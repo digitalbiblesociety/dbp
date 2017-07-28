@@ -92,12 +92,6 @@ class APIController extends Controller
             return $this->setStatusCode(403)->replyWithError('Missing Authentication key');
         }
 
-        if ($transformer != null) {
-            switch ($transformer) {
-                case 'BibleTransformer':
-                    $object = $this->bibleTransformer->transformCollection($object->ToArray());
-            }
-        }
         $format = @$_GET['format'];
         switch ($format) {
             case 'xml':

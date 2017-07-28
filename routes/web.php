@@ -11,18 +11,31 @@
 |
 */
 
-Route::get('bible/{id}/{book}/{chapter}',   'v4\BiblesController@text');
-Route::resource('bibles',                   'v4\BiblesController');
+Route::get('bible/{id}/{book}/{chapter}',   'BiblesController@text');
+Route::get('bibles/audio/uploads/thanks',     'AudioProcessingController@thanks')->name('bibles_audio_uploads.thanks');
+Route::resource('bibles/audio/uploads',     'AudioProcessingController');
+Route::resource('bibles/ocr',               'PrintProcesses');
+Route::resource('bibles',                   'BiblesController');
 
-Route::get('docs',                          'v4\DocsController@index')->name('v4_docs');
-Route::get('docs/bibles',                   'v4\DocsController@bibles')->name('v4_docs_bibles');
-Route::get('docs/bibles/books',             'v4\DocsController@books')->name('v4_docs_books');
+Route::get('docs',                          'DocsController@index')->name('docs');
+Route::get('docs/team',                     'DocsController@team')->name('docs_team');
+Route::get('docs/bibles',                   'DocsController@bibles')->name('docs_bibles');
+Route::get('docs/bibles/equivalents',       'DocsController@bibleEquivalents')->name('docs_bible_equivalents');
+Route::get('docs/bibles/books',             'DocsController@books')->name('docs_bible_books');
+Route::get('docs/languages',                'DocsController@languages')->name('docs_languages');
+Route::get('docs/language/create',          'DocsController@languages')->name('docs_language_create');
+Route::get('docs/language/update',          'DocsController@languages')->name('docs_language_update');
+Route::get('docs/countries',                'DocsController@countries')->name('docs_countries');
+Route::get('docs/alphabets',                'DocsController@alphabets')->name('docs_alphabets');
 
-Route::resource('books',                    'v4\BooksController',['only'=>['index','show','edit','update']]);
-Route::resource('languages',                'v4\LanguagesController');
-Route::resource('alphabets',                'v4\AlphabetsController');
-Route::resource('countries',                'v4\CountriesController',['only'=>['index','show']]);
 
+Route::resource('books',                    'BooksController',['only'=>['index','show','edit','update']]);
+Route::resource('languages',                'LanguagesController');
+Route::resource('alphabets',                'AlphabetsController');
+Route::resource('countries',                'CountriesController',['only'=>['index','show']]);
+
+Route::get('login/{provider}',          'Auth\LoginController@redirectToProvider')->name('login.social_redirect');
+Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback')->name('login.social_callback');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');

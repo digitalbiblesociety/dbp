@@ -1,0 +1,60 @@
+.card {
+
+    a.fullsize {
+      position: relative;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+      padding: 10px 10px 10px 60px;
+      height: 82px;
+      font-size: 10px;
+      margin-bottom: 15px;
+      display: block;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .title,
+    .subtitle {
+      display: block;
+      text-align: left;
+    }
+
+    .title {
+      color: #222;
+      font-weight: 500;
+      font-size: .75rem;
+      margin-top: -7px;
+      width: 90%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .subtitle {
+      font-size: .65rem;
+      color: #48B;
+    }
+
+    img {
+      height: 82px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+    }
+
+    .bottom-right,
+    .top-right {
+      color: #666;
+      font-size: .6rem;
+      position: absolute;
+      right: 5px;
+    }
+
+    .bottom-right {
+      bottom: 5px
+    }
+
+    .top-right {
+      top: 5px
+    }
+}

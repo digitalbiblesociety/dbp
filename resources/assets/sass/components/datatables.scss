@@ -1,0 +1,157 @@
+// Head Styles
+
+.dataTable {
+
+  thead {
+    position: relative;
+
+    tr td:active,
+    tr th:active {
+      outline: none;
+    }
+
+    .sorting_desc,
+    .sorting_asc,
+    .sorting {
+      position: relative;
+    }
+
+    .sorting_asc:before,
+    .sorting_asc:after,
+    .sorting_desc:before,
+    .sorting_desc:after,
+    .sorting:after,
+    .sorting:before {
+      position: absolute;
+      content: "";
+      width: 0;
+      height: 0;
+      border-left: 3px solid transparent;
+      border-right: 3px solid transparent;
+      right: 10px;
+    }
+
+    .sorting_desc:after,
+    .sorting:after {
+      border-top: 6px solid #CCC;
+      top:12px;
+    }
+
+    .sorting_asc:before,
+    .sorting:before {
+      border-bottom: 6px solid #CCC;
+      top:3px;
+    }
+
+    .sorting_asc:after {
+      top:12px;
+      border-top: 6px solid #333;
+    }
+
+    .sorting_desc:before {
+      top:3px;
+      border-bottom: 6px solid #333;
+    }
+
+    tr th {
+      padding-right: 1.5rem;
+    }
+  }
+
+}
+
+.dataTables_header {
+  position: relative;
+  height:70px;
+  background: #fafafa;
+  border: thin solid #ccc;
+  padding: 0px 10px;
+  box-sizing: border-box;
+
+  .dataTables_length {
+    position: absolute;
+  }
+
+  .dataTables_filter {
+    position: absolute;
+    left: 70px;
+  }
+
+  .dataTables_links {
+    a {
+      position: absolute;
+      height: 60px;
+      width: 60px;
+      display: block;
+      background-size: 75% 75%;
+      background-repeat: no-repeat;
+      background-position:center center;
+    }
+  }
+
+  .inscript {
+    right:10px;
+    background-image: url("/img/icons/logo_inscript.svg");
+  }
+  .findbible {
+    right:80px;
+    background-image: url("/img/icons/logo_fab.svg");
+  }
+
+}
+
+// Row Styles
+.dataTable tr td {
+  padding:10px 0;
+  text-align: center;
+}
+
+.odd {
+  background-color:#f2f2f2;
+}
+
+
+// Pagination Styles
+.dataTables_paginate {
+  margin:0 auto;
+  display: block;
+  clear:both;
+}
+.dataTables_paginate .ellipsis,
+.dataTables_paginate a {
+  display: inline-block;
+  min-width: 30px;
+  margin:0 3px;
+  padding: 7px 14px;
+  border: 1px solid #eaeaea;
+  color: #999;
+  font-size: 13px;
+  font-weight: 400;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.27s cubic-bezier(0.000, 0.000, 0.580, 1.000);
+}
+
+.dataTables_info {
+  text-align: center;
+  font-size:small;
+  margin:10px 0;
+  clear:both;
+}
+
+
+.dataTables_paginate a.current {
+  opacity: 1;
+  border-color: #bbb;
+  color: #444;
+  cursor: default;
+}
+
+.dataTables_paginate a:hover {
+  cursor: pointer;
+  opacity: 1;
+  text-decoration: none;
+  border-color: #bbb;
+  color: #444;
+}

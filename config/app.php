@@ -182,6 +182,7 @@ return [
 	     */
 	    Spatie\Fractal\FractalServiceProvider::class,
 	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
+	    Laravel\Socialite\SocialiteServiceProvider::class,
 
     ],
 
@@ -233,6 +234,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Fractal' => Spatie\Fractal\FractalFacade::class,
         'i18n' => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
 
     ],
 

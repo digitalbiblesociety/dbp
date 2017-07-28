@@ -1,2 +1,17 @@
-// Fonts
-@import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
+// Global styles and variables
+@import "global";
+
+@import "components/fonts";
+@import "components/typography";
+@import "components/buttons";
+
+@import "components/forms";
+@import "components/tabs";
+@import "components/datatables";
+
+@import "components/search";
+@import "components/headings";
+
+
+@import "partials/nav";
+@import "partials/footer";

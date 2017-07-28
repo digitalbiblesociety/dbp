@@ -4,6 +4,7 @@ namespace App\Models\Language;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\Film;
+use App\Models\Country\CountryRegion;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Language\LanguageCode;
@@ -38,12 +39,13 @@ class Language extends Model
      */
     public function translations()
     {
-        return $this->HasMany(LanguageTranslation::class, 'glotto_language')->select('name', 'iso_language as iso');
+        return $this->HasMany(LanguageTranslation::class, 'glotto_language')->select('name', 'glotto_language');
     }
 
-    public function currentTranslation()
+    public function currentTranslation($iso = null)
     {
-        $language = Language::where('iso',\i18n::getCurrentLocale())->first();
+    	if($iso == null) $iso = \i18n::getCurrentLocale();
+        $language = Language::where('iso',$iso)->first();
         return $this->HasOne(LanguageTranslation::class, 'glotto_language')->where('glotto_translation', $language->id);
     }
 
@@ -68,6 +70,11 @@ class Language extends Model
     public function primaryCountry()
     {
         return $this->HasOne(Country::class,'id','country_id');
+    }
+
+    public function region()
+    {
+    	return $this->HasOne(CountryRegion::class,'id','country_id');
     }
 
     /**
@@ -147,6 +154,21 @@ class Language extends Model
     public function dialects()
     {
         return $this->HasMany(LanguageDialect::class, 'parent');
+    }
+
+	/**
+	 * Returns a resource based upon the glottologue, ethnologue, or walls ID
+	 *
+	 * @param $id
+	 */
+	public function fetchByID($id = null) {
+		if(isset($_GET['language_id'])) $id = $_GET['language_id'];
+		$length = strlen($id);
+    	switch ($length) {
+		    case 3: return $this->where('iso',$id)->first();
+		    case 8: return $this->find($id);
+	    }
+		return false;
     }
 
 }

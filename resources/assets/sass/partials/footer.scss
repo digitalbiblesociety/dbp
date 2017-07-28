@@ -1,0 +1,50 @@
+footer[role="footer"] {
+  background:#f2f2f2;
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:40px;
+  line-height:40px;
+  font-size:small;
+  border-top:double #aaa thin;
+  padding:0 24px;
+  z-index: 99;
+
+  a {
+    text-decoration: none;
+    float: left;
+  }
+
+}
+
+footer[role="footer"] div:first-child a:last-child:after {
+  content:"";
+}
+
+footer[role="footer"] a .icon {
+  width: 2em;
+  height: 3em;
+  margin: 0 .5rem;
+}
+
+footer[role="footer"] a:after {
+  content: " | ";
+}
+
+footer[role="footer"] span.copyright a:after {
+  content:"";
+}
+
+footer[role="footer"] .ecosystem-link {
+  float: right;
+  opacity: .75;
+}
+
+footer[role="footer"] .ecosystem-link:after {
+  content: "";
+}
+footer[role="footer"] .ecosystem-link:hover,
+footer[role="footer"] .ecosystem-link[disabled] {
+  opacity: 1;
+}

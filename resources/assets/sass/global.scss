@@ -1,0 +1,162 @@
+// Variables
+
+// Body
+$body-bg: #f8f8f8;
+
+// colors
+$primary-color: #596;
+$info-color: #8eb4cb;
+$success-color: #2ab27b;
+$warning-color: #cbb956;
+$danger-color:  #bf5329;
+$default-black: #333;
+
+*, *::after, *::before {box-sizing:border-box;margin:0;padding:0}
+body, html 	           {height:100%}
+body 				   {margin:0 auto;color:#222;overflow-x: hidden;overflow-y: scroll;font-size: .98em;font-family: 'Open Sans', sans-serif;}
+a                      {text-decoration: none;}
+// images
+img                    {max-width:100%;height:auto}
+img[data-src]          {filter: blur(15px);}
+img.loaded             {transition: all .5s linear;filter:blur(0)}
+// Icons Style Applied to All SVG Sprites
+.icon                  {width: 1em; height: 1em;vertical-align: -0.15em;fill: currentColor;overflow: hidden}
+li                     {list-style: none}
+.shadow                {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)!important}
+
+// GRID
+section {position: relative}
+.row 					{margin:0 auto;max-width:1200px;width:100%}
+main:after,
+.row:before, .row:after {content:" ";display:table;clear:both}
+
+.row .row 		 		{margin:0 -1rem;max-width:none;width:auto}
+.row .row.collapse 		{margin:0}
+.collapse > .columns 	{padding-left:0;padding-right:0}
+.collapse .row 			{margin-left:0;margin-right:0}
+
+.columns 				{padding-left:1.1rem;padding-right:1.1rem;width:100%;float:left}
+.centered 				{margin-left:auto;margin-right:auto;float:none}
+.centered:last-child 	{float:none}
+.clearfix:after {content: ""; display: table; clear: both; }
+.disabled {opacity:.5}
+
+.hidden,
+.no-fouc {visibility: hidden!important;}
+
+@media only screen and (max-width:400px) {
+  .x-small-hide {display: none}
+}
+
+@media only screen {
+  .small-hide       {display:none}
+  .small-show       {display:block}
+  .small-1  		{width:8.33333%}
+  .small-2  		{width:16.66667%}
+  .small-3  		{width:25%}
+  .small-4  		{width:33.33333%}
+  .small-5  		{width:41.66667%}
+  .small-6  		{width:50%}
+  .small-7  		{width:58.33333%}
+  .small-8  		{width:66.66667%}
+  .small-9  		{width:75%}
+  .small-10 		{width:83.33333%}
+  .small-11 		{width:91.66667%}
+  .small-12 		{width:100%}
+}
+@media only screen and (min-width:600px) {
+  .small-show       {display:none}
+  .small-hide       {display:inherit}
+  .medium-hide      {display:none}
+  .medium-1  		{width:8.33333%}
+  .medium-2  		{width:16.66667%}
+  .medium-3  		{width:25%}
+  .medium-4  		{width:33.33333%}
+  .medium-5  		{width:41.66667%}
+  .medium-6  		{width:50%}
+  .medium-7  		{width:58.33333%}
+  .medium-8  		{width:66.66667%}
+  .medium-9  		{width:75%}
+  .medium-10 		{width:83.33333%}
+  .medium-11 		{width:91.66667%}
+  .medium-12 		{width:100%}
+}
+@media only screen and (min-width:960px) {
+  .small-show       {display:none}
+  .small-hide       {display:inherit}
+  .medium-hide      {display:block}
+  .large-1  		{width:8.33333%}
+  .large-2  		{width:16.66667%}
+  .large-3  		{width:25%}
+  .large-4  		{width:33.33333%}
+  .large-5  		{width:41.66667%}
+  .large-6  		{width:50%}
+  .large-7  		{width:58.33333%}
+  .large-8  		{width:66.66667%}
+  .large-9  		{width:75%}
+  .large-10 		{width:83.33333%}
+  .large-11 		{width:91.66667%}
+  .large-12 		{width:100%}
+}
+
+/*  Global Text Styles */
+.text-center {text-align: center}
+
+.panel {
+  background: #f8f8f8;
+  border:thin solid #ccc;
+}
+
+/*
+ * Pagination
+ */
+
+.pagination{
+  font-size: 13px;
+  font-family: "Open Sans", arial, sans-serif;
+  text-align: center;
+}
+.pagination li {
+  list-style: none;
+  display: inline-block;
+}
+.pagination li.active {
+  background: rgba(34,34,34, .9);
+}
+.pagination span,
+.pagination a{
+  display: inline-block;
+  min-width: 30px;
+
+  padding: 7px 14px;
+  border: 1px solid #eaeaea;
+  color: #999;
+  font-size: 13px;
+
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+
+
+  transition: all 0.27s cubic-bezier(0.000, 0.000, 0.580, 1.000);
+}
+.pagination .fa{
+  margin-top: 1px;
+  font-size: 16px;
+}
+.pagination a:hover{
+  text-decoration: none;
+  border-color: #bbb;
+  color: #444;
+}
+.pagination .active,
+.pagination .active:hover{
+  border-color: #bbb;
+  color: #444;
+}
+.pagination .no-active,
+.pagination .no-active:hover{
+  border-color: #efefef;
+  color: #bbb;
+}

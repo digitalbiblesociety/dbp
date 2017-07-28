@@ -5,6 +5,8 @@ use database\seeds\SeederHelper;
 use App\Models\Bible\BookTranslation;
 use App\Models\Bible\Book;
 use App\Models\Language\Language;
+use App\Models\Bible\BookCode;
+
 class bible_books_seeder extends Seeder
 {
     /**
@@ -14,6 +16,8 @@ class bible_books_seeder extends Seeder
      */
     public function run()
     {
+	\DB::table('book_codes')->delete();
+	\DB::table('books')->delete();
 
     /**
      * Run the database seeds.
@@ -21,21 +25,36 @@ class bible_books_seeder extends Seeder
      * @return void
      */
         $seederhelper = new SeederHelper();
-        $canon = $seederhelper->csv_to_array(storage_path() . "/data/bibles/books.csv");
-	    Book::insert($canon);
+	    $seederhelper = new SeederHelper();
+	    $data_url = 'https://docs.google.com/spreadsheets/d/1lKJGinIrK_nNBMgaw6iPdL_7s2N6dcP0HQ1fpcju-Ak/export?format=csv&id=1lKJGinIrK_nNBMgaw6iPdL_7s2N6dcP0HQ1fpcju-Ak';
+	    $canon = $seederhelper->csv_to_array($data_url);
 
-	    $bookTranslations = $seederhelper->csv_to_array(storage_path() . "/data/bibles/book_translations.csv");
+        foreach ($canon as $key => $canonItem) {
+	        $canonItem['id'] = $canonItem['usfm'];
+	        $codes[] = ['book_id' => $canonItem['id'],'code' => $canonItem['osis'],'type' => 'osis']; unset($canonItem['osis']);
+	        $codes[] = ['book_id' => $canonItem['id'],'code' => $canonItem['usfm'],'type' => 'usfm']; unset($canonItem['usfm']);
+	        $codes[] = ['book_id' => $canonItem['id'],'code' => $canonItem['usfx'],'type' => 'usfx']; unset($canonItem['usfx']);
+	        Book::create($canonItem);
+	        BookCode::create($codes);
+
+			unset($codes);
+        }
+
+	    $bookTranslations = $seederhelper->csv_to_array($data_url.'&gid=1922115575');
 	    foreach($bookTranslations as $translation) {
-	    	$language = Language::where('iso',$translation['iso'])->first();
-	    	if(!isset($language)) {
-	    		echo $translation['iso'];
-	    		continue;
+		    $language = Language::where('iso',$translation['iso'])->first();
+		    if(!isset($language)) {
+			    echo $translation['iso'];
+			    continue;
 		    }
-	    	$newTranslation = new BookTranslation();
-	    	$newTranslation->glotto = $language['id'];
-	    	$newTranslation->book_id = $translation['book_id'];
+		    $book = BookCode::where('type','usfx')->where('code',$translation['book_id'])->first()->book;
+		    $newTranslation = new BookTranslation();
+		    $newTranslation->glotto = $language->id;
+		    $newTranslation->book_id = $book->id;
 		    $newTranslation->name = $translation['name'];
-		    $newTranslation->description = $translation['description'];
+		    $newTranslation->name_long = $translation['name_long'];
+		    $newTranslation->name_short = $translation['name_short'];
+		    $newTranslation->name_abbreviation = $translation['name_abbreviation'];
 		    $newTranslation->save();
 	    }
 	    /*

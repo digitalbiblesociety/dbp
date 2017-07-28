@@ -1,0 +1,293 @@
+/* ==============================
+   Portfolio
+   ============================== */
+
+
+/*
+ * Works filter
+ */
+
+.works-filter {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 15px 0;
+  font-size: 13px;
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 0.4em;
+  color: #555;
+  cursor: default;
+}
+.works-filter a.active {
+  color: #111;
+  cursor: default;
+}
+.works-filter a {
+  display: inline-block;
+  margin: 0 27px;
+  color: #999;
+  text-decoration: none;
+  transition: all 0.27s cubic-bezier(0.000, 0.000, 0.580, 1.000);
+  cursor: pointer;
+}
+.works-filter a:hover {
+  color: #111;
+  text-decoration: none;
+}
+
+
+/*
+ * Works grid
+ */
+
+.works-grid{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.work-item{
+  width: 25%;
+  float: left;
+  margin: 0;
+}
+.work-grid-2 .work-item{
+  width: 50%;
+}
+.work-grid-3 .work-item{
+  width: 33.333%;
+}
+.container .work-grid-3 .work-item{
+  width: 33.2%;
+}
+.work-grid-5 .work-item{
+  width: 20%;
+}
+
+.works-grid.work-grid-gut{
+  margin: 0 0 0 -10px;
+}
+.works-grid.work-grid-gut .work-item{
+  padding: 0 0 10px 10px;
+}
+
+.work-item > a{
+  display: block;
+  padding: 0 0 84px 0;
+  position: relative;
+  text-decoration: none;
+}
+.work-item a,
+.work-item a:hover{
+  color: #111;
+  border: none;
+}
+.work-img{
+  position: relative;
+  overflow: hidden;
+}
+.work-img img{
+  width: 100%;
+  display: block;
+  overflow: hidden;
+}
+.work-intro{
+  width: 100%;
+  height: 84px;
+  padding: 20px 20px 0 20px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  text-align: center;
+  overflow: hidden;
+}
+.work-title{
+  margin: 8px 0 8px 0;
+  padding: 0;
+  font-size: 11px;
+
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  line-height: 1.2;
+}
+.work-descr{
+  font-size: 11px;
+  text-align: center;
+  text-transform: uppercase;
+  color: #aaa;
+  line-height: 1.2;
+}
+.works-grid.hide-titles .work-item > a{
+  overflow: hidden;
+  padding: 0;
+}
+.works-grid.hide-titles .work-item .work-intro{
+  opacity: 0;
+  bottom: -94px;
+}
+.works-grid.hide-titles .work-item:hover .work-intro{
+  opacity: 1;
+}
+
+
+
+/* Work item hover state */
+
+.work-intro{
+  transition: all 0.27s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+}
+
+.work-item:hover .work-intro{
+  /*bottom: auto;*/
+  /*top: 50%;*/
+  color: #fff;
+  transform: translateY(-99px);
+
+  z-index: 3;
+}
+.work-item:hover .work-title{
+  color: #ccc;
+}
+.work-item:hover .work-descr{
+  color: #999;
+}
+
+.work-item .work-img > img{
+  transition: all 0.3s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+}
+
+.work-item:hover .work-img > img{
+  transform: scale(1.05);
+}
+
+/*
+ * Works full view
+ */
+
+.work-full{
+  display: none;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  z-index: 10000;
+}
+.work-full-load{
+  padding-top: 60px;
+}
+
+/* Work navigation */
+
+.work-navigation{
+  width: 100%;
+  background: #fff;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+
+  z-index: 99;
+}
+
+.work-navigation a{
+  display: block;
+  float: left;
+  width: 33.33333%;
+  overflow: hidden;
+  vertical-align: middle;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: default;
+}
+.work-navigation a,
+.work-navigation a:visited{
+  color: #555;
+}
+.work-navigation a:hover{
+  color: #111;
+}
+.work-navigation a span{
+  display: inline-block;
+  height: 60px;
+  line-height: 59px;
+  padding: 0 4%;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+}
+.work-navigation span:hover{
+  background: #f7f7f7;
+}
+.work-back-link{
+  margin: 20px 0 0;
+  display: block;
+  background: #fff;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #151515;
+}
+.work-prev{
+  text-align: left;
+}
+.work-all{
+  text-align: center;
+}
+.work-next{
+  text-align: right;
+}
+.work-container{
+  padding: 50px 0;
+}
+.work-full-title{
+  margin: 0 0 10px 0;
+  padding: 0;
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 1px;
+}
+.work-full-media{
+  margin-top: 30px;
+}
+
+.work-full-media img{
+  max-width: 100%;
+  height: auto;
+}
+.work-full-text{
+  text-align: left;
+  font-size: 13px;
+  color: #777;
+}
+.work-full-text h6{
+  margin-top: 5px;
+}
+.work-detail{
+
+}
+.work-detail p:last-child{
+  margin-bottom: 0;
+}
+.work-full-detail{
+  font-size: 11px;
+  color: #777;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.work-full-detail p{
+  padding: 4px 0;
+  margin: 0;
+  border-top: 1px solid rgba(0,0,0, .05);
+}
+.work-full-detail p:last-child{
+  border-bottom: 1px solid rgba(0,0,0, .05);
+}
+.work-full-detail p strong{
+  width: 100px;
+  display: inline-block;
+}
+.work-full-action{
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid #eaeaea;
+  text-align: center;
+}

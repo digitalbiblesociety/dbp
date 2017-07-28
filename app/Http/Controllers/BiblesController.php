@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bible\Bible;
+use App\Models\Bible\BibleEquivalent;
+use App\Models\Language\Language;
 use \database\seeds\SeederHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\APIController;
-
+use App\Transformers\BibleTransformer;
 class BiblesController extends APIController
 {
 
@@ -15,10 +17,15 @@ class BiblesController extends APIController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Language $language,$country = null, $publisher = null)
     {
+    	$language = $language->fetchByID();
+
 	    if($this->api) {
-		    $bibles = Bible::all();
+		    $bibles = Bible::when($language, function ($query) use ($language) {
+			    return $query->where('glotto_id', $language->id);
+		    })->get();
+		    //dd($bibles);
 		    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->toArray());
 	    }
 	    return view('bibles.index');
@@ -39,7 +46,7 @@ class BiblesController extends APIController
      * Description:
      * Display the bible meta data for the specified ID.
      *
-     * @param  int  $id
+     * @param  string  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -56,6 +63,20 @@ class BiblesController extends APIController
 		$books = Book::select('id','book_order','name')->orderBy('book_order')->get();
 		if($this->api) return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer)->toArray());
 		return view('bibles.books.index');
+	}
+
+
+	/**
+	 * Display the equivalents for this resource.
+	 *
+	 * @param  string $id
+	 * @return \Illuminate\Http\Response
+	 */
+	public function equivalents(string $id)
+	{
+		$equivalents = BibleEquivalent::where('abbr',$id)->get();
+		return $this->reply($equivalents);
+		//return view('bibles.books.index');
 	}
 
 	/**

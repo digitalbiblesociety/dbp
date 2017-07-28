@@ -14,10 +14,7 @@ class alphabet_seeder extends Seeder
     {
         $seederhelper = new SeederHelper();
         $alphabets = $seederhelper->csv_to_array(storage_path() . "/data/languages/alphabets.csv");
-
-        foreach ($alphabets as $key => $alphabet) {
-            Alphabet::insert($alphabet);
-        }
+        foreach ($alphabets as $key => $alphabet) Alphabet::insert($alphabet);
     }
 
 }

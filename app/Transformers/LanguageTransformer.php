@@ -19,6 +19,7 @@ class LanguageTransformer extends TransformerAbstract
 	{
 		$this->version = $_GET['v'] ?? 4;
 		$this->iso = $_GET['iso'] ?? "eng";
+		$this->continent = $_GET['continent'] ?? false;
 	}
 
 
@@ -32,6 +33,11 @@ class LanguageTransformer extends TransformerAbstract
 	    }
     }
 
+	/**
+	 * @param Language $language
+	 *
+	 * @return array
+	 */
 	public function transformForDataTables(Language $language)
 	{
 		return [
@@ -40,6 +46,11 @@ class LanguageTransformer extends TransformerAbstract
 		];
 	}
 
+	/**
+	 * @param Language $language
+	 *
+	 * @return array
+	 */
 	public function transformForV2(Language $language) {
 		return [
 			'language_code'        => $language->iso ?? '',
@@ -54,11 +65,17 @@ class LanguageTransformer extends TransformerAbstract
 		];
 	}
 
+	/**
+	 * @param Language $language
+	 *
+	 * @return array
+	 */
 	public function transformForV4(Language $language) {
-		return [
-			'name_current' => $language->name_current,
-			'name' => $language->name
-		];
+			return [
+				'glotto_code' => $language->id,
+				'iso_code'    => $language->iso,
+				'name'        => $language->name
+			];
 	}
 
 }

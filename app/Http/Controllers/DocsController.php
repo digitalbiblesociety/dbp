@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\APIController;
 class DocsController extends APIController
@@ -24,7 +25,17 @@ class DocsController extends APIController
 	 */
 	public function bibles()
 	{
-		return view('docs.routes.bibles');
+		return view('docs.routes.bibleEquivalents');
+	}
+
+	/**
+	 * Keep going
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function bibleEquivalents()
+	{
+		return view('docs.routes.bibleEquivalents');
 	}
 
 	/**
@@ -36,4 +47,27 @@ class DocsController extends APIController
 	{
 		return view('docs.routes.books');
 	}
+
+	public function languages()
+	{
+		return view('docs.routes.languages');
+	}
+
+	public function countries()
+	{
+		return view('docs.routes.countries');
+	}
+
+	public function alphabets()
+	{
+		return view('docs.routes.alphabets');
+	}
+
+	public function team()
+	{
+		$teammates = User::whereHas('role.organization', function($q) {$q->where('role', 'teammember');})->get();
+		return view('docs.team',compact('teammates'));
+	}
+
+
 }

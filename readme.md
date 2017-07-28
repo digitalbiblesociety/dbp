@@ -1,7 +1,22 @@
 # Koinos API
 
 ### Description:
-The Koinos API is a open source Bible delivery API built for Faith Comes by Hearing by the Digital Bible Society. It's easily accessible and expandable, we'd love for you to join our growing community of curated Bible content. Please get in contact with us.
+The Koinos API is a open source end to end Bible delivery API built for Faith Comes by Hearing by the Digital Bible Society. It's easily accessible and expandable, we'd love for you to join our growing community of curated Bible content. Please get in contact with us.
+
+### Getting Started
+
+#### Dependencies
+
+- PHP >= 7.1
+- PECL
+- OpenSSL PHP Extension
+- PDO PHP Extension
+- Mbstring PHP Extension
+- Tokenizer PHP Extension
+- XML PHP Extension
+- Composer
+
+If you're planning on using the OCR capabilities of Koinos you'll need to install [Tesseract](https://github.com/tesseract-ocr/tesseract/).
 
 ### Contributing
 

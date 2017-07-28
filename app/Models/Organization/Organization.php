@@ -4,7 +4,6 @@ namespace App\Models\Organization;
 
 use App\Models\Bible\Bible;
 use App\Models\Language\Language;
-use App\Models\Library\Resource;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Organization\OrganizationTranslation;
 
@@ -20,8 +19,13 @@ class Organization extends Model
      */
     protected $hidden = ['pivot','logo','facebook','twitter','id','code'];
 
-    public function translations()
+    public function translations($id = null)
     {
+    	if($id) {
+    		$language = new Language();
+    		$language = $language->fetchByID($id);
+		    return $this->HasOne(OrganizationTranslation::class,'organization_id','id')->where('glotto_id', $language->id);
+	    }
         return $this->HasMany(OrganizationTranslation::class);
     }
 
@@ -30,6 +34,11 @@ class Organization extends Model
         $language = Language::where('iso',\i18n::getCurrentLocale())->first();
         return $this->HasOne(OrganizationTranslation::class)->where('glotto_id',$language->id);
     }
+
+	public function vernacularTranslation()
+	{
+		return $this->HasOne(OrganizationTranslation::class)->where('vernacular',1);
+	}
 
     public function bibles()
     {

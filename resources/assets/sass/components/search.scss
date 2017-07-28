@@ -1,0 +1,265 @@
+#search-section {
+  position: absolute;
+  width: 340px;
+  left: auto;
+  right: 0;
+  top: 46px;
+
+  .language-dropdown {
+    position: absolute;
+    right: 8px;
+    line-height: 26px;
+    text-align: left;
+    width: 80px;
+    top: 7px;
+    height: 28px;
+    z-index:90;
+
+    > a {
+      color:#FFF;
+      text-transform: uppercase;
+      font-size: 12px;
+      margin-right: 6px;
+    }
+
+  }
+
+  ul li         {float:none;width:200px}
+  ul a          {line-height:120%;padding:10px 15px}
+  ul ul         {top:0;left:100%}
+  .language-dropdown:hover > ul {transform: scale(1);}
+
+    ul {
+      position: absolute;
+      right: 0;
+      top: 40px;
+      transition: all 0.3s ease;
+      transform: scale(0);
+      transform-origin: 0 0;
+      background-color: #FFF;
+      z-index: 97;
+
+      li {
+        display: block;
+        width: 100%;
+        float: left;
+        &:hover {
+          background: #48b
+        }
+
+        a {
+          width: 100%;
+          display: inline-block;
+          white-space: pre;
+          box-sizing: border-box;
+          cursor: pointer;
+          border-bottom: 1px solid #eee;
+          &:hover {
+            color: #fff
+          }
+        }
+
+      }
+    }
+
+}
+
+#search-section .partners                 {position:relative}
+#search-section .partners img             {margin:20px auto;display:block}
+#search-section .tag-line {
+  padding:20px;
+}
+
+#search-section header {transition:transform .2s ease-in-out 0s;}
+#search-section .logo {
+  z-index: 102;
+  background-image: url("https://images.bible.cloud/bc_logo_title_flat.svg");
+  background-repeat: no-repeat;
+  width: 240px;
+  height: 220px;
+  margin: 0 auto 0 auto;
+  display: block;
+  background-size: 220px 220px;
+  display: block;
+}
+
+.search-active #search-section {
+  background: #f2f2f2;
+  height: 46px;
+  border-bottom: double #aaa thin;
+  position: absolute;
+  top: 46px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 90;
+}
+
+.search-active .language-dropdown {
+  display: none;
+}
+#search-section .language-dropdown a {color:#000;}
+
+#search-input {
+  z-index: 10;
+  width: 230px;
+  float: right;
+  margin-right: 96px;
+  top: -6px;
+  height: 28px;
+  border-radius: 2px;
+  background-color:#ffffff!important;
+  font-size: 10px!important;
+  text-transform: uppercase;
+  font-family: "Open Sans", Arial, Helvetica, sans-serif !important;
+
+  &::placeholder {
+    color:#666!important;
+  }
+
+}
+
+.algolia-autocomplete {
+float: right;
+}
+.aa-hint {
+  display:none
+}
+
+.aa-dropdown-menu           {
+  position: fixed!important;
+  width:100%;
+  height:100%;
+  padding: 100px 20px;
+  background-color:#FFF;
+  top:92px!important;
+  bottom:0px!important;
+  height: auto;
+  left:0px;
+  z-index:90!important;
+  display:block;
+  right:auto;
+  overflow: hidden;
+
+  @media only screen and (min-width:40.0625em) {
+    overflow: scroll;
+  }
+
+  a  {
+    color:#000;
+
+    &:hover   {
+      color:$primary-color;
+    }
+
+    em {
+      color:$primary-color;
+      font-style: normal;
+    }
+
+  }
+
+  h3        {
+    font-size:1rem;
+    text-transform:uppercase;
+    text-align:left;
+    color:$primary-color;
+    margin:20px 0;
+    font-weight:bold;
+    border-bottom:thin solid lightgrey
+  }
+
+  .algolia {
+    position: fixed;
+    width: 150px;
+    bottom: 45px;
+    right: 30px;
+    line-height: 1.3;
+
+    @media only screen and (max-width:40.0625em) {
+      width: 100%;
+      bottom: 0;
+      right: 0;
+      background: #FFF;
+      text-align: right;
+      border-top: thin solid #777;
+      padding: .5rem;
+    }
+
+    img {
+      display: inline;
+      float: right;
+      width: 60px;
+      margin-left:5px;
+    }
+  }
+
+
+  .bible              {
+    display:block;
+    width:100%;
+    height:75px;
+    margin-bottom:10px;
+    position:relative;
+    border-bottom:thin solid lightgrey;
+
+    @media only screen and (min-width:40.0625em) {
+      height:80px;
+    }
+    .language,
+    .abbr        {
+      font-size:x-small;
+      font-weight:bold;
+      position:absolute;
+      bottom:2px;
+      right:2px;
+      color:#999;
+      text-transform: uppercase;
+    }
+
+    .language {
+      right:auto;
+      left:57px
+    }
+
+
+    .vname {
+      position: absolute;
+      white-space: nowrap;
+      width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      left:55px;
+
+      @media only screen and (max-width:40.0625em) {
+        width:80%;
+      }
+
+    }
+    .name {
+      padding-top: 20px;
+      display: block;
+      font-size: small;
+      color: #999;
+    }
+
+    img          {
+      width:50px;
+      float:left;
+      margin-right:5px
+    }
+
+  }
+
+  .country            {
+    font-size:12px;
+    text-align:center;
+
+    .icon      {
+      display:block;
+      font-size:3rem;
+      margin:0 auto
+    }
+
+  }
+}

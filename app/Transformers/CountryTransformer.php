@@ -39,7 +39,7 @@ class CountryTransformer extends TransformerAbstract
 		if(!$country->hidden) {
 			$name = $country->currentTranslation->name ?? $country->name;
 			return [
-				'<a href="'.env('APP_URL').'/countries/'.$country->id.'">'.$name.'</a>',
+				"<a href='".env('APP_URL')."/countries/".$country->id."'>$name</a>",
 				$country->continent,
 				$country->id,
 				$country->iso_a3,

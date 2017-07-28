@@ -17,8 +17,13 @@ class LanguagesController extends APIController
      */
     public function index()
     {
+    	$country = $_GET['country'] ?? false;
+
     	if($this->api) {
-    		$languages = Language::with("currentTranslation")->get();
+			$languages = Language::with("translations","primaryCountry")
+				->when($country, function ($query) use ($country) {
+					return $query->where('country_id', $country);
+				})->get();
     		return $this->reply(fractal()->collection($languages)->transformWith(new LanguageTransformer())->toArray());
 	    }
         return view('languages.index');
@@ -42,19 +47,20 @@ class LanguagesController extends APIController
      */
     public function store(Request $request)
     {
-        //
+
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+	/**
+	 * @param $id
+	 * @param Language $language
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 */
+	public function show($id)
     {
     	if($this->api) {
-    		$language = Language::find($id);
+		    $language = new Language();
+		    $language = $language->fetchByID($id);
 		    return $this->reply(fractal()->item($language)->transformWith(new LanguageTransformer())->toArray());
 	    }
         return view('languages.show');

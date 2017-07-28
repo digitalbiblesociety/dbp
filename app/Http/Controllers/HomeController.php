@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Country\Country;
+use App\Models\Language\Alphabet;
+use App\Models\Language\Language;
+use App\Models\Organization\Organization;
+use App\Models\Bible\Bible;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Types\Resource;
 
 class HomeController extends Controller
 {
@@ -13,7 +19,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')->except('welcome');
+        $this->middleware('auth')->only('index');
     }
 
     /**
@@ -23,7 +29,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+    	$user = \Auth::user();
+        return view('home',compact('user'));
     }
 
 	/**
@@ -33,6 +40,17 @@ class HomeController extends Controller
 	 */
 	public function welcome()
 	{
-		return view('welcome');
+		$count['languages'] = Language::count();
+		$count['countries'] = Country::count();
+		$count['alphabets'] = Alphabet::count();
+		$count['organizations'] = Organization::count();
+		$count['bibles'] = Bible::count();
+
+		return view('welcome',compact('count'));
+	}
+
+	public function versions()
+	{
+		return [2,4];
 	}
 }

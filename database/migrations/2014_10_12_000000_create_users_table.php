@@ -14,15 +14,22 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-	        $table->string('id')->primary();
+	        $table->char('id',24)->primary();
 	        $table->string('name');
-	        $table->string('email')->unique();
-	        $table->string('password');
-	        $table->boolean('confirmed')->default(0);
-	        $table->string('confirmation_code')->nullable();
+	        $table->string('nickname')->nullable();
+	        $table->string('avatar')->nullable();
+	        $table->string('email')->unique()->nullable();
 	        $table->rememberToken();
 	        $table->timestamps();
         });
+
+	    Schema::create('user_accounts', function (Blueprint $table) {
+		    $table->char('user_id',24)->primary();
+		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
+		    $table->string('provider');
+		    $table->string('provider_user_id');
+		    $table->timestamps();
+	    });
 
     }
 
@@ -33,6 +40,7 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
+	    Schema::dropIfExists('user_accounts');
         Schema::dropIfExists('users');
     }
 }

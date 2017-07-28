@@ -13,6 +13,13 @@
 
 @section('content')
 
+    <div class="row">
+        <div class="medium-5 columns centered">
+            <a class="button github" href="{{ route('login.social_redirect', ['provider' => 'github']) }}" href="">Github Login</a>
+        </div>
+    </div>
+
+{{--
             <div class="row">
             <form role="form" method="POST" action="{{ route('login') }}">
                 {{ csrf_field() }}
@@ -23,5 +30,5 @@
                 <div class="medium-6 columns"><button type="submit" class="button">Login</button></div>
             </form>
             </div>
-
+--}}
 @endsection

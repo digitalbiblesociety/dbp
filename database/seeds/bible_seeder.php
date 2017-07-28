@@ -116,7 +116,7 @@ class bible_seeder extends Seeder
         foreach ($sophiaBibles as $sophiaBible) {
             $bible = Bible::where('abbr',$sophiaBible->fcbhId)->first();
             if(isset($bible)) {
-                $bible->sophia = true;
+                //$bible->sophia = true;
                 $bible->save();
             } else {
                 echo "\n !!!--- Unmatched Sophia Bible Abbreviation: ".$sophiaBible->fcbhId. " ---!!! ";

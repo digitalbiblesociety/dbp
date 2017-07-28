@@ -27,14 +27,14 @@
         <div class="route-section row">
             <div class="medium-4 columns">
                 <h5>{{ trans('docs.bibles_index_title') }}</h5>
-                <code>{{ route('v4_bibles.index') }}</code>
+                <code>{{ route('api_bibles.index') }}</code>
             </div>
         </div>
 
         <div class="route-section row">
             <div class="medium-4 columns">
                 <h5>{{ trans('docs.bibles_show_title') }}</h5>
-                <code>{{ route('v4_bibles.show', 'ENGKJV') }}</code>
+                <code>{{ route('api_bibles.show', 'ENGKJV') }}</code>
             </div>
             <div class="medium-8 columns">
                 <p class="text-center"><b>Description:</b><br>Display the bible meta data for the specified ID.</p>

@@ -24,10 +24,17 @@ class AlphabetTransformer extends TransformerAbstract
 		];
 	}
 
+	/**
+	 * Transforms the Response for the data table jquery plugin
+	 * Single quotes are preferred for a cleaner escape free json response
+	 * @param Alphabet $alphabet
+	 *
+	 * @return array
+	 */
 	public function transformForDataTables(Alphabet $alphabet)
 	{
 			return [
-				'<a href="'.env('APP_URL').'/alphabets/'. $alphabet->script .'">'.$alphabet->name.'</a>',
+				"<a href='".env('APP_URL')."/alphabets/$alphabet->script'>$alphabet->name</a>",
 				$alphabet->script,
 				$alphabet->family,
 				$alphabet->type,

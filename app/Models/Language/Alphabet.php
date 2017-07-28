@@ -15,7 +15,7 @@ class Alphabet extends Model
 
     public function languages()
     {
-        return $this->BelongsToMany(Language::class, 'alphabet_language','script','glotto_id')->select('glotto_id','name');
+        return $this->BelongsToMany(Language::class, 'geo.alphabet_language','script','glotto_id')->select('glotto_id','name');
     }
 
     public function fonts()

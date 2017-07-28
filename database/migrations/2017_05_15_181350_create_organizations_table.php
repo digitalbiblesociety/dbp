@@ -16,18 +16,24 @@ class CreateOrganizationsTable extends Migration
         Schema::create('organizations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('slug',191)->unique()->index();
-            $table->boolean('fobai')->default(false)->nullable();
-            $table->text('notes');
+	        $table->char('abbreviation',6)->unique()->index()->nullable();
+            $table->text('notes')->nullable();
             $table->string('primaryColor',7)->nullable();
             $table->string('secondaryColor',7)->nullable();
             $table->string('logo')->nullable();
+	        $table->string('logo_icon')->nullable();
             $table->boolean('inactive')->default(false)->nullable();
-            $table->boolean('globalContributor')->default(false)->nullable();
-            $table->boolean('libraryContributor')->default(false)->nullable();
-            $table->string('facebook')->nullable();
-            $table->string('website')->nullable();
-            $table->string('twitter')->nullable();
-            $table->string('address')->nullable();
+            $table->string('url_facebook')->nullable();
+            $table->string('url_website')->nullable();
+	        $table->string('url_donate')->nullable();
+            $table->string('url_twitter')->nullable();
+	        $table->string('address')->nullable();
+            $table->string('address2')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('country')->nullable();
+	        $table->foreign('country')->references('id')->on('geo.countries')->onUpdate('cascade');
+            $table->integer('zip')->nullable()->unsigned();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
         });
@@ -50,6 +56,25 @@ class CreateOrganizationsTable extends Migration
 		    $table->foreign('organization_id')->references('id')->on('organizations');
 		    $table->timestamps();
 	    });
+
+	    Schema::create('organization_relationships', function($table) {
+		    $table->integer('organization_parent_id')->unsigned();
+		    $table->foreign('organization_parent_id')->references('id')->on('organizations');
+		    $table->integer('organization_child_id')->unsigned();
+		    $table->foreign('organization_child_id')->references('id')->on('organizations');
+		    $table->string('type');
+		    $table->string('relationship_id');
+		    $table->timestamps();
+	    });
+
+	    Schema::create('organization_services', function($table) {
+		    $table->integer('organization_id')->unsigned();
+		    $table->foreign('organization_id')->references('id')->on('organizations');
+		    $table->string('type');
+		    $table->string('name');
+		    $table->text('description')->nullable();
+	    });
+
     }
 
     /**
@@ -60,7 +85,9 @@ class CreateOrganizationsTable extends Migration
     public function down()
     {
 	    Schema::dropIfExists('user_roles');
-        Schema::dropIfExists('organization_translations');
+	    Schema::dropIfExists('organization_relationships');
+	    Schema::dropIfExists('organization_translations');
+        Schema::dropIfExists('organization_services');
         Schema::dropIfExists('organizations');
     }
 }

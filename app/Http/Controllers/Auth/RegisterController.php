@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -63,8 +63,9 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
+        	'id'       => str_random(24),
+            'name'     => $data['name'],
+            'email'    => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
     }
@@ -87,9 +88,10 @@ class RegisterController extends Controller
 			return Redirect::back()->withInput()->withErrors($validator);
 		}
 
-		$confirmation_code = str_random(30);
+		$confirmation_code = str_random(24);
 
 		User::create([
+			'id'                => str_random(24),
 			'username'          => Input::get('username'),
 			'email'             => Input::get('email'),
 			'password'          => Hash::make(Input::get('password')),
@@ -97,8 +99,7 @@ class RegisterController extends Controller
 		]);
 
 		Mail::send('email.verify', $confirmation_code, function($message) {
-			$message->to(Input::get('email'), Input::get('username'))
-			        ->subject('Verify your email address');
+			$message->to(Input::get('email'), Input::get('username'))->subject('Verify your email address');
 		});
 
 		Flash::message('Thanks for signing up! Please check your email.');

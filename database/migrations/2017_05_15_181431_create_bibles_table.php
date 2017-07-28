@@ -62,19 +62,19 @@ class CreateBiblesTable extends Migration
         });
 
         Schema::create('books', function (Blueprint $table) {
-	        $table->char('id', 2)->primary();
+	        $table->char('id', 3)->primary();
             $table->tinyInteger('book_order'); // Genesis 01
-            $table->Integer('chapters')->default(0);
-            $table->Integer('verses')->default(0);
+            $table->Integer('chapters')->nullable()->unsigned();
+            $table->Integer('verses')->nullable()->unsigned();
             $table->string('name');
             $table->text('notes');
             $table->text('description');
         });
 
         Schema::create('book_codes', function (Blueprint $table) {
-	        $table->string('code');
-	        $table->string('type');
-	        $table->char('book_id', 2);
+	        $table->string('code', 16);
+	        $table->string('type', 8);
+	        $table->char('book_id', 3);
 	        $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade')->onUpdate('cascade');
         });
 
@@ -90,7 +90,7 @@ class CreateBiblesTable extends Migration
         Schema::create('book_translations', function (Blueprint $table) {
             $table->char('glotto', 8)->index();
             $table->foreign('glotto')->references('id')->on('geo.languages')->onDelete('cascade')->onUpdate('cascade');
-            $table->char('book_id', 2);
+            $table->char('book_id', 3);
             $table->foreign('book_id')->references('id')->on('books');
             $table->string('name');
             $table->text('name_long');
@@ -100,39 +100,23 @@ class CreateBiblesTable extends Migration
             $table->timestamp('updated_at')->useCurrent();
         });
 
-        Schema::create('audio', function (Blueprint $table) {
-            $table->increments('id');
-            $table->char('glotto', 8)->index();
-            $table->foreign('glotto')->references('id')->on('geo.languages')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('abbr', 12);
-            $table->foreign('abbr')->references('abbr')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
-            $table->char('book_id', 2);
-            $table->foreign('book_id')->references('id')->on('books');
-            $table->integer('chapter_start')->unsigned();
-            $table->integer('chapter_end')->unsigned();
-            $table->integer('verse_start')->unsigned();
-            $table->integer('verse_end')->unsigned();
-            $table->string('url_download');  // usually a link to a file
-            $table->string('url_stream');    // With Streaming Analytics
-            $table->string('url_share');     // to to a site
-            $table->integer('duration');     // in milliseconds
-            $table->text('embed_code');
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
-        });
+	    Schema::create('bible_audio', function (Blueprint $table) {
+	    	$table->increments('id');
+		    $table->string('bible_id', 12);
+		    $table->foreign('bible_id')->references('abbr')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
+		    $table->char('book_id',3);
+		    $table->foreign('book_id')->references('id')->on('books');
+		    $table->tinyInteger('chapter_start')->unsigned()->nullable();
+		    $table->tinyInteger('chapter_end')->unsigned()->nullable();
+		    $table->tinyInteger('verse_start')->unsigned()->nullable();
+		    $table->tinyInteger('verse_end')->unsigned()->nullable();
+		    $table->string('order');
+		    $table->string('filename');
+		    $table->timestamp('created_at')->useCurrent();
+		    $table->timestamp('updated_at')->useCurrent();
+	    });
 
-        Schema::create('audio_translations', function (Blueprint $table) {
-            $table->char('glotto', 8)->index();
-            $table->foreign('glotto')->references('id')->on('geo.languages')->onDelete('cascade')->onUpdate('cascade');
-            $table->integer('audio_id')->unsigned();
-            $table->foreign('audio_id')->references('id')->on('audio')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('title');
-            $table->text('description');
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
-        });
-
-        Schema::create('audio_organization', function (Blueprint $table) {
+        Schema::create('bible_audio_organization', function (Blueprint $table) {
             $table->integer('audio_id')->unsigned();
             $table->foreign('audio_id')->references('id')->on('audio');
             $table->integer('organization_id')->unsigned();
@@ -140,6 +124,18 @@ class CreateBiblesTable extends Migration
             $table->string('contribution_type');
         });
 
+	    Schema::create('bible_text', function (Blueprint $table) {
+		    $table->string('verse_id');
+		    $table->string('bible_id', 12);
+		    $table->foreign('bible_id')->references('abbr')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
+		    $table->char('book_id',3);
+		    $table->foreign('book_id')->references('id')->on('books');
+		    $table->tinyInteger('chapter_number')->unsigned();
+		    $table->tinyInteger('verse_number')->unsigned();
+		    $table->text('verse_text');
+		    $table->timestamp('created_at')->useCurrent();
+		    $table->timestamp('updated_at')->useCurrent();
+	    });
 
     }
 
@@ -150,9 +146,9 @@ class CreateBiblesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('audio_translations');
-        Schema::dropIfExists('audio_organization');
-        Schema::dropIfExists('audio');
+	    Schema::dropIfExists('bible_texts');
+        Schema::dropIfExists('bible_audio_organization');
+        Schema::dropIfExists('bible_audio');
         Schema::dropIfExists('book_translations');
         Schema::dropIfExists('bible_book');
 	    Schema::dropIfExists('book_codes');
