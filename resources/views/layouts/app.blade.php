@@ -26,16 +26,6 @@
 <nav role="navigation">
     <ul>
         <li><a href="/" class="logo">Ko<strong>in</strong>os</a></li>
-        <li><a href="https://dbs.dev/bibles/welcome">Bibles<span class="nav_down">&#9660;</span></a>
-            <ul>
-                <li><a href="https://dbs.dev/bibles/welcome">About</a></li>
-                <li><a href="https://dbs.dev/bibles">Bible Cloud</a></li>
-                <li><a href="https://inscript.org">inScript</a></li>
-                <li><a href="https://dbs.dev/bibles?print">Print a Bible</a></li>
-                <li><a href="https://dbs.dev/devices">Devices</a></li>
-                <li><a href="https://find.bible" target="_blank" rel="noopener noreferrer">Find a Bible</a></li>
-            </ul>
-        </li>
         <li><a href="/bibles/audio/uploads/">Uploader</a></li>
         <li><a href="/books/">Books</a></li>
         @if(!Auth::user())
