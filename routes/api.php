@@ -44,7 +44,76 @@ Route::resource('users',            'UsersController',['names' => [
 	'create'  => 'api_users.create',
 	'show'    => 'api_users.show',
 ]]);
+// Sign URL
+Route::get('sign', 'HomeController@signedUrl');
 
 
 // Version 2 Specific Routes
-Route::get('library/book', 'BooksController@show');
+
+	// LANGUAGES
+
+	Route::get('library/language', 'LanguagesController@index');
+	// TODO: Languages Create
+	// TODO: Languages Update
+
+	// VERSIONS
+
+	// [static]  Version Listing
+	// [omitted] Version Create
+	// [omitted] Version Update
+	Route::get('library/version', function () {return json_decode(file_get_contents(public_path('static/version_listing.json')));});
+	// TODO: Version Create
+	// TODO: Version Update
+
+	// VOLUMES
+
+	// [supported] Volume Listing
+	// [omitted] Volume Create
+	// [omitted] Volume Update
+	// [static] Volume Language List
+	// [static] Volume Language Family List
+	// [supported] Volume Organization Listing
+	// [static] Volume History List
+	Route::get('library/volume', 'BiblesController@index');
+	// TODO: Volume Create
+	// TODO: Volume Update
+	Route::get('library/volumelanguage', function () {return json_decode(file_get_contents(public_path('static/volume_language_list.json')));});
+	Route::get('library/volumelanguagefamily', function () {return json_decode(file_get_contents(public_path('static/volume_language_family.json')));});
+	Route::get('library/volumeorganization', 'OrganizationsController@index')->name('v2_volume_organization_list');
+	Route::get('library/volumehistory', function () {return json_decode(file_get_contents(public_path('static/library_volume_history.json')));});
+
+
+
+	// BOOKS
+
+	// [supported] Book Order Listing
+	// [omitted] Book Order Create
+	// [omitted] Book Order Update
+	// [omitted] Book Order Delete
+	// [supported] Book Listing
+	// [] Book Name Listing
+	// [omitted] Book Name Create
+	// [omitted] Book Name Update
+	Route::get('library/bookorder', 'BooksController@show')->name('v2_library_bookorder');
+	// TODO: Book Order Create
+	// TODO: Book Order Update
+	// TODO: Book Order Delete
+	Route::get('library/book',     'BooksController@show')->name('v2_library_book');
+	Route::get('library/bookname', 'BooksController@bookNames')->name('v2_library_bookname');
+	Route::get('library/chapter',  'BooksController@chapters')->name('v2_library_chapter');
+	// [] Chapter Listing
+	// [] Verse Info Listing
+	// [] Numbers Listing
+	// [] Numbers Create
+	// [] Numbers Update
+
+	// Metadata
+	// [] Metadata Listing
+	// [] Metadata Create
+	// [] Metadata Update
+
+	// Organizations
+	// [] Volume Asset Location
+	// [] Organization Listing
+	// [] Organization Create
+	// [] Organization Modify

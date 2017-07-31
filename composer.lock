@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d4b0573559d5558bbecd1563257f972b",
+    "content-hash": "b308712dd8d21b61b2f0624ea22b504d",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -142,6 +142,62 @@
                 "sdk"
             ],
             "time": "2017-07-14T21:17:45+00:00"
+        },
+        {
+            "name": "aws/aws-sdk-php-laravel",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aws/aws-sdk-php-laravel.git",
+                "reference": "3b946892d493b91b4920ec4facc4a0ad7195fb86"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php-laravel/zipball/3b946892d493b91b4920ec4facc4a0ad7195fb86",
+                "reference": "3b946892d493b91b4920ec4facc4a0ad7195fb86",
+                "shasum": ""
+            },
+            "require": {
+                "aws/aws-sdk-php": "~3.0",
+                "illuminate/support": "~5.1",
+                "php": ">=5.5.9"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0|~5.0"
+            },
+            "suggest": {
+                "laravel/framework": "To test the Laravel bindings",
+                "laravel/lumen-framework": "To test the Lumen bindings"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Aws\\Laravel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Amazon Web Services",
+                    "homepage": "http://aws.amazon.com"
+                }
+            ],
+            "description": "A simple Laravel 5 service provider for including the AWS SDK for PHP.",
+            "homepage": "http://aws.amazon.com/sdkforphp2",
+            "keywords": [
+                "amazon",
+                "aws",
+                "dynamodb",
+                "ec2",
+                "laravel",
+                "laravel 5",
+                "s3",
+                "sdk"
+            ],
+            "time": "2016-01-18T06:57:07+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -668,6 +724,60 @@
                 }
             ],
             "time": "2015-04-20T18:58:01+00:00"
+        },
+        {
+            "name": "jdavidbakr/signed-s3-filesystem",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jdavidbakr/signed-s3-filesystem.git",
+                "reference": "ba0a92678cbda709540daf07cd5b61e8f1a8e2e4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jdavidbakr/signed-s3-filesystem/zipball/ba0a92678cbda709540daf07cd5b61e8f1a8e2e4",
+                "reference": "ba0a92678cbda709540daf07cd5b61e8f1a8e2e4",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "~5.1",
+                "league/flysystem-aws-s3-v3": "~1.0",
+                "php": "~5.6|~7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0||~5.0",
+                "squizlabs/php_codesniffer": "^2.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "jdavidbakr\\SignedS3Filesystem\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "J David Baker",
+                    "email": "me@jdavidbaker.com",
+                    "homepage": "http://www.jdavidbaker.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Extension of the Laravel S3 filesystem to return signed URLs",
+            "homepage": "https://github.com/jdavidbakr/SignedS3Filesystem",
+            "keywords": [
+                "SignedS3Filesystem",
+                "jdavidbakr"
+            ],
+            "time": "2016-11-21T22:11:37+00:00"
         },
         {
             "name": "laravel/framework",

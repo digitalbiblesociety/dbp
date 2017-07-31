@@ -184,6 +184,10 @@ return [
 	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
 	    Laravel\Socialite\SocialiteServiceProvider::class,
 
+	    // AWS Packages
+	    Aws\Laravel\AwsServiceProvider::class,
+	    jdavidbakr\SignedS3Filesystem\SignedS3FilesystemServiceProvider::class,
+
     ],
 
     /*
@@ -235,6 +239,9 @@ return [
         'Fractal' => Spatie\Fractal\FractalFacade::class,
         'i18n' => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'AWS' => Aws\Laravel\AwsFacade::class,
+	    'Bucket' => \Helpers\AWS\bucket::class,
+
 
     ],
 
