@@ -55,12 +55,20 @@ return [
             'visibility' => 'public',
         ],
 
-        's3' => [
+        's3_dbs' => [
             'driver' => 's3',
-            'key'    => env('AWS_KEY'),
-            'secret' => env('AWS_SECRET'),
-            'region' => env('AWS_REGION'),
-            'bucket' => env('AWS_BUCKET'),
+            'key'    => env('DBS_AWS_KEY'),
+            'secret' => env('DBS_AWS_SECRET'),
+            'region' => env('DBS_AWS_REGION'),
+            'bucket' => env('DBS_AWS_BUCKET'),
+        ],
+
+        's3_fcbh' => [
+	        'driver' => 's3',
+	        'key'    => env('FCBH_AWS_KEY'),
+	        'secret' => env('FCBH_AWS_SECRET'),
+	        'region' => env('FCBH_AWS_REGION'),
+	        'bucket' => env('FCBH_AWS_BUCKET'),
         ],
 
     ],
