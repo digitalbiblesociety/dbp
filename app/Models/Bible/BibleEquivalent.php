@@ -10,13 +10,14 @@ class BibleEquivalent extends Model
 {
     protected $table = "bible_equivalents";
     protected $primaryKey = 'equivalent_id';
-    protected $hidden = ['created_at','updated_at','abbr'];
+    protected $hidden = ['created_at','updated_at','bible_id'];
     protected $fillable = ['abbr','equivalent_id','organization_id','type','suffix'];
     public $incrementing = false;
+    public $timestamps = false;
 
     public function bible()
     {
-        return $this->HasOne(Bible::class,'abbr','abbr');
+        return $this->BelongsTo(Bible::class,'bible_id','id');
     }
 
     public function organization()

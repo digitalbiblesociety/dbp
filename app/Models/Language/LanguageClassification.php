@@ -8,13 +8,12 @@ class LanguageClassification extends Model
 {
 
     protected $table = 'geo.languages_classifications';
-    protected $fillable = ['name', 'glotto_id'];
+    protected $fillable = ['language_id', 'classification_id', 'order', 'name'];
     public $timestamps = false;
-    public $incrementing = false;
 
     public function language()
     {
-        return $this->belongsTo(Language::class,'glotto_id','id');
+        return $this->belongsTo(Language::class);
     }
 
 }

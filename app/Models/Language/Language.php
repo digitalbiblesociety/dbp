@@ -16,6 +16,7 @@ use App\Models\Language\LanguageClassification;
 use App\Models\Language\Alphabet;
 use App\Models\Language\AlphabetFont;
 
+
 use App\Models\Country\Country;
 
 
@@ -23,7 +24,6 @@ class Language extends Model
 {
 	public $table = "geo.languages";
     public $primaryKey = 'id';
-    public $incrementing = false;
     public $timestamps = false;
 
     protected $hidden = ["pivot"];
@@ -31,7 +31,7 @@ class Language extends Model
 
     public function alphabets()
     {
-        return $this->BelongsToMany(Alphabet::class,'alphabet_language','glotto_id','script')->distinct();
+        return $this->BelongsToMany(Alphabet::class,'alphabet_language','script')->distinct();
     }
 
     /**
@@ -59,7 +59,7 @@ class Language extends Model
      */
     public function countries()
     {
-        return $this->BelongsToMany(Country::class, 'country_language', 'glotto_id');
+        return $this->BelongsToMany(Country::class, 'geo.country_language');
     }
 
     public function countriesByID()
@@ -90,27 +90,32 @@ class Language extends Model
      */
     public function bibles()
     {
-        return $this->HasMany(Bible::class,'glotto_id');
+        return $this->HasMany(Bible::class);
+    }
+
+    public function bibleCount()
+    {
+	    return $this->HasMany(Bible::class);
     }
 
     public function biblesSophia()
     {
-        return $this->HasMany(Bible::class,'glotto_id')->has('sophia');
+        return $this->HasMany(Bible::class)->has('sophia');
     }
 
     public function biblesWithoutSophia()
     {
-        return $this->HasMany(Bible::class,'glotto_id')->has('sophia', '<', 1);
+        return $this->HasMany(Bible::class)->has('sophia', '<', 1);
     }
 
     public function resources()
     {
-        return $this->HasMany(Resource::class,'glotto_id');
+        return $this->HasMany(Resource::class);
     }
 
     public function films()
     {
-        return $this->HasMany(Film::class,'glotto_id');
+        return $this->HasMany(Film::class);
     }
 
 
@@ -130,22 +135,22 @@ class Language extends Model
      */
     public function codes()
     {
-        return $this->HasMany(LanguageCode::class, 'glotto_id');
+        return $this->HasMany(LanguageCode::class);
     }
 
     public function iso639_2()
     {
-        return $this->HasOne(LanguageCode::class,'glotto_id')->where('source','Iso 639-2');
+        return $this->HasOne(LanguageCode::class)->where('source','Iso 639-2');
     }
 
     public function classifications()
     {
-        return $this->HasMany(LanguageClassification::class,'glotto_id');
+        return $this->HasMany(LanguageClassification::class);
     }
 
     public function alternativeNames()
     {
-        return $this->HasMany(LanguageAltName::class,'glotto_id');
+        return $this->HasMany(LanguageAltName::class);
     }
 
     /**
@@ -153,7 +158,7 @@ class Language extends Model
      */
     public function dialects()
     {
-        return $this->HasMany(LanguageDialect::class, 'parent');
+        return $this->HasMany(LanguageDialect::class);
     }
 
 	/**

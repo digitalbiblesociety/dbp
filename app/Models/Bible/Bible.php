@@ -6,6 +6,7 @@ use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
 
+use App\Models\Bible\Audio;
 use App\Models\Bible\BibleTranslation;
 use App\Models\Bible\BibleEquivalent;
 
@@ -14,7 +15,7 @@ class Bible extends Model
     /**
      * @var string
      */
-    protected $primaryKey = 'abbr';
+    protected $primaryKey = 'id';
 
     /**
      * Hides values from json return for api
@@ -27,7 +28,7 @@ class Bible extends Model
     /**
      * @var array
      */
-    protected $fillable = ['abbr', 'iso', 'date', 'script', 'derived', 'copyright'];
+    protected $fillable = ['id', 'iso', 'date', 'script', 'derived', 'copyright'];
     /**
      * @var bool
      */
@@ -43,30 +44,28 @@ class Bible extends Model
      */
     public function translations()
     {
-        return $this->HasMany(BibleTranslation::class, 'abbr')->where('name', '!=', '');
+        return $this->HasMany(BibleTranslation::class)->where('name', '!=', '');
     }
 
     public function currentTranslation()
     {
         $language = Language::where('iso',\i18n::getCurrentLocale())->first();
-        return $this->HasOne(BibleTranslation::class, 'abbr')->where('glotto_id', $language->id)->select('abbr','name');
+        return $this->HasOne(BibleTranslation::class)->where('glotto_id', $language->id)->select('bible_id','name');
     }
 
     public function vernacularTranslation()
     {
-        return $this->HasOne(BibleTranslation::class, 'abbr')->where('vernacular', '=', 1);
+        return $this->HasOne(BibleTranslation::class)->where('vernacular', '=', 1);
     }
 
     public function translation($iso)
     {
-        return $this->HasOne(BibleTranslation::class, 'abbr')->where('iso', $iso);
+        return $this->HasOne(BibleTranslation::class)->where('iso', $iso);
     }
 
     public function books()
     {
-        $abbr = strtoupper($this->abbr).'_vpl';
-        $books = \DB::connection('sophia')->table($abbr)->join('books', 'books.usfm', '=', $abbr.'.book')->select("usfm","chapter","name")->distinct()->get()->keyBy('usfm');
-        return $books;
+	    return $this->HasMany(BibleBook::class,'abbr');
     }
 
     public function chapters()
@@ -85,7 +84,7 @@ class Bible extends Model
 
     public function printable()
     {
-        return $this->hasOne('App\Models\Bible\Printable','bible_id','abbr');
+        return $this->hasOne('App\Models\Bible\Printable');
     }
 
     /*
@@ -100,17 +99,17 @@ class Bible extends Model
     */
     public function equivalents()
     {
-        return $this->HasMany(BibleEquivalent::class, 'abbr');
+        return $this->HasMany(BibleEquivalent::class);
     }
 
     public function audio()
     {
-        return $this->HasMany(BibleEquivalent::class, 'abbr')->where('type','audio');
+        return $this->HasMany(Audio::class);
     }
 
     public function hasType($type)
     {
-        return $this->HasMany(BibleEquivalent::class, 'abbr')->where('type',$type);
+        return $this->HasMany(BibleEquivalent::class)->where('type',$type);
     }
 
     public function sophia()
@@ -120,22 +119,22 @@ class Bible extends Model
 
     public function dbp()
     {
-        return $this->HasMany(BibleEquivalent::class, 'abbr','abbr')->where('type','bible.is');
+        return $this->HasMany(BibleEquivalent::class)->where('type','bible.is');
     }
 
     public function dbl()
     {
-        return $this->HasMany(BibleEquivalent::class, 'abbr','abbr')->where('type','Digital Bible Library');
+        return $this->HasMany(BibleEquivalent::class)->where('type','Digital Bible Library');
     }
 
     public function eSword()
     {
-        return $this->HasMany(BibleEquivalent::class, 'abbr','abbr')->where('type','eSword');
+        return $this->HasMany(BibleEquivalent::class)->where('type','eSword');
     }
 
     public function eBible()
     {
-        return $this->HasMany(BibleEquivalent::class, 'abbr','abbr')->where('type','eBible');
+        return $this->HasMany(BibleEquivalent::class)->where('type','eBible');
     }
 
     /**
@@ -186,7 +185,7 @@ class Bible extends Model
      */
     public function links()
     {
-        return $this->HasMany('App\Models\Bible\BibleLink', 'abbr');
+        return $this->HasMany('App\Models\Bible\BibleLink');
     }
 
     /**

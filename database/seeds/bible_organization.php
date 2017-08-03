@@ -13,7 +13,7 @@ class bible_organization extends Seeder
      */
     public function run()
     {
-        DB::table('bible_organization')->delete();
+        DB::table('bible_organizations')->delete();
         $seederhelper = new SeederHelper();
         $bible_organizations = $seederhelper->csv_to_array(storage_path().'/data/organizations/bible_publisher.csv');
         foreach($bible_organizations as $connection) {

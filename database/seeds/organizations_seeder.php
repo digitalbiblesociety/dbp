@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use database\seeds\SeederHelper;
 use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationTranslation;
-
+use App\Models\Organization\OrganizationLogo;
 
 class organizations_seeder extends Seeder
 {
@@ -18,6 +18,7 @@ class organizations_seeder extends Seeder
 		$seederHelper = new SeederHelper();
 		$googleSheetID = '1f5Vhhu7llkg3kI6Ga011Sb-OhwZIbfla4bwuN5Xcins';
 
+		DB::table('organization_logos')->delete();
 		DB::table('organization_translations')->delete();
 		DB::table('organization_services')->delete();
 		DB::table('organizations')->delete();
@@ -39,7 +40,19 @@ class organizations_seeder extends Seeder
 		$organizationTranslations = $seederHelper->csv_to_array("https://docs.google.com/spreadsheets/d/$googleSheetID/export?format=csv&id=$googleSheetID&gid=557153729");
 		foreach($organizationTranslations as $key => $data) {
 			$organizationTranslation = new OrganizationTranslation();
+			if($data['alt'] == '') $data['alt'] = 0;
 			$organizationTranslation->create($data);
+		}
+
+		$organizationLogos = $seederHelper->csv_to_array("https://docs.google.com/spreadsheets/d/$googleSheetID/export?format=csv&id=$googleSheetID&gid=1154991446");
+		foreach($organizationLogos as $key => $data) {
+			$organizationLogo = new OrganizationLogo();
+			if($data['logo'] == '') { continue; }
+			$language = new \App\Models\Language\Language();
+			$language = $language->fetchByID($data['language_code']);
+			unset($data['language_code']);
+			$data['glotto_id'] = $language->id;
+			$organizationLogo->create($data);
 		}
 
 		$organizations = Organization::with('translations')->get();

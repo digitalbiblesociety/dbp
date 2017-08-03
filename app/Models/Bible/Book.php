@@ -31,6 +31,11 @@ class Book extends Model
 		return $this->HasMany('App\Models\Bible\BookCode');
 	}
 
+	public function osis()
+	{
+		return $this->HasOne('App\Models\Bible\BookCode')->where('type','osis');
+	}
+
     public function translations()
     {
         return $this->HasMany('App\Models\Bible\BookTranslation', 'book_id');

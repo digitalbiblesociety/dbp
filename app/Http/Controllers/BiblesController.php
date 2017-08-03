@@ -39,7 +39,7 @@ class BiblesController extends APIController
      */
     public function store(Request $request)
     {
-        //
+        dd($request);
     }
 
     /**

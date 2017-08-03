@@ -20,7 +20,7 @@ class LanguagesController extends APIController
     	$country = $_GET['country'] ?? false;
 
     	if($this->api) {
-			$languages = Language::with("translations","primaryCountry")
+			$languages = Language::with("translations","primaryCountry","iso639_2")->withCount('bibles')
 				->when($country, function ($query) use ($country) {
 					return $query->where('country_id', $country);
 				})->get();

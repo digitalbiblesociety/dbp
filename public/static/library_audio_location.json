@@ -1,0 +1,23 @@
+[
+  {
+    "server": "cloud.faithcomesbyhearing.com",
+    "root_path": "/mp3audiobibles2",
+    "protocol": "http",
+    "CDN": "1",
+    "priority": "5"
+  },
+  {
+    "server": "fcbhabdm.s3.amazonaws.com",
+    "root_path": "/mp3audiobibles2",
+    "protocol": "http",
+    "CDN": "0",
+    "priority": "6"
+  },
+  {
+    "server": "cdn.faithcomesbyhearing.com",
+    "root_path": "/cfx/st",
+    "protocol": "rtmp-amazon",
+    "CDN": "0",
+    "priority": "9"
+  }
+]

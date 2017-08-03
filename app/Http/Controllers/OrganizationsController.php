@@ -17,14 +17,16 @@ class OrganizationsController extends APIController
 {
 
 	/**
-	 * Display a listing of the resource.
+	 * Display a listing of the organizations.
 	 *
 	 * @return Response
 	 */
 	public function index()
 	{
 		$organizations = Organization::with('translations')->get();
-
+		if(isset($_GET['count']) or (\Route::currentRouteName() == 'v2_volume_organization_list')) {
+			$organizations->load('bibles');
+		}
 		return $this->reply(fractal()->collection($organizations)->transformWith(new OrganizationTransformer())->ToArray());
 		return view('community.organizations.index', compact('organizations'));
 	}
@@ -39,12 +41,12 @@ class OrganizationsController extends APIController
 	{
 		// Support both incrementing ID and Slug
 		if(preg_match("/\d+/",$slug)) {
-			$organization = Organization::with("bibles.translations","bibles.language","translations")->where('id',$slug)->first();
+			$organization = Organization::with("bibles.translations","bibles.language","translations","logos")->where('id',$slug)->first();
 		} else {
-			$organization = Organization::with("bibles.translations","bibles.language","translations")->where('slug',$slug)->first();
+			$organization = Organization::with("bibles.translations","bibles.language","translations","logos")->where('slug',$slug)->first();
 		}
 
-		if(!$organization) return $this->setStatusCode(404)->replyWithError('sorry we don\'t have any record for '.$slug);
+		if(!$organization) return $this->setStatusCode(404)->replyWithError("Sorry we don't have any record for $slug");
 		if($this->api) return $this->reply($organization);
 
 		return view('community.organizations.show', compact('organization'));

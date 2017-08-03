@@ -10,7 +10,6 @@ use SoapBox\Formatter\Formatter;
 use App\Models\User\User;
 use i18n;
 
-
 class APIController extends Controller
 {
 

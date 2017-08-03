@@ -13,6 +13,6 @@ return [
     |
     */
 
-    'default_serializer' => '',
+    'default_serializer' => \Spatie\Fractalistic\ArraySerializer::class,
 
 ];

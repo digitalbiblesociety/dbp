@@ -8,20 +8,28 @@ use App\Models\Language\LanguageDialect;
 use App\Models\Language\LanguageAltName;
 use App\Models\Language\LanguageClassification;
 
+use App\Models\Country\Country;
 use App\Models\Country\CountryLanguage;
 class language_seeder extends Seeder
 {
 
     public function run()
     {
+	    \DB::connection('geo_data')->table('languages_translations')->delete();
+	    \DB::connection('geo_data')->table('languages_dialects')->delete();
+	    \DB::connection('geo_data')->table('languages_codes')->delete();
+	    \DB::connection('geo_data')->table('languages_classifications')->delete();
+	    \DB::connection('geo_data')->table('languages_altNames')->delete();
+    	\DB::connection('geo_data')->table('languages')->delete();
+
         $languages = Yaml::parse(file_get_contents(storage_path().'/data/languages/languages.yaml'));
         foreach($languages as $id => $language) {
 
             // Skip Entries Not officially in the Glottolog
-            if (strpos($language['code+name'], 'NOCODE_') !== false) continue;
-            //$iso = preg_match_all("/\[([^\]]*)\]/", $language['code+name'], $isoArray);
+            if (strpos($language['code+name'], 'NOCODE_') !== false) {continue;}
+
             $langoid = new Language();
-            $langoid->id = $id;
+            $langoid->glotto_id = $id;
             $langoid->name = $language['name'] ?? NULL;
             $langoid->iso = $language['iso_639-3'] ?? NULL;
             $langoid->status = $language['language_status'] ?? NULL;
@@ -36,99 +44,83 @@ class language_seeder extends Seeder
             $langoid->latitude = $language['coordinates']['latitude'] ?? NULL;
             $langoid->longitude = $language['coordinates']['longitude'] ?? NULL;
             $langoid->country_id = $country ?? NULL;
-            if(isset($language['typology'])) {
-                $langoid->typology = implode(',', $language['typology']);
-            }
-            if(isset($language['writing'])) {
-                $langoid->writing = implode(',', $language['writing']);
-            }
+            if(isset($language['typology'])) $langoid->typology = implode(',', $language['typology']);
+            if(isset($language['writing'])) $langoid->writing = implode(',', $language['writing']);
             $langoid->save();
-        }
-        foreach($languages as $id => $language) {
-
-            if (strpos($language['code+name'], 'NOCODE_') !== false) continue;
-
-            if(isset($language['alternate_names'])) {
-                foreach($language['alternate_names'] as $alternate_name) {
-                    $alternative = new LanguageAltName();
-                    $alternative->glotto_id = $id;
-                    $alternative->name = $alternate_name;
-                    $alternative->save();
-                }
-            }
-
-            if(isset($language['classification-gl'])) {
-                foreach ($language['classification-gl'] as $order => $classification) {
-                    preg_match_all("/\[([^\]]*)\]/", $classification, $classCodesArray);
-                    $class = new LanguageClassification();
-                    $class->order = $order;
-                    $class->glotto_id = $id;
-                    $class->classification_id = $classCodesArray[1][0];
-                    $class->name = $language['classification'][$order] ?? $classification;
-                    $class->save();
-                }
-            }
-
-            if(isset($language['country'])) {
-
-                if(is_array($language['country'])) {
-                    foreach($language['country'] as $country) {
-                        preg_match_all("/\[([^\]]*)\]/", $country, $countryCodeArray);
-                        if(count($countryCodeArray[1]) > 0) {
-                            CountryLanguage::insert([
-                                'country_id' => $countryCodeArray[1][0],
-                                'glotto_id' => $id
-                            ]);
-                        } else {
-                            $country = \App\Models\Country\Country::where('name',$language['country'])->first();
-                            if(!$country) continue;
-                            CountryLanguage::insert([
-                                'country_id' => $country->id,
-                                'glotto_id' => $id
-                            ]);
-                        }
-                    }
-                } else {
-                    preg_match_all("/\[([^\]]*)\]/", $language['country'], $countryCodeArray);
-                    if(count($countryCodeArray[1]) > 0) {
-                        CountryLanguage::insert([
-                            'country_id' => $countryCodeArray[1][0],
-                            'glotto_id' => $id
-                        ]);
-                    } else {
-                        $country = \App\Models\Country\Country::where('name',$language['country'])->first();
-                        if(!$country) continue;
-                        CountryLanguage::insert([
-                            'country_id' => $country->id,
-                            'glotto_id' => $id
-                        ]);
-                    }
-
-                }
-
-            }
 
 
-            if(isset($language['dialects'])) {
-                foreach($language['dialects'] as $dialect) {
-                    preg_match_all("/\[([^\]]*)\]/", $dialect, $dialectCodesArray);
+	        if(isset($language['alternate_names'])) {
+	        	foreach($language['alternate_names'] as $altName) {
+	        		$langoid->alternativeNames()->create(['language_id' => $langoid->id,'name' => $altName]);
+		        }
+	        }
 
-                    $new_dialect = new LanguageDialect();
-                    $new_dialect->glotto_id = $id;
-                    $new_dialect->name = $dialect;
+	        echo "\n Attempting Classifications";
+	        if(isset($language['classification-gl'])) {
+		        foreach ($language['classification-gl'] as $order => $classification) {
+			        preg_match_all("/\[([^\]]*)\]/", $classification, $classCodesArray);
+			        $langoid->classifications()->create([
+			            'order'             => $order,
+			            'language_id'       => $langoid->id,
+			            'classification_id' => $classCodesArray[1][0],
+			            'name'              => $language['classification'][$order] ?? $classification
+			        ]);
+		        }
+	        }
+	        echo "\n Attempting Dialects";
+	        if(isset($language['dialects'])) {
+	        	foreach($language['dialects'] as $dialect) {
+			        preg_match_all("/\[([^\]]*)\]/", $dialect, $dialectCodesArray);
+			        $dialect = ['language_id' => $langoid->id,'name' => $dialect];
 
-                    if(count($dialectCodesArray[1]) > 0) {
-                        $dialectLanguage = Language::where('iso',$dialectCodesArray[1][0])->first();
-                        if($dialectLanguage) {
-                            $new_dialect->dialect_id = $dialectLanguage->id;
-                        }
-                    }
+			        if(count($dialectCodesArray[1]) > 0) {
+				        $dialectLanguage = Language::where('iso',$dialectCodesArray[1][0])->first();
+				        if($dialectLanguage) {
+					        $dialect['dialect_id'] = $dialectLanguage->id;
+				        }
+			        }
+			        $langoid->dialects()->create($dialect);
+		        }
+	        }
+	        echo "\n Attempting Countries";
+	        if(isset($language['country'])) {
 
-                    $new_dialect->save();
+		        if(is_array($language['country'])) {
+			        foreach($language['country'] as $country) {
+				        preg_match_all("/\[([^\]]*)\]/", $country, $countryCodeArray);
+				        if(count($countryCodeArray[1]) > 0) {
+					        CountryLanguage::create([
+						        'country_id' => $countryCodeArray[1][0],
+						        'language_id' => $langoid->id
+					        ]);
+				        } else {
+					        $country = Country::where('name',$language['country'])->first();
+					        if(!$country) continue;
+					        CountryLanguage::create([
+						        'country_id' => $country->id,
+						        'language_id' => $langoid->id
+					        ]);
+				        }
+			        }
+		        } else {
+			        preg_match_all("/\[([^\]]*)\]/", $language['country'], $countryCodeArray);
+			        if(count($countryCodeArray[1]) > 0) {
+				        CountryLanguage::create([
+					        'country_id' => $countryCodeArray[1][0],
+					        'language_id' => $langoid->id
+				        ]);
+			        } else {
+				        $country = Country::where('name',$language['country'])->first();
+				        if(!$country) continue;
+				        CountryLanguage::create([
+					        'country_id' => $country->id,
+					        'language_id' => $langoid->id
+				        ]);
+			        }
 
-                }
-            }
+		        }
 
+	        }
         }
 
     }

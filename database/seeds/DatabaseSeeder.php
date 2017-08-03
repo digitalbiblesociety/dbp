@@ -33,14 +33,22 @@ class DatabaseSeeder extends Seeder
 
 		// 3. Bibles
 	    $this->call(bible_seeder::class);
-	    $this->call(bible_books_seeder::class);
-
-	        // 3.1 Equivalents
-	        $this->call(bible_equivalents_dbp::class);
 
 	    // 4. Organizations
 	    $this->call(organizations_seeder::class);
-	    $this->call(organizations_relationships_dbl::class);
+
+	        // 4.1 Organization Equivalents
+	        $this->call(bible_equivalents_bibleGateway::class);
+	        $this->call(bible_equivalents_bibleSearch::class);
+	        $this->call(bible_equivalents_inScript::class);
+	        $this->call(bible_equivalents_eBible::class);
+	        $this->call(bible_equivalents_eSword::class);
+	        $this->call(bible_equivalents_dbl::class);
+	        $this->call(bible_equivalents_dbp::class);
+	        $this->call(bible_equivalents_gbc::class);
+
+	    $this->call(bible_books_seeder::class);
+	    $this->call(bible_audio_seeder::class);
 
     }
 }

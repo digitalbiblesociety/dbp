@@ -50,4 +50,9 @@ class Organization extends Model
         return $this->HasMany(Resource::class);
     }
 
+	public function logos()
+	{
+		return $this->HasMany(OrganizationLogo::class);
+	}
+
 }

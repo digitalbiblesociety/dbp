@@ -17,7 +17,10 @@ class OrganizationTransformer extends BaseTransformer
     	//if($organization->engTranslation) dd($organization->engTranslation->name);
 	    switch ($this->version) {
 		    case "jQueryDataTable": return $this->transformForDataTables($organization);
-		    case "2": return $this->transformForV2($organization);
+		    case "2": {
+		    	if($organization->relationLoaded('bibles')) return $this->transformForV2_VolumeOrganizationListing($organization);
+		    	return $this->transformForV2($organization);
+		    }
 		    case "4":
 		    default: return $this->transformForV4($organization);
 	    }
@@ -59,6 +62,21 @@ class OrganizationTransformer extends BaseTransformer
 			"country"             => null,
 			"zip"                 => null,
 			"phone"               => $organization->phone
+		];
+	}
+
+	/**
+	 * Volume Organization Listing
+	 *
+	 * @param Organization $organization
+	 *
+	 * @return array
+	 */
+	public function transformForV2_VolumeOrganizationListing(Organization $organization) {
+		return [
+			"organization_id"   => $organization->id,
+			"organization_name" => ($organization->engTranslation) ? $organization->engTranslation->name : "",
+			"number_volumes"    => $organization->bibles->count(),
 		];
 	}
 

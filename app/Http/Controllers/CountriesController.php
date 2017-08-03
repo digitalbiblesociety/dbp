@@ -44,4 +44,9 @@ class CountriesController extends APIController
 	    }
 	    return view('countries.show');
     }
+
+    public function create()
+    {
+    	return view('countries.create');
+    }
 }

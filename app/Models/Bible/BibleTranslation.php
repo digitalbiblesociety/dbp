@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class BibleTranslation extends Model
 {
-    protected $hidden = ["created_at","updated_at","abbr","description"];
+    protected $hidden = ["created_at","updated_at","bible_id","description"];
     protected $fillable = ['name','glotto_id','description'];
 
     public function bible()
     {
-        return $this->belongsTo(Bible::class,'abbr');
+        return $this->belongsTo(Bible::class);
     }
 
     public function language()

@@ -20,8 +20,6 @@ class CreateOrganizationsTable extends Migration
             $table->text('notes')->nullable();
             $table->string('primaryColor',7)->nullable();
             $table->string('secondaryColor',7)->nullable();
-            $table->string('logo')->nullable();
-	        $table->string('logo_icon')->nullable();
             $table->boolean('inactive')->default(false)->nullable();
             $table->string('url_facebook')->nullable();
             $table->string('url_website')->nullable();
@@ -39,13 +37,15 @@ class CreateOrganizationsTable extends Migration
         });
 
         Schema::create('organization_translations', function (Blueprint $table) {
-            $table->char('glotto_id', 8)->index();
-            $table->foreign('glotto_id')->references('id')->on('geo.languages')->onDelete('cascade')->onUpdate('cascade');
+            $table->char('language_iso', 3)->index();
+            $table->foreign('language_iso')->references('iso')->on('geo.languages')->onDelete('cascade')->onUpdate('cascade');
             $table->integer('organization_id')->unsigned();
             $table->foreign('organization_id')->references('id')->on('organizations');
             $table->boolean('vernacular')->default(false);
+	        $table->boolean('alt')->default(false);
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->nullable();
+	        $table->string('description_short')->nullable();
         });
 
 	    Schema::create('user_roles', function (Blueprint $table) {
@@ -54,7 +54,6 @@ class CreateOrganizationsTable extends Migration
 		    $table->string('role');
 		    $table->integer('organization_id')->unsigned();
 		    $table->foreign('organization_id')->references('id')->on('organizations');
-		    $table->timestamps();
 	    });
 
 	    Schema::create('organization_relationships', function($table) {
@@ -64,7 +63,6 @@ class CreateOrganizationsTable extends Migration
 		    $table->foreign('organization_child_id')->references('id')->on('organizations');
 		    $table->string('type');
 		    $table->string('relationship_id');
-		    $table->timestamps();
 	    });
 
 	    Schema::create('organization_services', function($table) {
@@ -73,6 +71,15 @@ class CreateOrganizationsTable extends Migration
 		    $table->string('type');
 		    $table->string('name');
 		    $table->text('description')->nullable();
+	    });
+
+	    Schema::create('organization_logos', function($table) {
+		    $table->integer('organization_id')->unsigned();
+		    $table->foreign('organization_id')->references('id')->on('organizations');
+		    $table->char('language_iso', 3)->nullable();
+		    $table->foreign('language_iso')->references('iso')->on('geo.languages');
+		    $table->string('logo')->nullable();
+		    $table->boolean('icon')->default(false);
 	    });
 
     }
@@ -85,6 +92,7 @@ class CreateOrganizationsTable extends Migration
     public function down()
     {
 	    Schema::dropIfExists('user_roles');
+	    Schema::dropIfExists('organization_logos');
 	    Schema::dropIfExists('organization_relationships');
 	    Schema::dropIfExists('organization_translations');
         Schema::dropIfExists('organization_services');

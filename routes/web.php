@@ -12,7 +12,7 @@
 */
 
 Route::get('bible/{id}/{book}/{chapter}',   'BiblesController@text');
-Route::get('bibles/audio/uploads/thanks',     'AudioProcessingController@thanks')->name('bibles_audio_uploads.thanks');
+Route::get('bibles/audio/uploads/thanks',   'AudioProcessingController@thanks')->name('bibles_audio_uploads.thanks');
 Route::resource('bibles/audio/uploads',     'AudioProcessingController');
 Route::resource('bibles/ocr',               'PrintProcesses');
 Route::resource('bibles',                   'BiblesController');

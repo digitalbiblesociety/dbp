@@ -46,7 +46,7 @@ class language_alphabets extends Seeder
                         case "Medium": $thickness = 500;
                         case "Bold": $thickness = 700;
                         case "Black": $thickness = 800;
-                        default: $thickness = "";
+                        default: $thickness = null;
                     }
                     AlphabetFont::insert(['script_id' => ucwords($type), 'fontName' => $font, 'fontFileName' => $font, 'italic' => 0, 'fontWeight' => $thickness]);
                 }

@@ -8,13 +8,12 @@ class LanguageAltName extends Model
 {
 
     protected $table = 'geo.languages_altNames';
-    protected $fillable = ['name', 'glotto_id'];
+    protected $fillable = ['name', 'language_id'];
     public $timestamps = false;
-    public $incrementing = false;
 
     public function language()
     {
-        return $this->belongsTo(Language::class,'glotto_id','id');
+        return $this->belongsTo(Language::class);
     }
 
 }

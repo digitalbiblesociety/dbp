@@ -22,7 +22,8 @@ class CreateLanguagesTable extends Migration
         });
 
         Schema::connection('geo_data')->create('languages', function (Blueprint $table) {
-            $table->char('id',8)->primary();
+        	$table->increments('id');
+            $table->char('glotto_id',8)->nullable()->unique();
             $table->char('iso',3)->nullable()->unique();
             $table->string('name');
             $table->string('level')->nullable();
@@ -51,37 +52,40 @@ class CreateLanguagesTable extends Migration
         });
 
         Schema::connection('geo_data')->create('languages_translations', function (Blueprint $table) {
-            $table->char('glotto_language', 8)->index();
-            $table->foreign('glotto_language')->references('id')->on('languages')->onUpdate('cascade');
-            $table->char('glotto_translation', 8)->index();
-            $table->foreign('glotto_translation')->references('id')->on('languages')->onUpdate('cascade');
+            $table->integer('language_source')->unsigned();
+            $table->foreign('language_source')->references('id')->on('languages')->onUpdate('cascade');
+            $table->integer('language_translation')->unsigned();
+            $table->foreign('language_translation')->references('id')->on('languages')->onUpdate('cascade');
             $table->string('name');
         });
 
         Schema::connection('geo_data')->create('languages_altNames', function (Blueprint $table) {
-            $table->char('glotto_id', 8)->index();
-            $table->foreign('glotto_id')->references('id')->on('languages')->onUpdate('cascade');
+        	$table->increments('id');
+            $table->integer('language_id')->unsigned();
+            $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
             $table->string('name');
         });
 
         Schema::connection('geo_data')->create('languages_dialects', function (Blueprint $table) {
-            $table->char('glotto_id', 8)->index();
-            $table->foreign('glotto_id')->references('id')->on('languages')->onUpdate('cascade');
+	        $table->increments('id');
+            $table->integer('language_id')->unsigned();
+            $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
             $table->char('dialect_id', 8)->index()->nullable()->default(NULL);
             $table->text('name');
         });
 
         Schema::connection('geo_data')->create('languages_classifications', function (Blueprint $table) {
-            $table->char('glotto_id', 8);
-            $table->foreign('glotto_id')->references('id')->on('languages')->onUpdate('cascade');
+	        $table->increments('id');
+            $table->integer('language_id')->unsigned();
+            $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
             $table->char('classification_id', 8);
             $table->tinyInteger('order')->unsigned();
             $table->string('name');
         });
 
         Schema::connection('geo_data')->create('languages_codes', function (Blueprint $table) {
-            $table->char('glotto_id', 8);
-            $table->foreign('glotto_id')->references('id')->on('languages')->onUpdate('cascade');
+            $table->integer('language_id')->unsigned();
+            $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
             $table->string('source');
             $table->string('code');
         });
@@ -104,8 +108,8 @@ class CreateLanguagesTable extends Migration
         Schema::connection('geo_data')->create('alphabet_language', function (Blueprint $table) {
             $table->char('script', 4)->index();
             $table->foreign('script')->references('script')->on('alphabets')->onUpdate('cascade');
-            $table->char('glotto_id', 8)->index();
-            $table->foreign('glotto_id')->references('id')->on('languages')->onUpdate('cascade');
+            $table->integer('language_id')->unsigned();
+            $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
         });
 
         Schema::connection('geo_data')->create('alphabet_fonts', function (Blueprint $table) {
@@ -113,31 +117,34 @@ class CreateLanguagesTable extends Migration
             $table->foreign('script_id')->references('script')->on('alphabets')->onUpdate('cascade');
             $table->string('fontName');
             $table->string('fontFileName');
-            $table->string('fontWeight');
+            $table->integer('fontWeight')->unsigned()->nullable()->default(null);
+	        $table->string('copyright')->nullable()->default(null);
+	        $table->string('url')->nullable()->default(null);
+	        $table->text('notes')->nullable()->default(null);
             $table->boolean('italic')->default(0);
         });
 
         Schema::connection('geo_data')->create('country_translations', function (Blueprint $table) {
             $table->char('country_id', 2);
             $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
-            $table->char('glotto_id', 8);
-            $table->foreign('glotto_id')->references('id')->on('languages')->onUpdate('cascade');
+            $table->integer('language_id')->unsigned();
+            $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
             $table->string('name');
         });
 
         Schema::connection('geo_data')->create('country_regions', function (Blueprint $table) {
             $table->char('country_id', 2);
             $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
-            $table->char('glotto_id', 8);
-            $table->foreign('glotto_id')->references('id')->on('languages')->onUpdate('cascade');
+            $table->integer('language_id')->unsigned();
+            $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
             $table->string('name');
         });
 
         Schema::connection('geo_data')->create('country_language', function (Blueprint $table) {
             $table->char('country_id', 2);
             $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
-            $table->char('glotto_id', 8);
-            $table->foreign('glotto_id')->references('id')->on('languages')->onUpdate('cascade');
+            $table->integer('language_id')->unsigned();
+            $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
         });
     }
 

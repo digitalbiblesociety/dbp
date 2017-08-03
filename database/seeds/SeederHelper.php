@@ -72,20 +72,23 @@ class SeederHelper
 		BibleEquivalent::where('site',$site)->where('organization_id',$partner)->delete();
 
 		foreach($bibleEquivalents as $equivalent) {
-			$bible = Bible::find($equivalent['abbr']);
+			$bible = Bible::find($equivalent['bible_id']);
 			if(!$bible) {
-				echo "\n Missing Bible ID:" . $equivalent['abbr'];
+				echo "\n Missing Bible ID:" . $equivalent['bible_id'];
 				continue;
 			}
 			$alreadyExist = BibleEquivalent::where('equivalent_id',$equivalent['equivalent_id'])->where('organization_id',$partner)->where('site',$site)->first();
 			if(!$alreadyExist) {
+				$equivalent['bible_variation_id'] = ($equivalent['bible_variation_id'] != "") ? $equivalent['bible_variation_id'] : null;
+
 				BibleEquivalent::create([
-					'abbr'            => $equivalent['abbr'],
-					'equivalent_id'   => $equivalent['equivalent_id'],
-					'organization_id' => $partner,
-					'type'            => $type,
-					'site'            => $site,
-					'suffix'          => (isset($equivalent['suffix'])) ? $equivalent['suffix'] : ''
+					'bible_id'            => $equivalent['bible_id'],
+					'bible_variation_id'  => $equivalent['bible_variation_id'],
+					'equivalent_id'       => $equivalent['equivalent_id'],
+					'organization_id'     => $partner,
+					'type'                => $type,
+					'site'                => $site,
+					'suffix'              => (isset($equivalent['suffix'])) ? $equivalent['suffix'] : ''
 				]);
 			}
 		}

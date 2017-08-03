@@ -91,6 +91,8 @@ class bible_seeder extends Seeder
                 }
                 unset($bible['iso']);
                 $bible['glotto_id'] = $glotto->id;
+                $bible['id'] = $bible['abbr'];
+                unset($bible['abbr']);
                 DB::table('bibles')->insert($bible);
             }
 
@@ -107,6 +109,8 @@ class bible_seeder extends Seeder
                     }
                     $translation['glotto_id'] = $glotto->id;
                     unset($translation['iso']);
+	                $translation['bible_id'] = $translation['abbr'];
+	                unset($translation['abbr']);
                     DB::table('bible_translations')->insert($translation);
                 }
         }
@@ -114,7 +118,7 @@ class bible_seeder extends Seeder
         // Update Sophia Boolean
         $sophiaBibles = \DB::connection('sophia')->table('bible_list')->get();
         foreach ($sophiaBibles as $sophiaBible) {
-            $bible = Bible::where('abbr',$sophiaBible->fcbhId)->first();
+            $bible = Bible::where('id',$sophiaBible->fcbhId)->first();
             if(isset($bible)) {
                 //$bible->sophia = true;
                 $bible->save();

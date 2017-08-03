@@ -3,9 +3,12 @@
 use Illuminate\Database\Seeder;
 use database\seeds\SeederHelper;
 use App\Models\Bible\BookTranslation;
-use App\Models\Bible\Book;
 use App\Models\Language\Language;
+
+use App\Models\Bible\Book;
 use App\Models\Bible\BookCode;
+use App\Models\Bible\BibleEquivalent;
+use App\Models\Bible\BibleBook;
 
 class bible_books_seeder extends Seeder
 {
@@ -16,6 +19,7 @@ class bible_books_seeder extends Seeder
      */
     public function run()
     {
+	\DB::table('bible_books')->delete();
 	\DB::table('book_codes')->delete();
 	\DB::table('books')->delete();
 
@@ -24,7 +28,6 @@ class bible_books_seeder extends Seeder
      *
      * @return void
      */
-        $seederhelper = new SeederHelper();
 	    $seederhelper = new SeederHelper();
 	    $data_url = 'https://docs.google.com/spreadsheets/d/1lKJGinIrK_nNBMgaw6iPdL_7s2N6dcP0HQ1fpcju-Ak/export?format=csv&id=1lKJGinIrK_nNBMgaw6iPdL_7s2N6dcP0HQ1fpcju-Ak';
 	    $canon = $seederhelper->csv_to_array($data_url);
@@ -40,6 +43,47 @@ class bible_books_seeder extends Seeder
 			unset($codes);
         }
 
+
+
+
+	    $seederhelper = new SeederHelper();
+	    $bible_books = $seederhelper->csv_to_array(storage_path('/data/dbp2/bible_book_order.csv'));
+	    $bible_books_languages = $seederhelper->csv_to_array(storage_path('/data/dbp2/bible_book_name.csv'));
+	    $bible_books_languages = collect($bible_books_languages)->keyBy('language_ISO_639_3_id')->ToArray();
+	    foreach($bible_books as $bible_book) {
+		    $name = null;
+		    $osis = $bible_book['bible_book_definition_osis_code'];
+		    $book = BookCode::where('type','osis')->where('code',$osis)->first();
+		    if(!$book) {
+			    $missing['osisCodes'][] = $osis;
+			    continue;
+		    }
+		    $bibleEquivalent = BibleEquivalent::where('site','bible.is')->where('equivalent_id',$bible_book['dam_id_root'])->first();
+		    if(!$bibleEquivalent) {
+			    $missing['bibles'][] = $bible_book['dam_id_root'];
+			    continue;
+		    }
+		    $bible = $bibleEquivalent->bible;
+		    if((!$bible->language) or !key_exists($bible->language->iso, $bible_books_languages)) {
+			    $missing['languages'][] = substr($bible->id,0, 3);
+			    continue;
+		    }
+		    if($bible_books_languages[$bible->language->iso][$osis] != "") $name = $bible_books_languages[$bible->language->iso][$osis];
+
+		    BibleBook::create([
+			    'bible_id'    => $bible->id,
+			    'book_id'     => $book->book_id,
+			    'name'        => $name,
+			    'name_short'  => null,
+			    'chapters'    => null
+		    ]);
+	    }
+
+	    foreach ($missing as $key => $values) {
+	    	echo "\n Missing: ".$key.' : '.implode(",",$values);
+	    }
+
+/*
 	    $bookTranslations = $seederhelper->csv_to_array($data_url.'&gid=1922115575');
 	    foreach($bookTranslations as $translation) {
 		    $language = Language::where('iso',$translation['iso'])->first();
@@ -57,6 +101,7 @@ class bible_books_seeder extends Seeder
 		    $newTranslation->name_abbreviation = $translation['name_abbreviation'];
 		    $newTranslation->save();
 	    }
+*/
 	    /*
 				$seederHelper = new SeederHelper();
 				$bibleEquivalents = $seederHelper->csv_to_array('https://docs.google.com/spreadsheets/d/1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4/export?format=csv&id=1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4&gid=2021834900');

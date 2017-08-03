@@ -41,8 +41,11 @@ class LanguageTransformer extends TransformerAbstract
 	public function transformForDataTables(Language $language)
 	{
 		return [
+			$language->alternativeNames,
 			$language->name,
-			$language->glotto_id,
+			$language->id,
+			$language->iso,
+			$language->bibles_count
 		];
 	}
 
@@ -55,10 +58,10 @@ class LanguageTransformer extends TransformerAbstract
 		return [
 			'language_code'        => $language->iso ?? '',
             'language_name'        => $language->autonym ?? '',
-            'english_name'         => $language->name ?? '',
+            'english_name'         => $language->translations("eng")->name ?? $language->name,
             'language_iso'         => $language->iso ?? '',
-            'language_iso_2B'      => $language->iso639_2b ?? '',
-            'language_iso_2T'      => $language->iso639_2t ?? '',
+            'language_iso_2B'      => $language->iso639_2->code ?? '',
+            'language_iso_2T'      => $language->iso639_2->code ?? '',
             'language_iso_1'       => $language->iso639_1 ?? '',
             'language_iso_name'    => $language->name ?? '',
             'language_family_code' => $language->iso ?? ''
@@ -72,9 +75,10 @@ class LanguageTransformer extends TransformerAbstract
 	 */
 	public function transformForV4(Language $language) {
 			return [
-				'glotto_code' => $language->id,
-				'iso_code'    => $language->iso,
-				'name'        => $language->name
+				'glotto_code'     => $language->id,
+				'iso_code'        => $language->iso,
+				'name'            => $language->name,
+				'count_bible'     => $language->bibles_count
 			];
 	}
 
