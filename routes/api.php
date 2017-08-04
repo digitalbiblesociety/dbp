@@ -97,7 +97,7 @@ Route::get('sign', 'HomeController@signedUrl');
 	// [] Verse Info Listing
 	Route::get('library/verseinfo', 'VerseController@info')->name('v2_library_verseInfo');
 	// [] Numbers Listing
-	Route::get('library/numbers', 'NumbersController@index');
+	Route::get('library/numbers', 'NumbersController@index')->name('v2_library_numbers');
 	// TODO: Numbers CRUD
 
 	// Metadata

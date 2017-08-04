@@ -105,6 +105,16 @@ class CreateLanguagesTable extends Migration
             $table->timestamp('updated_at')->useCurrent();
         });
 
+	    Schema::connection('geo_data')->create('alphabet_numbers', function (Blueprint $table) {
+	    	$table->increments('id');
+		    $table->char('script_id',4);
+		    $table->foreign('script_id')->references('script')->on('alphabets')->onUpdate('cascade');
+		    $table->char('script_varient_iso',3);
+		    $table->integer('numeral')->unsigned();
+			$table->string('numeral_vernacular',12);
+		    $table->string('numeral_written',24);
+	    });
+
         Schema::connection('geo_data')->create('alphabet_language', function (Blueprint $table) {
             $table->char('script', 4)->index();
             $table->foreign('script')->references('script')->on('alphabets')->onUpdate('cascade');
@@ -156,6 +166,7 @@ class CreateLanguagesTable extends Migration
     public function down()
     {
         Schema::connection('geo_data')->dropIfExists('alphabet_language');
+	    Schema::connection('geo_data')->dropIfExists('alphabet_numbers');
         Schema::connection('geo_data')->dropIfExists('alphabet_fonts');
         Schema::connection('geo_data')->dropIfExists('alphabets');
         Schema::connection('geo_data')->dropIfExists('languages_translations');
