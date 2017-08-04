@@ -11,6 +11,9 @@ class BibleTranslation extends Model
     protected $hidden = ["created_at","updated_at","bible_id","description"];
     protected $fillable = ['name','glotto_id','description'];
 
+	public $incrementing = false;
+	public $timestamps = false;
+
     public function bible()
     {
         return $this->belongsTo(Bible::class);

@@ -51,7 +51,7 @@ class organizations_seeder extends Seeder
 			$language = new \App\Models\Language\Language();
 			$language = $language->fetchByID($data['language_code']);
 			unset($data['language_code']);
-			$data['glotto_id'] = $language->id;
+			$data['language_id'] = $language->id;
 			$organizationLogo->create($data);
 		}
 

@@ -55,7 +55,6 @@ class language_seeder extends Seeder
 		        }
 	        }
 
-	        echo "\n Attempting Classifications";
 	        if(isset($language['classification-gl'])) {
 		        foreach ($language['classification-gl'] as $order => $classification) {
 			        preg_match_all("/\[([^\]]*)\]/", $classification, $classCodesArray);
@@ -67,7 +66,7 @@ class language_seeder extends Seeder
 			        ]);
 		        }
 	        }
-	        echo "\n Attempting Dialects";
+
 	        if(isset($language['dialects'])) {
 	        	foreach($language['dialects'] as $dialect) {
 			        preg_match_all("/\[([^\]]*)\]/", $dialect, $dialectCodesArray);
@@ -82,45 +81,9 @@ class language_seeder extends Seeder
 			        $langoid->dialects()->create($dialect);
 		        }
 	        }
-	        echo "\n Attempting Countries";
-	        if(isset($language['country'])) {
 
-		        if(is_array($language['country'])) {
-			        foreach($language['country'] as $country) {
-				        preg_match_all("/\[([^\]]*)\]/", $country, $countryCodeArray);
-				        if(count($countryCodeArray[1]) > 0) {
-					        CountryLanguage::create([
-						        'country_id' => $countryCodeArray[1][0],
-						        'language_id' => $langoid->id
-					        ]);
-				        } else {
-					        $country = Country::where('name',$language['country'])->first();
-					        if(!$country) continue;
-					        CountryLanguage::create([
-						        'country_id' => $country->id,
-						        'language_id' => $langoid->id
-					        ]);
-				        }
-			        }
-		        } else {
-			        preg_match_all("/\[([^\]]*)\]/", $language['country'], $countryCodeArray);
-			        if(count($countryCodeArray[1]) > 0) {
-				        CountryLanguage::create([
-					        'country_id' => $countryCodeArray[1][0],
-					        'language_id' => $langoid->id
-				        ]);
-			        } else {
-				        $country = Country::where('name',$language['country'])->first();
-				        if(!$country) continue;
-				        CountryLanguage::create([
-					        'country_id' => $country->id,
-					        'language_id' => $langoid->id
-				        ]);
-			        }
+	        //
 
-		        }
-
-	        }
         }
 
     }

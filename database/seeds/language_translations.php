@@ -24,8 +24,8 @@ class language_translations extends Seeder
 
 	            LanguageTranslation::insert([
                     'name'               => $language['name'],
-                    'glotto_language'    => $languageExists->id,
-                    'glotto_translation' => $referenceLanguageExists->id,
+                    'language_source'    => $languageExists->id,
+                    'language_translation' => $referenceLanguageExists->id,
                 ]);
             } else {
                 $errorOutput[] = $language['iso_language'];

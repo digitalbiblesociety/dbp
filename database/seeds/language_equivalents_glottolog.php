@@ -15,7 +15,9 @@ class language_equivalents_glottolog extends Seeder
      */
     public function run()
     {
+	    $seederHelper = new SeederHelper();
         $languages = json_decode(file_get_contents("http://glottolog.org/resourcemap.json?rsc=language"));
+	    $languoids = $seederHelper->csv_to_array(storage_path().'/data/languages/languoid.csv');
         foreach($languages->resources as $resource) {
             if(!$resource->identifiers) continue;
             foreach($resource->identifiers as $code) {
@@ -23,7 +25,7 @@ class language_equivalents_glottolog extends Seeder
                     $iso = $code->identifier;
                     $isoExists = Language::where('iso',$iso)->first();
                     if($isoExists) continue;
-                    $language = Language::find($resource->id);
+                    $language = Language::where('glotto_id',$resource->id)->first();
                     if(!$language) continue;
                     $language->iso = $iso;
                     $language->save();
@@ -31,21 +33,20 @@ class language_equivalents_glottolog extends Seeder
             }
         }
 
-        // Run through Dialects
-        $seederHelper = new SeederHelper();
-        $languages = $seederHelper->csv_to_array(storage_path().'/data/languages/languoid.csv');
-        foreach($languages as $language) {
-            if($language['level'] == "dialect") {
-                $dialect = LanguageDialect::where('name',$language['name'])->first();
-                if($dialect) {
-                    if($dialect->dialect_id == NULL) {
-                        $dialect->dialect_id = $language['id'];
-                        $dialect->save();
-                    }
-                }
-            }
-        }
-
+	    // Run through Dialects
+	    foreach($languoids as $languoid) {
+		    if($languoid['level'] == "dialect") {
+			    $dialect = LanguageDialect::where('name',$languoid['name'])->first();
+			    if($dialect) {
+				    if($dialect->dialect_id == NULL) {
+				    	$language = Language::where('glotto_id', $languoid['id'])->first();
+				    	if(!$language) { continue; }
+					    $dialect->id = $language->id;
+					    $dialect->save();
+				    }
+			    }
+		    }
+	    }
 
     }
 }

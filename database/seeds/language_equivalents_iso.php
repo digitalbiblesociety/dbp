@@ -20,7 +20,7 @@ class language_equivalents_iso extends Seeder
             if(!isset($language['iso6393'])) {
                 dd($language);
             }
-	        LanguageCode::insert(['glotto_id' => $currentLanguage->id, 'code' => substr($language['iso6391'],0,3), 'source' => 'Iso 639-2']);
+	        LanguageCode::insert(['language_id' => $currentLanguage->id, 'code' => substr($language['iso6391'],0,3), 'source' => 'Iso 639-2']);
         }
 
     }

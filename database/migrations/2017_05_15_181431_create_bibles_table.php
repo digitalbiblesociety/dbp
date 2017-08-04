@@ -140,8 +140,6 @@ class CreateBiblesTable extends Migration
 		    $table->tinyInteger('chapter_end')->unsigned()->nullable();
 		    $table->tinyInteger('verse_start')->unsigned()->nullable();
 		    $table->tinyInteger('verse_end')->unsigned()->nullable();
-		    $table->float('timestamp_start', 8, 2)->unsigned()->nullable();
-		    $table->float('timestamp_end', 8, 2)->unsigned()->nullable();
 	    });
 
         Schema::create('bible_audio_organization', function (Blueprint $table) {

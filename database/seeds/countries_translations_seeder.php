@@ -33,7 +33,7 @@ class countries_translations_seeder extends Seeder
                     if(!Country::where('id','=', $translation['id'])->first()) continue;
                     CountryTranslation::insert([
                         'country_id' => $translation['id'],
-                        'glotto_id' => $current_language->id,
+                        'language_id' => $current_language->id,
                         'name' => $translation['name2']
                     ]);
                 }
@@ -41,28 +41,24 @@ class countries_translations_seeder extends Seeder
         }
     */
         // Wikipedia Translations
+	    \DB::connection('geo_data')->table('country_translations')->delete();
         $seederhelper = new SeederHelper();
         $wikipedia = $seederhelper->csv_to_array(storage_path()."/data/countries/country_translations_wiki.csv");
         foreach($wikipedia as $entry) {
-
             if(strlen($entry['language_id']) == 2) {
                 $current_language = LanguageCode::where('source','Iso 639-2')->where('code','=', $entry['language_id'])->first();
-                if(!$current_language) {
-                    continue;
-                }
+                if(!$current_language) { continue; }
                 $current_language = $current_language->language->id;
             } elseif(strlen($entry['language_id']) == 3) {
                 $current_language = Language::where('iso',$entry['language_id'])->first();
-                if(!$current_language) {
-                    continue;
-                }
+                if(!$current_language) { continue; }
                 $current_language = $current_language->id;
             } else {
                 dd($entry['language_id']);
             }
 
-            if(CountryTranslation::where(['country_id' => $entry['country_id'], 'glotto_id' => $current_language, 'name' => $entry['name']])->count() == 0) {
-                CountryTranslation::insert(['country_id' => $entry['country_id'], 'glotto_id' => $current_language, 'name' => $entry['name']]);
+            if(CountryTranslation::where(['country_id' => $entry['country_id'], 'language_id' => $current_language, 'name' => $entry['name']])->count() == 0) {
+                CountryTranslation::insert(['country_id' => $entry['country_id'], 'language_id' => $current_language, 'name' => $entry['name']]);
             }
         }
 

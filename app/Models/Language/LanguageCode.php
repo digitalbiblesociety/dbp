@@ -11,11 +11,10 @@ class LanguageCode extends Model
     protected $table = 'geo.languages_codes';
     protected $fillable = ['code', 'source', 'glotto_id'];
     public $timestamps = false;
-    public $incrementing = false;
 
     public function language()
     {
-        return $this->belongsTo(Language::class,'glotto_id','id');
+        return $this->belongsTo(Language::class);
     }
 
 }
