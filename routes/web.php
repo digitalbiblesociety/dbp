@@ -18,6 +18,7 @@ Route::resource('bibles/ocr',               'PrintProcesses');
 Route::resource('bibles',                   'BiblesController');
 
 Route::get('docs',                          'DocsController@index')->name('docs');
+Route::get('docs/progress',                 'DocsController@progress')->name('docs_progress');
 Route::get('docs/team',                     'DocsController@team')->name('docs_team');
 Route::get('docs/bibles',                   'DocsController@bibles')->name('docs_bibles');
 Route::get('docs/bibles/equivalents',       'DocsController@bibleEquivalents')->name('docs_bible_equivalents');

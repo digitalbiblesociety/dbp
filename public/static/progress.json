@@ -1,0 +1,384 @@
+{
+  "Library Catalog": {
+    "Language Listing": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Language Create": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Language Update": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Version Listing": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Version Create": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Version Update": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Volume Listing": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Volume Create": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Volume Update": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Volume Language List": {
+      "status": "static",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Volume Language Family List": {
+      "status": "static",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Volume Organization Listing": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Volume History List": {
+      "status": "static",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Book Order Listing": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Book Order Create": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Book Order Update": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Book Order Delete": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Book Listing": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Book Name Listing": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Book Name Create": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Book Name Update": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Chapter Listing": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Verse Info Listing": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Numbers Listing": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Numbers Create": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Numbers Update": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Metadata Listing": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Metadata Create": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Metadata Update": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Volume Asset Location": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Organization Listing": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Organization Create": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Organization Modify": {
+      "status": "omitted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    }
+  },
+  "Library Audio": {
+    "Location": {
+      "status": "static",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Path": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Verse Audio Timecodes List": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    }
+  },
+  "Library Text": {
+    "Font": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Verse": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Search": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Search Group": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    }
+  },
+  "Library Video": {
+    "Video Location": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Video Path": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Jesus Film Listing": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    }
+  },
+  "Country Language": {
+    "Country Language Listing": {
+      "status": "supported",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    }
+  },
+  "Study Programs": {
+    "Details": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Listing": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    }
+  },
+  "API": {
+    "API Version": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Reply": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    }
+  },
+  "Import": {
+    "Register Job": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Launch Job Processing": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Job Status": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    }
+  },
+  "Publish": {
+    "Register Job": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Launch Job Processing": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Job Status": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    }
+  },
+  "Report": {
+    "Register Job": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Launch Job Processing": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Job Status": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    }
+  },
+  "Accounts": {
+    "Account Creation": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Account Roles": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    },
+    "Account Update": {
+      "status": "uncompleted",
+      "description": "",
+      "url": "",
+      "url_demo": ""
+    }
+  }
+}

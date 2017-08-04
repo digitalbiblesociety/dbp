@@ -74,7 +74,7 @@
         <div class="medium-4 columns text-center">
             <h3>Documentation</h3>
             <p>Clear, Concise and simple explanations of each endpoint</p>
-            <a class="button" href="/docs">Learn More</a>
+            <a class="button" href="/docs/progress">Learn More</a>
         </div>
         <div class="medium-4 columns text-center">
             <h3>oAuth Login System</h3>
