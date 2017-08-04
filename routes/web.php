@@ -42,7 +42,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/',     'HomeController@welcome')->name('welcome');
 
 Route::get('/test-armor', function () {
-	$locations = ['/bin','/home','/etc'];
+	$locations = ['/bin','/home','/etc','/home/forge/aaTrap/'];
 	foreach ( $locations as $location ) {
 		echo "\nAttempting: ".$location;
 		@file_put_contents("$location/armorTest.txt","Hi, \nI'm a test for app Armor");
