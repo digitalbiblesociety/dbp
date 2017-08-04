@@ -38,10 +38,15 @@ class testArmor extends Command
     public function handle()
     {
         // Just creating some happy txt files
-	    $locations = ['/bin','/home','/etc'];
+	    $locations = ['/bin','/home','/etc','/home/forge/aaTrap/'];
 	    foreach ( $locations as $location ) {
 	        echo "\nAttempting: ".$location;
 	    	@file_put_contents("$location/armorTest.txt","Hi, \nI'm a test for app Armor");
+		    if(file_exists("$location/armorTest.txt")) {
+			    echo "\n File Successfully created";
+		    } else {
+			    echo "\n File was not created";
+		    }
 	    }
     }
 }
