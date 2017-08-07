@@ -30,7 +30,7 @@ class CreateOrganizationsTable extends Migration
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('country')->nullable();
-	        $table->foreign('country')->references('id')->on('geo.countries')->onUpdate('cascade');
+	        $table->foreign('country')->references('id')->on('countries')->onUpdate('cascade');
             $table->integer('zip')->nullable()->unsigned();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
@@ -38,7 +38,7 @@ class CreateOrganizationsTable extends Migration
 
         Schema::create('organization_translations', function (Blueprint $table) {
             $table->char('language_iso', 3)->index();
-            $table->foreign('language_iso')->references('iso')->on('geo.languages')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('language_iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
             $table->integer('organization_id')->unsigned();
             $table->foreign('organization_id')->references('id')->on('organizations');
             $table->boolean('vernacular')->default(false);
@@ -77,7 +77,7 @@ class CreateOrganizationsTable extends Migration
 		    $table->integer('organization_id')->unsigned();
 		    $table->foreign('organization_id')->references('id')->on('organizations');
 		    $table->char('language_iso', 3)->nullable();
-		    $table->foreign('language_iso')->references('iso')->on('geo.languages');
+		    $table->foreign('language_iso')->references('iso')->on('languages');
 		    $table->string('logo')->nullable();
 		    $table->boolean('icon')->default(false);
 	    });

@@ -17,9 +17,9 @@ class AlphabetsController extends APIController
     {
         if($this->api) {
             $alphabets = Alphabet::select('script','name','family','type','direction')->get();
-            return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->toArray());
+            return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer)->toArray());
         }
-        return view('wiki.alphabets.index');
+        return view('languages.alphabets.index');
     }
 
     /**
@@ -31,9 +31,9 @@ class AlphabetsController extends APIController
     public function show($id)
     {
         $alphabet = Alphabet::with('fonts','languages')->find($id);
-        if(!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('wiki.alphabets_errors_404'));
+        if(!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
         if($this->api) return $this->reply($alphabet);
-        return view('wiki.alphabets.show', compact('alphabet'));
+        return view('languages.alphabets.show', compact('alphabet'));
     }
 
 
@@ -46,7 +46,7 @@ class AlphabetsController extends APIController
     {
         $user = Auth::user();
         if(!$user->hasRole('archivist')) return $this->setStatusCode(403)->replyWithError("You are not an archivist");
-        return view('wiki.alphabets.create');
+        return view('languages.alphabets.create');
     }
 
     /**
@@ -60,7 +60,7 @@ class AlphabetsController extends APIController
         $user = Auth::user();
         if(!$user->hasRole('archivist')) return $this->setStatusCode(403)->replyWithError("You are not an archivist");
         $alphabet = Alphabet::find($id);
-        return view('wiki.alphabets.edit',compact('alphabet'));
+        return view('languages.alphabets.edit',compact('alphabet'));
     }
 
 

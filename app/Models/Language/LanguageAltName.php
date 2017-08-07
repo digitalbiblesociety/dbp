@@ -7,7 +7,7 @@ use App\Models\Language\Language;
 class LanguageAltName extends Model
 {
 
-    protected $table = 'geo.languages_altNames';
+    protected $table = 'languages_altNames';
     protected $fillable = ['name', 'language_id'];
     public $timestamps = false;
 

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Alphabet;
 class AlphabetFont extends Model
 {
-    protected $table = 'geo.alphabet_fonts';
+    protected $table = 'alphabet_fonts';
     protected $hidden = ['iso'];
 
     public function script()

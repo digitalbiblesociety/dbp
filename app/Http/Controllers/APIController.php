@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\URL;
 use SoapBox\Formatter\Formatter;
 use App\Models\User\User;
 use i18n;
+use League\Fractal\Serializer\DataArraySerializer;
+use League\Fractal\Serializer\ArraySerializer;
 
 class APIController extends Controller
 {
@@ -27,13 +29,14 @@ class APIController extends Controller
 
     public function __construct(Request $request)
     {
-        $this->paginateNumber = $_GET["number"] ?? 20;
-        $this->dataTable = isset($_GET["table"]);
-        $url = explode(".",url()->current());
-        if(substr(array_shift($url),-3,3) == "api") $this->api = true;
-        $this->request = $request;
+	    $url = explode(".",url()->current());
+	    if(substr(array_shift($url),-3,3) == "api") {
+		    $this->v = checkParam('v');
+		    $this->api = true;
+		    $this->serializer = ($this->v == "jQueryDataTable") ? new DataArraySerializer() : new ArraySerializer();
+		    $this->paginateNumber = $_GET["number"] ?? 20;
+	    }
         $this->middleware('auth')->only(['create','edit']);
-
     }
 
     /**

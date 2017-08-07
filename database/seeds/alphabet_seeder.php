@@ -14,10 +14,10 @@ class alphabet_seeder extends Seeder
      */
     public function run()
     {
-	    \DB::connection('geo_data')->table('alphabet_fonts')->delete();
-    	\DB::connection('geo_data')->table('alphabet_numbers')->delete();
-	    \DB::connection('geo_data')->table('alphabet_language')->delete();
-	    \DB::connection('geo_data')->table('alphabets')->delete();
+	    \DB::table('alphabet_fonts')->delete();
+    	\DB::table('alphabet_numbers')->delete();
+	    \DB::table('alphabet_language')->delete();
+	    \DB::table('alphabets')->delete();
         $seederhelper = new SeederHelper();
         $sheet_id = '1GoBzI4VRP2bQW8LMdv0eJrEICSSAJ-k_8yix3XjBf8w';
 

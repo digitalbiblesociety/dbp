@@ -7,7 +7,7 @@ use App\Models\Language\Language;
 use App\Models\Language\AlphabetFont;
 class Alphabet extends Model
 {
-    protected $table = "geo.alphabets";
+    protected $table = "alphabets";
     protected $primaryKey = 'script';
     public $incrementing = false;
 
@@ -15,7 +15,7 @@ class Alphabet extends Model
 
     public function languages()
     {
-        return $this->BelongsToMany(Language::class, 'geo.alphabet_language','script','glotto_id')->select('glotto_id','name');
+        return $this->BelongsToMany(Language::class,'alphabet_language','script');
     }
 
     public function fonts()

@@ -16,11 +16,11 @@ class bible_audio_seeder extends Seeder
      */
     public function run()
     {
-
 	    $seederhelper = new SeederHelper();
+/*
 	    \DB::table('bible_audio_references')->delete();
-	    /*
-    	\DB::table('bible_audio')->delete()
+    	\DB::table('bible_audio')->delete();
+
 	    $chapters = $seederhelper->csv_to_array(storage_path() . "/data/dbp2/tlibrary_chapters_mini.csv");
 	    foreach($chapters as $chapter) {
 	    	$dam_id = substr($chapter['dam_id'],0,7);

@@ -16,11 +16,11 @@ class CreateBiblesTable extends Migration
         Schema::create('bibles', function (Blueprint $table) {
             $table->string('id',12)->unique()->onUpdate('cascade')->onDelete('cascade');
             $table->char('iso', 3)->index();
-            $table->foreign('iso')->references('iso')->on('geo.languages');
+            $table->foreign('iso')->references('iso')->on('languages');
             $table->string('date');
             $table->char('scope', 4)->nullable();
             $table->char('script', 4)->nullable();
-            $table->foreign('script')->references('script')->on('geo.alphabets');
+            $table->foreign('script')->references('script')->on('alphabets');
             $table->text('derived')->nullable();
             $table->string('copyright')->nullable();
             $table->string('in_progress')->nullable();
@@ -34,7 +34,7 @@ class CreateBiblesTable extends Migration
 		    $table->string('date');
 		    $table->char('scope', 4)->nullable();
 		    $table->char('script', 4)->nullable();
-		    $table->foreign('script')->references('script')->on('geo.alphabets');
+		    $table->foreign('script')->references('script')->on('alphabets');
 		    $table->text('derived')->nullable();
 		    $table->string('copyright')->nullable();
 		    $table->string('in_progress')->nullable();
@@ -42,7 +42,7 @@ class CreateBiblesTable extends Migration
 
         Schema::create('bible_translations', function (Blueprint $table) {
             $table->char('iso', 3)->index();
-            $table->foreign('iso')->references('iso')->on('geo.languages')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
             $table->string('bible_id',12);
             $table->foreign('bible_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
 	        $table->string('bible_variation_id',12)->nullable();
@@ -107,7 +107,7 @@ class CreateBiblesTable extends Migration
 
         Schema::create('book_translations', function (Blueprint $table) {
             $table->char('iso', 3)->index();
-            $table->foreign('iso')->references('iso')->on('geo.languages')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
             $table->char('book_id', 3);
             $table->foreign('book_id')->references('id')->on('books');
             $table->string('name');
@@ -140,6 +140,7 @@ class CreateBiblesTable extends Migration
 		    $table->tinyInteger('chapter_end')->unsigned()->nullable();
 		    $table->tinyInteger('verse_start')->unsigned()->nullable();
 		    $table->tinyInteger('verse_end')->unsigned()->nullable();
+		    $table->float('timestamp');
 	    });
 
         Schema::create('bible_audio_organization', function (Blueprint $table) {

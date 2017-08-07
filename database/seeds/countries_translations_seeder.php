@@ -41,7 +41,7 @@ class countries_translations_seeder extends Seeder
         }
     */
         // Wikipedia Translations
-	    \DB::connection('geo_data')->table('country_translations')->delete();
+	    \DB::table('country_translations')->delete();
         $seederhelper = new SeederHelper();
         $wikipedia = $seederhelper->csv_to_array(storage_path()."/data/countries/country_translations_wiki.csv");
         foreach($wikipedia as $entry) {

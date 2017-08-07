@@ -12,13 +12,23 @@ class bible_seeder extends Seeder {
 	 * @return void
 	 */
 	public function run() {
+		\DB::table('bible_translations')->delete();
+		\DB::table('bibles')->delete();
 		$seederhelper = new SeederHelper();
 		$bibles       = $seederhelper->csv_to_array( storage_path() . "/data/bibles/bibles.csv" );
 		foreach ( $bibles as $key => $bible ) {
+			if(!isset($bible['abbr'])) continue;
+			if($bible['abbr'] == null) continue;
+			$language = Language::where('iso',$bible['iso'])->first();
+			if(!$language) {echo "\nMissing: ".$bible['iso'];continue;}
+
+			$alphabet = Alphabet::find($bible['script']);
+			if(!$alphabet) {echo "\nMissing: ".$bible['script'];continue;}
+
 			$current_bible = new Bible();
 			$current_bible->create([
 				'id'          => $bible['abbr'],
-				'iso'         => $bible['iso'],
+				'iso'         => $language->iso,
 				'date'        => $bible['date'],
 				'scope'       => $bible['size'],
 				'script'      => $bible['script'],
@@ -28,20 +38,21 @@ class bible_seeder extends Seeder {
 			]);
 
 			// English Title
-			$current_bible->translations()->create([
+			$translation = new \App\Models\Bible\BibleTranslation();
+			$translation->create([
+				"bible_id"    => $bible['abbr'],
 				"iso"         => "eng",
-				"vernacular"  => (($bible["iso"] == "eng") AND isset($bible["eng_title"]) ? 1 : 0),
+				"vernacular"  => (($language->iso == "eng") AND isset($bible["eng_title"]) ? 1 : 0),
 				"name"        => $bible["eng_title"],
-				"bible_id"    => $bible["abbr"],
 				"description" => $bible["description"]
 			]);
 
 			// Vernacular Title
-			$current_bible->translations()->create([
+			$translation->create([
+				"bible_id"    => $bible['abbr'],
 				"iso"         => $bible["iso"],
-				"vernacular"  => ($bible["iso"] != "eng") ? 1 : 0,
+				"vernacular"  => ($language->iso != "eng") ? 1 : 0,
 				"name"        => $bible["eng_title"],
-				"bible_id"    => $bible["abbr"],
 				"description" => $bible["description"]
 			]);
 

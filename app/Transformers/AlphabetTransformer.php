@@ -6,6 +6,14 @@ use League\Fractal\TransformerAbstract;
 use App\Models\Language\Alphabet;
 class AlphabetTransformer extends TransformerAbstract
 {
+
+	public function __construct()
+	{
+		$this->version = $_GET['v'] ?? 4;
+		$this->iso = $_GET['iso'] ?? "eng";
+		$this->continent = $_GET['continent'] ?? false;
+	}
+
     /**
      * A Fractal transformer.
      *
@@ -13,15 +21,12 @@ class AlphabetTransformer extends TransformerAbstract
      */
 	public function transform(Alphabet $alphabet)
 	{
-		$iso = $_GET['iso'] ?? null;
-		if(isset($_GET['table'])) return $this->transformForDataTables($alphabet);
-		return [
-			'name' => $alphabet->name,
-			'script' => $alphabet->script,
-			'family' => $alphabet->family,
-			'type' => $alphabet->type,
-			'direction' => $alphabet->direction
-		];
+		switch ($this->version) {
+			case "jQueryDataTable": return $this->transformForDataTables($alphabet);
+			case "2": return $this->transformForV2($alphabet);
+			case "4":
+			default: return $this->transformForV4($alphabet);
+		}
 	}
 
 	/**
@@ -41,4 +46,27 @@ class AlphabetTransformer extends TransformerAbstract
 				$alphabet->direction
 			];
 	}
+
+	public function transformForV2(Alphabet $alphabet)
+	{
+		return [
+			'name' => $alphabet->name,
+			'script' => $alphabet->script,
+			'family' => $alphabet->family,
+			'type' => $alphabet->type,
+			'direction' => $alphabet->direction
+		];
+	}
+
+	public function transformForV4(Alphabet $alphabet)
+	{
+		return [
+			'name' => $alphabet->name,
+			'script' => $alphabet->script,
+			'family' => $alphabet->family,
+			'type' => $alphabet->type,
+			'direction' => $alphabet->direction
+		];
+	}
+
 }

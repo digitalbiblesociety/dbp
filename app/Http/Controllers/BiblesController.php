@@ -31,6 +31,22 @@ class BiblesController extends APIController
 	    return view('bibles.index');
     }
 
+    public function languageNames()
+    {
+    	$languageNames = checkParam('language_names');
+    	$languageNames = explode(',',$languageNames);
+    	foreach($languageNames as $language_name) {
+    		$language = Language::where('name',$language_name)->first();
+    		if(!$language) continue;
+    		foreach ($language->bibles as $bible) {
+    			foreach ($bible->dbp as $connection) {
+    				$dbp[$language->name][] = $connection->equivalent_id;
+			    }
+		    }
+	    }
+		return $dbp;
+    }
+
     /**
      * Store a newly created resource in storage.
      *

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 
 Route::get('/',                             'HomeController@versions');
+Route::get('bible/LanguageNames',           'BiblesController@languageNames');
 Route::get('bible/{id}/{book}/{chapter}',   'BiblesController@text');
 Route::get('bible/{abbr}/book/{book}',      'BiblesController@book');
 Route::get('bible/{abbr}/books',            'BiblesController@books');

@@ -4,7 +4,6 @@ namespace App\Transformers;
 
 use App\Models\Language\Language;
 use League\Fractal\TransformerAbstract;
-
 class LanguageTransformer extends TransformerAbstract
 {
 
@@ -41,8 +40,8 @@ class LanguageTransformer extends TransformerAbstract
 	public function transformForDataTables(Language $language)
 	{
 		return [
-			$language->alternativeNames,
-			$language->name,
+			$language->alternativeNames->implode('name', ' '),
+			'<a href="/languages/'.$language->id.'">'.$language->name.'</a>',
 			$language->id,
 			$language->iso,
 			$language->bibles_count

@@ -22,12 +22,13 @@ use App\Models\Country\Country;
 
 class Language extends Model
 {
-	public $table = "geo.languages";
+
+	public $table = "languages";
     public $primaryKey = 'id';
     public $timestamps = false;
 
     protected $hidden = ["pivot"];
-    protected $fillable = ['country_id'];
+    protected $fillable = ['glotto_id','iso','name','level','maps','development','use','location','area','population','population_notes','notes','typology','writing','description','family_pk','father_pk','child_dialect_count','child_family_count','child_language_count','latitude','longitude','pk','status','country_id','scope'];
 
     public function alphabets()
     {
@@ -39,19 +40,19 @@ class Language extends Model
      */
     public function translations()
     {
-        return $this->HasMany(LanguageTranslation::class, 'glotto_language')->select('name', 'glotto_language');
+        return $this->HasMany(LanguageTranslation::class,'language_source');
     }
 
     public function currentTranslation($iso = null)
     {
     	if($iso == null) $iso = \i18n::getCurrentLocale();
         $language = Language::where('iso',$iso)->first();
-        return $this->HasOne(LanguageTranslation::class, 'glotto_language')->where('glotto_translation', $language->id);
+        return $this->HasOne(LanguageTranslation::class)->where('glotto_translation', $language->id);
     }
 
     public function vernacularTranslation()
     {
-        return $this->HasOne(LanguageTranslation::class, 'glotto_language')->where('glotto_translation',$this->iso);
+        return $this->HasOne(LanguageTranslation::class, 'glotto_id')->where('glotto_translation',$this->iso);
     }
 
     /**
@@ -59,7 +60,7 @@ class Language extends Model
      */
     public function countries()
     {
-        return $this->BelongsToMany(Country::class, 'geo.country_language');
+        return $this->BelongsToMany(Country::class, 'country_language');
     }
 
     public function countriesByID()
@@ -90,7 +91,7 @@ class Language extends Model
      */
     public function bibles()
     {
-        return $this->HasMany(Bible::class);
+        return $this->HasMany(Bible::class,'iso','iso');
     }
 
     public function bibleCount()
@@ -168,10 +169,11 @@ class Language extends Model
 	 */
 	public function fetchByID($id = null) {
 		if(isset($_GET['language_id'])) $id = $_GET['language_id'];
+		if(is_numeric($id)) return $this->find($id);
 		$length = strlen($id);
     	switch ($length) {
 		    case 3: return $this->where('iso',$id)->first();
-		    case 8: return $this->find($id);
+		    case 8: return $this->where('glotto_id',$id);
 	    }
 		return false;
     }

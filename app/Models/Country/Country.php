@@ -9,7 +9,7 @@ use App\Models\Bible\Bible;
 class Country extends Model
 {
 
-    protected $table = 'geo.countries';
+    protected $table = 'countries';
     public $incrementing = false;
     protected $hidden = ["pivot"];
 

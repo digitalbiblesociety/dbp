@@ -8,10 +8,7 @@ function bookCodeConvert($code = null, $source_type = null, $destination_type = 
 function checkParam($param, $v4Style = null)
 {
 	if($v4Style) return $v4Style;
-	if(!isset($_GET[$param])) {
-		abort(422, "You need to provide the missing parameter '$param'. Please append it to the url.");
-	}
-		//abort(422, "You need to provide the missing parameter '$param'. Please append it to the url.");
+	if(!isset($_GET[$param])) abort(422, "You need to provide the missing parameter '$param'. Please append it to the url.");
 	return $_GET[$param];
 }
 

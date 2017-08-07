@@ -119,7 +119,7 @@ class Bible extends Model
 
     public function dbp()
     {
-        return $this->HasMany(BibleEquivalent::class)->where('type','bible.is');
+        return $this->HasMany(BibleEquivalent::class)->where('site','bible.is');
     }
 
     public function dbl()

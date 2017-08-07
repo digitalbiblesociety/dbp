@@ -48,10 +48,6 @@ class organizations_seeder extends Seeder
 		foreach($organizationLogos as $key => $data) {
 			$organizationLogo = new OrganizationLogo();
 			if($data['logo'] == '') { continue; }
-			$language = new \App\Models\Language\Language();
-			$language = $language->fetchByID($data['language_code']);
-			unset($data['language_code']);
-			$data['language_id'] = $language->id;
 			$organizationLogo->create($data);
 		}
 

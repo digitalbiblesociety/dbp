@@ -23,8 +23,7 @@ class Organization extends Model
     {
     	if($id) {
     		$language = new Language();
-    		$language = $language->fetchByID($id);
-		    return $this->HasOne(OrganizationTranslation::class,'organization_id','id')->where('glotto_id', $language->id);
+		    return $this->HasOne(OrganizationTranslation::class,'organization_id','id')->where('language_iso', $language->iso);
 	    }
         return $this->HasMany(OrganizationTranslation::class);
     }

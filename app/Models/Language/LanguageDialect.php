@@ -8,7 +8,7 @@ use App\Models\Language\Language;
 class LanguageDialect extends Model
 {
     public $primaryKey = 'glotto_id';
-    protected $table = 'geo.languages_dialects';
+    protected $table = 'languages_dialects';
     public $incrementing = false;
     public $timestamps = false;
 

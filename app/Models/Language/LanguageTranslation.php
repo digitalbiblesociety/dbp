@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class LanguageTranslation extends Model
 {
     protected $hidden = ["iso_language"];
-    protected $table = 'geo.languages_translations';
+    protected $table = 'languages_translations';
 
     public static function vernacularTranslation($iso)
     {

@@ -7,7 +7,7 @@ use App\Models\Language\Language;
 class LanguageDivision extends Model
 {
 
-    protected $table = 'geo.languages_divisions';
+    protected $table = 'languages_divisions';
 
     public function macros()
     {

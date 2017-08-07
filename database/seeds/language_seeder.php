@@ -15,12 +15,12 @@ class language_seeder extends Seeder
 
     public function run()
     {
-	    \DB::connection('geo_data')->table('languages_translations')->delete();
-	    \DB::connection('geo_data')->table('languages_dialects')->delete();
-	    \DB::connection('geo_data')->table('languages_codes')->delete();
-	    \DB::connection('geo_data')->table('languages_classifications')->delete();
-	    \DB::connection('geo_data')->table('languages_altNames')->delete();
-    	\DB::connection('geo_data')->table('languages')->delete();
+	    \DB::table('languages_translations')->delete();
+	    \DB::table('languages_dialects')->delete();
+	    \DB::table('languages_codes')->delete();
+	    \DB::table('languages_classifications')->delete();
+	    \DB::table('languages_altNames')->delete();
+    	\DB::table('languages')->delete();
 
         $languages = Yaml::parse(file_get_contents(storage_path().'/data/languages/languages.yaml'));
         foreach($languages as $id => $language) {

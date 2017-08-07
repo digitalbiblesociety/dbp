@@ -7,6 +7,9 @@ use App\Transformers\LanguageTransformer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\APIController;
 
+use League\Fractal\Manager;
+use League\Fractal\Serializer\DataArraySerializer;
+use Spatie\Fractalistic\ArraySerializer;
 class LanguagesController extends APIController
 {
     /**
@@ -17,14 +20,13 @@ class LanguagesController extends APIController
      */
     public function index()
     {
-    	$country = $_GET['country'] ?? false;
-
     	if($this->api) {
+		    $country = $_GET['country'] ?? false;
 			$languages = Language::with("translations","primaryCountry","iso639_2")->withCount('bibles')
 				->when($country, function ($query) use ($country) {
 					return $query->where('country_id', $country);
 				})->get();
-    		return $this->reply(fractal()->collection($languages)->transformWith(new LanguageTransformer())->toArray());
+    		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
 	    }
         return view('languages.index');
     }
@@ -47,7 +49,15 @@ class LanguagesController extends APIController
      */
     public function store(Request $request)
     {
-
+	    $this->validate($request, [
+		    'iso'         => 'unique:languages|max:3',
+		    'glotto_code' => 'unique:languages|max:8',
+		    'name'        => 'required|max:191',
+		    'level'       => 'max:191',
+		    'maps'        => 'max:191',
+	    ]);
+		Language::create($request->all());
+	    redirect()->route('languages_show',['id' => $request->id]);
     }
 
 	/**
@@ -58,12 +68,10 @@ class LanguagesController extends APIController
 	 */
 	public function show($id)
     {
-    	if($this->api) {
-		    $language = new Language();
-		    $language = $language->fetchByID($id);
-		    return $this->reply(fractal()->item($language)->transformWith(new LanguageTransformer())->toArray());
-	    }
-        return view('languages.show');
+	    $language = new Language();
+	    $language = $language->fetchByID($id);
+    	if($this->api) return $this->reply(fractal()->item($language)->transformWith(new LanguageTransformer())->toArray());
+        return view('languages.show',compact('language'));
     }
 
     /**

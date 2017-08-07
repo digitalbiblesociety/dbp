@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CountryTranslation extends Model
 {
-    protected $table = 'geo.country_translations';
+    protected $table = 'country_translations';
     protected $hidden = ["country_id","vernacular"];
     public $incrementing = false;
     public $timestamps = false;
