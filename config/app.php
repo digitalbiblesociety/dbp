@@ -183,6 +183,7 @@ return [
 	    Spatie\Fractal\FractalServiceProvider::class,
 	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
 	    Laravel\Socialite\SocialiteServiceProvider::class,
+	    Barryvdh\Cors\ServiceProvider::class,
 
 	    // AWS Packages
 	    Aws\Laravel\AwsServiceProvider::class,
