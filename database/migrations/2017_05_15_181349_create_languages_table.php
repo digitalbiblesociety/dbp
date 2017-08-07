@@ -93,14 +93,27 @@ class CreateLanguagesTable extends Migration
         Schema::create('alphabets', function (Blueprint $table) {
             $table->char('script', 4)->unique()->index(); // ScriptSource/Iso ID
             $table->string('name');
-            $table->boolean('requiresFont')->default(0);
+	        $table->string('unicode_pdf')->nullable();
+            $table->string('family')->nullable();
+            $table->string('type')->nullable();
+	        $table->string('white_space')->nullable();
+	        $table->string('complex_positioning')->nullable();
+	        $table->string('open_type_tag')->nullable();
+	        $table->boolean('requires_font')->default(0);
 	        $table->boolean('unicode')->default(1);
-	        $table->string('unicodePDF')->nullable();
-            $table->string('family');
-            $table->string('type');
-            $table->char('direction', 3); // rtl, ltr, ttb
-            $table->string('directionNotes');
-            $table->text('sample');
+	        $table->boolean('diacritics')->nullable();
+	        $table->boolean('contextual_forms')->nullable();
+	        $table->boolean('reordering')->nullable();
+	        $table->boolean('case')->nullable();
+	        $table->boolean('split_graphs')->nullable();
+	        $table->string('status')->nullable();
+	        $table->string('baseline')->nullable();
+	        $table->string('ligatures')->nullable();
+            $table->char('direction', 3)->nullable(); // rtl, ltr, ttb
+            $table->text('direction_notes')->nullable();
+            $table->text('sample')->nullable();
+	        $table->string('sample_img')->nullable();
+	        $table->text('description')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
         });
