@@ -70,6 +70,7 @@ class LanguagesController extends APIController
     {
 	    $language = new Language();
 	    $language = $language->fetchByID($id);
+	    if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
     	if($this->api) return $this->reply(fractal()->item($language)->transformWith(new LanguageTransformer())->toArray());
         return view('languages.show',compact('language'));
     }

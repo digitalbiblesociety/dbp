@@ -20,12 +20,10 @@ class BiblesController extends APIController
     public function index(Language $language,$country = null, $publisher = null)
     {
     	$language = $language->fetchByID();
-
 	    if($this->api) {
 		    $bibles = Bible::when($language, function ($query) use ($language) {
 			    return $query->where('glotto_id', $language->id);
 		    })->get();
-		    //dd($bibles);
 		    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->toArray());
 	    }
 	    return view('bibles.index');
@@ -69,6 +67,7 @@ class BiblesController extends APIController
     {
 	    if($this->api) {
 		    $bible = Bible::find($id);
+		    if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
 		    return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
 	    }
 	    return view('bibles.show');

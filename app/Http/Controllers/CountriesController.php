@@ -40,6 +40,7 @@ class CountriesController extends APIController
     {
     	if($this->api) {
 		    $country = Country::find($id);
+		    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
 		    return fractal()->collection($country)->transformWith(new CountryTransformer())->ToArray();
 	    }
 	    return view('countries.show');
