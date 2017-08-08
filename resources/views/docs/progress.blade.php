@@ -1,47 +1,6 @@
 @extends('layouts.app')
 
 @section('head')
-    <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
-    <script type="text/javascript">
-        window.onload = function() {
-            CanvasJS.addColorSet("progressShades",
-                [
-                    "#DDDD9D",
-                    "#FF6138",
-                    "#BEEB9F",
-                    "#79BD8F"
-                ]);
-            $("#chartContainer").CanvasJSChart({
-                title: {
-                    text: "Progress for DBP v2 as of Today",
-                    fontSize: 24
-                },
-                colorSet: "progressShades",
-                axisY: {
-                    title: "Products in %"
-                },
-                legend :{
-                    verticalAlign: "center",
-                    horizontalAlign: "right"
-                },
-                data: [
-                    {
-                        type: "pie",
-                        showInLegend: true,
-                        toolTipContent: "{label} <br/> {y} %",
-                        indexLabel: "{y} %",
-                        dataPoints: [
-                            { label: "Omitted Count",      y: {{ round($progress->omitted_count_percentage) }}, legendText: "Omitted"},
-                            { label: "Uncompleted Count",  y: {{ round($progress->uncompleted_count_percentage) }}, legendText: "Uncompleted"  },
-                            { label: "Static Count",       y: {{ round($progress->static_count_percentage) }},  legendText: "Static" },
-                            { label: "Supported Count",    y: {{ round($progress->supported_count_percentage) }},  legendText: "Supported"}
-                        ]
-                    }
-                ]
-            });
-        }
-    </script>
     <style>
         .function-card {
             position: relative;
@@ -80,12 +39,17 @@
             content:"*";
             font-weight:bold;
         }
+
+        .function-card a[href=""] {
+            opacity: .5;
+            color:#888;
+        }
     </style>
 @endsection
 
 @section('content')
     <div class="medium-4 columns centered">
-        <div id="chartContainer" style="width: 100%; height: 300px"></div>
+        <canvas id="chartContainer" style="width: 100%; height: 300px"></canvas>
     </div>
 
     @foreach($progress as $catagory => $items)
@@ -106,4 +70,49 @@
     </div>
     @endforeach
 
+@endsection
+
+@section('footer')
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.min.js"></script>
+    <script>
+        var canvas = document.getElementById("chartContainer");
+        var ctx = canvas.getContext('2d');
+
+        // Global Options:
+        Chart.defaults.global.defaultFontColor = 'black';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var data = {
+            labels: [
+                "omitted",
+                "uncompleted",
+                "static",
+                "supported"
+            ],
+            datasets: [
+                {
+                    fill: true,
+                    backgroundColor: [
+                        '#DDDD9D',
+                        '#FF6138',
+                        '#BEEB9F',
+                        '#79BD8F'
+                    ],
+                    data: [
+                        {{ round($progress->omitted_count_percentage) }},
+                        {{ round($progress->uncompleted_count_percentage) }},
+                        {{ round($progress->static_count_percentage) }},
+                        {{ round($progress->supported_count_percentage) }}
+                    ]
+                }
+            ]
+        };
+
+        // Chart declaration:
+        var myBarChart = new Chart(ctx, {
+            type: 'pie',
+            data: data
+        });
+    </script>
 @endsection

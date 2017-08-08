@@ -4,7 +4,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "library/volumelanguage"
+      "url_demo": "https://api.dbp.dev/library/volumelanguage"
     },
     "Language Create": {
       "status": "omitted",
@@ -22,7 +22,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/version"
     },
     "Version Create": {
       "status": "omitted",
@@ -40,7 +40,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/volume"
     },
     "Volume Create": {
       "status": "omitted",
@@ -58,31 +58,31 @@
       "status": "static",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/volumelanguage"
     },
     "Volume Language Family List": {
       "status": "static",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/volumelanguagefamily"
     },
     "Volume Organization Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/volumeorganization"
     },
     "Volume History List": {
       "status": "static",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/volumehistory"
     },
     "Book Order Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/bookorder"
     },
     "Book Order Create": {
       "status": "omitted",
@@ -106,13 +106,13 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/ibrary/book"
     },
     "Book Name Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/bookname"
     },
     "Book Name Create": {
       "status": "omitted",
@@ -130,19 +130,19 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/chapter"
     },
     "Verse Info Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/verseinfo"
     },
     "Numbers Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/numbers"
     },
     "Numbers Create": {
       "status": "omitted",
@@ -157,10 +157,10 @@
       "url_demo": ""
     },
     "Metadata Listing": {
-      "status": "uncompleted",
+      "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/metadata"
     },
     "Metadata Create": {
       "status": "omitted",
@@ -184,7 +184,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.dbp.dev/library/volumeorganization"
     },
     "Organization Create": {
       "status": "omitted",
