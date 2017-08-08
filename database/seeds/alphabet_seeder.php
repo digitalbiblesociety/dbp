@@ -63,6 +63,18 @@ class alphabet_seeder extends Seeder
 		    ]);
 	    }
 
+	    $alphabets = $seederhelper->csv_to_array("https://docs.google.com/spreadsheets/d/$sheet_id/export?format=csv&id=$sheet_id&gid=0");
+	    foreach ($alphabets as $alphabet) {
+	    	$alphabetExists = Alphabet::find($alphabet['script']);
+	    	if(!$alphabetExists) {
+	    		Alphabet::create($alphabet);
+	    	} else {
+	    		$alphabetExists->sample = $alphabet['sample'];
+			    $alphabetExists->sample = $alphabet['sample_img'];
+			    $alphabetExists->save();
+		    }
+	    }
+
 	    $alphabet_numbers = $seederhelper->csv_to_array("https://docs.google.com/spreadsheets/d/$sheet_id/export?format=csv&id=$sheet_id&gid=1908412109");
 	    foreach ($alphabet_numbers as $alphabet_number) AlphabetNumber::create($alphabet_number);
 

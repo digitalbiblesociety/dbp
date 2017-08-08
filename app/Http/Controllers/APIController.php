@@ -30,6 +30,7 @@ class APIController extends Controller
     public function __construct(Request $request)
     {
 	    $url = explode(".",url()->current());
+	    $this->request = $request;
 	    if(substr(array_shift($url),-3,3) == "api") {
 		    $this->v = checkParam('v');
 		    $this->api = true;

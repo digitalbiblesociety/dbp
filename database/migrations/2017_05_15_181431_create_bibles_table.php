@@ -152,7 +152,7 @@ class CreateBiblesTable extends Migration
         });
 
 	    Schema::create('bible_text', function (Blueprint $table) {
-		    $table->string('verse_id');
+		    $table->increments('verse_id');
 		    $table->string('bible_id', 12);
 		    $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
 		    $table->string('bible_variation_id',12)->nullable();
@@ -160,7 +160,8 @@ class CreateBiblesTable extends Migration
 		    $table->char('book_id',3);
 		    $table->foreign('book_id')->references('id')->on('books');
 		    $table->tinyInteger('chapter_number')->unsigned();
-		    $table->tinyInteger('verse_number')->unsigned();
+		    $table->tinyInteger('verse_start')->unsigned();
+		    $table->tinyInteger('verse_end')->unsigned();
 		    $table->text('verse_text');
 	    });
 

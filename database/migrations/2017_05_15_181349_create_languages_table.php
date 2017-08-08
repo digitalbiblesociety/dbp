@@ -136,6 +136,7 @@ class CreateLanguagesTable extends Migration
         });
 
         Schema::create('alphabet_fonts', function (Blueprint $table) {
+	        $table->increments('id');
             $table->char('script_id', 4);
             $table->foreign('script_id')->references('script')->on('alphabets')->onUpdate('cascade');
             $table->string('fontName');

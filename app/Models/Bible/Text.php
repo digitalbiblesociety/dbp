@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Text extends Model
 {
+	protected $table = 'bible_text';
     protected $primaryKey = 'verse_id';
     protected $fillable = ['bible_id','book_id','chapter','verse_start','verse_end','verse_content'];
     public $incrementing = false;
@@ -18,7 +19,7 @@ class Text extends Model
 
     public function book()
     {
-        return $this->hasOne('App\Models\Bible\Book','usfx','book_id');
+        return $this->hasOne('App\Models\Bible\Book','id','book_id');
     }
 
     public function chapters()
