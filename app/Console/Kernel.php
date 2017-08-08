@@ -16,7 +16,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\processDBLBundle::class,
 	    Commands\testArmor::class,
-	    Commands\fetchAlphabets::class
+	    Commands\fetchAlphabets::class,
+	    Commands\countSophia::class,
     ];
 
     /**
