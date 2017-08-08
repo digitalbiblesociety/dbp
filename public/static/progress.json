@@ -4,7 +4,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/volumelanguage"
+      "url_demo": "https://api.bible.build/library/volumelanguage"
     },
     "Language Create": {
       "status": "omitted",
@@ -22,7 +22,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/version"
+      "url_demo": "https://api.bible.build/library/version"
     },
     "Version Create": {
       "status": "omitted",
@@ -40,7 +40,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/volume"
+      "url_demo": "https://api.bible.build/library/volume"
     },
     "Volume Create": {
       "status": "omitted",
@@ -58,31 +58,31 @@
       "status": "static",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/volumelanguage"
+      "url_demo": "https://api.bible.build/library/volumelanguage"
     },
     "Volume Language Family List": {
       "status": "static",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/volumelanguagefamily"
+      "url_demo": "https://api.bible.build/library/volumelanguagefamily"
     },
     "Volume Organization Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/volumeorganization"
+      "url_demo": "https://api.bible.build/library/volumeorganization"
     },
     "Volume History List": {
       "status": "static",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/volumehistory"
+      "url_demo": "https://api.bible.build/library/volumehistory"
     },
     "Book Order Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/bookorder"
+      "url_demo": "https://api.bible.build/library/bookorder"
     },
     "Book Order Create": {
       "status": "omitted",
@@ -106,13 +106,13 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/ibrary/book"
+      "url_demo": "https://api.bible.build/ibrary/book"
     },
     "Book Name Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/bookname"
+      "url_demo": "https://api.bible.build/library/bookname"
     },
     "Book Name Create": {
       "status": "omitted",
@@ -130,19 +130,19 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/chapter"
+      "url_demo": "https://api.bible.build/library/chapter"
     },
     "Verse Info Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/verseinfo"
+      "url_demo": "https://api.bible.build/library/verseinfo"
     },
     "Numbers Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/numbers"
+      "url_demo": "https://api.bible.build/library/numbers"
     },
     "Numbers Create": {
       "status": "omitted",
@@ -160,7 +160,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/metadata"
+      "url_demo": "https://api.bible.build/library/metadata"
     },
     "Metadata Create": {
       "status": "omitted",
@@ -184,7 +184,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.dbp.dev/library/volumeorganization"
+      "url_demo": "https://api.bible.build/library/volumeorganization"
     },
     "Organization Create": {
       "status": "omitted",
@@ -227,10 +227,10 @@
       "url_demo": ""
     },
     "Verse": {
-      "status": "uncompleted",
+      "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": ""
+      "url_demo": "https://api.bible.build/text/verse?v=2&book_id=MAT&chapter=1&verse_start=1&bible_id=VIECAD&v=2&format=json&pretty"
     },
     "Search": {
       "status": "uncompleted",
