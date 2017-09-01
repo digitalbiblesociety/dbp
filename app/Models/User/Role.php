@@ -9,6 +9,8 @@ class Role extends Model
 {
 
 	protected $table = 'user_roles';
+	public $incrementing = false;
+	public $timestamps = true;
 
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

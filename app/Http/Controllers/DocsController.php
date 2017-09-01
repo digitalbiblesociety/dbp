@@ -53,6 +53,11 @@ class DocsController extends APIController
 		return view('docs.routes.index');
 	}
 
+	public function swagger()
+	{
+		return view('docs.swagger');
+	}
+
 	/**
 	 * Move along
 	 *
@@ -102,6 +107,11 @@ class DocsController extends APIController
 	{
 		$teammates = User::whereHas('role.organization', function($q) {$q->where('role', 'teammember');})->get();
 		return view('docs.team',compact('teammates'));
+	}
+
+	public function bookOrderListing()
+	{
+		return view('docs.v2.books.bookOrderListing');
 	}
 
 

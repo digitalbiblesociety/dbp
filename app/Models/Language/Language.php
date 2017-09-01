@@ -25,7 +25,6 @@ class Language extends Model
 
 	public $table = "languages";
     public $primaryKey = 'id';
-    public $timestamps = false;
 
     protected $hidden = ["pivot"];
     protected $fillable = ['glotto_id','iso','name','level','maps','development','use','location','area','population','population_notes','notes','typology','writing','description','family_pk','father_pk','child_dialect_count','child_family_count','child_language_count','latitude','longitude','pk','status','country_id','scope'];
@@ -50,11 +49,6 @@ class Language extends Model
         return $this->HasOne(LanguageTranslation::class)->where('glotto_translation', $language->id);
     }
 
-    public function vernacularTranslation()
-    {
-        return $this->HasOne(LanguageTranslation::class, 'glotto_id')->where('glotto_translation',$this->iso);
-    }
-
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -63,19 +57,14 @@ class Language extends Model
         return $this->BelongsToMany(Country::class, 'country_language');
     }
 
-    public function countriesByID()
-    {
-        return \DB::table('country_language')->where('iso',$this->iso)->select('country_id')->get()->pluck('country_id')->ToArray();
-    }
-
     public function primaryCountry()
     {
-        return $this->HasOne(Country::class,'id','country_id');
+        return $this->BelongsTo(Country::class,'country_id','id','countries');
     }
 
     public function region()
     {
-    	return $this->HasOne(CountryRegion::class,'id','country_id');
+    	return $this->HasOne(CountryRegion::class,'country_id');
     }
 
     /**
@@ -136,12 +125,12 @@ class Language extends Model
      */
     public function codes()
     {
-        return $this->HasMany(LanguageCode::class);
+        return $this->HasMany(LanguageCode::class, 'language_id','id');
     }
 
     public function iso639_2()
     {
-        return $this->HasOne(LanguageCode::class)->where('source','Iso 639-2');
+        return $this->HasOne(LanguageCode::class);
     }
 
     public function classifications()
@@ -159,23 +148,12 @@ class Language extends Model
      */
     public function dialects()
     {
-        return $this->HasMany(LanguageDialect::class);
+        return $this->HasMany(LanguageDialect::class,'language_id','id');
     }
 
-	/**
-	 * Returns a resource based upon the glottologue, ethnologue, or walls ID
-	 *
-	 * @param $id
-	 */
-	public function fetchByID($id = null) {
-		if(isset($_GET['language_id'])) $id = $_GET['language_id'];
-		if(is_numeric($id)) return $this->find($id);
-		$length = strlen($id);
-    	switch ($length) {
-		    case 3: return $this->where('iso',$id)->first();
-		    case 8: return $this->where('glotto_id',$id);
-	    }
-		return false;
-    }
+	public function parent()
+	{
+		return $this->HasOne(LanguageDialect::class,'dialect_id', 'id');
+	}
 
 }

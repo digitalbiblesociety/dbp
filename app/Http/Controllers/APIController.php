@@ -34,7 +34,7 @@ class APIController extends Controller
 	    if(substr(array_shift($url),-3,3) == "api") {
 		    $this->v = checkParam('v');
 		    $this->api = true;
-		    $this->serializer = ($this->v == "jQueryDataTable") ? new DataArraySerializer() : new ArraySerializer();
+		    $this->serializer = (($this->v == "jQueryDataTable") OR ($this->v != 2)) ? new DataArraySerializer() : new ArraySerializer();
 		    $this->paginateNumber = $_GET["number"] ?? 20;
 	    }
         $this->middleware('auth')->only(['create','edit']);
@@ -108,9 +108,9 @@ class APIController extends Controller
                 return response()->make($formatter->toCsv(), $this->getStatusCode())->header('Content-Type', 'text/csv; charset=utf-8');
             default:
                 if(isset($_GET['pretty']) OR $pretty != 0) {
-                    return response()->json($object, $this->getStatusCode(), array(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)->header('Content-Type', 'text/json');
+                    return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)->header('Content-Type', 'text/json');
                 } else {
-                    return response()->json($object, $this->getStatusCode(), array(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'text/json');
+                    return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'text/json');
                 }
 
         }

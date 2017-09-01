@@ -184,10 +184,16 @@ return [
 	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
 	    Laravel\Socialite\SocialiteServiceProvider::class,
 	    Barryvdh\Cors\ServiceProvider::class,
+	    Lanin\Laravel\ApiDebugger\ServiceProvider::class,
 
 	    // AWS Packages
 	    Aws\Laravel\AwsServiceProvider::class,
 	    jdavidbakr\SignedS3Filesystem\SignedS3FilesystemServiceProvider::class,
+
+	    /*
+	     * Site Packages
+	     */
+	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
 
     ],
 
@@ -242,7 +248,8 @@ return [
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'AWS' => Aws\Laravel\AwsFacade::class,
 	    'Bucket' => \Helpers\AWS\bucket::class,
-
+        'i18n' => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
+        'Debugger' => Lanin\Laravel\ApiDebugger\Facade::class,
 
     ],
 

@@ -19,8 +19,8 @@ class bible_books_seeder extends Seeder
      */
     public function run()
     {
+	ini_set('memory_limit', '777M');
 	\DB::table('bible_books')->delete();
-	\DB::table('book_codes')->delete();
 	\DB::table('books')->delete();
 
     /**
@@ -34,13 +34,22 @@ class bible_books_seeder extends Seeder
 
         foreach ($canon as $key => $canonItem) {
 	        $canonItem['id'] = $canonItem['usfm'];
-	        $codes[] = ['book_id' => $canonItem['id'],'code' => $canonItem['osis'],'type' => 'osis']; unset($canonItem['osis']);
-	        $codes[] = ['book_id' => $canonItem['id'],'code' => $canonItem['usfm'],'type' => 'usfm']; unset($canonItem['usfm']);
-	        $codes[] = ['book_id' => $canonItem['id'],'code' => $canonItem['usfx'],'type' => 'usfx']; unset($canonItem['usfx']);
-	        Book::create($canonItem);
-	        BookCode::create($codes);
-
-			unset($codes);
+	        $codes = [
+				['book_id' => $canonItem['id'],'code' => $canonItem['osis'],'type' => 'osis'],
+				['book_id' => $canonItem['id'],'code' => $canonItem['usfm'],'type' => 'usfm'],
+				['book_id' => $canonItem['id'],'code' => $canonItem['usfx'],'type' => 'usfx']
+	        ];
+	        $book = new Book();
+	        $book->book_order = $canonItem['book_order'];
+            $book->name = $canonItem['name'];
+            $book->chapters = $canonItem['chapters'];
+            $book->verses = $canonItem['verses'];
+            $book->notes = $canonItem['notes'];
+            $book->description = $canonItem['description'];
+            $book->id = $canonItem['id'];
+	        $book->id_usfx = $canonItem['usfx'];
+	        $book->id_osis = $canonItem['osis'];
+            $book->save();
         }
 
 
@@ -53,26 +62,17 @@ class bible_books_seeder extends Seeder
 	    foreach($bible_books as $bible_book) {
 		    $name = null;
 		    $osis = $bible_book['bible_book_definition_osis_code'];
-		    $book = BookCode::where('type','osis')->where('code',$osis)->first();
-		    if(!$book) {
-			    $missing['osisCodes'][] = $osis;
-			    continue;
-		    }
-		    $bibleEquivalent = BibleEquivalent::where('site','bible.is')->where('equivalent_id',$bible_book['dam_id_root'])->first();
-		    if(!$bibleEquivalent) {
-			    $missing['bibles'][] = $bible_book['dam_id_root'];
-			    continue;
-		    }
+		    $book = Book::where('id_osis',$osis)->first();
+		    if(!$book) {continue;}
+		    $bibleEquivalent = BibleEquivalent::with('bible.language')->where('site','bible.is')->where('equivalent_id',$bible_book['dam_id_root'])->first();
+		    if(!$bibleEquivalent) {$missing['bibles'][] = $bible_book['dam_id_root']; continue; }
 		    $bible = $bibleEquivalent->bible;
-		    if((!$bible->language) or !key_exists($bible->language->iso, $bible_books_languages)) {
-			    $missing['languages'][] = substr($bible->id,0, 3);
-			    continue;
-		    }
+		    if((!$bible->language) or !key_exists($bible->language->iso, $bible_books_languages)) { $missing['languages'][] = substr($bible->id,0, 3); continue; }
 		    if($bible_books_languages[$bible->language->iso][$osis] != "") $name = $bible_books_languages[$bible->language->iso][$osis];
 
 		    BibleBook::create([
-			    'bible_id'    => $bible->id,
-			    'book_id'     => $book->book_id,
+			    'bible_id'    => $bibleEquivalent->bible_id,
+			    'book_id'     => $book->id,
 			    'name'        => $name,
 			    'name_short'  => null,
 			    'chapters'    => null

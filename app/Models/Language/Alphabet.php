@@ -2,6 +2,7 @@
 
 namespace App\Models\Language;
 
+use App\Models\Bible\Bible;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
 use App\Models\Language\AlphabetFont;
@@ -32,5 +33,10 @@ class Alphabet extends Model
     {
         return $this->HasOne(AlphabetFont::class,'script_id','script')->where('fontWeight',400);
     }
+
+	public function bibles()
+	{
+		return $this->HasMany(Bible::class,'script','script');
+	}
 
 }

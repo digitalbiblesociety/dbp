@@ -13,7 +13,6 @@ class BibleEquivalent extends Model
     protected $hidden = ['created_at','updated_at','bible_id'];
     protected $fillable = ['abbr','equivalent_id','organization_id','type','suffix'];
     public $incrementing = false;
-    public $timestamps = false;
 
     public function bible()
     {

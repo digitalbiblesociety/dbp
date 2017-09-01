@@ -49,19 +49,63 @@
                 top: auto;
             }
         }
+
+        .title {
+            text-align: center;
+        }
+        .title .subtitle {
+            display: block;
+        }
+
+        .features {
+            display: block;
+            background: #333;
+            width:100%;
+            min-height:40px;
+            margin:15px 5px;
+        }
+        .features li {
+            background: #333;
+            display: block;
+            float:left;
+            height:40px;
+            line-height:40px;
+            width:20%;
+            text-align: center;
+            color:#FFF;
+        }
+
+
+        .features li.disabled {text-decoration: line-through}
+
     </style>
 @endsection
 
 @section('content')
     <div id="alphabet-show">
 
+        <div class="row">
+            <h1 class='title'>{{ $alphabet->name }} <small class='subtitle'>{{ $alphabet->subtitle }}</small></h1>
+            <small class="code"></small>
+            <div class="features">
+                <li class="{{ ($alphabet->diacritics) ? "enabled" : "disabled" }}">Diacritics</li>
+                <li class="{{ ($alphabet->contextual_forms) ? "enabled" : "disabled" }}">Contextual Forms</li>
+                <li class="{{ ($alphabet->reordering) ? "enabled" : "disabled" }}">Reordering</li>
+                <li class="{{ ($alphabet->split_graphs) ? "enabled" : "disabled" }}">Graphs</li>
+                <li class="{{ ($alphabet->ligatures) ? "enabled" : "disabled" }}">Ligatures</li>
+            </div>
+        </div>
 
-        <span class='title'> $alphabet->name,</span>
-        <span class='subtitle'> $alphabet->subtitle,</span>
-        <span class='backgroundImage'>$alphabet->family</span>
-    <span class='backgroundBase64'> $alphabet->backgroundBase64</span>
-
-
+        {{ $alphabet->unicode_pdf }}
+        {{ $alphabet->white_space }}
+        {{ $alphabet->complex_positioning }}
+        {{ $alphabet->open_type_tag }}
+        {{ $alphabet->unicode }}
+        {{ $alphabet->case }}
+        {{ $alphabet->status }}
+        {{ $alphabet->baseline }}
+        {{ $alphabet->sample }}
+        {{ $alphabet->sample_img }}
 
         <div class="overlay">
             <span>{{ $alphabet->sample }}</span>
@@ -69,14 +113,12 @@
 
         <div class="row">
             <div class="small-4 columns">
-                <h3>Description</h3>
-                <p class="text-justify">{{ $alphabet->description }}</p>
-
                 <h3>Meta Data</h3>
                 <ul>
-                    <li><b>Script:</b> {{$alphabet->script}}</li>
+                    <li><b>Script ID:</b> {{$alphabet->script}}</li>
                     <li><b>Type:</b> {{$alphabet->type}}</li>
-                    <li><b>Direction:</b> {{$alphabet->direction}}</li>
+                    <li><b>Direction:</b> {{$alphabet->direction}} <span class="direction-notes">{{ $alphabet->direction_notes }}</span></li>
+                    <li><b>Family:</b> {{ $alphabet->family }}</li>
                 </ul>
                 <h3>Languages</h3>
                 <ul>
@@ -100,6 +142,30 @@
                         <p>{{ $font->fontWeight }}</p>
                     </div>
                 @endforeach
+            </div>
+        </div>
+        <div class="row">
+            <div class="medium-8 columns"><h3>Description</h3><p class="text-justify">{!! $alphabet->description !!}</p></div>
+            <div class="medium-4 columns">
+                <div class="row">
+                    <h3>Bibles</h3>
+                    <table>
+                        <thead>
+                        <tr>
+                            <td>Bible ID</td>
+                            <td>Bible Name</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($alphabet->bibles as $bible)
+                            <tr>
+                                <td>{{ $bible->id }}</td>
+                                <td>{{ $bible->translation("eng")->first()->name ?? '' }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

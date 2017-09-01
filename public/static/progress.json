@@ -2,9 +2,9 @@
   "Library Catalog": {
     "Language Listing": {
       "status": "supported",
-      "description": "",
+      "description": "A endpoint for the Languages of the world.",
       "url": "",
-      "url_demo": "https://api.bible.build/library/volumelanguage"
+      "url_demo": "https://api.bible.build/library/volumelanguage?v=2&pretty"
     },
     "Language Create": {
       "status": "omitted",
@@ -22,7 +22,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/library/version"
+      "url_demo": "https://api.bible.build/library/version?v=2&pretty"
     },
     "Version Create": {
       "status": "omitted",
@@ -40,7 +40,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/library/volume"
+      "url_demo": "https://api.bible.build/library/volume?v=2&pretty"
     },
     "Volume Create": {
       "status": "omitted",
@@ -58,31 +58,31 @@
       "status": "static",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/library/volumelanguage"
+      "url_demo": "https://api.bible.build/library/volumelanguage?v=2&pretty"
     },
     "Volume Language Family List": {
       "status": "static",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/library/volumelanguagefamily"
+      "url_demo": "https://api.bible.build/library/volumelanguagefamily?v=2&pretty"
     },
     "Volume Organization Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/library/volumeorganization"
+      "url_demo": "https://api.bible.build/library/volumeorganization?v=2&pretty"
     },
     "Volume History List": {
       "status": "static",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/library/volumehistory"
+      "url_demo": "https://api.bible.build/library/volumehistory?v=2&pretty"
     },
     "Book Order Listing": {
       "status": "supported",
-      "description": "",
-      "url": "",
-      "url_demo": "https://api.bible.build/library/bookorder"
+      "description": "Gets the book order and code listing for a volume",
+      "url": "/docs/v2/books/book-order-listing",
+      "url_demo": "https://api.bible.build/library/bookorder?v=2&pretty"
     },
     "Book Order Create": {
       "status": "omitted",
@@ -106,13 +106,13 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/ibrary/book"
+      "url_demo": "https://api.bible.build/ibrary/book?v=2&pretty"
     },
     "Book Name Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/library/bookname"
+      "url_demo": "https://api.bible.build/library/bookname?v=2&pretty"
     },
     "Book Name Create": {
       "status": "omitted",
@@ -130,19 +130,19 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/library/chapter"
+      "url_demo": "https://api.bible.build/library/chapter?v=2&pretty"
     },
     "Verse Info Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/library/verseinfo"
+      "url_demo": "https://api.bible.build/library/verseinfo?v=2&pretty"
     },
     "Numbers Listing": {
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/library/numbers"
+      "url_demo": "https://api.bible.build/library/numbers?v=2&pretty"
     },
     "Numbers Create": {
       "status": "omitted",
@@ -160,7 +160,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/library/metadata"
+      "url_demo": "https://api.bible.build/library/metadata?v=2&pretty"
     },
     "Metadata Create": {
       "status": "omitted",
@@ -184,7 +184,7 @@
       "status": "supported",
       "description": "",
       "url": "",
-      "url_demo": "https://api.bible.build/library/volumeorganization"
+      "url_demo": "https://api.bible.build/library/volumeorganization?v=2&pretty"
     },
     "Organization Create": {
       "status": "omitted",

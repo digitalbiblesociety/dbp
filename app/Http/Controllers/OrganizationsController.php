@@ -23,11 +23,18 @@ class OrganizationsController extends APIController
 	 */
 	public function index()
 	{
-		$organizations = Organization::with('translations')->get();
-		if(isset($_GET['count']) or (\Route::currentRouteName() == 'v2_volume_organization_list')) {
-			$organizations->load('bibles');
+		// Handle API options first
+		if($this->api) {
+			$organizations = Organization::with('translations')->get();
+			if(isset($_GET['count']) or (\Route::currentRouteName() == 'v2_volume_organization_list')) $organizations->load('bibles');
+			return $this->reply(fractal()->collection($organizations)->transformWith(new OrganizationTransformer())->ToArray());
 		}
-		return $this->reply(fractal()->collection($organizations)->transformWith(new OrganizationTransformer())->ToArray());
+
+		// If User is authorized pass them on to the Dashboard
+		$user = \Auth::user();
+		if($user) return view('dashboard.organizations.index',compact('user'));
+
+		// Otherwise to the front end, ya peasant
 		return view('community.organizations.index', compact('organizations'));
 	}
 
@@ -39,16 +46,22 @@ class OrganizationsController extends APIController
 	 */
 	public function show($slug)
 	{
-		// Support both incrementing ID and Slug
+		// Support both incrementing ID or Slug
 		if(preg_match("/\d+/",$slug)) {
 			$organization = Organization::with("bibles.translations","bibles.language","translations","logos")->where('id',$slug)->first();
 		} else {
 			$organization = Organization::with("bibles.translations","bibles.language","translations","logos")->where('slug',$slug)->first();
 		}
-
 		if(!$organization) return $this->setStatusCode(404)->replyWithError("Sorry we don't have any record for $slug");
+
+		// Handle API First
 		if($this->api) return $this->reply($organization);
 
+		// Than Try Admin
+		$user = \Auth::user();
+		if($user) return view('dashboard.organizations.show',compact('user','organization'));
+
+		// Finally send them to the public view
 		return view('community.organizations.show', compact('organization'));
 	}
 
@@ -66,7 +79,17 @@ class OrganizationsController extends APIController
 	 */
 	public function create()
 	{
+		$user = \Auth::user();
+		if($user) $organizations = Organization::with('translations')->get();
 		return view('community.organizations.create');
+	}
+
+	public function apply()
+	{
+		$user = \Auth::user();
+		if(!$user) return $this->replyWithError("You must be logged in");
+		$organizations = Organization::with('translations')->get();
+		return view('dashboard.organizations.apply',compact('user','organizations'));
 	}
 
 	/**

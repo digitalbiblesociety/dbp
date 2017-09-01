@@ -33,7 +33,6 @@ class Bible extends Model
      * @var bool
      */
     public $incrementing = false;
-	public $timestamps = false;
 
     /**
      *
@@ -63,9 +62,14 @@ class Bible extends Model
         return $this->HasOne(BibleTranslation::class)->where('iso', $iso);
     }
 
+    public function text()
+    {
+    	return $this->HasMany(Text::class);
+    }
+
     public function books()
     {
-	    return $this->HasMany(BibleBook::class,'abbr');
+	    return $this->HasMany(BibleBook::class);
     }
 
     public function chapters()
@@ -112,11 +116,6 @@ class Bible extends Model
         return $this->HasMany(BibleEquivalent::class)->where('type',$type);
     }
 
-    public function sophia()
-    {
-        return \Schema::connection('sophia')->hasTable($this->abbr.'_vpl');
-    }
-
     public function dbp()
     {
         return $this->HasMany(BibleEquivalent::class)->where('site','bible.is');
@@ -142,9 +141,9 @@ class Bible extends Model
      *
      * @return mixed
      */
-    public function contributors()
+    public function organizations()
     {
-        return $this->belongsToMany(Organization::class);
+        return $this->belongsToMany(Organization::class, 'bible_organizations');
     }
 
     /**
@@ -193,7 +192,7 @@ class Bible extends Model
      */
     public function language()
     {
-        return $this->hasOne('App\Models\Language\Language','id','glotto_id')->select('name','id','country_id','iso');
+        return $this->hasOne('App\Models\Language\Language','iso','iso')->select('name','id','country_id','iso');
     }
 
     /**

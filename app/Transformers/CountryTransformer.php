@@ -18,20 +18,12 @@ class CountryTransformer extends TransformerAbstract
 	public function transform(Country $country)
 	{
 		$iso = $_GET['iso'] ?? null;
-		if(isset($_GET['table'])) return $this->transformForDataTables($country);
-		return [
-			'name'           => $country->currentTranslation($iso) ?? $country->name,
-			'uri'            => env('APP_URL').'/countries/'.$country->id,
-			'continent_code' => $country->continent,
-			'hidden'         => (boolean) $country->hidden,
-			'languages'      => $country->languages->ToArray(),
-			'codes' => [
-				'fips'       => $country->fips,
-				'iso_a3'     => $country->iso_a3,
-				'iso_a2'     => $country->id,
-				'iso_num'    => $country->iso_num,
-			]
-		];
+		switch ($this->version) {
+			case "jQueryDataTable": return $this->transformForDataTables($country);
+			case "2": return $this->transformForV2($country);
+			case "4":
+			default: return $this->transformForV4($country);
+		}
 	}
 
 	public function transformForDataTables(Country $country)
@@ -47,4 +39,27 @@ class CountryTransformer extends TransformerAbstract
 			];
 		}
 	}
+
+	public function transformForV4($country)
+	{
+		return [
+			'name'           => $country->currentTranslation($iso) ?? $country->name,
+			'uri'            => env('APP_URL').'/countries/'.$country->id,
+			'continent_code' => $country->continent,
+			'hidden'         => (boolean) $country->hidden,
+			'languages'      => $country->languages->ToArray(),
+			'codes' => [
+				'fips'       => $country->fips,
+				'iso_a3'     => $country->iso_a3,
+				'iso_a2'     => $country->id,
+				'iso_num'    => $country->iso_num,
+			]
+		];
+	}
+
+	public function transformForV2($country)
+	{
+		$i = 0;
+	}
+
 }

@@ -54,13 +54,18 @@ class BooksTransformer extends TransformerAbstract
 
 			case "v2_library_bookname": {
 				return [
-					$bibleBook->book->osis->code => $bibleBook->name
+					'book_id'           => $bibleBook->book_id,
+					'book_name'         => $bibleBook->name
 				];
 			}
 
-			case "v2_library_bookname": {
+			case "v2_library_chapter": {
 				return [
-					$bibleBook->book->osis->code => $bibleBook->name
+					"dam_id"           => $bibleBook->bible_id,
+                    "book_id"          => $bibleBook->book_id,
+                    "chapter_id"       => $bibleBook->chapter_number,
+                    "chapter_name"     => "Chapter " . $bibleBook->chapter_number,
+                    "default"          => ""
 				];
 			}
 
@@ -72,12 +77,7 @@ class BooksTransformer extends TransformerAbstract
 
 	public function transformForV4(Book $book) {
 		return [
-			"ENGKJVO",
-			"Gen",
-			"Genesis",
-			"1",
-			"50",
-			"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50"
+			$book
 		];
 	}
 

@@ -10,9 +10,7 @@ class BibleTranslation extends Model
 {
     protected $hidden = ["created_at","updated_at","bible_id","description"];
     protected $fillable = ['name','description','bible_id','iso'];
-
 	public $incrementing = false;
-	public $timestamps = false;
 
     public function bible()
     {

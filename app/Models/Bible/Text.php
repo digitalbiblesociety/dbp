@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Text extends Model
 {
 	protected $table = 'bible_text';
-    protected $primaryKey = 'verse_id';
+    protected $primaryKey = 'id';
+    protected $keyType = 'string';
     protected $fillable = ['bible_id','book_id','chapter','verse_start','verse_end','verse_content'];
     public $incrementing = false;
     public $timestamps = false;

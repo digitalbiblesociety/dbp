@@ -6,12 +6,13 @@ use App\Http\Controllers\APIController;
 use App\Models\Language\Alphabet;
 use App\Transformers\AlphabetTransformer;
 use Auth;
+
 class AlphabetsController extends APIController
 {
     /**
      * Handles Alphabets index and api routes
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+     * @return JSON|View
      */
     public function index()
     {
@@ -25,14 +26,16 @@ class AlphabetsController extends APIController
     /**
      * Single Alphabet Route for API or view
      *
-     * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @param string $id
+     * @return JSON|View
      */
     public function show($id)
     {
-        $alphabet = Alphabet::with('fonts','languages')->find($id);
-        if(!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
-        if($this->api) return $this->reply($alphabet);
+        if($this->api) {
+	        $alphabet = Alphabet::with('fonts','languages')->find($id);
+	        if(!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
+        	return $this->reply(fractal()->item($alphabet)->transformWith(AlphabetTransformer::class)->serializeWith($this->serializer)->ToArray());
+        }
         return view('languages.alphabets.show', compact('alphabet'));
     }
 
@@ -40,7 +43,7 @@ class AlphabetsController extends APIController
     /**
      * Create a brand new Alphabet
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return JSON|View
      */
     public function create()
     {
@@ -52,8 +55,8 @@ class AlphabetsController extends APIController
     /**
      * Edit an Existing Alphabet
      *
-     * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @param string $id
+     * @return JSON|View
      */
     public function edit($id)
     {

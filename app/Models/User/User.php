@@ -51,9 +51,14 @@ class User extends Authenticatable
 		return $this->HasOne(Account::class)->where('provider','bitbucket');
 	}
 
-	public function role()
+	public function roles()
 	{
 		return $this->HasMany(Role::class);
+	}
+
+	public function role($id)
+	{
+		return $this->HasOne(Role::class)->where('organization_id',$id);
 	}
 
 }

@@ -14,18 +14,23 @@ class CreateLanguagesTable extends Migration
     public function up()
     {
 	    Schema::create('countries', function (Blueprint $table) {
-            $table->char('id', 2)->unique();
+            $table->char('id', 2)->primary();
             $table->char('iso_a3', 3)->unique();
             $table->char('fips', 2);
             $table->char('continent', 2);
             $table->string('name');
+		    $table->timestamps();
         });
 
         Schema::create('languages', function (Blueprint $table) {
         	$table->increments('id');
             $table->char('glotto_id',8)->nullable()->unique();
             $table->char('iso',3)->nullable()->unique();
+	        $table->char('iso2B',3)->nullable()->unique();
+	        $table->char('iso2T',3)->nullable()->unique();
+	        $table->char('iso1',2)->nullable()->unique();
             $table->string('name');
+	        $table->string('autonym')->nullable();
             $table->string('level')->nullable();
             $table->string('maps')->nullable();
             $table->text('development')->nullable();
@@ -49,6 +54,7 @@ class CreateLanguagesTable extends Migration
             $table->text('status')->nullable();
             $table->char('country_id',2)->nullable();
             $table->string('scope')->nullable();
+            $table->timestamps();
         });
 
         Schema::create('languages_translations', function (Blueprint $table) {
@@ -57,6 +63,7 @@ class CreateLanguagesTable extends Migration
             $table->integer('language_translation')->unsigned();
             $table->foreign('language_translation')->references('id')->on('languages')->onUpdate('cascade');
             $table->string('name');
+	        $table->timestamps();
         });
 
         Schema::create('languages_altNames', function (Blueprint $table) {
@@ -64,6 +71,7 @@ class CreateLanguagesTable extends Migration
             $table->integer('language_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
             $table->string('name');
+	        $table->timestamps();
         });
 
         Schema::create('languages_dialects', function (Blueprint $table) {
@@ -72,6 +80,7 @@ class CreateLanguagesTable extends Migration
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
             $table->char('dialect_id', 8)->index()->nullable()->default(NULL);
             $table->text('name');
+	        $table->timestamps();
         });
 
         Schema::create('languages_classifications', function (Blueprint $table) {
@@ -81,17 +90,20 @@ class CreateLanguagesTable extends Migration
             $table->char('classification_id', 8);
             $table->tinyInteger('order')->unsigned();
             $table->string('name');
+	        $table->timestamps();
         });
 
         Schema::create('languages_codes', function (Blueprint $table) {
+	        $table->increments('id');
             $table->integer('language_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
             $table->string('source');
             $table->string('code');
+	        $table->timestamps();
         });
 
         Schema::create('alphabets', function (Blueprint $table) {
-            $table->char('script', 4)->unique()->index(); // ScriptSource/Iso ID
+            $table->char('script', 4)->primary(); // ScriptSource/Iso ID
             $table->string('name');
 	        $table->string('unicode_pdf')->nullable();
             $table->string('family')->nullable();
@@ -114,8 +126,7 @@ class CreateLanguagesTable extends Migration
             $table->text('sample')->nullable();
 	        $table->string('sample_img')->nullable();
 	        $table->text('description')->nullable();
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
+	        $table->timestamps();
         });
 
 	    Schema::create('alphabet_numbers', function (Blueprint $table) {
@@ -126,13 +137,16 @@ class CreateLanguagesTable extends Migration
 		    $table->integer('numeral')->unsigned();
 			$table->string('numeral_vernacular',12);
 		    $table->string('numeral_written',24);
+		    $table->timestamps();
 	    });
 
         Schema::create('alphabet_language', function (Blueprint $table) {
+	        $table->increments('id');
             $table->char('script', 4)->index();
             $table->foreign('script')->references('script')->on('alphabets')->onUpdate('cascade');
             $table->integer('language_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
+	        $table->timestamps();
         });
 
         Schema::create('alphabet_fonts', function (Blueprint $table) {
@@ -146,6 +160,7 @@ class CreateLanguagesTable extends Migration
 	        $table->string('url')->nullable()->default(null);
 	        $table->text('notes')->nullable()->default(null);
             $table->boolean('italic')->default(0);
+	        $table->timestamps();
         });
 
         Schema::create('country_translations', function (Blueprint $table) {
@@ -154,6 +169,7 @@ class CreateLanguagesTable extends Migration
             $table->integer('language_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
             $table->string('name');
+	        $table->timestamps();
         });
 
         Schema::create('country_regions', function (Blueprint $table) {
@@ -162,6 +178,7 @@ class CreateLanguagesTable extends Migration
             $table->integer('language_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
             $table->string('name');
+	        $table->timestamps();
         });
 
         Schema::create('country_language', function (Blueprint $table) {
@@ -169,6 +186,7 @@ class CreateLanguagesTable extends Migration
             $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
             $table->integer('language_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
+	        $table->timestamps();
         });
     }
 

@@ -20,12 +20,14 @@
         "soapbox/laravel-formatter": "^2.0",
         "spatie/laravel-fractal": "^4.01",
         "spatie/pdf-to-image": "^1.4",
+        "symfony/yaml": "^3.3",
         "thiagoalessio/tesseract_ocr": "^1.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.7"
+        "phpunit/phpunit": "~5.7",
+        "lanin/laravel-api-debugger": "^0.3"
     },
     "autoload": {
         "classmap": [

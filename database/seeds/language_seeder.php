@@ -22,6 +22,7 @@ class language_seeder extends Seeder
 	    \DB::table('languages_altNames')->delete();
     	\DB::table('languages')->delete();
 
+	    $seederHelper = new \database\seeds\SeederHelper();
         $languages = Yaml::parse(file_get_contents(storage_path().'/data/languages/languages.yaml'));
         foreach($languages as $id => $language) {
 
@@ -67,6 +68,7 @@ class language_seeder extends Seeder
 		        }
 	        }
 
+	        /*
 	        if(isset($language['dialects'])) {
 	        	foreach($language['dialects'] as $dialect) {
 			        preg_match_all("/\[([^\]]*)\]/", $dialect, $dialectCodesArray);
@@ -76,15 +78,54 @@ class language_seeder extends Seeder
 				        $dialectLanguage = Language::where('iso',$dialectCodesArray[1][0])->first();
 				        if($dialectLanguage) {
 					        $dialect['dialect_id'] = $dialectLanguage->id;
+					        $langoid->dialects()->create($dialect);
 				        }
-			        }
-			        $langoid->dialects()->create($dialect);
-		        }
-	        }
 
-	        //
+			        }
+
+		        }
+	        }*/
 
         }
+
+	    // Double Check with Iso Data
+	    $languages = $seederHelper->tsv_to_collection(storage_path('data/languages/ethnologue/iso-639-3_20170202.tab'));
+	    foreach ($languages as $language) {
+		    $current_language = Language::where('iso',$language['Id'])->first();
+		    if(!$current_language) $current_language = new Language();
+
+		    $current_language->iso = $language['Id'];
+		    $current_language->name = $language['Ref_Name'];
+		    $current_language->iso2B = ($language['Part2B'] != '') ? $language['Part2B'] : null;
+		    $current_language->iso2T = ($language['Part2T'] != '') ? $language['Part2T'] : null;
+		    $current_language->iso1 = ($language['Part1'] != '') ? $language['Part1'] : null;
+		    $current_language->save();
+	    }
+
+	    $language_dialects = $seederHelper->tsv_to_collection(storage_path('data/languages/ethnologue/iso-639-3-macrolanguages_20170131.tab'));
+	    foreach($language_dialects as $dialect) {
+	    	if(!isset($dialect["M_Id"]) OR !isset($dialect["I_Id"])) { continue; }
+		    $iso_codes_to_search_by[] = $dialect["M_Id"];
+		    $iso_codes_to_search_by[] = $dialect["I_Id"];
+	    }
+	    $iso_codes_to_search_by = array_unique($iso_codes_to_search_by);
+	    $current_languages = Language::whereIn('iso',$iso_codes_to_search_by)->get();
+	    foreach ($language_dialects as $language_dialect) {
+	    	$language_id = $current_languages->where('iso',$language_dialect["M_Id"])->first();
+	    	if(!$language_id) { continue; }
+		    $language_id = $language_id->id;
+	    	$dialect_id = $current_languages->where('iso',$language_dialect["I_Id"])->first();
+		    if(!$dialect_id) { continue; }
+		    $dialect_id = $dialect_id->id;
+	    	$dialect = LanguageDialect::where('language_id',$language_id)->where('dialect_id',$dialect_id)->first();
+	    	if($dialect) {continue;}
+			$current_dialect = new LanguageDialect();
+			$current_dialect->language_id = $language_id;
+		    $current_dialect->dialect_id = $dialect_id;
+		    $current_dialect->name = $current_languages->where('iso',$language_dialect["I_Id"])->first()->name;
+		    $current_dialect->save();
+		    echo "\n Language Dialect Saved";
+	    }
 
     }
 

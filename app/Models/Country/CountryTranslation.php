@@ -8,7 +8,6 @@ class CountryTranslation extends Model
 {
     protected $table = 'country_translations';
     protected $hidden = ["country_id","vernacular"];
-    public $incrementing = false;
     public $timestamps = false;
 
     public function language()

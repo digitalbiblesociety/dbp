@@ -10,6 +10,24 @@
 
 @section('content')
 
+    @include('layouts.banner', [
+    'title'           => '',
+    'subtitle'        => '',
+    'subtitle_class'  => '',
+    'backgroundImage' => null,
+    'noGradient' => true,
+    'breadcrumbs' => [
+        route('home')         => trans('fields.home'),
+        route('bibles.index') => trans('fields.bibles'),
+        '#'                       => ''
+    ],
+    'tabs' => [
+        'v2'     => "Version 2",
+        'v4'     => "Version 4"
+    ]
+])
+    <section role="tabpanel" aria-hidden="false" id="v2" class="row">
+
     <div class="route-section row">
         <ul>
         <li><b>v:</b> Specifies the version of the API requested.</li>
@@ -92,7 +110,10 @@
             <code>{{ route('api_languages.show', ['eng']) }}</code>
         </div>
     </div>
+    </section>
+    <section role="tabpanel" aria-hidden="true" id="v4" class="row">
 
+    </section>
 @endsection
 
 @section('footer')

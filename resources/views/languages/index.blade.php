@@ -3,7 +3,7 @@
 @section('content')
     <div class="row">
         <h1 class="text-center">Languages</h1>
-        <table class="table" cellspacing="0" width="100%" data-route="languages" data-invisiblecolumns="0">
+        <table class="table" cellspacing="0" width="100%" data-route="languages">
             <thead>
             <tr>
                 <th>{{ trans('fields.alternativeNames') }}</th>

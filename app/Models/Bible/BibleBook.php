@@ -9,7 +9,6 @@ class BibleBook extends Model
 {
     protected $table = "bible_books";
     public $incrementing = false;
-    public $timestamps = false;
     public $fillable = ['abbr','book_id', 'name', 'name_short', 'chapters'];
 
     public function bible()
@@ -20,6 +19,11 @@ class BibleBook extends Model
     public function book()
     {
     	return $this->belongsTo(Book::class);
+    }
+
+    public function chapters()
+    {
+    	return $this->belongsTo(Text::class,'book_id','bible_book');
     }
 
 }

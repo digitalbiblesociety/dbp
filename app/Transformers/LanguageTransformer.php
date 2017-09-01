@@ -54,17 +54,81 @@ class LanguageTransformer extends TransformerAbstract
 	 * @return array
 	 */
 	public function transformForV2(Language $language) {
-		return [
-			'language_code'        => $language->iso ?? '',
-            'language_name'        => $language->autonym ?? '',
-            'english_name'         => $language->translations("eng")->name ?? $language->name,
-            'language_iso'         => $language->iso ?? '',
-            'language_iso_2B'      => $language->iso639_2->code ?? '',
-            'language_iso_2T'      => $language->iso639_2->code ?? '',
-            'language_iso_1'       => $language->iso639_1 ?? '',
-            'language_iso_name'    => $language->name ?? '',
-            'language_family_code' => $language->iso ?? ''
-		];
+		$route = \Route::currentRouteName();
+		switch($route) {
+			case "v2_library_volumeLanguage": {
+				return [
+					"language_name"             => $language->autonym,
+                    "english_name"              => $language->name,
+                    "language_code"             => $language->iso,
+                    "language_iso"              => $language->iso,
+                    "language_iso_2B"           => $language->iso2B,
+                    "language_iso_2T"           => $language->iso2T,
+                    "language_iso_1"            => $language->iso1,
+                    "language_iso_name"         => $language->name,
+					"language_family_code"      => $language->parent->language->iso,
+					"language_family_name"      => $language->parent->language->autonym,
+					"language_family_english"   => $language->parent->language->name,
+					"language_family_iso"       => $language->parent->language->iso,
+					"language_family_iso_2B"    => $language->parent->language->iso2B,
+					"language_family_iso_2T"    => $language->parent->language->iso2T,
+					"language_family_iso_1"     => $language->parent->languagew->iso1,
+                    "media"                     => ["text"],
+                    "delivery"                  => ["mobile","web","subsplash"],
+                    "resolution"                => []
+				];
+			}
+
+			case "v2_library_volumeLanguageFamily": {
+				return [
+					"language_family_code"    => $language->iso ?? null,
+					"language_family_name"    => $language->autonym ?? null,
+					"language_family_english" => $language->name ?? null,
+					"language_family_iso"     => $language->iso ?? null,
+					"language_family_iso_2B"  => $language->iso2B,
+					"language_family_iso_2T"  => $language->iso2T,
+					"language_family_iso_1"   => $language->iso1,
+					"language"                => $language->dialects->pluck('childLanguage.iso'),
+					"media"                   => ["text"],
+					"delivery"                => ["mobile","web","subsplash"],
+					"resolution"              => []
+				];
+			}
+
+			case "v2_country_lang": {
+				$img_type = checkParam('img_type');
+				$img_size = "_".checkParam('img_size');
+				if($img_type == "svg") $img_size = "";
+				return [
+					"id"                   => $language->id,
+                    "lang_code"            => $language->iso,
+                    "region"               => $language->primaryCountry->regions->first()->name,
+                    "country_primary"      => $language->primaryCountry->id,
+                    "lang_id"              => $language->iso,
+                    "iso_language_code"    => $language->iso,
+                    "regional_lang_name"   => $language->autonym ?? $language->name,
+                    "family_id"            => $language->iso,
+                    "primary_country_name" => $language->primaryCountry->name,
+					"country_image"        => url("/img/flags/".$language->primaryCountry->id.$img_size.'.'.$img_type)
+				];
+			}
+
+			default: {
+				return [
+					'language_code'        => $language->iso ?? '',
+					'language_name'        => $language->autonym ?? '',
+					'english_name'         => $language->name ?? '',
+					'language_iso'         => $language->iso ?? '',
+					"language_iso_2B"      => $language->iso2B,
+					"language_iso_2T"      => $language->iso2T,
+					"language_iso_1"       => $language->iso1,
+					'language_iso_name'    => $language->name ?? '',
+					'language_family_code' => $language->iso ?? ''
+				];
+			}
+
+		}
+
 	}
 
 	/**
@@ -73,6 +137,23 @@ class LanguageTransformer extends TransformerAbstract
 	 * @return array
 	 */
 	public function transformForV4(Language $language) {
+		if(isset($_GET['full'])) {
+			return [
+				"id"                   => $language->id,
+				"name"                 => $language->name,
+				'autonym'              => ($language->autonym) ? $language->autonym->name : '',
+                "glotto_id"            => $language->glotto_id,
+                "iso"                  => $language->iso,
+                "maps"                 => $language->maps,
+                "area"                 => $language->area,
+                "population"           => $language->population,
+				"country_id"           => $language->country_id,
+				'codes'                => $language->codes->pluck('code','source') ?? '',
+				'alternativeNames'     => array_flatten($language->alternativeNames->ToArray()) ?? '',
+				'dialects'             => $language->dialects->pluck('name') ?? '',
+				'classifications'      => $language->classifications->pluck('name','classification_id') ?? '',
+			];
+		}
 			return [
 				'glotto_code'     => $language->id,
 				'iso_code'        => $language->iso,

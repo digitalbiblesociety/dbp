@@ -56,7 +56,7 @@
     <div class="row">
         <h2>{{ $catagory }}</h2>
         @foreach($items as $title => $item)
-            <div class="medium-3 columns">
+            <div class="small-4 medium-4 large-3 columns">
                 <div class="function-card {{ $item->status }}">
                     <h4>{{ $title }}</h4>
                     <p>{{ $item->description }}</p>

@@ -1,0 +1,477 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://api.bible.build/v2'
+    description: Online Staging server for testing
+  - url: 'https://api.dbp.dev/v2'
+    description: Internal Staging server for testing
+info:
+  title: 'Digital Bible Platform [Koinos]'
+  description: An API for delivering Bible Content
+  version: 2.0.0
+  contact:
+    name: API Support
+    url: 'https://dbs.org/contact'
+    email: jon@dbs.org
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: Bible
+    description: Secured Admin-only calls
+  - name: Library
+    description: Different Organizational Routes to fetch Bible Resources
+paths:
+  /library/language:
+    get:
+      tags:
+        - Library
+      operationId: v2_library_volume
+      responses:
+        '200':
+          description: LanguagesController@index
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryLanguage'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryLanguage'
+  /library/volume:
+    get:
+      tags:
+        - Library
+      operationId: v2_library_volumeLanguage
+      responses:
+        '200':
+          description: BiblesController@index
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /library/volumelanguagefamily:
+    get:
+      tags:
+        - Library
+      operationId: v2_library_volumeLanguageFamily
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /library/volumeorganization:
+    get:
+      tags:
+        - Library
+      operationId: v2_volume_organization_list
+      responses:
+        '200':
+          description: >-
+            This route returns a unique incrementing ID for each organization,
+            the name of the organization and the number of volumes (AKA Bibles)
+            the organization has contributed to the Koinos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VolumeOrganization'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/VolumeOrganization'
+  /library/volumehistory:
+    get:
+      tags:
+        - Library
+      operationId: v2_library_volume_history
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /library/bookorder:
+    get:
+      tags:
+        - Library
+      operationId: v2_library_bookorder
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /library/book:
+    get:
+      tags:
+        - Library
+      operationId: v2_library_book
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /library/bookname:
+    get:
+      tags:
+        - Library
+      operationId: v2_library_bookname
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /library/chapter:
+    get:
+      tags:
+        - Library
+      operationId: v2_library_chapter
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /library/verseinfo:
+    get:
+      tags:
+        - Library
+      operationId: v2_library_verseInfo
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /library/numbers:
+    get:
+      tags:
+        - Library
+      operationId: v2_library_numbers
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /library/metadata:
+    get:
+      tags:
+        - Library
+      operationId: v2_library_metadata
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /audio/location:
+    get:
+      tags:
+        - Library
+      operationId: v2_audio_location
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /audio/path:
+    get:
+      tags:
+        - Library
+      operationId: v2_audio_path
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /audio/versestart:
+    get:
+      tags:
+        - Library
+      operationId: v2_audio_timestamps
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+  /text/font:
+    get:
+      tags:
+        - Library
+      operationId: verse
+      responses:
+        '200':
+          description: ToDO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LibraryVolumeLanguageFamily'
+components:
+  schemas:
+    LanguageVolume:
+      required:
+        - id
+        - name
+        - glotto_id
+        - iso
+      properties:
+        language_name:
+          type: string
+          maxLength: 191
+          example: Shqip
+        english_name:
+          type: string
+          maxLength: 191
+          example: Albanian
+        language_code:
+          type: string
+          pattern: '[a-z]'
+          minLength: 3
+          maxLength: 3
+          description: >-
+            This field is a legacy field from when it was possible for there to
+            be a different language code than the iso code. Now it's just a
+            duplicate of language_iso.
+          example: sqi
+        language_iso:
+          type: string
+          pattern: '[a-z]'
+          minLength: 3
+          maxLength: 3
+          description: >-
+            A three letter identifier for the languages resources. This code
+            matches up exactly with the codes from the [ISO 639-3
+            standard](http://www-01.sil.org/iso639-3/default.asp). If the Iso
+            Code Exists the Glotto Code is not required but may exist!
+          example: sqi
+        language_iso_2B:
+          type: string
+          pattern: '[a-z]'
+          minLength: 2
+          maxLength: 2
+          description: >-
+            The Bibliographic two letter identifier for the languages resources.
+            This code matches up exactly with the codes from the [ISO 639-2B
+            standard](https://www.loc.gov/standards/iso639-2/php/code_list.php).
+          example: sqi
+        language_iso_2T:
+          type: string
+          pattern: '[a-z]'
+          minLength: 2
+          maxLength: 2
+          description: >-
+            The Terminological two letter identifier for the languages
+            resources. This code matches up exactly with the codes from the [ISO
+            639-2T
+            standard](https://www.loc.gov/standards/iso639-2/php/code_list.php).
+          example: alb
+        language_iso_1:
+          type: string
+          minLength: 2
+          maxLength: 2
+          example: sq
+        language_iso_name:
+          type: string
+          maxLength: 191
+          description: Duplicate of language_name
+          example: Albanian
+        language_family_code:
+          type: string
+          maxLength: 191
+          example: sqi
+        language_family_name:
+          type: string
+          maxLength: 191
+        language_family_english:
+          type: string
+          maxLength: 191
+        language_family_iso:
+          type: string
+          maxLength: 191
+        language_family_iso_2B:
+          type: string
+          maxLength: 191
+        language_family_iso_2T:
+          type: string
+          maxLength: 191
+        language_family_iso_1:
+          type: string
+          maxLength: 191
+        media_text:
+          type: string
+          maxLength: 191
+        delivery_mobile:
+          type: string
+          maxLength: 191
+        delivery_web:
+          type: string
+          maxLength: 191
+        delivery_subsplash:
+          type: string
+          maxLength: 191
+        resolution:
+          type: string
+          maxLength: 191
+    LibraryLanguage:
+      required:
+        - id
+        - name
+        - glotto_id
+        - iso
+      properties:
+        language_code:
+          type: string
+          pattern: '[a-z]'
+          minLength: 3
+          maxLength: 3
+          description: >-
+            A three letter identifier for the languages resources. This code
+            matches up exactly with the codes from the [ISO 639-3
+            standard](http://www-01.sil.org/iso639-3/default.asp). If the Iso
+            Code Exists the Glotto Code is not required but may exist!
+          example: sqi
+        language_name:
+          type: string
+          maxLength: 191
+          example: Shqip
+        english_name:
+          type: string
+          maxLength: 191
+          example: Albanian
+        language_iso:
+          type: string
+          pattern: '[a-z]'
+          minLength: 3
+          maxLength: 3
+          description: >-
+            A three letter identifier for the languages resources. This code
+            matches up exactly with the codes from the [ISO 639-3
+            standard](http://www-01.sil.org/iso639-3/default.asp). If the Iso
+            Code Exists the Glotto Code is not required but may exist!
+          example: sqi
+        language_iso_2B:
+          type: string
+          pattern: '[a-z]'
+          minLength: 2
+          maxLength: 2
+          description: >-
+            The Bibliographic two letter identifier for the languages resources.
+            This code matches up exactly with the codes from the [ISO 639-2B
+            standard](https://www.loc.gov/standards/iso639-2/php/code_list.php).
+          example: sqi
+        language_iso_2T:
+          type: string
+          pattern: '[a-z]'
+          minLength: 2
+          maxLength: 2
+          description: >-
+            The Terminological two letter identifier for the languages
+            resources. This code matches up exactly with the codes from the [ISO
+            639-2T
+            standard](https://www.loc.gov/standards/iso639-2/php/code_list.php).
+          example: alb
+        language_iso_1:
+          type: string
+          minLength: 2
+          maxLength: 2
+          example: sq
+        language_iso_name:
+          type: string
+          maxLength: 191
+          description: Duplicate of language_name
+          example: Albanian
+        language_family_code:
+          type: string
+          maxLength: 191
+          example: sqi
+    LibraryVolumeLanguageFamily:
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          maxLength: 191
+          example: Coming Soon
+    Library:
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          maxLength: 191
+          example: Coming Soon
+    VolumeOrganization:
+      properties:
+        organization_id:
+          type: integer
+          description: Incrementing ID for the organizations
+          example: 1
+        organization_name:
+          type: string
+          description: The Name of the Organization in English
+          maxLength: 191
+          example: American Bible Society
+        number_volumes:
+          type: integer
+          description: >-
+            The number of biblical resources the organization has contributed to
+            Koinos
+          example: 139

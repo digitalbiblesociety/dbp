@@ -2,6 +2,59 @@
 import $ from "jquery";
 window.$ = window.jQuery = require("jquery");
 
+import selectize from "./selectize.js";
+$(".selectize").selectize();
+
+
+// Swagger
+import SwaggerUIBundle from './swagger-ui-bundle.js';
+import SwaggerUIStandalonePreset from './swagger-ui-standalone-preset.js';
+window.onload = function() {
+
+    // Build a Swagger system
+    const ui = SwaggerUIBundle({
+        url: "/swagger.json",
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIStandalonePreset
+        ],
+        plugins: [
+            SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout"
+    })
+    window.ui = ui
+
+    // Reveal any no-fouc elements
+    var elems = $(".no-fouc");
+    $.each(elems, function( index, foucElement ) {
+        $(foucElement).removeClass("no-fouc");
+    });
+
+}
+
+//tabs
+$("nav[role='tablist'] a").not('.external').click(function(event) {
+    event.preventDefault();
+    $(this).attr("aria-selected", "true");
+    $(this).siblings().attr("aria-selected", "false");
+    var tab = $(this).attr("href");
+    $(tab).attr("aria-hidden", "false");
+    $(tab).siblings().attr("aria-hidden", "true");
+});
+
+$(window).on('hashchange', function () {
+    $("nav[role='tablist'] a").each(function (index, a) {
+        if ($(this).attr("href") == location.hash) {
+            var tab = $(this).attr("href");
+            $(tab).attr("aria-hidden", "false");
+            $(tab).siblings().attr("aria-hidden", "true");
+        }
+    });
+});
+
 // Data Tables
 import DataTable from "dataTables.net";
 $(document).ready(function () {

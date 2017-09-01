@@ -4,32 +4,75 @@ namespace App\Http\Controllers;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleEquivalent;
+use App\Models\Bible\BibleOrganization;
+use App\Models\Bible\Book;
+use App\Models\Bible\BookCode;
 use App\Models\Language\Language;
 use \database\seeds\SeederHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\APIController;
 use App\Transformers\BibleTransformer;
+use Spatie\Fractalistic\ArraySerializer;
+use Symfony\Component\Yaml\Yaml;
 class BiblesController extends APIController
 {
 
     /**
      * Display a listing of the bibles.
      *
-     * @return \Illuminate\Http\Response
+     * @return JSON|View
      */
-    public function index(Language $language,$country = null, $publisher = null)
+    public function index(Language $language, $country = null, $publisher = null)
     {
-    	$language = $language->fetchByID();
+    	// First Handle API
 	    if($this->api) {
-		    $bibles = Bible::when($language, function ($query) use ($language) {
-			    return $query->where('glotto_id', $language->id);
-		    })->get();
-		    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->toArray());
+		    $language = $language->fetchByID();
+		    $organization = checkParam('organization',null,'optional');
+	    	if($organization) {
+			    $bibles = Bible::when($language, function ($query) use ($language) {
+				    return $query->where('glotto_id', $language->id);
+			    })->whereHas('organizations', function($q) use ($organization){
+				    $q->where('organization_id', '>=', $organization);
+			    })->get();
+		    } else {
+			    $bibles = Bible::with('translations')->when($language, function ($query) use ($language) {
+				    return $query->where('glotto_id', $language->id);
+			    })->get();
+		    }
+
+		    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
 	    }
+
+	    // If it's not an API request check to see if the user is logged in
+	    $user = \Auth::user();
+	    if($user) return view('bibles.index',compact('user'));
+
+	    // At last fall back to public view
 	    return view('bibles.index');
     }
 
-    public function languageNames()
+	/**
+	 * A Route to Review The Last 500 Recent Changes to The Bible Resources
+	 *
+	 * @return JSON|View
+	 */
+	public function history()
+    {
+    	if($this->api) {
+		    $limit = $_GET['limit'] ?? 500;
+		    $bibles = Bible::select('id','updated_at')->take($limit)->get();
+		    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith(new ArraySerializer())->toArray());
+	    }
+
+        return view('bibles.history');
+    }
+
+	/**
+	 * Language Names
+	 *
+	 * @return JSON|View
+	 */
+	public function languageNames()
     {
     	$languageNames = checkParam('language_names');
     	$languageNames = explode(',',$languageNames);

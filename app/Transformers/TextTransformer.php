@@ -16,16 +16,46 @@ class TextTransformer extends BaseTransformer
 
     public function transformforV2($text)
     {
-    	return [
-		    "book_name"        => $text->book->name,
-            "book_id"          => $text->book->osis->code,
-            "book_order"       => $text->book->order,
-            "chapter_id"       => $text->chapter_number,
-            "chapter_title"    => null,
-            "verse_id"         => $text->verse_start,
-            "verse_text"       => $text->verse_text,
-            "paragraph_number" => 1
-	    ];
+	    $route = \Route::currentRouteName();
+	    switch($route) {
+		    case "v2_text_search": {
+		    	return [
+			        "dam_id"           => $text->bible_id,
+                    "book_name"        => $text->book->name,
+                    "book_id"          => $text->book_id,
+                    "chapter_id"       => $text->chapter_number,
+                    "verse_id"         => $text->verse_start,
+                    "verse_text"       => $text->verse_text,
+                    "book_order"       => $text->book->book_order,
+				];
+		    }
+
+		    case "v2_text_search_group": {
+		    	return [
+				    "dam_id"           => $text->bible_id,
+				    "book_name"        => $text->book->name,
+				    "book_id"          => $text->book_id,
+				    "chapter_id"       => $text->chapter_number,
+				    "verse_id"         => $text->verse_start,
+				    "verse_text"       => $text->verse_text,
+				    "results"		   => $text->resultsCount,
+				    "book_order"	   => $text->book->order
+			    ];
+		    }
+
+		    default: {
+			    return [
+				    "book_name"        => $text->book->name,
+				    "book_id"          => $text->book->osis->code,
+				    "book_order"       => $text->book->order,
+				    "chapter_id"       => $text->chapter_number,
+				    "chapter_title"    => null,
+				    "verse_id"         => $text->verse_start,
+				    "verse_text"       => $text->verse_text,
+				    "paragraph_number" => 1
+			    ];
+		    }
+	    }
     }
 
 

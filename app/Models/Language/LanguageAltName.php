@@ -9,7 +9,7 @@ class LanguageAltName extends Model
 
     protected $table = 'languages_altNames';
     protected $fillable = ['name', 'language_id'];
-    public $timestamps = false;
+	protected $hidden = ['language_id','id'];
 
     public function language()
     {

@@ -10,7 +10,7 @@ class LanguageCode extends Model
 
     protected $table = 'languages_codes';
     protected $fillable = ['code', 'source', 'glotto_id'];
-    public $timestamps = false;
+	protected $hidden = ['language_id'];
 
     public function language()
     {

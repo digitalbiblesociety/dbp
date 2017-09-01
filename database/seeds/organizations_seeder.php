@@ -47,7 +47,7 @@ class organizations_seeder extends Seeder
 		$organizationLogos = $seederHelper->csv_to_array("https://docs.google.com/spreadsheets/d/$googleSheetID/export?format=csv&id=$googleSheetID&gid=1154991446");
 		foreach($organizationLogos as $key => $data) {
 			$organizationLogo = new OrganizationLogo();
-			if($data['logo'] == '') { continue; }
+			if($data['url'] == '') { continue; }
 			$organizationLogo->create($data);
 		}
 

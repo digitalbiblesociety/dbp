@@ -10,8 +10,9 @@ class Country extends Model
 {
 
     protected $table = 'countries';
-    public $incrementing = false;
     protected $hidden = ["pivot"];
+    public $incrementing = false;
+    public $keyType = 'string';
 
     public function currentTranslation($iso = "eng")
     {
@@ -32,6 +33,11 @@ class Country extends Model
     public function bibles()
     {
         return $this->HasManyThrough(Bible::class,Language::class, 'iso', 'iso');
+    }
+
+    public function regions()
+    {
+    	return $this->HasMany(CountryRegion::class);
     }
 
 }

@@ -31,7 +31,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-    	$user = \Auth::user();
+	    $user = \Auth::user();
         return view('home',compact('user'));
     }
 
@@ -51,9 +51,10 @@ class HomeController extends Controller
 		return view('welcome',compact('count'));
 	}
 
+
 	public function versions()
 	{
-		return [2,4];
+		return [ "versions" => [2,4]];
 	}
 
 	public function signedUrl()

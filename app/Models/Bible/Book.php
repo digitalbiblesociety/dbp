@@ -10,7 +10,7 @@ class Book extends Model
 {
     protected $table = "books";
     public $incrementing = false;
-    public $timestamps = false;
+    public $hidden = ['description','created_at','updated_at','notes'];
 
 
     /**
@@ -25,16 +25,6 @@ class Book extends Model
     {
         return $this->HasMany('App\Models\Bible\Text');
     }
-
-	public function codes()
-	{
-		return $this->HasMany('App\Models\Bible\BookCode');
-	}
-
-	public function osis()
-	{
-		return $this->HasOne('App\Models\Bible\BookCode')->where('type','osis');
-	}
 
     public function translations()
     {

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\APIController;
 
 /**
- * This class is missing the create, edit, store, and destroy methods
+ * This class is missing the create, store, and destroy methods
  * as it is this developer's hope that few changes will need to be
  * made to the geopolitical metadata. Idealism before cynicism.
  *
@@ -17,9 +17,9 @@ class CountriesController extends APIController
 {
 
     /**
-     * Display a listing of the Countries.
+     * Display a Listing of the Countries.
      *
-     * @return \Illuminate\Http\Response
+     * @return JSON|View
      */
     public function index()
     {
@@ -31,10 +31,10 @@ class CountriesController extends APIController
     }
 
     /**
-     * Display the specified country
+     * Display the Specified Country
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  int|string|char(3) $id
+     * @return JSON|View
      */
     public function show($id)
     {
@@ -43,11 +43,34 @@ class CountriesController extends APIController
 		    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
 		    return fractal()->collection($country)->transformWith(new CountryTransformer())->ToArray();
 	    }
-	    return view('countries.show');
+	    return view('countries.show',compact('country'));
     }
 
-    public function create()
-    {
-    	return view('countries.create');
-    }
+	/**
+	 * Edit the Specified Country
+	 *
+	 * @param $id
+	 * @return View
+	 */
+	public function edit($id)
+	{
+		$country = Country::find($id);
+		return view('countries.edit',compact('country'));
+	}
+
+
+	/**
+	 * Update the Specified Country
+	 *
+	 * @param Request $request
+	 * @param $id
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function update(Request $request,$id)
+	{
+		$country = Country::find($id);
+		return view('countries.show',compact('country'));
+	}
+
 }

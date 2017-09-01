@@ -34,6 +34,7 @@ class CreateOrganizationsTable extends Migration
             $table->integer('zip')->nullable()->unsigned();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
+	        $table->timestamps();
         });
 
         Schema::create('organization_translations', function (Blueprint $table) {
@@ -46,14 +47,16 @@ class CreateOrganizationsTable extends Migration
             $table->string('name');
             $table->text('description')->nullable();
 	        $table->string('description_short')->nullable();
+	        $table->timestamps();
         });
 
 	    Schema::create('user_roles', function (Blueprint $table) {
-		    $table->string('user_id')->primary();
+		    $table->string('user_id');
 		    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
 		    $table->string('role');
 		    $table->integer('organization_id')->unsigned();
 		    $table->foreign('organization_id')->references('id')->on('organizations');
+		    $table->timestamps();
 	    });
 
 	    Schema::create('organization_relationships', function($table) {
@@ -63,6 +66,7 @@ class CreateOrganizationsTable extends Migration
 		    $table->foreign('organization_child_id')->references('id')->on('organizations');
 		    $table->string('type');
 		    $table->string('relationship_id');
+		    $table->timestamps();
 	    });
 
 	    Schema::create('organization_services', function($table) {
@@ -71,6 +75,7 @@ class CreateOrganizationsTable extends Migration
 		    $table->string('type');
 		    $table->string('name');
 		    $table->text('description')->nullable();
+		    $table->timestamps();
 	    });
 
 	    Schema::create('organization_logos', function($table) {
@@ -78,8 +83,9 @@ class CreateOrganizationsTable extends Migration
 		    $table->foreign('organization_id')->references('id')->on('organizations');
 		    $table->char('language_iso', 3)->nullable();
 		    $table->foreign('language_iso')->references('iso')->on('languages');
-		    $table->string('logo')->nullable();
+		    $table->string('url')->nullable();
 		    $table->boolean('icon')->default(false);
+		    $table->timestamps();
 	    });
 
     }

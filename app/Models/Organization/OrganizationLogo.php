@@ -8,7 +8,6 @@ class OrganizationLogo extends Model
 {
 	protected $hidden = ['organization_id'];
 	protected $primaryKey = 'organization_logos';
-	public $timestamps = false;
 
 	public function organization()
 	{
