@@ -86,7 +86,7 @@ paths:
 		get:
 			tags:
 				- Library
-			operationId: v2_library_bookorder
+			operationId: v2_library_bookOrder
 			responeses:
 				'200':
 				description:
@@ -110,7 +110,7 @@ paths:
 		get:
 			tags:
 				- Library
-			operationId: v2_library_bookname
+			operationId: v2_library_bookName
 			responeses:
 				'200':
 				description:

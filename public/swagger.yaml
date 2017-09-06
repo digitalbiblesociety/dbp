@@ -103,7 +103,7 @@ paths:
     get:
       tags:
         - Library
-      operationId: v2_library_bookorder
+      operationId: v2_library_bookOrder
       responses:
         '200':
           description: ToDO
@@ -133,7 +133,7 @@ paths:
     get:
       tags:
         - Library
-      operationId: v2_library_bookname
+      operationId: v2_library_bookName
       responses:
         '200':
           description: ToDO
