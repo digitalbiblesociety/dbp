@@ -69,21 +69,21 @@ Route::get('sign', 'HomeController@signedUrl');
 	// VERSION 2
 
 		// Library
-		Route::get('library/asset', function () {return json_decode(file_get_contents(public_path('static/library_asset.json')));})->name('v2_library_asset');
-		Route::get('library/bookorder', 'BooksController@show')->name('v2_library_bookorder');
-		Route::get('library/book',      'BooksController@show')->name('v2_library_book');
-		Route::get('library/bookname',  'BooksController@bookNames')->name('v2_library_bookname');
-		Route::get('library/chapter',   'BooksController@chapters')->name('v2_library_chapter');
-		Route::get('library/language', 'LanguagesController@index')->name('v2_library_language');
-		Route::get('library/verseinfo', 'VerseController@info')->name('v2_library_verseInfo');
-		Route::get('library/numbers',   'NumbersController@index')->name('v2_library_numbers');
-		Route::get('library/metadata', 'BiblesController@show')->name('v2_library_metadata');
-		Route::get('library/volume', 'BiblesController@index')->name('v2_library_volume');
-		Route::get('library/volumelanguage', 'LanguagesController@volumeLanguage')->name('v2_library_volumeLanguage');
+		Route::get('library/asset',                'HomeController@libraryAsset')->name('v2_library_asset');
+		Route::get('library/version',              'BiblesController@libraryVersion')->name('v2_library_version');
+		Route::get('library/bookorder',            'BooksController@show')->name('v2_library_bookOrder');
+		Route::get('library/book',                 'BooksController@show')->name('v2_library_book');
+		Route::get('library/bookname',             'BooksController@bookNames')->name('v2_library_bookName');
+		Route::get('library/chapter',              'BooksController@chapters')->name('v2_library_chapter');
+		Route::get('library/language',             'LanguagesController@index')->name('v2_library_language');
+		Route::get('library/verseinfo',            'VerseController@info')->name('v2_library_verseInfo');
+		Route::get('library/numbers',              'NumbersController@index')->name('v2_library_numbers');
+		Route::get('library/metadata',             'BiblesController@show')->name('v2_library_metadata');
+		Route::get('library/volume',               'BiblesController@index')->name('v2_library_volume');
+		Route::get('library/volumelanguage',       'LanguagesController@volumeLanguage')->name('v2_library_volumeLanguage');
 		Route::get('library/volumelanguagefamily', 'LanguagesController@volumeLanguageFamily')->name('v2_library_volumeLanguageFamily');
-		Route::get('library/volumeorganization', 'OrganizationsController@index')->name('v2_volume_organization_list');
-		Route::get('library/volumehistory', 'BiblesController@history')->name('v2_volume_history');
-		Route::get('library/version', function () {return json_decode(file_get_contents(public_path('static/version_listing.json')));});
+		Route::get('library/volumeorganization',   'OrganizationsController@index')->name('v2_volume_organization_list');
+		Route::get('library/volumehistory',        'BiblesController@history')->name('v2_volume_history');
 
 		// Audio
 		Route::get('audio/location', function () {return json_decode(file_get_contents(public_path('static/library_audio_location.json')));});

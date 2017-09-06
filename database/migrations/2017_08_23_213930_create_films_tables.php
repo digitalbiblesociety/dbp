@@ -19,11 +19,12 @@ class CreateFilmsTables extends Migration
 		    $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
 		    $table->string('bible_id', 12)->nullable();
 		    $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
-		    $table->string('series');
-		    $table->string('episode');
-		    $table->string('section');
-		    $table->string('url_download');
-		    $table->string('url_share');
+		    $table->string('series')->nullable();
+		    $table->string('episode')->nullable();
+		    $table->string('section')->nullable();
+		    $table->string('url');
+		    $table->string('url_download')->nullable();
+		    $table->string('picture')->nullable();
 		    $table->integer('duration');
 		    $table->timestamps();
 	    });

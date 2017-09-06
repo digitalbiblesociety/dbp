@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bible\Film;
+use App\Models\Bible\Bible;
+use App\Models\Bible\Video;
+use App\Models\Language\Language;
 use Illuminate\Http\Request;
+use App\Transformers\FilmTransformer;
 
 class FilmsController extends APIController {
 
@@ -36,10 +39,12 @@ class FilmsController extends APIController {
 	}
 
 	public function videopath() {
-		if ( ! $this->api ) return view( 'docs.v2.video_videoPath' );
+		if(!$this->api) return view('docs.v2.video_videoPath');
 
-		$series_id = checkParam( 'dam_id' );
-		$films = Film::where( 'series_id', $series_id )->get();
+		$bible_id = checkParam('dam_id');
+		$films = Video::with('book','bible.translations','translations','related')->with(['related' => function ($query) use($bible_id) {
+			$query->where('bible_id', $bible_id);
+		}])->where('bible_id', $bible_id)->where('section','main')->get();
 
 		return $this->reply(fractal()->collection( $films )->transformWith(new FilmTransformer())->serializeWith( $this->serializer )->toArray());
 	}

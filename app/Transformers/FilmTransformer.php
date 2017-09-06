@@ -15,27 +15,16 @@ class FilmTransformer extends TransformerAbstract
     {
         return [
 			"segment_order"     => 1,
-			"title"             => $film->title,
-			"book_id"           => $film->book->id,
-			"path"              => $film->filepath,
-			"chapter_start"     => $film->chapter_start,
-			"verse_start"       => $film->verse_start,
-			"chapter_end"       => $film->chapter_end,
-			"verse_end"         => $film->verse_end,
-			"thumbnail_image"   => $film->thumbnail,
+			"title"             => ($film->translations->first() !== null) ? $film->translations->first()->name : "",
+			"book_id"           => ($film->book !== null) ? $film->book->id : "",
+			"path"              => $film->filepath ?? "",
+			"chapter_start"     => $film->chapter_start ?? 0,
+			"verse_start"       => $film->verse_start ?? 0,
+			"chapter_end"       => $film->chapter_end ?? 0,
+			"verse_end"         => $film->verse_end ?? 0,
+			"thumbnail_image"   => $film->thumbnail ?? "",
 			"references"        => [],
-			"related_videos"    => [
-					"video_type" => "Topic",
-					"path"       => $film->related->where('type','topic')->first()->filepath
-				],
-				[
-					"video_type" => "Intro",
-					"path"       => $film->related->where('type','intro')->first()->filepath
-				],
-	            [
-					"video_type" => "More Info",
-					"path"       => $film->related->where('type','info')->first()->filepath
-				]
+			"related_videos"    => $film->related
         ];
     }
 }

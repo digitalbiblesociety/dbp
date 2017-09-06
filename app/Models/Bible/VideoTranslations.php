@@ -4,9 +4,7 @@ namespace App\Models\Bible;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Film extends Model
+class VideoTranslations extends Model
 {
-
-	protected $table = "films";
-
+    //
 }
