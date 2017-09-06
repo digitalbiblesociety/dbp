@@ -27,15 +27,70 @@
   },
   "tags": [
     {
-      "name": "Bible",
-      "description": "Secured Admin-only calls"
+      "name": "Library",
+      "description": "These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume."
     },
     {
-      "name": "Library",
-      "description": "Different Organizational Routes to fetch Bible Resources"
+      "name": "Audio",
+      "description": "These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume."
+    },
+    {
+      "name": "Text",
+      "description": "These methods allow the caller to retrieve Bible text in a variety of configurations."
     }
   ],
   "paths": {
+    "/library/asset": {
+      "get": {
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "description": "The API key that's been generated for you.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "v",
+            "in": "query",
+            "description": "The Version of the API",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "Library"
+        ],
+        "operationId": "v2_library_asset",
+        "responses": {
+          "200": {
+            "description": "This route is the endpoint for the base URLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LibraryAsset"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LibraryAsset"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/library/language": {
       "get": {
         "parameters": [
@@ -68,12 +123,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LibraryLanguage"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LibraryLanguage"
+                  }
                 }
               },
               "application/xml": {
                 "schema": {
-                  "$ref": "#/components/schemas/LibraryLanguage"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LibraryLanguage"
+                  }
                 }
               }
             }
@@ -286,7 +347,7 @@
         "tags": [
           "Library"
         ],
-        "operationId": "v2_library_bookOrder",
+        "operationId": "v2_library_bookorder",
         "responses": {
           "200": {
             "description": "ToDO",
@@ -388,7 +449,7 @@
         "tags": [
           "Library"
         ],
-        "operationId": "v2_library_bookName",
+        "operationId": "v2_library_bookname",
         "responses": {
           "200": {
             "description": "This call retrieves the native language book names for a DBP language code",
@@ -591,7 +652,7 @@
         }
       }
     },
-    "/audio/location": {
+    "/library/organization": {
       "get": {
         "parameters": [
           {
@@ -616,6 +677,57 @@
         "tags": [
           "Library"
         ],
+        "operationId": "v2_library_organization",
+        "responses": {
+          "200": {
+            "description": "This route returns information about the volume and it's associated organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LibraryOrganization"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LibraryOrganization"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/audio/location": {
+      "get": {
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "description": "The API key that's been generated for you.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "v",
+            "in": "query",
+            "description": "The Version of the API",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "Audio"
+        ],
         "operationId": "v2_audio_location",
         "responses": {
           "200": {
@@ -623,12 +735,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LibraryVolumeLanguageFamily"
+                  "$ref": "#/components/schemas/AudioLocation"
                 }
               },
               "application/xml": {
                 "schema": {
-                  "$ref": "#/components/schemas/LibraryVolumeLanguageFamily"
+                  "$ref": "#/components/schemas/AudioLocation"
                 }
               }
             }
@@ -659,7 +771,7 @@
           }
         ],
         "tags": [
-          "Library"
+          "Audio"
         ],
         "operationId": "v2_audio_path",
         "responses": {
@@ -704,7 +816,7 @@
           }
         ],
         "tags": [
-          "Library"
+          "Audio"
         ],
         "operationId": "v2_audio_timestamps",
         "responses": {
@@ -749,12 +861,12 @@
           }
         ],
         "tags": [
-          "Library"
+          "Text"
         ],
-        "operationId": "verse",
+        "operationId": "v2_text_font",
         "responses": {
           "200": {
-            "description": "ToDO",
+            "description": "Some languages used by the Digital Bible Platform utilize character sets that are not supported by \"standard\" fonts. This call provides a list of custom fonts that have been made available.",
             "content": {
               "application/json": {
                 "schema": {
@@ -764,6 +876,57 @@
               "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/LibraryFont"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/text/verse": {
+      "get": {
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "description": "The API key that's been generated for you.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "v",
+            "in": "query",
+            "description": "The Version of the API",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "Text"
+        ],
+        "operationId": "v2_text_verse",
+        "responses": {
+          "200": {
+            "description": "This method retrieves the bible verse text for the specified volume/book/chapter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TextVerse"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TextVerse"
+                  }
                 }
               }
             }
@@ -1384,9 +1547,50 @@
       },
       "LibraryFont": {
         "properties": {
-          "dam_id": {
+          "id": {
+            "type": "integer",
+            "example": 2
+          },
+          "name": {
             "type": "string",
-            "example": "AAHWBT"
+            "example": "Abyssinica SIL"
+          },
+          "base_url": {
+            "type": "string",
+            "example": "http://cloud.faithcomesbyhearing.com/fonts/Abyssinica_SIL"
+          },
+          "files": {
+            "type": "object",
+            "properties": {
+              "zip": {
+                "type": "boolean"
+              },
+              "ttf": {
+                "type": "boolean"
+              }
+            }
+          },
+          "platforms": {
+            "type": "object",
+            "properties": {
+              "android": {
+                "type": "boolean"
+              },
+              "ios": {
+                "type": "boolean"
+              },
+              "web": {
+                "type": "boolean"
+              }
+            }
+          },
+          "copyright": {
+            "type": "string",
+            "example": "© 2000-2013 SIL International"
+          },
+          "url": {
+            "type": "string",
+            "example": "http://bit.ly/1uKBBMx"
           }
         }
       },
@@ -1468,6 +1672,146 @@
           "organization_phone": {
             "type": "string",
             "example": null
+          }
+        }
+      },
+      "AudioLocation": {
+        "properties": {
+          "dam_id": {
+            "type": "string",
+            "example": "AAHWBT"
+          }
+        }
+      },
+      "LibraryOrganization": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 225
+          },
+          "name": {
+            "type": "string",
+            "example": "© Nhóm Phiên Dịch Các Giờ Kinh Phụng Vụ giữ bản quyền reserved"
+          },
+          "english_name": {
+            "type": "string",
+            "example": "Translation Group Liturgy of the Hours, All rights reserved"
+          },
+          "description": {
+            "type": "string",
+            "example": null
+          },
+          "english_description": {
+            "type": "string",
+            "example": null
+          },
+          "web_url": {
+            "type": "string",
+            "example": null
+          },
+          "donation_url": {
+            "type": "string",
+            "example": null
+          },
+          "enabled": {
+            "type": "string",
+            "example": "true"
+          },
+          "address": {
+            "type": "string",
+            "example": null
+          },
+          "address2": {
+            "type": "string",
+            "example": null
+          },
+          "city": {
+            "type": "string",
+            "example": null
+          },
+          "state": {
+            "type": "string",
+            "example": null
+          },
+          "country": {
+            "type": "string",
+            "example": null
+          },
+          "zip": {
+            "type": "string",
+            "example": null
+          },
+          "phone": {
+            "type": "string",
+            "example": "nul"
+          }
+        }
+      },
+      "LibraryAsset": {
+        "properties": {
+          "server": {
+            "type": "string",
+            "example": "cloud.faithcomesbyhearing.com"
+          },
+          "root_path": {
+            "type": "string",
+            "example": "/mp3audiobibles2"
+          },
+          "protocol": {
+            "type": "string",
+            "example": "https"
+          },
+          "CDN": {
+            "type": "integer",
+            "example": 1
+          },
+          "priority": {
+            "type": "integer",
+            "example": 5
+          },
+          "volume_id": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "TextVerse": {
+        "properties": {
+          "book_name": {
+            "type": "string",
+            "maxLength": 191,
+            "example": "Matthew"
+          },
+          "book_id": {
+            "type": "string",
+            "maxLength": 12,
+            "example": "Matt"
+          },
+          "book_order": {
+            "type": "integer",
+            "example": 55
+          },
+          "chapter_id": {
+            "type": "integer",
+            "pattern": "[1-150]",
+            "example": 1
+          },
+          "chapter_title": {
+            "type": "string",
+            "example": "Chapter 1"
+          },
+          "verse_id": {
+            "type": "integer",
+            "pattern": "[1-176]",
+            "example": 1
+          },
+          "verse_text": {
+            "type": "string",
+            "example": "The book of the generation of Jesus Christ, the son of David, the son of Abraham."
+          },
+          "paragraph_number": {
+            "type": "integer",
+            "example": 1
           }
         }
       }
