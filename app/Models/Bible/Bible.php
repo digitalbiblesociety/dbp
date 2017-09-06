@@ -49,7 +49,7 @@ class Bible extends Model
     public function currentTranslation()
     {
         $language = Language::where('iso',\i18n::getCurrentLocale())->first();
-        return $this->HasOne(BibleTranslation::class)->where('glotto_id', $language->id)->select('bible_id','name');
+        return $this->HasOne(BibleTranslation::class)->where('iso', $language->iso)->select('bible_id','name');
     }
 
     public function vernacularTranslation()

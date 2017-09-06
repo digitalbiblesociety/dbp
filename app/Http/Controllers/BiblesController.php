@@ -24,31 +24,19 @@ class BiblesController extends APIController
      */
     public function index(Language $language, $country = null, $publisher = null)
     {
-    	// First Handle API
-	    if($this->api) {
-		    $language = $language->fetchByID();
-		    $organization = checkParam('organization',null,'optional');
-	    	if($organization) {
-			    $bibles = Bible::when($language, function ($query) use ($language) {
-				    return $query->where('glotto_id', $language->id);
-			    })->whereHas('organizations', function($q) use ($organization){
-				    $q->where('organization_id', '>=', $organization);
-			    })->get();
-		    } else {
-			    $bibles = Bible::with('translations')->when($language, function ($query) use ($language) {
-				    return $query->where('glotto_id', $language->id);
-			    })->get();
-		    }
+	    // Return the documentation if it's not an API request
+	    if(!$this->api) return view('bibles.index');
 
-		    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
-	    }
+		$language = fetchLanguage(checkParam('language',null,'optional'));
+		$organization = checkParam('organization',null,'optional');
 
-	    // If it's not an API request check to see if the user is logged in
-	    $user = \Auth::user();
-	    if($user) return view('bibles.index',compact('user'));
+		$bibles = Bible::when($language, function ($query) use ($language) {
+				return $query->where('glotto_id', $language->id);
+		    })->when($organization, function($q) use ($organization){
+			    $q->where('organization_id', '>=', $organization);
+		    })->get();
+		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
 
-	    // At last fall back to public view
-	    return view('bibles.index');
     }
 
 	/**
@@ -87,6 +75,11 @@ class BiblesController extends APIController
 	    }
 		return $dbp;
     }
+
+	public function libraryVersion()
+	{
+		return $this->reply(json_decode(file_get_contents(public_path('static/version_listing.json'))));
+	}
 
     /**
      * Store a newly created resource in storage.

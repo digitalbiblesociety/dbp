@@ -19,7 +19,7 @@ class bible_books_seeder extends Seeder
      */
     public function run()
     {
-	ini_set('memory_limit', '777M');
+	ini_set('memory_limit', '3000M');
 	\DB::table('bible_books')->delete();
 	\DB::table('books')->delete();
 

@@ -37,7 +37,7 @@
 
     <pre>
         <code>
-            {{ file_get_contents(route('v2_library_bookorder')) }}
+            {{ file_get_contents(route('v2_library_bookOrder')) }}
         </code>
     </pre>
 

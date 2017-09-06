@@ -3,7 +3,7 @@
 namespace App\Models\Language;
 
 use App\Models\Bible\Bible;
-use App\Models\Bible\Film;
+use App\Models\Bible\Video;
 use App\Models\Country\CountryRegion;
 use Illuminate\Database\Eloquent\Model;
 
@@ -105,7 +105,7 @@ class Language extends Model
 
     public function films()
     {
-        return $this->HasMany(Film::class);
+        return $this->HasMany(Video::class);
     }
 
 

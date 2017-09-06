@@ -23,19 +23,20 @@ class OrganizationsController extends APIController
 	 */
 	public function index()
 	{
-		// Handle API options first
-		if($this->api) {
-			$organizations = Organization::with('translations')->get();
-			if(isset($_GET['count']) or (\Route::currentRouteName() == 'v2_volume_organization_list')) $organizations->load('bibles');
-			return $this->reply(fractal()->collection($organizations)->transformWith(new OrganizationTransformer())->ToArray());
+		if(!$this->api) {
+			// If User is authorized pass them on to the Dashboard
+			$user = \Auth::user();
+			if($user) return view('dashboard.organizations.index',compact('user'));
+
+			// Otherwise to the public end, ya peasant
+			return view('community.organizations.index');
 		}
 
-		// If User is authorized pass them on to the Dashboard
-		$user = \Auth::user();
-		if($user) return view('dashboard.organizations.index',compact('user'));
+		// Otherwise Fetch API route
+		$organizations = Organization::with('translations')->get();
+		if(isset($_GET['count']) or (\Route::currentRouteName() == 'v2_volume_organization_list')) $organizations->load('bibles');
+		return $this->reply(fractal()->collection($organizations)->transformWith(new OrganizationTransformer())->ToArray());
 
-		// Otherwise to the front end, ya peasant
-		return view('community.organizations.index', compact('organizations'));
 	}
 
 	/**

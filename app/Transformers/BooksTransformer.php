@@ -32,7 +32,7 @@ class BooksTransformer extends TransformerAbstract
     public function transformForV2($bibleBook) {
 
 		switch(\Route::currentRouteName()) {
-			case "v2_library_bookorder": {
+			case "v2_library_bookOrder": {
 				return [
 					"book_order"  => $bibleBook->book->book_order,
 					"book_id"     => $bibleBook->book->id,
@@ -52,7 +52,7 @@ class BooksTransformer extends TransformerAbstract
 				];
 			}
 
-			case "v2_library_bookname": {
+			case "v2_library_bookName": {
 				return [
 					'book_id'           => $bibleBook->book_id,
 					'book_name'         => $bibleBook->name

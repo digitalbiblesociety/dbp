@@ -12,17 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\Types\Resource;
 
-class HomeController extends Controller
+class HomeController extends APIController
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth')->only('index');
-    }
 
     /**
      * Show the application dashboard.
@@ -51,10 +42,14 @@ class HomeController extends Controller
 		return view('welcome',compact('count'));
 	}
 
-
 	public function versions()
 	{
 		return [ "versions" => [2,4]];
+	}
+
+	public function libraryAsset()
+	{
+		return $this->reply(json_decode(file_get_contents(public_path('static/library_asset.json'))));
 	}
 
 	public function signedUrl()
