@@ -184,7 +184,8 @@ return [
 	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
 	    Laravel\Socialite\SocialiteServiceProvider::class,
 	    Barryvdh\Cors\ServiceProvider::class,
-	    Lanin\Laravel\ApiDebugger\ServiceProvider::class,
+	    Intouch\LaravelNewrelic\NewrelicServiceProvider::class,
+	    //Lanin\Laravel\ApiDebugger\ServiceProvider::class,
 
 	    // AWS Packages
 	    Aws\Laravel\AwsServiceProvider::class,
@@ -249,7 +250,8 @@ return [
         'AWS' => Aws\Laravel\AwsFacade::class,
 	    'Bucket' => \Helpers\AWS\bucket::class,
         'i18n' => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
-        'Debugger' => Lanin\Laravel\ApiDebugger\Facade::class,
+        'Newrelic' => Intouch\LaravelNewrelic\Facades\Newrelic::class,
+        //'Debugger' => Lanin\Laravel\ApiDebugger\Facade::class,
 
     ],
 

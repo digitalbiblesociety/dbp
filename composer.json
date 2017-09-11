@@ -8,6 +8,7 @@
         "php": ">=5.6.4",
         "aws/aws-sdk-php-laravel": "^3.1",
         "barryvdh/laravel-cors": "^0.9.2",
+        "intouch/laravel-newrelic": "~2.0",
         "jdavidbakr/signed-s3-filesystem": "^1.0",
         "laravel/framework": "5.4.*",
         "laravel/socialite": "^3.0",
@@ -16,6 +17,7 @@
         "league/fractal": "^0.16.0",
         "mcamara/laravel-localization": "^1.2",
         "paquettg/php-html-parser": "^1.7",
+        "parsedown/laravel": "^1.0",
         "php-ffmpeg/php-ffmpeg": "^0.9.5",
         "soapbox/laravel-formatter": "^2.0",
         "spatie/laravel-fractal": "^4.01",
@@ -26,8 +28,7 @@
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.7",
-        "lanin/laravel-api-debugger": "^0.3"
+        "phpunit/phpunit": "~5.7"
     },
     "autoload": {
         "classmap": [
