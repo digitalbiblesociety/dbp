@@ -40,13 +40,11 @@ class BooksController extends APIController
 	 */
 	public function show()
     {
-    	if($this->api) {
-		    $abbreviation = checkParam('dam_id');
-		    $books = BibleBook::with('book')->where('bible_id',$abbreviation)->get()->sortBy('book.book_order');
-		    return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer()));
-	    }
-	    $user = \Auth::user();
-    	return view('docs.v2.books.BookOrderListing',compact('user'));
+    	if(!$this->api) return view('docs.v2.books.BookOrderListing');
+
+		$abbreviation = checkParam('dam_id');
+		$books = BibleBook::with('book')->where('bible_id',$abbreviation)->get()->sortBy('book.book_order');
+		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer)->toArray());
     }
 
 	/**
@@ -54,23 +52,22 @@ class BooksController extends APIController
 	 * This will retrieve the native language book names for a DBP language code.
 	 * OLD REST URL: http://dbt.io/library/bookname
 	 *
-	 * @return JSON|View
+	 * @return View|JSON
 	 */
 	public function bookNames()
     {
-    	if($this->api) {
-		    $languageCode = checkParam('language_code');
-		    $language = fetchLanguage($languageCode);
+    	if(!$this->api) return view('docs.books.bookNames');
 
-		    // Fetch Bible Book Names By Bible Iso and Order by Book Order
-		    $books = BibleBook::whereHas('bible', function($q) use ($language) {$q->where('iso', '=', $language->iso);})
-					->select('book_id','bible_books.name','books.book_order')
-		            ->join('books', 'books.id', '=', 'bible_books.book_id')
-		            ->orderBy('books.book_order', 'ASC')->distinct()->get();
+		$languageCode = checkParam('language_code');
+		$language = fetchLanguage($languageCode);
 
-		    return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer()));
-	    }
-		return view('docs.books.bookNames');
+		// Fetch Bible Book Names By Bible Iso and Order by Book Order
+		$books = BibleBook::whereHas('bible', function($q) use ($language) {$q->where('iso', '=', $language->iso);})
+			->select('book_id','bible_books.name','books.book_order')
+			->join('books', 'books.id', '=', 'bible_books.book_id')
+			->orderBy('books.book_order', 'ASC')->distinct()->get();
+
+		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer()));
     }
 
 	/**

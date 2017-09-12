@@ -30,7 +30,7 @@ class BiblesController extends APIController
 		$language = fetchLanguage(checkParam('language',null,'optional'));
 		$organization = checkParam('organization',null,'optional');
 
-		$bibles = Bible::when($language, function ($query) use ($language) {
+		$bibles = Bible::has('fcbh')->with('translations','language.parent','alphabet','fcbh')->when($language, function ($query) use ($language) {
 				return $query->where('glotto_id', $language->id);
 		    })->when($organization, function($q) use ($organization){
 			    $q->where('organization_id', '>=', $organization);
@@ -46,13 +46,11 @@ class BiblesController extends APIController
 	 */
 	public function history()
     {
-    	if($this->api) {
-		    $limit = $_GET['limit'] ?? 500;
-		    $bibles = Bible::select('id','updated_at')->take($limit)->get();
-		    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith(new ArraySerializer())->toArray());
-	    }
+    	if(!$this->api) return view('bibles.history');
 
-        return view('bibles.history');
+		$limit = checkParam('limit',null,'optional') ?? 500;
+		$bibles = Bible::select('id','updated_at')->take($limit)->get();
+		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith(new ArraySerializer())->toArray());
     }
 
 	/**
@@ -68,9 +66,7 @@ class BiblesController extends APIController
     		$language = Language::where('name',$language_name)->first();
     		if(!$language) continue;
     		foreach ($language->bibles as $bible) {
-    			foreach ($bible->dbp as $connection) {
-    				$dbp[$language->name][] = $connection->equivalent_id;
-			    }
+    			foreach ($bible->dbp as $connection) $dbp[$language->name][] = $connection->equivalent_id;
 		    }
 	    }
 		return $dbp;
@@ -79,6 +75,15 @@ class BiblesController extends APIController
 	public function libraryVersion()
 	{
 		return $this->reply(json_decode(file_get_contents(public_path('static/version_listing.json'))));
+	}
+
+	public function libraryMetadata()
+	{
+		$dam_id = checkParam('dam_id', null, 'optional');
+		$bible = Bible::has('text')->when($dam_id, function ($query) use ($dam_id) {
+			return $query->where('id', $dam_id);
+		})->get();
+		return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
 	}
 
     /**
@@ -101,19 +106,19 @@ class BiblesController extends APIController
      */
     public function show($id)
     {
-	    if($this->api) {
-		    $bible = Bible::find($id);
-		    if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
-		    return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
-	    }
-	    return view('bibles.show');
+    	if(!$this->api) return view('bibles.show');
+
+		$bible = Bible::find($id);
+		if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
+		return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
     }
 
 	public function books()
 	{
+		if(!$this->api) return view('bibles.books.index');
+
 		$books = Book::select('id','book_order','name')->orderBy('book_order')->get();
-		if($this->api) return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer)->toArray());
-		return view('bibles.books.index');
+		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer)->toArray());
 	}
 
 
@@ -125,22 +130,24 @@ class BiblesController extends APIController
 	 */
 	public function equivalents(string $id)
 	{
+		if(!$this->api) return view('bibles.books.index');
+
 		$equivalents = BibleEquivalent::where('abbr',$id)->get();
 		return $this->reply($equivalents);
-		//return view('bibles.books.index');
 	}
 
 	/**
 	 * Display the specified resource.
 	 *
 	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
+	 * @return View|JSON
 	 */
 	public function book($id)
 	{
+		if(!$this->api) return view('bibles.books.show');
+
 		$book = Book::with('codes','translations')->find($id);
-		if($this->api) return $this->reply(fractal()->item($book)->transformWith(new BooksTransformer)->toArray());
-		return view('bibles.books.show');
+		return $this->reply(fractal()->item($book)->transformWith(new BooksTransformer)->toArray());
 	}
 
 	/**
@@ -148,13 +155,14 @@ class BiblesController extends APIController
 	 * Display the bible meta data for the specified ID.
 	 *
 	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
+	 * @return View|JSON
 	 */
 	public function edit($id)
 	{
+		if(!$this->api) return view('bibles.edit');
+
 		$bible = Bible::find($id);
-		if($this->api) return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
-		return view('bibles.edit',compact('bible'));
+		return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
 	}
 
 

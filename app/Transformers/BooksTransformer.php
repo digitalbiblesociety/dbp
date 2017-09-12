@@ -10,8 +10,8 @@ class BooksTransformer extends TransformerAbstract
 
 	public function __construct()
 	{
-		$this->version = $_GET['v'] ?? 4;
-		$this->iso = $_GET['iso'] ?? "eng";
+		$this->version = checkParam('v') ?? 4;
+		$this->iso = checkParam('iso', null, 'optional') ?? "eng";
 	}
 
     /**
@@ -37,14 +37,14 @@ class BooksTransformer extends TransformerAbstract
 					"book_order"  => $bibleBook->book->book_order,
 					"book_id"     => $bibleBook->book->id,
 					"book_name"   => $bibleBook->book->name,
-					"dam_id_root" => $bibleBook->abbr
+					"dam_id_root" => $bibleBook->bible_id
 				];
 			}
 
 			case "v2_library_book": {
 				return [
-					"dam_id"             => $bibleBook->abbr,
-					"book_id"            => $bibleBook->book->osis->code,
+					"dam_id"             => $bibleBook->bible_id,
+					"book_id"            => $bibleBook->book->code_osis,
 					"book_name"          => $bibleBook->name,
 					"book_order"         => $bibleBook->book->book_order,
 					"number_of_chapters" => $bibleBook->book->chapters,

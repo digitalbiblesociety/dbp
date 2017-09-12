@@ -9,8 +9,8 @@ class BibleTransformer extends TransformerAbstract
 
 	public function __construct()
 	{
-		$this->version = $_GET['v'] ?? 4;
-		$this->iso = $_GET['iso'] ?? "eng";
+		$this->version = checkParam('v', null, 'optional') ?? 4;
+		$this->iso = checkParam('iso', null, 'optional') ?? "eng";
 	}
 
 	/**
@@ -46,7 +46,7 @@ class BibleTransformer extends TransformerAbstract
 				        "dam_id"                    => $bible->id,
 				        "mark"                      => $bible->copyright,
 				        "organization"              => $bible->organization,
-                        "fcbh_id"                   => "1INSLSS2DV",
+                        "fcbh_id"                   => $bible->fcbh->equivalent_id,
 			            "status"                    => "live", // for the moment these default to Live
                         "dbp_agreement"             => 1, // for the moment these default to True
                         "expiration"                => "0000-00-00",
@@ -54,26 +54,26 @@ class BibleTransformer extends TransformerAbstract
 				        "language_name"             => $bible->language->autonym,
 				        "language_english"          => $bible->language->name,
 				        "language_iso"              => $bible->iso,
-				        "language_iso_2B"           => $bible->language->codes->where('source','Iso 639-2B')->first()->code,
-				        "language_iso_2T"           => $bible->language->codes->where('source','Iso 639-2T')->first()->code,
-				        "language_iso_1"            => $bible->language->codes->where('source','Iso 639-1')->first()->code,
+				        "language_iso_2B"           => $bible->language->iso2B,
+				        "language_iso_2T"           => $bible->language->iso2T,
+				        "language_iso_1"            => $bible->language->iso1,
 				        "language_iso_name"         => $bible->language->name, // This is just a duplicate of language_english
-				        "language_family_code"      => ($bible->language->isDialect) ? $bible->language->parent->iso : $bible->iso,
-				        "language_family_name"      => ($bible->language->isDialect) ? $bible->language->parent->autonym : $bible->iso,
-				        "language_family_english"   => ($bible->language->isDialect) ? $bible->language->parent->name : $bible->iso,
+				        "language_family_code"      => ($bible->language->parent) ? $bible->language->parent->iso : $bible->language->iso,
+				        "language_family_name"      => ($bible->language->parent) ? $bible->language->parent->autonym : $bible->language->autonym,
+				        "language_family_english"   => ($bible->language->parent) ? $bible->language->parent->name : $bible->language->name,
 				        "language_family_iso"       => $bible->iso,
-				        "language_family_iso_2B"    => ($bible->language->isDialect) ? $bible->language->codes->where('source','Iso 639-2B')->first()->code : $bible->language->codes->where('source','Iso 639-2B')->first()->code,
-				        "language_family_iso_2T"    => ($bible->language->isDialect) ? $bible->language->codes->where('source','Iso 639-2T')->first()->code : $bible->language->codes->where('source','Iso 639-2T')->first()->code,
-				        "language_family_iso_1"     => ($bible->language->isDialect) ? $bible->language->codes->where('source','Iso 639-1')->first()->code : $bible->language->codes->where('source','Iso 639-1')->first()->code,
+				        "language_family_iso_2B"    => ($bible->language->parent) ? $bible->language->parent->iso2B : $bible->language->iso2B,
+				        "language_family_iso_2T"    => ($bible->language->parent) ? $bible->language->parent->iso2T : $bible->language->iso2T,
+				        "language_family_iso_1"     => ($bible->language->parent) ? $bible->language->parent->iso1 : $bible->language->iso1,
 				        "version_code"              => substr($bible->id,3),
 				        "version_name"              => $bible->translations->where("vernacular",1)->first()->name,
 				        "version_english"           => $bible->translations->where("iso","eng")->first()->name,
 				        "collection_code"           => $bible->scope,
 				        "rich"                      => 0,
 				        "collection_name"           => "",
-				        "updated_on"                => $bible->updated_at,
-				        "created_on"                => $bible->created_at,
-				        "right_to_left"             => $bible->script->direction,
+				        "updated_on"                => $bible->updated_at->timestamp,
+				        "created_on"                => $bible->created_at->timestamp,
+				        "right_to_left"             => $bible->alphabet->direction,
 				        "num_art"                   => 0,
 				        "num_sample_audio"          => 0,
 				        "sku"                       => "",
@@ -85,6 +85,17 @@ class BibleTransformer extends TransformerAbstract
 				        "delivery"                  => ["mobile","web"],
 				        "resolution"                => []
 			        ];
+		        }
+
+		        case "v2_library_metadata": {
+					return [
+						"dam_id" => $bible->id,
+                        "mark" => $bible->copyright,
+                        "volume_summary" => null,
+                        "font_copyright" => null,
+                        "font_url" => (isset($bible->alphabet->primaryFont)) ? $bible->alphabet->primaryFont->fontFileName : null,
+                        "organization" => $bible->organizations
+					];
 		        }
 
 	        }
