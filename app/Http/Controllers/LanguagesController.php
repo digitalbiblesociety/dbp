@@ -11,7 +11,7 @@ use Illuminate\View\View;
 use League\Fractal\Manager;
 use League\Fractal\Serializer\DataArraySerializer;
 use Spatie\Fractalistic\ArraySerializer;
-use Lanin\Laravel\ApiDebugger\Debugger;
+
 class LanguagesController extends APIController
 {
     /**
@@ -22,18 +22,13 @@ class LanguagesController extends APIController
      */
     public function index()
     {
+	    if(!$this->api) return view('languages.index');
 	    ini_set('memory_limit', '464M');
-    	if($this->api) {
-		    lad_pr_start('language_fetch');
-		    $country = $_GET['country'] ?? false;
-			$languages = Language::select('id','iso','name')
-				->when($country, function ($query) use ($country) {
-					return $query->where('country_id', $country);
-				})->get();
-		    lad_pr_stop('language_fetch');
-    		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
-	    }
-        return view('languages.index');
+
+		$country = checkParam('country',null,'optional');
+		$languages = Language::select('id','iso','name')->when($country, function ($query) use ($country) { return $query->where('country_id', $country); })->get();
+
+		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
     }
 
 
@@ -42,19 +37,14 @@ class LanguagesController extends APIController
 	 * Returns a List of Languages that contain resources and if the
 	 * language is a dialect, returns the parent language as well.
 	 *
-	 * @return JSON|View
+	 * @return View|JSON
 	 */
 	public function volumeLanguage()
     {
+		if(!$this->api) return view('languages.volumes');
 
-    	// First handle API
-    	if($this->api) {
-		    $languages = Language::select('id','iso','iso2B','iso2T','iso1','name','autonym')->has('bibles')->has('parent')->with('parent.language')->get();
-		    return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
-	    }
-
-	    // Than return view
-    	return view('languages.volumes');
+		$languages = Language::select('id','iso','iso2B','iso2T','iso1','name','autonym')->has('bibles')->has('parent')->with('parent.language')->get();
+		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
     }
 
 
@@ -169,9 +159,9 @@ class LanguagesController extends APIController
 		// If it's not an API route send them to the documentation
 		if(!$this->api) return view('docs.v2.country_language');
 
-		// Get and set variables from Params
-		$sort_by = checkParam('sort_by');
-		$country_additional = checkParam('country_additional');
+		// Get and set variables from Params. Both are optional.
+		$sort_by = checkParam('sort_by', null, 'optional');
+		$country_additional = checkParam('country_additional', null, 'optional');
 
 		// Fetch Languages and add conditional sorting / loading depending on params
 		$languages = Language::has('primaryCountry')->with('primaryCountry.regions')->when($sort_by, function ($query) use ($sort_by) {

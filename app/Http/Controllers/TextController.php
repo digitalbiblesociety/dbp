@@ -69,8 +69,11 @@ class TextController extends APIController
 		$name = checkParam('name', null, 'optional'); //(optional) Search for a specific font by name
 		$platform = checkParam('platform', null, 'optional') ?? 'all'; //(optional) Only return fonts that have been authorized for the specified platform. Available values are: "android", "ios", "web", or "all"
 
-	    if($name) $font = AlphabetFont::where('name',$name)->first();
-	    if($id) $font = AlphabetFont::find($id);
+	    if($name) {
+	    	$font = AlphabetFont::where('name',$name)->first();
+	    } else {
+		    $font = ($id) ? AlphabetFont::find($id) : false;
+	    }
 	    if($font) return $this->reply(fractal()->item($font)->transformWith(new FontsTransformer())->serializeWith($this->serializer)->toArray());
 
 		$fonts = AlphabetFont::all();

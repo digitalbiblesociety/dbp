@@ -16,9 +16,9 @@ class LanguageTransformer extends TransformerAbstract
 	 */
 	public function __construct()
 	{
-		$this->version = $_GET['v'] ?? 4;
-		$this->iso = $_GET['iso'] ?? "eng";
-		$this->continent = $_GET['continent'] ?? false;
+		$this->version = checkParam('v', null, 'optional') ?? 4;
+		$this->iso = checkParam('iso', null, 'optional') ?? "eng";
+		$this->continent = checkParam('continent', null, 'optional') ?? false;
 	}
 
 
@@ -66,13 +66,13 @@ class LanguageTransformer extends TransformerAbstract
                     "language_iso_2T"           => $language->iso2T,
                     "language_iso_1"            => $language->iso1,
                     "language_iso_name"         => $language->name,
-					"language_family_code"      => $language->parent->language->iso,
-					"language_family_name"      => $language->parent->language->autonym,
-					"language_family_english"   => $language->parent->language->name,
-					"language_family_iso"       => $language->parent->language->iso,
-					"language_family_iso_2B"    => $language->parent->language->iso2B,
-					"language_family_iso_2T"    => $language->parent->language->iso2T,
-					"language_family_iso_1"     => $language->parent->languagew->iso1,
+					"language_family_code"      => ($language->parent) ? $language->parent->iso : $language->iso,
+					"language_family_name"      => ($language->parent) ? $language->parent->autonym : $language->autonym,
+					"language_family_english"   => ($language->parent) ? $language->parent->name : $language->name,
+					"language_family_iso"       => $language->iso,
+					"language_family_iso_2B"    => ($language->parent) ? $language->parent->iso2B : $language->iso2B,
+					"language_family_iso_2T"    => ($language->parent) ? $language->parent->iso2T : $language->iso2T,
+					"language_family_iso_1"     => ($language->parent) ? $language->parent->iso1 : $language->iso1,
                     "media"                     => ["text"],
                     "delivery"                  => ["mobile","web","subsplash"],
                     "resolution"                => []
@@ -96,8 +96,8 @@ class LanguageTransformer extends TransformerAbstract
 			}
 
 			case "v2_country_lang": {
-				$img_type = checkParam('img_type');
-				$img_size = "_".checkParam('img_size');
+				$img_type = checkParam('img_type', null, 'optional') ?? "svg";
+				$img_size = "_".checkParam('img_size', null, 'optional') ?? "";
 				if($img_type == "svg") $img_size = "";
 				return [
 					"id"                   => $language->id,
@@ -137,7 +137,8 @@ class LanguageTransformer extends TransformerAbstract
 	 * @return array
 	 */
 	public function transformForV4(Language $language) {
-		if(isset($_GET['full'])) {
+		$full = checkParam('full', null, 'optional');
+		if($full) {
 			return [
 				"id"                   => $language->id,
 				"name"                 => $language->name,

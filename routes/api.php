@@ -78,7 +78,7 @@ Route::get('sign', 'HomeController@signedUrl');
 		Route::get('library/language',             'LanguagesController@index')->name('v2_library_language');
 		Route::get('library/verseinfo',            'VerseController@info')->name('v2_library_verseInfo');
 		Route::get('library/numbers',              'NumbersController@index')->name('v2_library_numbers');
-		Route::get('library/metadata',             'BiblesController@show')->name('v2_library_metadata');
+		Route::get('library/metadata',             'BiblesController@libraryMetadata')->name('v2_library_metadata');
 		Route::get('library/volume',               'BiblesController@index')->name('v2_library_volume');
 		Route::get('library/volumelanguage',       'LanguagesController@volumeLanguage')->name('v2_library_volumeLanguage');
 		Route::get('library/volumelanguagefamily', 'LanguagesController@volumeLanguageFamily')->name('v2_library_volumeLanguageFamily');
@@ -86,22 +86,33 @@ Route::get('sign', 'HomeController@signedUrl');
 		Route::get('library/volumehistory',        'BiblesController@history')->name('v2_volume_history');
 
 		// Audio
-		Route::get('audio/location', function () {return json_decode(file_get_contents(public_path('static/library_audio_location.json')));});
-		Route::get('audio/path', 'AudioController@index')->name('v2_audio_path');
-		Route::get('audio/versestart', 'AudioController@timestamps')->name('v2_audio_timestamps');
+		Route::get('audio/location',               'AudioController@location')->name('v2_audio_location');
+		Route::get('audio/path',                   'AudioController@index')->name('v2_audio_path');
+		Route::get('audio/versestart',             'AudioController@timestamps')->name('v2_audio_timestamps');
 
 		// Text
-		Route::get('text/font',         'TextController@fonts')->name('v2_text_font');
-		Route::get('text/verse',        'TextController@index')->name('v2_text_verse');
-		Route::get('text/search',       'TextController@search')->name('v2_text_search');
-		Route::get('text/searchgroup',  'TextController@searchGroup')->name('v2_text_search_group');
+		Route::get('text/font',                    'TextController@fonts')->name('v2_text_font');
+		Route::get('text/verse',                   'TextController@index')->name('v2_text_verse');
+		Route::get('text/search',                  'TextController@search')->name('v2_text_search');
+		Route::get('text/searchgroup',             'TextController@searchGroup')->name('v2_text_search_group');
 
 		// Video
-		Route::get('video/location',    'FilmsController@location')->name('v2_video_location');
-		Route::get('video/path',        'FilmsController@videoPath')->name('v2_video_video_path');
+		Route::get('video/location',               'FilmsController@location')->name('v2_video_location');
+		Route::get('video/path',                   'FilmsController@videoPath')->name('v2_video_video_path');
 
 		// Country/Language
-		Route::get('country/countrylang', 'LanguagesController@CountryLang')->name('v2_country_lang');
+		Route::get('country/countrylang',          'LanguagesController@CountryLang')->name('v2_country_lang');
 
 		// API INFO
-		Route::get('/api/apiversion', 'HomeController@versions')->name('v2_api_apiversion');
+		Route::get('/api/apiversion',              'HomeController@versionLatest')->name('v2_api_versionLatest');
+		Route::get('/api/reply',                   'HomeController@versionReplyFormats')->name('v2_api_apiReply');
+
+	// VERSION 4
+
+		// Library
+
+
+		// API INFO
+		Route::get('/api/versions',                'HomeController@versions')->name('v4_api_versions');
+		Route::get('/api/versions/latest',         'HomeController@versionLatest')->name('v4_api_versionLatest');
+		Route::get('/api/versions/replyFormats',   'HomeController@versionReplyFormats')->name('v4_api_replyFormats');

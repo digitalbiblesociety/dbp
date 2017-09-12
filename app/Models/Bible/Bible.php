@@ -116,6 +116,11 @@ class Bible extends Model
         return $this->HasMany(BibleEquivalent::class)->where('type',$type);
     }
 
+    public function fcbh()
+    {
+	    return $this->HasOne(BibleEquivalent::class)->where('site','bible.is');
+    }
+
     public function dbp()
     {
         return $this->HasMany(BibleEquivalent::class)->where('site','bible.is');

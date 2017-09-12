@@ -9,8 +9,8 @@ class AudioTransformer extends TransformerAbstract
 
 	public function __construct()
 	{
-		$this->version = $_GET['v'] ?? 4;
-		$this->iso = $_GET['iso'] ?? "eng";
+		$this->version = checkParam('v', null, 'optional') ?? 4;
+		$this->iso = checkParam('iso', null, 'optional') ?? "eng";
 	}
     /**
      * A Fractal transformer.
@@ -32,13 +32,13 @@ class AudioTransformer extends TransformerAbstract
     		case "v2_audio_timestamps": {
 			    return [
 				    "verse_id"    => $audio->verse_start,
-                    "verse_start" => $audio->timestamp_start
+                    "verse_start" => $audio->timestamp
 			    ];
 		    }
 
 		    case "v2_audio_path": {
 			    return [
-				    "book_id"    => $audio->book->osis->code,
+				    "book_id"    => $audio->book->id_osis,
 				    "chapter_id" => $audio->chapter_start,
 				    "path"       => $audio->filename
 			    ];

@@ -11,44 +11,22 @@ class FontsTransformer extends TransformerAbstract
      *
      * @return array
      */
-    public function transform()
+    public function transform($font)
     {
         return [
-
-	        /*
-			 * [
-	 {
-	 "id": "9",
-	 "name": "More Fonty Goodness",
-	 "base_url": "http://cloud.faithcomesbyhearing.com/fonts-stage/More_Fonty_Goodness",
-	 "files": {
-	 "zip": "all.zip",
-	 "svg": "font.svg",
-	 "ttf": "font.ttf"
-	 },
-	 "platforms": {
-	 "android": true,
-	 "ios": true,
-	 "web": true
-	 }
-	 },
-	 {
-	 "id": "11",
-	 "name": "Charis SILR",
-	 "base_url": "http://cloud.faithcomesbyhearing.com/fonts-stage/Charis_SILR",
-	 "files": {
-	 "zip": "all.zip",
-	 "ttf": "font.ttf"
-	 },
-	 "platforms": {
-	 "android": true,
-	 "ios": true,
-	 "web": true
-	 }
-	 }
-	 ]
-
-			 */
-        ];
+			"id"       => $font->id,
+			"name"     => $font->fontName,
+			"base_url" => url(public_path('fonts/'.$font->fontFileName.'.ttf')),
+			"files"    => [
+				"zip"  => url(public_path('fonts/'.$font->fontFileName.'.zip')),
+				"svg"  => url(public_path('fonts/'.$font->fontFileName.'.svg')),
+				"ttf"  => url(public_path('fonts/'.$font->fontFileName.'.ttf')),
+				   "platforms" => [
+				       "android" => true,
+				       "ios"     => true,
+				       "web"     => true
+				   ]
+			]
+		];
     }
 }

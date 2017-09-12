@@ -23,6 +23,6 @@ class VerseController extends Controller
 		])->when($verse_end, function ($query) use ($verse_end) {
 			return $query->where('verse_start', '<=', $verse_end);
 		})->get();
-		dd($verse_info);
+		return $verse_info;
     }
 }

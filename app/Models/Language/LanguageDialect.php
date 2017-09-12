@@ -12,6 +12,14 @@ class LanguageDialect extends Model
 	protected $hidden = ['language_id','id'];
     public $incrementing = false;
 
+	public function language()
+	{
+		return $this->belongsTo(Language::class);
+	}
+
+	/*
+	 * Alias of language
+	 */
     public function parentLanguage()
     {
         return $this->belongsTo(Language::class);

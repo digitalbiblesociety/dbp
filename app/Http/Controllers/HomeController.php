@@ -11,7 +11,7 @@ use App\Helpers\AWS\Bucket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\Types\Resource;
-
+use Parsedown;
 class HomeController extends APIController
 {
 
@@ -44,7 +44,22 @@ class HomeController extends APIController
 
 	public function versions()
 	{
-		return [ "versions" => [2,4]];
+		return $this->reply(["versions" => [2,4]]);
+	}
+
+	public function versionLatest()
+	{
+		$swagger = json_decode(file_get_contents(public_path('swagger.json')));
+		return $this->reply([ "Version" => $swagger->info->version ]);
+	}
+
+	public function versionReplyFormats()
+	{
+		$versionReplies = [
+			"2" => ["json", "jsonp", "html"],
+			"4" => ["json", "jsonp", "xml", "html"]
+		];
+		return $this->reply($versionReplies[$this->v]);
 	}
 
 	public function libraryAsset()
