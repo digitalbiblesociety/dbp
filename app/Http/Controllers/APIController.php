@@ -32,9 +32,10 @@ class APIController extends Controller
 	    $url = explode(".",url()->current());
 	    $this->request = $request;
 	    if(substr(array_shift($url),-3,3) == "api") {
-		    $this->v = checkParam('v');
+	    	$noVersionRoutes = ['v2_api_apiversion','v4_api_versionLatest'];
+	    	if(!in_array(\Route::currentRouteName(), $noVersionRoutes)) $this->v = checkParam('v');
 		    $this->api = true;
-		    $this->serializer = (($this->v == "jQueryDataTable") OR ($this->v != 2)) ? new DataArraySerializer() : new ArraySerializer();
+		    if(isset($this->v)) $this->serializer = (($this->v == "jQueryDataTable") OR ($this->v != 2)) ? new DataArraySerializer() : new ArraySerializer();
 		    $this->paginateNumber = $_GET["number"] ?? 20;
 	    }
         $this->middleware('auth')->only(['create','edit']);
