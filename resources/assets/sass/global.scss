@@ -36,7 +36,7 @@ main:after,
 .collapse .row 			{margin-left:0;margin-right:0}
 
 .columns 				{padding-left:1.1rem;padding-right:1.1rem;width:100%;float:left}
-.centered 				{margin-left:auto;margin-right:auto;float:none}
+.centered 				{margin-left:auto!important;margin-right:auto!important;float:none}
 .centered:last-child 	{float:none}
 .clearfix:after {content: ""; display: table; clear: both; }
 .disabled {opacity:.5}

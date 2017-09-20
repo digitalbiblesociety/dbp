@@ -10400,26 +10400,6 @@ window.onload = function () {
     });
 };
 
-//tabs
-__WEBPACK_IMPORTED_MODULE_0_jquery___default()("nav[role='tablist'] a").not('.external').click(function (event) {
-    event.preventDefault();
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).attr("aria-selected", "true");
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).siblings().attr("aria-selected", "false");
-    var tab = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).attr("href");
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default()(tab).attr("aria-hidden", "false");
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default()(tab).siblings().attr("aria-hidden", "true");
-});
-
-__WEBPACK_IMPORTED_MODULE_0_jquery___default()(window).on('hashchange', function () {
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default()("nav[role='tablist'] a").each(function (index, a) {
-        if (__WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).attr("href") == location.hash) {
-            var tab = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).attr("href");
-            __WEBPACK_IMPORTED_MODULE_0_jquery___default()(tab).attr("aria-hidden", "false");
-            __WEBPACK_IMPORTED_MODULE_0_jquery___default()(tab).siblings().attr("aria-hidden", "true");
-        }
-    });
-});
-
 // Data Tables
 
 __WEBPACK_IMPORTED_MODULE_0_jquery___default()(document).ready(function () {
