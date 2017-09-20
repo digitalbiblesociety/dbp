@@ -18,7 +18,7 @@ class OrganizationTransformer extends BaseTransformer
 	    switch ($this->version) {
 		    case "jQueryDataTable": return $this->transformForDataTables($organization);
 		    case "2": {
-		    	if($organization->relationLoaded('bibles')) return $this->transformForV2_VolumeOrganizationListing($organization);
+		    	if(\Route::currentRouteName() == "v2_volume_organization_list") return $this->transformForV2_VolumeOrganizationListing($organization);
 		    	return $this->transformForV2($organization);
 		    }
 		    case "4":

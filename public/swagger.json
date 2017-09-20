@@ -28,18 +28,67 @@
   "tags": [
     {
       "name": "Library",
-      "description": "These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume."
+      "description": "These routes retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume."
     },
     {
       "name": "Audio",
-      "description": "These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume."
+      "description": "These routes retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume."
     },
     {
       "name": "Text",
-      "description": "These methods allow the caller to retrieve Bible text in a variety of configurations."
+      "description": "These routes allow the caller to retrieve Bible text in a variety of configurations."
+    },
+    {
+      "name": "Meta",
+      "description": "These routes allow the caller to retrieve information about the API"
     }
   ],
   "paths": {
+    "/api/apiversion": {
+      "get": {
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "description": "The API key that's been generated for you.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "v",
+            "in": "query",
+            "description": "The Version of the API",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "Meta"
+        ],
+        "operationId": "v2_library_asset",
+        "responses": {
+          "200": {
+            "description": "This route is the endpoint for the base URLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VersionNumber"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/VersionNumber"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/library/asset": {
       "get": {
         "parameters": [
@@ -703,6 +752,51 @@
         }
       }
     },
+    "/library/verseInfo": {
+      "get": {
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "description": "The API key that's been generated for you.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "v",
+            "in": "query",
+            "description": "The Version of the API",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "Library"
+        ],
+        "operationId": "v2_library_verseInfo",
+        "responses": {
+          "200": {
+            "description": "This route is the endpoint for the base URLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibraryVerseInfo"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibraryVerseInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/audio/location": {
       "get": {
         "parameters": [
@@ -776,16 +870,16 @@
         "operationId": "v2_audio_path",
         "responses": {
           "200": {
-            "description": "ToDO",
+            "description": "This call returns the file path information for audio files for a volume. This information can be used with the response of the /audio/location call to create a URI to retrieve the audio files.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LibraryVolumeLanguageFamily"
+                  "$ref": "#/components/schemas/AudioPath"
                 }
               },
               "application/xml": {
                 "schema": {
-                  "$ref": "#/components/schemas/LibraryVolumeLanguageFamily"
+                  "$ref": "#/components/schemas/AudioPath"
                 }
               }
             }
@@ -1150,7 +1244,7 @@
             "description": "A three letter identifier for the languages resources. This code matches up exactly with the codes from the [ISO 639-3 standard](http://www-01.sil.org/iso639-3/default.asp). If the Iso Code Exists the Glotto Code is not required but may exist!",
             "example": "aka"
           },
-          "language_iso_2B": {
+          "language_family_iso_2B": {
             "type": "string",
             "pattern": "[a-z]",
             "minLength": 2,
@@ -1158,7 +1252,7 @@
             "description": "The Bibliographic two letter identifier for the languages resources. This code matches up exactly with the codes from the [ISO 639-2B standard](https://www.loc.gov/standards/iso639-2/php/code_list.php).",
             "example": "aka"
           },
-          "language_iso_2T": {
+          "language_family_iso_2T": {
             "type": "string",
             "pattern": "[a-z]",
             "minLength": 2,
@@ -1166,7 +1260,7 @@
             "description": "The Terminological two letter identifier for the languages resources. This code matches up exactly with the codes from the [ISO 639-2T standard](https://www.loc.gov/standards/iso639-2/php/code_list.php).",
             "example": "aka"
           },
-          "language_iso_1": {
+          "language_family_iso_1": {
             "type": "string",
             "minLength": 2,
             "maxLength": 2,
@@ -1247,155 +1341,20 @@
       "LibraryVolume": {
         "properties": {
           "dam_id": {
-            "description": "The volume internal DAM ID. Can be used to restrict the response to only DAM IDs that contain with 'N2' for example",
             "type": "string",
-            "maxLength": 191,
-            "example": "ENGKJV"
+            "description": "DAM ID of volume."
           },
           "fcbh_id": {
-            "description": "the volume FCBH DAM ID. Can be used to restrict the response to only FCBH DAM IDs that contain with 'N2' for example",
             "type": "string",
-            "maxLength": 191,
-            "example": "ENGKJVN2DA"
-          },
-          "version_code": {
-            "description": "Version of volume",
-            "type": "string",
-            "example": "KJV"
+            "description": "the volume FCBH DAM ID."
           },
           "volume_name": {
-            "description": "Name of volume.",
             "type": "string",
-            "example": "King James Version",
-            "maxLength": 191
-          },
-          "media": {
-            "description": "the format of assets the caller is interested in. This specifies if you only want volumes available in text or volumes available in audio.",
-            "type": "string",
-            "enum": [
-              "text",
-              "audio",
-              "video"
-            ],
-            "maxLength": 191
-          },
-          "delivery": {
-            "description": "A criteria for approved delivery method. It is possible to OR these methods together using '|', such as \"delivery=streaming_url|mobile\".  'any' means any of the supported methods. 'none' means volumes that are not approved for any of the supported methods. All volumes are returned by default.",
-            "type": "string",
-            "enum": [
-              "web",
-              "web_streaming",
-              "download",
-              "download_text",
-              "mobile",
-              "sign_language",
-              "streaming_url",
-              "local_bundled",
-              "podcast",
-              "mp3_cd",
-              "digital_download",
-              "bible_stick",
-              "subsplash",
-              "any",
-              "none"
-            ]
-          },
-          "language": {
-            "description": "Filter the versions returned to a specified native or English language language name. For example return all the 'English' volumes.",
-            "type": "string",
-            "example": "English",
-            "maxLength": 191
-          },
-          "language_name": {
-            "type": "string",
-            "maxLength": 191,
-            "example": "Shqip"
-          },
-          "language_code": {
-            "type": "string",
-            "pattern": "[a-z]",
-            "minLength": 3,
-            "maxLength": 3,
-            "description": "This field is a legacy field from when it was possible for there to be a different language code than the iso code. Now it's just a duplicate of language_iso.",
-            "example": "sqi"
-          },
-          "language_iso": {
-            "type": "string",
-            "pattern": "[a-z]",
-            "minLength": 3,
-            "maxLength": 3,
-            "description": "A three letter identifier for the languages resources. This code matches up exactly with the codes from the [ISO 639-3 standard](http://www-01.sil.org/iso639-3/default.asp). If the Iso Code Exists the Glotto Code is not required but may exist!",
-            "example": "sqi"
-          },
-          "language_iso_2B": {
-            "type": "string",
-            "pattern": "[a-z]",
-            "minLength": 2,
-            "maxLength": 2,
-            "description": "The Bibliographic two letter identifier for the languages resources. This code matches up exactly with the codes from the [ISO 639-2B standard](https://www.loc.gov/standards/iso639-2/php/code_list.php).",
-            "example": "sqi"
-          },
-          "language_iso_2T": {
-            "type": "string",
-            "pattern": "[a-z]",
-            "minLength": 2,
-            "maxLength": 2,
-            "description": "The Terminological two letter identifier for the languages resources. This code matches up exactly with the codes from the [ISO 639-2T standard](https://www.loc.gov/standards/iso639-2/php/code_list.php).",
-            "example": "alb"
-          },
-          "language_iso_1": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 2,
-            "example": "sq"
-          },
-          "language_iso_name": {
-            "type": "string",
-            "maxLength": 191,
-            "description": "Duplicate of language_name",
-            "example": "Albanian"
-          },
-          "language_family_code": {
-            "type": "string",
-            "maxLength": 191,
-            "example": "sqi"
-          },
-          "language_family_name": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "language_family_english": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "language_family_iso": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "language_family_iso_2B": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "language_family_iso_2T": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "language_family_iso_1": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "right_to_left": {
-            "type": "boolean"
-          },
-          "updated_on": {
-            "description": "YYYY-MM-DD. This is used to get volumes that were modified since the specified date.",
-            "type": "string",
-            "maxLength": 10,
-            "example": "2017-12-14"
+            "description": "Name of volume."
           },
           "status": {
-            "description": "Publishing status of volume. The default is 'live'.",
             "type": "string",
+            "description": "Publishing status of volume.",
             "enum": [
               "live",
               "disabled",
@@ -1403,51 +1362,119 @@
               "waiting_review",
               "in_review",
               "discontinued"
-            ],
-            "maxLength": 191
-          },
-          "num_art": {
-            "type": "integer",
-            "description": "Number of art files for this volume",
-            "example": 55
-          },
-          "num_sample_audio": {
-            "type": "integer",
-            "description": "Number of sample audio files for this volume",
-            "example": 10
-          },
-          "sku": {
-            "description": "Legacy stocknumber",
-            "example": 147582
+            ]
           },
           "dbp_agreement": {
-            "description": "Whether or not a DBP Agreement has been executed between FCBH and the organization to whom the volume belongs.",
             "type": "boolean",
-            "example": true
+            "description": "Whether or not a DBP Agreement has been executed between FCBH and the organization to whom the volume belongs."
           },
-          "expired": {
-            "description": "Whether the volume as passed its expiration or not.",
+          "expiration": {
+            "type": "string",
+            "description": "expiration date."
+          },
+          "language_code": {
+            "type": "string",
+            "description": "DBP language code"
+          },
+          "language_name": {
+            "type": "string",
+            "description": "native language name of the language of the volume."
+          },
+          "language_english": {
+            "type": "string",
+            "description": "English language name of the language of the volume."
+          },
+          "language_iso": {
+            "type": "string",
+            "description": "ISO 639-3 language code."
+          },
+          "language_iso_2B": {
+            "type": "string",
+            "description": "ISO 639-2B language code."
+          },
+          "language_iso_2T": {
+            "type": "string",
+            "description": "ISO 639-2T language code."
+          },
+          "language_iso_1": {
+            "type": "string",
+            "description": "ISO 639-1 language code."
+          },
+          "language_iso_name": {
+            "type": "string",
+            "description": "ISO  language name."
+          },
+          "language_family_code": {
+            "type": "string",
+            "description": "DBP language code of language family to which this language belongs."
+          },
+          "language_family_name": {
+            "type": "string",
+            "description": "native language name of language family to which this language belongs."
+          },
+          "language_family_english": {
+            "type": "string",
+            "description": "English language name of language family to which this language belongs."
+          },
+          "language_family_iso": {
+            "type": "string",
+            "description": "ISO 639-3 language code."
+          },
+          "language_family_iso_2B": {
+            "type": "string",
+            "description": "ISO 639-2B language code."
+          },
+          "language_family_iso_2T": {
+            "type": "string",
+            "description": "ISO 639-2T language code."
+          },
+          "language_family_iso_1": {
+            "type": "string",
+            "description": "ISO 639-1 language code."
+          },
+          "version_code": {
+            "type": "string",
+            "description": "Version of volume."
+          },
+          "updated_on": {
+            "type": "string",
+            "description": "Date and time of last update."
+          },
+          "right_to_left": {
             "type": "boolean",
-            "example": false
+            "description": "Indicating that the language is read right to left."
+          },
+          "num_art": {
+            "type": "string",
+            "description": "Number of art files for this volume."
+          },
+          "num_sample_audio": {
+            "type": "string",
+            "description": "Number of sample audio files for this volume."
+          },
+          "sku": {
+            "type": "string",
+            "description": "Legacy stocknumber, while supported."
+          },
+          "media": {
+            "type": "string",
+            "description": "media format (text, audio, video)"
+          },
+          "media_type": {
+            "type": "string",
+            "description": "The variety of the media, such as drama and non-drama."
+          },
+          "delivery": {
+            "type": "string",
+            "description": "array of delivery methods"
           },
           "resolution": {
-            "description": "Currently used for video volumes as they can be available in different resolutions, basically conforming to the loose general categories of low, medium, and high resolution. Low resolution is geared towards devices with smaller screens.",
             "type": "string",
-            "enum": [
-              "lo",
-              "med",
-              "hi"
-            ],
-            "maxLength": 191
+            "description": "Array of resolutions available, if applicable."
           },
-          "organization_id": {
-            "description": "Organization id of volumes to return.",
+          "font": {
             "type": "string",
-            "maxLength": 191
-          },
-          "sort_by": {
-            "type": "string",
-            "maxLength": 191
+            "description": "If this volume has text that cannot be displayed properly using most standard fonts, a custom font will be assigned. This field can either be null (no font assigned), or a JSON object containing information about the font. For information about the structure of this JSON object, see the documentation for the /text/font call."
           }
         }
       },
@@ -1812,6 +1839,224 @@
           "paragraph_number": {
             "type": "integer",
             "example": 1
+          }
+        }
+      },
+      "TextFont": {
+        "properties": {
+          "id": {
+            "description": "The numeric ID of the font",
+            "type": "integer"
+          },
+          "name": {
+            "description": "The name of the font",
+            "type": "string"
+          },
+          "base_url": {
+            "description": "The server directory that the font file(s) can be found in"
+          },
+          "files": {
+            "description": "A JSON object representing the files available for the font. This JSON object is structured as follows",
+            "type": "object"
+          }
+        }
+      },
+      "TextSearch": {
+        "properties": {
+          "dam_id": {
+            "description": "DAM ID of the volume",
+            "type": "string"
+          },
+          "book_name": {
+            "description": "Book name.",
+            "type": "string"
+          },
+          "book_id": {
+            "description": "Book id.",
+            "type": "string"
+          },
+          "book_order": {
+            "description": "Order of book in volume.",
+            "type": "string"
+          },
+          "chapter_id": {
+            "description": "Chapter id.",
+            "type": "string"
+          },
+          "verse_id": {
+            "description": "Verse id.",
+            "type": "string"
+          },
+          "verse_text": {
+            "description": "The full text of the result returned.",
+            "type": "string"
+          }
+        }
+      },
+      "TextSearchGroup": {
+        "properties": {
+          "dam_id": {
+            "description": "DAM ID of the volume",
+            "type": "string"
+          },
+          "book_name": {
+            "description": "Book name.",
+            "type": "string"
+          },
+          "book_id": {
+            "description": "Book id.",
+            "type": "string"
+          },
+          "book_order": {
+            "description": "Order of book in volume.",
+            "type": "string"
+          },
+          "results": {
+            "description": "Number of results.",
+            "type": "integer"
+          }
+        }
+      },
+      "VersionNumber": {
+        "required": [
+          "Version"
+        ],
+        "properties": {
+          "Version": {
+            "type": "string",
+            "maxLength": 24,
+            "example": "2.0.3"
+          }
+        }
+      },
+      "LibraryVerseInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 64,
+            "example": "ENGKJV_1_GEN_001_001"
+          },
+          "bible_id": {
+            "type": "string",
+            "maxLength": 24,
+            "example": "ENGKJV"
+          },
+          "bible_variation_id": {
+            "type": "string",
+            "maxLength": 24,
+            "example": "ENGKJV1611"
+          },
+          "book_id": {
+            "type": "string",
+            "maxLength": 3,
+            "example": "GEN"
+          },
+          "chapter_number": {
+            "type": "integer",
+            "minLength": 1,
+            "maxLength": 150,
+            "example": 1
+          },
+          "verse_start": {
+            "type": "integer",
+            "maxLength": 178,
+            "minLength": 1,
+            "example": 1
+          },
+          "verse_end": {
+            "type": "integer",
+            "maxLength": 178,
+            "minLength": 1,
+            "example": 1
+          },
+          "verse_text": {
+            "type": "string",
+            "example": "In the beginning God created the heaven and the earth."
+          }
+        }
+      },
+      "AudioPath": {
+        "properties": {
+          "book_id": {
+            "description": "unique ID for the associated book for this chapter",
+            "example": "GEN",
+            "type": "string"
+          },
+          "chapter_id": {
+            "description": "The id of the chapter",
+            "type": "integer",
+            "example": 1
+          },
+          "path": {
+            "description": "relative file path for the audio",
+            "type": "string",
+            "example": "o2esv/A01_06_Genesis_O2ESV.mp3"
+          }
+        }
+      },
+      "AudioTimestamp": {
+        "properties": {
+          "verse_id": {
+            "description": "id of verse"
+          },
+          "verse_start": {
+            "description": "time start in seconds of the verse"
+          }
+        }
+      },
+      "VideoLocation": {
+        "properties": {
+          "protocol": {
+            "description": "HTTP, HTTPS",
+            "type": "string"
+          },
+          "server": {
+            "description": "Example video.dbt.io",
+            "type": "string"
+          }
+        }
+      },
+      "CountryLang": {
+        "properties": {
+          "id": {
+            "description": "Numerical country id",
+            "type": "integer"
+          },
+          "lang_code": {
+            "description": "Language code of associated country",
+            "type": "string"
+          },
+          "region": {
+            "description": "Country Region",
+            "type": "string"
+          },
+          "country_primary": {
+            "description": "ISO country code",
+            "type": "string"
+          },
+          "country_image": {
+            "description": "Link to country flag image of requested size",
+            "type": "string"
+          },
+          "country_additional": {
+            "description": "Colon separated list of optional countries",
+            "type": "string"
+          },
+          "iso_language_code": {
+            "description": "ISO language code",
+            "type": "string"
+          },
+          "regional_lang_name": {
+            "description": "Regional Language Name",
+            "type": "string"
+          },
+          "family_id": {
+            "description": "Language Family ID",
+            "type": "string"
+          },
+          "primary_country_name": {
+            "description": "Full name of country",
+            "type": "string"
           }
         }
       }

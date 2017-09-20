@@ -47,6 +47,7 @@ class BibleTransformer extends TransformerAbstract
 				        "mark"                      => $bible->copyright,
 				        "organization"              => $bible->organization,
                         "fcbh_id"                   => $bible->fcbh->equivalent_id,
+				        "volume_name"               => $bible->translations->where('iso','eng')->first()->name,
 			            "status"                    => "live", // for the moment these default to Live
                         "dbp_agreement"             => 1, // for the moment these default to True
                         "expiration"                => "0000-00-00",

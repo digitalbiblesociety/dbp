@@ -43,7 +43,7 @@ class BooksTransformer extends TransformerAbstract
 
 			case "v2_library_book": {
 				return [
-					"dam_id"             => $bibleBook->bible_id,
+					"dam_id_root"        => $bibleBook->bible_id,
 					"book_id"            => $bibleBook->book->code_osis,
 					"book_name"          => $bibleBook->name,
 					"book_order"         => $bibleBook->book->book_order,

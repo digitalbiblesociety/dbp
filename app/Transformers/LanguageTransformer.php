@@ -109,7 +109,8 @@ class LanguageTransformer extends TransformerAbstract
                     "regional_lang_name"   => $language->autonym ?? $language->name,
                     "family_id"            => $language->iso,
                     "primary_country_name" => $language->primaryCountry->name,
-					"country_image"        => url("/img/flags/".$language->primaryCountry->id.$img_size.'.'.$img_type)
+					"country_image"        => url("/img/flags/".$language->primaryCountry->id.$img_size.'.'.$img_type),
+					"country_additional"   => $language->countries->pluck('id')
 				];
 			}
 
