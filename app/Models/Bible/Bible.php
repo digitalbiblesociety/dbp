@@ -148,37 +148,7 @@ class Bible extends Model
      */
     public function organizations()
     {
-        return $this->belongsToMany(Organization::class, 'bible_organizations');
-    }
-
-    /**
-     * Basically anybody who helps out with the bible Translation
-     *
-     * @return mixed
-     */
-    public function publishers()
-    {
-        return $this->belongsToMany(Organization::class)->where('contributionType','=', 2);
-    }
-
-    /**
-     * Basically anybody who helps out with the bible Translation
-     *
-     * @return mixed
-     */
-    public function owners()
-    {
-        return $this->belongsToMany(Organization::class)->where('contributionType','=', 3);
-    }
-
-    /**
-     * Each Bible has many links that attach
-     *
-     * @return mixed
-     */
-    public function reviews()
-    {
-        return $this->HasMany('App\Models\Bible\BibleReview');
+        return $this->BelongsToMany(Organization::class, 'bible_organizations');
     }
 
 
@@ -197,7 +167,7 @@ class Bible extends Model
      */
     public function language()
     {
-        return $this->hasOne('App\Models\Language\Language','iso','iso')->select('name','id','country_id','iso');
+        return $this->hasOne(Language::class,'iso','iso')->select('name','id','country_id','iso');
     }
 
     /**

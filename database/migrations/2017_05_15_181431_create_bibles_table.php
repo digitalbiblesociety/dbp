@@ -66,8 +66,8 @@ class CreateBiblesTable extends Migration
             $table->string('equivalent_id');
             $table->integer('organization_id')->unsigned();
             $table->foreign('organization_id')->references('id')->on('organizations');
-            $table->string('type');
-            $table->string('site');
+            $table->string('type')->nullable();
+            $table->string('site')->nullable();
             $table->string('suffix')->default(NULL);
 	        $table->timestamps();
         });
@@ -77,11 +77,24 @@ class CreateBiblesTable extends Migration
             $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
 	        $table->string('bible_variation_id',12)->nullable();
 	        $table->foreign('bible_variation_id')->references('id')->on('bible_variations')->onUpdate('cascade')->onDelete('cascade');
-            $table->integer('organization_id')->unsigned();
+            $table->integer('organization_id')->unsigned()->nullable();
             $table->foreign('organization_id')->references('id')->on('organizations');
             $table->string('relationship_type');
 	        $table->timestamps();
         });
+
+	    Schema::create('bible_links', function (Blueprint $table) {
+		    $table->increments('id');
+		    $table->string('bible_id',12)->nullable();
+		    $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
+		    $table->string('type');
+		    $table->text('link');
+		    $table->string('title');
+		    $table->integer('organization_id')->unsigned();
+		    $table->foreign('organization_id')->references('id')->on('organizations');
+		    $table->timestamp('created_at')->useCurrent();
+		    $table->timestamp('updated_at')->useCurrent();
+	    });
 
         Schema::create('books', function (Blueprint $table) {
 	        $table->char('id', 3)->primary(); // Code USFM
@@ -189,6 +202,7 @@ class CreateBiblesTable extends Migration
 	    Schema::dropIfExists('bible_books');
         Schema::dropIfExists('book_codes');
         Schema::dropIfExists('books');
+	    Schema::dropIfExists('bible_links');
 	    Schema::dropIfExists('bible_organizations');
         Schema::dropIfExists('bible_translations');
         Schema::dropIfExists('bible_equivalents');

@@ -56,6 +56,11 @@ class User extends Authenticatable
 		return $this->HasMany(Role::class);
 	}
 
+	public function archivist()
+	{
+		return $this->hasOne(Role::class)->where('role','archivist');
+	}
+
 	public function role($id)
 	{
 		return $this->HasOne(Role::class)->where('organization_id',$id);

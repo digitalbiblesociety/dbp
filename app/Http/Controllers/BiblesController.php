@@ -7,13 +7,18 @@ use App\Models\Bible\BibleEquivalent;
 use App\Models\Bible\BibleOrganization;
 use App\Models\Bible\Book;
 use App\Models\Bible\BookCode;
+use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
+use App\Models\Organization\Organization;
+use App\Models\Organization\OrganizationTranslation;
 use \database\seeds\SeederHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\APIController;
 use App\Transformers\BibleTransformer;
 use Spatie\Fractalistic\ArraySerializer;
 use Symfony\Component\Yaml\Yaml;
+use Validator;
+
 class BiblesController extends APIController
 {
 
@@ -94,7 +99,29 @@ class BiblesController extends APIController
      */
     public function store(Request $request)
     {
-        dd($request);
+
+	    $validator = Validator::make($request->all(), [
+		    'id'                      => 'required|unique:bibles,id|max:24',
+		    'iso'                     => 'required|exists:languages,iso',
+		    'translations.*.name'     => 'required',
+		    'translations.*.iso'      => 'required|exists:languages,iso',
+		    'date'                    => 'integer',
+	    ]);
+
+	    if($validator->fails()) return redirect('bibles/create')->withErrors($validator)->withInput();
+
+	    $bible = \DB::transaction(function () use($request) {
+		    $bible = new Bible();
+		    $bible = $bible->create($request->only(['id','date','script','portions','copyright','derived','in_progress','notes','iso']));
+		    $bible->translations()->createMany($request->translations);
+		    $bible->organizations()->attach($request->organizations);
+		    $bible->equivalents()->createMany($request->equivalents);
+		    $bible->links()->createMany($request->links);
+
+		    return $bible;
+	    });
+
+	    return redirect()->route('webView_bibles.show', ['id' => $bible->id]);
     }
 
     /**
@@ -106,10 +133,11 @@ class BiblesController extends APIController
      */
     public function show($id)
     {
-    	if(!$this->api) return view('bibles.show');
+	    $bible = Bible::find($id);
+	    if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
 
-		$bible = Bible::find($id);
-		if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
+    	if(!$this->api) return view('bibles.show',compact('bible'));
+	    
 		return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
     }
 
@@ -239,7 +267,10 @@ class BiblesController extends APIController
 	 */
 	public function create()
 	{
-		return view('bibles.create');
+		$languages = Language::select('iso','name')->get();
+		$organizations = OrganizationTranslation::select('name','organization_id')->where('language_iso','eng')->get();
+		$alphabets = Alphabet::select('script')->get();
+		return view('bibles.create',compact('languages', 'organizations', 'alphabets'));
 	}
 
 

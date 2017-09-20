@@ -2,18 +2,15 @@
 
 @section('head')
 <style>
-    .clonedInput {
-        padding:1rem;
-        margin:1rem auto;
-    }
-
     .tabs-content {
         border:none;
     }
+
 </style>
 @endsection
 
 @section('content')
+
     <h1 class="text-center">Create Bible</h1>
 
     <div class="row">
@@ -26,7 +23,18 @@
     <div class="tabs-content row" data-tabs-content="example-tabs">
         <div class="tabs-panel is-active" id="panel1">
 
-            <form action="/bibles/create" method="POST">
+            <form action="/bibles" method="POST" data-abide novalidate>
+                {{ csrf_field() }}
+                @if($errors->any())
+                <div data-abide-error class="alert callout">
+                    <p><i class="fi-alert"></i> There are some errors in your form:</p>
+                    <ul>
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
                 @include('bibles.form')
             </form>
 
@@ -55,29 +63,33 @@
 
 @section('footer')
     <script>
-        var regex = /^(.+?)(\d+)$/i;
+        var regex = /^(.+?)\[(\d+)]\[(.+?)]$/i;
         var cloneIndex = $(".clonedInput").length;
-        function clone() {
-            var cloneType = $(this).parents(".clonedInput").attr("data-type");
-            $(this).parents(".clonedInput").clone()
-                .appendTo("."+cloneType + "-group")
-                .attr("data", "clonedInput" + cloneType +  cloneIndex)
-                .find("*")
-                .each(function() {
-                    var id = this.id || "";
-                    var match = id.match(regex) || [];
-                    if (match.length == 3) {
-                        this.id = match[1] + (cloneIndex);
-                    }
-                })
-                .on('click', 'div.clone', clone)
-                .on('click', 'div.remove', remove);
-            cloneIndex++;
+
+        function clone(event) {
+            if (event.which === 13 || event.type === 'click') {
+                var cloneType = $(this).parents(".clonedInput").attr("data-type");
+
+                $(this).parents(".clonedInput").clone()
+                    .appendTo("." + cloneType + "-group")
+                    .on('click', '.clone', clone)
+                    .on('click', '.remove', remove)
+                    .find(':input')
+                    .each(function() {
+                        var name = this.name || "";
+                        var match = name.match(regex) || [];
+                        this.name = match[1] + "[" + (cloneIndex) + "][" + match[3] + "]";
+                    });
+                cloneIndex++;
+            }
         }
-        function remove() {
-            $(this).parents(".clonedInput").remove();
+        function remove(event) {
+            if (event.which === 13 || event.type === 'click') {
+                $(this).parents(".clonedInput").remove();
+            }
         }
-        $("div.clone").on("click", clone);
-        $("div.remove").on("click", remove);
+
+        $(".clone").on("click", clone);
+        $(".remove").on("click", remove);
     </script>
 @endsection
