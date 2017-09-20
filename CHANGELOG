@@ -1,0 +1,12 @@
+# Changelog
+All notable changes to this project will be documented in this file. 
+This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+### A look at the future updates for V4
+    - Unreleased changes will go here until they're merged into a version number
+
+## [2.1.4] - 2017-09-08
+### Rewrote the Digital Bible Platform
+- Using Laravel as the phpframework
+- Swagger API 3.0 Spec for the documentation

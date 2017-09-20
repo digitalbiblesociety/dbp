@@ -165,7 +165,7 @@ class LanguagesController extends APIController
 
 		// Fetch Languages and add conditional sorting / loading depending on params
 		$languages = Language::has('primaryCountry')->with('primaryCountry.regions')->when($sort_by, function ($query) use ($sort_by) {
-			return $query>orderBy($sort_by, 'desc');
+			return $query->orderBy($sort_by, 'desc');
 		})->get();
 		if($country_additional) $languages->load('countries');
 

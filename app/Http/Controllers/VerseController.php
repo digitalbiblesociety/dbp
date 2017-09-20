@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bible\Text;
 use Illuminate\Http\Request;
 
-class VerseController extends Controller
+class VerseController extends APIController
 {
     public function info()
     {
@@ -23,6 +23,6 @@ class VerseController extends Controller
 		])->when($verse_end, function ($query) use ($verse_end) {
 			return $query->where('verse_start', '<=', $verse_end);
 		})->get();
-		return $verse_info;
+		return $this->reply($verse_info);
     }
 }
