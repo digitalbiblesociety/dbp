@@ -82,7 +82,7 @@
                             @endif
                         </a>
                     @endforeach
-                    <a href="{{ route('dashboard_organizations.create') }}" class="button">Add an Organization</a>
+                    <a href="{{ route('dashboard_organization_roles.create') }}" class="button">Add an Organization</a>
                 @else
                     <strong>NOT SET?! <a href="{{ route('dashboard_organization_roles.create') }}" class="button">Request to join one now!</a></strong>
                 @endif

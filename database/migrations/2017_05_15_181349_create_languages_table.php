@@ -109,8 +109,8 @@ class CreateLanguagesTable extends Migration
             $table->string('family')->nullable();
             $table->string('type')->nullable();
 	        $table->string('white_space')->nullable();
-	        $table->string('complex_positioning')->nullable();
 	        $table->string('open_type_tag')->nullable();
+	        $table->boolean('complex_positioning');
 	        $table->boolean('requires_font')->default(0);
 	        $table->boolean('unicode')->default(1);
 	        $table->boolean('diacritics')->nullable();

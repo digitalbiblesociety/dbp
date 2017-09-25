@@ -15,6 +15,7 @@ Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRed
 {
 
 	Route::get('docs',                          'DocsController@index')->name('docs');
+	Route::get('docs/history',                  'DocsController@history')->name('history');
 	Route::get('docs/swagger',                  'DocsController@swagger')->name('swagger');
 	Route::get('docs/progress',                 'DocsController@progress')->name('docs_progress');
 	Route::get('docs/team',                     'DocsController@team')->name('docs_team');

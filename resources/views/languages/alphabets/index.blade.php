@@ -7,11 +7,11 @@
         <table class="table" cellspacing="0" width="100%" data-route="alphabets">
             <thead>
             <tr>
-                <th>{{ trans('fields.alternativeNames') }}</th>
-                <th>{{ trans('fields.name') }}</th>
-                <th>{{ trans('fields.id') }}</th>
-                <th>{{ trans('fields.iso') }}</th>
-                <th>{{ trans('fields.bibles_count') }}</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Family</th>
+                <th>Type</th>
+                <th>Direction</th>
             </tr>
             </thead>
             <tbody>

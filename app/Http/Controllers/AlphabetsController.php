@@ -6,6 +6,7 @@ use App\Http\Controllers\APIController;
 use App\Models\Language\Alphabet;
 use App\Transformers\AlphabetTransformer;
 use Auth;
+use Illuminate\Http\Request;
 
 class AlphabetsController extends APIController
 {
@@ -16,11 +17,10 @@ class AlphabetsController extends APIController
      */
     public function index()
     {
-        if($this->api) {
-            $alphabets = Alphabet::select('script','name','family','type','direction')->get();
-            return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer)->toArray());
-        }
-        return view('languages.alphabets.index');
+    	if(!$this->api) return view('languages.alphabets.index');
+
+		$alphabets = Alphabet::select('script','name','family','type','direction')->get();
+		return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer)->toArray());
     }
 
     /**
@@ -31,12 +31,11 @@ class AlphabetsController extends APIController
      */
     public function show($id)
     {
-        if($this->api) {
-	        $alphabet = Alphabet::with('fonts','languages')->find($id);
-	        if(!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
-        	return $this->reply(fractal()->item($alphabet)->transformWith(AlphabetTransformer::class)->serializeWith($this->serializer)->ToArray());
-        }
-        return view('languages.alphabets.show', compact('alphabet'));
+	    $alphabet = Alphabet::with('fonts','languages')->find($id);
+    	if(!$this->api) return view('languages.alphabets.show', compact('alphabet'));
+
+	    if(!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
+        return $this->reply(fractal()->item($alphabet)->transformWith(AlphabetTransformer::class)->serializeWith($this->serializer)->ToArray());
     }
 
 
@@ -48,8 +47,31 @@ class AlphabetsController extends APIController
     public function create()
     {
         $user = Auth::user();
-        if(!$user->hasRole('archivist')) return $this->setStatusCode(403)->replyWithError("You are not an archivist");
+        if(!$user->role('archivist')) return $this->setStatusCode(403)->replyWithError("You are not an archivist");
         return view('languages.alphabets.create');
+    }
+
+	/**
+	 * Store a brand new Alphabet
+	 *
+	 * @return JSON|View
+	 */
+    public function store(Request $request)
+    {
+	    $validator = Validator::make($request->all(), [
+		    'script'                  => 'required|unique:alphabets,script|max:4|min:4',
+		    'name'                    => 'required|unique:alphabets,name'
+	    ]);
+
+	    $alphabet = \DB::transaction(function () use($request) {
+		    $alphabet = new Alphabet();
+		    $alphabet = $alphabet->create($request->all());
+
+		    return $alphabet;
+	    });
+
+
+
     }
 
     /**

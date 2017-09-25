@@ -82,7 +82,7 @@ class OrganizationsController extends APIController
 	{
 		$user = \Auth::user();
 		if($user) $organizations = Organization::with('translations')->get();
-		return view('community.organizations.create');
+		return view('organizations.create');
 	}
 
 	public function apply()
@@ -90,7 +90,7 @@ class OrganizationsController extends APIController
 		$user = \Auth::user();
 		if(!$user) return $this->replyWithError("You must be logged in");
 		$organizations = Organization::with('translations')->get();
-		return view('dashboard.organizations.apply',compact('user','organizations'));
+		return view('dashboard.organizations.roles.create',compact('user','organizations'));
 	}
 
 	/**

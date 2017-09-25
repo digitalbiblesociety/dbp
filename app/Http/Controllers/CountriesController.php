@@ -23,11 +23,10 @@ class CountriesController extends APIController
      */
     public function index()
     {
-        if($this->api) {
-	        $countries = Country::select('id','name')->get();
-	        return fractal()->collection($countries)->transformWith(new CountryTransformer())->ToArray();
-        }
-        return view('countries.index');
+    	if(!$this->api) return view('countries.index');
+
+		$countries = Country::select('id','name')->get();
+		return fractal()->collection($countries)->transformWith(new CountryTransformer())->ToArray();
     }
 
     /**
@@ -38,12 +37,11 @@ class CountriesController extends APIController
      */
     public function show($id)
     {
-    	if($this->api) {
-		    $country = Country::find($id);
-		    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
-		    return fractal()->collection($country)->transformWith(new CountryTransformer())->ToArray();
-	    }
-	    return view('countries.show',compact('country'));
+	    $country = Country::find($id);
+	    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
+    	if(!$this->api) return view('countries.show',compact('country'));
+
+		return fractal()->collection($country)->transformWith(new CountryTransformer())->ToArray();
     }
 
 	/**

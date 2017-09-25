@@ -19,3 +19,14 @@
 */
 
 @import "foundation";
+
+nav[role="navigation"] {
+  background-color: #fff;
+  border-bottom:thin solid #f8f8f8;
+}
+
+.centered {
+  margin: 0 auto!important;
+  display: block;
+  float: none;
+}

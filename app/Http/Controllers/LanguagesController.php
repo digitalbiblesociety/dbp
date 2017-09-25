@@ -43,7 +43,7 @@ class LanguagesController extends APIController
     {
 		if(!$this->api) return view('languages.volumes');
 
-		$languages = Language::select('id','iso','iso2B','iso2T','iso1','name','autonym')->has('bibles')->has('parent')->with('parent.language')->get();
+		$languages = Language::select('id','iso','iso2B','iso2T','iso1','name','autonym')->with('bibles')->with('parent')->with('parent.language')->get();
 		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
     }
 
@@ -56,14 +56,10 @@ class LanguagesController extends APIController
 	 */
 	public function volumeLanguageFamily()
 	{
-		// First handle API
-		if($this->api) {
-			$languages = Language::select('id','iso','iso2B','iso2T','iso1','name','autonym')->has('bibles')->has('dialects')->with(['dialects.childLanguage' => function($query) {$query->select(['id','iso']);}])->get();
-			return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
-		}
+		if(!$this->api) return view('languages.volumes');
 
-		// Than return view
-		return view('languages.volumes');
+		$languages = Language::select('id','iso','iso2B','iso2T','iso1','name','autonym')->with('bibles')->with('dialects')->with(['dialects.childLanguage' => function($query) {$query->select(['id','iso']);}])->get();
+		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
 	}
 
 	/**
@@ -135,7 +131,7 @@ class LanguagesController extends APIController
      */
     public function update(Request $request, $id)
     {
-        //
+
     }
 
     /**

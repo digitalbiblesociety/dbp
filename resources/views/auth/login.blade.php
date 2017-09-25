@@ -248,6 +248,7 @@
                         <input class="login-box-input" type="text" name="username" placeholder="Username" value="{{ old('email') }}" required />
                         <input class="login-box-input" type="password" name="password" placeholder="Password" required />
                         <input class="login-box-submit-button" type="submit" name="signup_submit" value="Sign In" />
+                        <a href="{{ route('register') }}">Register</a>
                     </form>
                 </div>
             </div>

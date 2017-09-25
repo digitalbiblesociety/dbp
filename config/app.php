@@ -180,12 +180,12 @@ return [
 	    /*
 	     * API Service Providers
 	     */
-	    Spatie\Fractal\FractalServiceProvider::class,
 	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
 	    Laravel\Socialite\SocialiteServiceProvider::class,
 	    Barryvdh\Cors\ServiceProvider::class,
 	    Intouch\LaravelNewrelic\NewrelicServiceProvider::class,
 	    //Lanin\Laravel\ApiDebugger\ServiceProvider::class,
+	    Yajra\DataTables\DataTablesServiceProvider::class,
 
 	    // AWS Packages
 	    Aws\Laravel\AwsServiceProvider::class,
@@ -195,6 +195,8 @@ return [
 	     * Site Packages
 	     */
 	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
+	    Anhskohbo\NoCaptcha\NoCaptchaServiceProvider::class,
+
 
     ],
 
@@ -251,6 +253,7 @@ return [
 	    'Bucket' => \Helpers\AWS\bucket::class,
         'i18n' => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
         'Newrelic' => Intouch\LaravelNewrelic\Facades\Newrelic::class,
+        'Datatables' => Yajra\Datatables\Facades\Datatables::class,
         //'Debugger' => Lanin\Laravel\ApiDebugger\Facade::class,
 
     ],

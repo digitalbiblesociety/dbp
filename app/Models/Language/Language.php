@@ -90,12 +90,12 @@ class Language extends Model
 
     public function biblesSophia()
     {
-        return $this->HasMany(Bible::class)->has('sophia');
+        return $this->HasMany(Bible::class)->filled('sophia');
     }
 
     public function biblesWithoutSophia()
     {
-        return $this->HasMany(Bible::class)->has('sophia', '<', 1);
+        return $this->HasMany(Bible::class)->filled('sophia', '<', 1);
     }
 
     public function resources()

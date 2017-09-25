@@ -91,10 +91,35 @@ class TextController extends APIController
 	    if(!$this->api) return view('docs.v2.text_search');
 
 	    $query = checkParam('query');
+	    $exclude = checkParam('exclude', null, 'optional');
 	    $bible_id = checkParam('dam_id');
-	    $limit = checkParam('limit', null, 'optional') ?? 50;
+	    $limit = checkParam('limit', null, 'optional') ?? 15;
 
-	    $verses = Text::with('book')->where('bible_id',$bible_id)->where('verse_text', 'LIKE', '%'.$query.'%')->take($limit)->get();
+/*
+	    if (strpos($query, ' ') !== false) {
+	    	$query = explode(' ', $query);
+	    	foreach($query as $word) $sql_search[] = ['verse_text', 'LIKE', '%'.$word.'%'];
+
+	    	// Handle Possible Excludes
+
+	    	if($exclude) {
+	    		if(strpos($exclude, ' ') !== false) {
+				    $excludes = explode(' ', $exclude);
+				    foreach($excludes as $excluded) $sql_search[] = ['verse_text', 'NOT LIKE', '%'.$excluded.'%'];
+			    } else {
+				    $sql_search[] = ['verse_text', 'NOT LIKE', '%'.$exclude.'%'];
+			    }
+		    }
+
+		    $verses = Text::with('book')->where('bible_id',$bible_id)->where($sql_search)->take($limit)->get();
+	    } else {
+		    $verses = Text::with('book')->where('bible_id',$bible_id)->where('verse_text', 'LIKE', '%'.$query.'%')->take($limit)->get();
+	    }
+*/
+
+		$query = \DB::connection()->getPdo()->quote('+'.str_replace(' ',' +',$query).' -'.$exclude);
+	    $verses = Text::with('book')->where('bible_id',$bible_id)->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)->get();
+
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
     }
 

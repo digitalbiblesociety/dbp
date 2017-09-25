@@ -2,71 +2,7 @@
 
 use Illuminate\Http\Request;
 
-
-// API Versions
-Route::get('/',                             'HomeController@versions');
-Route::get('/api/apiversion',               'HomeController@versions');
-
-Route::get('bible/LanguageNames',           'BiblesController@languageNames');
-Route::get('bible/{id}/{book}/{chapter}',   'BiblesController@text');
-Route::get('bible/{abbr}/book/{book}',      'BiblesController@book');
-
-Route::get('bible/{abbr}/equivalents',      'BiblesController@equivalents')->name('api_bibles.equivalents');
-
-Route::resource('bible/films',              'BibleFilmsController',['names' => [
-	'index'   => 'v4_bible_films.index',
-	'edit'    => 'v4_bible_films.edit',
-	'create'  => 'v4_bible_films.create',
-	'show'    => 'v4_bible_films.show',
-]]);
-
-Route::resource('bibles',                   'BiblesController',['names' => [
-    'index'   => 'api_bibles.index',
-    'edit'    => 'api_bibles.edit',
-    'create'  => 'api_bibles.create',
-    'show'    => 'api_bibles.show',
-]]);
-Route::resource('languages',                'LanguagesController',['names' => [
-	'index'   => 'api_languages.index',
-	'edit'    => 'api_languages.edit',
-	'create'  => 'api_languages.create',
-	'show'    => 'api_languages.show',
-]]);
-Route::resource('alphabets',                'AlphabetsController',['names' => [
-	'index'   => 'api_alphabets.index',
-	'edit'    => 'api_alphabets.edit',
-	'create'  => 'api_alphabets.create',
-	'show'    => 'api_alphabets.show',
-]]);
-Route::resource('countries',                'CountriesController',['names' => [
-	'index'   => 'api_alphabets.index',
-	'edit'    => 'api_alphabets.edit',
-	'create'  => 'api_alphabets.create',
-	'show'    => 'api_alphabets.show',
-]]);
-Route::get('library/organization',          'OrganizationsController@index');
-Route::resource('organizations',            'OrganizationsController',['names' => [
-	'index'   => 'api_organizations.index',
-	'edit'    => 'api_organizations.edit',
-	'create'  => 'api_organizations.create',
-	'show'    => 'api_organizations.show',
-]]);
-Route::resource('users',            'UsersController',['names' => [
-	'index'   => 'api_users.index',
-	'edit'    => 'api_users.edit',
-	'create'  => 'api_users.create',
-	'show'    => 'api_users.show',
-]]);
-Route::resource('books',      'BooksController',['names' => [
-	'index'   => 'v4_api_books.index',
-	'edit'    => 'v4_api_books.edit',
-	'create'  => 'v4_api_books.create',
-	'show'    => 'v4_api_books.show',
-]]);
-Route::get('bible/{abbr}/books',            'BiblesController@books')->name('api_v4_books');
-Route::get('sign', 'HomeController@signedUrl');
-
-	// VERSION 2
+		// VERSION 2
 
 		// Library
 		Route::get('library/asset',                'HomeController@libraryAsset')->name('v2_library_asset');
@@ -84,6 +20,7 @@ Route::get('sign', 'HomeController@signedUrl');
 		Route::get('library/volumelanguagefamily', 'LanguagesController@volumeLanguageFamily')->name('v2_library_volumeLanguageFamily');
 		Route::get('library/volumeorganization',   'OrganizationsController@index')->name('v2_volume_organization_list');
 		Route::get('library/volumehistory',        'BiblesController@history')->name('v2_volume_history');
+		Route::get('library/organization',          'OrganizationsController@index');
 
 		// Audio
 		Route::get('audio/location',               'AudioController@location')->name('v2_audio_location');
@@ -109,10 +46,69 @@ Route::get('sign', 'HomeController@signedUrl');
 
 	// VERSION 4
 
-		// Library
+		// Bibles
+		Route::get('bible/LanguageNames',           'BiblesController@languageNames');
+		Route::get('bible/{abbr}/equivalents',      'BiblesController@equivalents')->name('api_bibles.equivalents');
+		Route::get('bible/{id}/{book}/{chapter}',   'BiblesController@text');
+		Route::get('bible/{abbr}/book/{book}',      'BiblesController@book');
+		Route::get('bible/{abbr}/books',            'BiblesController@books')->name('api_v4_books');
+		Route::resource('bible/films',              'BibleFilmsController',['names' => [
+			'index'   => 'v4_bible_films.index',
+			'update'  => 'v4_bible_films.update',
+			'store'   => 'v4_bible_films.store',
+			'show'    => 'v4_bible_films.show',
+		]]);
+		Route::resource('/bibles/books',      'BooksController',['names' => [
+			'index'   => 'v4_api_books.index',
+			'update'  => 'v4_api_books.update',
+			'store'   => 'v4_api_books.store',
+			'show'    => 'v4_api_books.show',
+		]]);
+		Route::resource('bibles',                   'BiblesController',['names' => [
+			'index'   => 'api_bibles.index',
+			'update'  => 'api_bibles.update',
+			'store'   => 'api_bibles.store',
+			'show'    => 'api_bibles.show',
+		]]);
 
+		// Country
+		Route::resource('countries',                'CountriesController', ['names' => [
+			'index'   => 'api_countries.index',
+			'update'  => 'api_countries.update',
+			'store'   => 'api_countries.store',
+			'show'    => 'api_countries.show',
+		]]);
+
+		// Languages
+		Route::resource('languages',                'LanguagesController',['names' => [
+			'index'   => 'api_languages.index',
+			'update'  => 'api_languages.update',
+			'store'   => 'api_languages.store',
+			'show'    => 'api_languages.show',
+		]]);
+		Route::resource('alphabets',                'AlphabetsController',['names' => [
+			'index'   => 'api_alphabets.index',
+			'update'  => 'api_alphabets.update',
+			'store'   => 'api_alphabets.store',
+			'show'    => 'api_alphabets.show',
+		]]);
+
+		// Community
+		Route::resource('/organizations',            'OrganizationsController',['names' => [
+			'index'   => 'api_organizations.index',
+			'update'  => 'api_organizations.update',
+			'store'   => 'api_organizations.store',
+			'show'    => 'api_organizations.show',
+		]]);
+		Route::resource('/users',              'UsersController',['names' => [
+			'index'   => 'api_users.index',
+			'update'  => 'api_users.update',
+			'store'   => 'api_users.store',
+			'show'    => 'api_users.show',
+		]]);
 
 		// API INFO
+		Route::get('sign', 'HomeController@signedUrl');
 		Route::get('/api/versions',                'HomeController@versions')->name('v4_api_versions');
 		Route::get('/api/versions/latest',         'HomeController@versionLatest')->name('v4_api_versionLatest');
 		Route::get('/api/versions/replyFormats',   'HomeController@versionReplyFormats')->name('v4_api_replyFormats');

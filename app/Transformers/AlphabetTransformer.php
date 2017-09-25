@@ -61,11 +61,13 @@ class AlphabetTransformer extends TransformerAbstract
 	public function transformForV4(Alphabet $alphabet)
 	{
 		return [
-			'name' => $alphabet->name,
-			'script' => $alphabet->script,
-			'family' => $alphabet->family,
-			'type' => $alphabet->type,
-			'direction' => $alphabet->direction
+			'name'      => $alphabet->name,
+			'script'    => $alphabet->script,
+			'family'    => $alphabet->family,
+			'type'      => $alphabet->type,
+			'direction' => $alphabet->direction,
+			'fonts'     => $alphabet->fonts,
+			'languages' => $alphabet->languages
 		];
 	}
 

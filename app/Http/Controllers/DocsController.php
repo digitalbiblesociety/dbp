@@ -58,6 +58,11 @@ class DocsController extends APIController
 		return view('docs.swagger');
 	}
 
+	public function history()
+	{
+		return view('docs.history');
+	}
+
 	/**
 	 * Move along
 	 *

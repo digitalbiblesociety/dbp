@@ -20,14 +20,11 @@ class BooksController extends APIController
 	 */
 	public function index()
 	{
-		if($this->api) {
-			return \Cache::remember('v4_books_index', 2400, function() {
-				$books = Book::with('codes')->orderBy('book_order')->get();
-				return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer()));
-			});
-		}
-
-		return view('docs.books');
+		if(!$this->api) return view('docs.books');
+		return \Cache::remember('v4_books_index', 2400, function() {
+			$books = Book::with('codes')->orderBy('book_order')->get();
+			return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer()));
+		});
 	}
 
 
@@ -84,13 +81,12 @@ class BooksController extends APIController
 	 */
 	public function chapters()
     {
-	    if($this->api) {
-		    $bible_id = checkParam('dam_id');
-		    $book_id = checkParam('book_id');
-		    $chapters = Text::where('bible_id',$bible_id)->Where('book_id',$book_id)->select('chapter_number','bible_id','book_id')->distinct()->orderBy('chapter_number')->get();
-		    return $this->reply(fractal()->collection($chapters)->transformWith(new BooksTransformer()));
-	    }
-		return view('docs.books.chapters');
+	    if(!$this->api) return view('docs.books.chapters');
+
+		$bible_id = checkParam('dam_id');
+		$book_id = checkParam('book_id');
+		$chapters = Text::where('bible_id',$bible_id)->Where('book_id',$book_id)->select('chapter_number','bible_id','book_id')->distinct()->orderBy('chapter_number')->get();
+		return $this->reply(fractal()->collection($chapters)->transformWith(new BooksTransformer()));
     }
 
 }
