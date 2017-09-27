@@ -43,17 +43,10 @@ class CreateLanguagesTable extends Migration
             $table->text('typology')->nullable();
             $table->text('writing')->nullable();
             $table->text('description')->nullable();
-            $table->integer('family_pk')->unsigned()->default(0)->nullable();
-            $table->integer('father_pk')->unsigned()->default(0)->nullable();
-            $table->integer('child_dialect_count')->unsigned()->default(0)->nullable();
-            $table->integer('child_family_count')->unsigned()->default(0)->nullable();
-            $table->integer('child_language_count')->unsigned()->default(0)->nullable();
             $table->float('latitude',11,7)->nullable();
             $table->float('longitude',11,7)->nullable();
-            $table->integer('pk')->unsigned()->default(0);
             $table->text('status')->nullable();
             $table->char('country_id',2)->nullable();
-            $table->string('scope')->nullable();
             $table->timestamps();
         });
 
@@ -110,7 +103,7 @@ class CreateLanguagesTable extends Migration
             $table->string('type')->nullable();
 	        $table->string('white_space')->nullable();
 	        $table->string('open_type_tag')->nullable();
-	        $table->boolean('complex_positioning');
+	        $table->string('complex_positioning')->nullable();
 	        $table->boolean('requires_font')->default(0);
 	        $table->boolean('unicode')->default(1);
 	        $table->boolean('diacritics')->nullable();

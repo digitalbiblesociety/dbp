@@ -11,8 +11,11 @@
         <li>
             <a href="#">Create New...</a>
             <ul class="vertical menu">
-                <li><a href="/bibles/create">Bibles</a></li>
-                <li><a href="/resources/create">Resources</a></li>
+                <li><a href="/bibles/create">Bible</a></li>
+                <li><a href="/resources/create">Resource</a></li>
+                <li><a href="/languages/create">Language</a></li>
+                <li><a href="/alphabets/create">Alphabet</a></li>
+                <li><a href="/numbers/create">Numeral Set</a></li>
             </ul>
         </li>
         @endif

@@ -49,8 +49,24 @@ Route::resource('bibles',                   'BiblesController', ['names' => [
 
 
 Route::resource('books',                    'BooksController');
-Route::resource('languages',                'LanguagesController');
-Route::resource('alphabets',                'AlphabetsController');
+Route::resource('languages',                'LanguagesController', ['names' => [
+	'index'   => 'view_languages.index',
+	'edit'    => 'view_languages.edit',
+	'create'  => 'view_languages.create',
+	'show'    => 'view_languages.show',
+]]);
+Route::resource('numbers',                  'NumbersController', ['names' => [
+	'index'   => 'view_numbers.index',
+	'edit'    => 'view_numbers.edit',
+	'create'  => 'view_numbers.create',
+	'show'    => 'view_numbers.show',
+]]);
+Route::resource('alphabets',                'AlphabetsController', ['names' => [
+	'index'   => 'view_alphabets.index',
+	'edit'    => 'view_alphabets.edit',
+	'create'  => 'view_alphabets.create',
+	'show'    => 'view_alphabets.show',
+]]);
 Route::resource('countries',                'CountriesController',['only'=>['index','show']]);
 
 Route::get('login/{provider}',          'Auth\LoginController@redirectToProvider')->name('login.social_redirect');

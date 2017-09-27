@@ -12,7 +12,3 @@
     </form>
 
 @endsection
-
-@section('footer')
-
-@endsection

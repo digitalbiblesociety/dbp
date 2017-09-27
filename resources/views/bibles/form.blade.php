@@ -120,7 +120,7 @@
 <fieldset class="text-center callout">
     <legend>Equivalents</legend>
     <div class="equivalent-group">
-        <div class="row clonedInput" data-type="equivalent" data-closable>
+        <div class="row clonedInput" data-type="equivalent">
             <label class="medium-2 columns">Clone/Remove
                 <div class="button-group expanded columns">
                     <a tabindex="0" class="clone button expanded">+</a>

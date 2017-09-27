@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 		Route::get('library/chapter',              'BooksController@chapters')->name('v2_library_chapter');
 		Route::get('library/language',             'LanguagesController@index')->name('v2_library_language');
 		Route::get('library/verseinfo',            'VerseController@info')->name('v2_library_verseInfo');
-		Route::get('library/numbers',              'NumbersController@index')->name('v2_library_numbers');
+		Route::get('library/numbers',              'NumbersController@customRange')->name('v2_library_numbers');
 		Route::get('library/metadata',             'BiblesController@libraryMetadata')->name('v2_library_metadata');
 		Route::get('library/volume',               'BiblesController@index')->name('v2_library_volume');
 		Route::get('library/volumelanguage',       'LanguagesController@volumeLanguage')->name('v2_library_volumeLanguage');

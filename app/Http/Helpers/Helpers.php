@@ -56,3 +56,13 @@ function fetchAPI($path)
 	return json_encode($contents, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
 }
+
+function fetchSwaggerSchema($schema, $version = "v2") {
+	$arrContextOptions = (env('APP_ENV') == "local") ? stream_context_create([ "ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]]) : stream_context_create([]);
+	$swagger = new Swagger();
+	$swagger->url = env('APP_URL')."/swagger_$version.json";
+	$swagger->response = json_decode(file_get_contents($swagger->url, false, $arrContextOptions, true));
+	$swagger->schema = $this->swagger['components']['schemas'];
+	$swagger->field_names = array_keys($this->schemas[$schema]['properties']);
+	return $swagger;
+}

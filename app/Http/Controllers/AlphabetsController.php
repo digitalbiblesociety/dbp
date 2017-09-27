@@ -48,7 +48,8 @@ class AlphabetsController extends APIController
     {
         $user = Auth::user();
         if(!$user->role('archivist')) return $this->setStatusCode(403)->replyWithError("You are not an archivist");
-        return view('languages.alphabets.create');
+        $swagger = fetchSwaggerSchema('Alphabet','V4');
+        return view('languages.alphabets.create', compact('swagger'));
     }
 
 	/**
@@ -59,8 +60,27 @@ class AlphabetsController extends APIController
     public function store(Request $request)
     {
 	    $validator = Validator::make($request->all(), [
-		    'script'                  => 'required|unique:alphabets,script|max:4|min:4',
-		    'name'                    => 'required|unique:alphabets,name'
+		    'script'              => 'required|unique:alphabets,script|max:4|min:4',
+		    'name'                => 'required|unique:alphabets,name|max:191',
+		    'unicode_pdf'         => 'url',
+		    'family'              => 'string|max:191|nullable',
+		    'type'                => 'string|max:191|nullable',
+			'white_space'         => 'string|max:191|nullable',
+			'open_type_tag'       => 'string|max:191|nullable',
+			'complex_positioning' => 'boolean',
+			'requires_font'       => 'boolean',
+			'unicode'             => 'boolean',
+			'diacritics'          => 'boolean',
+			'contextual_forms'    => 'boolean',
+			'reordering'          => 'boolean',
+			'case'                => 'boolean',
+			'split_graphs'        => 'boolean',
+			'status'              => 'string|max:191|nullable',
+			'baseline'            => 'string|max:191|nullable',
+			'ligatures'           => 'string|max:191|nullable',
+			'direction'           => 'alpha|min:3|max:3',
+			'sample'              => 'max:2024',
+			'sample_img'          => 'image'
 	    ]);
 
 	    $alphabet = \DB::transaction(function () use($request) {

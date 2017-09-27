@@ -30,7 +30,10 @@
 
     <section class="row">
         <h3>Create Alphabet</h3>
-        <a href="">Field Descriptions, restrictions and requirements</a>
+        <ul class="tabs" data-tabs id="example-tabs">
+            <li class="tabs-title is-active"><a href="#fields" aria-selected="true">Single Creation</a></li>
+            <li class="tabs-title"><a data-tabs-target="field_descriptions" href="#field_descriptions">Field Descriptions</a></li>
+        </ul>
     </section>
 
     <form action="/alphabets" method="POST">

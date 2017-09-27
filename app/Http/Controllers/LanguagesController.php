@@ -72,7 +72,8 @@ class LanguagesController extends APIController
     {
     	$user = \Auth::user();
     	if(!$user->archivist) return $this->replyWithError("Sorry you must have Archivist Level Permissions");
-        return view('languages.create');
+	    $swagger = fetchSwaggerSchema('Language','V4');
+        return view('languages.create',compact('swagger'));
     }
 
 	/**
@@ -83,12 +84,21 @@ class LanguagesController extends APIController
      */
     public function store(Request $request)
     {
+    	$latLongRegex = '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$';
 	    $this->validate($request, [
-		    'iso'         => 'unique:languages|max:3',
-		    'glotto_code' => 'unique:languages|max:8',
-		    'name'        => 'required|max:191',
-		    'level'       => 'max:191',
-		    'maps'        => 'max:191',
+		    'glotto_id'             => 'alpha_num|unique:languages,glotto_id|max:8|required_if:iso,null|nullable',
+		    'iso'                   => 'alpha|unique:languages,iso|max:3|required_if:glotto_code,null|nullable',
+			'iso2B'                 => 'alpha|max:3|unique:languages,iso2B',
+			'iso2T'                 => 'alpha|max:3|unique:languages,iso2T',
+			'iso1'                  => 'alpha|max:2|unique:languages,iso1',
+			'name'                  => 'required|string|max:191',
+			'autonym'               => 'required|string|max:191',
+			'level'                 => 'string|max:191|nullable',
+			'maps'                  => 'string|max:191|nullable',
+			'population'            => 'integer',
+			'latitude'              =>  "regex:$latLongRegex",
+			'longitude'             =>  "regex:$latLongRegex",
+			'country_id'            =>  'alpha|max:2|exists:countries,id',
 	    ]);
 		Language::create($request->all());
 	    redirect()->route('languages_show',['id' => $request->id]);

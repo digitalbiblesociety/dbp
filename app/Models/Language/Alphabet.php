@@ -39,4 +39,9 @@ class Alphabet extends Model
 		return $this->HasMany(Bible::class,'script','script');
 	}
 
+	public function numerals()
+	{
+		return $this->HasMany(AlphabetNumber::class,'script_id');
+	}
+
 }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Language\Alphabet;
 use App\Models\Language\AlphabetNumber;
 
+use App\Models\Language\Language;
 use Illuminate\Http\Request;
 
 class NumbersController extends APIController
@@ -15,7 +17,7 @@ class NumbersController extends APIController
 	 *
 	 * @return JSON|View
 	 */
-	public function index()
+	public function customRange()
     {
 		$iso = checkParam('iso', null, true);
 		$start_number = checkParam('start');
@@ -42,6 +44,49 @@ class NumbersController extends APIController
 		    $current_number++;
 		}
 		return $this->reply($out_numbers);
+    }
+
+    public function index()
+    {
+	    $alphabets = Alphabet::has('numerals')->get();
+	    return view('languages.alphabets.numerals.index', compact('alphabets'));
+    }
+
+    public function show($system)
+    {
+    	$alphabet = Alphabet::with('languages.bibles.translations')->find($system);
+    	$numerals = AlphabetNumber::where('script_id', $system)->orderBy('numeral')->get();
+		return view('languages.alphabets.numerals.show',compact('numerals','alphabet'));
+    }
+
+    public function create()
+    {
+    	$alphabets = Alphabet::select('script')->get();
+    	$languages = Language::select('iso','name')->get();
+		return view('languages.alphabets.numerals.create',compact('alphabets','languages'));
+    }
+
+	public function store(Request $request)
+	{
+		$this->validate($request, [
+			'numerals.*.script_id'             => 'exists:alphabets,script|required',
+			'numerals.*.script_varient_iso'    => 'exists:languages,iso',
+			'numerals.*.numeral'               => 'required|integer',
+			'numerals.*.numeral_vernacular'    => 'string|max:191|required',
+			'numerals.*.numeral_written'       => 'string|max:191',
+		]);
+	}
+
+    public function edit($system)
+    {
+	    $numbers = AlphabetNumber::where('script_id', $system)->get();
+		if($this->api) return $numbers;
+		return view('languages.alphabets.numerals.edit',compact('numbers'));
+    }
+
+    public function update()
+    {
+
     }
 
 
