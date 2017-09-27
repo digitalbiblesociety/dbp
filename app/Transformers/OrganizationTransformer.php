@@ -86,11 +86,7 @@ class OrganizationTransformer extends BaseTransformer
 	 * @return array
 	 */
 	public function transformForV4(Organization $organization) {
-		return [
-			'glotto_code' => $organization->id,
-			'iso_code'    => $organization->iso,
-			'name'        => $organization->name
-		];
+		return $organization->toArray();
 	}
 
 }
