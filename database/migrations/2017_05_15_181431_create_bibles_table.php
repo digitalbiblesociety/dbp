@@ -64,7 +64,7 @@ class CreateBiblesTable extends Migration
 	        $table->string('bible_variation_id',12)->nullable();
 	        $table->foreign('bible_variation_id')->references('id')->on('bible_variations')->onUpdate('cascade')->onDelete('cascade');
             $table->string('equivalent_id');
-            $table->integer('organization_id')->unsigned();
+            $table->char('organization_id',36);
             $table->foreign('organization_id')->references('id')->on('organizations');
             $table->string('type')->nullable();
             $table->string('site')->nullable();
@@ -77,7 +77,7 @@ class CreateBiblesTable extends Migration
             $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
 	        $table->string('bible_variation_id',12)->nullable();
 	        $table->foreign('bible_variation_id')->references('id')->on('bible_variations')->onUpdate('cascade')->onDelete('cascade');
-            $table->integer('organization_id')->unsigned()->nullable();
+	        $table->char('organization_id',36)->nullable();
             $table->foreign('organization_id')->references('id')->on('organizations');
             $table->string('relationship_type');
 	        $table->timestamps();
@@ -90,7 +90,7 @@ class CreateBiblesTable extends Migration
 		    $table->string('type');
 		    $table->text('link');
 		    $table->string('title');
-		    $table->integer('organization_id')->unsigned();
+		    $table->char('organization_id',36)->nullable();
 		    $table->foreign('organization_id')->references('id')->on('organizations');
 		    $table->timestamp('created_at')->useCurrent();
 		    $table->timestamp('updated_at')->useCurrent();
@@ -101,6 +101,8 @@ class CreateBiblesTable extends Migration
 	        $table->char('id_usfx',2);
 	        $table->string('id_osis',12);
             $table->tinyInteger('book_order'); // Genesis 01
+	        $table->string('book_testament');
+	        $table->string('book_group');
             $table->Integer('chapters')->nullable()->unsigned();
             $table->Integer('verses')->nullable()->unsigned();
             $table->string('name');
@@ -132,25 +134,35 @@ class CreateBiblesTable extends Migration
 	        $table->timestamps();
         });
 
-	    Schema::create('bible_audio', function (Blueprint $table) {
-	    	$table->increments('id');
-		    $table->string('bible_id', 12);
-		    $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
-		    $table->string('bible_variation_id',12)->nullable();
-		    $table->foreign('bible_variation_id')->references('id')->on('bible_variations')->onUpdate('cascade')->onDelete('cascade');
+	    Schema::create('bible_files', function (Blueprint $table) {
+		    $table->char('id', 36)->primary();
+		    $table->string('bible_id',12);
+		    $table->foreign('bible_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
+		    $table->string('variation_id',12)->nullable();
+		    $table->foreign('variation_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
 		    $table->char('book_id',3);
 		    $table->foreign('book_id')->references('id')->on('books');
 		    $table->tinyInteger('chapter_start')->unsigned()->nullable();
 		    $table->tinyInteger('chapter_end')->unsigned()->nullable();
 		    $table->tinyInteger('verse_start')->unsigned()->nullable();
 		    $table->tinyInteger('verse_end')->unsigned()->nullable();
-		    $table->string('filename');
+		    $table->string('file_name');
+		    $table->string('file_type',12);
 		    $table->timestamps();
 	    });
 
-	    Schema::create('bible_audio_references', function (Blueprint $table) {
-		    $table->integer('audio_id')->unsigned();
-		    $table->foreign('audio_id')->references('id')->on('bible_audio');
+	    Schema::create('bible_file_permissions', function (Blueprint $table) {
+		    $table->string('bible_file_id',12);
+		    $table->foreign('bible_file_id')->references('id')->on('bible_files')->onUpdate('cascade')->onDelete('cascade');
+		    $table->char('user_id', 36)->primary();
+		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
+		    $table->string('access_level');
+		    $table->timestamps();
+	    });
+
+	    Schema::create('bible_file_timestamps', function (Blueprint $table) {
+		    $table->uuid('bible_file_id')->primary();
+		    $table->foreign('bible_file_id')->references('id')->on('bible_files');
 		    $table->char('book_id',3);
 		    $table->foreign('book_id')->references('id')->on('books');
 		    $table->tinyInteger('chapter_start')->unsigned()->nullable();
@@ -160,15 +172,6 @@ class CreateBiblesTable extends Migration
 		    $table->float('timestamp');
 		    $table->timestamps();
 	    });
-
-        Schema::create('bible_audio_organization', function (Blueprint $table) {
-	        $table->string('bible_variation_id',12);
-	        $table->foreign('bible_variation_id')->references('id')->on('bible_variations')->onUpdate('cascade')->onDelete('cascade');
-            $table->integer('organization_id')->unsigned();
-            $table->foreign('organization_id')->references('id')->on('organizations');
-            $table->string('contribution_type');
-	        $table->timestamps();
-        });
 
 	    Schema::create('bible_text', function (Blueprint $table) {
 		    $table->string('id', 32)->primary()->unique()->index();
@@ -184,6 +187,7 @@ class CreateBiblesTable extends Migration
 		    $table->text('verse_text');
 		    $table->timestamps();
 	    });
+	    DB::statement('ALTER TABLE bible_text ADD FULLTEXT(verse_text);');
 
     }
 
@@ -195,9 +199,9 @@ class CreateBiblesTable extends Migration
     public function down()
     {
 	    Schema::dropIfExists('bible_text');
-        Schema::dropIfExists('bible_audio_organization');
-	    Schema::dropIfExists('bible_audio_references');
-        Schema::dropIfExists('bible_audio');
+        Schema::dropIfExists('bible_file_permissions');
+	    Schema::dropIfExists('bible_file_timestamps');
+        Schema::dropIfExists('bible_files');
         Schema::dropIfExists('book_translations');
 	    Schema::dropIfExists('bible_books');
         Schema::dropIfExists('book_codes');

@@ -40,7 +40,7 @@ class CreateFilmsTables extends Migration
 		    $table->string('tag'); // "El topico"
 		    $table->integer('language_id')->unsigned()->nullable();
 		    $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
-		    $table->integer('organization_id')->unsigned()->nullable();
+		    $table->char('organization_id',36)->nullable();
 		    $table->foreign('organization_id')->references('id')->on('organizations');
 
 		    // Book and Chapter Linkage

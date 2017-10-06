@@ -254,6 +254,7 @@ return [
         'i18n' => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
         'Newrelic' => Intouch\LaravelNewrelic\Facades\Newrelic::class,
         'Datatables' => Yajra\Datatables\Facades\Datatables::class,
+        'Uuid' => Webpatser\Uuid\Uuid::class,
         //'Debugger' => Lanin\Laravel\ApiDebugger\Facade::class,
 
     ],

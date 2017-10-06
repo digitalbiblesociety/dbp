@@ -49,13 +49,16 @@ class CreateLanguagesTable extends Migration
             $table->char('country_id',2)->nullable();
             $table->timestamps();
         });
+	    DB::statement('ALTER TABLE languages ADD CONSTRAINT CHECK (iso IS NOT NULL OR glotto_id IS NOT NULL)');
 
         Schema::create('languages_translations', function (Blueprint $table) {
+	        $table->increments('id');
             $table->integer('language_source')->unsigned();
             $table->foreign('language_source')->references('id')->on('languages')->onUpdate('cascade');
             $table->integer('language_translation')->unsigned();
             $table->foreign('language_translation')->references('id')->on('languages')->onUpdate('cascade');
             $table->string('name');
+	        $table->text('description')->nullable();
 	        $table->timestamps();
         });
 
@@ -126,7 +129,7 @@ class CreateLanguagesTable extends Migration
 	    	$table->increments('id');
 		    $table->char('script_id',4);
 		    $table->foreign('script_id')->references('script')->on('alphabets')->onUpdate('cascade');
-		    $table->char('script_varient_iso',3);
+		    $table->char('script_varient_iso',3)->nullable();
 		    $table->integer('numeral')->unsigned();
 			$table->string('numeral_vernacular',12);
 		    $table->string('numeral_written',24);

@@ -14,7 +14,7 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-	        $table->char('id',24)->primary();
+	        $table->char('id', 36)->primary();
 	        $table->string('name');
 	        $table->string('nickname')->nullable();
 	        $table->string('avatar')->nullable();
@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
         });
 
 	    Schema::create('user_accounts', function (Blueprint $table) {
-		    $table->char('user_id',24)->primary();
+		    $table->char('user_id', 36)->primary();
 		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
 		    $table->string('provider');
 		    $table->string('provider_user_id');

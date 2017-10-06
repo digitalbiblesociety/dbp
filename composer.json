@@ -24,6 +24,7 @@
         "spatie/pdf-to-image": "^1.4",
         "symfony/yaml": "^3.3",
         "thiagoalessio/tesseract_ocr": "^1.1",
+        "webpatser/laravel-uuid": "^3.0",
         "yajra/laravel-datatables-oracle": "^8.0"
     },
     "require-dev": {

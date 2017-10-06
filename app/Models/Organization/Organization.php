@@ -12,7 +12,9 @@ use App\Models\Organization\OrganizationTranslation;
 class Organization extends Model
 {
     protected $fillable = ['name', 'email', 'password','facebook','twitter','website','address','phone'];
-
+	public $incrementing = false;
+	use Uuids;
+	
     /**
      * The attributes excluded from the model's JSON form.
      *
