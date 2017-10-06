@@ -35,7 +35,7 @@ class BiblesController extends APIController
 		$language = fetchLanguage(checkParam('language',null,'optional'));
 		$organization = checkParam('organization',null,'optional');
 
-		$bibles = Bible::has('fcbh')->with('translations','language.parent','alphabet','fcbh')->when($language, function ($query) use ($language) {
+		$bibles = Bible::with('translations','language.parent','alphabet','dbp')->when($language, function ($query) use ($language) {
 				return $query->where('glotto_id', $language->id);
 		    })->when($organization, function($q) use ($organization){
 			    $q->where('organization_id', '>=', $organization);
@@ -121,7 +121,7 @@ class BiblesController extends APIController
 		    return $bible;
 	    });
 
-	    return redirect()->route('webView_bibles.show', ['id' => $bible->id]);
+	    return redirect()->route('view_bibles.show', ['id' => $bible->id]);
     }
 
     /**

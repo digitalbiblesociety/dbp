@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bible\Audio;
-use App\Models\Bible\AudioReferences;
+use App\Models\Bible\BibleFileTimestamp;
 use App\Transformers\AudioTransformer;
 use Illuminate\Http\Request;
 

@@ -106,19 +106,14 @@ class Bible extends Model
         return $this->HasMany(BibleEquivalent::class);
     }
 
-    public function audio()
+    public function files()
     {
-        return $this->HasMany(Audio::class);
+        return $this->HasMany(BibleFile::class);
     }
 
     public function hasType($type)
     {
         return $this->HasMany(BibleEquivalent::class)->where('type',$type);
-    }
-
-    public function fcbh()
-    {
-	    return $this->HasOne(BibleEquivalent::class)->where('site','bible.is');
     }
 
     public function dbp()
@@ -128,7 +123,7 @@ class Bible extends Model
 
     public function dbl()
     {
-        return $this->HasMany(BibleEquivalent::class)->where('type','Digital Bible Library');
+        return $this->HasMany(BibleEquivalent::class)->where('site', 'Digital Bible Library');
     }
 
     public function eSword()

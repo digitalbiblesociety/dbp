@@ -41,6 +41,8 @@ class bible_books_seeder extends Seeder
 	        ];
 	        $book = new Book();
 	        $book->book_order = $canonItem['book_order'];
+	        $book->book_testament = $canonItem['book_testament'];
+	        $book->book_group = $canonItem['book_group'];
             $book->name = $canonItem['name'];
             $book->chapters = $canonItem['chapters'];
             $book->verses = $canonItem['verses'];
@@ -51,9 +53,6 @@ class bible_books_seeder extends Seeder
 	        $book->id_osis = $canonItem['osis'];
             $book->save();
         }
-
-
-
 
 	    $seederhelper = new SeederHelper();
 	    $bible_books = $seederhelper->csv_to_array(storage_path('/data/dbp2/bible_book_order.csv'));

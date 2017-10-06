@@ -57,12 +57,15 @@ function fetchAPI($path)
 
 }
 
-function fetchSwaggerSchema($schema, $version = "v2") {
+function fetchSwaggerSchema($schema, $version = "v4") {
 	$arrContextOptions = (env('APP_ENV') == "local") ? stream_context_create([ "ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]]) : stream_context_create([]);
-	$swagger = new Swagger();
-	$swagger->url = env('APP_URL')."/swagger_$version.json";
-	$swagger->response = json_decode(file_get_contents($swagger->url, false, $arrContextOptions, true));
-	$swagger->schema = $this->swagger['components']['schemas'];
-	$swagger->field_names = array_keys($this->schemas[$schema]['properties']);
+
+	$swagger['url'] = env('APP_URL') . "/swagger_$version.json";
+	$swagger['response'] = json_decode(file_get_contents($swagger['url'], false, $arrContextOptions), true);
+	if(!isset($swagger['response']['components']['schemas'][$schema])) return $swagger;
+	$swagger['schema'] = $swagger['response']['components']['schemas'][$schema];
+	$swagger['field_names'] = array_keys($swagger['schema']['properties']);
+	$swagger = collect($swagger);
+
 	return $swagger;
 }
