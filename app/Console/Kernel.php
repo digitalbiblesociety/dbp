@@ -17,7 +17,10 @@ class Kernel extends ConsoleKernel
         Commands\processDBLBundle::class,
 	    Commands\testArmor::class,
 	    Commands\fetchAlphabets::class,
+	    Commands\fetchLanguageDescriptions::class,
 	    Commands\countSophia::class,
+	    Commands\organizations_dbl_status::class,
+	    Commands\droptables::class
     ];
 
     /**
