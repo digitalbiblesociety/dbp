@@ -69,10 +69,17 @@ class HomeController extends APIController
 
 	public function signedUrl()
 	{
-		$filename = $_GET['filename'] ?? "";
+		$filenames = $_GET['filenames'] ?? "";
+		$filenames = explode(",",$filenames);
 		$signer = $_GET['signer'] ?? 's3_fcbh';
-		$bucket = $_GET['bucket'] ?? "dbp_dev";
+		$bucket = $_GET['bucket'] ?? "dbp-dev";
 		$expiry = $_GET['expiry'] ?? 5;
-		return Bucket::signedUrl($filename,$signer,$bucket,$expiry);
+
+		foreach($filenames as $filename) {
+			$filename = ltrim($filename, "/");
+			$paths = explode("/",$filename);
+			$urls["urls"][$paths[0]][$paths[1]][$paths[2]] = Bucket::signedUrl($filename,$signer,$bucket,$expiry);
+		}
+		return $this->reply($urls);
 	}
 }
