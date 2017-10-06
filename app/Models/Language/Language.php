@@ -18,7 +18,7 @@ use App\Models\Language\AlphabetFont;
 
 
 use App\Models\Country\Country;
-
+use App\Models\Resource\Resource;
 
 class Language extends Model
 {
@@ -46,7 +46,7 @@ class Language extends Model
     {
     	if($iso == null) $iso = \i18n::getCurrentLocale();
         $language = Language::where('iso',$iso)->first();
-        return $this->HasOne(LanguageTranslation::class)->where('glotto_translation', $language->id);
+        return $this->HasOne(LanguageTranslation::class,'language_source')->where('language_translation', $language->id);
     }
 
     /**

@@ -112,8 +112,7 @@ class LanguagesController extends APIController
 	 */
 	public function show($id)
     {
-	    $language = new Language();
-	    $language = $language->fetchByID($id);
+	    $language = fetchLanguage($id);
 	    $language->load("translations","codes","alternativeNames","dialects","classifications");
 	    if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
     	if($this->api) return $this->reply(fractal()->item($language)->transformWith(new LanguageTransformer())->toArray());

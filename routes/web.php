@@ -40,15 +40,25 @@ Route::get('bible/{id}/{book}/{chapter}',   'BiblesController@text');
 Route::get('bibles/audio/uploads/thanks',   'AudioProcessingController@thanks')->name('bibles_audio_uploads.thanks');
 Route::resource('bibles/audio/uploads',     'AudioProcessingController');
 Route::resource('bibles/ocr',               'PrintProcesses');
+Route::resource('bibles/connections',       'BibleConnectionsController', ['names' => [
+	'index'   => 'view_bible_connections.index',
+	'edit'    => 'view_bible_connections.edit',
+	'create'  => 'view_bible_connections.create',
+	'show'    => 'view_bible_connections.show',
+]]);
 Route::resource('bibles',                   'BiblesController', ['names' => [
-	'index'   => 'webView_bibles.index',
-	'edit'    => 'webView_bibles.edit',
-	'create'  => 'webView_bibles.create',
-	'show'    => 'webView_bibles.show',
+	'index'   => 'view_bibles.index',
+	'edit'    => 'view_bibles.edit',
+	'create'  => 'view_bibles.create',
+	'show'    => 'view_bibles.show',
 ]]);
 
-
-Route::resource('books',                    'BooksController');
+Route::resource('books',                    'BooksController', ['names' => [
+	'index'   => 'view_books.index',
+	'edit'    => 'view_books.edit',
+	'create'  => 'view_books.create',
+	'show'    => 'view_books.show',
+]]);
 Route::resource('languages',                'LanguagesController', ['names' => [
 	'index'   => 'view_languages.index',
 	'edit'    => 'view_languages.edit',
@@ -66,6 +76,12 @@ Route::resource('alphabets',                'AlphabetsController', ['names' => [
 	'edit'    => 'view_alphabets.edit',
 	'create'  => 'view_alphabets.create',
 	'show'    => 'view_alphabets.show',
+]]);
+Route::resource('resources',                'ResourcesController', ['names' => [
+	'index'   => 'view_resources.index',
+	'edit'    => 'view_resources.edit',
+	'create'  => 'view_resources.create',
+	'show'    => 'view_resources.show',
 ]]);
 Route::resource('countries',                'CountriesController',['only'=>['index','show']]);
 

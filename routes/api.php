@@ -92,6 +92,13 @@ use Illuminate\Http\Request;
 			'store'   => 'api_alphabets.store',
 			'show'    => 'api_alphabets.show',
 		]]);
+		Route::get('numbers/range',               'NumbersController@customRange');
+		Route::resource('numbers',                'NumbersController',['names' => [
+			'index'   => 'api_languages.index',
+			'update'  => 'api_languages.update',
+			'store'   => 'api_languages.store',
+			'show'    => 'api_languages.show',
+		]]);
 
 		// Community
 		Route::resource('/organizations',            'OrganizationsController',['names' => [

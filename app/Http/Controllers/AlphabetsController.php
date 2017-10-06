@@ -17,9 +17,9 @@ class AlphabetsController extends APIController
      */
     public function index()
     {
-    	if(!$this->api) return view('languages.alphabets.index');
+	    $alphabets = Alphabet::select('script','name','family','type','direction')->get();
+    	if(!$this->api) return view('languages.alphabets.index', compact('alphabets'));
 
-		$alphabets = Alphabet::select('script','name','family','type','direction')->get();
 		return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer)->toArray());
     }
 
@@ -48,8 +48,7 @@ class AlphabetsController extends APIController
     {
         $user = Auth::user();
         if(!$user->role('archivist')) return $this->setStatusCode(403)->replyWithError("You are not an archivist");
-        $swagger = fetchSwaggerSchema('Alphabet','V4');
-        return view('languages.alphabets.create', compact('swagger'));
+        return view('languages.alphabets.create');
     }
 
 	/**
