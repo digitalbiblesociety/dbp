@@ -11,7 +11,7 @@ const { mix } = require('laravel-mix');
  |
  */
 
-mix.sass('resources/assets/sass/app.scss', 'public/css').version();
+mix.sass('resources/assets/sass/app.scss', 'public/css');
 
 var foundationJsFolder = '../../../node_modules/foundation-sites/js/';
 mix.combine([
@@ -51,4 +51,8 @@ mix.combine([
     foundationJsFolder + 'foundation.util.touch.js',
     foundationJsFolder + 'foundation.util.triggers.js',
     '/resources/assets/js/foundation-init.js'
-], 'public/js/app.js').version();
+], 'public/js/app.js');
+
+mix.browserSync({
+    proxy: 'https://dbp.dev'
+});

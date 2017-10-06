@@ -5,27 +5,7 @@ window.$ = window.jQuery = require("jquery");
 import selectize from "./selectize.js";
 $(".selectize").selectize();
 
-
-// Swagger
-import SwaggerUIBundle from './swagger-ui-bundle.js';
-import SwaggerUIStandalonePreset from './swagger-ui-standalone-preset.js';
 window.onload = function() {
-
-    // Build a Swagger system
-    const ui = SwaggerUIBundle({
-        url: "/swagger.json",
-        dom_id: '#swagger-ui',
-        deepLinking: true,
-        presets: [
-            SwaggerUIBundle.presets.apis,
-            SwaggerUIStandalonePreset
-        ],
-        plugins: [
-            SwaggerUIBundle.plugins.DownloadUrl
-        ],
-        layout: "StandaloneLayout"
-    })
-    window.ui = ui
 
     // Reveal any no-fouc elements
     var elems = $(".no-fouc");

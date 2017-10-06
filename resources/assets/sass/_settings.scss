@@ -69,11 +69,11 @@ $global-font-size: 100%;
 $global-width: rem-calc(1200);
 $global-lineheight: 1.5;
 $foundation-palette: (
-  primary: #1779ba,
+  primary: #00b09b,
   secondary: #767676,
-  success: #3adb76,
-  warning: #ffae00,
-  alert: #cc4b37,
+  success: #56ab2f,
+  warning: #F2994A,
+  alert: #ff5e62,
 );
 $light-gray: #e6e6e6;
 $medium-gray: #cacaca;
@@ -82,7 +82,7 @@ $black: #0a0a0a;
 $white: #fefefe;
 $body-background: $white;
 $body-font-color: $black;
-$body-font-family: 'Open Sans', Arial, sans-serif;
+$body-font-family: 'Roberto', sans-serif;
 $body-antialiased: true;
 $global-margin: 1.5rem;
 $global-padding: 1.5rem;
@@ -839,8 +839,8 @@ $tooltip-radius: $global-radius;
 // 55. Top Bar
 // -----------
 
-$topbar-padding: 0.5rem;
-$topbar-background: $light-gray;
+$topbar-padding: 0.25rem;
+$topbar-background: $white;
 $topbar-submenu-background: $topbar-background;
 $topbar-title-spacing: 0.5rem 1rem 0.5rem 0;
 $topbar-input-width: 200px;
@@ -849,7 +849,7 @@ $topbar-unstack-breakpoint: medium;
 // 56. Xy Grid
 // -----------
 
-$xy-grid: true;
+$xy-grid: false;
 $grid-container: $global-width;
 $grid-columns: 12;
 $grid-margin-gutters: (
