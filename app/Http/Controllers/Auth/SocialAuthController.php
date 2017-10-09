@@ -34,6 +34,7 @@ class SocialAuthController extends APIController
 					'nickname' => $providerUser->getNickname(),
 					'email'    => $providerUser->getEmail(),
 					'name'     => $providerUser->getName(),
+					'avatar'   => $providerUser->getAvatar()
 				]);
 			}
 			$account->user()->associate($user);
