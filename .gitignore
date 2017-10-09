@@ -1,3 +1,6 @@
+# Eric's Bible Processor
+/aletheia
+
 /node_modules
 /public/hot
 /public/storage
@@ -6,10 +9,14 @@
 /storage/*.key
 /storage/data/
 /vendor
+
+# Locally Generated Development Files
 /.idea
 /.vagrant
 Homestead.json
 Homestead.yaml
 npm-debug.log
 .env
+
+# The Mac
 .DS_STORE
