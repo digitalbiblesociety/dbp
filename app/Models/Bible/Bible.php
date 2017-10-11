@@ -16,6 +16,7 @@ class Bible extends Model
      * @var string
      */
     protected $primaryKey = 'id';
+    protected $keyType = 'string';
 
     /**
      * Hides values from json return for api

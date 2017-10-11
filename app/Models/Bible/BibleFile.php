@@ -8,10 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class BibleFile extends Model
 {
 	protected $table = "bible_files";
-
 	public $incrementing = false;
-	public $primaryKey = 'id';
-
+	protected $primaryKey = 'id';
+	protected $keyType = 'string';
 	use Uuids;
 
 	public function language()
@@ -29,7 +28,7 @@ class BibleFile extends Model
 		return $this->BelongsTo(Book::class);
 	}
 
-	public function references()
+	public function timestamps()
 	{
 		return $this->hasMany(BibleFileTimestamp::class);
 	}

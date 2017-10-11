@@ -38,9 +38,9 @@ class AudioTransformer extends TransformerAbstract
 
 		    case "v2_audio_path": {
 			    return [
-				    "book_id"    => $audio->book->id_osis,
+				    "book_id"    => $audio->book_id,
 				    "chapter_id" => $audio->chapter_start,
-				    "path"       => $audio->filename
+				    "path"       => $audio->file_name
 			    ];
 		    }
 
@@ -49,9 +49,13 @@ class AudioTransformer extends TransformerAbstract
 
 	public function transformForV4($audio) {
 		return [
-			"book_id"    => $audio->book->osis->code,
-			"chapter_id" => $audio->chapter_start,
-			"path"       => $audio->filename
+			"book_id"       => $audio->book_id,
+			"chapter_start" => $audio->chapter_start,
+			"chapter_end"   => $audio->chapter_end,
+			"verse_start"   => $audio->verse_start,
+			"verse_end"     => $audio->verse_end,
+			"timestamp"     => $audio->timestamp,
+			"path"          => $audio->file_name
 		];
 	}
 

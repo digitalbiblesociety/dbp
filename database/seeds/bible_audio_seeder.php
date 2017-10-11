@@ -19,7 +19,6 @@ class bible_audio_seeder extends Seeder
     {
 	    ini_set('memory_limit', '3000M');
 
-	    \DB::table('bible_file_timestamps')->delete();
 	    \DB::table('bible_files')->delete();
 
 	    $seederhelper = new SeederHelper();
@@ -45,36 +44,6 @@ class bible_audio_seeder extends Seeder
 			]);
 	    }
 	    echo "Missing IDs: ".implode(',',array_unique($missing));
-
-
-		// Attach Timestamps
-		$timestamps = $seederhelper->csv_to_array(storage_path() . "/data/dbp2/tlibrary_audio_timestamps.csv");
-		    foreach ($timestamps as $timestamp) {
-			    $dam_id = substr($timestamp['dam_id'],0,7);
-
-			    // Select Bible using FCBH DAM_ID
-			    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$dam_id)->first();
-			    if(!$bibleEquivalent) {$missing[] = $dam_id; continue;}
-			    // Create the Audio Resource
-			    $bible = $bibleEquivalent->bible;
-			    $book = Book::where('id_osis',$timestamp['osis_code'])->first();
-			    if(!$book) {echo "Missing OSIS:". $timestamp['osis_code'];continue;}
-
-			    $bibleFile = BibleFile::where([['book_id',$book->id],['chapter_start',$timestamp['chapter_number']],['bible_id',$bible->id]])->first();
-			    dd($book->id.' '. $timestamp['chapter_number']. ' '. $bible->id);
-			    if(!$bibleFile) {echo "\n Missing Audio";continue;}
-
-		        BibleFileTimestamp::create([
-		        	'bible_file_id' => $bibleFile->id,
-			        'book_id'       => $book->id,
-			        'chapter_start' => $timestamp['chapter_number'],
-			        'chapter_end'   => null,
-			        'verse_start'   => $timestamp['verse_number'],
-			        'verse_end'     => null,
-			        'timestamp'     => $timestamp['timestamp']
-		        ]);
-		    }
-
 
     }
 }

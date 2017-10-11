@@ -3,6 +3,8 @@
 namespace App\Models\Bible;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Bible\BibleFile;
+use App\Models\Bible\BibleFileTimestamp;
 
 class Text extends Model
 {
@@ -70,5 +72,32 @@ class Text extends Model
         if($previousChapter != 0) return ($this->chapter + 1);
         return false;
     }
+
+    /*
+     * File Connections
+     */
+
+    public function files()
+    {
+	    return $this->hasMany(BibleFile::class,'bible_id', 'bible_id');
+    }
+
+    public function audio()
+    {
+    	return $this->hasMany(BibleFile::class,'bible_id', 'bible_id')->where('file_type', 'audio');
+    }
+
+	public function timestamps()
+	{
+		return $this->hasManyThrough(
+			BibleFileTimestamp::class,
+			BibleFile::class,
+			'bible_id', // Foreign key on users table...
+			'bible_id', // Foreign key on timestamps table...
+			'bible_id', // Local key on countries table...
+			'bible_id' // Local key on users table...
+		);
+	}
+
 
 }
