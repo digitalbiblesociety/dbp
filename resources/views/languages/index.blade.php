@@ -48,9 +48,8 @@
 @endsection
 
 @section('content')
-    <div class="banner">
-        <h1 class="text-center">Languages</h1>
-    </div>
+
+    @include('layouts.partials.banner', ['title' => 'Languages'])
 
     <div class="row">
         <table class="table" cellspacing="0" width="100%" data-route="languages" data-invisiblecolumns="0">

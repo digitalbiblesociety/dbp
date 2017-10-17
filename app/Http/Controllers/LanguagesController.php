@@ -71,7 +71,7 @@ class LanguagesController extends APIController
     public function create()
     {
     	$user = \Auth::user();
-    	if(!$user->archivist) return $this->replyWithError("Sorry you must have Archivist Level Permissions");
+    	if(!$user->archivist) return $this->setStatusCode(401)->replyWithError("Sorry you must have Archivist Level Permissions");
 	    $swagger = fetchSwaggerSchema('Language','V4');
         return view('languages.create',compact('swagger'));
     }
@@ -113,7 +113,7 @@ class LanguagesController extends APIController
 	public function show($id)
     {
 	    $language = fetchLanguage($id);
-	    $language->load("translations","codes","alternativeNames","dialects","classifications");
+	    $language->load("translations","codes","alternativeNames","dialects","classifications","countries");
 	    if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
     	if($this->api) return $this->reply(fractal()->item($language)->transformWith(new LanguageTransformer())->toArray());
         return view('languages.show',compact('language'));

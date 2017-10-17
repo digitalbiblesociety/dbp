@@ -28,20 +28,17 @@
 
 @section('content')
 
+    @include('layouts.partials.banner', ['title' => 'Create Numbers'])
     <section class="row">
-        <h3>Create Numbers</h3>
         <ul class="tabs" data-tabs id="example-tabs">
             <li class="tabs-title is-active"><a href="#fields" aria-selected="true">Single Creation</a></li>
             <li class="tabs-title"><a data-tabs-target="field_descriptions" href="#field_descriptions">Field Descriptions</a></li>
         </ul>
     </section>
-
     <form action="/numbers" method="POST" class="row">
         {{ csrf_field() }}
         @include('languages.alphabets.numerals.form')
     </form>
-
-
 @endsection
 
 @section('footer')

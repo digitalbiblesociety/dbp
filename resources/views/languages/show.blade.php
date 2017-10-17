@@ -102,6 +102,12 @@
             opacity: 1;
         }
 
+        @media screen and (max-device-width: 500px) {
+            #language-tabs .tabs-title.is-active a {
+                border: none;
+            }
+        }
+
     </style>
 @endsection
 
@@ -115,10 +121,13 @@
             <span itemprop="alternateName">{{ $translation->name }}</span>
         @endforeach
     </small>
-    <div class="tabs medium-6 columns centered text-center" data-tabs id="language-tabs">
-        <div class="medium-4 columns tabs-title is-active"><a href="#information-tab" aria-selected="true">Information</a></div>
-        <div class="medium-4 columns tabs-title"><a data-tabs-target="bibles-tab" href="#bibles-tab">Bibles</a></div>
-        <div class="medium-4 columns tabs-title"><a data-tabs-target="resources-tab" href="#resources-tab">Resources</a></div>
+    <div class="tabs medium-10 columns centered text-center" data-tabs id="language-tabs">
+        <div class="small-6 medium-3 columns tabs-title is-active"><a href="#information-tab" aria-selected="true">Information</a></div>
+        <div class="small-6 medium-3 columns tabs-title"><a data-tabs-target="bibles-tab" href="#bibles-tab">Bibles</a></div>
+        @if(!empty($language->resources))
+        <div class="small-6 medium-3 columns tabs-title"><a data-tabs-target="resources-tab" href="#resources-tab">Resources</a></div>
+        @endif
+        <div class="small-6 medium-3 columns tabs-title"><a data-tabs-target="countries-tab" href="#countries-tab">Countries</a></div>
     </div>
 </div>
 
@@ -229,6 +238,23 @@
                 {{-- @foreach($language->resources as $resource) --}}
                 {{--     {{ $resource }} --}}
                 {{-- @endforeach --}}
+                </tbody>
+            </table>
+        </div>
+        <div class="tabs-panel" id="countries-tab">
+            <h3>Notable Countries</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>Current Name</td>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach($language->countries->unique() as $country)
+                    <td>{{ $country->id }}</td>
+                    <td><a href="{{ route('view_countries.show', ['country' => $country->id]) }}">{{ $country->name }}</a></td>
+                @endforeach
                 </tbody>
             </table>
         </div>

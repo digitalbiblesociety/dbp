@@ -25,8 +25,8 @@ class CountriesController extends APIController
     {
     	if(!$this->api) return view('countries.index');
 
-		$countries = Country::select('id','name')->get();
-		return fractal()->collection($countries)->transformWith(new CountryTransformer())->ToArray();
+		$countries = Country::get();
+		return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
     }
 
     /**
@@ -37,11 +37,11 @@ class CountriesController extends APIController
      */
     public function show($id)
     {
-	    $country = Country::find($id);
+	    $country = Country::with('languages.bibles.filesets')->find($id);
 	    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
     	if(!$this->api) return view('countries.show',compact('country'));
 
-		return fractal()->collection($country)->transformWith(new CountryTransformer())->ToArray();
+		return $this->reply(fractal()->collection($country)->transformWith(new CountryTransformer())->ToArray());
     }
 
 	/**

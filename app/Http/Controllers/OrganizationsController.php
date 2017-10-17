@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bible\Bible;
+use App\Models\User\User;
 use database\seeds\SeederHelper;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Models\Organization\Organization;
 use App\Transformers\OrganizationTransformer;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 /**
  * Class OrganizationsController
@@ -26,10 +28,7 @@ class OrganizationsController extends APIController
 		if(!$this->api) {
 			// If User is authorized pass them on to the Dashboard
 			$user = \Auth::user();
-			if($user) return view('dashboard.organizations.index',compact('user'));
-
-			// Otherwise to the public end, ya peasant
-			return view('community.organizations.index');
+			return view('dashboard.organizations.index', compact('user'));
 		}
 
 		// Otherwise Fetch API route
@@ -63,7 +62,7 @@ class OrganizationsController extends APIController
 		if($user) return view('dashboard.organizations.show',compact('user','organization'));
 
 		// Finally send them to the public view
-		return view('community.organizations.show', compact('organization'));
+		return view('organizations.show', compact('organization'));
 	}
 
 	public function bibles(string $slug, Bible $bible)
@@ -155,4 +154,5 @@ class OrganizationsController extends APIController
 		$organizations = Organization::with("currentTranslation")->get();
 		return view('community.organizations.index', compact('organizations'));
 	}
+
 }
