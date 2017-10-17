@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Dashboard\Organization;
 
+use App\Http\Controllers\APIController;
 use Illuminate\Http\Request;
 
-class ResourcesController extends Controller
+class ResourcesController extends APIController
 {
     /**
      * Display a listing of the resource.

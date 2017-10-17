@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
 	    $this->call(language_equivalents_iso::class);
 	    $this->call(language_primaryCountrySeeder::class);
 	    $this->call(language_translations::class);
+	    $this->call(language_descriptions::class);
 
 	    // Languages - Alphabets
 	    $this->call(alphabet_seeder::class);
@@ -30,12 +31,14 @@ class DatabaseSeeder extends Seeder
 
 	    $this->call(countries_translations_seeder::class);
 	    $this->call(countries_regions_seeder::class);
+	    $this->call(countries_language_seeder::class);
 
 		// 3. Bibles
 	    $this->call(bible_seeder::class);
 
 	    // 4. Organizations
 	    $this->call(organizations_seeder::class);
+	    $this->call(users_seeder::class);
 
 	        // 4.1 Organization Equivalents
 	        $this->call(bible_equivalents_bibleGateway::class);
@@ -49,6 +52,7 @@ class DatabaseSeeder extends Seeder
 
 	    $this->call(bible_books_seeder::class);
 	    $this->call(bible_audio_seeder::class);
+	    $this->call(bible_file_timestamps_seeder::class);
 
     }
 }

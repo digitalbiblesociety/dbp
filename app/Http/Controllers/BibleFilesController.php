@@ -3,18 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bible\Bible;
+use App\Models\Bible\BibleFileset;
 use Illuminate\Http\Request;
 
 class BibleFilesController extends APIController
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the Filesets.
      *
-     * @return \Illuminate\Http\Response
+     * @return View|JSON
      */
     public function index()
     {
-        //
+        if(!$this->api) return view('bibles.filesets.index');
+
+        $filesets = BibleFileset::all();
+        return $this->reply($filesets);
     }
 
     /**
@@ -24,7 +28,7 @@ class BibleFilesController extends APIController
      */
     public function create()
     {
-        //
+	    return view('bibles.filesets.create');
     }
 
     /**
@@ -78,7 +82,7 @@ class BibleFilesController extends APIController
      */
     public function edit($id)
     {
-        //
+	    return view('bibles.filesets.edit');
     }
 
     /**

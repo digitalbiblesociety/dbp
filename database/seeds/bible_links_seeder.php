@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use \App\Models\Organization\OrganizationTranslation;
 use \database\seeds\SeederHelper;
+use App\Models\Bible\Bible;
 class bible_links_seeder extends Seeder
 {
     /**
@@ -20,10 +21,10 @@ class bible_links_seeder extends Seeder
         foreach($bibleLinks as $item) {
             // id,"abbr","type","title","link","provider","created_at","updated_at"
             // 1,"RUSLCV","PDF","Greek and Russian FB","ftp://ftp.logos.md/Biblioteca/Biblia%28Biblija%29/InterlGreekRusNT.pdf","Logos","2015-11-06 02:04:05","2015-11-06 02:04:05"
-            $link['abbr'] = $item['abbr'];
+            $link['bible_id'] = $item['abbr'];
             $link['type'] = $item['type'];
             $link['link'] = $item['link'];
-            $bible = DB::table('bibles')->where('abbr','=',$item['abbr'])->first();
+            $bible = Bible::find($item['abbr']);
             if(isset($bible)) {
 
                 $organizationTranslation = OrganizationTranslation::with('organization')->where('name','=',$item['provider'])->first();

@@ -2,30 +2,14 @@
 import $ from "jquery";
 window.$ = window.jQuery = require("jquery");
 
+// Foundation
+import 'foundation-sites'
+$(document).foundation();
+
 import selectize from "./selectize.js";
 $(".selectize").selectize();
 
-
-// Swagger
-import SwaggerUIBundle from './swagger-ui-bundle.js';
-import SwaggerUIStandalonePreset from './swagger-ui-standalone-preset.js';
 window.onload = function() {
-
-    // Build a Swagger system
-    const ui = SwaggerUIBundle({
-        url: "/swagger.json",
-        dom_id: '#swagger-ui',
-        deepLinking: true,
-        presets: [
-            SwaggerUIBundle.presets.apis,
-            SwaggerUIStandalonePreset
-        ],
-        plugins: [
-            SwaggerUIBundle.plugins.DownloadUrl
-        ],
-        layout: "StandaloneLayout"
-    })
-    window.ui = ui
 
     // Reveal any no-fouc elements
     var elems = $(".no-fouc");
@@ -44,17 +28,10 @@ $(document).ready(function () {
         var table = $(this);
 
         if (table.data("route")) {
-            if (table.data("route") == "bibles") {
-                var order = 4;
-            } else {
-                var order = 0;
-            }
-
             table.DataTable({
                 ajax: "https://api." + window.location.hostname + "/" + table.data("route") + "?key=1234&v=jQueryDataTable&params=" + table.data("params"),
                 dom: '<<"dataTables_header"lf><t>ip>',
                 fixedHeader: true,
-                order: [order, "asc"],
                 lengthMenu: [[50, 250, 250, -1], [50, 100, 250, "All"]],
                 stateSave: true,
                 deferRender: true,
@@ -161,4 +138,26 @@ $(document).ready(function () {
         }
     });
 
+
+    // Auto Fill DataList
+    $('input[list]').on('input', function(e) {
+        var $input = $(e.target),
+            $options = $('#' + $input.attr('list') + ' option'),
+            $hiddenInput = $('#' + $input.attr('id') + '-hidden'),
+            label = $input.val();
+
+        $hiddenInput.val(label);
+
+        for(var i = 0; i < $options.length; i++) {
+            var $option = $options.eq(i);
+
+            if($option.text() === label) {
+                $hiddenInput.val( $option.attr('data-value') );
+                break;
+            }
+        }
+    });
+
 });
+
+

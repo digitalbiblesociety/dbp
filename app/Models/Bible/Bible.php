@@ -107,10 +107,20 @@ class Bible extends Model
         return $this->HasMany(BibleEquivalent::class);
     }
 
+    public function filesets()
+    {
+	    return $this->HasMany(BibleFileset::class);
+    }
+
     public function files()
     {
         return $this->HasMany(BibleFile::class);
     }
+
+//	public function files()
+//	{
+//		return $this->HasMany(BibleFile::class);
+//	}
 
     public function hasType($type)
     {
@@ -155,7 +165,7 @@ class Bible extends Model
      */
     public function links()
     {
-        return $this->HasMany('App\Models\Bible\BibleLink');
+        return $this->HasMany(BibleLink::class);
     }
 
     /**

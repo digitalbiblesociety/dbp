@@ -9,9 +9,17 @@
         </ul>
     </div>
     <div class="top-bar-right">
-        <ul class="menu">
+        <ul class="dropdown menu" data-dropdown-menu>
             <li><a href="{{ route('view_bibles.index') }}">Bibles</a></li>
             <li><a href="{{ route('view_books.index') }}">Books</a></li>
+            <li>
+                <a href="{{ route('view_languages.index') }}">Languages</a>
+                <ul class="menu vertical">
+                    <li><a href="{{ route('view_alphabets.index') }}">Alphabets</a></li>
+                    <li><a href="{{ route('view_countries.index') }}">Countries</a></li>
+                    <li><a href="{{ route('view_numbers.index') }}">Numeral Sets</a></li>
+                </ul>
+            </li>
             @if(!Auth::user())
                 <li><a href="/login">Login or Signup</a></li>
             @else
@@ -22,7 +30,7 @@
                     <a href="#">Create New...</a>
                     <ul class="vertical menu">
                         <li><a href="{{ route('view_bibles.create') }}">Bible</a></li>
-                        <li><a href="/bibles/connections/create">Bible Connections <small>Connect HTML, MP3, MP4</small></a></li>
+                        <li><a href="{{ route('view_bible_filesets.create') }}">Bible Filesets <small>Connect HTML, MP3, MP4</small></a></li>
                         <li><a href="{{ route('view_resources.create') }}">Resource</a></li>
                         <li><a href="{{ route('view_languages.create') }}">Language</a></li>
                         <li><a href="{{ route('view_alphabets.create') }}">Alphabet</a></li>

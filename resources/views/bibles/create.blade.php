@@ -17,6 +17,7 @@
         <ul class="tabs" data-tabs id="example-tabs">
             <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Single Upload</a></li>
             <li class="tabs-title"><a href="#panel2">Bulk Upload</a></li>
+            <li class="tabs-title"><a href="#field_descriptions">Field Descriptions</a></li>
         </ul>
     </div>
 
@@ -54,6 +55,9 @@
                 </div>
             </form>
 
+        </div>
+        <div class="tabs-panel" id="field_descriptions">
+            @include('layouts.swagger_descriptions', ['schema' => 'Bible'])
         </div>
     </div>
 

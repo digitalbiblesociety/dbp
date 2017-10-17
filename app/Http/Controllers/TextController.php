@@ -136,7 +136,8 @@ class TextController extends APIController
 	    $query = checkParam('query');
 	    $bible_id = checkParam('dam_id');
 
-	    $verses = Text::with('book')->where('bible_id',$bible_id)->where('verse_text', 'LIKE', "%$query%")->select('book_id')->get();
+	    $verses = Text::with('book')->where('bible_id',$bible_id)->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->select('book_id')->get();
+	    dd($verses);
 	    foreach($verses->groupBy('book_id') as $key => $verse) $verseCount[$key] = $verse->count();
 
 	    return $this->reply($verseCount);

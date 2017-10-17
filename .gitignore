@@ -4,10 +4,12 @@
 /node_modules
 /public/hot
 /public/storage
+/public/bibles
 /public/uploads
 /public/swagger-editor
 /storage/*.key
 /storage/data/
+/storage/bibles/
 /vendor
 
 # Locally Generated Development Files
@@ -20,3 +22,7 @@ npm-debug.log
 
 # The Mac
 .DS_STORE
+
+# Images
+/public/img/countries/landmarks/
+/public/img/banners/

@@ -52,6 +52,29 @@
             bottom:-3px;
             right:-3px;
         }
+
+
+        .connections a {
+            height: 70px;
+            display: block;
+            line-height: 70px;
+            color:#FFF;
+            text-shadow: 0 0 1px #000000;
+        }
+        .connections a.disabled {
+            opacity: .5;
+        }
+
+        .connections a img {
+            height:50px;
+            margin:10px;
+            float:left;
+        }
+
+        .github         {background-color:#181717}
+        .google         {background-color:#4285F4}
+        .bitbucket      {background-color:#205081}
+
     </style>
 @endsection
 
@@ -91,11 +114,11 @@
         <div class="medium-4 columns">
             <h2>Connected Accounts</h2>
             <p>Your current connected accounts are:
-                <ul class="organization connections">
-                    <li @if(!$user->github) class="disabled" @endif>Github</li>
-                    <li @if(!$user->google) class="disabled" @endif><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"></use></svg>Google</li>
-                    <li @if(!$user->bitbucket) class="disabled" @endif>Bitbucket</li>
-                </ul>
+                <div class="organization connections">
+                    <a href="https://github.com/" class="github @if(!$user->github) disabled @endif"><img src="/img/social/github.svg" /> Github</a>
+                    <a href="https://google.com/" class="google @if(!$user->google) disabled @endif"><img src="/img/social/google.svg" /> Google</a>
+                    <a href="https://bitbucket.org/" class="bitbucket @if(!$user->bitbucket) disabled @endif"><img src="/img/social/bitbucket.svg" /> Bitbucket</a>
+                </div>
             </p>
         </div>
         <div class="medium-4 columns">
@@ -129,7 +152,6 @@
                 @endif
             </ul>
         </div>
-
     </div>
 
 @endsection

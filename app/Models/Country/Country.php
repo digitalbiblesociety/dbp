@@ -14,25 +14,16 @@ class Country extends Model
     public $incrementing = false;
     public $keyType = 'string';
 
-    public function currentTranslation($iso = "eng")
+    public function translations($iso = null)
     {
-        $language = Language::where('iso',$iso)->first();
-        return $this->HasOne(CountryTranslation::class)->where('glotto_id', $language->id);
-    }
-
-    public function translations()
-    {
-        return $this->HasMany(CountryTranslation::class);
+    	if(!isset($iso)) return $this->HasMany(CountryTranslation::class);
+    	$language = Language::where('iso',$iso)->first();
+    	return $this->HasMany(CountryTranslation::class)->where('language_id',$language->id);
     }
 
     public function languages()
     {
-        return $this->BelongsToMany(Language::class, 'country_language', 'country_id', 'glotto_id')->distinct();
-    }
-
-    public function bibles()
-    {
-        return $this->HasManyThrough(Bible::class,Language::class, 'iso', 'iso');
+        return $this->BelongsToMany(Language::class)->distinct();
     }
 
     public function regions()

@@ -13,7 +13,7 @@
   "info": {
     "title": "Digital Bible Platform [Koinos]",
     "description": "This is a simple API",
-    "version": "2.0.0",
+    "version": "4.0.0",
     "contact": {
       "name": "API Support",
       "url": "https://dbs.org/contact",
@@ -32,6 +32,10 @@
     {
       "name": "Library",
       "description": "Different Organizational Routes to fetch Bible Resources"
+    },
+    {
+      "name": "Wiki",
+      "description": "A series of Routes for Language, Alphabet, Country, and other Geo-socio-political data."
     }
   ],
   "paths": {
@@ -384,6 +388,68 @@
           "resolution": {
             "type": "string",
             "maxLength": 191
+          }
+        }
+      },
+      "Alphabet": {
+        "required": [
+          "id",
+          "name",
+          "glotto_id",
+          "iso"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "uniqueItems": true,
+            "description": "An incrementing ID for the languages resources",
+            "example": 1
+          },
+          "glotto_id": {
+            "type": "string",
+            "uniqueItems": true,
+            "pattern": "[a-z0-9]{8,8}",
+            "minLength": 8,
+            "maxLength": 8,
+            "description": "An eight character identifier for the langauges resources. This is based on the codes from the [glottolog.org](http://glottolog.org). Custom Glotto Codes may Exist for certain resources. They'll be indentifable by the string `XXX`. If the Glotto Code Exists the Iso Code is not required but may exist! An incrementing ID for the languages resources",
+            "example": "stan1290"
+          }
+        }
+      },
+      "Number": {
+        "required": [
+          "script_id",
+          "numeral",
+          "numeral_vernacular"
+        ],
+        "properties": {
+          "script_id": {
+            "type": "string",
+            "maxLength": 4,
+            "minLength": 4,
+            "description": "This should match exactly the codes from the ISO 15924 Registration Authority.",
+            "example": "Khmr"
+          },
+          "script_varient_iso": {
+            "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "description": "A three letter identifier for the languages resources. This code matches up exactly with the codes from the ISO 639-3 standard."
+          },
+          "numeral": {
+            "type": "integer",
+            "description": "The integer value for the vernacular number",
+            "example": 1
+          },
+          "numeral_vernacular": {
+            "type": "string",
+            "description": "The vernacular number",
+            "example": "១"
+          },
+          "numeral_written": {
+            "type": "string",
+            "description": "The written word for the vernacular number",
+            "example": "មួយ"
           }
         }
       }

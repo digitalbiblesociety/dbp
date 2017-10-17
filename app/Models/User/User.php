@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\User\Role;
 use App\Models\User\Account;
+use App\Traits\Uuids;
 
 class User extends Authenticatable
 {

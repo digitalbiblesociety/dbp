@@ -133,7 +133,7 @@ class BiblesController extends APIController
      */
     public function show($id)
     {
-	    $bible = Bible::find($id);
+	    $bible = Bible::with('filesets')->find($id);
 	    if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
 
     	if(!$this->api) return view('bibles.show',compact('bible'));

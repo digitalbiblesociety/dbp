@@ -37,16 +37,26 @@
 @include foundation-switch;
 @include foundation-table;
 @include foundation-tabs;
-@include foundation-thumbnail;
+// @include foundation-thumbnail;
 @include foundation-title-bar;
 @include foundation-tooltip;
 @include foundation-top-bar;
 @include foundation-visibility-classes;
 @include foundation-float-classes;
 
+
+@import "components/datatables";
+@import "components/dropzone";
+
 nav[role="navigation"] {
   background-color: #fff;
   border-bottom:thin solid #f8f8f8;
+}
+
+section[role="banner"] {
+  padding:70px;
+  background-color:$primary-color;
+  color:#FFF;
 }
 
 .centered {

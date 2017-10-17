@@ -40,11 +40,18 @@ Route::get('bible/{id}/{book}/{chapter}',   'BiblesController@text');
 Route::get('bibles/audio/uploads/thanks',   'AudioProcessingController@thanks')->name('bibles_audio_uploads.thanks');
 Route::resource('bibles/audio/uploads',     'AudioProcessingController');
 Route::resource('bibles/ocr',               'PrintProcesses');
-Route::resource('bibles/connections',       'BibleConnectionsController', ['names' => [
-	'index'   => 'view_bible_connections.index',
-	'edit'    => 'view_bible_connections.edit',
-	'create'  => 'view_bible_connections.create',
-	'show'    => 'view_bible_connections.show',
+Route::get('bibles/connections/{id}/overview', 'BibleFileSetsController@overview');
+Route::resource('bibles/filesets/{id}/permissions',       'BibleFileSetPermissionsController', ['names' => [
+	'index'   => 'view_bible_filesets_permissions.index',
+	'edit'    => 'view_bible_filesets_permissions.edit',
+	'create'  => 'view_bible_filesets_permissions.create',
+	'show'    => 'view_bible_filesets_permissions.show',
+]]);
+Route::resource('bibles/filesets',       'BibleFileSetsController', ['names' => [
+	'index'   => 'view_bible_filesets.index',
+	'edit'    => 'view_bible_filesets.edit',
+	'create'  => 'view_bible_filesets.create',
+	'show'    => 'view_bible_filesets.show',
 ]]);
 Route::resource('bibles',                   'BiblesController', ['names' => [
 	'index'   => 'view_bibles.index',
@@ -52,7 +59,6 @@ Route::resource('bibles',                   'BiblesController', ['names' => [
 	'create'  => 'view_bibles.create',
 	'show'    => 'view_bibles.show',
 ]]);
-
 Route::resource('books',                    'BooksController', ['names' => [
 	'index'   => 'view_books.index',
 	'edit'    => 'view_books.edit',
@@ -83,7 +89,17 @@ Route::resource('resources',                'ResourcesController', ['names' => [
 	'create'  => 'view_resources.create',
 	'show'    => 'view_resources.show',
 ]]);
-Route::resource('countries',                'CountriesController',['only'=>['index','show']]);
+Route::resource('organizations', 'OrganizationsController',['names' => [
+	'index'   => 'view_organizations.index',
+	'edit'    => 'view_organizations.edit',
+	'create'  => 'view_organizations.create',
+	'show'    => 'view_organizations.show',
+]]);
+
+Route::resource('countries',                'CountriesController', [
+	'only' => ['index','show'],
+	'names'=> ['index' => 'view_countries.index','show'  => 'view_countries.show']
+]);
 
 Route::get('login/{provider}',          'Auth\LoginController@redirectToProvider')->name('login.social_redirect');
 Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback')->name('login.social_callback');
@@ -104,29 +120,6 @@ Route::resource('/home/organizations', 'OrganizationsController', ['names' => [
 	'edit'    => 'dashboard_organizations.edit',
 	'create'  => 'dashboard_organizations.create',
 	'show'    => 'dashboard_organizations.show',
-]]);
-
-// User Dashboard
-Route::resource('/home/organizations/{organization_id}/users', 'Dashboard\Organizations\UsersController',['names' => [
-	'index'   => 'dashboard_organizations_users.index',
-	'edit'    => 'dashboard_organizations_users.edit',
-	'create'  => 'dashboard_organizations_users.create',
-	'show'    => 'dashboard_organizations_users.show',
-]]);
-
-// Organizations Resources Dashboard
-Route::resource('/home/organizations/{organization_id}/resources', 'Dashboard\Organizations\ResourcesController',['names' => [
-	'index'   => 'dashboard_organizations_resources.index',
-	'edit'    => 'dashboard_organizations_resources.edit',
-	'create'  => 'dashboard_organizations_resources.create',
-	'show'    => 'dashboard_organizations_resources.show',
-]]);
-
-Route::resource('/home/organizations/{organization_id}/resources', 'Dashboard\Organizations\ResourcesController',['names' => [
-	'index'   => 'dashboard_organizations_bibles.index',
-	'edit'    => 'dashboard_organizations_bibles.edit',
-	'create'  => 'dashboard_organizations_bibles.create',
-	'show'    => 'dashboard_organizations_bibles.show',
 ]]);
 
 Route::get('/',     'HomeController@welcome')->name('welcome');

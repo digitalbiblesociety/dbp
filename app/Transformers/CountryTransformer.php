@@ -6,6 +6,13 @@ use League\Fractal\TransformerAbstract;
 use App\Models\Country\Country;
 class CountryTransformer extends TransformerAbstract
 {
+
+	public function __construct()
+	{
+		$this->version = checkParam('v', null, 'optional') ?? 4;
+		$this->iso = checkParam('iso', null, 'optional') ?? "eng";
+	}
+
 	/**
 	 * A Fractal transformer for the Country Collection.
 	 * This function will format requests depending on the
@@ -17,7 +24,6 @@ class CountryTransformer extends TransformerAbstract
 	 */
 	public function transform(Country $country)
 	{
-		$iso = $_GET['iso'] ?? null;
 		switch ($this->version) {
 			case "jQueryDataTable": return $this->transformForDataTables($country);
 			case "2": return $this->transformForV2($country);
@@ -40,10 +46,10 @@ class CountryTransformer extends TransformerAbstract
 		}
 	}
 
-	public function transformForV4($country)
+	public function transformForV4(Country $country)
 	{
 		return [
-			'name'           => $country->currentTranslation($iso) ?? $country->name,
+			'name'           => $country->translations($this->iso)->first() ?? $country->name,
 			'uri'            => env('APP_URL').'/countries/'.$country->id,
 			'continent_code' => $country->continent,
 			'hidden'         => (boolean) $country->hidden,
@@ -59,7 +65,7 @@ class CountryTransformer extends TransformerAbstract
 
 	public function transformForV2($country)
 	{
-		$i = 0;
+		return $country->toArray();
 	}
 
 }

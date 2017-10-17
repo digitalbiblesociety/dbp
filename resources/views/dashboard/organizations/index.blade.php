@@ -37,6 +37,7 @@
 
     <div class="row">
         <h1 class="text-center">Organizations</h1>
+        @isset($user)
             @foreach($user->role as $role)
                     <div class="medium-4 columns {{ $role->role }}">
                         <a class="card" href="{{ route('dashboard_organizations.show', ['id' => $role->organization->id]) }}">
@@ -46,5 +47,22 @@
                         </a>
                     </div>
             @endforeach
+        @endisset
+
+        <div class="row">
+            <table class="table" cellspacing="0" width="100%" data-route="organizations">
+                <thead>
+                <tr>
+                    <th>{{ trans('fields.alternativeNames') }}</th>
+                    <th>{{ trans('fields.name') }}</th>
+                    <th>{{ trans('fields.id') }}</th>
+                    <th>{{ trans('fields.iso') }}</th>
+                    <th>{{ trans('fields.bibles_count') }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
     </div>
 @endsection

@@ -14,7 +14,7 @@ class CreateOrganizationsTable extends Migration
     public function up()
     {
         Schema::create('organizations', function (Blueprint $table) {
-            $table->char('id',36)->unique();
+            $table->increments('id');
             $table->string('slug',191)->unique()->index();
 	        $table->char('abbreviation',6)->unique()->index()->nullable();
             $table->text('notes')->nullable();
@@ -40,7 +40,7 @@ class CreateOrganizationsTable extends Migration
         Schema::create('organization_translations', function (Blueprint $table) {
             $table->char('language_iso', 3)->index();
             $table->foreign('language_iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
-            $table->char('organization_id', 36);
+            $table->integer('organization_id')->unsigned();
             $table->foreign('organization_id')->references('id')->on('organizations');
             $table->boolean('vernacular')->default(false);
 	        $table->boolean('alt')->default(false);
@@ -54,15 +54,15 @@ class CreateOrganizationsTable extends Migration
 		    $table->string('user_id');
 		    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
 		    $table->string('role');
-		    $table->char('organization_id',36);
+		    $table->integer('organization_id')->unsigned();
 		    $table->foreign('organization_id')->references('id')->on('organizations');
 		    $table->timestamps();
 	    });
 
 	    Schema::create('organization_relationships', function($table) {
-		    $table->char('organization_parent_id',36);
+		    $table->integer('organization_parent_id')->unsigned();
 		    $table->foreign('organization_parent_id')->references('id')->on('organizations');
-		    $table->char('organization_child_id',36);
+		    $table->integer('organization_child_id')->unsigned();
 		    $table->foreign('organization_child_id')->references('id')->on('organizations');
 		    $table->string('type');
 		    $table->string('relationship_id');
@@ -70,7 +70,7 @@ class CreateOrganizationsTable extends Migration
 	    });
 
 	    Schema::create('organization_services', function($table) {
-		    $table->char('organization_id',36);
+		    $table->integer('organization_id')->unsigned();
 		    $table->foreign('organization_id')->references('id')->on('organizations');
 		    $table->string('type');
 		    $table->string('name');
@@ -79,7 +79,7 @@ class CreateOrganizationsTable extends Migration
 	    });
 
 	    Schema::create('organization_logos', function($table) {
-		    $table->char('organization_id',36);
+		    $table->integer('organization_id')->unsigned();
 		    $table->foreign('organization_id')->references('id')->on('organizations');
 		    $table->char('language_iso', 3)->nullable();
 		    $table->foreign('language_iso')->references('iso')->on('languages');

@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bible\BibleFile;
-use App\Models\Bible\Book;
 use Illuminate\Http\Request;
 
-class BibleConnectionsController extends Controller
+class ResourcesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +13,7 @@ class BibleConnectionsController extends Controller
      */
     public function index()
     {
-        return view('bibles.connections.index');
+        return view('resources.index');
     }
 
     /**
@@ -25,8 +23,7 @@ class BibleConnectionsController extends Controller
      */
     public function create()
     {
-    	$books = Book::orderBy('book_order')->get();
-        return view('bibles.connections.create', compact('books'));
+        return view('resources.create');
     }
 
     /**
@@ -37,7 +34,7 @@ class BibleConnectionsController extends Controller
      */
     public function store(Request $request)
     {
-
+        return view('resources.store');
     }
 
     /**
@@ -48,8 +45,7 @@ class BibleConnectionsController extends Controller
      */
     public function show($id)
     {
-    	$bibleFile = BibleFile::find($id);
-        return view('bibles.connections.show', compact('bibleFile'));
+        return view('resources.show');
     }
 
     /**
@@ -60,7 +56,7 @@ class BibleConnectionsController extends Controller
      */
     public function edit($id)
     {
-        return view('bibles.connections.edit');
+        return view('resources.edit');
     }
 
     /**
@@ -72,7 +68,7 @@ class BibleConnectionsController extends Controller
      */
     public function update(Request $request, $id)
     {
-
+        return view('resources.update');
     }
 
     /**
@@ -83,6 +79,6 @@ class BibleConnectionsController extends Controller
      */
     public function destroy($id)
     {
-
+        return view('resources.destroy');
     }
 }

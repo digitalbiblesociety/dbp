@@ -59,6 +59,20 @@ use Illuminate\Http\Request;
 			'show'    => 'v4_api_books.show',
 		]]);
 
+		// FileSets and Permissions
+		Route::resource('bibles/filesets/{id}/permissions',       'BibleFileSetPermissionsController', ['names' => [
+			'index'   => 'v4_api_bible_filesets_permissions.index',
+			'edit'    => 'v4_api_bible_filesets_permissions.edit',
+			'create'  => 'v4_api_bible_filesets_permissions.create',
+			'show'    => 'v4_api_bible_filesets_permissions.show',
+		]]);
+		Route::resource('bibles/filesets',       'BibleFileSetsController', ['names' => [
+			'index'   => 'v4_api_bible_filesets.index',
+			'edit'    => 'v4_api_bible_filesets.edit',
+			'create'  => 'v4_api_bible_filesets.create',
+			'show'    => 'v4_api_bible_filesets.show',
+		]]);
+
 		Route::get('bibles/files/{ id }',   'BibleFilesController@show')->name('v4_audio_files');
 
 		Route::get('timestamps',                             'AudioController@availableTimestamps')->name('v4_audio_timestamps');

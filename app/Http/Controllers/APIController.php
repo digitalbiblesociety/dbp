@@ -169,7 +169,9 @@ class APIController extends Controller
     {
         $status = $this->getStatusCode();
 
-        if(!$this->api) return view('errors.broken',compact('message','status'));
+
+	    if(!$this->api AND !isset($status)) return view('errors.broken',compact('message'));
+	    if(!$this->api) return view("errors.$status",compact('message','status'));
 
         return response()->json(['error' => [
             'message' => $message,

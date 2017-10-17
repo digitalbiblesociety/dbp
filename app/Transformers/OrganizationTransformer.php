@@ -35,8 +35,8 @@ class OrganizationTransformer extends BaseTransformer
 	public function transformForDataTables(Organization $organization)
 	{
 		return [
-			$organization->name,
-			$organization->glotto_id,
+			($organization->engTranslation) ? $organization->engTranslation->name : "",
+			$organization->id,
 		];
 	}
 
