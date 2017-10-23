@@ -11,7 +11,7 @@
     <div class="top-bar-right">
         <ul class="dropdown menu" data-dropdown-menu>
             <li><a href="{{ route('view_bibles.index') }}">Bibles</a></li>
-            <li><a href="{{ route('view_books.index') }}">Books</a></li>
+            {{-- <li><a href="{{ route('view_books.index') }}">Books</a></li> --}}
             <li>
                 <a href="{{ route('view_languages.index') }}">Languages</a>
                 <ul class="menu vertical">
@@ -26,6 +26,7 @@
                 <li><a href="/home">Dashboard</a></li>
                 <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a></li>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">{{ csrf_field() }}</form>
+                @if(Auth::user()->archivist)
                 <li>
                     <a href="#">Create New...</a>
                     <ul class="vertical menu">
@@ -37,8 +38,8 @@
                         <li><a href="{{ route('view_numbers.create') }}">Numeral Set</a></li>
                     </ul>
                 </li>
+                @endif
             @endif
-            <li><input type="search" id="site-search" placeholder="Search The Site"></li>
         </ul>
     </div>
 </div>
