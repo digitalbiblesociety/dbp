@@ -1,3 +1,4 @@
+@isset($breadcrumbs)
 <div itemscope itemtype="http://schema.org/BreadcrumbList" @if(isset($noGradient)) class="nogradient" @endif>
     @foreach($breadcrumbs as $url => $breadcrumb)
         @if($url != "#")
@@ -17,6 +18,7 @@
         @endif
     @endforeach
 </div>
+@endisset
 <section role="banner" itemscope itemtype="http://schema.org/WPHeader"  @if(!isset($noGradient) and isset($backgroundImage)) class="darken" @endif>
 
     <div class="banner-image">
