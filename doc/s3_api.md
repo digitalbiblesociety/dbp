@@ -1,14 +1,14 @@
-### Layout
+# The Layout of Objects in S3
 
 ```scss
 /
   - bibles.json
   - bibles/{ #id }/info.json
   - bibles/{ #id }/{ #version_id }/{ #provider_id }/{ #file_type }/{ #filename }.html
+  - bibles/{ #id }/{ #version_id }/{ #provider_id }/{ #file_type }/{ #metaData }/{ #filename }.json
   - languages.json
   - languages/{ #iso }.json
   - fonts/{ #script_id }.json
-
 ````
 
 ### Variable Definitions
@@ -35,7 +35,35 @@
 
 **Description:** The type of Bible media being delivered.
 
-**Example:** *HTML*
+**Note:**
+There are multiple possible duplicate content collections under file_type
+for instance you might have might have several different audio Bibles for
+a single version id. The *file_type* field should the guide here. It is a
+convention not strictly limited to file names. It may contain metadata or
+tags.
+
+Tags should be after a dash character multiple modifiers are separated by
+underscores.
+
+So if you have a high quality Dramatized Audio Bible...
+```
+bibles/ENGKJV/ENGKJV1611/FCBH/mp3-hq_drama/GEN_1.mp3
+```
+
+#### metaData
+
+**Description:** Additional data files to accompany the parent entity
+
+**Note:** These could take the form of timestamps for the audio files and
+they could also be dictionary, glossaries, or maps. All variants ought to
+be listed in the central index.json
+
+```
+bibles/ENGKJV/ENGKJV1611/FCBH/mp3-hq_drama/timestamps/GEN_1.json
+bibles/ENGKJV/ENGKJV1611/FCBH/mp3-hq_drama/commentaries/GEN_1.json
+bibles/ENGKJV/ENGKJV1611/FCBH/mp3-hq_drama/meta/glossary.json
+bibles/ENGKJV/ENGKJV1611/FCBH/mp3-hq_drama/meta/dictionary.json
+```
 
 #### filename
 
