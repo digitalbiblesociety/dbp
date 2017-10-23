@@ -13,6 +13,7 @@ class Alphabet extends Model
     public $incrementing = false;
 
     protected $hidden = ["created_at","updated_at","directionNotes","requiresFont"];
+    protected $fillable = [ "script", "name", "unicode_pdf", "family", "type", "white_space", "open_type_tag", "complex_positioning", "requires_font", "unicode", "diacritics", "contextual_forms", "reordering", "case", "split_graphs", "status", "baseline", "ligatures", "direction", "sample", "sample_img"];
 
     public function languages()
     {
