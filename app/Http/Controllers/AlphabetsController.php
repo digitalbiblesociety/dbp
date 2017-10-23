@@ -56,12 +56,12 @@ class AlphabetsController extends APIController
 	 *
 	 * @return JSON|View
 	 */
-    public function store(Request $request)
+    public function store()
     {
-	    $validator = Validator::make($request->all(), [
+	    $alphabet = request()->validate([
 		    'script'              => 'required|unique:alphabets,script|max:4|min:4',
 		    'name'                => 'required|unique:alphabets,name|max:191',
-		    'unicode_pdf'         => 'url',
+		    'unicode_pdf'         => 'url|nullable',
 		    'family'              => 'string|max:191|nullable',
 		    'type'                => 'string|max:191|nullable',
 			'white_space'         => 'string|max:191|nullable',
@@ -79,18 +79,10 @@ class AlphabetsController extends APIController
 			'ligatures'           => 'string|max:191|nullable',
 			'direction'           => 'alpha|min:3|max:3',
 			'sample'              => 'max:2024',
-			'sample_img'          => 'image'
+			'sample_img'          => 'image|nullable'
 	    ]);
-
-	    $alphabet = \DB::transaction(function () use($request) {
-		    $alphabet = new Alphabet();
-		    $alphabet = $alphabet->create($request->all());
-
-		    return $alphabet;
-	    });
-
-
-
+		$alphabet = Alphabet::create($alphabet);
+		return redirect()->route('view_alphabets.show', ['id' => $alphabet->id]);
     }
 
     /**

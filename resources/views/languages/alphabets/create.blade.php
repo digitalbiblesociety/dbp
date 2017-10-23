@@ -37,7 +37,7 @@
         </ul>
     </section>
 
-    <form action="/alphabets" method="POST">
+    <form action="{{ route('alphabets.store') }}" method="POST">
         {{ csrf_field() }}
         @include('languages.alphabets.form')
     </form>

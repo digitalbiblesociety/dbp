@@ -1,5 +1,15 @@
 <div class="tabs-content" data-tabs-content="example-tabs">
     <div class="tabs-panel is-active" id="fields">
+        @if(session('status'))<div class="callout success">{{ session('status') }}</div>@endif
+
+            @if($errors->any())
+                <div class="callout alert medium-6 columns centered">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+                </div>
+            @endif
+
         <div class="row">
             <aside class="medium-3 columns">
                 <label>{{ trans('fields.alphabets_requires_font') }} <input type="checkbox" name="requires_font" /></label>
