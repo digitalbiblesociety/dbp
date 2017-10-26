@@ -3,6 +3,7 @@
 namespace App\Models\Bible;
 
 use App\Models\Organization\Organization;
+use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
 
 class BibleFileset extends Model
@@ -32,4 +33,8 @@ class BibleFileset extends Model
 		return $this->hasMany(BibleFileSetPermission::class);
 	}
 
+	public function users()
+	{
+		return $this->hasMany(BibleFileSetPermission::class)->select('user_id');
+	}
 }

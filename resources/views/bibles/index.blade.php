@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-center">Bibles</h1>
+
+    @include('layouts.partials.banner', ['title' => 'Bibles'])
+    <div class="row">
     <table class="table" cellspacing="0" width="100%" data-route="bibles">
         <thead>
             <tr>
@@ -13,4 +15,5 @@
         </thead>
         <tbody></tbody>
     </table>
+    </div>
 @endsection

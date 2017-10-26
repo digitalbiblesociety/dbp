@@ -84,6 +84,8 @@ bibles/ENGKJV/ENGKJV1611/FCBH/mp3-hq_drama/meta/dictionary.json
 **Description:** The ISO 15924 codes curated by the script source project
 
 
+## Section Examples:
+
 ### Two Possible Variations for Chapter Jsons
 
 ```json
@@ -130,3 +132,32 @@ bibles/ENGKJV/ENGKJV1611/FCBH/mp3-hq_drama/meta/dictionary.json
 
 ```
 
+### Language JSONs
+
+
+#### index.json
+```json
+[
+	{
+      "glotto_id": "stan1293",
+      "iso": "eng",
+      "name": "English"
+	}
+]
+
+```
+
+#### { #iso }.json
+```json
+[
+	{
+      "glotto_id": "stan1293",
+      "iso": "eng",
+      "name": "English"
+	}
+]
+
+```
+
+
+### Countries JSONs

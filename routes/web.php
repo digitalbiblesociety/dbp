@@ -41,12 +41,16 @@ Route::get('bibles/audio/uploads/thanks',   'AudioProcessingController@thanks')-
 Route::resource('bibles/audio/uploads',     'AudioProcessingController');
 Route::resource('bibles/ocr',               'PrintProcesses');
 Route::get('bibles/connections/{id}/overview', 'BibleFileSetsController@overview');
+
 Route::resource('bibles/filesets/{id}/permissions',       'BibleFileSetPermissionsController', ['names' => [
 	'index'   => 'view_bible_filesets_permissions.index',
 	'edit'    => 'view_bible_filesets_permissions.edit',
 	'create'  => 'view_bible_filesets_permissions.create',
+	'store'   => 'view_bible_filesets_permissions.store',
 	'show'    => 'view_bible_filesets_permissions.show',
+	'update'  => 'view_bible_filesets_permissions.update'
 ]]);
+
 Route::resource('bibles/filesets',       'BibleFileSetsController', ['names' => [
 	'index'   => 'view_bible_filesets.index',
 	'edit'    => 'view_bible_filesets.edit',
@@ -123,8 +127,6 @@ Route::resource('/home/organizations', 'OrganizationsController', ['names' => [
 ]]);
 
 Route::get('/',     'HomeController@welcome')->name('welcome');
-
-
 
 Route::get('/test-armor', function () {
 	$locations = ['/bin','/home','/etc','/home/forge/aaTrap/'];

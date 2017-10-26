@@ -64,14 +64,19 @@
             <h4>Description</h4>
             {{ $bible->translations->where('iso',\i18n::getCurrentLocale())->first()->description }}
             <h4>Reference Filesets</h4>
+            @foreach($bible->filesets as $fileset)
             <div class="expanded button-group">
-                @foreach($bible->filesets as $fileset)
-                    <a class="button" href="/bibles/{{ $fileset->id }}/epub/{{ $fileset->id }}.epub">ePub</a>
-                    <a class="button" href="/bibles/{{ $fileset->id }}/mobi/{{ $fileset->id }}.mobi">mobi</a>
-                    <a class="button" href="/bibles/{{ $fileset->id }}/inscript/index.html">inScript</a>
-                    <a class="button" href="/bibles/{{ $fileset->id }}/html/index.html">HTML</a>
-                @endforeach
+                    @if($fileset->set_type == "Audio")
+                        <a class="button" href="/bibles/filesets/{{ $fileset->id }}">Audio Source</a>
+                    @elseif($fileset->set_type == "Text")
+                        <a class="button" href="/bibles/filesets/{{ $fileset->id }}">Text Source</a>
+                        <a class="button" href="/bibles/{{ $fileset->id }}/epub/{{ $fileset->id }}.epub">ePub</a>
+                        <a class="button" href="/bibles/{{ $fileset->id }}/mobi/{{ $fileset->id }}.mobi">mobi</a>
+                        <a class="button" href="/bibles/{{ $fileset->id }}/inscript/index.html">inScript</a>
+                        <a class="button" href="/bibles/{{ $fileset->id }}/html/index.html">HTML</a>
+                    @endif
             </div>
+            @endforeach
         </div>
 
             <div class="medium-5 columns">

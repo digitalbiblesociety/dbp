@@ -27,7 +27,7 @@
 			                "verify_peer_name"=>false,
 		                ),
 	                );
-	                echo json_decode(json_encode(file_get_contents( route('api_bibles.equivalents', 'ENGKJV'), false, stream_context_create($arrContextOptions))), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?>
+	                echo json_decode(json_encode(file_get_contents( route('api_bibles.equivalents', 'ENGKJV', ['v' => 2]), false, stream_context_create($arrContextOptions))), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?>
                 </pre></code>
 
             </div>

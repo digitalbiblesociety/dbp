@@ -35,9 +35,7 @@
 
 @section('content')
 
-    <div role="banner">
-        <h1>{{ $country->name }}</h1>
-    </div>
+    @include('layouts.partials.banner', ['title' => 'Countries'])
 
     <div class="row">
     <table>

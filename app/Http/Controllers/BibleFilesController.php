@@ -35,11 +35,11 @@ class BibleFilesController extends APIController
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return JSON|View
      */
     public function store(Request $request)
     {
-        //
+        return view('bibles.filesets.show', $request->id);
     }
 
 	/**

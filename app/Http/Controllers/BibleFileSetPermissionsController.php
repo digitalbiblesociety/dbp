@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFileSetPermission;
 use App\Models\User\User;
 use App\Transformers\BibleFilePermissionsTransformer;
 use Illuminate\Http\Request;
+use App\Mail\BibleFilePermissionsRequest;
 
 class BibleFileSetPermissionsController extends APIController
 {
@@ -44,7 +46,8 @@ class BibleFileSetPermissionsController extends APIController
 	{
 		$permission = new BibleFileSetPermission();
 		$permission->user_id = $request->user_id;
-		$permission->access_level = $request->access_level;
+		$permission->bible_fileset_id = $request->fileset_id;
+		$permission->access_level = $request->access_level ?? "requested";
 		$permission->access_notes = $request->access_notes;
 		$permission->save();
 
@@ -84,7 +87,12 @@ class BibleFileSetPermissionsController extends APIController
 	 */
 	public function update(Request $request, $id)
 	{
-
+		$fileset = BibleFileset::find($id);
+		$this->authorize('update', $fileset);
+		$permission = BibleFileSetPermission::find($request->permission_id);
+		$permission->access_level =$request->access_level;
+		$permission->save();
+		return redirect()->route('view_bible_filesets.show', $id);
 	}
 
 	/**
@@ -95,7 +103,7 @@ class BibleFileSetPermissionsController extends APIController
 	 */
 	public function destroy($id)
 	{
-		$bibleFileSet = BibleFileset::find($id);
-		$bibleFileSet->delete();
+		$fileSet = BibleFileset::find($id);
+		$fileSet->delete();
 	}
 }

@@ -91,7 +91,7 @@ class BibleFileSetsController extends APIController
      */
     public function show($id)
     {
-	    $fileset = BibleFileset::find($id);
+	    $fileset = BibleFileset::with('files')->find($id);
         return view('bibles.filesets.show', compact('fileset'));
     }
 

@@ -160,7 +160,7 @@ class BiblesController extends APIController
 	{
 		if(!$this->api) return view('bibles.books.index');
 
-		$equivalents = BibleEquivalent::where('abbr',$id)->get();
+		$equivalents = BibleEquivalent::where('bible_id',$id)->get();
 		return $this->reply($equivalents);
 	}
 

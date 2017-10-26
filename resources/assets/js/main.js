@@ -94,38 +94,6 @@ $(document).ready(function () {
             });
         }
 
-        // specific to the bibles route
-        if (table.data("route") == "bibles") {
-
-            $(".dataTables_header").append('<div class="dataTables_views small-hide"><i class="table"><img src="http://images.bible.cloud/nav_list_color.svg" /></i><i class="grid"><img src="http://images.bible.cloud/nav_grid_color.svg" /></i></div>');
-            $('section[role="banner"]').append('<div class="banner-logo"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/img/icons-bibleBanner.svg#bible"></use></svg></div>');
-            $(".continents label").click(function () {
-                var currentValue = $(this).prev().val();
-                console.log(currentValue);
-                table.DataTable().columns(0).search(currentValue).draw();
-            });
-
-            $(".bible-type label").click(function () {
-                var currentValue = $(this).prev().val();
-                table.DataTable().columns(2).search(currentValue).draw();
-
-                //$(".banner-image img").attr('src', "/img/bible-banner-" + currentValue + ".png");
-                if(currentValue == "") currentValue = "Bible";
-                console.log(currentValue);
-                $(".icon.logo use").attr('xlink:href', "/img/icons-bibleBanner.svg#" + currentValue);
-            });
-
-            $(".dataTables_views i").click(function () {
-                table.toggleClass("grid");
-            });
-        }
-
-        if (table.data("route") == "libraries/resources") {
-            $("select[name='country-select']").change(function () {
-                table.DataTable().columns(0).search($(this).val()).draw();
-            });
-        }
-
         if (table.attr("data-invisiblecolumns") != undefined) {
             if(table.data("invisiblecolumns") == 0) {
                 table.DataTable().columns(0).visible(false);

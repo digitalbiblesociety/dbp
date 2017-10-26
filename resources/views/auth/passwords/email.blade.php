@@ -3,7 +3,7 @@
 @section('content')
 
     @include('layouts.banner', ['title' => 'Reset Password'])
-    
+
     @if(session('status'))<div class="callout success">{{ session('status') }}</div>@endif
     @if($errors->has('email')) <div class="callout alert">{{ $errors->first('email') }}</div> @endif
 

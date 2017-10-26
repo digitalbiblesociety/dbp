@@ -132,6 +132,11 @@ class Bible extends Model
         return $this->HasMany(BibleEquivalent::class)->where('site','bible.is');
     }
 
+	public function fcbh()
+	{
+		return $this->HasOne(BibleEquivalent::class)->where('site','bible.is');
+	}
+
     public function dbl()
     {
         return $this->HasMany(BibleEquivalent::class)->where('site', 'Digital Bible Library');

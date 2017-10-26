@@ -28,12 +28,12 @@ class OrganizationRolesController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
 	public function create()
 	{
 		$user = \Auth::user();
-		$organizations = Organization::with('translations')->get();
+		$organizations = Organization::with('currentTranslation')->get()->pluck('currentTranslation.name','id');
 		return view('dashboard.organizations.roles.create',compact('user','organizations'));
 	}
 
@@ -64,7 +64,7 @@ class OrganizationRolesController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function show($id)
     {
@@ -77,7 +77,7 @@ class OrganizationRolesController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function edit($id)
     {
@@ -89,7 +89,7 @@ class OrganizationRolesController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function update(Request $request, $id)
     {
@@ -100,7 +100,7 @@ class OrganizationRolesController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function destroy($id)
     {

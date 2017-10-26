@@ -11,7 +11,7 @@ class BibleEquivalent extends Model
     protected $table = "bible_equivalents";
     protected $primaryKey = 'equivalent_id';
     protected $hidden = ['created_at','updated_at','bible_id'];
-    protected $fillable = ['abbr','equivalent_id','organization_id','type','suffix'];
+    protected $fillable = ['bible_id','equivalent_id','organization_id','type','suffix'];
     public $incrementing = false;
 
     public function bible()

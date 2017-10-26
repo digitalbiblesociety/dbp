@@ -70,7 +70,7 @@ class DocsController extends APIController
 	 */
 	public function bibles()
 	{
-		return view('docs.routes.bibleEquivalents');
+		return view('docs.routes.bibles');
 	}
 
 	/**

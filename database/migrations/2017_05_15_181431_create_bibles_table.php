@@ -141,6 +141,8 @@ class CreateBiblesTable extends Migration
 		    $table->foreign('variation_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
 		    $table->string('name');
 		    $table->string('set_type', 12);
+		    $table->boolean('hidden')->default(0);
+		    $table->integer('response_time')->default(0)->unsigned();
 		    $table->integer('organization_id')->unsigned()->nullable();
 		    $table->foreign('organization_id')->references('id')->on('organizations');
 		    $table->timestamps();
@@ -168,6 +170,7 @@ class CreateBiblesTable extends Migration
 		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
 		    $table->string('access_level');
 		    $table->text('access_notes')->nullable();
+		    $table->timestamp('first_response_time');
 		    $table->timestamps();
 	    });
 

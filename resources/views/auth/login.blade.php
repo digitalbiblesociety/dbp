@@ -238,6 +238,8 @@
 
 @section('content')
 
+    @include('layouts.partials.banner', ['title' => "Login" ])
+
     <div class="row row-padding align-center">
         <div class="login-box row">
             <div class="small-12 medium-6 columns small-order-2 medium-order-1">
@@ -248,7 +250,7 @@
                         <input class="login-box-input" type="text" name="username" placeholder="Username" value="{{ old('email') }}" required />
                         <input class="login-box-input" type="password" name="password" placeholder="Password" required />
                         <input class="login-box-submit-button" type="submit" name="signup_submit" value="Sign In" />
-                        <a href="{{ route('register') }}">Register</a>
+                        <a href="{{ route('register') }}">Register</a> | <a href="{{ route('password.request') }}">Forgot Password?</a>
                     </form>
                 </div>
             </div>

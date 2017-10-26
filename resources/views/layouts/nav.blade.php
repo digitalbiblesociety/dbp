@@ -5,13 +5,12 @@
 <div class="top-bar" id="responsive-menu">
     <div class="top-bar-left">
         <ul class="menu">
-            <li class="menu-text">koinos</li>
+            <li class="menu-text"><a href="{{ route('welcome') }}">koinos</a></li>
         </ul>
     </div>
     <div class="top-bar-right">
         <ul class="dropdown menu" data-dropdown-menu>
             <li><a href="{{ route('view_bibles.index') }}">Bibles</a></li>
-            {{-- <li><a href="{{ route('view_books.index') }}">Books</a></li> --}}
             <li>
                 <a href="{{ route('view_languages.index') }}">Languages</a>
                 <ul class="menu vertical">

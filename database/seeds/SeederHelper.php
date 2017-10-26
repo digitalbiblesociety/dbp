@@ -113,7 +113,7 @@ class SeederHelper
 		if (!file_exists($file)) {
 			if ($debug) { $error = 'File does not exist: '.htmlspecialchars($file).'.'; }
 			else { $error = 'File does not exist.'; }
-			custom_die($error);
+			dd($error);
 		}
 
 		if ($debug) { echo '<p>Opening '.htmlspecialchars($file).'&hellip;</p>'; }
@@ -123,7 +123,7 @@ class SeederHelper
 			$contents = fread($handle, filesize($file));
 			fclose($handle);
 		} else {
-			custom_die('There was an error opening the file.');
+			dd('There was an error opening the file.');
 		}
 
 		$lines = explode($lb,$contents);

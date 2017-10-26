@@ -182,8 +182,10 @@ class CreateLanguagesTable extends Migration
             $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
             $table->integer('language_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
-	        $table->timestamps();
+	        $table->integer('population')->default(0);
         });
+	    DB::statement('ALTER TABLE country_language ADD CONSTRAINT uq_country_language UNIQUE(country_id, language_id)');
+
     }
 
     /**

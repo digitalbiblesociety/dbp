@@ -9,8 +9,11 @@
         <label>Variation ID<input type="text" name="variation_id" value="{{ $fileset->variation_id ?? old('variation_id') }}" /></label>
         <label>Name <input type="text" name="name" value="{{ $fileset->name ?? old('name') }}" /></label>
         <label>Set Type <input type="text" name="set_type" value="{{ $fileset->set_type ?? old('set_type') }}"></label>
-        <label>DBL Package <input type="radio" name="input_type"></label>
-        <label>Audio Collection <input type="radio" name="input_type"></label>
+        <div class="row text-center">
+            <label class="medium-4 columns">DBL Package <input type="radio" name="input_type[]" value="dbl"></label>
+            <label class="medium-4 columns">Audio Collection <input type="radio" name="input_type[]" value="audio"></label>
+            <label class="medium-4 columns">Video Collection <input type="radio" name="input_type[]" value="Video"></label>
+        </div>
         <input class="button expanded" type="submit">
     </div>
 </div>

@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use App\Models\Organization\Organization;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\User\Role;
@@ -61,9 +62,19 @@ class User extends Authenticatable
 		return $this->hasOne(Role::class)->where('role','archivist');
 	}
 
+	public function authorizedArchivist($id)
+	{
+		return $this->hasOne(Role::class)->where('role','archivist')->where('organization_id',$id);
+	}
+
 	public function role($id)
 	{
 		return $this->HasOne(Role::class)->where('organization_id',$id);
+	}
+
+	public function organizations()
+	{
+		return $this->HasManyThrough(Organization::class, Role::class, 'user_id', 'id', 'id', 'organization_id');
 	}
 
 }

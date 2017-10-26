@@ -31,12 +31,10 @@ class TextController extends APIController
 	    $verse_end = checkParam('verse_end', null, 'optional');
 
 	    // Fetch Bible for Book Translations
-	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',substr($bible_id,0,7))->first();
-	    if(!$bibleEquivalent) {
-	    	$bible = Bible::find($bible_id);
-	    } else {
-	    	$bible = $bibleEquivalent->bible;
-	    }
+	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$bible_id)->first();
+	    if(!isset($bibleEquivalent)) $bibleEquivalent = BibleEquivalent::where('equivalent_id',substr($bible_id,0,7))->first();
+	    if(!isset($bibleEquivalent)) $bible = Bible::find($bible_id);
+	    if(isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
 
 	    $book = Book::where('id',$book_id)->orWhere('id_usfx',$book_id)->orWhere('id_osis',$book_id)->first();
 
