@@ -1,6 +1,6 @@
 # JSON Generator
 
-The command `` php artisan filesystem:update `` will update the json lists in the s3 bucket.
+The command `` php artisan filesystem:update `` will update the json lists in the filesystem.
  
  ### Arguments
  
@@ -37,3 +37,20 @@ for a specific organization's filesets. This will only effect
 the bibles route. The default option is *all*. 
  
     php artisan filesystem:update bibles local faith-comes-by-hearing
+    
+    
+# JSON Check
+
+The command `` php artisan filesystem:check `` will verify the json lists and the files themselves in the filesystem.
+
+ #### 1) Driver
+ This allows the program to check the API files in a number of
+ different storage solutions. The default option is *local*.
+ More drivers could be added on request, Dropbox ect.
+ 
+    php artisan filesystem:check local
+ 
+ - local
+ - ftp
+ - s3
+ - rackspace
