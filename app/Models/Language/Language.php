@@ -31,7 +31,7 @@ class Language extends Model
 
     public function alphabets()
     {
-        return $this->BelongsToMany(Alphabet::class,'alphabet_language','script')->distinct();
+        return $this->BelongsToMany(Alphabet::class,'alphabet_language','script','id')->distinct();
     }
 
     /**

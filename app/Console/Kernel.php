@@ -19,7 +19,8 @@ class Kernel extends ConsoleKernel
 	    Commands\fetchAlphabets::class,
 	    Commands\fetchLanguageDescriptions::class,
 	    Commands\countSophia::class,
-	    Commands\organizations_dbl_status::class
+	    Commands\organizations_dbl_status::class,
+	    Commands\filesystem_update::class
     ];
 
     /**

@@ -9,6 +9,7 @@
 /public/swagger-editor
 /storage/*.key
 /storage/data/
+/storage/s3/
 /storage/bibles/
 /vendor
 
