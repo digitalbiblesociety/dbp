@@ -3,9 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Models\Bible\Bible;
+use App\Models\Bible\BibleFileset;
 use App\Models\Country\Country;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
+use App\Models\Organization\Organization;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 class filesystem_update extends Command
@@ -15,7 +17,7 @@ class filesystem_update extends Command
      *
      * @var string
      */
-    protected $signature = 'filesystem:update {section=all} {driver=local}';
+    protected $signature = 'filesystem:update {section=all} {driver=local} {organization=all}';
 
     /**
      * The console command description.
@@ -45,11 +47,25 @@ class filesystem_update extends Command
     {
 	    $this->driver = $this->argument('driver');
 	    $this->section = $this->argument('section');
+	    $this->organization = $this->argument('organization');
+
 		switch($this->section) {
-			case "languages": { $this->handleLanguages();break; }
-			case "countries": { $this->handleCountries();break; }
-			case "alphabets": { $this->handleAlphabets();break; }
-			case "bibles":    { $this->handleBibles();break; }
+			case "languages": {
+				$this->handleLanguages();
+				break;
+			}
+			case "countries": {
+				$this->handleCountries();
+				break;
+			}
+			case "alphabets": {
+				$this->handleAlphabets();
+				break;
+			}
+			case "bibles":    {
+				$this->handleBibles();
+				break;
+			}
 			case "all":       {
 				$this->handleLanguages();
 				$this->handleCountries();
@@ -108,22 +124,34 @@ class filesystem_update extends Command
 
 	public function handleBibles() {
 		$this->info("\n Bibles Section Started");
-		$bibles = Bible::select( 'iso', 'id' )->get();
-		$bar    = $this->output->createProgressBar( count( $bibles ) );
-		Storage::disk( $this->driver )->put( 'bibles.json', json_encode( $bibles, JSON_PRETTY_PRINT ) );
-		foreach ( $bibles as $bible ) {
-			$bible = Bible::with( 'translations', 'language.parent', 'alphabet.fonts', 'equivalents', 'filesets.files', 'organizations', 'links' )->find( $bible->id );
 
-			$filesets = $bible->filesets ?? [];
-			unset( $bible->filesets );
-			$bible->filesets = $filesets->pluck( 'id' );
+		// Check the organization Argument and if it exists Filter the Bibles by that organization's filesets
+		if($this->organization != "all") {
+			$organization = Organization::where('slug',$this->organization)->first();
+			if(!$organization) return $this->error("Organization slug not found for".$this->organization);
+			$filesets = BibleFileSet::with('bible')->where('organization_id',$organization->id)->get();
+			$bibles = $filesets->pluck('bible.iso','bible.id');
+		} else {
+			// Otherwise just get all Bibles
+			$bibles = Bible::select( 'iso', 'id' )->get()->pluck('iso','id');
+		}
 
-			Storage::disk( $this->driver )->put( "/bibles/$bible->id/info.json", json_encode( $bible, JSON_PRETTY_PRINT ) );
-			foreach ($filesets as $fileset ) Storage::disk( $this->driver )->put( "/bibles/$bible->id/$fileset->id.json", json_encode( $fileset, JSON_PRETTY_PRINT ) );
+		// Initialize Progress Bar
+		$bar = $this->output->createProgressBar(count($bibles));
+		Storage::disk( $this->driver )->put('bibles.json', json_encode($bibles, JSON_PRETTY_PRINT));
+
+		// Save Individual Bible Files
+		foreach($bibles as $id => $iso) {
+			$bible = Bible::with('translations','language.parent','alphabet.fonts','equivalents','filesets.files','organizations','links')->find($id);
+			Storage::disk($this->driver)->put("/bibles/$id/info.json", json_encode( $bible, JSON_PRETTY_PRINT ));
+			foreach($bible->filesets as $fileset) {
+
+				Storage::disk( $this->driver )->put( "/bibles/$id/$fileset->id.json", json_encode( $fileset, JSON_PRETTY_PRINT ) );
+			}
 			$bar->advance();
 		}
-			$bar->finish();
-			$this->info("\n Bibles Section Finished");
+		$bar->finish();
+		$this->info("\n Bibles Section Finished");
 	}
 
 
