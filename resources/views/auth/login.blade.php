@@ -258,8 +258,8 @@
             <div class="small-12 medium-6 columns small-order-1 medium-order-2 login-box-social-section">
                 <div class="login-box-social-section-inner">
                     <span class="login-box-social-headline">Sign in with<br />your social network</span>
-                    <a class="login-box-social-button-facebook">Log in with facebook</a>
-                    <a class="login-box-social-button-twitter">Log in with Twitter</a>
+                    <a class="login-box-social-button-facebook" href="{{ route('login.social_redirect', ['provider' => 'facebook']) }}">Log in with facebook</a>
+                    <a class="login-box-social-button-twitter" href="{{ route('login.social_redirect', ['provider' => 'twitter']) }}">Log in with Twitter</a>
                     <a class="button expanded github" href="{{ route('login.social_redirect', ['provider' => 'github']) }}" href="">Github Login</a>
                 </div>
             </div>

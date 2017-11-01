@@ -16,6 +16,7 @@
     "foundation-sites": "^6.4.4-rc1",
     "jquery": "^3.1.1",
     "laravel-mix": "0.*",
-    "selectize": "^0.12.4"
+    "selectize": "^0.12.4",
+    "swagger-spec-validator": "^1.0.1"
   }
 }
