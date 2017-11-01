@@ -2,26 +2,6 @@
 
 @section('head')
     <title>Swagger API</title>
-    <link href="/css/swagger-ui.css" rel="stylesheet" />
-    <style>
-        html
-        {
-            box-sizing: border-box;
-            overflow: -moz-scrollbars-vertical;
-            overflow-y: scroll;
-        }
-        *,
-        *:before,
-        *:after
-        {
-            box-sizing: inherit;
-        }
-
-        body {
-            margin:0;
-            background: #fafafa;
-        }
-    </style>
 @endsection
 
 @section('content')
