@@ -32,6 +32,12 @@ class CreateUsersTable extends Migration
 		    $table->timestamps();
 	    });
 
+	    Schema::create('cache', function ($table) {
+		    $table->string('key')->unique();
+		    $table->text('value');
+		    $table->integer('expiration');
+	    });
+
     }
 
     /**
@@ -41,6 +47,7 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
+	    Schema::dropIfExists('cache');
 	    Schema::dropIfExists('user_accounts');
         Schema::dropIfExists('users');
     }

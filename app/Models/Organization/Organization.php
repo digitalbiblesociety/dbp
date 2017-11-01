@@ -21,6 +21,12 @@ class Organization extends Model
      */
     protected $hidden = ['pivot','logo','facebook','twitter','id','code'];
 
+	public function setSlugAttribute($value)
+	{
+		$this->attributes['title'] = $value;
+		$this->attributes['slug'] = str_slug($value);
+	}
+
     public function translations($iso = null)
     {
     	if($iso) return $this->HasOne(OrganizationTranslation::class,'organization_id','id')->where('language_iso', $iso);

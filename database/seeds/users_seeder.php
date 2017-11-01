@@ -19,6 +19,10 @@ class users_seeder extends Seeder
 	    $user->password = Hash::make("2ch714");
 	    $user->save();
 
+	    $user = new User();
+	    $user->id = "7dfa67f0b5e111e7aaf8a53dd0c8fc55";
+	    $user->name = "Test Build IOS";
+	    $user->save();
 
 	    $user = new User();
 	    $user->name = "Emijo J.";

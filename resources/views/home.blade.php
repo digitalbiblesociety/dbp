@@ -52,28 +52,6 @@
         right:-3px;
     }
 
-
-    .connections a {
-        display: inline-block;
-        line-height: 70px;
-        padding:5px;
-        color:#FFF;
-        text-shadow: 0 0 1px #000000;
-    }
-    .connections a.disabled {
-        opacity: .5;
-    }
-
-    .connections a img {
-        height:50px;
-        margin:10px;
-        float:left;
-    }
-
-    .github         {background-color:#181717}
-    .google         {background-color:#4285F4}
-    .bitbucket      {background-color:#205081}
-
     .without-organization {
         height:100%;
     }
@@ -90,6 +68,27 @@
         font-size:1.75rem;
     }
 
+    .organizations {
+        background-color:#f1f1f1;
+        text-align: center;
+    }
+
+    .organizations img {
+        height:70px;
+        margin:10px auto;
+    }
+
+    .organizations a {
+        color:#222;
+        background-color:rgba(0,0,0,.1);
+        margin:10px;
+    }
+
+    .organizations a:hover {
+        background-color:rgba(0,0,0,.8);
+        color:#FFF;
+    }
+
 </style>
 @section('head')
 @endsection
@@ -99,17 +98,19 @@
     @include('layouts.partials.banner', ['title' => "Hello $user->name" ])
 
     @if(count($user->roles) > 0)
+        <div class="row organizations">
         @foreach($user->roles as $connection)
-            <a href="{{ route('dashboard_organizations.show',['id' => $connection->organization->id]) }}" class="card">
-                <img src="{{ $connection->organization->logoIcon->icon or $connection->organization->logo->url }}" />
-                <span class="title">{{ $connection->organization->translations("eng")->first()->name }}</span>
+            <a href="{{ route('dashboard_organizations.show',['id' => $connection->organization->id]) }}" class="medium-2 columns">
+                <img src="{{ $connection->organization->logo->url }}" title="{{ $connection->organization->translations("eng")->first()->name }}" />
                 <small class="subtitle">{{ $connection->role }}</small>
-                @if(($connection->role == "manager") | ($connection->role == "admin"))
-                    <a href=""></a>
-                @endif
             </a>
         @endforeach
-        <a href="{{ route('dashboard_organization_roles.create') }}" class="button">Add an Organization</a>
+            <a href="{{ route('dashboard_organization_roles.create') }}" class="medium-2 columns">
+                <img src="/img/icons/add.svg" />
+                <small class="subtitle">Add an Organization</small>
+            </a>
+        </div>
+
 
         <div class="row">
 

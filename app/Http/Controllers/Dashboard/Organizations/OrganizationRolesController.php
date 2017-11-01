@@ -54,7 +54,7 @@ class OrganizationRolesController extends Controller
     	$user = \Auth::user();
         $role = new Role();
         $role->user_id = $user->id;
-        $role->organization_id = $request->organization_id;
+        $role->organization_id = $request->organizations;
 	    $role->role = "requesting-access";
         $role->save();
         redirect()->route('dashboard_organization_roles.index');

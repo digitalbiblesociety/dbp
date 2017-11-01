@@ -19,8 +19,8 @@ class AudioController extends APIController
      */
     public function index($id = null)
     {
-	    $id = CheckParam('dam_id',$id);
-    	$audioChapters = BibleFile::with('book')->where('bible_id',$id)->orderBy('file_name')->get();
+	    $id = CheckParam('fileset_id',$id);
+    	$audioChapters = BibleFile::with('book')->where('set_id',$id)->orderBy('file_name')->get();
         return $this->reply(fractal()->collection($audioChapters)->transformWith(new AudioTransformer()));
     }
 
@@ -46,12 +46,12 @@ class AudioController extends APIController
 	public function timestampsByReference(string $id = null, string $book = null, int $chapter = null)
 	{
 		// Set Params
-		$id = CheckParam('dam_id', $id);
+		$id = CheckParam('fileset_id', $id);
 		$chapter = CheckParam('chapter', $chapter);
 		$book = CheckParam('book', $book);
 
 		// Fetch timestamps
-		$audioTimestamps = BibleFileTimestamp::where('bible_id', $id)
+		$audioTimestamps = BibleFileTimestamp::where('bible_fileset_id', $id)
 		                            ->where('chapter_start', $chapter)
 		                            ->where('book_id', $book)->orderBy('chapter_start')->orderBy('verse_start')->get();
 

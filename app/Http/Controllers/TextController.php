@@ -131,11 +131,15 @@ class TextController extends APIController
 	    // If it's not an API route send them to the documentation
 	    if(!$this->api) return view('docs.v2.text_search_group');
 
+	    $exclude = checkParam('exclude', null, 'optional');
 	    $query = checkParam('query');
 	    $bible_id = checkParam('dam_id');
 
+	    if($exclude) $exclude = ' -'.$exclude;
+	    $query = \DB::connection()->getPdo()->quote('+'.str_replace(' ',' +',$query).$exclude);
+
 	    $verses = Text::with('book')->where('bible_id',$bible_id)->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->select('book_id')->get();
-	    dd($verses);
+
 	    foreach($verses->groupBy('book_id') as $key => $verse) $verseCount[$key] = $verse->count();
 
 	    return $this->reply($verseCount);

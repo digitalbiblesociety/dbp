@@ -57,8 +57,10 @@
                 </thead>
                 <tbody>
                 @foreach($fileset->files as $file)
+                    <form action="/bibles/{{ $fileset->bible_id }}/{{ $fileset->id }}/{{ $file->file_name }}" method="POST">
+                    {{ csrf_field() }}
                     <tr>
-                        <td><a href="#">{{ $file->file_name }}</a></td>
+                        <td><input type="text" value="{{ $file->file_name }}"></td>
                         <td>{{ $file->book_id }}
                             @if(($file->chapter_end != null) AND ($file->chapter_end != $file->chapter_start))
                                 {{ $file->chapter_start.':'.$file->verse_start.'-'. $file->chapter_end .':'.$file->verse_end }}
@@ -69,6 +71,7 @@
                             @endif
                         </td>
                     </tr>
+                    </form>
                 @endforeach
                 </tbody>
             </table>

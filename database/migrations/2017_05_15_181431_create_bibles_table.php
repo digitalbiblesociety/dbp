@@ -42,6 +42,7 @@ class CreateBiblesTable extends Migration
 	    });
 
         Schema::create('bible_translations', function (Blueprint $table) {
+        	$table->increments('id');
             $table->char('iso', 3)->index();
             $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
             $table->string('bible_id',12);
@@ -87,7 +88,7 @@ class CreateBiblesTable extends Migration
 		    $table->string('bible_id',12)->nullable();
 		    $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
 		    $table->string('type');
-		    $table->text('link');
+		    $table->text('url');
 		    $table->string('title');
 		    $table->integer('organization_id')->unsigned()->nullable();
 		    $table->foreign('organization_id')->references('id')->on('organizations');

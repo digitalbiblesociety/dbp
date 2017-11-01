@@ -38,9 +38,11 @@
     @include('layouts.partials.banner', ['title' => 'Countries'])
 
     <div class="row">
-    <table>
+    <table class="table" cellspacing="0" width="100%">
         <thead>
         <tr>
+            <td>Iso</td>
+            <td>Language</td>
             <td>Name</td>
             <td>Date</td>
             <td>Scope</td>
@@ -53,6 +55,8 @@
         @foreach($country->languages as $language)
             @foreach($language->bibles as $bible)
                 <tr data-filesets="{{ $bible->filesets->count() }}" data-links="{{ $bible->links->count() }}">
+                    <td>{{ $bible->language->iso }}</td>
+                    <td>{{ $bible->language->name }}</td>
                     <td><a href="{{ route('view_bibles.show', $bible->id) }}">{{ $bible->currentTranslation->name }}</a></td>
                     <td>{{ $bible->date }}</td>
                     <td>{{ $bible->scope }}</td>

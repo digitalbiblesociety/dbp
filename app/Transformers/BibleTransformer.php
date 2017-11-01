@@ -127,7 +127,7 @@ class BibleTransformer extends TransformerAbstract
 		$translations = $bible->translations()->get()->keyBy('iso');
 		return [
 			'<a href="/bibles/'.$bible->id.'">'.$translations["eng"]->name.'</a>',
-			$translations[$bible->language->iso]->name,
+			(isset($translations[$bible->language->iso])) ? $translations[$bible->language->iso]->name : collect($translations)->first(),
 			$bible->language->primaryCountry->name ?? "",
 			$bible->language->name ?? "",
 			$bible->date,

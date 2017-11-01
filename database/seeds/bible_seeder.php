@@ -52,7 +52,7 @@ class bible_seeder extends Seeder {
 				"bible_id"    => $bible['abbr'],
 				"iso"         => $bible["iso"],
 				"vernacular"  => ($language->iso != "eng") ? 1 : 0,
-				"name"        => $bible["eng_title"],
+				"name"        => $bible["vern_title"],
 				"description" => $bible["description"]
 			]);
 

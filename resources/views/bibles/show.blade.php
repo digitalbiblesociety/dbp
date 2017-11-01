@@ -77,6 +77,17 @@
                     @endif
             </div>
             @endforeach
+
+            <h4>Links</h4>
+            @foreach($bible->links as $link)
+                <div class="panel"><a href="{{ $link->url }}"><b>{{ $link->type }}</b> | <span>{{ $link->title }}</span></a></div>
+            @endforeach
+
+            <h4>Organizations</h4>
+            @foreach($bible->organizations as $organization)
+                <div class="panel"><a href="{{ $organization->id }}">{{ $organization->pivot->relationship_type }} | {{ $organization->currentTranslation->name }}</a></div>
+            @endforeach
+
         </div>
 
             <div class="medium-5 columns">

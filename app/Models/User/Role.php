@@ -11,6 +11,7 @@ class Role extends Model
 	protected $table = 'user_roles';
 	public $incrementing = false;
 	public $timestamps = true;
+	public $fillable = ['organization_id','user_id','role'];
 
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

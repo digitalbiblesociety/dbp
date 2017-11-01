@@ -5,6 +5,7 @@
 /public/hot
 /public/storage
 /public/bibles
+/public/scriptures
 /public/uploads
 /public/swagger-editor
 /storage/*.key

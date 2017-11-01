@@ -44,7 +44,7 @@ class Bible extends Model
      */
     public function translations()
     {
-        return $this->HasMany(BibleTranslation::class)->where('name', '!=', '');
+        return $this->HasMany(BibleTranslation::class);
     }
 
     public function currentTranslation()
@@ -159,7 +159,7 @@ class Bible extends Model
      */
     public function organizations()
     {
-        return $this->BelongsToMany(Organization::class, 'bible_organizations');
+        return $this->BelongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type']);
     }
 
 

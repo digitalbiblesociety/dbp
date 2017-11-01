@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class BibleFileset extends Model
 {
 
+	public $primaryKey = 'id';
 	public $incrementing = false;
 	protected $keyType = "string";
 	protected $fillable = ['name','set_type','organization_id','variation_id','bible_id'];
@@ -25,7 +26,7 @@ class BibleFileset extends Model
 
 	public function files()
 	{
-		return $this->HasMany(BibleFile::class,'set_id');
+		return $this->HasMany(BibleFile::class,'set_id', 'id');
 	}
 
 	public function permissions()

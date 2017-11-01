@@ -18,6 +18,7 @@ use App\Transformers\BibleTransformer;
 use Spatie\Fractalistic\ArraySerializer;
 use Symfony\Component\Yaml\Yaml;
 use Validator;
+use Illuminate\Support\Facades\Cache;
 
 class BiblesController extends APIController
 {
@@ -35,11 +36,12 @@ class BiblesController extends APIController
 		$language = fetchLanguage(checkParam('language',null,'optional'));
 		$organization = checkParam('organization',null,'optional');
 
-		$bibles = Bible::with('translations','language.parent','alphabet','dbp')->when($language, function ($query) use ($language) {
-				return $query->where('glotto_id', $language->id);
+	    $bibles = Bible::with('translations','language.parent','alphabet','dbp')->when($language, function ($query) use ($language) {
+			    return $query->where('glotto_id', $language->id);
 		    })->when($organization, function($q) use ($organization){
 			    $q->where('organization_id', '>=', $organization);
 		    })->get();
+
 		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
 
     }
@@ -187,9 +189,14 @@ class BiblesController extends APIController
 	 */
 	public function edit($id)
 	{
-		if(!$this->api) return view('bibles.edit');
+		$bible = Bible::with('translations.language')->find($id);
+		if(!$this->api) {
+			$languages = Language::select('iso','name')->orderBy('iso')->get();
+			$organizations = OrganizationTranslation::select('name','organization_id')->where('language_iso','eng')->get();
+			$alphabets = Alphabet::select('script')->get();
+			return view('bibles.edit',compact('languages', 'organizations', 'alphabets','bible'));
+		}
 
-		$bible = Bible::find($id);
 		return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
 	}
 
@@ -283,7 +290,42 @@ class BiblesController extends APIController
      */
     public function update(Request $request, $id)
     {
-        //
+
+	    $validator = Validator::make($request->all(), [
+		    'id'                      => 'required|max:24',
+		    'iso'                     => 'required|exists:languages,iso',
+		    'translations.*.name'     => 'required',
+		    'translations.*.iso'      => 'required|exists:languages,iso',
+		    'date'                    => 'integer',
+	    ]);
+
+	    if($validator->fails()) return redirect('bibles/edit')->withErrors($validator)->withInput();
+
+	    $bible = \DB::transaction(function () use($request,$id) {
+		    $bible = Bible::with('translations','organizations','equivalents','links')->find($id);
+		    $bible->update($request->only(['id','date','script','portions','copyright','derived','in_progress','notes','iso']));
+
+			if($request->translations) {
+				foreach ($bible->translations as $translation) $translation->delete();
+				foreach ($request->translations as $translation) if($translation['name']) $bible->translations()->create($translation);
+			}
+
+		    if($request->organizations) $bible->organizations()->sync($request->organizations);
+
+		    if($request->equivalents) {
+			    foreach ($bible->equivalents as $equivalent) $equivalent->delete();
+			    foreach ($request->equivalents as $equivalent) if($equivalent['equivalent_id']) $bible->equivalents()->create($equivalent);
+		    }
+
+		    if($request->links) {
+			    foreach ($bible->links as $link) $link->delete();
+			    foreach ($request->links as $link) if($link['url']) $bible->links()->create($link);
+		    }
+
+		    return $bible;
+	    });
+
+	    return redirect()->route('view_bibles.show', ['id' => $bible->id]);
     }
 
     /**

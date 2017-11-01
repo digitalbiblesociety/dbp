@@ -53,6 +53,7 @@ class DatabaseSeeder extends Seeder
 	    $this->call(bible_books_seeder::class);
 	    $this->call(bible_audio_seeder::class);
 	    $this->call(bible_file_timestamps_seeder::class);
+	    $this->call(bible_translators_seeder::class);
 
     }
 }

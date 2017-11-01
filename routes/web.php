@@ -14,25 +14,24 @@
 Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]], function()
 {
 
-	Route::get('docs',                          'DocsController@index')->name('docs');
-	Route::get('docs/history',                  'DocsController@history')->name('history');
-	Route::get('docs/swagger',                  'DocsController@swagger')->name('swagger');
-	Route::get('docs/progress',                 'DocsController@progress')->name('docs_progress');
-	Route::get('docs/team',                     'DocsController@team')->name('docs_team');
-	Route::get('docs/bibles',                   'DocsController@bibles')->name('docs_bibles');
-	Route::get('docs/bibles/equivalents',       'DocsController@bibleEquivalents')->name('docs_bible_equivalents');
-	Route::get('docs/bibles/books',             'DocsController@books')->name('docs_bible_books');
-	Route::get('docs/languages',                'DocsController@languages')->name('docs_languages');
-	Route::get('docs/language/create',          'DocsController@languages')->name('docs_language_create');
-	Route::get('docs/language/update',          'DocsController@languages')->name('docs_language_update');
-	Route::get('docs/countries',                'DocsController@countries')->name('docs_countries');
-	Route::get('docs/alphabets',                'DocsController@alphabets')->name('docs_alphabets');
+	Route::name('docs')->get('docs',                                        'DocsController@index');
+	Route::name('history')->get('docs/history',                             'DocsController@history');
+	Route::name('swagger')->get('docs/swagger',                             'DocsController@swagger');
 
-	Route::get('docs/v2/books/book-order-listing',  'BooksController@show')->name('docs_books_BookOrderListing');
-	Route::get('docs/v2/text/search',  'TextController@search')->name('v2_docs_text_search');
-	// library/volumelanguage
+	Route::name('docs_progress')->get('docs/progress',                      'DocsController@progress');
+	Route::name('docs_team')->get('docs/team',                              'DocsController@team');
+	Route::name('docs_bibles')->get('docs/bibles',                          'DocsController@bibles');
+	Route::name('docs_bible_equivalents')->get('docs/bibles/equivalents',   'DocsController@bibleEquivalents');
+	Route::name('docs_bible_books')->get('docs/bibles/books',               'DocsController@books');
+	Route::name('docs_languages')->get('docs/languages',                    'DocsController@languages');
+	Route::name('docs_language_create')->get('docs/language/create',        'DocsController@languages');
+	Route::name('docs_language_update')->get('docs/language/update',        'DocsController@languages');
+	Route::name('docs_countries')->get('docs/countries',                    'DocsController@countries');
+	Route::name('docs_alphabets')->get('docs/alphabets',                    'DocsController@alphabets');
+	Route::name('docs_books_BookOrderListing')->get('docs/v2/books/book-order-listing',  'BooksController@show');
+	Route::name('v2_docs_text_search')->get('docs/v2/text/search',  'TextController@search');
 
-	Route::get('library/volumelanguage', 'LanguagesController@volumeLanguage')->name('data_library_volumeLanguage');
+	Route::name('data_library_volumeLanguage')->get('library/volumelanguage', 'LanguagesController@volumeLanguage');
 
 });
 
@@ -42,6 +41,9 @@ Route::resource('bibles/audio/uploads',     'AudioProcessingController');
 Route::resource('bibles/ocr',               'PrintProcesses');
 Route::get('bibles/connections/{id}/overview', 'BibleFileSetsController@overview');
 
+
+Route::post('bibles/filesets/{id}/files/{file_id}' , 'BibleFilesController@update');
+
 Route::resource('bibles/filesets/{id}/permissions',       'BibleFileSetPermissionsController', ['names' => [
 	'index'   => 'view_bible_filesets_permissions.index',
 	'edit'    => 'view_bible_filesets_permissions.edit',
@@ -50,7 +52,6 @@ Route::resource('bibles/filesets/{id}/permissions',       'BibleFileSetPermissio
 	'show'    => 'view_bible_filesets_permissions.show',
 	'update'  => 'view_bible_filesets_permissions.update'
 ]]);
-
 Route::resource('bibles/filesets',       'BibleFileSetsController', ['names' => [
 	'index'   => 'view_bible_filesets.index',
 	'edit'    => 'view_bible_filesets.edit',
@@ -61,6 +62,8 @@ Route::resource('bibles',                   'BiblesController', ['names' => [
 	'index'   => 'view_bibles.index',
 	'edit'    => 'view_bibles.edit',
 	'create'  => 'view_bibles.create',
+	'update'  => 'view_bibles.update',
+	'store'   => 'view_bibles.store',
 	'show'    => 'view_bibles.show',
 ]]);
 Route::resource('books',                    'BooksController', ['names' => [
