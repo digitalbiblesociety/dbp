@@ -140,6 +140,9 @@
         </div>
 
     @else
+        <div class="row expanded callout secondary text-center">
+            <p>Your API Key is <h5><a href="{{ route('view_bible_filesets_permissions.user') }}"><code>{{ $user->id }}</code></a></h5></p>
+        </div>
         <div class="row expanded without-organization">
             <div class="medium-6 columns organization-join-panel">
                 <h2>Your account is not associated with an organization</h2>

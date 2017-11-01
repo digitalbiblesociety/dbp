@@ -44,6 +44,7 @@ Route::get('bibles/connections/{id}/overview', 'BibleFileSetsController@overview
 
 Route::post('bibles/filesets/{id}/files/{file_id}' , 'BibleFilesController@update');
 
+Route::get('/permissions',       'BibleFileSetPermissionsController@user')->name('view_bible_filesets_permissions.user');
 Route::resource('bibles/filesets/{id}/permissions',       'BibleFileSetPermissionsController', ['names' => [
 	'index'   => 'view_bible_filesets_permissions.index',
 	'edit'    => 'view_bible_filesets_permissions.edit',
@@ -111,6 +112,7 @@ Route::resource('countries',                'CountriesController', [
 Route::get('login/{provider}',          'Auth\LoginController@redirectToProvider')->name('login.social_redirect');
 Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback')->name('login.social_callback');
 Auth::routes();
+
 
 Route::get('/home', 'HomeController@index')->name('home');
 

@@ -106,4 +106,12 @@ class BibleFileSetPermissionsController extends APIController
 		$fileSet = BibleFileset::find($id);
 		$fileSet->delete();
 	}
+
+	public function user()
+	{
+		$user = \Auth::user();
+		if(!$user) return $this->replyWithError('You must be logged in to view this page');
+		return view('dashboard.permissions',compact('user'));
+	}
+
 }

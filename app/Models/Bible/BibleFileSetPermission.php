@@ -11,7 +11,7 @@ class BibleFileSetPermission extends Model
 
 	public function fileset()
 	{
-		return $this->hasOne(BibleFileset::class);
+		return $this->BelongsTo(BibleFileset::class,'bible_fileset_id');
 	}
 
 	public function user()

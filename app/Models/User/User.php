@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use App\Models\Bible\BibleFileSetPermission;
 use App\Models\Organization\Organization;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -75,6 +76,11 @@ class User extends Authenticatable
 	public function organizations()
 	{
 		return $this->HasManyThrough(Organization::class, Role::class, 'user_id', 'id', 'id', 'organization_id');
+	}
+
+	public function permissions()
+	{
+		return $this->hasMany(BibleFileSetPermission::class);
 	}
 
 }
