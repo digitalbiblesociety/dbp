@@ -2,12 +2,12 @@
   "openapi": "3.0.0",
   "servers": [
     {
-      "url": "https://api.bible.build/v2",
-      "description": "Online Staging server for testing"
+      "url": "https://api.dbp.dev/",
+      "description": "Internal Staging server for testing"
     },
     {
-      "url": "https://api.dbp.dev/v2",
-      "description": "Internal Staging server for testing"
+      "url": "https://api.bible.build/",
+      "description": "Online Staging server for testing"
     }
   ],
   "info": {
@@ -48,22 +48,19 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/key"
           },
           {
-            "name": "v",
-            "in": "query",
-            "description": "The Version of the API",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
           }
         ],
         "tags": [
@@ -93,22 +90,22 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/key"
           },
           {
-            "name": "v",
-            "in": "query",
-            "description": "The Version of the API",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "$ref": "#/components/parameters/dam_id"
           }
         ],
         "tags": [
@@ -144,22 +141,19 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/key"
           },
           {
-            "name": "v",
-            "in": "query",
-            "description": "The Version of the API",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
           }
         ],
         "tags": [
@@ -195,21 +189,184 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "name": "dam_id",
             "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
+            "description": "the volume internal DAM ID. Can be used to restrict the response to only DAM IDs that contain with 'N2' for example",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "v",
+            "name": "fcbh_id",
             "in": "query",
-            "description": "The Version of the API",
-            "required": true,
+            "description": "the volume FCBH DAM ID. Can be used to restrict the response to only FCBH DAM IDs that contain with 'N2' for example",
             "schema": {
-              "type": "integer"
+              "type": "string"
+            }
+          },
+          {
+            "name": "media",
+            "in": "query",
+            "description": "The format of assets the caller is interested in. This specifies if you only want volumes available in text or volumes available in audio.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "text",
+                "audio",
+                "video"
+              ]
+            }
+          },
+          {
+            "name": "delivery",
+            "in": "query",
+            "description": "A criteria for approved delivery method. It is possible to OR these methods together using '|', such as \"delivery=streaming_url|mobile\".  'any' means any of the supported methods (this list may change over time) i.e. approved for something. 'none' means volumes that are not approved for any of the supported methods. All volumes are returned by default.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "web",
+                "web_streaming",
+                "download",
+                "download_text",
+                "mobile",
+                "sign_language",
+                "streaming_url",
+                "local_bundled",
+                "podcast",
+                "mp3_cd",
+                "digital_download",
+                "bible_stick",
+                "subsplash",
+                "any",
+                "none"
+              ]
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Filter the versions returned to a specified native or English language language name. For example return all the 'English' volumes.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "full_word",
+            "in": "query",
+            "description": "Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string 'new' is anywhere in the language name, like in \"Newari\" and \"Awa for Papua New Guinea\". When true, it will only return volumes where the language name contains the full word 'new', like in \"Awa for Papua New Guinea\". Default is false.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "language_code",
+            "in": "query",
+            "description": "the three letter language code.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "language_family_code",
+            "in": "query",
+            "description": "the three letter language code for the language family.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "updated",
+            "in": "query",
+            "description": "YYYY-MM-DD. This is used to get volumes that were modified since the specified date.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Publishing status of volume. The default is 'live'.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "live",
+                "disabled",
+                "incomplete",
+                "waiting_review",
+                "in_review",
+                "discontinued"
+              ]
+            }
+          },
+          {
+            "name": "dbp_agreement",
+            "in": "query",
+            "description": "Whether or not a DBP Agreement has been executed between FCBH and the organization to whom the volume belongs.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "expired",
+            "in": "query",
+            "description": "Whether the volume as passed its expiration or not.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "description": "Currently used for video volumes as they can be available in different resolutions, basically conforming to the loose general categories of low, medium, and high resolution. Low resolution is geared towards devices with smaller screens.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "lo",
+                "med",
+                "hi"
+              ]
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "query",
+            "description": "Organization id of volumes to return.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Primary criteria by which to sort.  The default is 'dam_id'.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "dam_id",
+                "volume_name",
+                "language_name",
+                "language_english",
+                "language_family_code",
+                "language_family_name",
+                "version_code",
+                "version_name",
+                "version_english"
+              ]
             }
           }
         ],
@@ -240,22 +397,19 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/key"
           },
           {
-            "name": "v",
-            "in": "query",
-            "description": "The Version of the API",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
           }
         ],
         "tags": [
@@ -285,21 +439,116 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "name": "root",
             "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
+            "description": "the native language or English language language name root. Can be used to restrict the response to only languages that start with 'Quechua' for example",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "v",
+            "name": "full_word",
             "in": "query",
-            "description": "The Version of the API",
-            "required": true,
+            "description": "Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string 'new' is anywhere in the language name, like in \"Newari\" and \"Awa for Papua New Guinea\". When true, it will only return volumes where the language name contains the full word 'new', like in \"Awa for Papua New Guinea\". Default is false.",
             "schema": {
-              "type": "integer"
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "language_code",
+            "in": "query",
+            "description": "the three letter language code.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "media",
+            "in": "query",
+            "description": "The format of the volumes of the language families the caller is interested in. This specifies if you want language families available in text, audio or video.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "text",
+                "audio",
+                "video"
+              ]
+            }
+          },
+          {
+            "name": "delivery",
+            "in": "query",
+            "description": "A criteria for approved delivery method. It is possible to OR these methods together using '|', such as \"delivery=streaming|mobile\". 'any' means any of the supported methods (this list may change over time). 'none' means assets that are not approved for any of the supported methods. All returned by default.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "streaming",
+                "web_streaming",
+                "download",
+                "download_text",
+                "mobile",
+                "sign_language",
+                "local_bundled",
+                "podcast",
+                "mp3_cd",
+                "digital_download",
+                "bible_stick",
+                "subsplash",
+                "any",
+                "none"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Publishing status of volume. The default is 'live'.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "live",
+                "disabled",
+                "incomplete",
+                "waiting_review",
+                "in_review",
+                "discontinued"
+              ]
+            }
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "description": "Currently used for video volumes as they can be available in different resolutions, basically conforming to the loose general categories of low, medium, and high resolution. Low resolution is geared towards devices with smaller screens.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "lo",
+                "med",
+                "hi"
+              ]
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "query",
+            "description": "The id of an organization by which to filter the languages of available volumes.",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -330,22 +579,19 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/key"
           },
           {
-            "name": "v",
-            "in": "query",
-            "description": "The Version of the API",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
           }
         ],
         "tags": [
@@ -375,22 +621,22 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/key"
           },
           {
-            "name": "v",
-            "in": "query",
-            "description": "The Version of the API",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "$ref": "#/components/parameters/dam_id"
           }
         ],
         "tags": [
@@ -420,22 +666,22 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/key"
           },
           {
-            "name": "v",
-            "in": "query",
-            "description": "The Version of the API",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "$ref": "#/components/parameters/dam_id"
           }
         ],
         "tags": [
@@ -465,22 +711,22 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/key"
           },
           {
-            "name": "v",
-            "in": "query",
-            "description": "The Version of the API",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "$ref": "#/components/parameters/dam_id"
           },
           {
             "name": "language_code",
@@ -528,21 +774,29 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/key"
           },
           {
-            "name": "v",
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "$ref": "#/components/parameters/dam_id"
+          },
+          {
+            "name": "book_id",
             "in": "query",
-            "description": "The Version of the API",
-            "required": true,
+            "description": "The ID for the book for which to retrieve chapters",
             "schema": {
-              "type": "integer"
+              "type": "string"
             }
           }
         ],
@@ -579,22 +833,10 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/key"
           },
           {
-            "name": "v",
-            "in": "query",
-            "description": "The Version of the API",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/version"
           },
           {
             "name": "iso",
@@ -657,19 +899,27 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/key"
           },
           {
-            "name": "v",
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "$ref": "#/components/parameters/dam_id"
+          },
+          {
+            "name": "organization_id",
             "in": "query",
-            "description": "The Version of the API",
-            "required": true,
+            "description": "Organization ID by which to filter",
             "schema": {
               "type": "integer"
             }
@@ -705,21 +955,42 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "name": "name",
             "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
+            "description": "The partial or complete name of the organization in either the organization's native language or English.",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "v",
+            "name": "id",
             "in": "query",
-            "description": "The Version of the API",
-            "required": true,
+            "description": "the id of the organization",
             "schema": {
-              "type": "integer"
+              "type": "string"
+            }
+          },
+          {
+            "name": "enabled",
+            "in": "query",
+            "description": "The enabled status of the organization",
+            "schema": {
+              "type": "boolean"
             }
           }
         ],
@@ -756,21 +1027,58 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "name": "dam_id",
+            "description": "The DAM ID of the verse info.",
             "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "v",
+            "name": "book_id",
+            "description": "If specified returns verse text ONLY for the specified book.",
             "in": "query",
-            "description": "The Version of the API",
-            "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string"
+            }
+          },
+          {
+            "name": "chapter_id",
+            "description": "If specified returns verse text ONLY for the specified book and chapter.",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "verse_start",
+            "description": "If specified without 'verse_end' returns verse text ONLY for the specified book, chapter, and verse. If specified with 'verse_end' returns all verse text for the specified book, chapter, and verse range from 'verse_start' to 'verse_end'.",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "verse_end",
+            "description": "If specified returns of all verse text for the specified book, chapter, and verse range from 'verse_start' to 'verse_end'. If specified requires that 'verse' is also specified.",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -801,21 +1109,32 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/key"
           },
           {
-            "name": "v",
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "name": "protocol",
             "in": "query",
-            "description": "The Version of the API",
+            "description": "Allows the caller to restrict potential servers from being returned that don't support a specified protocol.",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "enum": [
+                "HTTP",
+                "HTTPS",
+                "RTMP"
+              ]
             }
           }
         ],
@@ -846,21 +1165,61 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "name": "dam_id",
+            "description": "The DAM ID for which to retrieve file path info.",
             "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "v",
+            "name": "encoding",
+            "description": "The audio encoding format desired.",
             "in": "query",
-            "description": "The Version of the API",
-            "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "enum": [
+                "mp3"
+              ]
+            }
+          },
+          {
+            "name": "book_order",
+            "description": "The order number of the book in the volume. This is particularly useful for story volumes as there are no applicable OSIS book codes.",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "book_id",
+            "description": "The OSIS id of the book. If book is not specified ALL book/chapter information for the given language is returned to the caller. Otherwise chapter information for the specified book is returned.",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chapter_id",
+            "description": "The id for the specified chapter. If chapter is specified only the specified chapter audio information is returned to the caller.",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -891,18 +1250,42 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "name": "dam_id",
             "in": "query",
-            "description": "The API key that's been generated for you.",
+            "description": "The DAM ID of the audio volume",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
-            "name": "v",
+            "name": "osis_code",
             "in": "query",
-            "description": "The Version of the API",
+            "description": "The book for verse times desired.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "chapter_number",
+            "in": "query",
+            "description": "The chapter for the verse times desired",
             "required": true,
             "schema": {
               "type": "integer"
@@ -936,21 +1319,48 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "name": "id",
+            "description": "The numeric ID of the font to retrieve",
             "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "v",
+            "name": "name",
+            "description": "Search for a specific font by name",
             "in": "query",
-            "description": "The Version of the API",
-            "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string"
+            }
+          },
+          {
+            "name": "platform",
+            "description": "Only return fonts that have been authorized for the specified platform.",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "android",
+                "ios",
+                "web",
+                "all"
+              ]
             }
           }
         ],
@@ -981,21 +1391,66 @@
       "get": {
         "parameters": [
           {
-            "name": "key",
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/echo"
+          },
+          {
+            "name": "dam_id",
+            "description": "The DAM ID of the verse text",
             "in": "query",
-            "description": "The API key that's been generated for you.",
-            "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "v",
+            "name": "book_id",
+            "description": "If specified returns verse text ONLY for the specified book.",
             "in": "query",
-            "description": "The Version of the API",
-            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chapter_id",
+            "description": "If specified returns verse text ONLY for the specified book and chapter.",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "verse_start",
+            "description": "If specified without 'verse_end' returns verse text ONLY for the specified book, chapter, and verse. If specified with 'verse_end' returns all verse text for the specified book, chapter, and verse range from 'verse_start' to 'verse_end'.",
+            "in": "query",
             "schema": {
               "type": "integer"
+            }
+          },
+          {
+            "name": "verse_end",
+            "description": "If specified returns of all verse text for the specified book, chapter, and verse range from 'verse_start' to 'verse_end'. If specified requires that 'verse' is also specified.",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "markup",
+            "description": "If specified returns the verse text in a variety of standardized markup formats. By default the internal DBT format is returned. Current options include OSIS, and native (the default DBT format).",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -1030,6 +1485,65 @@
     }
   },
   "components": {
+    "parameters": {
+      "key": {
+        "name": "key",
+        "in": "query",
+        "description": "The API key that's been generated for you.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "echo": {
+        "name": "echo",
+        "in": "query",
+        "description": "If unused the results are as before. If set to true, the results will be prepended with the array of calling arguments used. This does mean that the results will be one layer deeper as the results will be an array where the first element is the array of input arguments and the second element will be the results as normally returned.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "version": {
+        "name": "key",
+        "in": "query",
+        "description": "The API key that's been generated for you.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "reply": {
+        "name": "reply",
+        "in": "query",
+        "description": "Specifies the response type requested by the caller. Default is json.",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "json",
+            "html",
+            "jsonp",
+            "yaml",
+            "xml"
+          ]
+        }
+      },
+      "callback": {
+        "name": "callback",
+        "in": "query",
+        "description": "If unused the results are as before. If set to true, the results will be prepended with the array of calling arguments used. This does mean that the results will be one layer deeper as the results will be an array where the first element is the array of input arguments and the second element will be the results as normally returned.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "dam_id": {
+        "name": "dam_id",
+        "in": "query",
+        "description": "To get the location directory and asset file basename for a specific volume.",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
     "schemas": {
       "LanguageVolume": {
         "required": [
