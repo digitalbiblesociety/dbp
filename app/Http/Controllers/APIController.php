@@ -9,9 +9,8 @@ use Illuminate\Support\Facades\URL;
 use SoapBox\Formatter\Formatter;
 use App\Models\User\User;
 use i18n;
-use League\Fractal\Serializer\DataArraySerializer;
-use League\Fractal\Serializer\ArraySerializer;
-
+use \Spatie\Fractalistic\DataArraySerializer;
+use \Spatie\Fractalistic\ArraySerializer;
 class APIController extends Controller
 {
 
