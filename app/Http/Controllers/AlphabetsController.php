@@ -2,34 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\APIController;
 use App\Models\Language\Alphabet;
 use App\Transformers\AlphabetTransformer;
 use Auth;
-use Illuminate\Http\Request;
 
 class AlphabetsController extends APIController
 {
-    /**
-     * Handles Alphabets index and api routes
-     *
-     * @return JSON|View
-     */
-    public function index()
+
+	/**
+	 * Lists Alphabets for View or API
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 */
+	public function index()
     {
-	    $alphabets = Alphabet::select('script','name','family','type','direction')->get();
+	    $alphabets = Alphabet::all();
     	if(!$this->api) return view('languages.alphabets.index', compact('alphabets'));
 
 		return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer)->toArray());
     }
 
-    /**
-     * Single Alphabet Route for API or view
-     *
-     * @param string $id
-     * @return JSON|View
-     */
-    public function show($id)
+
+	/**
+	 * Single Alphabet Route for API or view
+	 *
+	 * @param $id
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 */
+	public function show($id)
     {
 	    $alphabet = Alphabet::with('fonts','languages')->find($id);
 	    if(!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
@@ -38,24 +39,26 @@ class AlphabetsController extends APIController
     }
 
 
-    /**
-     * Create a brand new Alphabet
-     *
-     * @return JSON|View
-     */
-    public function create()
+	/**
+	 *
+	 * Create a brand new Alphabet
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function create()
     {
         $user = Auth::user();
         if(!$user->role('archivist')) return $this->setStatusCode(403)->replyWithError("You are not an archivist");
         return view('languages.alphabets.create');
     }
 
+
 	/**
-	 * Store a brand new Alphabet
+	 * Store an Alphabet
 	 *
-	 * @return JSON|View
+	 * @return \Illuminate\Http\RedirectResponse
 	 */
-    public function store()
+	public function store()
     {
 	    $alphabet = request()->validate([
 		    'script'              => 'required|unique:alphabets,script|max:4|min:4',
@@ -80,20 +83,23 @@ class AlphabetsController extends APIController
 			'sample'              => 'max:2024',
 			'sample_img'          => 'image|nullable'
 	    ]);
-		$alphabet = Alphabet::create($alphabet);
-		return redirect()->route('view_alphabets.show', ['id' => $alphabet->id]);
+		Alphabet::create($alphabet);
+		return redirect()->route('view_alphabets.show', ['id' => request()->id]);
     }
 
-    /**
-     * Edit an Existing Alphabet
-     *
-     * @param string $id
-     * @return JSON|View
-     */
-    public function edit($id)
+
+	/**
+	 *
+	 * Edit an Existing Alphabet
+	 *
+	 * @param $id
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function edit($id)
     {
-        $user = Auth::user();
-        if(!$user->hasRole('archivist')) return $this->setStatusCode(403)->replyWithError("You are not an archivist");
+	    $user = Auth::user();
+        if(!$user->archivist) return $this->setStatusCode(403)->replyWithError("You are not an archivist");
         $alphabet = Alphabet::find($id);
         return view('languages.alphabets.edit',compact('alphabet'));
     }

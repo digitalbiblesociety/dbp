@@ -4,31 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleEquivalent;
-use App\Models\Bible\BibleOrganization;
 use App\Models\Bible\Book;
-use App\Models\Bible\BookCode;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
-use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationTranslation;
-use \database\seeds\SeederHelper;
-use Illuminate\Http\Request;
-use App\Http\Controllers\APIController;
 use App\Transformers\BibleTransformer;
-use Spatie\Fractalistic\ArraySerializer;
-use Symfony\Component\Yaml\Yaml;
-use Validator;
-use Illuminate\Support\Facades\Cache;
+use App\Transformers\BooksTransformer;
 
 class BiblesController extends APIController
 {
 
-    /**
-     * Display a listing of the bibles.
-     *
-     * @return JSON|View
-     */
-    public function index(Language $language, $country = null, $publisher = null)
+
+	/**
+	 *
+	 * Display a listing of the bibles.
+	 *
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 */
+	public function index()
     {
 	    // Return the documentation if it's not an API request
 	    if(!$this->api) return view('bibles.index');
@@ -46,29 +40,33 @@ class BiblesController extends APIController
 
     }
 
+
 	/**
+	 *
 	 * A Route to Review The Last 500 Recent Changes to The Bible Resources
 	 *
-	 * @return JSON|View
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
 	public function history()
     {
     	if(!$this->api) return view('bibles.history');
 
 		$limit = checkParam('limit',null,'optional') ?? 500;
-		$bibles = Bible::select('id','updated_at')->take($limit)->get();
-		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith(new ArraySerializer())->toArray());
+		$bibles = Bible::select(['id','updated_at'])->take($limit)->get();
+		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
     }
+
 
 	/**
 	 * Language Names
 	 *
-	 * @return JSON|View
+	 * @return array
 	 */
 	public function languageNames()
     {
     	$languageNames = checkParam('language_names');
     	$languageNames = explode(',',$languageNames);
+    	$dbp = [];
     	foreach($languageNames as $language_name) {
     		$language = Language::where('name',$language_name)->first();
     		if(!$language) continue;
@@ -79,30 +77,36 @@ class BiblesController extends APIController
 		return $dbp;
     }
 
+	/**
+	 * @return mixed
+	 */
 	public function libraryVersion()
 	{
 		return $this->reply(json_decode(file_get_contents(public_path('static/version_listing.json'))));
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function libraryMetadata()
 	{
 		$dam_id = checkParam('dam_id', null, 'optional');
-		$bible = Bible::has('text')->when($dam_id, function ($query) use ($dam_id) {
+		$bible = Bible::has('text')->when(
+			$dam_id, function ($query) use ($dam_id) {
 			return $query->where('id', $dam_id);
 		})->get();
-		return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
+		return $this->reply(fractal()->collection($bible)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
 	}
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
 
-	    $validator = Validator::make($request->all(), [
+	    request()->validate([
 		    'id'                      => 'required|unique:bibles,id|max:24',
 		    'iso'                     => 'required|exists:languages,iso',
 		    'translations.*.name'     => 'required',
@@ -110,16 +114,13 @@ class BiblesController extends APIController
 		    'date'                    => 'integer',
 	    ]);
 
-	    if($validator->fails()) return redirect('bibles/create')->withErrors($validator)->withInput();
-
-	    $bible = \DB::transaction(function () use($request) {
+	    $bible = \DB::transaction(function () {
 		    $bible = new Bible();
-		    $bible = $bible->create($request->only(['id','date','script','portions','copyright','derived','in_progress','notes','iso']));
-		    $bible->translations()->createMany($request->translations);
-		    $bible->organizations()->attach($request->organizations);
-		    $bible->equivalents()->createMany($request->equivalents);
-		    $bible->links()->createMany($request->links);
-
+		    $bible = $bible->create(request()->only(['id','date','script','portions','copyright','derived','in_progress','notes','iso']));
+		    $bible->translations()->createMany(request()->translations);
+		    $bible->organizations()->attach(request()->organizations);
+		    $bible->equivalents()->createMany(request()->equivalents);
+		    $bible->links()->createMany(request()->links);
 		    return $bible;
 	    });
 
@@ -147,7 +148,7 @@ class BiblesController extends APIController
 	{
 		if(!$this->api) return view('bibles.books.index');
 
-		$books = Book::select('id','book_order','name')->orderBy('book_order')->get();
+		$books = Book::select(['id','book_order','name'])->orderBy('book_order')->get();
 		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer)->toArray());
 	}
 
@@ -166,12 +167,7 @@ class BiblesController extends APIController
 		return $this->reply($equivalents);
 	}
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return View|JSON
-	 */
+
 	public function book($id)
 	{
 		if(!$this->api) return view('bibles.books.show');
@@ -180,91 +176,18 @@ class BiblesController extends APIController
 		return $this->reply(fractal()->item($book)->transformWith(new BooksTransformer)->toArray());
 	}
 
-	/**
-	 * Description:
-	 * Display the bible meta data for the specified ID.
-	 *
-	 * @param  int  $id
-	 * @return View|JSON
-	 */
+
 	public function edit($id)
 	{
 		$bible = Bible::with('translations.language')->find($id);
 		if(!$this->api) {
-			$languages = Language::select('iso','name')->orderBy('iso')->get();
-			$organizations = OrganizationTranslation::select('name','organization_id')->where('language_iso','eng')->get();
+			$languages = Language::select(['iso','name'])->orderBy('iso')->get();
+			$organizations = OrganizationTranslation::select(['name','organization_id'])->where('language_iso','eng')->get();
 			$alphabets = Alphabet::select('script')->get();
 			return view('bibles.edit',compact('languages', 'organizations', 'alphabets','bible'));
 		}
 
 		return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
-	}
-
-
-	public function text($id,$book,$chapter)
-	{
-		// Allow Users to pick the format of response they'd like to have
-		$format = @$_GET['format'];
-
-		$table = strtoupper($id).'_vpl';
-
-		// if chapter value is a range, handle that
-		if(str_contains($chapter, '-')) {
-			$range = explode('-',$chapter);
-			$verses = \DB::connection('dbp')->table($table)
-			             ->where('book',$book)
-			             ->where('chapter','>=',$range[0])
-			             ->where('chapter','<=',$range[1])->get();
-		} else {
-			$verses = \DB::connection('dbp')->table($table)
-			             ->where('book',$book)
-			             ->where('chapter',$chapter)->get();
-		}
-
-		// format the response
-		switch($format) {
-			case "HTML":
-				$output['data'] = $this->textHTML($verses);
-				break;
-			case "JSON":
-				$output['data'] = $verses;
-				break;
-			default:
-				$output['data'] = $this->textDefault($verses);
-		}
-
-		// mix in some meta data
-		$output['metadata'] = [
-			'bible_id' => $id,
-			'book_id' => $book,
-			'chapter' => array_unique($verses->pluck('chapter')->ToArray())
-		];
-
-		// reply
-		return $this->reply($output);
-	}
-
-	private function textDefault($verses) {
-		foreach ($verses as $verse) {
-			if($verse->verse_start != $verse->verse_end) {
-				$output[] = $verse->verse_start."-".$verse->verse_end." ".$verse->verse_text;
-			} else {
-				$output[] = $verse->verse_start." ".$verse->verse_text;
-			}
-		}
-		return implode($output);
-	}
-
-	private function textHTML($verses) {
-		foreach ($verses as $verse) {
-			if($verse->verse_start != $verse->verse_end) {
-				$output[] = "<sup>".$verse->verse_start."-".$verse->verse_end."&nbsp;</sup><p>".$verse->verse_text."</p>";
-			} else {
-				$output[] = "<sup>".$verse->verse_start."&nbsp;</sup><p>".$verse->verse_text."</p>";
-			}
-		}
-
-		return implode($output);
 	}
 
 	/**
@@ -274,8 +197,8 @@ class BiblesController extends APIController
 	 */
 	public function create()
 	{
-		$languages = Language::select('iso','name')->get();
-		$organizations = OrganizationTranslation::select('name','organization_id')->where('language_iso','eng')->get();
+		$languages = Language::select(['iso','name'])->get();
+		$organizations = OrganizationTranslation::select(['name','organization_id'])->where('language_iso','eng')->get();
 		$alphabets = Alphabet::select('script')->get();
 		return view('bibles.create',compact('languages', 'organizations', 'alphabets'));
 	}
@@ -284,14 +207,13 @@ class BiblesController extends APIController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update($id)
     {
 
-	    $validator = Validator::make($request->all(), [
+	    request()->validate([
 		    'id'                      => 'required|max:24',
 		    'iso'                     => 'required|exists:languages,iso',
 		    'translations.*.name'     => 'required',
@@ -299,27 +221,25 @@ class BiblesController extends APIController
 		    'date'                    => 'integer',
 	    ]);
 
-	    if($validator->fails()) return redirect('bibles/edit')->withErrors($validator)->withInput();
-
-	    $bible = \DB::transaction(function () use($request,$id) {
+	    $bible = \DB::transaction(function () use($id) {
 		    $bible = Bible::with('translations','organizations','equivalents','links')->find($id);
-		    $bible->update($request->only(['id','date','script','portions','copyright','derived','in_progress','notes','iso']));
+		    $bible->update(request()->only(['id','date','script','portions','copyright','derived','in_progress','notes','iso']));
 
-			if($request->translations) {
+			if(request()->translations) {
 				foreach ($bible->translations as $translation) $translation->delete();
-				foreach ($request->translations as $translation) if($translation['name']) $bible->translations()->create($translation);
+				foreach (request()->translations as $translation) if($translation['name']) $bible->translations()->create($translation);
 			}
 
-		    if($request->organizations) $bible->organizations()->sync($request->organizations);
+		    if(request()->organizations) $bible->organizations()->sync(request()->organizations);
 
-		    if($request->equivalents) {
+		    if(request()->equivalents) {
 			    foreach ($bible->equivalents as $equivalent) $equivalent->delete();
-			    foreach ($request->equivalents as $equivalent) if($equivalent['equivalent_id']) $bible->equivalents()->create($equivalent);
+			    foreach (request()->equivalents as $equivalent) if($equivalent['equivalent_id']) $bible->equivalents()->create($equivalent);
 		    }
 
-		    if($request->links) {
+		    if(request()->links) {
 			    foreach ($bible->links as $link) $link->delete();
-			    foreach ($request->links as $link) if($link['url']) $bible->links()->create($link);
+			    foreach (request()->links as $link) if($link['url']) $bible->links()->create($link);
 		    }
 
 		    return $bible;
@@ -336,6 +256,6 @@ class BiblesController extends APIController
      */
     public function destroy($id)
     {
-        //
+        // TODO: Generate Delete Model for Bible
     }
 }

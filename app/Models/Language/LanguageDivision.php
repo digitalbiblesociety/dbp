@@ -4,6 +4,14 @@ namespace App\Models\Language;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
+
+/**
+ * App\Models\Language\LanguageDivision
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\Language[] $macros
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\Language[] $micros
+ * @mixin \Eloquent
+ */
 class LanguageDivision extends Model
 {
 

@@ -9,6 +9,8 @@
         "anhskohbo/no-captcha": "^2.4",
         "aws/aws-sdk-php-laravel": "^3.1",
         "barryvdh/laravel-cors": "^0.9.2",
+        "barryvdh/laravel-ide-helper": "^2.4",
+        "doctrine/dbal": "^2.6",
         "intouch/laravel-newrelic": "~2.0",
         "jdavidbakr/signed-s3-filesystem": "^1.0",
         "laravel/framework": "5.5.*",
@@ -62,6 +64,10 @@
         ],
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
+            "php artisan clear-compiled",
+            "php artisan ide-helper:generate",
+            "php artisan ide-helper:models --write",
+            "php artisan ide-helper:meta",
             "php artisan optimize"
         ],
         "post-autoload-dump": [

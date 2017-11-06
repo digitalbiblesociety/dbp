@@ -56,6 +56,72 @@ class TextController extends APIController
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)->toArray());
     }
 
+	public function text($id,$book,$chapter)
+	{
+		// Allow Users to pick the format of response they'd like to have
+		$format = @$_GET['format'];
+
+		$table = strtoupper($id).'_vpl';
+
+		// if chapter value is a range, handle that
+		if(str_contains($chapter, '-')) {
+			$range = explode('-',$chapter);
+			$verses = \DB::connection('dbp')->table($table)
+			             ->where('book',$book)
+			             ->where('chapter','>=',$range[0])
+			             ->where('chapter','<=',$range[1])->get();
+		} else {
+			$verses = \DB::connection('dbp')->table($table)
+			             ->where('book',$book)
+			             ->where('chapter',$chapter)->get();
+		}
+
+		// format the response
+		switch($format) {
+			case "HTML":
+				$output['data'] = $this->textHTML($verses);
+				break;
+			case "JSON":
+				$output['data'] = $verses;
+				break;
+			default:
+				$output['data'] = $this->textDefault($verses);
+		}
+
+		// mix in some meta data
+		$output['metadata'] = [
+			'bible_id' => $id,
+			'book_id' => $book,
+			'chapter' => array_unique($verses->pluck('chapter')->ToArray())
+		];
+
+		// reply
+		return $this->reply($output);
+	}
+
+	private function textDefault($verses) {
+		foreach ($verses as $verse) {
+			if($verse->verse_start != $verse->verse_end) {
+				$output[] = $verse->verse_start."-".$verse->verse_end." ".$verse->verse_text;
+			} else {
+				$output[] = $verse->verse_start." ".$verse->verse_text;
+			}
+		}
+		return implode($output);
+	}
+
+	private function textHTML($verses) {
+		foreach ($verses as $verse) {
+			if($verse->verse_start != $verse->verse_end) {
+				$output[] = "<sup>".$verse->verse_start."-".$verse->verse_end."&nbsp;</sup><p>".$verse->verse_text."</p>";
+			} else {
+				$output[] = "<sup>".$verse->verse_start."&nbsp;</sup><p>".$verse->verse_text."</p>";
+			}
+		}
+
+		return implode($output);
+	}
+
 	/**
 	 * Display a listing of the Fonts
 	 *

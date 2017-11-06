@@ -6,11 +6,28 @@ use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class BibleLink
+ * App\Models\Bible\BibleLink
  *
- * handles the links to the different partners
- *
- * @package App\Models\Bible
+ * @property int $id
+ * @property string|null $bible_id
+ * @property string $type
+ * @property string $url
+ * @property string $title
+ * @property int|null $organization_id
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property string|null $provider
+ * @property-read \App\Models\Organization\Organization $organization
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereBibleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereOrganizationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereProvider($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereUrl($value)
+ * @mixin \Eloquent
  */
 class BibleLink extends Model
 {

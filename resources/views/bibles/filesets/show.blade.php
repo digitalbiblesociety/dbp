@@ -78,6 +78,9 @@
         </div>
 
         <div class="tabs-panel is-active" id="permissions">
+            <div class="row">
+                <div class="medium-4 columns"><a class="button expanded" href="{{ route('view_bible_filesets_permissions.create', ['id' => $fileset->id]) }}">Request Permission</a></div>
+            </div>
             <table class="table" cellspacing="0" width="100%">
                 <thead>
                 <tr>

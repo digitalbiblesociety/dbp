@@ -25,6 +25,8 @@ class APIController extends Controller
     protected $isoPreference = false;
     protected $paginateNumber;
     protected $api;
+    protected $serializer;
+    protected $v;
 
     public function __construct(Request $request)
     {
@@ -99,7 +101,7 @@ class APIController extends Controller
         switch ($format) {
             case 'xml':
                 $formatter = Formatter::make($object, Formatter::ARR);
-                return response()->make($formatter->toXml(), $this->getStatusCode())->header('Content-Type', 'text/xml;  charset=utf-8');
+                return response()->make($formatter->toXml(), $this->getStatusCode())->header('Content-Type', 'text/xml; charset=utf-8');
             case 'yaml':
                 $formatter = Formatter::make($object, Formatter::ARR);
                 return response()->make($formatter->toYaml(), $this->getStatusCode())->header('Content-Type', 'text/yaml; charset=utf-8');
@@ -108,11 +110,10 @@ class APIController extends Controller
                 return response()->make($formatter->toCsv(), $this->getStatusCode())->header('Content-Type', 'text/csv; charset=utf-8');
             default:
                 if(isset($_GET['pretty']) OR $pretty != 0) {
-                    return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)->header('Content-Type', 'application/json');
+                    return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)->header('Content-Type', 'application/json; charset=utf-8');
                 } else {
-                    return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'application/json');
+                    return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'application/json; charset=utf-8');
                 }
-
         }
     }
 

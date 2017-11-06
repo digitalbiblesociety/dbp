@@ -2,13 +2,16 @@
 
 namespace App\Models\Bible;
 
-use App\Models\Community\User;
+use App\Models\User\User;
 use App\Models\Bible\Bible;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class inScript
- * @package App
+ * App\Models\Bible\Sophia
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bibles
+ * @property-read \App\Models\User\User $user
+ * @mixin \Eloquent
  */
 class Sophia extends Model
 {

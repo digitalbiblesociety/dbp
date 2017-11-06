@@ -430,7 +430,7 @@
             "description": "This should match exactly the codes from the ISO 15924 Registration Authority.",
             "example": "Khmr"
           },
-          "script_varient_iso": {
+          "script_variant_iso": {
             "type": "string",
             "maxLength": 3,
             "minLength": 3,

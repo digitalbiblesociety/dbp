@@ -3,44 +3,67 @@
 namespace App\Models\Bible;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Lang;
-use App\Models\Language\Language;
+use i18n;
 
+/**
+ * App\Models\Bible\Book
+ *
+ * @property string $id
+ * @property string $id_usfx
+ * @property string $id_osis
+ * @property int $book_order
+ * @property string $book_testament
+ * @property string $book_group
+ * @property int|null $chapters
+ * @property int|null $verses
+ * @property string $name
+ * @property string $notes
+ * @property string $description
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\Bible\BookTranslation $currentTranslation
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Text[] $text
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BookTranslation[] $translations
+ * @property-read \App\Models\Bible\BookTranslation $vernacularTranslation
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereBookGroup($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereBookOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereBookTestament($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereChapters($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereIdOsis($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereIdUsfx($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereVerses($value)
+ * @mixin \Eloquent
+ */
 class Book extends Model
 {
     protected $table = "books";
     public $incrementing = false;
     public $hidden = ['description','created_at','updated_at','notes'];
 
-
-    /**
-     *
-     * Titles and descriptions for every text can be translated into any language.
-     * This relationship returns those translations.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\belongsToMany
-     */
-
     public function text()
     {
-        return $this->HasMany('App\Models\Bible\Text');
+        return $this->HasMany(Text::class);
     }
 
     public function translations()
     {
-        return $this->HasMany('App\Models\Bible\BookTranslation', 'book_id');
+        return $this->HasMany(BookTranslation::class, 'book_id');
     }
 
     public function currentTranslation()
     {
-        $language = Language::where('iso',\i18n::getCurrentLocale())->first();
-        return $this->HasOne('App\Models\Bible\BookTranslation', 'book_id')->where('glotto_id',$language->id);
+        return $this->HasOne(BookTranslation::class, 'book_id')->where('iso',i18n::getCurrentLocale());
     }
 
-    public function vernacularTranslation($iso)
+    public function vernacularTranslation($iso = null)
     {
-        $language = Language::where('iso',$iso)->first();
-        return $this->HasOne('App\Models\Bible\BookTranslation', 'book_id')->where('glotto_id',$language->id);
+        return $this->HasOne(BookTranslation::class, 'book_id')->where('iso',$iso);
     }
 
 }

@@ -160,7 +160,7 @@
                         @foreach($alphabet->bibles as $bible)
                             <tr>
                                 <td>{{ $bible->id }}</td>
-                                <td>{{ $bible->translation("eng")->first()->name ?? '' }}</td>
+                                <td>{{ $bible->currentTranslation->name ?? '' }}</td>
                             </tr>
                         @endforeach
                         </tbody>

@@ -7,6 +7,9 @@ use App\Models\Bible\Bible;
 class BibleTransformer extends TransformerAbstract
 {
 
+	protected $version;
+	protected $iso;
+
 	public function __construct()
 	{
 		$this->version = checkParam('v', null, 'optional') ?? 4;
@@ -14,10 +17,12 @@ class BibleTransformer extends TransformerAbstract
 	}
 
 	/**
-     * A Fractal transformer.
-     *
-     * @return array
-     */
+	 * A Fractal transformer.
+	 *
+	 * @param Bible $bible
+	 *
+	 * @return array
+	 */
     public function transform(Bible $bible)
     {
 	    switch ($this->version) {
@@ -67,8 +72,8 @@ class BibleTransformer extends TransformerAbstract
 				        "language_family_iso_2T"    => ($bible->language->parent) ? $bible->language->parent->iso2T : $bible->language->iso2T,
 				        "language_family_iso_1"     => ($bible->language->parent) ? $bible->language->parent->iso1 : $bible->language->iso1,
 				        "version_code"              => substr($bible->id,3),
-				        "version_name"              => $bible->translations->where("vernacular",1)->first()->name,
-				        "version_english"           => $bible->translations->where("iso","eng")->first()->name,
+				        "version_name"              => ($bible->translations->where("vernacular",1)->first()) ? $bible->translations->where("vernacular",1)->first()->name : "",
+				        "version_english"           => ($bible->translations->where("iso","eng")->first()) ? $bible->translations->where("iso","eng")->first()->name : "",
 				        "collection_code"           => $bible->scope,
 				        "rich"                      => 0,
 				        "collection_name"           => "",

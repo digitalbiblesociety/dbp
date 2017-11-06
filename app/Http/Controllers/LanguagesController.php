@@ -5,12 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Language\Language;
 use App\Transformers\LanguageTransformer;
 use Illuminate\Http\Request;
-use App\Http\Controllers\APIController;
-
 use Illuminate\View\View;
-use League\Fractal\Manager;
-use League\Fractal\Serializer\DataArraySerializer;
-use Spatie\Fractalistic\ArraySerializer;
 
 class LanguagesController extends APIController
 {
@@ -26,7 +21,7 @@ class LanguagesController extends APIController
 	    ini_set('memory_limit', '464M');
 
 		$country = checkParam('country',null,'optional');
-		$languages = Language::select('id','iso','name')->when($country, function ($query) use ($country) { return $query->where('country_id', $country); })->get();
+		$languages = Language::select(['id','iso','name'])->when($country, function ($query) use ($country) { return $query->where('country_id', $country); })->get();
 
 		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
     }
@@ -43,7 +38,7 @@ class LanguagesController extends APIController
     {
 		if(!$this->api) return view('languages.volumes');
 
-		$languages = Language::select('id','iso','iso2B','iso2T','iso1','name','autonym')->with('bibles')->with('parent')->with('parent.language')->get();
+		$languages = Language::select(['id','iso','iso2B','iso2T','iso1','name','autonym'])->with('bibles')->with('parent')->with('parent.language')->get();
 		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
     }
 
@@ -52,13 +47,13 @@ class LanguagesController extends APIController
 	 * API V2:
 	 * Returns of List of Macro-Languages that contain resources and their dialects
 	 *
-	 * @return JSON|View
+	 * @return mixed
 	 */
 	public function volumeLanguageFamily()
 	{
 		if(!$this->api) return view('languages.volumes');
 
-		$languages = Language::select('id','iso','iso2B','iso2T','iso1','name','autonym')->with('bibles')->with('dialects')->with(['dialects.childLanguage' => function($query) {$query->select(['id','iso']);}])->get();
+		$languages = Language::select(['id','iso','iso2B','iso2T','iso1','name','autonym'])->with('bibles')->with('dialects')->with(['dialects.childLanguage' => function($query) {$query->select(['id','iso']);}])->get();
 		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
 	}
 
@@ -66,7 +61,7 @@ class LanguagesController extends APIController
 	 * WEB:
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function create()
     {

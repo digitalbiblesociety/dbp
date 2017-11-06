@@ -3,9 +3,37 @@
 namespace App\Models\Bible;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Bible\BibleFile;
-use App\Models\Bible\BibleFileTimestamp;
 
+/**
+ * App\Models\Bible\Text
+ *
+ * @property string $id
+ * @property string $bible_id
+ * @property string|null $bible_variation_id
+ * @property string $book_id
+ * @property int $chapter_number
+ * @property int $verse_start
+ * @property int|null $verse_end
+ * @property string $verse_text
+ * @property string|null $created_at
+ * @property string|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFile[] $audio
+ * @property-read \App\Models\Bible\Bible $bible
+ * @property-read \App\Models\Bible\Book $book
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFile[] $files
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileTimestamp[] $timestamps
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Text whereBibleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Text whereBibleVariationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Text whereBookId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Text whereChapterNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Text whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Text whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Text whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Text whereVerseEnd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Text whereVerseStart($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Text whereVerseText($value)
+ * @mixin \Eloquent
+ */
 class Text extends Model
 {
 	protected $table = 'bible_text';
@@ -17,12 +45,12 @@ class Text extends Model
 
     public function bible()
     {
-        return $this->hasOne('App\Models\Bible\Bible', 'abbr', 'bible_id');
+        return $this->hasOne(Bible::class, 'abbr', 'bible_id');
     }
 
     public function book()
     {
-        return $this->hasOne('App\Models\Bible\Book','id','book_id');
+        return $this->hasOne(Book::class,'id','book_id');
     }
 
     public function chapters()

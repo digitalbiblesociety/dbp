@@ -4,16 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
-use Illuminate\Http\Request;
+use App\Helpers\AWS\Bucket;
 
 class BibleFilesController extends APIController
 {
-    /**
-     * Display a listing of the Filesets.
-     *
-     * @return View|JSON
-     */
-    public function index()
+
+	/**
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 */
+	public function index()
     {
         if(!$this->api) return view('bibles.filesets.index');
 
@@ -21,26 +20,23 @@ class BibleFilesController extends APIController
         return $this->reply($filesets);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return JSON|View
-     */
-    public function store(Request $request)
+	/**
+	 *
+	 */
+	public function store()
     {
-        return view('bibles.filesets.show', $request->id);
+
     }
 
 	/**
-	 * Return the Signed URL for Bible Files
-	 *
 	 * @param string $id
+	 *
+	 * @return mixed
 	 */
 	public function show(string $id)
     {
+	    $urls = [];
     	$types = checkParam('types');
-	    $references = checkParam('references');
 
     	$acceptedTypes = ['audio','html','epub','pdf'];
     	foreach($types as $type) if(!in_array($type,$acceptedTypes)) return $this->replyWithError('The Provided Type Parameter is not Valid');
@@ -64,25 +60,18 @@ class BibleFilesController extends APIController
 
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+	/**
+	 * @param $id
+	 */
+	public function update($id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+	/**
+	 * @param $id
+	 */
+	public function destroy($id)
     {
         //
     }

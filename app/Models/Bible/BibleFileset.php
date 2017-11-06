@@ -3,9 +3,38 @@
 namespace App\Models\Bible;
 
 use App\Models\Organization\Organization;
-use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Bible\BibleFileset
+ *
+ * @property string $id
+ * @property string $bible_id
+ * @property string|null $variation_id
+ * @property string $name
+ * @property string $set_type
+ * @property int $hidden
+ * @property int $response_time
+ * @property int|null $organization_id
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\Bible\Bible $bible
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFile[] $files
+ * @property-read \App\Models\Organization\Organization|null $organization
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileSetPermission[] $permissions
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileSetPermission[] $users
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereBibleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereHidden($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereOrganizationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereResponseTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSetType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereVariationId($value)
+ * @mixin \Eloquent
+ */
 class BibleFileset extends Model
 {
 

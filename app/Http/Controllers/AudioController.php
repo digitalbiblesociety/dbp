@@ -2,22 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bible\Text;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileTimestamp;
-
-use App\Models\Bible\Text;
-
 use App\Transformers\AudioTransformer;
-use Illuminate\Http\Request;
 
 class AudioController extends APIController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index($id = null)
+
+	/**
+	 * @param null $id
+	 *
+	 * @return mixed
+	 */
+	public function index($id = null)
     {
 	    $id = CheckParam('fileset_id',$id);
     	$audioChapters = BibleFile::with('book')->where('set_id',$id)->orderBy('file_name')->get();
@@ -27,7 +25,7 @@ class AudioController extends APIController
 	/**
 	 * Available Timestamps
 	 *
-	 * @return JSON
+	 * @return mixed
 	 */
 	public function availableTimestamps()
 	{
@@ -41,7 +39,7 @@ class AudioController extends APIController
 	 * @param string $book
 	 * @param int $chapter
 	 *
-	 * @return View|JSON
+	 * @return mixed
 	 */
 	public function timestampsByReference(string $id = null, string $book = null, int $chapter = null)
 	{
@@ -56,8 +54,9 @@ class AudioController extends APIController
 		                            ->where('book_id', $book)->orderBy('chapter_start')->orderBy('verse_start')->get();
 
 		// Return API
-		return $this->reply(fractal()->collection($audioTimestamps)->transformWith(new AudioTransformer()));
+		return $this->reply(fractal()->collection($audioTimestamps)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
 	}
+
 
 	/**
 	 * Returns a List of timestamps for a given tag
@@ -65,9 +64,9 @@ class AudioController extends APIController
 	 * @param string $id
 	 * @param string $query
 	 *
-	 * @return JSON|View
+	 * @return mixed
 	 */
-	public function timestampsByTag(string $id = null, string $query = null)
+	public function timestampsByTag(string $id = "", string $query = "")
 	{
 		// Check Params
 		$id = CheckParam('dam_id', $id);
@@ -76,7 +75,7 @@ class AudioController extends APIController
 		$query = \DB::connection()->getPdo()->quote('+'.str_replace(' ',' +',$query));
 		$verses = Text::where('bible_id', $id)
 			->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))
-			->select('bible_id','book_id','chapter_number')
+			->select(['bible_id','book_id','chapter_number'])
 			->get();
 
 		// Build the timestamp query
@@ -87,10 +86,9 @@ class AudioController extends APIController
 		return $this->reply(fractal()->collection($timestamps)->transformWith(new AudioTransformer()));
 	}
 
+
 	/**
-	 * Returns the location routes
-	 *
-	 * @return JSON
+	 * @return mixed
 	 */
 	public function location()
 	{

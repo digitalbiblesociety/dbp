@@ -3,24 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Country\Country;
-use App\Models\Country\CountryLanguage;
 use App\Transformers\CountryTransformer;
-use Illuminate\Http\Request;
-use App\Http\Controllers\APIController;
+use Illuminate\View\View;
 
-/**
- * This class is missing the create, store, and destroy methods
- * as it is this developer's hope that few changes will need to be
- * made to the geopolitical metadata. Idealism before cynicism.
- *
- */
 class CountriesController extends APIController
 {
 
     /**
      * Display a Listing of the Countries.
      *
-     * @return JSON|View
+     * @return mixed
      */
     public function index()
     {
@@ -33,8 +25,8 @@ class CountriesController extends APIController
     /**
      * Display the Specified Country
      *
-     * @param  int|string|char(3) $id
-     * @return JSON|View
+     * @param  string $id
+     * @return mixed
      */
     public function show($id)
     {
@@ -61,13 +53,13 @@ class CountriesController extends APIController
 	/**
 	 * Update the Specified Country
 	 *
-	 * @param Request $request
 	 * @param $id
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 * @return View
 	 */
-	public function update(Request $request,$id)
+	public function update($id)
 	{
+		// TODO: Write UPDATE CODE
 		$country = Country::find($id);
 		return view('countries.show',compact('country'));
 	}

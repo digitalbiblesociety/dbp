@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bible\Text;
-use Illuminate\Http\Request;
 
 class VerseController extends APIController
 {

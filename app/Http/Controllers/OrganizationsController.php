@@ -2,26 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bible\Bible;
-use App\Models\User\User;
-use database\seeds\SeederHelper;
-use Illuminate\Http\Request;
-use App\Http\Requests;
+
 use App\Models\Organization\Organization;
 use App\Transformers\OrganizationTransformer;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-/**
- * Class OrganizationsController
- * @package App\Http\Controllers
- */
+use Illuminate\View\View;
+use App\Transformers\BibleTransformer;
+
 class OrganizationsController extends APIController
 {
 
 	/**
 	 * Display a listing of the organizations.
 	 *
-	 * @return Response
+	 * @return mixed
 	 */
 	public function index()
 	{
@@ -42,7 +35,7 @@ class OrganizationsController extends APIController
 	 * Display the specified resource.
 	 *
 	 * @param  string $slug
-	 * @return Response
+	 * @return mixed
 	 */
 	public function show($slug)
 	{
@@ -65,22 +58,21 @@ class OrganizationsController extends APIController
 		return view('organizations.show', compact('organization'));
 	}
 
-	public function bibles(string $slug, Bible $bible)
+	public function bibles(string $slug)
 	{
 		$organization = Organization::with('bibles')->where('slug',$slug)->first();
-		return $this->reply(fractal()->collection($organization->bibles)->transformWith(new BiblesTransformer())->toArray());
+		return $this->reply(fractal()->collection($organization->bibles)->transformWith(new BibleTransformer())->toArray());
 	}
 
 	/**
 	 * Show the form for editing the specified resource.
 	 *
-	 * @param  class $organization
-	 * @return Response
+	 * @return mixed
 	 */
 	public function create()
 	{
 		$user = \Auth::user();
-		if($user) $organizations = Organization::with('translations')->get();
+		if(!$user->archivist) return $this->replyWithError('Not an Archivist');
 		return view('organizations.create');
 	}
 
@@ -95,14 +87,13 @@ class OrganizationsController extends APIController
 	/**
 	 * Show the form for editing the specified resource.
 	 *
-	 * @param  class $organization
-	 * @return Response
+	 * @return mixed
 	 */
-	public function store(Request $request)
+	public function store()
 	{
 		$organization = new Organization();
-		$organization->save($request->except(['translations']));
-		foreach($request->translations as $translation) {
+		$organization->save(request()->except(['translations']));
+		foreach(request()->translations as $translation) {
 			$organization->translations()->create(['iso' => $translation['iso'], 'name' => $translation['translation'], 'description' => '']);
 		}
 		return view('community.organizations.show', compact('organization'));
@@ -112,7 +103,7 @@ class OrganizationsController extends APIController
 	 * Show the form for editing the specified resource.
 	 *
 	 * @param  string $slug
-	 * @return Response
+	 * @return View
 	 */
 	public function edit($slug)
 	{
@@ -123,16 +114,15 @@ class OrganizationsController extends APIController
 	/**
 	 * Update the specified resource in storage.
 	 *
-	 * @param  Request  $request
 	 * @param  string  $slug
-	 * @return Response
+	 * @return View
 	 */
-	public function update(Request $request, $slug)
+	public function update($slug)
 	{
 		$organization = Organization::where('slug',$slug)->first();
-		$organization->update($request->except(['translations']));
+		$organization->update(request()->except(['translations']));
 		$organization->translations()->delete();
-		foreach($request->translations as $translation) {
+		foreach(request()->translations as $translation) {
 			$organization->translations()->create(['iso' => $translation['iso'], 'name' => $translation['translation'], 'description' => '']);
 		}
 		return view('community.organizations.show', compact('organization'));
@@ -142,7 +132,7 @@ class OrganizationsController extends APIController
 	 * Remove the specified resource from storage.
 	 *
 	 * @param  int  $id
-	 * @return Response
+	 * @return View
 	 */
 	public function destroy($id)
 	{

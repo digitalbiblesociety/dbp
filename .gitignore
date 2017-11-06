@@ -21,6 +21,9 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 .env
+.phpstorm.meta.php
+_ide_helper.php
+_ide_helper_models.php
 
 # The Mac
 .DS_STORE

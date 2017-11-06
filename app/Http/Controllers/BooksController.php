@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\Book;
-use App\Models\Language\Language;
 use App\Models\Bible\Text;
 use App\Transformers\BooksTransformer;
-use Illuminate\View\View;
 
 class BooksController extends APIController
 {
@@ -16,7 +13,7 @@ class BooksController extends APIController
 	/**
 	 *
 	 *
-	 * @return JSON|View
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
 	public function index()
 	{
@@ -33,7 +30,7 @@ class BooksController extends APIController
 	 * Gets the book order and code listing for a volume.
 	 * REST URL: http://dbt.io/library/bookorder
 	 *
-	 * @return JSON|View
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
 	public function show()
     {
@@ -49,7 +46,7 @@ class BooksController extends APIController
 	 * This will retrieve the native language book names for a DBP language code.
 	 * OLD REST URL: http://dbt.io/library/bookname
 	 *
-	 * @return View|JSON
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
 	public function bookNames()
     {
@@ -60,11 +57,11 @@ class BooksController extends APIController
 
 		// Fetch Bible Book Names By Bible Iso and Order by Book Order
 		$books = BibleBook::whereHas('bible', function($q) use ($language) {$q->where('iso', '=', $language->iso);})
-			->select('book_id','bible_books.name','books.book_order')
+			->select(['book_id','bible_books.name','books.book_order'])
 			->join('books', 'books.id', '=', 'bible_books.book_id')
 			->orderBy('books.book_order', 'ASC')->distinct()->get();
 
-		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer()));
+		return $this->reply(fractal()->collection($books)->serializeWith($this->serializer)->transformWith(new BooksTransformer()));
     }
 
 	/**
@@ -77,7 +74,7 @@ class BooksController extends APIController
 	 * So story volumes have no chapters.
 	 * OLD REST URL: http://dbt.io/library/chapter
 	 *
-	 * @return JSON|View
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
 	public function chapters()
     {
@@ -85,8 +82,8 @@ class BooksController extends APIController
 
 		$bible_id = checkParam('dam_id');
 		$book_id = checkParam('book_id');
-		$chapters = Text::where('bible_id',$bible_id)->Where('book_id',$book_id)->select('chapter_number','bible_id','book_id')->distinct()->orderBy('chapter_number')->get();
-		return $this->reply(fractal()->collection($chapters)->transformWith(new BooksTransformer()));
+		$chapters = Text::where('bible_id',$bible_id)->Where('book_id',$book_id)->select(['chapter_number','bible_id','book_id'])->distinct()->orderBy('chapter_number')->get();
+		return $this->reply(fractal()->collection($chapters)->serializeWith($this->serializer)->transformWith(new BooksTransformer()));
     }
 
 }

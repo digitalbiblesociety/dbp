@@ -10,6 +10,64 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Organization\OrganizationTranslation;
 use App\Traits\Uuids;
 
+/**
+ * App\Models\Organization\Organization
+ *
+ * @property int $id
+ * @property string $slug
+ * @property string|null $abbreviation
+ * @property string|null $notes
+ * @property string|null $primaryColor
+ * @property string|null $secondaryColor
+ * @property int|null $inactive
+ * @property string|null $url_facebook
+ * @property string|null $url_website
+ * @property string|null $url_donate
+ * @property string|null $url_twitter
+ * @property string|null $address
+ * @property string|null $address2
+ * @property string|null $city
+ * @property string|null $state
+ * @property string|null $country
+ * @property int|null $zip
+ * @property string|null $phone
+ * @property string|null $email
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bibles
+ * @property-read \App\Models\Organization\OrganizationTranslation $currentTranslation
+ * @property-read \App\Models\Organization\OrganizationRelationship $dbl
+ * @property-read \App\Models\Organization\OrganizationLogo $logo
+ * @property-read \App\Models\Organization\OrganizationLogo $logoIcon
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Organization\OrganizationLogo[] $logos
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\User[] $members
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Organization\OrganizationRelationship[] $relationships
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Resource\Resource[] $resources
+ * @property-read \App\Models\Organization\OrganizationTranslation $translations
+ * @property-read \App\Models\Organization\OrganizationTranslation $vernacularTranslation
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereAbbreviation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereAddress2($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereCountry($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereInactive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization wherePrimaryColor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereSecondaryColor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereUrlDonate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereUrlFacebook($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereUrlTwitter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereUrlWebsite($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereZip($value)
+ * @mixin \Eloquent
+ */
 class Organization extends Model
 {
     protected $fillable = ['name', 'email', 'password','facebook','twitter','website','address','phone'];

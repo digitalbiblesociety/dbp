@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User\User;
-use Illuminate\Http\Request;
-use App\Http\Controllers\APIController;
 class DocsController extends APIController
 {
 

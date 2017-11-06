@@ -39,7 +39,6 @@ Route::get('bible/{id}/{book}/{chapter}',   'BiblesController@text');
 Route::get('bibles/audio/uploads/thanks',   'AudioProcessingController@thanks')->name('bibles_audio_uploads.thanks');
 Route::resource('bibles/audio/uploads',     'AudioProcessingController');
 Route::resource('bibles/ocr',               'PrintProcesses');
-Route::get('bibles/connections/{id}/overview', 'BibleFileSetsController@overview');
 
 
 Route::post('bibles/filesets/{id}/files/{file_id}' , 'BibleFilesController@update');

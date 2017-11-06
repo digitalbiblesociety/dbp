@@ -49,7 +49,7 @@ use Illuminate\Http\Request;
 		// Bibles
 		Route::get('bible/LanguageNames',           'BiblesController@languageNames');
 		Route::get('bible/{abbr}/equivalents',      'BiblesController@equivalents')->name('api_bibles.equivalents');
-		Route::get('bible/{id}/{book}/{chapter}',   'BiblesController@text');
+		Route::get('bible/{id}/{book}/{chapter}',   'TextController@text');
 		Route::get('bible/{abbr}/book/{book}',      'BiblesController@book');
 		Route::get('bible/{abbr}/books',            'BiblesController@books')->name('api_v4_books');
 		Route::resource('/bibles/books',      'BooksController',['names' => [

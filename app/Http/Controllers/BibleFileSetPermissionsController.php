@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFileSetPermission;
 use App\Models\User\User;
 use App\Transformers\BibleFilePermissionsTransformer;
-use Illuminate\Http\Request;
-use App\Mail\BibleFilePermissionsRequest;
 
 class BibleFileSetPermissionsController extends APIController
 {
+
 	/**
 	 * Return an index of file set permissions
 	 *
-	 * @return View|JSON
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
 	public function index()
 	{
@@ -24,10 +22,14 @@ class BibleFileSetPermissionsController extends APIController
 		return $this->reply(fractal()->collection($bibleFileSetPermissions)->transformWith(BibleFilePermissionsTransformer::class)->serializeWith($this->serializer));
 	}
 
+
 	/**
+	 *
 	 * Show the form for creating a new resource.
 	 *
-	 * @return View
+	 * @param string $id
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */
 	public function create(string $id)
 	{
@@ -36,29 +38,26 @@ class BibleFileSetPermissionsController extends APIController
 		return view('bibles.filesets.permissions.create', compact('fileset','users'));
 	}
 
+
 	/**
+	 *
 	 * Store a newly created resource in storage.
 	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @return \Illuminate\Http\Response
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */
-	public function store(Request $request)
+	public function store()
 	{
-		$permission = new BibleFileSetPermission();
-		$permission->user_id = $request->user_id;
-		$permission->bible_fileset_id = $request->fileset_id;
-		$permission->access_level = $request->access_level ?? "requested";
-		$permission->access_notes = $request->access_notes;
-		$permission->save();
-
-		return view('bibles.filesets.permissions.show',compact('permission'));
+		BibleFileSetPermission::create(request()->all());
+		return redirect()->route('view_bible_filesets.show', ['id' => request()->bible_fileset_id]);
 	}
 
 	/**
 	 * Display the specified resource.
 	 *
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
+	 * @param $id
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */
 	public function show($id)
 	{
@@ -81,16 +80,15 @@ class BibleFileSetPermissionsController extends APIController
 	/**
 	 * Update the specified resource in storage.
 	 *
-	 * @param  \Illuminate\Http\Request  $request
 	 * @param  int  $id
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update(Request $request, $id)
+	public function update($id)
 	{
 		$fileset = BibleFileset::find($id);
 		$this->authorize('update', $fileset);
-		$permission = BibleFileSetPermission::find($request->permission_id);
-		$permission->access_level =$request->access_level;
+		$permission = BibleFileSetPermission::find(request()->permission_id);
+		$permission->access_level = request()->access_level;
 		$permission->save();
 		return redirect()->route('view_bible_filesets.show', $id);
 	}
@@ -105,6 +103,8 @@ class BibleFileSetPermissionsController extends APIController
 	{
 		$fileSet = BibleFileset::find($id);
 		$fileSet->delete();
+
+		return redirect()->route('view_bible_filesets.index');
 	}
 
 	public function user()

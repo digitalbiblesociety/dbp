@@ -4,10 +4,12 @@
 
     @include('layouts.partials.banner', ['title' => 'Create Permissions For '.$fileset->bible->currentTranslation->name.' '.$fileset->name])
 
-    <form action="bibles/filesets" method="POST">
+    <form action="{{ route('view_bible_filesets_permissions.store', ['id' => $fileset->id]) }}" method="POST">
         <div class="medium-8 columns centered">
             {{ csrf_field() }}
-            @include('layouts.partials.datalist', ['name' => 'user', 'list' => $users, 'label' => 'User'])
+            <input type="hidden" value="requesting-access" name="access_level" />
+            <input type="hidden" value="{{ \Auth::user()->id }}" name="user_id" />
+            <input type="hidden" value="{{ $fileset->id }}" name="bible_fileset_id" />
             <label>Access Level
                 <select name="access">
                     <option value="online">Online Access Only</option>

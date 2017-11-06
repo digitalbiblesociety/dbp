@@ -8,10 +8,7 @@ use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Models\Bible\Bible;
 use App\Helpers\AWS\Bucket;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use phpDocumentor\Reflection\Types\Resource;
-use Parsedown;
+
 class HomeController extends APIController
 {
 
@@ -64,7 +61,8 @@ class HomeController extends APIController
 
 	public function libraryAsset()
 	{
-		return $this->reply(json_decode(file_get_contents(public_path('static/library_asset.json'))));
+		$libraryAsset = json_decode(file_get_contents(public_path('static/library_asset.json')));
+		return $this->reply($libraryAsset);
 	}
 
 	public function signedUrl()
@@ -74,6 +72,7 @@ class HomeController extends APIController
 		$signer = $_GET['signer'] ?? 's3_fcbh';
 		$bucket = $_GET['bucket'] ?? "dbp-dev";
 		$expiry = $_GET['expiry'] ?? 5;
+		$urls = [];
 
 		foreach($filenames as $filename) {
 			$filename = ltrim($filename, "/");

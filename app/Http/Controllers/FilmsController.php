@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bible\Bible;
 use App\Models\Bible\Video;
-use App\Models\Language\Language;
-use Illuminate\Http\Request;
 use App\Transformers\FilmTransformer;
 
 class FilmsController extends APIController {
+
 
 	/**
 	 * Video Location
 	 * This method allows the caller to retrieve information about the media distribution servers and protocols they support.
 	 *
-	 * @return JSON
+	 * @return mixed
 	 */
 	public function location() {
 		$videoServer      = env( 'video_server_bucket' ) ?? "dbp-video.s3.amazonaws.com";
@@ -38,6 +36,9 @@ class FilmsController extends APIController {
 		] );
 	}
 
+	/**
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 */
 	public function videopath() {
 		if(!$this->api) return view('docs.v2.video_videoPath');
 

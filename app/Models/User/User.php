@@ -10,6 +10,40 @@ use App\Models\User\Role;
 use App\Models\User\Account;
 use App\Traits\Uuids;
 
+/**
+ * App\Models\User\User
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Account[] $accounts
+ * @property-read \App\Models\User\Role $archivist
+ * @property-read \App\Models\User\Role $authorizedArchivist
+ * @property-read \App\Models\User\Account $bitbucket
+ * @property-read \App\Models\User\Account $github
+ * @property-read \App\Models\User\Account $google
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Organization\Organization[] $organizations
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileSetPermission[] $permissions
+ * @property-read \App\Models\User\Role $role
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Role[] $roles
+ * @mixin \Eloquent
+ * @property string $id
+ * @property string|null $name
+ * @property string|null $password
+ * @property string|null $nickname
+ * @property string|null $avatar
+ * @property string|null $email
+ * @property string|null $remember_token
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereAvatar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereNickname($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereUpdatedAt($value)
+ */
 class User extends Authenticatable
 {
 	public $incrementing = false;
@@ -63,12 +97,12 @@ class User extends Authenticatable
 		return $this->hasOne(Role::class)->where('role','archivist');
 	}
 
-	public function authorizedArchivist($id)
+	public function authorizedArchivist($id = null)
 	{
 		return $this->hasOne(Role::class)->where('role','archivist')->where('organization_id',$id);
 	}
 
-	public function role($id)
+	public function role($id = null)
 	{
 		return $this->HasOne(Role::class)->where('organization_id',$id);
 	}

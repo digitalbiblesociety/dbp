@@ -4,8 +4,68 @@ namespace App\Models\Language;
 
 use App\Models\Bible\Bible;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Language\Language;
-use App\Models\Language\AlphabetFont;
+
+/**
+ * App\Models\Language\Alphabet
+ *
+ * @property string $script
+ * @property string $name
+ * @property string|null $unicode_pdf
+ * @property string|null $family
+ * @property string|null $type
+ * @property string|null $white_space
+ * @property string|null $open_type_tag
+ * @property string|null $complex_positioning
+ * @property int $requires_font
+ * @property int $unicode
+ * @property int|null $diacritics
+ * @property int|null $contextual_forms
+ * @property int|null $reordering
+ * @property int|null $case
+ * @property int|null $split_graphs
+ * @property string|null $status
+ * @property string|null $baseline
+ * @property string|null $ligatures
+ * @property string|null $direction
+ * @property string|null $direction_notes
+ * @property string|null $sample
+ * @property string|null $sample_img
+ * @property string|null $description
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bibles
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\AlphabetFont[] $fonts
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\Language[] $languages
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\AlphabetNumber[] $numerals
+ * @property-read \App\Models\Language\AlphabetFont $primaryFont
+ * @property-read \App\Models\Language\AlphabetFont $regular
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereBaseline($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereCase($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereComplexPositioning($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereContextualForms($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereDiacritics($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereDirection($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereDirectionNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereFamily($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereLigatures($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereOpenTypeTag($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereReordering($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereRequiresFont($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereSample($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereSampleImg($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereScript($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereSplitGraphs($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereUnicode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereUnicodePdf($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereWhiteSpace($value)
+ * @mixin \Eloquent
+ */
 class Alphabet extends Model
 {
     protected $table = "alphabets";
