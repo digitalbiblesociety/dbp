@@ -42,7 +42,6 @@ class LanguageTransformer extends TransformerAbstract
 		return [
 			$language->alternativeNames->implode('name', ' '),
 			'<a href="/languages/'.$language->id.'">'.$language->name.'</a>',
-			$language->id,
 			$language->iso,
 			$language->bibles_count
 		];
@@ -116,13 +115,13 @@ class LanguageTransformer extends TransformerAbstract
 
 			default: {
 				return [
-					'language_code'        => $language->iso ?? '',
+					'language_code'        => strtoupper($language->iso) ?? '',
 					'language_name'        => $language->autonym ?? '',
 					'english_name'         => $language->name ?? '',
 					'language_iso'         => $language->iso ?? '',
-					"language_iso_2B"      => $language->iso2B,
-					"language_iso_2T"      => $language->iso2T,
-					"language_iso_1"       => $language->iso1,
+					"language_iso_2B"      => $language->iso2B ?? '',
+					"language_iso_2T"      => $language->iso2T ?? '',
+					"language_iso_1"       => $language->iso1 ?? '',
 					'language_iso_name'    => $language->name ?? '',
 					'language_family_code' => $language->iso ?? ''
 				];
