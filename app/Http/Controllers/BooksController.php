@@ -86,7 +86,7 @@ class BooksController extends APIController
 		$chapters = Text::where('bible_id',$bible_id)->when($book_id, function ($query) use ($book_id) {
 			return $query->where('book_id',$book_id);
 		})->select(['chapter_number','bible_id','book_id'])->distinct()->orderBy('chapter_number')->get();
-		dd($chapters);
+		
 		return $this->reply(fractal()->collection($chapters)->serializeWith($this->serializer)->transformWith(new BooksTransformer()));
     }
 
