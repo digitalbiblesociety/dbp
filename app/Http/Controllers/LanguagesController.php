@@ -73,7 +73,7 @@ class LanguagesController extends APIController
 	    $media =  checkParam('media', null, 'optional');
 	    $organization_id =  checkParam('organization_id', null, 'optional');
 
-		$languages = Language::select(['id','iso','iso2B','iso2T','iso1','name','autonym'])->with('bibles','parent.language')
+		$languages = Language::select(['id','iso','iso2B','iso2T','iso1','name','autonym'])->with('parent')
 			->when($iso, function ($query) use ($iso) {
 				return $query->where('iso', $iso);
 			})->when($root, function ($query) use ($root) {
