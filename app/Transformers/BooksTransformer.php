@@ -48,7 +48,7 @@ class BooksTransformer extends TransformerAbstract
 					"book_name"          => $bibleBook->first()->book->name,
 					"book_order"         => $bibleBook->first()->book->book_order,
 					"number_of_chapters" => $bibleBook->count('chapter_number'),
-					"chapters"           => $bibleBook->pluck('chapter_number')
+					"chapters"           => implode(",",$bibleBook->pluck('chapter_number')->ToArray())
 				];
 			}
 
