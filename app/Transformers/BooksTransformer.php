@@ -43,12 +43,12 @@ class BooksTransformer extends TransformerAbstract
 
 			case "v2_library_book": {
 				return [
-					"dam_id_root"        => $bibleBook->bible_id,
-					"book_id"            => $bibleBook->book->code_osis,
-					"book_name"          => $bibleBook->name,
-					"book_order"         => $bibleBook->book->book_order,
-					"number_of_chapters" => $bibleBook->book->chapters,
-					"chapters"           => $bibleBook->chapters
+					"dam_id_root"        => $bibleBook->first()->bible_id,
+					"book_id"            => $bibleBook->first()->book->id_osis,
+					"book_name"          => $bibleBook->first()->book->name,
+					"book_order"         => $bibleBook->first()->book->book_order,
+					"number_of_chapters" => $bibleBook->count('chapter_number'),
+					"chapters"           => $bibleBook->pluck('chapter_number')
 				];
 			}
 

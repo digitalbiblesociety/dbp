@@ -37,7 +37,7 @@ class BooksController extends APIController
     	if(!$this->api) return view('docs.v2.books.BookOrderListing');
 
 		$abbreviation = checkParam('dam_id');
-		$books = BibleBook::with('book')->where('bible_id',$abbreviation)->get()->sortBy('book.book_order');
+		$books = Text::with('book')->where('bible_id',$abbreviation)->select(['bible_id','chapter_number','book_id'])->distinct()->get()->groupBy('book_id');
 		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer)->toArray());
     }
 
