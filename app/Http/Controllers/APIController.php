@@ -71,7 +71,7 @@ class APIController extends Controller
      */
     public function reply($object, $transformer = null, $key = 0, $pretty = 0)
     {
-    	if(isset($_GET['echo'])) $object = [$_GET,$object];
+    	if(isset($_GET['echo'])) if($_GET['echo'] == 'true') $object = [$_GET,$object];
         if (isset($_GET['key'])) {
             $key = \DB::table('users')->where('id','=',$_GET['key'])->first();
             if(!$key) return $this->setStatusCode(403)->replyWithError('Provided authentication key does not match a key in our records');
