@@ -19,6 +19,21 @@ class BiblesController extends APIController
 	 *
 	 * Display a listing of the bibles.
 	 *
+	 * @param dam_id (optional): the volume internal DAM ID. Can be used to restrict the response to only DAM IDs that contain with 'N2' for example
+	 * @param fcbh_id (optional): the volume FCBH DAM ID. Can be used to restrict the response to only FCBH DAM IDs that contain with 'N2' for example
+	 * @param media (optional): [text|audio|video] the format of assets the caller is interested in. This specifies if you only want volumes available in text or volumes available in audio.
+	 * @deprecated delivery (optional): [web|web_streaming|download|download_text|mobile|sign_language|streaming_url|local_bundled|podcast|mp3_cd|digital_download| bible_stick|subsplash|any|none] a criteria for approved delivery method. It is possible to OR these methods together using '|', such as "delivery=streaming_url|mobile".  'any' means any of the supported methods (this list may change over time) i.e. approved for something. 'none' means volumes that are not approved for any of the supported methods. All volumes are returned by default.
+	 * @param language (optional): Filter the versions returned to a specified native or English language language name. For example return all the 'English' volumes.
+	 * @param full_word (optional): [true|false] Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string 'new' is anywhere in the language name, like in "Newari" and "Awa for Papua New Guinea". When true, it will only return volumes where the language name contains the full word 'new', like in "Awa for Papua New Guinea". Default is false.
+	 * @param language_code (optional): the three letter language code.
+	 * @param language_family_code (optional): the three letter language code for the language family.
+	 * @param updated (optional): YYYY-MM-DD. This is used to get volumes that were modified since the specified date.
+	 * @deprecated status (optional): [live|disabled|incomplete|waiting_review|in_review|discontinued] Publishing status of volume. The default is 'live'.
+	 * @deprecated dbp_agreement (optional): [true|false] Whether or not a DBP Agreement has been executed between FCBH and the organization to whom the volume belongs.
+	 * @deprecated expired (optional): [true|false] Whether the volume as passed its expiration or not.
+	 * @deprecated resolution (optional): [lo|med|hi] Currently used for video volumes as they can be available in different resolutions, basically conforming to the loose general categories of low, medium, and high resolution. Low resolution is geared towards devices with smaller screens.
+	 * @param organization_id (optional): Organization id of volumes to return.
+	 * @param sort_by (optional): [ dam_id | volume_name | language_name | language_english | language_family_code | language_family_name | version_code | version_name | version_english ] Primary criteria by which to sort.  The default is 'dam_id'.
 	 *
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
@@ -27,16 +42,38 @@ class BiblesController extends APIController
 	    // Return the documentation if it's not an API request
 	    if(!$this->api) return view('bibles.index');
 
-		$language = fetchLanguage(checkParam('language',null,'optional'));
-		$organization = checkParam('organization',null,'optional');
-		$bible_id = checkParam('dam_id',null,'optional');
+	    // $delivery = checkParam('delivery', null,'optional');
+	    // $expired = checkParam('expired', null,'optional');
+	    // $status = checkParam('status', null,'optional');
+	    // $dbp_agreement = checkParam('dbp_agreement', null,'optional');
+	    // $resolution = checkParam('resolution', null,'optional');
+	    $dam_id = checkParam('dam_id', null, 'optional') ?? checkParam('fcbh_id', null,'optional');
+	    $media = checkParam('media', null, 'optional');
+	    $language = checkParam('language', null, 'optional');
+	    $full_word = checkParam('full_word', null, 'optional');
+	    $iso = checkParam('language_family_code', null, 'optional') ?? checkParam('language_code', null, 'optional');
+	    $updated = checkParam('updated', null, 'optional');
+	    $organization = checkParam('organization_id', null, 'optional');
+		$sort_by = checkParam('sort_by', null, 'optional');
 
-	    $bibles = Bible::with('translations','language.parent','alphabet','dbp')->when($language, function ($query) use ($language) {
-			    return $query->where('glotto_id', $language->id);
+	    $bibles = Bible::with('translations','language.parent','alphabet','dbp')->when($language, function ($query) use ($language, $full_word) {
+	    	    if(!$full_word) return $query->where('name', 'LIKE', "%".$language."%");
+		        return $query->where('name', $language);
 		    })->when($organization, function($q) use ($organization){
 			    $q->where('organization_id', '>=', $organization);
-		    })->when($bible_id, function($q) use ($bible_id){
-		        $q->where('id', '=', $bible_id);
+		    })->when($dam_id, function($q) use ($dam_id){
+		        $q->where('id', '=', $dam_id);
+	        })->when($media, function($q) use ($media){
+	        	switch ($media) {
+	        		case "video": {$q->has('filesetFilm'); break;}
+			        case "audio": {$q->has('filesetAudio');break;}
+		        }
+	        })->when($updated, function($q) use ($updated){
+		        $q->where('updated_at', '>', $updated);
+	        })->when($iso, function($q) use ($iso){
+		        $q->where('iso', $iso);
+	        })->when($iso, function($q) use ($sort_by){
+		        $q->orderBy($sort_by);
 	        })->get();
 
 		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
@@ -54,7 +91,7 @@ class BiblesController extends APIController
     {
     	if(!$this->api) return view('bibles.history');
 
-		$limit = checkParam('limit',null,'optional') ?? 500;
+		$limit = checkParam('limit', null,'optional') ?? 500;
 		$bibles = Bible::select(['id','updated_at'])->take($limit)->get();
 		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
     }

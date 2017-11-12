@@ -137,6 +137,16 @@ class Bible extends Model
 	    return $this->HasMany(BibleFileset::class);
     }
 
+	public function filesetAudio()
+	{
+		return $this->HasMany(BibleFileset::class)->where('set_type','Audio');
+	}
+
+	public function filesetFilm()
+	{
+		return $this->HasMany(BibleFileset::class)->where('set_type','Film');
+	}
+
     public function files()
     {
         return $this->HasMany(BibleFile::class);
