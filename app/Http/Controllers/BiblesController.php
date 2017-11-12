@@ -29,12 +29,15 @@ class BiblesController extends APIController
 
 		$language = fetchLanguage(checkParam('language',null,'optional'));
 		$organization = checkParam('organization',null,'optional');
+		$bible_id = checkParam('dam_id',null,'optional');
 
 	    $bibles = Bible::with('translations','language.parent','alphabet','dbp')->when($language, function ($query) use ($language) {
 			    return $query->where('glotto_id', $language->id);
 		    })->when($organization, function($q) use ($organization){
 			    $q->where('organization_id', '>=', $organization);
-		    })->get();
+		    })->when($bible_id, function($q) use ($bible_id){
+		        $q->where('id', '=', $bible_id);
+	        })->get();
 
 		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
 
