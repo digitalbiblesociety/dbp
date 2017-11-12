@@ -13,6 +13,13 @@ class LanguagesController extends APIController
      * Display a listing of the resource.
      * Fetches the records from the database > passes them through fractal for transforming and
      *
+     * @param code (optional): Get the entry for a three letter language code.
+     * @param name (optional): Get the entry for a part of a language name in either native language or English.
+     * @param full_word (optional): [true|false] Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string 'new' is anywhere in the language name, like in "Newari" and "Awa for Papua New Guinea". When true, it will only return volumes where the language name contains the full word 'new', like in "Awa for Papua New Guinea". Default is false.
+     * @param sort_by (optional): [code|name|english] Primary criteria by which to sort. 'name' refers to the native language name. The default is 'english'.
+     * @deprecated family_only (optional): [true|false] When set to true the returned list is of only legal language families. The default is false.
+     * @deprecated possibilities (optional); [true|false] When set to true the returned list is a combination of DBP languages and ISO languages not yet defined in DBP that meet any of the criteria.
+     *
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -45,14 +52,42 @@ class LanguagesController extends APIController
 	 * Returns a List of Languages that contain resources and if the
 	 * language is a dialect, returns the parent language as well.
 	 *
+	 * @param root (optional): the native language or English language language name root. Can be used to restrict the response to only languages that start with 'Quechua' for example
+	 * @param full_word (optional): [true|false] Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string 'new' is anywhere in the language name, like in "Newari" and "Awa for Papua New Guinea". When true, it will only return volumes where the language name contains the full word 'new', like in "Awa for Papua New Guinea". Default is false.
+	 * @param language_code (optional): the three letter language code.
+	 * @param media (optional): [text|audio|video] - the format of languages the caller is interested in. This specifies if you want languages available in text or languages available in audio.
+	 * @deprecated delivery (optional): [streaming|web_streaming|download|download_text|mobile|sign_language|local_bundled|podcast|mp3_cd|digital_download|bible_stick|subsplash|any|none] a criteria for approved delivery method. It is possible to OR these methods together using '|', such as "delivery=streaming|mobile". 'any' means any of the supported methods (this list may change over time). 'none' means assets that are not approved for any of the supported methods. All returned by default.
+	 * @param status (optional): [live|disabled|incomplete|waiting_review|in_review|discontinued] Publishing status of volume. The default is 'live'.
+	 * @param resolution (optional): [lo|med|hi] Currently used for video volumes as they can be available in different resolutions, basically conforming to the loose general categories of low, medium, and high resolution. Low resolution is geared towards devices with smaller screens.
+	 * @param organization_id: The id of an organization by which to filter the languages of available volumes.
+	 *
+	 *
 	 * @return View|JSON
 	 */
 	public function volumeLanguage()
     {
-	    return \Cache::remember('volumeLanguage', 2400, function () {
-			$languages = Language::select(['id','iso','iso2B','iso2T','iso1','name','autonym'])->with('bibles')->with('parent')->with('parent.language')->get();
-			return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
-		});
+
+	    // $delivery =  checkParam('delivery', null, 'optional');
+	    $iso = checkParam('language_code', null, 'optional');
+	    $root = checkParam('root', null, 'optional');
+	    $media =  checkParam('media', null, 'optional');
+	    $organization_id =  checkParam('organization_id', null, 'optional');
+
+		$languages = Language::select(['id','iso','iso2B','iso2T','iso1','name','autonym'])->with('bibles','parent.language')
+			->when($iso, function ($query) use ($iso) {
+				return $query->where('iso', $iso);
+			})->when($root, function ($query) use ($root) {
+				return $query->where('name', '%'.$root.'%');
+			})->when($organization_id, function ($query) use ($organization_id) {
+				return $query->whereHas('filesets', function($q) use ($organization_id) { $q->where('organization_id', $organization_id); });
+			})->when($media, function ($query) use ($media) {
+				switch($media) {
+					case "audio": { return $query->has('bibles.filesetAudio'); break;}
+					case "video": { return $query->has('bibles.filesetFilm'); break;}
+					case "text":  { return $query->has('bibles.filesets'); break;}
+				}
+			})->get();
+		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
     }
 
 
@@ -60,13 +95,40 @@ class LanguagesController extends APIController
 	 * API V2:
 	 * Returns of List of Macro-Languages that contain resources and their dialects
 	 *
+	 * @param language_code (optional): the three letter language code.
+	 * @param root (optional): the native language or English language language name root. Can be used to restrict the response to only languages that start with 'Quechua' for example
+	 * @deprecated full_word (optional): [true|false] Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string 'new' is anywhere in the language name, like in "Newari" and "Awa for Papua New Guinea". When true, it will only return volumes where the language name contains the full word 'new', like in "Awa for Papua New Guinea". Default is false.
+	 * @param media (optional): [text|audio|video] - the format of languages the caller is interested in. This specifies if you want languages available in text or languages available in audio.
+	 * @param delivery (optional): [streaming|web_streaming|download|download_text|mobile|sign_language|local_bundled|podcast|mp3_cd|digital_download|bible_stick|subsplash|any|none] a criteria for approved delivery method. It is possible to OR these methods together using '|', such as "delivery=streaming|mobile". 'any' means any of the supported methods (this list may change over time). 'none' means assets that are not approved for any of the supported methods. All returned by default.
+	 * @deprecated status (optional): [live|disabled|incomplete|waiting_review|in_review|discontinued] Publishing status of volume. The default is 'live'.
+	 * @deprecated resolution (optional): [lo|med|hi] Currently used for video volumes as they can be available in different resolutions, basically conforming to the loose general categories of low, medium, and high resolution. Low resolution is geared towards devices with smaller screens.
+	 * @param organization_id: The id of an organization by which to filter the languages of available volumes.
+	 *
 	 * @return mixed
 	 */
 	public function volumeLanguageFamily()
 	{
 		if(!$this->api) return view('languages.volumes');
 
-		$languages = Language::select(['id','iso','iso2B','iso2T','iso1','name','autonym'])->with('bibles')->with('dialects')->with(['dialects.childLanguage' => function($query) {$query->select(['id','iso']);}])->get();
+		// $full_word =  checkParam('full_word', null, 'optional');
+		// $status =  checkParam('status', null, 'optional');
+		// $resolution =  checkParam('resolution', null, 'optional');
+		$iso = checkParam('language_code', null, 'optional');
+		$root = checkParam('root', null, 'optional');
+		$media =  checkParam('media', null, 'optional');
+		$delivery =  checkParam('delivery', null, 'optional');
+		$organization_id =  checkParam('organization_id', null, 'optional');
+
+		$languages = Language::with('bibles')->with('dialects')
+			->with(['dialects.childLanguage' => function($query) {$query->select(['id','iso']);}])
+			->when($iso, function ($query) use ($iso) {
+				return $query->where('iso', $iso);
+			})->when($root, function ($query) use ($root) {
+				return $query->where('name', 'LIKE', '%'.$root.'%');
+			})->when($root, function ($query) use ($root) {
+				return $query->where('name', 'LIKE', '%'.$root.'%');
+			})
+			->get();
 		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
 	}
 
