@@ -81,11 +81,25 @@ class BiblesController extends APIController
     }
 
 	/**
-	 * @return mixed
+	 *
+	 * Get the list of versions defined in the system
+	 *
+	 * @param code (optional): Get the entry for a three letter version code.
+	 * @param name (optional): Get the entry for a part of a version name in either native language or English.
+	 * @param sort_by (optional): [code|name|english] Primary criteria by which to sort. 'name' refers to the native language name. The default is 'english'.
+	 *
+	 * @return json
 	 */
 	public function libraryVersion()
 	{
-		return $this->reply(json_decode(file_get_contents(public_path('static/version_listing.json'))));
+		$code = checkParam('code', null, 'optional');
+		$name = checkParam('name', null, 'optional');
+		$sort = checkParam('sort_by', null, 'optional');
+		$versions = collect(json_decode(file_get_contents(public_path('static/version_listing.json'))));
+		if(isset($code)) $versions = $versions->where('version_code',$code)->flatten();
+		if(isset($name)) $versions = $versions->filter(function ($item) use ($name) { return false !== stristr($item->version_name, $name);})->flatten();
+		if(isset($sort)) $versions = $versions->sortBy($sort);
+		return $this->reply($versions);
 	}
 
 	/**
