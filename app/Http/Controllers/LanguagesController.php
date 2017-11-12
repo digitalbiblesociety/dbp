@@ -21,7 +21,20 @@ class LanguagesController extends APIController
 	    ini_set('memory_limit', '464M');
 
 		$country = checkParam('country',null,'optional');
-		$languages = Language::select(['id','iso','name'])->when($country, function ($query) use ($country) { return $query->where('country_id', $country); })->get();
+		$code = checkParam('code', null, 'optional');
+	    $language_name_portion = checkParam('full_word', null, 'optional');
+	    $sort_by = checkParam('sort_by', null, 'optional');
+
+		$languages = Language::select(['id','iso','name'])
+			->when($country, function ($query) use ($country) {
+				return $query->where('country_id', $country);
+			})->when($code, function ($query) use ($code) {
+				return $query->where('iso', $code);
+			})->when($language_name_portion, function ($query) use ($language_name_portion) {
+				return $query->where('name', 'contains', $language_name_portion);
+			})->when($sort_by, function ($query) use ($sort_by) {
+				return $query->orderBy($sort_by);
+			})->get();
 
 		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
     }
@@ -36,10 +49,10 @@ class LanguagesController extends APIController
 	 */
 	public function volumeLanguage()
     {
-		if(!$this->api) return view('languages.volumes');
-
-		$languages = Language::select(['id','iso','iso2B','iso2T','iso1','name','autonym'])->with('bibles')->with('parent')->with('parent.language')->get();
-		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
+	    return \Cache::remember('volumeLanguage', 2400, function () {
+			$languages = Language::select(['id','iso','iso2B','iso2T','iso1','name','autonym'])->with('bibles')->with('parent')->with('parent.language')->get();
+			return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
+		});
     }
 
 
@@ -108,7 +121,7 @@ class LanguagesController extends APIController
 	public function show($id)
     {
 	    $language = fetchLanguage($id);
-	    $language->load("translations","codes","alternativeNames","dialects","classifications","countries");
+	    $language->load("translations","codes","alternativeNames","dialects","classifications","countries","bibles");
 	    if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
     	if($this->api) return $this->reply(fractal()->item($language)->transformWith(new LanguageTransformer())->toArray());
         return view('languages.show',compact('language'));
