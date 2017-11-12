@@ -43,7 +43,7 @@ class BooksTransformer extends TransformerAbstract
 
 			case "v2_library_book": {
 				return [
-					"dam_id_root"        => $bibleBook->first()->bible_id,
+					"dam_id"             => $bibleBook->first()->bible_id.substr($bibleBook->first()->book->book_testament,0,1),
 					"book_id"            => $bibleBook->first()->book->id_osis,
 					"book_name"          => $bibleBook->first()->book->name,
 					"book_order"         => $bibleBook->first()->book->book_order,
