@@ -83,7 +83,7 @@ class BooksController extends APIController
 		$bible_id = checkParam('dam_id');
 		$book_id = checkParam('book_id', null, true);
 
-		$chapters = Text::where('bible_id',$bible_id)->when($book_id, function ($query) use ($book_id) {
+		$chapters = Text::where('bible_id',$bible_id)->with('book')->when($book_id, function ($query) use ($book_id) {
 			if(strlen($book_id) != 3) {
 				$book = Book::where('id_osis',$book_id)->first();
 			} else {

@@ -62,7 +62,7 @@ class BooksTransformer extends TransformerAbstract
 			case "v2_library_chapter": {
 				return [
 					"dam_id"           => $bibleBook->bible_id,
-                    "book_id"          => $bibleBook->book_id,
+                    "book_id"          => $bibleBook->book->id_osis,
                     "chapter_id"       => $bibleBook->chapter_number,
                     "chapter_name"     => "Chapter " . $bibleBook->chapter_number,
                     "default"          => ""
