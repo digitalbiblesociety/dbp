@@ -22,7 +22,7 @@ class TextTransformer extends BaseTransformer
 		    	return [
 			        "dam_id"           => $text->bible_id,
                     "book_name"        => $text->book->name,
-                    "book_id"          => $text->book_id,
+                    "book_id"          => $text->book->osis_id,
                     "chapter_id"       => $text->chapter_number,
                     "verse_id"         => $text->verse_start,
                     "verse_text"       => $text->verse_text,
@@ -34,7 +34,7 @@ class TextTransformer extends BaseTransformer
 		    	return [
 				    "dam_id"           => $text->bible_id,
 				    "book_name"        => $text->book->name,
-				    "book_id"          => $text->book_id,
+				    "book_id"          => $text->book->osis_id,
 				    "chapter_id"       => $text->chapter_number,
 				    "verse_id"         => $text->verse_start,
 				    "verse_text"       => $text->verse_text,
@@ -46,7 +46,7 @@ class TextTransformer extends BaseTransformer
 		    default: {
 			    return [
 				    "book_name"        => $text->book->name,
-				    "book_id"          => $text->book->osis->code,
+				    "book_id"          => $text->book->osis_id,
 				    "book_order"       => $text->book->order,
 				    "chapter_id"       => $text->chapter_number,
 				    "chapter_title"    => null,
