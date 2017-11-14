@@ -45,7 +45,7 @@ class Text extends Model
 
     public function bible()
     {
-        return $this->hasOne(Bible::class, 'abbr', 'bible_id');
+        return $this->hasOne(Bible::class, 'id', 'bible_id');
     }
 
     public function book()

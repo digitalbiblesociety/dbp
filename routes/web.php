@@ -43,6 +43,11 @@ Route::resource('bibles/ocr',               'PrintProcesses');
 
 Route::post('bibles/filesets/{id}/files/{file_id}' , 'BibleFilesController@update');
 
+Route::post('/search',                          'BibleDisplayController@search');
+Route::get('/read/{id}',                        'BibleDisplayController@chapter')->name('view_bible_chapter');
+Route::get('/read/{id}/{book}/{chapter}',       'BibleDisplayController@chapter')->name('view_bible_chapter');
+
+
 Route::get('/permissions',       'BibleFileSetPermissionsController@user')->name('view_bible_filesets_permissions.user');
 Route::resource('bibles/filesets/{id}/permissions',       'BibleFileSetPermissionsController', ['names' => [
 	'index'   => 'view_bible_filesets_permissions.index',

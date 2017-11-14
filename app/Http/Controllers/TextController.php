@@ -48,6 +48,12 @@ class TextController extends APIController
 			['book_id',$book->id],
 			['chapter_number',$chapter],
 			['verse_start', '>=', $verse_start],
+		])
+		->where([
+			['bible_variation_id',$bible_id],
+			['book_id',$book->id],
+			['chapter_number',$chapter],
+			['verse_start', '>=', $verse_start],
 		])->when($verse_end, function ($query) use ($verse_end) {
 			return $query->where('verse_end', '<=', $verse_end);
 		})->get();
