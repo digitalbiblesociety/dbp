@@ -44,6 +44,8 @@
         body {
             min-height:100vh;
         }
+        .panel,
+        .no-fouc {visibility: hidden!important;}
 
         nav {
             background:#A14;
@@ -106,7 +108,8 @@
 
         a                           {text-decoration:none!important;-webkit-transition:all 225ms ease;-moz-transition:all 225ms ease;transition:all 225ms ease}
         .panel                {background:#444;overflow:scroll}
-        .panel > ul             {list-style:none;padding:0;margin:0;text-align:center;height:800px;overflow: scroll}
+        .panel ul               {list-style:none;padding:0;margin:0;text-align:center;}
+        .panel > ul             {height:800px;overflow: scroll}
         .panel > ul li a        {display:block;width:100%;height:50px;line-height:50px;background:transparent;color:#fff}
         .panel > ul li a:hover  {background:#555}
         .panel input          {width:100%;
@@ -114,6 +117,15 @@
             padding: 10px;
             background: #f1f1f1;
             text-indent: 30px;
+        }
+
+        #settings-panel .list ul {
+            border-top:thin solid #333;
+        }
+
+        #settings-panel .list > li {
+            color:#FFF;
+            padding:10px;
         }
 
         #navigation-panel .list .book {
@@ -162,7 +174,32 @@
 </head>
 <body>
 <header>
-<div id="navigation-panel" class="panel">
+<div id="settings-panel" class="panel"
+     data-containerSelector="body"
+     data-direction="right"
+     data-clickSelector=".font-button">
+    <ul class="list">
+        <li>Fonts
+        <ul class="fonts">
+            <li><a data-font="Helvetica">Helvetica</a></li>
+            <li><a data-font="Verdana">Verdana</a></li>
+            <li><a data-font="Palatino">Palatino</a></li>
+            <li><a data-font="Georgia">Georgia</a></li>
+        </ul></li>
+        <li>Size
+            <ul class="sizer">
+                <li><a data-size=".75rem">small</a></li>
+                <li><a data-size="1rem">medium</a></li>
+                <li><a data-size="1.5rem">large</a></li>
+                <li><a data-size="2rem">extra large</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<div id="navigation-panel" class="panel"
+     data-containerSelector="body"
+     data-direction="top"
+     data-clickSelector=".chapter-button">
     <ul class="list">
         @foreach($bibleNavigation as $bookName => $chapters)
             @if($loop->iteration == 1 OR ($loop->iteration % 3) == 0) <div class="row"> @endif
@@ -180,8 +217,10 @@
         @endforeach
     </ul>
 </div>
-
-<div id="bible-panel" class="panel">
+<div id="bible-panel" class="panel"
+     data-containerSelector="body"
+     data-direction="left"
+     data-clickSelector=".version-button">
     <input class="search" placeholder="Search" />
     <ul class="list">
         @foreach($bibleLanguages as $languageName => $bibles)
@@ -217,14 +256,14 @@
     </form>
     </div>
     <div class="small-3 columns">
-    <!-- <a href="#" class="font-button">Aa</a> -->
+    <a href="#" class="font-button">Aa</a>
     </div>
 </nav>
 <main class="small-10 medium-7 columns centered">
     <article class="reader">
         @if(!$query)
         @foreach($verses as $verse)
-           <sup>{{ $verse->verse_start }}</sup> {{ $verse->verse_text }}
+           <sup>{{ $verse->verse_start }}@if(isset($verse->verse_end))-{{ $verse->verse_end }}@endif</sup> {{ $verse->verse_text }}
         @endforeach
         @else
             <div class="results">
@@ -241,37 +280,27 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
-<script src="/js/scotchPanels.min.js"></script>
+<script src="/js/reader.js"></script>
 <script>
 
     // Filters
-    var options = {
-        valueNames: [ 'name', 'language' ]
-    };
+    var options = {valueNames: [ 'name', 'language' ]};
     new List('bible-panel', options);
 
     // Scotch
-    $('#bible-panel').scotchPanel({
-        containerSelector:'body',
-        forceMinHeight:true,
-        direction:'left',
-        duration:300,
-        transition:'ease',
-        clickSelector:'.version-button',
-        distanceX:'30%',
-        enableEscapeKey:true
+    $('#bible-panel').scotchPanel();
+    $('#navigation-panel').scotchPanel();
+    $('#settings-panel').scotchPanel();
+
+    // Font
+    $('.fonts a').click(function() {
+        $('.reader').css('font-family',$(this).data('font'));
     });
-    // Scotch
-    $('#navigation-panel').scotchPanel({
-        containerSelector:'body',
-        forceMinHeight:true,
-        direction:'top',
-        duration:300,
-        transition:'ease',
-        clickSelector:'.chapter-button',
-        distanceX:'30%',
-        enableEscapeKey:true
+    $('.sizer a').click(function() {
+        $('.reader').css('font-size',$(this).data('size'));
     });
+
+
 </script>
 </body>
 </html>
