@@ -83,13 +83,12 @@ class BooksController extends APIController
 		$bible_id = checkParam('dam_id');
 		$book_id = checkParam('book_id', null, true);
 
+		// V2 of the API uses OSIS
+	    $book = ($this->v == 2) ? Book::where('id_osis',$book_id)->first() : Book::find($book_id );
+	    if($book) $book_id = $book->id;
+
 		$chapters = Text::where('bible_id',$bible_id)->with('book')->when($book_id, function ($query) use ($book_id) {
-			if(strlen($book_id) != 3) {
-				$book = Book::where('id_osis',$book_id)->first();
-			} else {
-				$book = Book::find($book_id);
-			}
-			return $query->where('book_id', $book->id);
+			return $query->where('book_id', $book_id);
 		})->select(['chapter_number','bible_id','book_id'])->distinct()->orderBy('chapter_number')->get();
 
 		return $this->reply(fractal()->collection($chapters)->serializeWith($this->serializer)->transformWith(new BooksTransformer()));
