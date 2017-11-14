@@ -88,7 +88,8 @@
             color:#fff;
             text-indent:55px;
             line-height:50px;
-            background:url("http://cloud.faithcomesbyhearing.com/volumeart/50x50/SPNLBV.jpg?cr=1") no-repeat left center;
+            background:url("https://bible.cloud/images/covers/110x170/{{ $verses->first()->bible_id }}.jpg") no-repeat left center;
+            background-size: 35px 50px;
         }
 
         nav #search-form input {
@@ -234,7 +235,7 @@
 </header>
 <nav>
     <div class="small-3 columns">
-    <a href="#" class="version-button">LBV</a>
+    <a href="#" class="version-button">{{ substr($verses->first()->bible_id,3) }}</a>
     </div>
     <div class="small-6 columns">
     <a href="#" class="chapter-button">

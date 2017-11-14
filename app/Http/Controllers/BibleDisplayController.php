@@ -9,7 +9,7 @@ use App\Models\Bible\Bible;
 class BibleDisplayController extends Controller
 {
 
-	public function chapter($bible_id, $book_id = null, $chapter = null) {
+	public function chapter($bible_id = "ENGESV", $book_id = null, $chapter = null) {
 		// handle starting routes
 		if(!$book_id) {
 			$selection = Text::where('bible_id',$bible_id)->orderBy('id')->first();

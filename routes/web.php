@@ -44,6 +44,7 @@ Route::resource('bibles/ocr',               'PrintProcesses');
 Route::post('bibles/filesets/{id}/files/{file_id}' , 'BibleFilesController@update');
 
 Route::post('/search',                          'BibleDisplayController@search');
+Route::get('/read/',                            'BibleDisplayController@chapter')->name('view_bible_chapter');
 Route::get('/read/{id}',                        'BibleDisplayController@chapter')->name('view_bible_chapter');
 Route::get('/read/{id}/{book}/{chapter}',       'BibleDisplayController@chapter')->name('view_bible_chapter');
 
