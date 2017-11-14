@@ -44,7 +44,7 @@
         body {
             min-height:100vh;
         }
-        .panel,
+
         .no-fouc {visibility: hidden!important;}
 
         nav {
@@ -175,7 +175,7 @@
 </head>
 <body>
 <header>
-<div id="settings-panel" class="panel"
+<div id="settings-panel" class="panel no-fouc"
      data-containerSelector="body"
      data-direction="right"
      data-clickSelector=".font-button">
@@ -197,7 +197,7 @@
         </li>
     </ul>
 </div>
-<div id="navigation-panel" class="panel"
+<div id="navigation-panel" class="panel no-fouc"
      data-containerSelector="body"
      data-direction="top"
      data-clickSelector=".chapter-button">
@@ -218,7 +218,7 @@
         @endforeach
     </ul>
 </div>
-<div id="bible-panel" class="panel"
+<div id="bible-panel" class="panel no-fouc"
      data-containerSelector="body"
      data-direction="left"
      data-clickSelector=".version-button">
@@ -289,9 +289,37 @@
     new List('bible-panel', options);
 
     // Scotch
-    $('#bible-panel').scotchPanel();
-    $('#navigation-panel').scotchPanel();
-    $('#settings-panel').scotchPanel();
+    // Scotch
+    $('#bible-panel').scotchPanel({
+        containerSelector:'body',
+        forceMinHeight:true,
+        direction:'left',
+        duration:300,
+        transition:'ease',
+        clickSelector:'.version-button',
+        distanceX:'30%',
+        enableEscapeKey:true
+    });
+    $('#navigation-panel').scotchPanel({
+        containerSelector:'body',
+        forceMinHeight:true,
+        direction:'top',
+        duration:300,
+        transition:'ease',
+        clickSelector:'.chapter-button',
+        distanceX:'30%',
+        enableEscapeKey:true
+    });
+    $('#settings-panel').scotchPanel({
+        containerSelector:'body',
+        forceMinHeight:true,
+        direction:'right',
+        duration:300,
+        transition:'ease',
+        clickSelector:'.font-button',
+        distanceX:'30%',
+        enableEscapeKey:true
+    });
 
     // Font
     $('.fonts a').click(function() {
