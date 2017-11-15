@@ -21,7 +21,7 @@ class BibleDisplayController extends Controller
 			$chapter = $selection->chapter_number;
 		}
 
-		$bibleNavigation = Text::with('book')->select('book_id','chapter_number','bible_id')->distinct()->where('bible_id',$bible_id)->get()->groupBy('book.name');
+		$bibleNavigation = Text::with('book')->select('book_id','chapter_number','bible_id')->distinct()->where('bible_id',$bible_id)->get()->groupBy('book.id');
 		$bibleLanguages = Bible::with('currentTranslation','language')->has('text')->get()->groupBy('language.name');
 		$verses = Text::select(['bible_id','book_id','verse_start','verse_text','chapter_number'])->where('bible_id',$bible_id)->where('book_id', $book_id)->where('chapter_number',$chapter)->orderBy('verse_start')->get();
 		$query = false;

@@ -120,6 +120,11 @@
             text-indent: 30px;
         }
 
+        #settings-panel li,
+        #settings-panel a {
+            font-size:16px;
+        }
+
         #settings-panel .list ul {
             border-top:thin solid #333;
         }
@@ -171,68 +176,68 @@
             background:#f2f2f2;
         }
 
+        .sideNav {
+            position: fixed;
+            top:50%;
+            padding:100px 10px;
+            margin-top:-100px;
+            border-radius: 5px;
+        }
+
+        .sideNav:hover {
+            background: #ccc;
+            color:#FFF;
+        }
+
+        .sideNav:hover .chevron:before {
+            color:#FFF;
+        }
+
+        .sideNav.left {
+            left:10px;
+        }
+
+        .sideNav.right {
+            right:10px;
+        }
+
+        .chevron::before {
+            border-style: solid;
+            border-width: .25em .25em 0 0;
+            content: '';
+            display: inline-block;
+            height: 0.9em;
+            left: 0.3em;
+            position: relative;
+            top: 0.3em;
+            transform: rotate(-45deg);
+            vertical-align: top;
+            width: 0.9em;
+            color:#ccc;
+        }
+
+        .chevron.right:before {
+            left: 0;
+            transform: rotate(45deg);
+        }
+
+        .chevron.bottom:before {
+            top: 0;
+            transform: rotate(135deg);
+        }
+
+        .chevron.left:before {
+            left: 0.25em;
+            transform: rotate(-135deg);
+        }
+
+        /*
+        https://images.bible.cloud/partners_bible_is_white.svg
+         */
+
     </style>
 </head>
 <body>
-<header>
-<div id="settings-panel" class="panel no-fouc"
-     data-containerSelector="body"
-     data-direction="right"
-     data-clickSelector=".font-button">
-    <ul class="list">
-        <li>Fonts
-        <ul class="fonts">
-            <li><a data-font="Helvetica">Helvetica</a></li>
-            <li><a data-font="Verdana">Verdana</a></li>
-            <li><a data-font="Palatino">Palatino</a></li>
-            <li><a data-font="Georgia">Georgia</a></li>
-        </ul></li>
-        <li>Size
-            <ul class="sizer">
-                <li><a data-size=".75rem">small</a></li>
-                <li><a data-size="1rem">medium</a></li>
-                <li><a data-size="1.5rem">large</a></li>
-                <li><a data-size="2rem">extra large</a></li>
-            </ul>
-        </li>
-    </ul>
-</div>
-<div id="navigation-panel" class="panel no-fouc"
-     data-containerSelector="body"
-     data-direction="top"
-     data-clickSelector=".chapter-button">
-    <ul class="list">
-        @foreach($bibleNavigation as $bookName => $chapters)
-            @if($loop->iteration == 1 OR ($loop->iteration % 3) == 0) <div class="row"> @endif
-            <div class="medium-4 columns">
-            <div class="book row">{{ $bookName }}</div>
-            <div class="row">
-                <div class="chapters">
-            @foreach($chapters as $chapter)
-                    <div class="small-2 columns chapter"><a href="/read/{{ $chapter->bible_id }}/{{ $chapter->book_id }}/{{ $chapter->chapter_number }}">{{ $chapter->chapter_number }}</a></div>
-            @endforeach
-                </div>
-            </div>
-            </div>
-                @if(($loop->iteration % 3) == 0) </div> @endif
-        @endforeach
-    </ul>
-</div>
-<div id="bible-panel" class="panel no-fouc"
-     data-containerSelector="body"
-     data-direction="left"
-     data-clickSelector=".version-button">
-    <input class="search" placeholder="Search" />
-    <ul class="list">
-        @foreach($bibleLanguages as $languageName => $bibles)
-            <li class="language">{{ $languageName }}</li>
-            @foreach($bibles as $bible)
-                <li><a href="/read/{{ $bible->id }}/" class="name">{{ $bible->currentTranslation->name }}<small>{{ $bible->id }}</small></a></li>
-            @endforeach
-        @endforeach
-    </ul>
-</div>
-</header>
 <nav>
     <div class="small-3 columns">
     <a href="#" class="version-button">{{ substr($verses->first()->bible_id,3) }}</a>
@@ -260,9 +265,70 @@
     <a href="#" class="font-button">Aa</a>
     </div>
 </nav>
+
+@if(in_array(($verses->first()->chapter_number - 1), $bibleNavigation[$verses->first()->book_id]->pluck('chapter_number')->ToArray())) <a href="/read/{{ $verses->first()->bible_id }}/{{ $verses->first()->book_id }}/{{ $verses->first()->chapter_number - 1 }}" class="sideNav left"><div class="chevron left"></div></a> @endif
+@if(in_array(($verses->first()->chapter_number + 1), $bibleNavigation[$verses->first()->book_id]->pluck('chapter_number')->ToArray())) <a href="/read/{{ $verses->first()->bible_id }}/{{ $verses->first()->book_id }}/{{ $verses->first()->chapter_number + 1 }}" class="sideNav right"> <div class="chevron right"> </div></a> @endif
+
 <main class="small-10 medium-7 columns centered">
     <article class="reader">
+        <header>
+            <div id="settings-panel" class="panel no-fouc"
+                 data-direction="right"
+                 data-clickSelector=".font-button">
+                <ul class="list">
+                    <li>Fonts
+                        <ul class="fonts">
+                            <li><a style="font-family: Helvetica" data-font="Helvetica">Helvetica</a></li>
+                            <li><a style="font-family: Verdana" data-font="Verdana">Verdana</a></li>
+                            <li><a style="font-family: Palatino" data-font="Palatino">Palatino</a></li>
+                            <li><a style="font-family: Georgia" data-font="Georgia">Georgia</a></li>
+                        </ul></li>
+                    <li>Size
+                        <ul class="sizer">
+                            <li><a data-size=".75rem">small</a></li>
+                            <li><a data-size="1rem">medium</a></li>
+                            <li><a data-size="1.5rem">large</a></li>
+                            <li><a data-size="2rem">extra large</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div id="navigation-panel" class="panel no-fouc"
+                 data-direction="top"
+                 data-clickSelector=".chapter-button">
+                <ul class="list">
+                    @foreach($bibleNavigation as $bookID => $chapters)
+                        @if($loop->iteration == 1 OR ($loop->iteration % 3) == 0) <div class="row"> @endif
+                            <div class="medium-4 columns">
+                                <div class="book row">{{ $chapters->first()->book->currentTranslation->name ?? $chapters->first()->book->name }}</div>
+                                <div class="row">
+                                    <div class="chapters">
+                                        @foreach($chapters as $chapter)
+                                            <div class="small-2 columns chapter"><a href="/read/{{ $chapter->bible_id }}/{{ $chapter->book_id }}/{{ $chapter->chapter_number }}">{{ $chapter->chapter_number }}</a></div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                            @if(($loop->iteration % 3) == 0) </div> @endif
+                    @endforeach
+                </ul>
+            </div>
+            <div id="bible-panel" class="panel no-fouc"
+                 data-direction="left"
+                 data-clickSelector=".version-button">
+                <input class="search" placeholder="Search" />
+                <ul class="list">
+                    @foreach($bibleLanguages as $languageName => $bibles)
+                        <li class="language">{{ $languageName }}</li>
+                        @foreach($bibles as $bible)
+                            <li><a href="/read/{{ $bible->id }}/" class="name">{{ $bible->currentTranslation->name }}<small>{{ $bible->id }}</small></a></li>
+                        @endforeach
+                    @endforeach
+                </ul>
+            </div>
+        </header>
         @if(!$query)
+            <h2>{{ $verses->first()->book->currentTranslation->name ?? $verses->first()->book->name }} {{ $verses->first()->chapter_number }}</h2>
         @foreach($verses as $verse)
            <sup>{{ $verse->verse_start }}@if(isset($verse->verse_end))-{{ $verse->verse_end }}@endif</sup> {{ $verse->verse_text }}
         @endforeach
@@ -288,36 +354,43 @@
     var options = {valueNames: [ 'name', 'language' ]};
     new List('bible-panel', options);
 
-    // Scotch
+    var container = $('.reader');
+    if (!container.hasClass('scotchified')) {
+        container.wrapInner('<div class="scotch-panel-wrapper"><div class="scotch-panel-canvas"></div></div>').addClass('scotchified');
+    }
+
     // Scotch
     $('#bible-panel').scotchPanel({
-        containerSelector:'body',
+        containerSelector:'.reader',
         forceMinHeight:true,
+        height: '100%',
         direction:'left',
         duration:300,
         transition:'ease',
         clickSelector:'.version-button',
-        distanceX:'30%',
+        distanceX:'100%',
         enableEscapeKey:true
     });
     $('#navigation-panel').scotchPanel({
-        containerSelector:'body',
+        containerSelector:'.reader',
         forceMinHeight:true,
+        height: '100%',
         direction:'top',
         duration:300,
         transition:'ease',
         clickSelector:'.chapter-button',
-        distanceX:'30%',
+        distanceX:'100%',
         enableEscapeKey:true
     });
     $('#settings-panel').scotchPanel({
-        containerSelector:'body',
+        containerSelector:'.reader',
         forceMinHeight:true,
+        height: '100%',
         direction:'right',
         duration:300,
         transition:'ease',
         clickSelector:'.font-button',
-        distanceX:'30%',
+        distanceX:'40%',
         enableEscapeKey:true
     });
 
