@@ -12,8 +12,8 @@
     <meta property="og:type" content="book" />
     <meta property="og:title" content="{{ $verses->first()->book->currentTranslation->name ?? $verses->first()->book_id }} {{ $verses->first()->chapter_number }}| Bible.is" />
     <meta property="og:description" content="{{ $verses->first()->verse_text }}..." />
-    <meta property="og:url" content="{{ env('APP_URL') }}/{{ $verses->first()->bible_id }}/{{ $verses->first()->book_id }}/{{ $verses->first()->chapter_number }}" />
-    <meta property="og:image" content="{{ env('APP_URL') }}/images/FB-post-icon.png?cr=1" />
+    <meta property="og:url" content="/{{ $verses->first()->bible_id }}/{{ $verses->first()->book_id }}/{{ $verses->first()->chapter_number }}" />
+    <meta property="og:image" content="/images/FB-post-icon.png?cr=1" />
     <meta property="og:site_name" content="Bible.is" />
     <meta property="fb:app_id" content="{{ env('FACEBOOK_APP_ID') }}" />
     @endif
@@ -33,13 +33,13 @@
     @endif
     <meta name="google-play-app" content="app-id=com.faithcomesbyhearing.android.bibleis">
     <link rel="favorite icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="apple-touch-icon" href="{{ env('APP_URL') }}/images/icons/apple-touch-icon-152.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ env('APP_URL') }}/images/icons/apple-touch-icon-76.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="t{{ env('APP_URL') }}/images/icons/apple-touch-icon-120.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="{{ env('APP_URL') }}/images/icons/apple-touch-icon-152.png">
-    <link rel="apple-touch-startup-image" href="{{ env('APP_URL') }}/images/spinner.gif" />
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon-152.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/images/icons/apple-touch-icon-76.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="t/images/icons/apple-touch-icon-120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/images/icons/apple-touch-icon-152.png">
+    <link rel="apple-touch-startup-image" href="/images/spinner.gif" />
     <link href="{{ mix('css/app.css') }}" rel="stylesheet" />
-    <!--[if IE 8]> <link href="{{ env('APP_URL') }}/css/ie8.css?cr=1" rel="stylesheet" type="text/css" media="screen" /> -->
+    <!--[if IE 8]> <link href="/css/ie8.css?cr=1" rel="stylesheet" type="text/css" media="screen" /> -->
     <style>
         body {
             min-height:100vh;
@@ -57,6 +57,7 @@
             float:left;
         }
 
+        .version-button,
         .font-button,
         .search-button,
         .chapter-button {
@@ -68,6 +69,7 @@
             color:#FFF;
             padding:10px;
             margin:10px 0;
+            font-size:12px;
         }
 
 
@@ -81,19 +83,8 @@
             font-weight:bold;
         }
 
-        .version-button {
-            margin:5px;
-            width:140px;
-            height:50px;
-            color:#fff;
-            text-indent:55px;
-            line-height:50px;
-            background:url("https://bible.cloud/images/covers/110x170/{{ $verses->first()->bible_id }}.jpg") no-repeat left center;
-            background-size: 35px 50px;
-        }
-
         nav #search-form input {
-            width:calc(100% - 80px);
+            width:calc(100% - 120px);
             height:40px;
             margin:10px 0;
             border:none;
@@ -231,18 +222,33 @@
             transform: rotate(-135deg);
         }
 
-        /*
-        https://images.bible.cloud/partners_bible_is_white.svg
-         */
+        .logo {
+            width:100px;
+            margin-top:15px;
+        }
+
+
+        .chapters {
+            visibility: hidden;
+            display: none;
+        }
+
+        .chapters.active {
+            visibility: visible;
+            display: block;
+        }
 
     </style>
 </head>
 <body>
 <nav>
     <div class="small-3 columns">
-    <a href="#" class="version-button">{{ substr($verses->first()->bible_id,3) }}</a>
+        <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 242 60">
+            <path fill="#FFF" d="M41.2 49c-1 2-2 3.7-3.7 5.2-1.6 1.4-3.5 2.5-5.7 3.2-2.2.8-4.6 1-7.3 1H0V0h23.5C29.3 0 33.8 1.5 37 4.4c3 3 4.6 7 4.6 12 0 1.7-.2 3.2-.7 4.5-.5 1.2-1 2.4-2 3.4-.6 1-1.4 2-2.3 2.6-.8.7-1.6 1.2-2.3 1.5 1 .5 1.8 1 2.7 1.7 1 .7 2 1.6 2.7 2.6.8 1 1.4 2.3 2 3.7.5 1.5.7 3.2.7 5.2 0 2.7-.4 5-1.2 7.2zm-13-37c-1.2-1.2-3-1.8-5.6-1.8H11.4v13.5h11.2c2.5 0 4.4-.6 5.7-2 1.2-1 2-2.7 2-4.8 0-2-.7-3.7-2-5zm1 24c-1.3-1.4-3.2-2-5.8-2h-12v14.3h12c2.6 0 4.5-.7 5.8-2C30.4 44.7 31 43 31 41s-.6-3.6-1.8-5zM49.8 58.5V16H60v42.5H49.8M103.8 42.7c0 1.7-.2 3.4-.5 5s-.7 3.2-1.3 4.6c-.7 1.5-1.5 2.7-2.5 3.8-1.3 1.3-2.8 2.3-4.7 3-2 .6-4 1-6 1-2.3 0-4.3-.3-6-1-1.7-.7-3.3-2-4.8-3.6v4H67.3V0h11v19.8c1.5-1.6 3-2.7 4.7-3.4 1.7-.6 3.6-1 6-1 2 0 4 .4 5.8 1 2 .8 3.5 1.8 4.7 3 1 1 2 2.4 2.5 3.8.6 1.4 1 3 1.3 4.5.3 1.7.5 3.3.5 5v10zm-11.2-10c0-1.4-.5-2.7-1-4-.5-1-1.2-1.8-2.2-2.5-1-.6-2.2-1-3.8-1-1.6 0-3 .4-4 1-1 .7-1.6 1.5-2 2.6-.6 1.2-1 2.5-1 4-.2 1.5-.3 3-.3 5 0 1.7 0 3.3.2 5 .2 1.4.5 2.7 1 3.8.5 1 1.2 2 2.2 2.7 1 .6 2.3 1 4 1 1.5 0 2.8-.4 3.7-1 1-.7 1.7-1.6 2.2-2.7.5-1 1-2.4 1-4 .2-1.5.3-3 .3-5 0-1.7-.2-3.3-.4-4.8zm32 25.8c-2.4 0-4.5-.3-6.2-1-1.6-.7-3-1.7-4-2.8-1.2-1.2-2-2.5-2.4-4-.5-1.4-.8-3-.8-4.4V0h11.4v45.6c0 1.3.3 2.3 1 3 .5.6 1.5 1 3 1h.7v9h-2.8zm15-17c0 2.7.7 5 2.4 6.8 1.6 1.7 4 2.6 7 2.6 2.4 0 4.3-.4 5.7-1 1.4-.7 2.8-1.7 4.2-3l6.5 6.2-3.3 3c-1 .7-2.3 1.4-3.7 2-1.3.6-2.7 1-4.3 1.3-1.5.3-3.3.5-5.3.5-2.6 0-5-.3-7.6-1-2.4-.6-4.5-1.8-6.4-3.5-2-1.7-3.4-4-4.5-6.7-1.2-3-1.7-6.5-1.7-10.8 0-3.5.5-6.6 1.4-9.3 1-2.8 2.2-5 4-7 1.5-1.8 3.5-3.2 6-4.2 2.2-1 4.8-1.4 7.6-1.4 3 0 5.7.6 8 1.7 2.5 1 4.5 2.4 6 4.2 1.7 1.7 3 4 3.8 6.4.8 2.5 1.2 5.2 1.2 8.2v4.8h-27.3zm16.2-10l-.7-2c-.5-1.3-1.4-2.4-2.6-3.2-1.2-1-2.8-1.3-4.6-1.3-1.8 0-3.4.4-4.6 1.3-1.2.8-2 2-2.7 3l-.7 2.3-.3 2.5H156c0-1 0-1.7-.2-2.4zm17 25v-9c0-.4.2-.7.6-.7h8.8c.4 0 .7.3.7.7v9c0 .3-.4.6-.8.6h-8.8c-.4 0-.7-.2-.7-.6zM190.2 58.5V16h10.3v42.5h-10.3M240 52.2c-1 1.7-2.2 3.2-3.8 4.4-1.7 1-3.6 2-5.8 2.5-2.3.7-4.7 1-7.2 1-1.7 0-3.3 0-5-.2-1.5-.2-3-.4-4.7-1-1.5-.3-3-1-4.4-1.7-1.3-.7-2.7-1.8-4-3.2l7-7c1.7 1.8 3.6 3 5.7 3.4 2 .4 4 .7 5.7.7 1 0 1.8-.2 2.7-.4 1-.2 2-.4 2.6-.8.7-.3 1.3-.8 1.7-1.3.4-.6.7-1.3.7-2 0-1.2-.4-2-1-2.8-.7-.7-2-1-3.6-1.3l-6.8-.6c-4-.4-7-1.5-9.2-3.4-2.2-1.8-3.3-4.7-3.3-8.6 0-2.2.6-4.2 1.5-6 1-1.6 2-3 3.6-4.2 1.6-1 3.4-2 5.4-2.6 2-.6 4-1 6.3-1 3.3 0 6.4.5 9 1.2 3 .7 5.3 2 7.4 4l-6.5 6.6c-1.3-1-2.8-2-4.5-2.3-1.8-.4-3.6-.6-5.5-.6-2 0-3.7.3-4.7 1-1 1-1.4 2-1.4 3 0 .4 0 .8.2 1.2 0 .4.3.8.6 1 .4.5.8.8 1.4 1 .6.3 1.3.5 2.3.6l6.7.6c4.3.4 7.4 1.7 9.6 4 2 2 3.2 5 3.2 8.6 0 2.4-.5 4.4-1.4 6.2zM59.3 11.7h-8.6c-.5 0-.8-.4-.8-.8V2.2c0-.5.3-.8.8-.8h8.6c.4 0 .8.3.8.8V11c0 .4-.4.7-.8.7zm140.4 0H191c-.4 0-.8-.4-.8-.8V2.2c0-.5.4-.8 1-.8h8.4c.5 0 1 .3 1 .8V11c0 .4-.5.7-1 .7z"/>
+        </svg>
     </div>
     <div class="small-6 columns">
+    <a href="#" class="version-button">{{ substr($verses->first()->bible_id,3,3) }}</a>
     <a href="#" class="chapter-button">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 24">
             <path d="M.8 4.5v18.3s8-5.7 14.8 0H17V3C6.2-4 .8 4.6.8 4.6zM15 6v12.5c-6.2-3-11.2-.5-11.2-.5V6s2.5-2.4 5.5-2.4S15 6 15 6zm2-3v19.7h1.3c6.7-5.5 15 0 15 0v-18S27.6-4 17 3zm13.2 15s-5-2.4-11.2.5V6s2.7-2.4 5.6-2.4c3 0 5.6 2.3 5.6 2.3v12z"/>
@@ -269,7 +275,7 @@
 @if(in_array(($verses->first()->chapter_number - 1), $bibleNavigation[$verses->first()->book_id]->pluck('chapter_number')->ToArray())) <a href="/read/{{ $verses->first()->bible_id }}/{{ $verses->first()->book_id }}/{{ $verses->first()->chapter_number - 1 }}" class="sideNav left"><div class="chevron left"></div></a> @endif
 @if(in_array(($verses->first()->chapter_number + 1), $bibleNavigation[$verses->first()->book_id]->pluck('chapter_number')->ToArray())) <a href="/read/{{ $verses->first()->bible_id }}/{{ $verses->first()->book_id }}/{{ $verses->first()->chapter_number + 1 }}" class="sideNav right"> <div class="chevron right"> </div></a> @endif
 
-<main class="small-10 medium-7 columns centered">
+<main class="small-10 medium-9 large-6 columns centered">
     <article class="reader">
         <header>
             <div id="settings-panel" class="panel no-fouc"
@@ -298,18 +304,12 @@
                  data-clickSelector=".chapter-button">
                 <ul class="list">
                     @foreach($bibleNavigation as $bookID => $chapters)
-                        @if($loop->iteration == 1 OR ($loop->iteration % 3) == 0) <div class="row"> @endif
-                            <div class="medium-4 columns">
-                                <div class="book row">{{ $chapters->first()->book->currentTranslation->name ?? $chapters->first()->book->name }}</div>
-                                <div class="row">
-                                    <div class="chapters">
-                                        @foreach($chapters as $chapter)
-                                            <div class="small-2 columns chapter"><a href="/read/{{ $chapter->bible_id }}/{{ $chapter->book_id }}/{{ $chapter->chapter_number }}">{{ $chapter->chapter_number }}</a></div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-                            @if(($loop->iteration % 3) == 0) </div> @endif
+                    <div class="book">{{ $chapters->first()->book->currentTranslation->name ?? $chapters->first()->book->name }}</div>
+                    <div class="chapters @if($loop->first) active @endif">
+                        @foreach($chapters as $chapter)
+                            <div class="small-2 columns chapter"><a href="/read/{{ $chapter->bible_id }}/{{ $chapter->book_id }}/{{ $chapter->chapter_number }}">{{ $chapter->chapter_number }}</a></div>
+                        @endforeach
+                    </div>
                     @endforeach
                 </ul>
             </div>
@@ -401,6 +401,8 @@
     $('.sizer a').click(function() {
         $('.reader').css('font-size',$(this).data('size'));
     });
+
+
 
 
 </script>
