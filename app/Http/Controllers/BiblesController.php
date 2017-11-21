@@ -56,9 +56,8 @@ class BiblesController extends APIController
 	    $updated = checkParam('updated', null, 'optional');
 	    $organization = checkParam('organization_id', null, 'optional');
 		$sort_by = checkParam('sort_by', null, 'optional');
-		$callstring = "bibles_".$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by;
 
-		    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent')->when($language, function ($query) use ($language, $full_word) {
+		    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent')->has('filesets')->when($language, function ($query) use ($language, $full_word) {
 			    if(!$full_word) return $query->where('name', 'LIKE', "%".$language."%");
 			    return $query->where('name', $language);
 		    })->when($organization, function($q) use ($organization){
@@ -78,7 +77,7 @@ class BiblesController extends APIController
 			    $q->orderBy($sort_by);
 		    })->get();
 
-	    if($this->v == 2) $bibles->load('alphabet');
+	    if($this->v == 2) $bibles->load('alphabet','filesets');
 
 		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
 

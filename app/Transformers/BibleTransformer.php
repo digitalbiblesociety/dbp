@@ -47,48 +47,51 @@ class BibleTransformer extends TransformerAbstract
 		        }
 
 		        case "v2_library_volume": {
-			        return [
-				        "dam_id"                    => $bible->id,
-				        "fcbh_id"                   => (isset($bible->fcbh)) ? $bible->fcbh->equivalent_id : "",
-				        "volume_name"               => @$bible->currentTranslation->name ?? "",
-				        "status"                    => "live", // for the moment these default to Live
-				        "dbp_agreement"             => "true", // for the moment these default to True
-				        "expiration"                => "0000-00-00",
-				        "language_code"             => strtoupper($bible->iso) ?? "",
-				        "language_name"             => $bible->language->autonym ?? "",
-				        "language_english"          => $bible->language->name ?? "",
-				        "language_iso"              => $bible->iso ?? "",
-				        "language_iso_2B"           => $bible->language->iso2B ?? "",
-				        "language_iso_2T"           => $bible->language->iso2T ?? "",
-				        "language_iso_1"            => $bible->language->iso1 ?? "",
-				        "language_iso_name"         => $bible->language->name ?? "", // This is just a duplicate of language_english
-				        "language_family_code"      => (($bible->language->parent) ? strtoupper($bible->language->parent->iso) : strtoupper($bible->language->iso)) ?? "",
-				        "language_family_name"      => (($bible->language->parent) ? $bible->language->parent->autonym : $bible->language->autonym) ?? "",
-				        "language_family_english"   => (($bible->language->parent) ? $bible->language->parent->name : $bible->language->name) ?? "",
-				        "language_family_iso"       => $bible->iso ?? "",
-				        "language_family_iso_2B"    => (($bible->language->parent) ? $bible->language->parent->iso2B : $bible->language->iso2B) ?? "",
-				        "language_family_iso_2T"    => (($bible->language->parent) ? $bible->language->parent->iso2T : $bible->language->iso2T) ?? "",
-				        "language_family_iso_1"     => (($bible->language->parent) ? $bible->language->parent->iso1 : $bible->language->iso1) ?? "",
-				        "version_code"              => substr($bible->id,3) ?? "",
-				        "version_name"              => @$bible->vernacularTranslation->name ?? "",
-				        "version_english"           => @$bible->currentTranslation->name ?? "",
-				        "collection_code"           => $bible->scope ?? "",
-				        "rich"                      => "0",
-				        "collection_name"           => "",
-				        "updated_on"                => $bible->updated_at->timestamp ?? "",
-				        "created_on"                => $bible->created_at->timestamp ?? "",
-				        "right_to_left"             => ($bible->alphabet->direction == "rtl") ? "true" : "false",
-				        "num_art"                   => "0",
-				        "num_sample_audio"          => "0",
-				        "sku"                       => "",
-				        "audio_zip_path"            => "",
-				        "font"                      => null,
-				        "arclight_language_id"      => "",
-				        "media"                     => ["text"],
-				        "media_type"                => "Drama",
-				        "delivery"                  => ["mobile","web"],
-				        "resolution"                => []
-			        ];
+		        	foreach ($bible->filesets as $fileset) {
+				        return [
+					        "dam_id"                    => $fileset->id,
+					        "fcbh_id"                   => (isset($bible->fcbh)) ? $bible->fcbh->equivalent_id : "",
+					        "volume_name"               => @$bible->currentTranslation->name ?? "",
+					        "status"                    => "live", // for the moment these default to Live
+					        "dbp_agreement"             => "true", // for the moment these default to True
+					        "expiration"                => "0000-00-00",
+					        "language_code"             => strtoupper($bible->iso) ?? "",
+					        "language_name"             => $bible->language->autonym ?? "",
+					        "language_english"          => $bible->language->name ?? "",
+					        "language_iso"              => $bible->iso ?? "",
+					        "language_iso_2B"           => $bible->language->iso2B ?? "",
+					        "language_iso_2T"           => $bible->language->iso2T ?? "",
+					        "language_iso_1"            => $bible->language->iso1 ?? "",
+					        "language_iso_name"         => $bible->language->name ?? "", // This is just a duplicate of language_english
+					        "language_family_code"      => @strtoupper($bible->language->parent->iso) ?? strtoupper($bible->language->iso),
+					        "language_family_name"      => @$bible->language->parent->autonym ?? $bible->language->autonym,
+					        "language_family_english"   => @$bible->language->parent->name ?? $bible->language->name,
+					        "language_family_iso"       => $bible->iso ?? "",
+					        "language_family_iso_2B"    => @$bible->language->parent->iso2B ?? $bible->language->iso2B,
+					        "language_family_iso_2T"    => @$bible->language->parent->iso2T ?? $bible->language->iso2T,
+					        "language_family_iso_1"     => @$bible->language->parent->iso1 ?? $bible->language->iso1,
+					        "version_code"              => substr($bible->id,3) ?? "",
+					        "version_name"              => @$bible->vernacularTranslation->name ?? "",
+					        "version_english"           => @$bible->currentTranslation->name ?? "",
+					        "collection_code"           => $bible->scope ?? "",
+					        "rich"                      => "0",
+					        "collection_name"           => "",
+					        "updated_on"                => $bible->updated_at->timestamp ?? "",
+					        "created_on"                => $bible->created_at->timestamp ?? "",
+					        "right_to_left"             => ($bible->alphabet->direction == "rtl") ? "true" : "false",
+					        "num_art"                   => "0",
+					        "num_sample_audio"          => "0",
+					        "sku"                       => "",
+					        "audio_zip_path"            => "",
+					        "font"                      => null,
+					        "arclight_language_id"      => "",
+					        "media"                     => ["$fileset->set_type"],
+					        "media_type"                => "Drama",
+					        "delivery"                  => ["mobile","web"],
+					        "resolution"                => []
+				        ];
+			        }
+
 		        }
 
 		        case "v2_library_metadata": {
