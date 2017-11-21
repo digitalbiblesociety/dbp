@@ -50,7 +50,7 @@ class BibleTransformer extends TransformerAbstract
 			        return [
 				        "dam_id"                    => $bible->id,
 				        "fcbh_id"                   => (isset($bible->fcbh)) ? $bible->fcbh->equivalent_id : "",
-				        "volume_name"               => ($bible->currentTranslation) ? $bible->currentTranslation->name : "",
+				        "volume_name"               => @$bible->currentTranslation->name ?? "",
 				        "status"                    => "live", // for the moment these default to Live
 				        "dbp_agreement"             => "true", // for the moment these default to True
 				        "expiration"                => "0000-00-00",
@@ -70,8 +70,8 @@ class BibleTransformer extends TransformerAbstract
 				        "language_family_iso_2T"    => (($bible->language->parent) ? $bible->language->parent->iso2T : $bible->language->iso2T) ?? "",
 				        "language_family_iso_1"     => (($bible->language->parent) ? $bible->language->parent->iso1 : $bible->language->iso1) ?? "",
 				        "version_code"              => substr($bible->id,3) ?? "",
-				        "version_name"              => ($bible->translations->where("vernacular",1)->first()) ? $bible->translations->where("vernacular",1)->first()->name : "",
-				        "version_english"           => ($bible->translations->where("iso","eng")->first()) ? $bible->translations->where("iso","eng")->first()->name : "",
+				        "version_name"              => @$bible->vernacularTranslation->name ?? "",
+				        "version_english"           => @$bible->currentTranslation->name ?? "",
 				        "collection_code"           => $bible->scope ?? "",
 				        "rich"                      => "0",
 				        "collection_name"           => "",
@@ -110,14 +110,12 @@ class BibleTransformer extends TransformerAbstract
 
 	public function transformForV4($bible)
 	{
-		$translations = $bible->translations()->get()->keyBy('iso');
-
 		// Algolia
 		return [
 			"abbr"          => $bible->id,
 			"mark"          => $bible->copyright,
-			"name"          => $translations["eng"]->name,
-			"vname"         => $translations[$bible->language->iso]->name,
+			"name"          => $bible->currentTranslation->name,
+			"vname"         => @$bible->vernacularTranslation->name ?? "",
 			"organization"  => $bible->organization,
 			"language"      => $bible->language->name,
 			"date"          => intval($bible->date),
@@ -127,10 +125,9 @@ class BibleTransformer extends TransformerAbstract
 
 	public function transformForDataTables($bible)
 	{
-		$translations = $bible->translations()->get()->keyBy('iso');
 		return [
-			'<a href="/bibles/'.$bible->id.'">'.$translations["eng"]->name.'</a>',
-			(isset($translations[$bible->language->iso])) ? $translations[$bible->language->iso]->name : collect($translations)->first(),
+			'<a href="/bibles/'.$bible->id.'">'.$bible->currentTranslation->name.'</a>',
+			@$bible->vernacularTranslation->name ?? "",
 			$bible->language->primaryCountry->name ?? "",
 			$bible->language->name ?? "",
 			$bible->date,
