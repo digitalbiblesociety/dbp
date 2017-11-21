@@ -7,10 +7,10 @@
     <table class="table" cellspacing="0" width="100%" data-route="bibles">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Copyright</th>
                 <th>Name</th>
                 <th>Vernacular Name</th>
+                <th>Country</th>
+                <th>Language</th>
             </tr>
         </thead>
         <tbody></tbody>
