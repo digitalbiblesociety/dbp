@@ -9,7 +9,7 @@
     <section class="banner">
         <nav aria-label="You are here:" role="navigation">
             <ul class="breadcrumbs">
-                <li><a href="{{ route('home') }}">Home</a></li>
+                <li><a href="{{ route('welcome') }}">Home</a></li>
                 <li><a href="{{ route('view_alphabets.index') }}">{{ trans('wiki_alphabets.index_title') }}</a></li>
                 <li class="disabled">{{ trans('wiki_numbers.index_title') }}</li>
             </ul>
