@@ -73,9 +73,9 @@ class BibleTransformer extends TransformerAbstract
 					        "version_code"              => substr($bible->id,3) ?? "",
 					        "version_name"              => @$bible->vernacularTranslation->name ?? "",
 					        "version_english"           => @$bible->currentTranslation->name ?? "",
-					        "collection_code"           => $bible->scope ?? "",
+					        "collection_code"           => ($fileset->name == "Old Testament") ? "OT" : "NT",
 					        "rich"                      => "0",
-					        "collection_name"           => "",
+					        "collection_name"           => $fileset->name,
 					        "updated_on"                => $bible->updated_at->timestamp ?? "",
 					        "created_on"                => $bible->created_at->timestamp ?? "",
 					        "right_to_left"             => ($bible->alphabet->direction == "rtl") ? "true" : "false",
@@ -87,7 +87,12 @@ class BibleTransformer extends TransformerAbstract
 					        "arclight_language_id"      => "",
 					        "media"                     => ["$fileset->set_type"],
 					        "media_type"                => "Drama",
-					        "delivery"                  => ["mobile","web"],
+					        "delivery"                  => [
+					        	"mobile",
+						        "web",
+						        "local_bundled",
+						        "subsplash"
+					        ],
 					        "resolution"                => []
 				        ];
 			        }
