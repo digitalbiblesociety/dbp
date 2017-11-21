@@ -60,20 +60,20 @@ class BiblesController extends APIController
 		    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent')->has('filesets')->when($language, function ($query) use ($language, $full_word) {
 			    if(!$full_word) return $query->where('name', 'LIKE', "%".$language."%");
 			    return $query->where('name', $language);
-		    })->when($organization, function($q) use ($organization){
+		    })->when($organization, function($q) use ($organization) {
 			    $q->where('organization_id', '>=', $organization);
-		    })->when($dam_id, function($q) use ($dam_id){
+		    })->when($dam_id, function($q) use ($dam_id) {
 			    $q->where('id', '=', $dam_id);
-		    })->when($media, function($q) use ($media){
+		    })->when($media, function($q) use ($media) {
 			    switch ($media) {
 				    case "video": {$q->has('filesetFilm'); break;}
 				    case "audio": {$q->has('filesetAudio');break;}
 			    }
-		    })->when($updated, function($q) use ($updated){
+		    })->when($updated, function($q) use ($updated) {
 			    $q->where('updated_at', '>', $updated);
 		    })->when($iso, function($q) use ($iso){
 			    $q->where('iso', $iso);
-		    })->when($iso, function($q) use ($sort_by){
+		    })->when($sort_by, function($q) use ($sort_by){
 			    $q->orderBy($sort_by);
 		    })->get();
 
