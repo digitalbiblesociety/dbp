@@ -39,25 +39,24 @@ class TextController extends APIController
 	    $book = Book::where('id',$book_id)->orWhere('id_usfx',$book_id)->orWhere('id_osis',$book_id)->first();
 
 	    // Fetch Verses
-		$verses = Text::with('book')->with(['book.translations' => function ($query) use ($bible,$book) {
+
+		$verses = Text::with('book')->with(['book.translations' => function ($query) use ($book,$bible) {
 			$query->where('iso', $bible->iso);
 			$query->where('book_id', $book->id);
 		}])
 		->where([
 			['bible_id',$bible_id],
 			['book_id',$book->id],
-			['chapter_number',$chapter],
-			['verse_start', '>=', $verse_start],
+			['chapter_number',$chapter]
 		])
-		->where([
+		->orWhere([
 			['bible_variation_id',$bible_id],
 			['book_id',$book->id],
-			['chapter_number',$chapter],
-			['verse_start', '>=', $verse_start],
+			['chapter_number',$chapter]
 		])->when($verse_end, function ($query) use ($verse_end) {
 			return $query->where('verse_end', '<=', $verse_end);
 		})->get();
-		return $verses;
+
 		if(count($verses) == 0) return $this->setStatusCode(404)->replyWithError("No Verses Were found with the provided params");
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)->toArray());
     }
