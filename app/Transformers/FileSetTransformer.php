@@ -5,14 +5,8 @@ namespace App\Transformers;
 use App\Models\Bible\BibleFileset;
 use League\Fractal\TransformerAbstract;
 
-class FileSetTransformer extends TransformerAbstract
+class FileSetTransformer extends BaseTransformer
 {
-
-	public function __construct()
-	{
-		$this->version = checkParam('v', null, 'optional') ?? 4;
-		$this->iso = checkParam('iso', null, 'optional') ?? "eng";
-	}
 
     /**
      * A Fractal transformer.

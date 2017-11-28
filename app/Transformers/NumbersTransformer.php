@@ -5,14 +5,8 @@ namespace App\Transformers;
 use App\Models\Language\AlphabetNumber;
 use League\Fractal\TransformerAbstract;
 
-class NumbersTransformer extends TransformerAbstract
+class NumbersTransformer extends BaseTransformer
 {
-
-	public function __construct()
-	{
-		$this->version = checkParam('v', null, 'optional') ?? 4;
-		$this->iso = checkParam('iso', null, 'optional') ?? "eng";
-	}
     /**
      * A Fractal transformer.
      *

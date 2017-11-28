@@ -2,19 +2,9 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\Bible\Bible;
-class BibleTransformer extends TransformerAbstract
+class BibleTransformer extends BaseTransformer
 {
-
-	protected $version;
-	protected $iso;
-
-	public function __construct()
-	{
-		$this->version = checkParam('v', null, 'optional') ?? 4;
-		$this->iso = checkParam('iso', null, 'optional') ?? "eng";
-	}
 
 	/**
 	 * A Fractal transformer.
@@ -35,8 +25,20 @@ class BibleTransformer extends TransformerAbstract
 
     public function transformForV2($bible)
     {
-    	    $route = \Route::currentRouteName();
-    	    switch($route) {
+
+    	    switch($this->route) {
+
+		        case "v2_library_metadata": {
+			        return [
+				        "dam_id" => $bible->id,
+				        "mark" => $bible->copyright,
+				        "volume_summary" => null,
+				        "font_copyright" => null,
+				        "font_url" => (isset($bible->alphabet->primaryFont)) ? $bible->alphabet->primaryFont->fontFileName : null,
+				        "organization" => $bible->organizations
+			        ];
+			        break;
+		        }
 
 		        case "v2_volume_history": {
 		        	return [
@@ -44,13 +46,14 @@ class BibleTransformer extends TransformerAbstract
 				        "time"   => $bible->updated_at->toDateTimeString(),
 				        "event"  => "Updated"
 			        ];
+			        break;
 		        }
 
 		        case "v2_library_volume": {
-		        	foreach ($bible->filesets as $fileset) {
+		        	foreach($bible->filesets as $fileset) {
 				        return [
 					        "dam_id"                    => $fileset->id,
-					        "fcbh_id"                   => (isset($bible->fcbh)) ? $bible->fcbh->equivalent_id : "",
+					        "fcbh_id"                   => $fileset->id,
 					        "volume_name"               => @$bible->currentTranslation->name ?? "",
 					        "status"                    => "live", // for the moment these default to Live
 					        "dbp_agreement"             => "true", // for the moment these default to True
@@ -96,18 +99,6 @@ class BibleTransformer extends TransformerAbstract
 					        "resolution"                => []
 				        ];
 			        }
-
-		        }
-
-		        case "v2_library_metadata": {
-					return [
-						"dam_id" => $bible->id,
-                        "mark" => $bible->copyright,
-                        "volume_summary" => null,
-                        "font_copyright" => null,
-                        "font_url" => (isset($bible->alphabet->primaryFont)) ? $bible->alphabet->primaryFont->fontFileName : null,
-                        "organization" => $bible->organizations
-					];
 		        }
 
 	        }

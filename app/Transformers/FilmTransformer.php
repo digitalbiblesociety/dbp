@@ -2,9 +2,7 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
-
-class FilmTransformer extends TransformerAbstract
+class FilmTransformer extends BaseTransformer
 {
     /**
      * A Fractal transformer.

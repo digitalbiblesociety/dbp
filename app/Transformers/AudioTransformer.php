@@ -2,16 +2,9 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\Bible\Audio;
-class AudioTransformer extends TransformerAbstract
+class AudioTransformer extends BaseTransformer
 {
-
-	public function __construct()
-	{
-		$this->version = checkParam('v', null, 'optional') ?? 4;
-		$this->iso = checkParam('iso', null, 'optional') ?? "eng";
-	}
     /**
      * A Fractal transformer.
      *
@@ -28,7 +21,7 @@ class AudioTransformer extends TransformerAbstract
     }
 
 	public function transformForV2($audio) {
-    	switch(\Route::currentRouteName()) {
+    	switch($this->route) {
     		case "v2_audio_timestamps": {
 			    return [
 				    "verse_id"    => $audio->verse_start,

@@ -5,7 +5,7 @@ namespace App\Transformers;
 use App\Models\Bible\Text;
 class TextTransformer extends BaseTransformer
 {
-    public function transform(Text $text)
+    public function transform($text)
     {
 	    switch ($this->version) {
 		    case "2": return $this->transformForV2($text);
@@ -16,8 +16,7 @@ class TextTransformer extends BaseTransformer
 
     public function transformforV2($text)
     {
-	    $route = \Route::currentRouteName();
-	    switch($route) {
+	    switch($this->route) {
 		    case "v2_text_search": {
 		    	return [
 			        "dam_id"           => $text->bible_id,
@@ -45,10 +44,10 @@ class TextTransformer extends BaseTransformer
 
 		    default: {
 			    return [
-				    "book_name"        => $text->book->name,
-				    "book_id"          => $text->book->osis_id,
-				    "book_order"       => $text->book->order,
-				    "chapter_id"       => $text->chapter_number,
+				    "book_name"        => $text->book_name,
+				    "book_id"          => $text->osis_id,
+				    "book_order"       => $text->book_order,
+				    "chapter_id"       => $text->chapter,
 				    "chapter_title"    => null,
 				    "verse_id"         => $text->verse_start,
 				    "verse_text"       => $text->verse_text,

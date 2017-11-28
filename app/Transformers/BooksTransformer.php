@@ -3,17 +3,10 @@
 namespace App\Transformers;
 
 use App\Models\Bible\Book;
-use League\Fractal\TransformerAbstract;
+use Faker\Provider\Base;
 
-class BooksTransformer extends TransformerAbstract
+class BooksTransformer extends BaseTransformer
 {
-
-	public function __construct()
-	{
-		$this->version = checkParam('v') ?? 4;
-		$this->iso = checkParam('iso', null, 'optional') ?? "eng";
-	}
-
     /**
      * A Fractal transformer.
      *
@@ -31,7 +24,7 @@ class BooksTransformer extends TransformerAbstract
 
     public function transformForV2($bibleBook) {
 
-		switch(\Route::currentRouteName()) {
+		switch($this->route) {
 			case "v2_library_bookOrder": {
 				return [
 					"book_order"  => $bibleBook->book->book_order,

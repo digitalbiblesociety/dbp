@@ -4,14 +4,8 @@ namespace App\Transformers;
 
 use League\Fractal\TransformerAbstract;
 use App\Models\Country\Country;
-class CountryTransformer extends TransformerAbstract
+class CountryTransformer extends BaseTransformer
 {
-
-	public function __construct()
-	{
-		$this->version = checkParam('v', null, 'optional') ?? 4;
-		$this->iso = checkParam('iso', null, 'optional') ?? "eng";
-	}
 
 	/**
 	 * A Fractal transformer for the Country Collection.

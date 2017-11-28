@@ -3,25 +3,9 @@
 namespace App\Transformers;
 
 use App\Models\Language\Language;
-use League\Fractal\TransformerAbstract;
-class LanguageTransformer extends TransformerAbstract
+
+class LanguageTransformer extends BaseTransformer
 {
-
-	/**
-	 * LanguageTransformer constructor, sets the default version as 4
-	 * and the default language as English but let's people customize
-	 * their responses via parameters
-	 *
-	 * @param Request $request
-	 */
-	public function __construct()
-	{
-		$this->version = checkParam('v', null, 'optional') ?? 4;
-		$this->iso = checkParam('iso', null, 'optional') ?? "eng";
-		$this->continent = checkParam('continent', null, 'optional') ?? false;
-	}
-
-
     public function transform(Language $language)
     {
     	switch ($this->version) {
@@ -53,8 +37,7 @@ class LanguageTransformer extends TransformerAbstract
 	 * @return array
 	 */
 	public function transformForV2(Language $language) {
-		$route = \Route::currentRouteName();
-		switch($route) {
+		switch($this->route) {
 			case "v2_library_volumeLanguage": {
 				return [
 					"language_name"             => $language->autonym ?? "",

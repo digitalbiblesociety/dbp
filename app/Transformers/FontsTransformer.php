@@ -2,9 +2,7 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
-
-class FontsTransformer extends TransformerAbstract
+class FontsTransformer extends BaseTransformer
 {
     /**
      * A Fractal transformer.
