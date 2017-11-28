@@ -37,95 +37,28 @@ class TextController extends APIController
 	    if(isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
 
 	    $book = Book::where('id',$book_id)->orWhere('id_usfx',$book_id)->orWhere('id_osis',$book_id)->first();
-
+		$book->push('name_vernacular', $book->translation($bible->iso)->first());
 	    // Fetch Verses
 
-		$verses = Text::with('book')->with(['book.translations' => function ($query) use ($book,$bible) {
-			$query->where('iso', $bible->iso);
-			$query->where('book_id', $book->id);
-		}])
-		->where([
-			['bible_id',$bible_id],
-			['book_id',$book->id],
-			['chapter_number',$chapter]
-		])
-		->orWhere([
-			['bible_variation_id',$bible_id],
-			['book_id',$book->id],
-			['chapter_number',$chapter]
-		])->when($verse_end, function ($query) use ($verse_end) {
+		$verses = \DB::connection('sophia')->table($bible->id.'_vpl')
+		->where([['book',$book->id_usfx], ['chapter',$chapter]])
+		->when($verse_start, function ($query) use ($verse_start) {
+			return $query->where('verse_end', '>=', $verse_start);
+		})
+		->when($verse_end, function ($query) use ($verse_end) {
 			return $query->where('verse_end', '<=', $verse_end);
 		})->get();
 
-		if(count($verses) == 0) return $this->setStatusCode(404)->replyWithError("No Verses Were found with the provided params");
+	    $verses->map(function ($verse) use ($book) {
+		    $verse->osis_id = $book->id_osis;
+		    $verse->book_order = ltrim(substr($verse->canon_order,0,3),"0");
+		    $verse->book_name = $book->name_vernacular->name ?? $book->name;
+		    return $verse;
+	    });
+
+	    if(count($verses) == 0) return $this->setStatusCode(404)->replyWithError("No Verses Were found with the provided params");
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)->toArray());
     }
-
-	public function text($id,$book,$chapter)
-	{
-		// Allow Users to pick the format of response they'd like to have
-		$format = @$_GET['format'];
-
-		$table = strtoupper($id).'_vpl';
-
-		// if chapter value is a range, handle that
-		if(str_contains($chapter, '-')) {
-			$range = explode('-',$chapter);
-			$verses = \DB::connection('dbp')->table($table)
-			             ->where('book',$book)
-			             ->where('chapter','>=',$range[0])
-			             ->where('chapter','<=',$range[1])->get();
-		} else {
-			$verses = \DB::connection('dbp')->table($table)
-			             ->where('book',$book)
-			             ->where('chapter',$chapter)->get();
-		}
-
-		// format the response
-		switch($format) {
-			case "HTML":
-				$output['data'] = $this->textHTML($verses);
-				break;
-			case "JSON":
-				$output['data'] = $verses;
-				break;
-			default:
-				$output['data'] = $this->textDefault($verses);
-		}
-
-		// mix in some meta data
-		$output['metadata'] = [
-			'bible_id' => $id,
-			'book_id' => $book,
-			'chapter' => array_unique($verses->pluck('chapter')->ToArray())
-		];
-
-		// reply
-		return $this->reply($output);
-	}
-
-	private function textDefault($verses) {
-		foreach ($verses as $verse) {
-			if($verse->verse_start != $verse->verse_end) {
-				$output[] = $verse->verse_start."-".$verse->verse_end." ".$verse->verse_text;
-			} else {
-				$output[] = $verse->verse_start." ".$verse->verse_text;
-			}
-		}
-		return implode($output);
-	}
-
-	private function textHTML($verses) {
-		foreach ($verses as $verse) {
-			if($verse->verse_start != $verse->verse_end) {
-				$output[] = "<sup>".$verse->verse_start."-".$verse->verse_end."&nbsp;</sup><p>".$verse->verse_text."</p>";
-			} else {
-				$output[] = "<sup>".$verse->verse_start."&nbsp;</sup><p>".$verse->verse_text."</p>";
-			}
-		}
-
-		return implode($output);
-	}
 
 	/**
 	 * Display a listing of the Fonts
@@ -164,30 +97,8 @@ class TextController extends APIController
 	    $bible_id = checkParam('dam_id');
 	    $limit = checkParam('limit', null, 'optional') ?? 15;
 
-/*
-	    if (strpos($query, ' ') !== false) {
-	    	$query = explode(' ', $query);
-	    	foreach($query as $word) $sql_search[] = ['verse_text', 'LIKE', '%'.$word.'%'];
-
-	    	// Handle Possible Excludes
-
-	    	if($exclude) {
-	    		if(strpos($exclude, ' ') !== false) {
-				    $excludes = explode(' ', $exclude);
-				    foreach($excludes as $excluded) $sql_search[] = ['verse_text', 'NOT LIKE', '%'.$excluded.'%'];
-			    } else {
-				    $sql_search[] = ['verse_text', 'NOT LIKE', '%'.$exclude.'%'];
-			    }
-		    }
-
-		    $verses = Text::with('book')->where('bible_id',$bible_id)->where($sql_search)->take($limit)->get();
-	    } else {
-		    $verses = Text::with('book')->where('bible_id',$bible_id)->where('verse_text', 'LIKE', '%'.$query.'%')->take($limit)->get();
-	    }
-*/
-
-		$query = \DB::connection()->getPdo()->quote('+'.str_replace(' ',' +',$query).' -'.$exclude);
-	    $verses = Text::with('book')->where('bible_id',$bible_id)->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)->get();
+		$query = \DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).' -'.$exclude);
+	    $verses = \DB::connection('sophia')->table($bible_id.'_vpl')->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)->get();
 
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
     }
@@ -207,9 +118,8 @@ class TextController extends APIController
 	    $bible_id = checkParam('dam_id');
 
 	    if($exclude) $exclude = ' -'.$exclude;
-	    $query = \DB::connection()->getPdo()->quote('+'.str_replace(' ',' +',$query).$exclude);
-
-	    $verses = Text::with('book')->where('bible_id',$bible_id)->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->select('book_id')->get();
+	    $query = \DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).$exclude);
+	    $verses = \DB::connection('sophia')->table($bible_id.'_vpl')->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->select('book_id')->get();
 
 	    foreach($verses->groupBy('book_id') as $key => $verse) $verseCount[$key] = $verse->count();
 

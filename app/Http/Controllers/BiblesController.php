@@ -57,7 +57,8 @@ class BiblesController extends APIController
 	    $organization = checkParam('organization_id', null, 'optional');
 		$sort_by = checkParam('sort_by', null, 'optional');
 
-		    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent')->has('filesets')->when($language, function ($query) use ($language, $full_word) {
+	    //Cache::remember("bibles_$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by", 1900, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by) {
+	    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent')->has('filesets')->when($language, function ($query) use ($language, $full_word) {
 			    if(!$full_word) return $query->where('name', 'LIKE', "%".$language."%");
 			    return $query->where('name', $language);
 		    })->when($organization, function($q) use ($organization) {
@@ -79,8 +80,7 @@ class BiblesController extends APIController
 
 	    if($this->v == 2) $bibles->load('alphabet','filesets');
 
-		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
-
+	    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
     }
 
 
@@ -200,6 +200,14 @@ class BiblesController extends APIController
 	    
 		return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
     }
+
+	public function manage($id)
+	{
+		$bible = Bible::with('filesets')->find($id);
+		if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
+
+		return view('bibles.manage',compact('bible'));
+	}
 
 	public function books()
 	{

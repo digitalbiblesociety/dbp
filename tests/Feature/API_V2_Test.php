@@ -52,8 +52,11 @@ class API_V2_Test extends TestCase
 	 */
 	public function test_library_asset() {
 		$response = $this->get(route('v2_library_asset'), $this->params);
+		$response_v2 = $this->get("https://dbt.io/library/asset", $this->params);
+
 		echo "\nTesting: ".route('v2_library_asset', $this->params);
 		$response->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('LibraryAsset')]);
+		$response_v2->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('LibraryAsset')]);
 	}
 
 	/**
@@ -69,8 +72,11 @@ class API_V2_Test extends TestCase
 	 */
 	public function test_library_version() {
 		$response = $this->get(route('v2_api_versionLatest'), $this->params);
+		$response_v2 = $this->get("https://dbt.io/api/apiversion", $this->params);
+
 		echo "\nTesting: ".route('v2_api_versionLatest', $this->params);
 		$response->assertSuccessful()->assertJsonStructure($this->getSchemaKeys('VersionNumber'));
+		$response_v2->assertSuccessful()->assertJsonStructure($this->getSchemaKeys('VersionNumber'));
 	}
 
 	/**

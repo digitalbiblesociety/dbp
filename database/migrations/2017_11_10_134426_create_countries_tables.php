@@ -17,18 +17,19 @@ class CreateCountriesTables extends Migration
 	    Schema::create('country_geography', function (Blueprint $table) {
 		    $table->char('country_id', 2);
 		    $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
-		    $table->text('location_description');
-		    $table->string('coordinates');
-		    $table->string('mapReferences');
-		    $table->integer('area_sqkm_total')->unsigned();
+		    $table->text('location_description')->nullable();
+		    $table->decimal('latitude', 10, 7)->nullable();
+		    $table->decimal('longitude', 10, 7)->nullable();
+		    $table->string('mapReferences')->nullable();
+		    $table->integer('area_sqkm_total')->unsigned()->nullable();
 		    $table->integer('area_sqkm_land')->unsigned()->nullable();
 		    $table->integer('area_sqkm_water')->unsigned()->nullable();
-		    $table->integer('area_km_coastline')->unsigned();
-		    $table->text('area_note');
-		    $table->text('climate');
+		    $table->integer('area_km_coastline')->unsigned()->nullable();
+		    $table->text('area_note')->nullable();
+		    $table->text('climate')->nullable();
 		    $table->text('terrain')->nullable();
 		    $table->text('hazards')->nullable();
-		    $table->text('notes');
+		    $table->text('notes')->nullable();
 		    $table->timestamps();
 	    });
 

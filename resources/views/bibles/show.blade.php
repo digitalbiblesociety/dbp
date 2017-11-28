@@ -47,22 +47,22 @@
 
     <section class="banner">
         <h1 class="title">
-            {{ $bible->translations->where('iso',\i18n::getCurrentLocale())->first()->name }}
+            {{ $bible->currentTranslation->name }}
+            <div class="subtitle">
+            {{-- If the current Vernacular Title does not match the current title --}}
+                @if($bible->currentTranslation->name != $bible->vernacularTranslation->name)
+                    {{ $bible->vernacularTranslation->name }}
+                @endif
+            </div>
             <small>{{ $bible->id }}</small>
         </h1>
 
-        <h2>
-            {{-- If the current Vernacular Title does not match the current title --}}
-            @if($bible->translations->where('iso',\i18n::getCurrentLocale())->first()->name != $bible->translations->where('iso',$bible->iso)->first()->name)
-                {{ $bible->translations->where('iso',$bible->iso)->first()->name }}
-            @endif
-        </h2>
     </section>
 
     <section class="row">
         <div class="medium-7 columns">
             <h4>Description</h4>
-            {{ $bible->translations->where('iso',\i18n::getCurrentLocale())->first()->description }}
+            {{ $bible->currentTranslation->description }}
             <h4>Reference Filesets</h4>
             @foreach($bible->filesets as $fileset)
             <div class="expanded button-group">

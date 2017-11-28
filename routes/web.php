@@ -35,7 +35,7 @@ Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRed
 
 });
 
-Route::get('bible/{id}/{book}/{chapter}',   'BiblesController@text');
+
 Route::get('bibles/audio/uploads/thanks',   'AudioProcessingController@thanks')->name('bibles_audio_uploads.thanks');
 Route::resource('bibles/audio/uploads',     'AudioProcessingController');
 Route::resource('bibles/ocr',               'PrintProcesses');
@@ -64,6 +64,8 @@ Route::resource('bibles/filesets',       'BibleFileSetsController', ['names' => 
 	'create'  => 'view_bible_filesets.create',
 	'show'    => 'view_bible_filesets.show',
 ]]);
+
+Route::get('bibles/{id}/manage',            'BiblesController@manage')->name('view_bibles.manage');
 Route::resource('bibles',                   'BiblesController', ['names' => [
 	'index'   => 'view_bibles.index',
 	'edit'    => 'view_bibles.edit',

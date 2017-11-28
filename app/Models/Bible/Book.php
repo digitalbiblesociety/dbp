@@ -56,6 +56,11 @@ class Book extends Model
         return $this->HasMany(BookTranslation::class, 'book_id');
     }
 
+	public function translation($iso = null)
+	{
+		return $this->HasOne(BookTranslation::class, 'book_id')->where('iso',$iso);
+	}
+
     public function currentTranslation()
     {
         return $this->HasOne(BookTranslation::class, 'book_id')->where('iso',i18n::getCurrentLocale());

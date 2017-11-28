@@ -66,27 +66,40 @@ class LanguagesController extends APIController
 	 */
 	public function volumeLanguage()
     {
-
+	    ini_set('memory_limit', '464M');
 	    // $delivery =  checkParam('delivery', null, 'optional');
 	    $iso = checkParam('language_code', null, 'optional');
 	    $root = checkParam('root', null, 'optional');
 	    $media =  checkParam('media', null, 'optional');
 	    $organization_id =  checkParam('organization_id', null, 'optional');
 
-		$languages = Language::select(['id','iso','iso2B','iso2T','iso1','name','autonym'])->with('parent')
-			->when($iso, function ($query) use ($iso) {
-				return $query->where('iso', $iso);
-			})->when($root, function ($query) use ($root) {
-				return $query->where('name', '%'.$root.'%');
-			})->when($organization_id, function ($query) use ($organization_id) {
-				return $query->whereHas('filesets', function($q) use ($organization_id) { $q->where('organization_id', $organization_id); });
-			})->when($media, function ($query) use ($media) {
-				switch($media) {
-					case "audio": { return $query->has('bibles.filesetAudio'); break;}
-					case "video": { return $query->has('bibles.filesetFilm'); break;}
-					case "text":  { return $query->has('bibles.filesets'); break;}
-				}
-			})->get();
+	    //$languages = \Cache::remember('volumeLanguage'.$root.$iso.$media.$organization_id, 2400, function () use($root,$iso,$media,$organization_id) {
+		    $languages = Language::select( [ 'id', 'iso', 'iso2B', 'iso2T', 'iso1', 'name', 'autonym' ] )->with( 'parent' )
+		                   ->when( $iso, function ( $query ) use ( $iso ) {
+			                   return $query->where( 'iso', $iso );
+		                   } )->when( $root, function ( $query ) use ( $root ) {
+				    return $query->where( 'name', '%' . $root . '%' );
+			    } )->when( $organization_id, function ( $query ) use ( $organization_id ) {
+				    return $query->whereHas( 'filesets', function ( $q ) use ( $organization_id ) {
+					    $q->where( 'organization_id', $organization_id );
+				    } );
+			    } )->when( $media, function ( $query ) use ( $media ) {
+				    switch ( $media ) {
+					    case "audio": {
+						    return $query->has( 'bibles.filesetAudio' );
+						    break;
+					    }
+					    case "video": {
+						    return $query->has( 'bibles.filesetFilm' );
+						    break;
+					    }
+					    case "text": {
+						    return $query->has( 'bibles.filesets' );
+						    break;
+					    }
+				    }
+			    } )->get();
+	    //});
 		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
     }
 

@@ -7,6 +7,10 @@
             position: relative;
         }
 
+        .status div[role="banner"] {
+            background: #333;
+        }
+
         .status-6 > .legend,
         .status-6 div[role="banner"] {background:#ff9966;background:-webkit-linear-gradient(to right, #ff5e62, #ff9966);background:linear-gradient(to right, #ff5e62, #ff9966);color:#FFF}
         .status-6 a {color: #ff9966!important}
@@ -112,7 +116,7 @@
 @endsection
 
 @section('content')
-<div itemscope itemtype="http://schema.org/Language"  class="status-{{ strtok($language->status," ") }}">
+<div itemscope itemtype="http://schema.org/Language"  class="status status-{{ strtok($language->status," ") }}">
 <div role="banner">
     <h1 itemprop="name" class="text-center">{{ $language->name }}</h1>
     <h2 itemprop="alternateName" class="text-center">{{ $language->autonym }}</h2>
@@ -135,12 +139,12 @@
         <div class="tabs-panel is-active" id="information-tab">
                 <div class="medium-3 columns">
                         <p><b>Glottolog Code:</b> <small itemprop="value">{{ $language->glotto_id }}</small></p>
-                        <p><b>ISO639-3 Code:</b> <small itemprop="value">{{ $language->iso }}</small></p>
+                        <p><b>ISO639-3 Code: </b> <small itemprop="value">{{ $language->iso }}</small></p>
                         <p><b>Latitude: </b><small>{{ $language->latitude }}</small></p>
                         <p><b>Longitude: </b><small>{{ $language->longitude }}</small></p>
                         <p><b>Location: </b> <a href="/countries/{{ $language->country_id }}">{{ $language->maps }}</a></p>
-                        <p><b>Area</b><small>{{ $language->area }}</small></p>
-                        <p><b>Population</b><small>{{ $language->population }}</small></p>
+                        <p><b>Area: </b><small>{{ $language->area }}</small></p>
+                        <p><b>Population: </b><small>{{ $language->population }}</small></p>
                         @isset($language->level) <p><b>level:</b> <small>{{ $language->level }}</small></p> @endisset
                         @isset($language->notes) <p><b>notes:</b> <small>{{ $language->notes }}</small></p> @endisset
                         @isset($language->typology) <p><b>typology:</b> <small>{{ $language->typology }}</small></p> @endisset
@@ -149,6 +153,31 @@
                         @isset($language->scope) <p><b>scope:</b><small>{{ $language->scope }}</small></p> @endisset
                 </div>
                 <div class="medium-9 columns">
+                    @if($language->bibles->count() == 0)
+                    <div class="callout secondary">
+                        <section class="apology">
+                            <h2>No Bibles have been discovered online</h2>
+
+                            @if($language->bible_year)
+                                <p>However we do know a Complete Bible has been completed in this language around {{ $language->bible_year }}</p>
+                            @elseif($language->bible_year_newTestament)
+                                <p>However we do know a New Testament has been completed in this language around {{ $language->bible_year_newTestament }}</p>
+                            @elseif($language->bible_year_portions)
+                                <p>However we do know portions were translated in this language around {{ $language->bible_year_portions }}</p>
+                            @else
+                                <p>Worse still, we don't think a Bible has even been translated for this language.</p>
+                            @endif
+
+                            <p>Regardless, just because we haven't been able to archive a text in this language doesn't mean that there isn't one. There are plenty of places online where texts are kept. Maybe you've run across it in your online travels? Anyways if you'd like to help us find it that'd be great!</p>
+                            <p>We've find these resource sites to be rather rich hunting grounds in our searches for obscure biblical texts. I probably need to apologize in advance for sending you back to google if you just arrived here from google but let's face it google is a great resource for finding great resources</p>
+                            <div class="button-group small-12 large-6 columns centered">
+                                <a href="https://archive.org/search.php?query={{$language->name}}&and[]=mediatype%3A%22texts%22" class="button">Archive.org</a>
+                                <a href="https://www.gutenberg.org/ebooks/search/?query={{$language->name}}&go=Go" class="button">Project Gutenberg</a>
+                                <a href="http://google.com" class="button">Google</a>
+                            </div>
+                        </section>
+                        @endif
+                    </div>
                     @isset($language->currentTranslation)
                         <h3>Overview</h3>
                         <p itemprop="description">{{ $language->currentTranslation->description }}</p>

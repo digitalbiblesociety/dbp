@@ -47,6 +47,13 @@ class CreateLanguagesTable extends Migration
             $table->float('longitude',11,7)->nullable();
             $table->text('status')->nullable();
             $table->char('country_id',2)->nullable();
+	        $table->tinyInteger('bible_status')->nullable();
+	        $table->boolean('bible_translation_need')->nullable();
+	        $table->integer('bible_year')->nullable();
+	        $table->integer('bible_year_newTestament')->nullable();
+	        $table->integer('bible_year_portions')->nullable();
+	        $table->text('bible_sample_text')->nullable();
+	        $table->string('bible_sample_img')->nullable();
             $table->timestamps();
         });
 	    DB::statement('ALTER TABLE languages ADD CONSTRAINT CHECK (iso IS NOT NULL OR glotto_id IS NOT NULL)');

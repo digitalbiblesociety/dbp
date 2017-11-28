@@ -26,6 +26,7 @@ class bible_links_seeder extends Seeder
 		    if (!$bible) {continue;}
 			$organizationTranslation = OrganizationTranslation::where('name', $item['provider'])->first();
 			BibleLink::create([
+				'bible_id'        => $item['abbr'],
 			    'organization_id' => $organizationTranslation->id ?? null,
 			    'title'           => $item['title'],
 			    'type'            => $item['type'],

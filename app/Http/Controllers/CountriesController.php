@@ -32,8 +32,8 @@ class CountriesController extends APIController
     {
 	    $country = Country::with('languages.bibles.filesets')->find($id);
 	    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
+	    $country->meta = json_decode(file_get_contents(storage_path('data/countries/factbook/'.$id.'.json')));
     	if(!$this->api) return view('countries.show',compact('country'));
-
 		return $this->reply(fractal()->collection($country)->transformWith(new CountryTransformer())->ToArray());
     }
 

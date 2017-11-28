@@ -52,12 +52,12 @@ class OrganizationRolesController extends Controller
     public function store(Request $request)
     {
     	$user = \Auth::user();
-        $role = new Role();
-        $role->user_id = $user->id;
-        $role->organization_id = $request->organizations;
-	    $role->role = "requesting-access";
-        $role->save();
-        redirect()->route('dashboard_organization_roles.index');
+        Role::create([
+	        'user_id' => $user->id,
+	        'organization_id' => $request->organizations,
+			'role' => "requesting-access"
+        ]);
+        redirect()->action('HomeController@index');
     }
 
     /**

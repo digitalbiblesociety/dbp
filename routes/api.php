@@ -21,28 +21,18 @@ use Illuminate\Http\Request;
 		Route::get('library/volumeorganization',   'OrganizationsController@index')->name('v2_volume_organization_list');
 		Route::get('library/volumehistory',        'BiblesController@history')->name('v2_volume_history');
 		Route::get('library/organization',         'OrganizationsController@index');
-
-		// Audio
 		Route::get('audio/location',               'AudioController@location')->name('v2_audio_location');
 		Route::get('audio/path',                   'AudioController@index')->name('v2_audio_path');
 		Route::get('audio/versestart',             'AudioController@timestampsByReference')->name('v2_audio_timestamps');
-
-		// Text
 		Route::get('text/font',                    'TextController@fonts')->name('v2_text_font');
 		Route::get('text/verse',                   'TextController@index')->name('v2_text_verse');
 		Route::get('text/search',                  'TextController@search')->name('v2_text_search');
 		Route::get('text/searchgroup',             'TextController@searchGroup')->name('v2_text_search_group');
-
-		// Video
 		Route::get('video/location',               'FilmsController@location')->name('v2_video_location');
 		Route::get('video/path',                   'FilmsController@videoPath')->name('v2_video_video_path');
-
-		// Country/Language
 		Route::get('country/countrylang',          'LanguagesController@CountryLang')->name('v2_country_lang');
-
-		// API INFO
-		Route::get('/api/apiversion',              'HomeController@versionLatest')->name('v2_api_versionLatest');
-		Route::get('/api/reply',                   'HomeController@versionReplyFormats')->name('v2_api_apiReply');
+		Route::get('api/apiversion',              'HomeController@versionLatest')->name('v2_api_versionLatest');
+		Route::get('api/reply',                   'HomeController@versionReplyFormats')->name('v2_api_apiReply');
 
 	// VERSION 4
 
@@ -52,7 +42,7 @@ use Illuminate\Http\Request;
 		Route::get('bible/{id}/{book}/{chapter}',   'TextController@text');
 		Route::get('bible/{abbr}/book/{book}',      'BiblesController@book');
 		Route::get('bible/{abbr}/books',            'BiblesController@books')->name('api_v4_books');
-		Route::resource('/bibles/books',      'BooksController',['names' => [
+		Route::resource('/bibles/books',      'BooksController', ['names' => [
 			'index'   => 'v4_api_books.index',
 			'update'  => 'v4_api_books.update',
 			'store'   => 'v4_api_books.store',

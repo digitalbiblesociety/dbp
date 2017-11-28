@@ -8,26 +8,6 @@
     <meta name="apple-mobile-web-app-title" content="Bible.is" />
     <meta name="author" content="Faith Comes By Hearing"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    @if(env('FACEBOOK_APP_ID'))
-    <meta property="og:type" content="book" />
-    <meta property="og:title" content="{{ $verses->first()->book->currentTranslation->name ?? $verses->first()->book_id }} {{ $verses->first()->chapter_number }}| Bible.is" />
-    <meta property="og:description" content="{{ $verses->first()->verse_text }}..." />
-    <meta property="og:url" content="/{{ $verses->first()->bible_id }}/{{ $verses->first()->book_id }}/{{ $verses->first()->chapter_number }}" />
-    <meta property="og:image" content="/images/FB-post-icon.png?cr=1" />
-    <meta property="og:site_name" content="Bible.is" />
-    <meta property="fb:app_id" content="{{ env('FACEBOOK_APP_ID') }}" />
-    @endif
-    @if(env('TWITTER_APP_ID'))
-    <meta name="twitter:card" content="summary"/>
-    <meta name="twitter:site" content="@bibleis"/>
-    <meta name="twitter:creator" content="@audiobible"/>
-    <meta name="twitter:title" content="{{ $verses->first()->book->currentTranslation->name ?? $verses->first()->book_id }} {{ $verses->first()->chapter_number }}"/>
-    <meta name="twitter:description" content="{{ $verses->first()->verse_text }}..."/>
-    <meta name="twitter:image" content="http://listen.bible.is/images/Twitter-card-icon.png?cr=1"/>
-    <meta name="twitter:app:id:iphone" content="{{ env('TWITTER_APP_ID') }}"/>
-    <meta name="twitter:app:id:ipad" content="{{ env('TWITTER_APP_ID') }}"/>
-    <meta name="twitter:app:id:googleplay" content="com.faithcomesbyhearing.android.bibleis"/>
-    @endif
     @if(env('ITUNES_APP_ID'))
     <meta name="apple-itunes-app" content="app-id={{ env("ITUNES_APP_ID") }}" />
     @endif
@@ -248,7 +228,7 @@
         </svg>
     </div>
     <div class="small-6 columns">
-    <a href="#" class="version-button">{{ substr($verses->first()->bible_id,3,3) }}</a>
+    <a href="#" class="version-button">{{ substr($bible_id,3,3) }}</a>
     <a href="#" class="chapter-button">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 24">
             <path d="M.8 4.5v18.3s8-5.7 14.8 0H17V3C6.2-4 .8 4.6.8 4.6zM15 6v12.5c-6.2-3-11.2-.5-11.2-.5V6s2.5-2.4 5.5-2.4S15 6 15 6zm2-3v19.7h1.3c6.7-5.5 15 0 15 0v-18S27.6-4 17 3zm13.2 15s-5-2.4-11.2.5V6s2.7-2.4 5.6-2.4c3 0 5.6 2.3 5.6 2.3v12z"/>
@@ -258,7 +238,7 @@
     <form id="search-form" method="post" action="/search">
         {{ csrf_field() }}
         <input class="search" type="text" name="search" placeholder="Romanos 10:17 or Jesus">
-        <input type="hidden" name="bible_id" id="volume" value="{{ $verses->first()->bible_id }}">
+        <input type="hidden" name="bible_id" id="volume" value="{{ $bible_id }}">
         <button class="search-button" type="submit">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="-12.8 -13.9 32.9 33.8">
                 <path opacity=".8" fill="#231F20" d="M18.4 13.5L10 6c1.5-1.8 2.3-4.8 2.3-7.5C12.3-8 6.6-13-.2-13s-12 5-12 11.5S-7 10.3 0 10.3c2 0 4.3-.4 5.8-1l8.5 8c.6.7 1.5.7 2 0l2-1.8c.6-.6.6-1.4 0-2zM0 5.5c-4 0-7.2-3-7.2-7 0-3.7 3.3-7 7.3-7 4.3 0 7.5 3.3 7.5 7 0 4-3.2 7-7.3 7z"/>
@@ -272,8 +252,8 @@
     </div>
 </nav>
 
-@if(in_array(($verses->first()->chapter_number - 1), $bibleNavigation[$verses->first()->book_id]->pluck('chapter_number')->ToArray())) <a href="/read/{{ $verses->first()->bible_id }}/{{ $verses->first()->book_id }}/{{ $verses->first()->chapter_number - 1 }}" class="sideNav left"><div class="chevron left"></div></a> @endif
-@if(in_array(($verses->first()->chapter_number + 1), $bibleNavigation[$verses->first()->book_id]->pluck('chapter_number')->ToArray())) <a href="/read/{{ $verses->first()->bible_id }}/{{ $verses->first()->book_id }}/{{ $verses->first()->chapter_number + 1 }}" class="sideNav right"> <div class="chevron right"> </div></a> @endif
+@if(in_array(($verses->first()->chapter - 1), $bibleNavigation[$verses->first()->book]->pluck('chapter')->ToArray())) <a href="/read/{{ $bible_id }}/{{ $verses->first()->book }}/{{ $verses->first()->chapter - 1 }}" class="sideNav left"><div class="chevron left"></div></a> @endif
+@if(in_array(($verses->first()->chapter + 1), $bibleNavigation[$verses->first()->book]->pluck('chapter')->ToArray())) <a href="/read/{{ $bible_id }}/{{ $verses->first()->book }}/{{ $verses->first()->chapter + 1 }}" class="sideNav right"> <div class="chevron right"> </div></a> @endif
 
 <main class="small-10 medium-9 large-6 columns centered">
     <article class="reader">
@@ -304,10 +284,10 @@
                  data-clickSelector=".chapter-button">
                 <ul class="list">
                     @foreach($bibleNavigation as $bookID => $chapters)
-                    <div class="book">{{ $chapters->first()->book->currentTranslation->name ?? $chapters->first()->book->name }}</div>
+                    <div class="book">{{ $chapters->first()->book }}</div>
                     <div class="chapters @if($loop->first) active @endif">
                         @foreach($chapters as $chapter)
-                            <div class="small-2 columns chapter"><a href="/read/{{ $chapter->bible_id }}/{{ $chapter->book_id }}/{{ $chapter->chapter_number }}">{{ $chapter->chapter_number }}</a></div>
+                            <div class="small-2 columns chapter"><a href="/read/{{ $bible_id }}/{{ $chapter->book }}/{{ $chapter->chapter }}">{{ $chapter->chapter }}</a></div>
                         @endforeach
                     </div>
                     @endforeach
@@ -328,7 +308,7 @@
             </div>
         </header>
         @if(!$query)
-            <h2>{{ $verses->first()->book->currentTranslation->name ?? $verses->first()->book->name }} {{ $verses->first()->chapter_number }}</h2>
+            <h2>{{ $verses->first()->book->currentTranslation->name ?? $verses->first()->book }} {{ $verses->first()->chapter }}</h2>
         @foreach($verses as $verse)
            <sup>{{ $verse->verse_start }}@if(isset($verse->verse_end))-{{ $verse->verse_end }}@endif</sup> {{ $verse->verse_text }}
         @endforeach
@@ -337,7 +317,7 @@
                 <h2>Results</h2>
                 @foreach($verses as $verse)
                     <div class="result">
-                    <a href="/read/{{ $verse->bible_id }}/{{ $verse->book_id }}/{{ $verse->chapter_number }}"><strong>{{ $verse->book->currentTranslation->name ?? $verse->book->name }} {{ $verse->chapter_number }}:{{ $verse->verse_start }}</strong><br> {!! str_replace($query,"<b>$query</b>",$verse->verse_text) !!}</a>
+                    <a href="/read/{{ $bible_id }}/{{ $verse->book }}/{{ $verse->chapter }}"><strong>{{ $verse->book->currentTranslation->name ?? $verse->book }} {{ $verse->chapter }}:{{ $verse->verse_start }}</strong><br> {!! str_replace($query,"<b>$query</b>",$verse->verse_text) !!}</a>
                     </div>
                 @endforeach
             </div>

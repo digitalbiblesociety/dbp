@@ -52,6 +52,10 @@ class countries_factbook_seeder extends Seeder
 	public function seedGeography($country)
 	{
 		$geography = $country['Geography'];
+		$latlongs = json_decode(file_get_contents(storage_path('/data/countries/countries_latLong.json')), true);
+		$latlongs = $latlongs[$country['code']] ?? [];
+		$lng = $latlongs['lng'] ?? NULL;
+		$lat = $latlongs['lat'] ?? NULL;
 
 		// Need special accommodation for France
 		if($country['code'] == "FR") {
@@ -66,11 +70,6 @@ class countries_factbook_seeder extends Seeder
 			if(!$geography["Location"]["text"]) $geography["Location"]["text"] = "";
 		} else {
 			$geography["Location"]["text"] = "";
-		}
-		if(isset($geography["Geographic coordinates"])) {
-			if(!isset($geography["Geographic coordinates"]["text"])) $geography["Geographic coordinates"]["text"] = "";
-		} else {
-			$geography["Geographic coordinates"]["text"] = "";
 		}
 		if(isset($geography["Map references"])) {
 			if(!isset($geography["Map references"]["text"])) $geography["Map references"]["text"] = "";
@@ -116,7 +115,8 @@ class countries_factbook_seeder extends Seeder
 		CountryGeography::create([
 			'country_id'           => $country['code'],
 			'location_description' => $geography["Location"]["text"],
-			'coordinates'          => $geography["Geographic coordinates"]["text"],
+			'latitude'             => $lng ?? null,
+			'longitude'            => $lat ?? null,
 			'mapReferences'        => $geography["Map references"]["text"],
 			'area_sqkm_total'      => intval($geography["Area"]["total"]["text"]),
 			'area_sqkm_land'       => intval($geography["Area"]["land"]["text"]),

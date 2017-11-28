@@ -41,9 +41,9 @@ class OrganizationsController extends APIController
 	{
 		// Support both incrementing ID or Slug
 		if(preg_match("/\d+/",$slug)) {
-			$organization = Organization::with("bibles.translations","bibles.language","translations","logos")->where('id',$slug)->first();
+			$organization = Organization::with("bibles.translations","bibles.language","translations","logos","currentTranslation")->where('id',$slug)->first();
 		} else {
-			$organization = Organization::with("bibles.translations","bibles.language","translations","logos")->where('slug',$slug)->first();
+			$organization = Organization::with("bibles.translations","bibles.language","translations","logos","currentTranslation")->where('slug',$slug)->first();
 		}
 		if(!$organization) return $this->setStatusCode(404)->replyWithError("Sorry we don't have any record for $slug");
 

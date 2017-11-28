@@ -154,11 +154,6 @@ class Language extends Model
 	    return $this->HasMany(Bible::class);
     }
 
-    public function resources()
-    {
-        return $this->HasMany(Resource::class);
-    }
-
     public function films()
     {
         return $this->HasMany(Video::class);
