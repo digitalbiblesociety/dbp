@@ -37,9 +37,9 @@ class TextController extends APIController
 	    if(isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
 
 	    $book = Book::where('id',$book_id)->orWhere('id_usfx',$book_id)->orWhere('id_osis',$book_id)->first();
-		$book->push('name_vernacular', $book->translation($bible->iso)->first());
+	    if(!$book) return $this->setStatusCode(422)->replyWithError('Missing Book ID');
+	    $book->push('name_vernacular', $book->translation($bible->iso)->first());
 	    // Fetch Verses
-
 		$verses = \DB::connection('sophia')->table($bible->id.'_vpl')
 		->where([['book',$book->id_usfx], ['chapter',$chapter]])
 		->when($verse_start, function ($query) use ($verse_start) {
