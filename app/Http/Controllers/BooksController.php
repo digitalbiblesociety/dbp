@@ -40,16 +40,16 @@ class BooksController extends APIController
 		$abbreviation = checkParam('dam_id');
 		$bibleEquivalent = BibleEquivalent::where('equivalent_id', $abbreviation)->first();
 		if($bibleEquivalent) {
-			$bible = $bibleEquivalent->bible;
-			$textExists = \Schema::connection('sophia')->hasTable($bible->id.'_vpl');
+			$bible_id = $bibleEquivalent->bible->id;
+			$textExists = \Schema::connection('sophia')->hasTable($bible_id.'_vpl');
 			if($textExists) {
-				$booksChapters = collect(\DB::connection('sophia')->table($abbreviation.'_vpl')->select('book','chapter')->distinct()->get());
+				$booksChapters = collect(\DB::connection('sophia')->table($bible_id.'_vpl')->select('book','chapter')->distinct()->get());
 				$books = $booksChapters->pluck('book')->toArray();
 				$chapters = [];
 				foreach ($booksChapters as $books_chapter) $chapters[$books_chapter->book][] = $books_chapter->chapter;
 
-				$books = Book::whereIn('id_usfx',$books)->get()->map(function ($book) use ($abbreviation,$chapters) {
-					$book['bible_id'] = $abbreviation;
+				$books = Book::whereIn('id_usfx',$books)->get()->map(function ($book) use ($bible_id,$chapters) {
+					$book['bible_id'] = $bible_id;
 					$book['sophia_chapters'] = $chapters[$book->id_usfx];
 					return $book;
 				});
