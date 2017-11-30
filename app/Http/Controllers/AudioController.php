@@ -17,19 +17,25 @@ class AudioController extends APIController
 	 */
 	public function index($id = null)
     {
-	    $id = CheckParam('fileset_id',$id, 'optional');
-		if(!$id) $id = CheckParam('dam_id',$id,'optional');
-		if(!$id) return $this->setStatusCode(422)->replyWithError("Missing dam_id param");
-	    
+	    $bible_id = CheckParam('fileset_id',$id, 'optional');
+		if(!$bible_id) $bible_id = CheckParam('dam_id',$id,'optional');
+		if(!$bible_id) return $this->setStatusCode(422)->replyWithError("Missing dam_id param");
+
 	    $chapter_id = CheckParam('chapter_id',null,'optional');
 	    $book_id = CheckParam('book_id',null,'optional');
 
-    	$audioChapters = BibleFile::with('book')->where('set_id',$id)->when($chapter_id, function ($query) use ($chapter_id) {
+    	$audioChapters = BibleFile::with('book')->where('set_id',$bible_id)->when($chapter_id, function ($query) use ($chapter_id) {
 		    return $query->where('chapter_start', $chapter_id);
 	    })->when($book_id, function ($query) use ($book_id) {
 		    return $query->where('book_id', $book_id);
-	    })->orderBy('file_name')->get();
-        return $this->reply(fractal()->collection($audioChapters)->transformWith(new AudioTransformer()));
+	    })->orderBy('file_name')->get()->map(function ($chapter) use ($bible_id) {
+		    $chapter['bible_id'] = $bible_id;
+		    return $chapter;
+	    });;
+
+
+
+        return $this->reply(fractal()->collection($audioChapters)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
     }
 
 	/**
@@ -103,14 +109,21 @@ class AudioController extends APIController
 	public function location()
 	{
 		return $this->reply([
-			[
-				"server" => "s3-us-west-2.amazonaws.com",
-				"root_path" => "/dbp-dev/audio",
-				"protocol" => "https",
-				"CDN" => 1,
-				"priority" => 5
-			]
-		]);
+				[
+					"server"    => "cloud.faithcomesbyhearing.com",
+					"root_path" => "/mp3audiobibles2",
+					"protocol"  => "http",
+					"CDN"       => "1",
+					"priority"  => "5"
+				],
+				[
+					"server"    => "fcbhabdm.s3.amazonaws.com",
+					"root_path" => "/mp3audiobibles2",
+					"protocol"  => "http",
+					"CDN"       => "0",
+					"priority"  => "6"
+				]
+			]);
 	}
 
 }
