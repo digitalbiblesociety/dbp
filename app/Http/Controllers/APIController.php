@@ -111,10 +111,12 @@ class APIController extends Controller
         $status = $this->getStatusCode();
 	    if(!$this->api AND !isset($status)) return view('errors.broken',compact('message'));
 	    if(!$this->api) return view("errors.$status",compact('message','status'));
+	    $faces = ['⤜(ʘ_ʘ)⤏','¯\_ツ_/¯','ᗒ ͟ʖᗕ','ᖗ´• ꔢ •`ᖘ','|▰╭╮▰|'];
 
         return response()->json(['error' => [
             'message' => $message,
-            'status code' => $status
+            'status code' => $status,
+	        'face' => array_random($faces)
         ]], $this->getStatusCode(), array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'text/json');
     }
 
