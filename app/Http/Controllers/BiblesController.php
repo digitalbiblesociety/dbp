@@ -99,27 +99,6 @@ class BiblesController extends APIController
 		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
     }
 
-
-	/**
-	 * Language Names
-	 *
-	 * @return array
-	 */
-	public function languageNames()
-    {
-    	$languageNames = checkParam('language_names');
-    	$languageNames = explode(',',$languageNames);
-    	$dbp = [];
-    	foreach($languageNames as $language_name) {
-    		$language = Language::where('name',$language_name)->first();
-    		if(!$language) continue;
-    		foreach ($language->bibles as $bible) {
-    			foreach ($bible->dbp as $connection) $dbp[$language->name][] = $connection->equivalent_id;
-		    }
-	    }
-		return $dbp;
-    }
-
 	/**
 	 *
 	 * Get the list of versions defined in the system
