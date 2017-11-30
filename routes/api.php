@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 		// VERSION 2
 
 		// Library
@@ -32,103 +30,43 @@ use Illuminate\Http\Request;
 		Route::get('video/path',                   'FilmsController@videoPath')->name('v2_video_video_path');
 		Route::get('country/countrylang',          'LanguagesController@CountryLang')->name('v2_country_lang');
 		Route::get('api/apiversion',              'HomeController@versionLatest')->name('v2_api_versionLatest');
-		Route::get('api/reply',                   'HomeController@versionReplyFormats')->name('v2_api_apiReply');
+		Route::get('api/reply',                   'HomeController@versionReplyTypes')->name('v2_api_apiReply');
 
 	// VERSION 4
 
 		// Bibles
-		Route::get('bible/LanguageNames',           'BiblesController@languageNames');
-		Route::get('bible/{abbr}/equivalents',      'BiblesController@equivalents')->name('api_bibles.equivalents');
-		Route::get('bible/{id}/{book}/{chapter}/formatted',   'TextController@formattedResponse');
-		Route::get('bible/{id}/{book}/{chapter}',   'TextController@text');
-		Route::get('bible/{abbr}/book/{book}',      'BiblesController@book');
-		Route::get('bible/{abbr}/books',            'BiblesController@books')->name('api_v4_books');
-		Route::resource('/bibles/books',      'BooksController', ['names' => [
-			'index'   => 'v4_api_books.index',
-			'update'  => 'v4_api_books.update',
-			'store'   => 'v4_api_books.store',
-			'show'    => 'v4_api_books.show',
-		]]);
-
-		// FileSets and Permissions
-		Route::resource('bibles/filesets/{id}/permissions',       'BibleFileSetPermissionsController', ['names' => [
-			'index'   => 'v4_api_bible_filesets_permissions.index',
-			'edit'    => 'v4_api_bible_filesets_permissions.edit',
-			'create'  => 'v4_api_bible_filesets_permissions.create',
-			'show'    => 'v4_api_bible_filesets_permissions.show',
-		]]);
-		Route::resource('bibles/filesets',       'BibleFileSetsController', ['names' => [
-			'index'   => 'v4_api_bible_filesets.index',
-			'edit'    => 'v4_api_bible_filesets.edit',
-			'create'  => 'v4_api_bible_filesets.create',
-			'show'    => 'v4_api_bible_filesets.show',
-		]]);
+		Route::name('v4_bible.all')->get('bibles',                                            'BiblesController@index');
+		Route::name('v4_bible.one')->get('bibles/{id}',                                       'BiblesController@show');
+		Route::name('v4_bible.equivalents')->get('bible/{id}/equivalents',                    'BiblesController@equivalents');
+		Route::name('v4_bible.books_all')->get('bible/{id}/book/{book}',                      'BiblesController@books');
+		Route::name('v4_bible.books_one')->get('bible/{id}/book/{book}',                      'BiblesController@book');
+		Route::name('v4_bible.read')->get('bible/{id}/{book}/{chapter}',                      'TextController@text');
+		Route::name('v4_bible_books.all')->get('bibles/books/',                               'BooksController@index');
+		Route::name('v4_bible_books.one')->get('bibles/books/{id}',                           'BooksController@show');
+		Route::name('v4_bible_filesets.all')->get('bibles',                                   'BibleFileSetsController@index');
+		Route::name('v4_bible_filesets.one')->get('bibles/{id}',                              'BibleFileSetsController@show');
+		Route::name('v4_bible_filesets.permissions')->get('bibles/filesets/{id}/permissions', 'BibleFileSetPermissionsController@index');
+		Route::name('v4_bibleFiles.one')->get('bibles/files/{ id }',                          'BibleFilesController@show');
+		Route::name('v4_timestamps')->get('timestamps',                                       'AudioController@availableTimestamps');
+		Route::name('v4_timestamps.tag')->get('timestamps/{id}',                              'AudioController@timestampsByTag');
+		Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',           'AudioController@timestampsByReference');
 
 
-		Route::get('bibles/files/{ id }',   'BibleFilesController@show')->name('v4_audio_files');
-
-		Route::get('timestamps',                             'AudioController@availableTimestamps')->name('v4_audio_timestamps');
-		Route::get('timestamps/{id}',                        'AudioController@timestampsByTag')->name('v4_audio_timestampsByTag');
-		Route::get('timestamps/{id}/{book}/{chapter}',       'AudioController@timestampsByReference')->name('v4_audio_timestampByReference');
-
-		Route::resource('bibles',                   'BiblesController',['names' => [
-			'index'   => 'api_bibles.index',
-			'update'  => 'api_bibles.update',
-			'store'   => 'api_bibles.store',
-			'show'    => 'api_bibles.show',
-		]]);
-
-		// File Routes
-
-
-		// Audio Routes
-
-
-		// Country
-		Route::resource('countries',                'CountriesController', ['names' => [
-			'index'   => 'api_countries.index',
-			'update'  => 'api_countries.update',
-			'store'   => 'api_countries.store',
-			'show'    => 'api_countries.show',
-		]]);
-
-		// Languages
-		Route::resource('languages',                'LanguagesController',['names' => [
-			'index'   => 'api_languages.index',
-			'update'  => 'api_languages.update',
-			'store'   => 'api_languages.store',
-			'show'    => 'api_languages.show',
-		]]);
-		Route::resource('alphabets',                'AlphabetsController',['names' => [
-			'index'   => 'api_alphabets.index',
-			'update'  => 'api_alphabets.update',
-			'store'   => 'api_alphabets.store',
-			'show'    => 'api_alphabets.show',
-		]]);
-		Route::get('numbers/range',               'NumbersController@customRange');
-		Route::resource('numbers',                'NumbersController',['names' => [
-			'index'   => 'api_languages.index',
-			'update'  => 'api_languages.update',
-			'store'   => 'api_languages.store',
-			'show'    => 'api_languages.show',
-		]]);
-
-		// Community
-		Route::resource('/organizations',            'OrganizationsController',['names' => [
-			'index'   => 'api_organizations.index',
-			'update'  => 'api_organizations.update',
-			'store'   => 'api_organizations.store',
-			'show'    => 'api_organizations.show',
-		]]);
-		Route::resource('/users',              'UsersController',['names' => [
-			'index'   => 'api_users.index',
-			'update'  => 'api_users.update',
-			'store'   => 'api_users.store',
-			'show'    => 'api_users.show',
-		]]);
-
-		// API INFO
-		Route::get('sign', 'HomeController@signedUrls');
-		Route::get('/api/versions',                'HomeController@versions')->name('v4_api_versions');
-		Route::get('/api/versions/latest',         'HomeController@versionLatest')->name('v4_api_versionLatest');
-		Route::get('/api/versions/replyFormats',   'HomeController@versionReplyFormats')->name('v4_api_replyFormats');
+		// V4 Wiki
+		Route::name('v4_countries.all')->get('countries',                             'CountriesController@index');
+		Route::name('v4_countries.one')->get('countries/{id}',                        'CountriesController@show');
+		Route::name('v4_languages.all')->get('languages',                             'LanguagesController@index');
+		Route::name('v4_languages.one')->get('languages/{id}',                        'LanguagesController@show');
+		Route::name('v4_alphabets.all')->get('alphabets',                             'AlphabetsController@index');
+		Route::name('v4_alphabets.one')->get('alphabets/{id}',                        'AlphabetsController@show');
+		Route::name('v4_numbers.range')->get('numbers/range',                         'NumbersController@customRange');
+		Route::name('v4_numbers.all')->get('numbers/',                                'NumbersController@index');
+		Route::name('v4_numbers.one')->get('numbers/{id}',                            'NumbersController@show');
+		Route::name('v4_organizations.all')->get('organizations/',                    'OrganizationsController@index');
+		Route::name('v4_organizations.one')->get('organizations/{id}',                'OrganizationsController@show');
+		Route::name('v4_users.all')->get('organizations/',                            'UsersController@index');
+		Route::name('v4_users.one')->get('organizations/{id}',                        'UsersController@show');
+		Route::name('v4_api.versions')->get('/api/versions',                          'HomeController@versions');
+		Route::name('v4_api.versionLatest')->get('/api/versions/latest',              'HomeController@versionLatest');
+		Route::name('v4_api.replyTypes')->get('/api/versions/replyTypes',             'HomeController@versionReplyTypes');
+		Route::name('v4_api.sign')->get('sign',                                       'HomeController@signedUrls');
