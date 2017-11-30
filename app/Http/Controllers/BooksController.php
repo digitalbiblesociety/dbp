@@ -41,7 +41,7 @@ class BooksController extends APIController
 		$bibleEquivalent = BibleEquivalent::where('equivalent_id', $abbreviation)->first();
 		if($bibleEquivalent) {
 			$bible = $bibleEquivalent->bible;
-			$textExists = Schema::hasTable($bible->id.'_vpl');
+			$textExists = \Schema::connection('sophia')->hasTable($bible->id.'_vpl');
 			if($textExists) {
 				$booksChapters = collect(\DB::connection('sophia')->table($abbreviation.'_vpl')->select('book','chapter')->distinct()->get());
 				$books = $booksChapters->pluck('book')->toArray();
