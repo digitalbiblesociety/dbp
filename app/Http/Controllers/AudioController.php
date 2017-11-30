@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bible\Book;
 use App\Models\Bible\Text;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileTimestamp;
@@ -23,6 +24,8 @@ class AudioController extends APIController
 
 	    $chapter_id = CheckParam('chapter_id',null,'optional');
 	    $book_id = CheckParam('book_id',null,'optional');
+	    $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
+	    if($book) $book_id = $book->id;
 
     	$audioChapters = BibleFile::with('book')->where('set_id',$bible_id)->when($chapter_id, function ($query) use ($chapter_id) {
 		    return $query->where('chapter_start', $chapter_id);
@@ -31,10 +34,8 @@ class AudioController extends APIController
 	    })->orderBy('file_name')->get()->map(function ($chapter) use ($bible_id) {
 		    $chapter['bible_id'] = $bible_id;
 		    return $chapter;
-	    });;
-
-
-
+	    });
+	    
         return $this->reply(fractal()->collection($audioChapters)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
     }
 
