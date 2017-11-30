@@ -34,7 +34,7 @@ class BookTranslation extends Model
 
     public function book()
     {
-        return $this->BelongsTo(Book::class, 'usfx', 'id');
+        return $this->BelongsTo(Book::class);
     }
 
 }

@@ -37,7 +37,16 @@ class BooksController extends APIController
     	if(!$this->api) return view('docs.v2.books.BookOrderListing');
 
 		$abbreviation = checkParam('dam_id');
-		$books = Text::with('book')->where('bible_id',$abbreviation)->select(['bible_id','chapter_number','book_id'])->distinct()->get()->groupBy('book_id');
+		$booksChapters = collect(\DB::connection('sophia')->table($abbreviation.'_vpl')->select('book','chapter')->distinct()->get());
+		$books = $booksChapters->pluck('book')->toArray();
+	    $chapters = [];
+		foreach ($booksChapters as $books_chapter) $chapters[$books_chapter->book][] = $books_chapter->chapter;
+
+	    $books = Book::whereIn('id_usfx',$books)->get()->map(function ($book) use ($abbreviation,$chapters) {
+		    $book['bible_id'] = $abbreviation;
+		    $book['sophia_chapters'] = $chapters[$book->id_usfx];
+		    return $book;
+	    });
 		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer)->toArray());
     }
 
@@ -78,14 +87,14 @@ class BooksController extends APIController
 		$bible_id = checkParam('dam_id');
 		$book_id = checkParam('book_id', null, true);
 
-		// V2 of the API uses OSIS
-	    $book = ($this->v == 2) ? Book::where('id_osis',$book_id)->first() : Book::find($book_id );
-	    if($book) $book_id = $book->id;
-
-		$chapters = Text::where('bible_id',$bible_id)->with('book')->when($book_id, function ($query) use ($book_id) {
-			return $query->where('book_id', $book_id);
-		})->select(['chapter_number','bible_id','book_id'])->distinct()->orderBy('chapter_number')->get();
-
+	    $book = Book::where('id_osis',$book_id)->orWhere('id',$book_id)->first();
+		$chapters = \DB::connection('sophia')->table($bible_id.'_vpl')->where('book',$book->id_usfx)
+			->select(['chapter','book'])->distinct()->orderBy('chapter')->get()
+			->map(function ($chapter) use ($bible_id,$book) {
+				$chapter->book = $book;
+				$chapter->bible_id = $bible_id;
+				return $chapter;
+			});
 		return $this->reply(fractal()->collection($chapters)->serializeWith($this->serializer)->transformWith(new BooksTransformer()));
     }
 

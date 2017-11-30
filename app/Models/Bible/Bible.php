@@ -98,10 +98,6 @@ class Bible extends Model
         return $this->HasOne(BibleTranslation::class)->where('vernacular', '=', 1);
     }
 
-    public function text()
-    {
-    	return $this->HasMany(Text::class);
-    }
     public function books()
     {
 	    return $this->HasMany(BibleBook::class);

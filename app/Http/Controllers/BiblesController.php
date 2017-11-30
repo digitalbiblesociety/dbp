@@ -94,7 +94,7 @@ class BiblesController extends APIController
     {
     	if(!$this->api) return view('bibles.history');
 
-		$limit = checkParam('limit', null,'optional') ?? 500;
+		$limit = checkParam('limit', null, 'optional') ?? 500;
 		$bibles = Bible::select(['id','updated_at'])->take($limit)->get();
 		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
     }
@@ -148,11 +148,10 @@ class BiblesController extends APIController
 	public function libraryMetadata()
 	{
 		$dam_id = checkParam('dam_id', null, 'optional');
-		$bible = Bible::has('text')->when(
-			$dam_id, function ($query) use ($dam_id) {
+		$bible = Bible::when($dam_id, function ($query) use ($dam_id) {
 			return $query->where('id', $dam_id);
-		})->get();
-		return $this->reply(fractal()->collection($bible)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
+		})->first();
+		return $this->reply(fractal()->item($bible)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
 	}
 
     /**

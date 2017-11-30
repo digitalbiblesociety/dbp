@@ -2,13 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\BiblesController;
 use App\Http\Controllers\HomeController;
 use App\Models\User\User;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use App\Models\Bible\Bible;
-use App\Models\Bible\Video;
+use App\Models\Bible\Book;
 
 class API_V2_Test extends TestCase
 {
@@ -25,7 +24,7 @@ class API_V2_Test extends TestCase
 	function setUp() {
 		parent::setUp();
 		$user = User::inRandomOrder()->first();
-		$this->params = ['v' => 2,'key' => $user->id,'pretty'];
+		$this->params = ['v' => 2,'key' => '3e0eed1a69fc6e012fef51b8a28cc6ff','pretty'];
 
 		// Fetch the Swagger Docs for Structure Validation
 		$arrContextOptions= [ "ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]];
@@ -52,11 +51,11 @@ class API_V2_Test extends TestCase
 	 */
 	public function test_library_asset() {
 		$response = $this->get(route('v2_library_asset'), $this->params);
-		$response_v2 = $this->get("https://dbt.io/library/asset", $this->params);
+//		$response_v2 = $this->get("https://dbt.io/library/asset", $this->params);
 
 		echo "\nTesting: ".route('v2_library_asset', $this->params);
 		$response->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('LibraryAsset')]);
-		$response_v2->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('LibraryAsset')]);
+//		$response_v2->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('LibraryAsset')]);
 	}
 
 	/**
@@ -72,11 +71,9 @@ class API_V2_Test extends TestCase
 	 */
 	public function test_library_version() {
 		$response = $this->get(route('v2_api_versionLatest'), $this->params);
-		$response_v2 = $this->get("https://dbt.io/api/apiversion", $this->params);
-
 		echo "\nTesting: ".route('v2_api_versionLatest', $this->params);
+
 		$response->assertSuccessful()->assertJsonStructure($this->getSchemaKeys('VersionNumber'));
-		$response_v2->assertSuccessful()->assertJsonStructure($this->getSchemaKeys('VersionNumber'));
 	}
 
 	/**
@@ -86,13 +83,13 @@ class API_V2_Test extends TestCase
 	 * @see BooksController::show()
 	 * @category Swagger ID: BookOrder
 	 * @category Route Name: v2_library_bookOrder
-	 * @link Route Path: https://api.dbp.dev/library/bookorder?v=2&dam_id=ENGKJV
+	 * @link Route Path: https://api.dbp.dev/library/bookorder?v=2&dam_id=ENGESV&pretty
 	 *
 	 */
 	public function test_library_bookOrder() {
-		$bible = Bible::has('text')->inRandomOrder()->first();
-		echo "\nTesting: " . route('v2_library_bookOrder',  ['v' => 2, 'dam_id' => $bible->id]);
-		$response = $this->get(route('v2_library_bookOrder'), ['v' => 2, 'dam_id' => $bible->id]);
+		$bible = fetchRandomBibleID();
+		echo "\nTesting: " . route('v2_library_bookOrder',  ['v' => 2, 'dam_id' => $bible, 'key' => $this->params['key'], 'pretty']);
+		$response = $this->get(route('v2_library_bookOrder'), ['v' => 2, 'dam_id' => $bible, 'key' => $this->params['key'], 'pretty']);
 		$response->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('BookOrder')]);
 	}
 
@@ -104,14 +101,14 @@ class API_V2_Test extends TestCase
 	 * @see BooksController::show()
 	 * @category Swagger ID: BookOrder
 	 * @category Route Name: v2_library_bookOrder
-	 * @link Route Path: https://api.dbp.dev/library/book?v=2&dam_id=ENGKJV&pretty
+	 * @link Route Path: https://api.dbp.dev/library/book?v=2&dam_id=ENGESV&pretty
 	 *
 	 */
 	public function test_library_book() {
-		$bible = Bible::has('text')->inRandomOrder()->first();
-		echo "\nTesting: " . route('v2_library_book',  ['v' => 2, 'dam_id' => $bible->id]);
-		$response = $this->get(route('v2_library_book'), ['v' => 2, 'dam_id' => $bible->id]);
-		$response->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('BookOrder')]);
+		$bible_id = fetchRandomBibleID();
+		echo "\nTesting: " . route('v2_library_book',  ['v' => 2, 'dam_id' => $bible_id]);
+		$response = $this->get(route('v2_library_book'), ['v' => 2, 'dam_id' => $bible_id]);
+		$response->assertSuccessful()->assertJsonStructure($this->getSchemaKeys('BookOrder'));
 	}
 
 	/**
@@ -137,14 +134,15 @@ class API_V2_Test extends TestCase
 	 * @see BooksController::chapters()
 	 * @category Swagger ID: BookName
 	 * @category Route Name: v2_library_bookName
-	 * @link Route Path: https://api.dbp.dev/library/chapter?v=2&dam_id=ENGKJV&book_id=GEN&pretty
+	 * @link Route Path: https://api.dbp.dev/library/chapter?v=2&dam_id=ENGESV&book_id=GEN&pretty
 	 *
 	 */
 	public function test_library_chapter() {
-		$bible = Bible::has('text')->inRandomOrder()->first();
-		$book_id = $bible->text->first()->book->id;
-		$response = $this->get(route('v2_library_chapter'), ['v' => 2, 'dam_id' => $bible->id, 'book_id' => $book_id]);
-		echo "\nTesting: ".route('v2_library_chapter', ['v' => 2, 'dam_id' => $bible->id, 'book_id' => $book_id]);
+		$bible_id = fetchRandomBibleID();
+		$bible = \DB::connection('sophia')->table($bible_id.'_vpl')->inRandomOrder()->first();
+
+		$response = $this->get(route('v2_library_chapter'), ['v' => 2, 'dam_id' => $bible_id, 'book_id' => $bible->book]);
+		echo "\nTesting: ".route('v2_library_chapter', ['v' => 2, 'dam_id' => $bible_id, 'book_id' => $bible->book]);
 		$response->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('ChapterListItem')]);
 	}
 
@@ -160,7 +158,7 @@ class API_V2_Test extends TestCase
 	 *
 	 */
 	public function test_library_language() {
-		$response = $this->get(route('v2_library_language'), ['v' => 2]);
+		$response = $this->get(route('v2_library_language'), $this->params);
 		echo "\nTesting: ".route('v2_library_language');
 		$response->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('LibraryLanguage')]);
 	}
@@ -173,18 +171,18 @@ class API_V2_Test extends TestCase
 	 * @see VerseController::info()
 	 * @category Swagger ID: LibraryVerseInfo
 	 * @category Route Name: v2_library_verseInfo
-	 * @link Route Path: https://api.dbp.dev/library/verseinfo?v=2&pretty&bible_id=ENGKJV&book_id=GEN&chapter=1&verse_start=1
+	 * @link Route Path: https://api.dbp.dev/library/verseinfo?v=2&pretty&bible_id=ENGESV&book_id=GEN&chapter=1&verse_start=1
 	 *
 	 */
 	public function test_library_verseInfo() {
-		$bible = Bible::has('text')->inRandomOrder()->first();
-		$text = $bible->text->first();
-		$book_id = $text->book->id;
-		$chapter = $text->chapter_number;
-		$verse_start = $text->verse_start;
-		$verse_end = $text->verse_start + 5;
-		$response = $this->get(route('v2_library_verseInfo'), ['v' => 2,'bible_id' => $bible->id, 'book_id' => $book_id, 'chapter' => $chapter, 'verse_start' => $verse_start, 'verse_end' => $verse_end]);
-		echo "\nTesting: ".route('v2_library_verseInfo', ['v' => 2,'bible_id' => $bible->id, 'book_id' => $book_id, 'chapter' => $chapter, 'verse_start' => $verse_start, 'verse_end' => $verse_end]);
+		$bible_id = fetchRandomBibleID();
+		$verse = \DB::connection('sophia')->table($bible_id.'_vpl')->inRandomOrder()->first();
+		$book_id = Book::where('id_usfx',$verse->book)->first();
+		$chapter = $verse->chapter;
+		$verse_start = $verse->verse_start;
+		$verse_end = $verse->verse_start + 5;
+		$response = $this->get(route('v2_library_verseInfo'), ['v' => 2,'bible_id' => $bible_id, 'book_id' => $book_id, 'chapter' => $chapter, 'verse_start' => $verse_start, 'verse_end' => $verse_end]);
+		echo "\nTesting: ".route('v2_library_verseInfo', ['v' => 2,'bible_id' => $bible_id, 'book_id' => $book_id, 'chapter' => $chapter, 'verse_start' => $verse_start, 'verse_end' => $verse_end]);
 		$response->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('LibraryVerseInfo')]);
 	}
 
@@ -210,16 +208,17 @@ class API_V2_Test extends TestCase
 	 * Tests the Library MetaData Route
 	 *
 	 * @category V2_Library
-	 * @see BiblesController
+	 * @see BiblesController::libraryMetadata()
 	 * @category Swagger ID: LibraryMetaData
 	 * @category Route Name: v2_library_metadata
-	 * @link Route Path: https://api.dbp.dev/library/metadata?v=2&id=ENGKJV
+	 * @link Route Path: https://api.dbp.dev/library/metadata?v=2&id=ENGESV
 	 *
 	 */
-	public function test_library_metadata()             {
-		$bible = Bible::has('text')->inRandomOrder()->first();
-		$response = $this->get(route('v2_library_metadata', ['id' => $bible->id]), ['v' => 2]);
-		echo "\nTesting: ".route('v2_library_metadata', ['id' => $bible->id]);
+	public function test_library_metadata()
+	{
+		$bible_id = fetchRandomBibleID();
+		$response = $this->get(route('v2_library_metadata'), ['v' => 2,'bible_id' => $bible_id]);
+		echo "\nTesting: ".route('v2_library_metadata', ['id' => $bible_id]);
 		$response->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('LibraryMetaData')]);
 	}
 
@@ -234,7 +233,8 @@ class API_V2_Test extends TestCase
 	 * @link Route Path: https://api.dbp.dev/library/volume?v=2&pretty
 	 *
 	 */
-	public function test_library_volume() {
+	public function test_library_volume()
+	{
 		$response = $this->get(route('v2_library_volume'), $this->params);
 		echo "\nTesting: ".route('v2_library_volume');
 		$response->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('LibraryVolume')]);
@@ -297,14 +297,15 @@ class API_V2_Test extends TestCase
 	 * Tests the Volume History
 	 *
 	 * @category V2_Library
-	 * @see OrganizationsController::index()
+	 * @see BiblesController::history
 	 * @category Swagger ID: LibraryVolumeLanguageFamily
 	 * @category Route Name: v2_volume_history
-	 * @link Route Path: https://api.dbp.dev/library/organization?v=2&pretty
+	 * @link Route Path: https://api.dbp.dev/library/volumehistory?v=2&pretty
 	 *
 	 */
-	public function test_volume_history()               {
-		$response = $this->get(route('v2_volume_history'), ['v' => 2, 'limit' => 20]);
+	public function test_volume_history()
+	{
+		$response = $this->get(route('v2_volume_history'), ['v' => 2, 'limit' => 5]);
 		echo "\nTesting: ".route('v2_volume_history');
 		$response->assertSuccessful();
 	}
@@ -317,14 +318,14 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\AudioController::index()
 	 * @category Swagger ID:
 	 * @category Route Name: v2_audio_path
-	 * @link Route Path: https://api.dbp.dev/audio/path?v=2&fileset_id=ENGKJV&pretty
+	 * @link Route Path: https://api.dbp.dev/audio/path?v=2&fileset_id=ENGESV&pretty
 	 *
 	 */
-	public function test_audio_path()                   {
-		$bible = Bible::has('text')->inRandomOrder()->first();
-		$response = $this->get(route('v2_audio_path'), ['v' => 2, 'fileset_id' => $bible->id]);
+	public function test_audio_path()
+	{
+		$bible_id = fetchRandomBibleID();
+		$response = $this->get(route('v2_audio_path'), ['v' => 2, 'fileset_id' => $bible_id]);
 		echo "\nTesting: ".route('v2_audio_path');
-
 		$response->assertSuccessful();
 	}
 
@@ -336,7 +337,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\AudioController::timestampsByReference()
 	 * @category Swagger ID:
 	 * @category Route Name: v2_audio_timestamps
-	 * @link Route Path: https://api.dbp.dev/audio/versestart?v=2&dam_id=ENGKJV&chapter=1&book=GEN&pretty
+	 * @link Route Path: https://api.dbp.dev/audio/versestart?v=2&fileset_id=ENGESVO2DA&chapter=1&book=GEN&pretty
 	 *
 	 */
 	public function test_audio_timestamps() {
@@ -377,7 +378,6 @@ class API_V2_Test extends TestCase
 	public function test_text_verse() {
 		$response = $this->get(route('v2_text_verse'), ['v' => 2, 'dam_id' => "ENGESV", 'book_id' => "GEN", 'chapter_id' => 1, 'verse_start' => 1, 'verse_end' => 10]);
 		echo "\nTesting: ".route('v2_text_verse');
-
 		$response->assertSuccessful();
 	}
 
@@ -424,7 +424,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\FilmsController::location()
 	 * @category Swagger ID: VideoLocation
 	 * @category Route Name: v2_video_location
-	 * @link Route Path: https://api.dbp.dev/video/location?v=2&dam_id=ENGKJV
+	 * @link Route Path: https://api.dbp.dev/video/location?v=2&dam_id=ENGESV
 	 *
 
 	public function test_video_location() {

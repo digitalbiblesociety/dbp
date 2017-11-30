@@ -24,6 +24,7 @@ class CreateBiblesTable extends Migration
             $table->text('derived')->nullable();
             $table->string('copyright')->nullable();
             $table->string('in_progress')->nullable();
+	        $table->tinyInteger('priority')->default(0)->unsigned();
 	        $table->timestamps();
         });
 
@@ -235,7 +236,7 @@ class CreateBiblesTable extends Migration
         Schema::dropIfExists('bible_file_permissions');
 	    Schema::dropIfExists('bible_file_timestamps');
         Schema::dropIfExists('bible_files');
-	    Schema::dropIfExists('bible_filesets_tags');
+	    Schema::dropIfExists('bible_fileset_tags');
 	    Schema::dropIfExists('bible_filesets');
         Schema::dropIfExists('book_translations');
 	    Schema::dropIfExists('bible_books');

@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 		// Library
 		Route::get('library/asset',                'HomeController@libraryAsset')->name('v2_library_asset');
 		Route::get('library/version',              'BiblesController@libraryVersion')->name('v2_library_version');
-		Route::get('library/bookorder',            'BooksController@show')->name('v2_library_bookOrder');
 		Route::get('library/book',                 'BooksController@show')->name('v2_library_book');
 		Route::get('library/bookname',             'BooksController@bookNames')->name('v2_library_bookName');
+		Route::get('library/bookorder',            'BooksController@show')->name('v2_library_bookOrder');
 		Route::get('library/chapter',              'BooksController@chapters')->name('v2_library_chapter');
 		Route::get('library/language',             'LanguagesController@index')->name('v2_library_language');
 		Route::get('library/verseinfo',            'VerseController@info')->name('v2_library_verseInfo');
@@ -39,6 +39,7 @@ use Illuminate\Http\Request;
 		// Bibles
 		Route::get('bible/LanguageNames',           'BiblesController@languageNames');
 		Route::get('bible/{abbr}/equivalents',      'BiblesController@equivalents')->name('api_bibles.equivalents');
+		Route::get('bible/{id}/{book}/{chapter}/formatted',   'TextController@formattedResponse');
 		Route::get('bible/{id}/{book}/{chapter}',   'TextController@text');
 		Route::get('bible/{abbr}/book/{book}',      'BiblesController@book');
 		Route::get('bible/{abbr}/books',            'BiblesController@books')->name('api_v4_books');
@@ -62,6 +63,7 @@ use Illuminate\Http\Request;
 			'create'  => 'v4_api_bible_filesets.create',
 			'show'    => 'v4_api_bible_filesets.show',
 		]]);
+
 
 		Route::get('bibles/files/{ id }',   'BibleFilesController@show')->name('v4_audio_files');
 
@@ -126,7 +128,7 @@ use Illuminate\Http\Request;
 		]]);
 
 		// API INFO
-		Route::get('sign', 'HomeController@signedUrl');
+		Route::get('sign', 'HomeController@signedUrls');
 		Route::get('/api/versions',                'HomeController@versions')->name('v4_api_versions');
 		Route::get('/api/versions/latest',         'HomeController@versionLatest')->name('v4_api_versionLatest');
 		Route::get('/api/versions/replyFormats',   'HomeController@versionReplyFormats')->name('v4_api_replyFormats');

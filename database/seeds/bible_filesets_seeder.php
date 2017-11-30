@@ -33,12 +33,19 @@ class bible_filesets_seeder extends Seeder
 
 				    $bible_exists = \App\Models\Bible\Bible::where('id',$bible_id)->first();
 				    if(!$bible_exists) {continue;}
+				    switch($volume['collection_code']) {
+					    case "NT": {$size_name = "New Testament";break;}
+					    case "OT": {$size_name = "Old Testament";break;}
+					    default: $size_name = "";
+				    }
 				    BibleFileset::create([
 					    'id'              => $volume['dam_id'],
 					    'bible_id'        => $bible_id,
 					    'name'            => 'Faith Comes by Hearing',
 					    'set_type'        => $set_type,
-					    'organization_id' => 9
+					    'organization_id' => 9,
+					    'size_code'       => $volume['collection_code'],
+					    'size_name'       => $size_name
 				    ]);
 			    }
 		    }

@@ -69,3 +69,10 @@ function fetchSwaggerSchema($schema, $version = "v4") {
 
 	return $swagger;
 }
+
+function fetchRandomBibleID() {
+	$bible = collect(\DB::connection('sophia')->select('SHOW TABLES'))->pluck('Tables_in_sophia')->filter(function ($value, $key) {
+		return (strpos($value, '_vpl') !== false) ? $value : false;
+	})->random(1)->first();
+	return substr($bible,0,-4);
+}

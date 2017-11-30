@@ -16,14 +16,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Bible\Bible $bible
  * @property-read \App\Models\Bible\Book $book
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleBook whereBibleId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleBook whereBookId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleBook whereChapters($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleBook whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleBook whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleBook whereNameShort($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleBook whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @method static BibleBook whereBibleId($value)
+ * @method static BibleBook whereBookId($value)
+ * @method static BibleBook whereChapters($value)
+ * @method static BibleBook whereCreatedAt($value)
+ * @method static BibleBook whereName($value)
+ * @method static BibleBook whereNameShort($value)
+ * @method static BibleBook whereUpdatedAt($value)
  */
 class BibleBook extends Model
 {
@@ -39,11 +38,6 @@ class BibleBook extends Model
     public function book()
     {
     	return $this->belongsTo(Book::class);
-    }
-
-    public function chapters()
-    {
-    	return $this->belongsTo(Text::class,'book_id','bible_book');
     }
 
 }

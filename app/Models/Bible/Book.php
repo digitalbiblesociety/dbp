@@ -46,11 +46,6 @@ class Book extends Model
     public $incrementing = false;
     public $hidden = ['description','created_at','updated_at','notes'];
 
-    public function text()
-    {
-        return $this->HasMany(Text::class);
-    }
-
     public function translations()
     {
         return $this->HasMany(BookTranslation::class, 'book_id');

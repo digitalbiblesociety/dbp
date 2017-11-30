@@ -28,17 +28,28 @@ class bible_audio_seeder extends Seeder
 	    $setsCreated = array();
 
 	    foreach($chapters as $chapter) {
-	    	$dam_id = substr($chapter['dam_id'],0,7);
+	    	$dam_id = $chapter['dam_id'];
 	    	if(!in_array($dam_id,$setsCreated)) {
 			    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$dam_id)->first();
 			    if(!$bibleEquivalent) {$missing[] = $dam_id;continue;}
-	    		$audioSet = new BibleFileset();
-			    $audioSet->id = $chapter['dam_id'];
-			    $audioSet->variation_id = null;
-	    		$audioSet->set_type = 'Audio';
-			    $audioSet->name = 'Faith Comes by Hearing';
-	    		$audioSet->bible_id = $bibleEquivalent->bible->id;
-	    		$audioSet->organization_id = \App\Models\Organization\Organization::where('slug','faith-comes-by-hearing')->first()->id;
+
+			    $collectionCode = $chapter['collection_code'] ?? "";
+			    switch($collectionCode) {
+				    case "NT": {$size_name = "New Testament";break;}
+				    case "OT": {$size_name = "Old Testament";break;}
+				    default: $size_name = "";
+			    }
+
+	    		$audioSet = BibleFileset::create([
+				    'id'              => $chapter['dam_id'],
+			        'variation_id'    => null,
+					'set_type'        => 'Audio',
+				    'size_code'       => $collectionCode,
+				    'size_name'       => $size_name,
+					'name'            => 'Faith Comes by Hearing',
+					'bible_id'        => $bibleEquivalent->bible->id,
+					'organization_id' => \App\Models\Organization\Organization::where('slug','faith-comes-by-hearing')->first()->id,
+			    ]);
 			    $audioSet->save();
 			    $setsCreated[] = $dam_id;
 		    }

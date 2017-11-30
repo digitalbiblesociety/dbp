@@ -65,7 +65,7 @@ class HomeController extends APIController
 		return $this->reply($libraryAsset);
 	}
 
-	public function signedUrl()
+	public function signedUrls()
 	{
 		$filenames = $_GET['filenames'] ?? "";
 		$filenames = explode(",",$filenames);

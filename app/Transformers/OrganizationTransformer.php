@@ -13,7 +13,7 @@ class OrganizationTransformer extends BaseTransformer
      */
     public function transform(Organization $organization)
     {
-    	$organization->engTranslation = $organization->translations("eng")->first();
+    	$organization->name = ($organization->translations("eng")->first()) ? $organization->translations("eng")->first()->name : $organization->slug;
     	//if($organization->engTranslation) dd($organization->engTranslation->name);
 	    switch ($this->version) {
 		    case "jQueryDataTable": return $this->transformForDataTables($organization);
@@ -86,7 +86,30 @@ class OrganizationTransformer extends BaseTransformer
 	 * @return array
 	 */
 	public function transformForV4(Organization $organization) {
-		return $organization->toArray();
+		return [
+			"id"             => $organization->id,
+			"name"           => $organization->name,
+            "slug"           => $organization->slug,
+			"logo"           => ($organization->logo) ? $organization->logo->url : "",
+			"icon"           => ($organization->logoIcon) ? $organization->logoIcon->url : "",
+            "abbreviation"   => $organization->abbreviation,
+            "notes"          => $organization->notes,
+            "primaryColor"   => $organization->primaryColor,
+            "secondaryColor" => $organization->secondaryColor,
+            "inactive"       => $organization->inactive,
+            "url_facebook"   => $organization->url_facebook,
+            "url_website"    => $organization->url_website,
+            "url_donate"     => $organization->url_donate,
+            "url_twitter"    => $organization->url_twitter,
+            "address"        => $organization->address,
+            "address2"       => $organization->address2,
+            "city"           => $organization->city,
+            "state"          => $organization->state,
+            "country"        => $organization->country,
+            "zip"            => $organization->zip,
+            "phone"          => $organization->phone,
+            "email"          => $organization->email
+		];
 	}
 
 }

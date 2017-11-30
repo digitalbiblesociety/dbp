@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bible\Bible;
+use App\Models\Bible\Book;
 use App\Models\Bible\Text;
 
 class VerseController extends APIController
@@ -14,11 +16,13 @@ class VerseController extends APIController
 	    $verse_start = checkParam('verse_start');
 		$verse_end = checkParam('verse_end', null, true);
 
-		$verse_info = Text::where([
-			['bible_id',       '=',  $bible_id],
-			['book_id',        '=',  $book_id],
-			['chapter_number', '=',  $chapter_id],
-			['verse_start',    '>=', $verse_start]
+		$bible = Bible::find($bible_id);
+		$book = Book::where('id',$book_id)->orWhere('id_usfx',$book_id)->first();
+
+		$verse_info = \DB::connection('sophia')->table($bible->id.'_vpl')->where([
+			['book',            '=',  $book->id_usfx],
+			['chapter',         '=',  $chapter_id],
+			['verse_start',     '>=', $verse_start]
 		])->when($verse_end, function ($query) use ($verse_end) {
 			return $query->where('verse_start', '<=', $verse_end);
 		})->get();

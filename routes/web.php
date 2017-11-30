@@ -39,6 +39,7 @@ Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRed
 Route::get('bibles/audio/uploads/thanks',   'AudioProcessingController@thanks')->name('bibles_audio_uploads.thanks');
 Route::resource('bibles/audio/uploads',     'AudioProcessingController');
 Route::resource('bibles/ocr',               'PrintProcesses');
+Route::resource('dbl',                      'Connections\DigitalBibleLibraryController');
 
 
 Route::post('bibles/filesets/{id}/files/{file_id}' , 'BibleFilesController@update');

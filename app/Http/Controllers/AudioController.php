@@ -73,9 +73,9 @@ class AudioController extends APIController
 		$query = CheckParam('query', $query);
 		
 		$query = \DB::connection()->getPdo()->quote('+'.str_replace(' ',' +',$query));
-		$verses = Text::where('bible_id', $id)
+		$verses = \DB::connection('sophia')->table($id)
 			->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))
-			->select(['bible_id','book_id','chapter_number'])
+			->select(['book','chapter'])
 			->get();
 
 		// Build the timestamp query
@@ -94,25 +94,11 @@ class AudioController extends APIController
 	{
 		return $this->reply([
 			[
-				"server" => "cloud.faithcomesbyhearing.com",
-				"root_path" => "/mp3audiobibles2",
-				"protocol" => "http",
+				"server" => "s3-us-west-2.amazonaws.com",
+				"root_path" => "/dbp-dev/audio",
+				"protocol" => "https",
 				"CDN" => 1,
 				"priority" => 5
-			],
-			[
-				"server"    => "fcbhabdm.s3.amazonaws.com",
-				"root_path" => "/mp3audiobibles2",
-				"protocol"  => "http",
-				"CDN"       => 0,
-				"priority"  => 6
-			],
-			[
-				"server" => "cdn.faithcomesbyhearing.com",
-				"root_path" => "/cfx/st",
-				"protocol" => "rtmp-amazon",
-				"CDN" => 0,
-				"priority" => 9
 			]
 		]);
 	}

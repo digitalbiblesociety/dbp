@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\AWS\Bucket;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleEquivalent;
 use App\Models\Bible\Book;
@@ -31,8 +32,7 @@ class TextController extends APIController
 	    $verse_end = checkParam('verse_end', null, 'optional');
 
 	    // Fetch Bible for Book Translations
-	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$bible_id)->first();
-	    if(!isset($bibleEquivalent)) $bibleEquivalent = BibleEquivalent::where('equivalent_id',substr($bible_id,0,7))->first();
+	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$bible_id)->orWhere('equivalent_id',substr($bible_id,0,7))->first();
 	    if(!isset($bibleEquivalent)) $bible = Bible::find($bible_id);
 	    if(isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
 
@@ -58,6 +58,16 @@ class TextController extends APIController
 
 	    if(count($verses) == 0) return $this->setStatusCode(404)->replyWithError("No Verses Were found with the provided params");
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)->toArray());
+    }
+
+    public function formattedResponse()
+    {
+	    $bible_id = checkParam('dam_id');
+	    $book_id = checkParam('book_id');
+	    $chapter = checkParam('chapter_id');
+
+	    $url = "https://s3-us-west-2.amazonaws.com/dbp-dev/text/".$bible_id."/".$bible_id."/".$book_id.$chapter.".html";
+	    $chapter = Bucket::get($url);
     }
 
 	/**

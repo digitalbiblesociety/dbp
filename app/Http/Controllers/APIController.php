@@ -36,7 +36,7 @@ class APIController extends Controller
 	    	$noVersionRoutes = ['v2_api_apiversion','v4_api_versionLatest'];
 	    	if(!in_array(\Route::currentRouteName(), $noVersionRoutes)) $this->v = checkParam('v');
 		    $this->api = true;
-		    if(isset($this->v)) $this->serializer = (($this->v == "jQueryDataTable") OR ($this->v != 2)) ? new DataArraySerializer() : new ArraySerializer();
+		    if(isset($this->v)) $this->serializer = (($this->v == "jQueryDataTable") OR ($this->v != 2) OR (isset($_GET['arraySerializer']))) ? new DataArraySerializer() : new ArraySerializer();
 		    $this->paginateNumber = $_GET["number"] ?? 20;
 	    }
         $this->middleware('auth')->only(['create','edit']);
@@ -117,5 +117,15 @@ class APIController extends Controller
             'status code' => $status
         ]], $this->getStatusCode(), array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'text/json');
     }
+
+	public function signedUrl($url)
+	{
+		$signer = $_GET['signer'] ?? 's3_fcbh';
+		$bucket = $_GET['bucket'] ?? "dbp-dev";
+		$expiry = $_GET['expiry'] ?? 5;
+
+		$url = Bucket::signedUrl($url,$signer,$bucket,$expiry);
+		return $this->reply($url);
+	}
 
 }

@@ -30,12 +30,12 @@ class BibleTransformer extends BaseTransformer
 
 		        case "v2_library_metadata": {
 			        return [
-				        "dam_id" => $bible->id,
-				        "mark" => $bible->copyright,
+				        "dam_id"         => $bible->id,
+				        "mark"           => $bible->copyright,
 				        "volume_summary" => null,
 				        "font_copyright" => null,
-				        "font_url" => (isset($bible->alphabet->primaryFont)) ? $bible->alphabet->primaryFont->fontFileName : null,
-				        "organization" => $bible->organizations
+				        "font_url"       => (isset($bible->alphabet->primaryFont)) ? $bible->alphabet->primaryFont->fontFileName : null,
+				        "organization"   => $bible->organizations
 			        ];
 			        break;
 		        }

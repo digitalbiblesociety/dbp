@@ -22,42 +22,35 @@ class BooksTransformer extends BaseTransformer
 	    }
     }
 
-    public function transformForV2($bibleBook) {
+    public function transformForV2($book) {
 
 		switch($this->route) {
 			case "v2_library_bookOrder": {
 				return [
-					"book_order"  => $bibleBook->book->book_order,
-					"book_id"     => $bibleBook->book->id,
-					"book_name"   => $bibleBook->book->name,
-					"dam_id_root" => $bibleBook->bible_id
+					"book_order"  => $book->book_order,
+					"book_id"     => $book->id,
+					"book_name"   => $book->name,
+					"dam_id_root" => $book->bible_id
 				];
 			}
 
 			case "v2_library_book": {
 				return [
-					"dam_id"             => $bibleBook->first()->bible_id.substr($bibleBook->first()->book->book_testament,0,1),
-					"book_id"            => $bibleBook->first()->book->id_osis,
-					"book_name"          => $bibleBook->first()->book->name,
-					"book_order"         => $bibleBook->first()->book->book_order,
-					"number_of_chapters" => $bibleBook->count('chapter_number'),
-					"chapters"           => implode(",",$bibleBook->pluck('chapter_number')->ToArray())
-				];
-			}
-
-			case "v2_library_bookName": {
-				return [
-					'book_id'           => $bibleBook->book_id,
-					'book_name'         => $bibleBook->name
+					"dam_id"             => $book->bible_id.substr($book->book_testament,0,1),
+					"book_id"            => $book->id_osis,
+					"book_name"          => $book->name,
+					"book_order"         => $book->book_order,
+					"number_of_chapters" => count($book->sophia_chapters),
+					"chapters"           => implode(",",$book->sophia_chapters)
 				];
 			}
 
 			case "v2_library_chapter": {
 				return [
-					"dam_id"           => $bibleBook->bible_id,
-                    "book_id"          => $bibleBook->book->id_osis,
-                    "chapter_id"       => $bibleBook->chapter_number,
-                    "chapter_name"     => "Chapter " . $bibleBook->chapter_number,
+					"dam_id"           => $book->bible_id,
+                    "book_id"          => $book->book->id_osis,
+                    "chapter_id"       => $book->chapter,
+                    "chapter_name"     => "Chapter " . $book->chapter,
                     "default"          => ""
 				];
 			}
