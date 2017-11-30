@@ -50,7 +50,7 @@ class HomeController extends APIController
 		return $this->reply([ "Version" => $swagger->info->version ]);
 	}
 
-	public function versionReplyFormats()
+	public function versionReplyTypes()
 	{
 		$versionReplies = [
 			"2" => ["json", "jsonp", "html"],

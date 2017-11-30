@@ -50,23 +50,20 @@
 		Route::name('v4_timestamps')->get('timestamps',                                       'AudioController@availableTimestamps');
 		Route::name('v4_timestamps.tag')->get('timestamps/{id}',                              'AudioController@timestampsByTag');
 		Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',           'AudioController@timestampsByReference');
-
-
-		// V4 Wiki
-		Route::name('v4_countries.all')->get('countries',                             'CountriesController@index');
-		Route::name('v4_countries.one')->get('countries/{id}',                        'CountriesController@show');
-		Route::name('v4_languages.all')->get('languages',                             'LanguagesController@index');
-		Route::name('v4_languages.one')->get('languages/{id}',                        'LanguagesController@show');
-		Route::name('v4_alphabets.all')->get('alphabets',                             'AlphabetsController@index');
-		Route::name('v4_alphabets.one')->get('alphabets/{id}',                        'AlphabetsController@show');
-		Route::name('v4_numbers.range')->get('numbers/range',                         'NumbersController@customRange');
-		Route::name('v4_numbers.all')->get('numbers/',                                'NumbersController@index');
-		Route::name('v4_numbers.one')->get('numbers/{id}',                            'NumbersController@show');
-		Route::name('v4_organizations.all')->get('organizations/',                    'OrganizationsController@index');
-		Route::name('v4_organizations.one')->get('organizations/{id}',                'OrganizationsController@show');
-		Route::name('v4_users.all')->get('organizations/',                            'UsersController@index');
-		Route::name('v4_users.one')->get('organizations/{id}',                        'UsersController@show');
-		Route::name('v4_api.versions')->get('/api/versions',                          'HomeController@versions');
-		Route::name('v4_api.versionLatest')->get('/api/versions/latest',              'HomeController@versionLatest');
-		Route::name('v4_api.replyTypes')->get('/api/versions/replyTypes',             'HomeController@versionReplyTypes');
-		Route::name('v4_api.sign')->get('sign',                                       'HomeController@signedUrls');
+		Route::name('v4_countries.all')->get('countries',                                     'CountriesController@index');
+		Route::name('v4_countries.one')->get('countries/{id}',                                'CountriesController@show');
+		Route::name('v4_languages.all')->get('languages',                                     'LanguagesController@index');
+		Route::name('v4_languages.one')->get('languages/{id}',                                'LanguagesController@show');
+		Route::name('v4_alphabets.all')->get('alphabets',                                     'AlphabetsController@index');
+		Route::name('v4_alphabets.one')->get('alphabets/{id}',                                'AlphabetsController@show');
+		Route::name('v4_numbers.range')->get('numbers/range',                                 'NumbersController@customRange');
+		Route::name('v4_numbers.all')->get('numbers/',                                        'NumbersController@index');
+		Route::name('v4_numbers.one')->get('numbers/{id}',                                    'NumbersController@show');
+		Route::name('v4_organizations.all')->get('organizations/',                            'OrganizationsController@index');
+		Route::name('v4_organizations.one')->get('organizations/{id}',                        'OrganizationsController@show');
+		Route::name('v4_users.all')->get('organizations/',                                    'UsersController@index');
+		Route::name('v4_users.one')->get('organizations/{id}',                                'UsersController@show');
+		Route::name('v4_api.versions')->get('/api/versions',                                  'HomeController@versions');
+		Route::name('v4_api.versionLatest')->get('/api/versions/latest',                      'HomeController@versionLatest');
+		Route::name('v4_api.replyTypes')->get('/api/versions/replyTypes',                     'HomeController@versionReplyTypes');
+		Route::name('v4_api.sign')->get('sign',                                               'HomeController@signedUrls');
