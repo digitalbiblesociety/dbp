@@ -94,9 +94,14 @@ class BooksController extends APIController
     {
 	    if(!$this->api) return view('docs.books.chapters');
 
-		$bible_id = checkParam('dam_id');
-		$book_id = checkParam('book_id', null, true);
+		$id = checkParam('dam_id');
+		$bibleEquivalent = BibleEquivalent::where('equivalent_id',$id)->first();
+		if($bibleEquivalent) $bible = $bibleEquivalent->bible;
+		if(!$bible) $bible = Bible::find($id);
+		if(!$bible) return $this->setStatusCode(422)->replyWithError("Missing dam_id");
+		$bible_id = $bible->id;
 
+		$book_id = checkParam('book_id', null, true);
 	    $book = Book::where('id_osis',$book_id)->orWhere('id',$book_id)->first();
 		$chapters = \DB::connection('sophia')->table($bible_id.'_vpl')->where('book',$book->id_usfx)
 			->select(['chapter','book'])->distinct()->orderBy('chapter')->get()
