@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bible\BibleBook;
-use App\Models\Bible\Book;
 use App\Models\Bible\Text;
+use App\Models\Bible\Book;
+use App\Models\Bible\BookTranslation;
 use App\Transformers\BooksTransformer;
 
 class BooksController extends APIController
@@ -56,12 +56,7 @@ class BooksController extends APIController
 		$language = fetchLanguage($languageCode);
 
 		// Fetch Bible Book Names By Bible Iso and Order by Book Order
-		$books = BibleBook::whereHas('bible', function($q) use ($language) {$q->where('iso', '=', $language->iso);})
-			->select(['book_id','bible_books.name','books.book_order'])
-			->join('books', 'books.id', '=', 'bible_books.book_id')
-			->orderBy('books.book_order', 'ASC')->distinct()->get();
-
-		return $this->reply(fractal()->collection($books)->serializeWith($this->serializer)->transformWith(new BooksTransformer()));
+		return $this->reply(BookTranslation::where('iso',$languageCode)->with('book')->select('name','book_id')->get()->pluck('name','book.id_osis'));
     }
 
 	/**

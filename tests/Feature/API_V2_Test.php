@@ -127,7 +127,7 @@ class API_V2_Test extends TestCase
 	public function test_library_bookName() {
 		$response = $this->get(route('v2_library_bookName'), ['v' => 2, 'language_code' => 'eng']);
 		echo "\nTesting: ".route('v2_library_bookName', ['v' => 2, 'language_code' => 'eng']);
-		$response->assertSuccessful()->assertJsonStructure([$this->getSchemaKeys('BookName')]);
+		$response->assertSuccessful();
 	}
 
 	/**
