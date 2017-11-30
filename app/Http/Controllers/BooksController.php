@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bible\BibleEquivalent;
 use App\Models\Bible\Text;
 use App\Models\Bible\Book;
 use App\Models\Bible\BookTranslation;
@@ -37,17 +38,26 @@ class BooksController extends APIController
     	if(!$this->api) return view('docs.v2.books.BookOrderListing');
 
 		$abbreviation = checkParam('dam_id');
-		$booksChapters = collect(\DB::connection('sophia')->table($abbreviation.'_vpl')->select('book','chapter')->distinct()->get());
-		$books = $booksChapters->pluck('book')->toArray();
-	    $chapters = [];
-		foreach ($booksChapters as $books_chapter) $chapters[$books_chapter->book][] = $books_chapter->chapter;
+		$bibleEquivalent = BibleEquivalent::where('equivalent_id', $abbreviation)->first();
+		if($bibleEquivalent) {
+			$bible = $bibleEquivalent->bible;
+			$textExists = Schema::hasTable($bible->id.'_vpl');
+			if($textExists) {
+				$booksChapters = collect(\DB::connection('sophia')->table($abbreviation.'_vpl')->select('book','chapter')->distinct()->get());
+				$books = $booksChapters->pluck('book')->toArray();
+				$chapters = [];
+				foreach ($booksChapters as $books_chapter) $chapters[$books_chapter->book][] = $books_chapter->chapter;
 
-	    $books = Book::whereIn('id_usfx',$books)->get()->map(function ($book) use ($abbreviation,$chapters) {
-		    $book['bible_id'] = $abbreviation;
-		    $book['sophia_chapters'] = $chapters[$book->id_usfx];
-		    return $book;
-	    });
-		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer)->toArray());
+				$books = Book::whereIn('id_usfx',$books)->get()->map(function ($book) use ($abbreviation,$chapters) {
+					$book['bible_id'] = $abbreviation;
+					$book['sophia_chapters'] = $chapters[$book->id_usfx];
+					return $book;
+				});
+				return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer)->toArray());
+			}
+		}
+	    if($this->v == 2) return [];
+		return $this->setStatusCode(422)->replyWithError("DAM ID not found");
     }
 
 	/**
