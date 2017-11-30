@@ -83,7 +83,7 @@ class LanguageTransformer extends BaseTransformer
 				$img_size = "_".checkParam('img_size', null, 'optional') ?? "";
 				if($img_type == "svg") $img_size = "";
 				return [
-					"id"                   => $language->id,
+					"id"                   => "$language->id",
                     "lang_code"            => $language->iso,
                     "region"               => $language->primaryCountry->regions->first()->name,
                     "country_primary"      => $language->primaryCountry->id,

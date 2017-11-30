@@ -23,10 +23,10 @@ class TextTransformer extends BaseTransformer
 			        "dam_id"           => $text->bible_id,
                     "book_name"        => $text->book->name,
                     "book_id"          => $text->book->osis_id,
-                    "chapter_id"       => stringValue($text->chapter_number),
-                    "verse_id"         => stringValue($text->verse_start),
-                    "verse_text"       => stringValue($text->verse_text),
-                    "book_order"       => stringValue($text->book->book_order)
+                    "chapter_id"       => "$text->chapter_number",
+                    "verse_id"         => "$text->verse_start",
+                    "verse_text"       => "$text->verse_text",
+                    "book_order"       => "$text->book->book_order"
 				];
 		    }
 
@@ -35,11 +35,11 @@ class TextTransformer extends BaseTransformer
 				    "dam_id"           => $text->bible_id,
 				    "book_name"        => $text->book->name,
 				    "book_id"          => $text->book->osis_id,
-				    "chapter_id"       => stringValue($text->chapter_number),
-				    "verse_id"         => stringValue($text->verse_start),
+				    "chapter_id"       => "$text->chapter_number",
+				    "verse_id"         => "$text->verse_start",
 				    "verse_text"       => $text->verse_text,
-				    "results"		   => stringValue($text->resultsCount),
-				    "book_order"	   => stringValue($text->book->order)
+				    "results"		   => "$text->resultsCount",
+				    "book_order"	   => "$text->book->order"
 			    ];
 		    }
 
@@ -47,12 +47,12 @@ class TextTransformer extends BaseTransformer
 			    return [
 				    "book_name"        => $text->book_name,
 				    "book_id"          => $text->osis_id,
-				    "book_order"       => stringValue($text->book_order),
-				    "chapter_id"       => stringValue($text->chapter),
+				    "book_order"       => "$text->book_order",
+				    "chapter_id"       => "$text->chapter",
 				    "chapter_title"    => "Chapter $text->chapter",
-				    "verse_id"         => stringValue($text->verse_start),
-				    "verse_text"       => stringValue($text->verse_text),
-				    "paragraph_number" => stringValue(1)
+				    "verse_id"         => "$text->verse_start",
+				    "verse_text"       => "$text->verse_text",
+				    "paragraph_number" => "1"
 			    ];
 		    }
 	    }
