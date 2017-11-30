@@ -17,8 +17,18 @@ class AudioController extends APIController
 	 */
 	public function index($id = null)
     {
-	    $id = CheckParam('fileset_id',$id);
-    	$audioChapters = BibleFile::with('book')->where('set_id',$id)->orderBy('file_name')->get();
+	    $id = CheckParam('fileset_id',$id, 'optional');
+		if(!$id) $id = CheckParam('dam_id',$id,'optional');
+		if(!$id) return $this->setStatusCode(422)->replyWithError("Missing dam_id param");
+	    
+	    $chapter_id = CheckParam('chapter_id',null,'optional');
+	    $book_id = CheckParam('book_id',null,'optional');
+
+    	$audioChapters = BibleFile::with('book')->where('set_id',$id)->when($chapter_id, function ($query) use ($chapter_id) {
+		    return $query->where('chapter_start', $chapter_id);
+	    })->when($book_id, function ($query) use ($book_id) {
+		    return $query->where('book_id', $book_id);
+	    })->orderBy('file_name')->get();
         return $this->reply(fractal()->collection($audioChapters)->transformWith(new AudioTransformer()));
     }
 
