@@ -31,7 +31,7 @@ class AudioTransformer extends BaseTransformer
 
 		    case "v2_audio_path": {
 			    return [
-				    "book_id"    => ucfirst(strtolower($audio->book_id)),
+				    "book_id"    => ucfirst(strtolower($audio->book->id_osis)),
 				    "chapter_id" => "$audio->chapter_start",
 				    "path"       => $audio->bible_id."/".$audio->file_name
 			    ];
