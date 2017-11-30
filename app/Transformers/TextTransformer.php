@@ -46,12 +46,12 @@ class TextTransformer extends BaseTransformer
 			    return [
 				    "book_name"        => $text->book_name,
 				    "book_id"          => $text->osis_id,
-				    "book_order"       => $text->book_order,
-				    "chapter_id"       => $text->chapter,
-				    "chapter_title"    => null,
-				    "verse_id"         => $text->verse_start,
-				    "verse_text"       => $text->verse_text,
-				    "paragraph_number" => 1
+				    "book_order"       => "$text->book_order",
+				    "chapter_id"       => "$text->chapter",
+				    "chapter_title"    => "Chapter $text->chapter",
+				    "verse_id"         => "$text->verse_start",
+				    "verse_text"       => "$text->verse_text",
+				    "paragraph_number" => "1"
 			    ];
 		    }
 	    }
