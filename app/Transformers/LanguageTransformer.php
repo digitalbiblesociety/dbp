@@ -66,7 +66,7 @@ class LanguageTransformer extends BaseTransformer
 			case "v2_library_volumeLanguageFamily": {
 				return [
 					"language_family_code"    => strtoupper($language->iso) ?? "",
-					"language_family_name"    => $language->autonym ?? "",
+					"language_family_name"    => $language->name ?? "",
 					"language_family_english" => $language->name ?? "",
 					"language_family_iso"     => $language->iso ?? "",
 					"language_family_iso_2B"  => $language->iso2B ?? "",
