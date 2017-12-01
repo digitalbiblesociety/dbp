@@ -39,7 +39,13 @@ class BooksController extends APIController
 
 		$abbreviation = checkParam('dam_id');
 		$bibleEquivalent = BibleEquivalent::where('equivalent_id', $abbreviation)->first();
+	    $testament = false;
+
 		if($bibleEquivalent) {
+			$testament_letter = substr($bibleEquivalent->equivalent_id,-4,1);
+			if($testament_letter == "N") $testament = "NT";
+			if($testament_letter == "O") $testament = "OT";
+
 			$bible_id = $bibleEquivalent->bible->id;
 			$textExists = \Schema::connection('sophia')->hasTable($bible_id.'_vpl');
 			if($textExists) {
@@ -48,7 +54,9 @@ class BooksController extends APIController
 				$chapters = [];
 				foreach ($booksChapters as $books_chapter) $chapters[$books_chapter->book][] = $books_chapter->chapter;
 
-				$books = Book::whereIn('id_usfx',$books)->get()->map(function ($book) use ($bible_id,$chapters) {
+				$books = Book::whereIn('id_usfx',$books)->orderBy('book_order')->when($testament, function($q) use ($testament) {
+					$q->where('book_testament', $testament);
+				})->get()->map(function ($book) use ($bible_id,$chapters) {
 					$book['bible_id'] = $bible_id;
 					$book['sophia_chapters'] = $chapters[$book->id_usfx];
 					return $book;
