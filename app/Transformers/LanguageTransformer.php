@@ -75,7 +75,7 @@ class LanguageTransformer extends BaseTransformer
 					"language"                => [strtoupper($language->iso)],
 					"media"                   => ["text"],
 					"delivery"                => ["mobile","web","subsplash"],
-					"resolution"              => []
+					"resolution"              => ["lo"]
 				];
 			}
 
