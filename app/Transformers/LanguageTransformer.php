@@ -64,10 +64,10 @@ class LanguageTransformer extends BaseTransformer
 
 			case "v2_library_volumeLanguageFamily": {
 				return [
-					"language_family_code"    => $language->iso ?? null,
-					"language_family_name"    => $language->autonym ?? null,
-					"language_family_english" => $language->name ?? null,
-					"language_family_iso"     => $language->iso ?? null,
+					"language_family_code"    => $language->iso ?? "",
+					"language_family_name"    => $language->autonym ?? "",
+					"language_family_english" => $language->name ?? "",
+					"language_family_iso"     => $language->iso ?? "",
 					"language_family_iso_2B"  => $language->iso2B,
 					"language_family_iso_2T"  => $language->iso2T,
 					"language_family_iso_1"   => $language->iso1,
@@ -83,7 +83,7 @@ class LanguageTransformer extends BaseTransformer
 				$img_size = "_".checkParam('img_size', null, 'optional') ?? "";
 				if($img_type == "svg") $img_size = "";
 				return [
-					"id"                   => "$language->id",
+					"id"                   => (string) $language->id,
                     "lang_code"            => $language->iso,
                     "region"               => $language->primaryCountry->regions->first()->name,
                     "country_primary"      => $language->primaryCountry->id,
