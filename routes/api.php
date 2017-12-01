@@ -3,38 +3,35 @@
 		// VERSION 2
 
 		// Library
-		Route::get('library/asset',                'HomeController@libraryAsset')->name('v2_library_asset');
-		Route::get('library/version',              'BiblesController@libraryVersion')->name('v2_library_version');
-		Route::get('library/book',                 'BooksController@show')->name('v2_library_book');
-		Route::get('library/bookname',             'BooksController@bookNames')->name('v2_library_bookName');
-		Route::get('library/bookorder',            'BooksController@show')->name('v2_library_bookOrder');
-		Route::get('library/chapter',              'BooksController@chapters')->name('v2_library_chapter');
-		Route::get('library/language',             'LanguagesController@index')->name('v2_library_language');
-		Route::get('library/verseinfo',            'VerseController@info')->name('v2_library_verseInfo');
-		Route::get('library/numbers',              'NumbersController@customRange')->name('v2_library_numbers');
-		Route::get('library/metadata',             'BiblesController@libraryMetadata')->name('v2_library_metadata');
-		Route::get('library/volume',               'BiblesController@index')->name('v2_library_volume');
-		Route::get('library/volumelanguage',       'LanguagesController@volumeLanguage')->name('v2_library_volumeLanguage');
-		Route::get('library/volumelanguagefamily', 'LanguagesController@volumeLanguageFamily')->name('v2_library_volumeLanguageFamily');
-		Route::get('library/volumeorganization',   'OrganizationsController@index')->name('v2_volume_organization_list');
-		Route::get('library/volumehistory',        'BiblesController@history')->name('v2_volume_history');
-		Route::get('library/organization',         'OrganizationsController@index');
-		Route::get('audio/location',               'AudioController@location')->name('v2_audio_location');
-		Route::get('audio/path',                   'AudioController@index')->name('v2_audio_path');
-		Route::get('audio/versestart',             'AudioController@timestampsByReference')->name('v2_audio_timestamps');
-		Route::get('text/font',                    'TextController@fonts')->name('v2_text_font');
-		Route::get('text/verse',                   'TextController@index')->name('v2_text_verse');
-		Route::get('text/search',                  'TextController@search')->name('v2_text_search');
-		Route::get('text/searchgroup',             'TextController@searchGroup')->name('v2_text_search_group');
-		Route::get('video/location',               'FilmsController@location')->name('v2_video_location');
-		Route::get('video/path',                   'FilmsController@videoPath')->name('v2_video_video_path');
-		Route::get('country/countrylang',          'LanguagesController@CountryLang')->name('v2_country_lang');
-		Route::get('api/apiversion',              'HomeController@versionLatest')->name('v2_api_versionLatest');
-		Route::get('api/reply',                   'HomeController@versionReplyTypes')->name('v2_api_apiReply');
-
-	// VERSION 4
-
-		// Bibles
+		Route::name('v2_library_asset')->get('library/asset',                                 'HomeController@libraryAsset');
+		Route::name('v2_library_version')->get('library/version',                             'BiblesController@libraryVersion');
+		Route::name('v2_library_book')->get('library/book',                                   'BooksController@show');
+		Route::name('v2_library_bookName')->get('library/bookname',                           'BooksController@bookNames');
+		Route::name('v2_library_bookOrder')->get('library/bookorder',                         'BooksController@show');
+		Route::name('v2_library_chapter')->get('library/chapter',                             'BooksController@chapters');
+		Route::name('v2_library_language')->get('library/language',                           'LanguagesController@index');
+		Route::name('v2_library_verseInfo')->get('library/verseinfo',                         'VerseController@info');
+		Route::name('v2_library_numbers')->get('library/numbers',                             'NumbersController@customRange');
+		Route::name('v2_library_metadata')->get('library/metadata',                           'BiblesController@libraryMetadata');
+		Route::name('v2_library_volume')->get('library/volume',                               'BiblesController@index');
+		Route::name('v2_library_volumeLanguage')->get('library/volumelanguage',               'LanguagesController@volumeLanguage');
+		Route::name('v2_library_volumeLanguageFamily')->get('library/volumelanguagefamily',   'LanguagesController@volumeLanguageFamily');
+		Route::name('v2_volume_organization_list')->get('library/volumeorganization',         'OrganizationsController@index');
+		Route::name('v2_volume_history')->get('library/volumehistory',                        'BiblesController@history');
+		Route::name('v2_library_organization')->get('library/organization',                   'OrganizationsController@index');
+		Route::name('v2_audio_location')->get('audio/location',                               'AudioController@location');
+		Route::name('v2_audio_path')->get('audio/path',                                       'AudioController@index');
+		Route::name('v2_audio_timestamps')->get('audio/versestart',                           'AudioController@timestampsByReference');
+		Route::name('v2_text_font')->get('text/font',                                         'TextController@fonts');
+		Route::name('v2_text_verse')->get('text/verse',                                       'TextController@index');
+		Route::name('v2_text_search')->get('text/search',                                     'TextController@search');
+		Route::name('v2_text_search_group')->get('text/searchgroup',                          'TextController@searchGroup');
+		Route::name('v2_video_location')->get('video/location',                               'FilmsController@location');
+		Route::name('v2_video_video_path')->get('video/path',                                 'FilmsController@videoPath');
+		Route::name('v2_country_lang')->get('country/countrylang',                            'LanguagesController@CountryLang');
+		Route::name('v2_api_versionLatest')->get('api/apiversion',                            'HomeController@versionLatest');
+		Route::name('v2_api_apiReply')->get('api/reply',                                      'HomeController@versionReplyTypes');
+		// VERSION 4
 		Route::name('v4_bible.all')->get('bibles',                                            'BiblesController@index');
 		Route::name('v4_bible.one')->get('bibles/{id}',                                       'BiblesController@show');
 		Route::name('v4_bible.equivalents')->get('bible/{id}/equivalents',                    'BiblesController@equivalents');
@@ -43,8 +40,8 @@
 		Route::name('v4_bible.read')->get('bible/{id}/{book}/{chapter}',                      'TextController@text');
 		Route::name('v4_bible_books.all')->get('bibles/books/',                               'BooksController@index');
 		Route::name('v4_bible_books.one')->get('bibles/books/{id}',                           'BooksController@show');
-		Route::name('v4_bible_filesets.all')->get('bibles',                                   'BibleFileSetsController@index');
-		Route::name('v4_bible_filesets.one')->get('bibles/{id}',                              'BibleFileSetsController@show');
+		Route::name('v4_bible_filesets.all')->get('bibles/{id}/filesets',                     'BibleFileSetsController@index');
+		Route::name('v4_bible_filesets.one')->get('bibles/{id}/filesets/{fileset_id}',        'BibleFileSetsController@show');
 		Route::name('v4_bible_filesets.permissions')->get('bibles/filesets/{id}/permissions', 'BibleFileSetPermissionsController@index');
 		Route::name('v4_bibleFiles.one')->get('bibles/files/{ id }',                          'BibleFilesController@show');
 		Route::name('v4_timestamps')->get('timestamps',                                       'AudioController@availableTimestamps');
