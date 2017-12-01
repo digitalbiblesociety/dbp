@@ -36,7 +36,14 @@ class APIController extends Controller
 	    	$noVersionRoutes = ['v2_api_apiversion','v4_api_versionLatest'];
 	    	if(!in_array(\Route::currentRouteName(), $noVersionRoutes)) $this->v = checkParam('v');
 		    $this->api = true;
-		    if(isset($this->v)) $this->serializer = (($this->v == "jQueryDataTable") OR ($this->v != 2) OR ($this->v != 3) OR (isset($_GET['arraySerializer']))) ? new DataArraySerializer() : new ArraySerializer();
+		    if(isset($this->v)) {
+		    	switch ($this->v) {
+				    case "jQueryDataTable":
+				    case "2":
+				    case "3": {$this->serializer = new ArraySerializer();break;}
+				    default: $this->serializer = new DataArraySerializer();
+			    }
+		    }
 		    $this->paginateNumber = $_GET["number"] ?? 20;
 	    }
         $this->middleware('auth')->only(['create','edit']);
