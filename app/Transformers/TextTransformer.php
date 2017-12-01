@@ -9,7 +9,8 @@ class TextTransformer extends BaseTransformer
     public function transform($text)
     {
 	    switch ($this->version) {
-		    case "2": return $this->transformForV2($text);
+		    case "2":
+		    case "3": return $this->transformForV2($text);
 		    case "4":
 		    default: return $this->transformForV4($text);
 	    }

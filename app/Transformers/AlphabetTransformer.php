@@ -23,7 +23,8 @@ class AlphabetTransformer extends TransformerAbstract
 	{
 		switch ($this->version) {
 			case "jQueryDataTable": return $this->transformForDataTables($alphabet);
-			case "2": return $this->transformForV2($alphabet);
+			case "2":
+			case "3": return $this->transformForV2($alphabet);
 			case "4":
 			default: return $this->transformForV4($alphabet);
 		}
@@ -50,10 +51,10 @@ class AlphabetTransformer extends TransformerAbstract
 	public function transformForV2(Alphabet $alphabet)
 	{
 		return [
-			'name' => $alphabet->name,
-			'script' => $alphabet->script,
-			'family' => $alphabet->family,
-			'type' => $alphabet->type,
+			'name'      => $alphabet->name,
+			'script'    => $alphabet->script,
+			'family'    => $alphabet->family,
+			'type'      => $alphabet->type,
 			'direction' => $alphabet->direction
 		];
 	}

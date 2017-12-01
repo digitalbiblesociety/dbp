@@ -17,8 +17,9 @@ class BibleTransformer extends BaseTransformer
     {
 	    switch ($this->version) {
 		    case "jQueryDataTable": return $this->transformForDataTables($bible);
-		    case "2": return $this->transformForV2($bible);
-		    case "4":
+		    case "2":
+		    case "3": return $this->transformForV2($bible);
+		    case "4": return $this->transformForV4($bible);
 		    default: return $this->transformForV4($bible);
 	    }
     }
@@ -86,7 +87,7 @@ class BibleTransformer extends BaseTransformer
 					        "num_sample_audio"          => "0",
 					        "sku"                       => "",
 					        "audio_zip_path"            => "",
-					        "font"                      => null,
+					        "font"                      => "",
 					        "arclight_language_id"      => "",
 					        "media"                     => ["$fileset->set_type"],
 					        "media_type"                => "Drama",
@@ -106,20 +107,29 @@ class BibleTransformer extends BaseTransformer
 
     }
 
-
 	public function transformForV4($bible)
 	{
-		// Algolia
-		return [
-			"abbr"          => $bible->id,
-			"mark"          => $bible->copyright,
-			"name"          => $bible->currentTranslation->name,
-			"vname"         => @$bible->vernacularTranslation->name ?? "",
-			"organization"  => $bible->organization,
-			"language"      => $bible->language->name,
-			"date"          => intval($bible->date),
-			"country"       => $bible->language->primaryCountry->name ?? '',
-		];
+
+		switch($this->route) {
+
+			case "v4_bible.all": {
+				return [
+					"abbr"         => $bible->id,
+					"mark"         => $bible->copyright,
+					"name"         => $bible->currentTranslation->name,
+					"vname"        => @$bible->vernacularTranslation->name ?? "",
+					"organization" => $bible->organization,
+					"language"     => $bible->language->name,
+					"date"         => intval( $bible->date ),
+					"country"      => $bible->language->primaryCountry->name ?? '',
+				];
+			}
+
+			case "v4_bible.one": {
+				return $bible;
+			}
+
+		}
 	}
 
 	public function transformForDataTables($bible)

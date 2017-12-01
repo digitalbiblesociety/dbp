@@ -14,7 +14,8 @@ class AudioTransformer extends BaseTransformer
     {
 	    switch ($this->version) {
 		    case "jQueryDataTable": return $this->transformForDataTables($audio);
-		    case "2": return $this->transformForV2($audio);
+		    case "2":
+		    case "3": return $this->transformForV2($audio);
 		    case "4":
 		    default: return $this->transformForV4($audio);
 	    }
@@ -24,7 +25,7 @@ class AudioTransformer extends BaseTransformer
     	switch($this->route) {
     		case "v2_audio_timestamps": {
 			    return [
-				    "verse_id"    => $audio->verse_start,
+				    "verse_id"    => (string) $audio->verse_start,
                     "verse_start" => $audio->timestamp
 			    ];
 		    }
@@ -32,7 +33,7 @@ class AudioTransformer extends BaseTransformer
 		    case "v2_audio_path": {
 			    return [
 				    "book_id"    => ucfirst(strtolower($audio->book->id_osis)),
-				    "chapter_id" => "$audio->chapter_start",
+				    "chapter_id" => (string) $audio->chapter_start,
 				    "path"       => $audio->bible_id."/".$audio->file_name
 			    ];
 		    }

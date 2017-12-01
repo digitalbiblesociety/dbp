@@ -17,7 +17,8 @@ class OrganizationTransformer extends BaseTransformer
     	//if($organization->engTranslation) dd($organization->engTranslation->name);
 	    switch ($this->version) {
 		    case "jQueryDataTable": return $this->transformForDataTables($organization);
-		    case "2": {
+		    case "2":
+		    case "3": {
 		    	if($this->route == "v2_volume_organization_list") return $this->transformForV2_VolumeOrganizationListing($organization);
 		    	return $this->transformForV2($organization);
 		    }

@@ -17,7 +17,8 @@ class FileSetTransformer extends BaseTransformer
     {
 	    switch ($this->version) {
 		    case "jQueryDataTable": return $this->transformForDataTables($fileset);
-		    case "2": return $this->transformForV2($fileset);
+		    case "2":
+		    case "3": return $this->transformForV2($fileset);
 		    case "4":
 		    default: return $this->transformForV4($fileset);
 	    }

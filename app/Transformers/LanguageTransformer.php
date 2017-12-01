@@ -10,7 +10,8 @@ class LanguageTransformer extends BaseTransformer
     {
     	switch ($this->version) {
 		    case "jQueryDataTable": return $this->transformForDataTables($language);
-		    case "2": return $this->transformForV2($language);
+		    case "2":
+		    case "3": return $this->transformForV2($language);
 		    case "4":
 		    default: return $this->transformForV4($language);
 	    }
