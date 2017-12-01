@@ -40,6 +40,9 @@ class BiblesController extends APIController
 	 */
 	public function index()
     {
+    	// TODO: Test default return from v2
+    	if(\Route::currentRouteName() == "v2_library_volume") return json_decode(public_path('/data/volume.json'));
+
 	    // Return the documentation if it's not an API request
 	    if(!$this->api) return view('bibles.index');
 
@@ -127,14 +130,16 @@ class BiblesController extends APIController
 	public function libraryMetadata()
 	{
 		$bible_id = null;
+		$bible = null;
 		$dam_id = checkParam('dam_id', null, 'optional');
 		$bibleEquivalent = BibleEquivalent::where('equivalent_id',$dam_id)->first();
-		if($bibleEquivalent) $bible = $bibleEquivalent->bible;
+
+		if(isset($bibleEquivalent)) $bible = $bibleEquivalent->bible;
 		if(!$bible) $bible = Bible::find($dam_id);
 		if(!$bible) return $this->replyWithError("No Bible found for given dam_id");
 		if($bible) $bible_id = $bible->id;
 
-		$bible = Bible::when($bible_id, function ($query) use ($bible_id) {
+		$bible = Bible::with('organizations')->when($bible_id, function ($query) use ($bible_id) {
 			return $query->where('id', $bible_id);
 		})->first();
 		return $this->reply(fractal()->item($bible)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
@@ -182,8 +187,7 @@ class BiblesController extends APIController
 	    if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
 
     	if(!$this->api) return view('bibles.show',compact('bible'));
-	    
-		return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
+		return $this->reply(fractal()->collection($bible)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
     }
 
 	public function manage($id)
