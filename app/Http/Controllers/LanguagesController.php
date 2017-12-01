@@ -121,6 +121,7 @@ class LanguagesController extends APIController
 	 */
 	public function volumeLanguageFamily()
 	{
+		return json_decode(file_get_contents(public_path('/data/volumelanguagefamily.json')));
 		if(!$this->api) return view('languages.volumes');
 
 		// $full_word =  checkParam('full_word', null, 'optional');
