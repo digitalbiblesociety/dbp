@@ -38,7 +38,6 @@ class APIController extends Controller
 		    $this->api = true;
 		    if(isset($this->v)) {
 		    	switch ($this->v) {
-				    case "jQueryDataTable":
 				    case "2":
 				    case "3": {$this->serializer = new ArraySerializer();break;}
 				    default: $this->serializer = new DataArraySerializer();
