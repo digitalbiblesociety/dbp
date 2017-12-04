@@ -40,9 +40,6 @@ class BiblesController extends APIController
 	 */
 	public function index()
     {
-    	// TODO: Test default return from v2
-    	if(\Route::currentRouteName() == "v2_library_volume") return json_decode(public_path('/data/volume.json'));
-
 	    // Return the documentation if it's not an API request
 	    if(!$this->api) return view('bibles.index');
 
@@ -81,7 +78,7 @@ class BiblesController extends APIController
 			    $q->orderBy($sort_by);
 		    })->get();
 
-	    if($this->v == 2) $bibles->load('alphabet','filesets');
+	    if(($this->v == 2) OR ($this->v == 3)) $bibles->load('alphabet','filesets');
 
 	    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
     }
