@@ -75,7 +75,7 @@ class BibleTransformer extends BaseTransformer
 					        "language_family_iso_2T"    => (($bible->language->parent) ? $bible->language->parent->parentLanguage->iso2T : $bible->language->iso2T) ?? "",
 					        "language_family_iso_1"     => (($bible->language->parent) ? $bible->language->parent->parentLanguage->iso1 : $bible->language->iso1) ?? "",
 					        "version_code"              => substr($bible->id,3) ?? "",
-					        "version_name"              => @$bible->vernacularTranslation->name ?? @$bible->currentTranslation->name,
+					        "version_name"              => "Wycliffe Bible Translators, Inc.",
 					        "version_english"           => @$bible->currentTranslation->name ?? $bible->id,
 					        "collection_code"           => ($fileset->name == "Old Testament") ? "OT" : "NT",
 					        "rich"                      => "0",
