@@ -39,6 +39,7 @@ use i18n;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereVerses($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Bible\BookTranslation $translation
  */
 class Book extends Model
 {

@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetNumber whereScriptVarientIso($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetNumber whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetNumber whereScriptVariantIso($value)
  */
 class AlphabetNumber extends Model
 {

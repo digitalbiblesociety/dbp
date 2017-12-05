@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static BibleBook whereName($value)
  * @method static BibleBook whereNameShort($value)
  * @method static BibleBook whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class BibleBook extends Model
 {
