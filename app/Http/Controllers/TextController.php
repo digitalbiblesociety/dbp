@@ -22,12 +22,12 @@ class TextController extends APIController
      *
      * @return JSON|View
      */
-    public function index()
+    public function index($bible_url_param = null, $book_url_param = null,$chapter_url_param = null)
     {
     	// Fetch and Assign $_GET params
-    	$bible_id = checkParam('dam_id');
-	    $book_id = checkParam('book_id');
-	    $chapter = checkParam('chapter_id');
+    	$bible_id = checkParam('dam_id', $bible_url_param);
+	    $book_id = checkParam('book_id', $book_url_param);
+	    $chapter = checkParam('chapter_id', $chapter_url_param);
     	$verse_start = checkParam('verse_start', null, 'optional') ?? 1;
 	    $verse_end = checkParam('verse_end', null, 'optional');
 
@@ -39,6 +39,7 @@ class TextController extends APIController
 	    $book = Book::where('id',$book_id)->orWhere('id_usfx',$book_id)->orWhere('id_osis',$book_id)->first();
 	    if(!$book) return $this->setStatusCode(422)->replyWithError('Missing Book ID');
 	    $book->push('name_vernacular', $book->translation($bible->iso)->first());
+
 	    // Fetch Verses
 		$verses = \DB::connection('sophia')->table($bible->id.'_vpl')
 		->where([['book',$book->id_usfx], ['chapter',$chapter]])

@@ -39,7 +39,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BibleTranslation extends Model
 {
-    protected $hidden = ["created_at","updated_at","bible_id","description"];
+    protected $hidden = ["created_at","updated_at","bible_id","description","id"];
     protected $fillable = ['name','description','bible_id','iso'];
 
     public function bible()

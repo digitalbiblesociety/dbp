@@ -64,7 +64,7 @@ class TextTransformer extends BaseTransformer
 	{
 		return [
 			"book"             => $text->book,
-			"chapter"          => $text->chapter_number,
+			"chapter"          => $text->chapter,
 			"verse_start"      => $text->verse_start,
 			"verse_end"        => $text->verse_end,
 			"verse_text"       => $text->verse_text

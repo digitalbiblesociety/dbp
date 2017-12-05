@@ -30,6 +30,7 @@ class BibleBook extends Model
     protected $table = "bible_books";
     public $incrementing = false;
     public $fillable = ['abbr','book_id', 'name', 'name_short', 'chapters'];
+    public $hidden = ['created_at','updated_at','bible_id'];
 
     public function bible()
     {

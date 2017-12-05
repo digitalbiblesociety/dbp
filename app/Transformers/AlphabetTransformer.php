@@ -66,9 +66,7 @@ class AlphabetTransformer extends TransformerAbstract
 			'script'    => $alphabet->script,
 			'family'    => $alphabet->family,
 			'type'      => $alphabet->type,
-			'direction' => $alphabet->direction,
-			'fonts'     => $alphabet->fonts,
-			'languages' => $alphabet->languages
+			'direction' => $alphabet->direction
 		];
 	}
 

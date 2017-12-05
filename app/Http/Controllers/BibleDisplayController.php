@@ -22,7 +22,7 @@ class BibleDisplayController extends Controller
 		}
 
 		$bibleNavigation =  \DB::connection('sophia')->table($bible_id.'_vpl')->select('book','chapter')->distinct()->get()->groupBy('book');
-		$bibleLanguages = Bible::with('currentTranslation','language')->has('text')->get()->groupBy('language.name');
+		$bibleLanguages = Bible::with('currentTranslation','language')->get()->groupBy('language.name');
 		$verses = \DB::connection('sophia')->table($bible_id.'_vpl')->select(['book','verse_start','verse_text','chapter'])->where('book', $book_id)->where('chapter',$chapter)->orderBy('verse_start')->get();
 		$query = false;
 		return view('bibles.chapter',compact('verses','bibleLanguages','bibleNavigation','query','bible_id'));
@@ -35,7 +35,7 @@ class BibleDisplayController extends Controller
 		$limit = 100;
 
 		$bibleNavigation =  \DB::connection('sophia')->table($bible_id.'_vpl')->select('book','chapter')->distinct()->get()->groupBy('book');
-		$bibleLanguages = Bible::with('currentTranslation','language')->has('text')->get()->groupBy('language.name');
+		$bibleLanguages = Bible::with('currentTranslation','language')->get()->groupBy('language.name');
 		$search = \DB::connection()->getPdo()->quote('+'.str_replace(' ',' +',$query));
 		$verses = \DB::connection('sophia')->table($bible_id.'_vpl')->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($search IN NATURAL LANGUAGE MODE)"))->limit($limit)->get();
 		return view('bibles.chapter',compact('verses','bibleLanguages','bibleNavigation','query','bible_id'));

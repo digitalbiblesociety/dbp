@@ -19,7 +19,7 @@ class AlphabetsController extends APIController
 	    $alphabets = Alphabet::all();
     	if(!$this->api) return view('languages.alphabets.index', compact('alphabets'));
 
-		return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer)->toArray());
+		return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer));
     }
 
 
@@ -35,7 +35,7 @@ class AlphabetsController extends APIController
 	    $alphabet = Alphabet::with('fonts','languages')->find($id);
 	    if(!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
     	if(!$this->api) return view('languages.alphabets.show', compact('alphabet'));
-        return $this->reply(fractal()->item($alphabet)->transformWith(AlphabetTransformer::class)->serializeWith($this->serializer)->ToArray());
+        return $this->reply(fractal()->item($alphabet)->transformWith(AlphabetTransformer::class)->serializeWith($this->serializer));
     }
 
 

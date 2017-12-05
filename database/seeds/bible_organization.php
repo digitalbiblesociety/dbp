@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use database\seeds\SeederHelper;
 use App\Models\Bible\Bible;
+use \App\Models\Bible\BibleOrganization;
 
 class bible_organization extends Seeder
 {
@@ -22,11 +23,11 @@ class bible_organization extends Seeder
                 echo "\n Missing:". $connection['bible_id'];
                 continue;
             }
-
-            DB::table('bible_organization')->insert([
-                'bible_abbr'       => $connection['bible_id'],
-                'organization_id'  => $organization->slug,
-                'contributionType' => 2
+			if(!$organization) { continue; }
+            BibleOrganization::create([
+                'bible_id'          => $connection['bible_id'],
+                'organization_id'   => $organization->id,
+                'relationship_type' => "publisher"
             ]);
         }
     }
