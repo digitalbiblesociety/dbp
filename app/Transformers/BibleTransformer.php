@@ -89,7 +89,7 @@ class BibleTransformer extends BaseTransformer
 					        "audio_zip_path"            => "",
 					        "font"                      => null,
 					        "arclight_language_id"      => "",
-					        "media"                     => ["$fileset->set_type"],
+					        "media"                     => "$fileset->set_type",
 					        "media_type"                => "Drama",
 					        "delivery"                  => [
 					        	"mobile",
