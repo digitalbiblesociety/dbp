@@ -48,6 +48,7 @@ class BooksController extends APIController
 
 			$bible_id = $bibleEquivalent->bible->id;
 			$textExists = \Schema::connection('sophia')->hasTable($bible_id.'_vpl');
+
 			if($textExists) {
 				$booksChapters = collect(\DB::connection('sophia')->table($bible_id.'_vpl')->select('book','chapter')->distinct()->get());
 				$books = $booksChapters->pluck('book')->toArray();
@@ -56,8 +57,8 @@ class BooksController extends APIController
 
 				$books = Book::whereIn('id_usfx',$books)->orderBy('book_order')->when($testament, function($q) use ($testament) {
 					$q->where('book_testament', $testament);
-				})->get()->map(function ($book) use ($bible_id,$chapters) {
-					$book['bible_id'] = $bible_id;
+				})->get()->map(function ($book) use ($bibleEquivalent,$chapters) {
+					$book['bible_id'] = $bibleEquivalent;
 					$book['sophia_chapters'] = $chapters[$book->id_usfx];
 					return $book;
 				});
@@ -102,22 +103,25 @@ class BooksController extends APIController
     {
 	    if(!$this->api) return view('docs.books.chapters');
 
-		$id = checkParam('dam_id');
-		$bibleEquivalent = BibleEquivalent::where('equivalent_id',$id)->first();
+	    $id = checkParam('dam_id');
+	    $book_id = checkParam('book_id', null, 'optional');
+	    if(!$book_id) { return $this->setStatusCode(422)->replyWithError("Missing book_id");}
+
+	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$id)->first();
 		if($bibleEquivalent) $bible = $bibleEquivalent->bible;
 		if(!$bible) $bible = Bible::find($id);
 		if(!$bible) return $this->setStatusCode(422)->replyWithError("Missing dam_id");
 		$bible_id = $bible->id;
 
-		$book_id = checkParam('book_id', null, true);
 	    $book = Book::where('id_osis',$book_id)->orWhere('id',$book_id)->first();
 		$chapters = \DB::connection('sophia')->table($bible_id.'_vpl')->where('book',$book->id_usfx)
 			->select(['chapter','book'])->distinct()->orderBy('chapter')->get()
-			->map(function ($chapter) use ($bible_id,$book) {
+			->map(function ($chapter) use ($id, $book) {
 				$chapter->book = $book;
-				$chapter->bible_id = $bible_id;
+				$chapter->bible_id = $id;
 				return $chapter;
 			});
+
 		return $this->reply(fractal()->collection($chapters)->serializeWith($this->serializer)->transformWith(new BooksTransformer()));
     }
 
