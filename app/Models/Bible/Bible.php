@@ -53,6 +53,9 @@ use App\Models\Language\Language;
  * @method static Builder|Bible whereScript($value)
  * @method static Builder|Bible whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesetAudio
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesetFilm
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesetText
  */
 class Bible extends Model
 {
@@ -143,6 +146,11 @@ class Bible extends Model
 		return $this->HasMany(BibleFileset::class)->where('set_type','Film');
 	}
 
+	public function filesetText()
+	{
+		return $this->HasMany(BibleFileset::class)->where('set_type','Text');
+	}
+
     public function files()
     {
         return $this->HasMany(BibleFile::class);
@@ -204,7 +212,7 @@ class Bible extends Model
      */
     public function language()
     {
-        return $this->hasOne(Language::class,'iso','iso')->select('name','id','country_id','iso');
+        return $this->hasOne(Language::class,'iso','iso')->select('name','id','country_id','iso','iso2T','iso2B','iso1','autonym');
     }
 
     /**

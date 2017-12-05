@@ -58,7 +58,7 @@ class BiblesController extends APIController
 		$sort_by = checkParam('sort_by', null, 'optional');
 
 	    //Cache::remember("bibles_$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by", 1900, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by) {
-	    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent')->has('filesets')->when($language, function ($query) use ($language, $full_word) {
+	    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent.parentLanguage')->has('filesets')->when($language, function ($query) use ($language, $full_word) {
 			    if(!$full_word) return $query->where('name', 'LIKE', "%".$language."%");
 			    return $query->where('name', $language);
 		    })->when($organization, function($q) use ($organization) {
@@ -69,6 +69,7 @@ class BiblesController extends APIController
 			    switch ($media) {
 				    case "video": {$q->has('filesetFilm'); break;}
 				    case "audio": {$q->has('filesetAudio');break;}
+				    case "text":  {$q->has('filesetText'); break;}
 			    }
 		    })->when($updated, function($q) use ($updated) {
 			    $q->where('updated_at', '>', $updated);

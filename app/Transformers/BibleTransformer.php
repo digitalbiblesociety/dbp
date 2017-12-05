@@ -17,7 +17,7 @@ class BibleTransformer extends BaseTransformer
     {
 	    switch ($this->version) {
 		    case "jQueryDataTable": return $this->transformForDataTables($bible);
-		    case "2":
+		    case "2": return $this->transformForV2($bible);
 		    case "3": return $this->transformForV2($bible);
 		    case "4": return $this->transformForV4($bible);
 		    default: return $this->transformForV4($bible);
@@ -63,17 +63,17 @@ class BibleTransformer extends BaseTransformer
 					        "language_name"             => $bible->language->autonym ?? "",
 					        "language_english"          => $bible->language->name ?? "",
 					        "language_iso"              => $bible->iso ?? "",
-					        "language_iso_2B"           => $bible->language->iso2B ?? "",
-					        "language_iso_2T"           => $bible->language->iso2T ?? "",
-					        "language_iso_1"            => $bible->language->iso1 ?? "",
-					        "language_iso_name"         => $bible->language->name ?? "", // This is just a duplicate of language_english
-					        "language_family_code"      => (@strtoupper($bible->language->parent->iso) ?? strtoupper($bible->language->iso)) ?? "",
-					        "language_family_name"      => (@$bible->language->parent->autonym ?? $bible->language->autonym) ?? "",
-					        "language_family_english"   => (@$bible->language->parent->name ?? $bible->language->name) ?? "",
+					        "language_iso_2B"           => @$bible->language->iso2B ?? "",
+					        "language_iso_2T"           => @$bible->language->iso2T ?? "",
+					        "language_iso_1"            => @$bible->language->iso1 ?? "",
+					        "language_iso_name"         => @$bible->language->name ?? "",
+					        "language_family_code"      => (($bible->language->parent) ? strtoupper($bible->language->parent->parentLanguage->iso) : strtoupper($bible->iso)) ?? "",
+					        "language_family_name"      => (($bible->language->parent) ? $bible->language->parent->parentLanguage->autonym : $bible->language->autonym) ?? "",
+					        "language_family_english"   => (($bible->language->parent) ? $bible->language->parent->parentLanguage->name : $bible->language->name) ?? "",
 					        "language_family_iso"       => $bible->iso ?? "",
-					        "language_family_iso_2B"    => (@$bible->language->parent->iso2B ?? $bible->language->iso2B) ?? "",
-					        "language_family_iso_2T"    => (@$bible->language->parent->iso2T ?? $bible->language->iso2T) ?? "",
-					        "language_family_iso_1"     => (@$bible->language->parent->iso1 ?? $bible->language->iso1) ?? "",
+					        "language_family_iso_2B"    => (($bible->language->parent) ? $bible->language->parent->parentLanguage->iso2B : $bible->language->iso2B) ?? "",
+					        "language_family_iso_2T"    => (($bible->language->parent) ? $bible->language->parent->parentLanguage->iso2T : $bible->language->iso2T) ?? "",
+					        "language_family_iso_1"     => (($bible->language->parent) ? $bible->language->parent->parentLanguage->iso1 : $bible->language->iso1) ?? "",
 					        "version_code"              => substr($bible->id,3) ?? "",
 					        "version_name"              => @$bible->vernacularTranslation->name ?? "",
 					        "version_english"           => @$bible->currentTranslation->name ?? "",
@@ -89,7 +89,7 @@ class BibleTransformer extends BaseTransformer
 					        "audio_zip_path"            => "",
 					        "font"                      => null,
 					        "arclight_language_id"      => "",
-					        "media"                     => "$fileset->set_type",
+					        "media"                     => $fileset->set_type,
 					        "media_type"                => "Drama",
 					        "delivery"                  => [
 					        	"mobile",

@@ -94,6 +94,20 @@ use App\Models\Resource\Resource;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereUse($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereWriting($value)
  * @mixin \Eloquent
+ * @property int|null $bible_status
+ * @property int|null $bible_translation_need
+ * @property int|null $bible_year
+ * @property int|null $bible_year_newTestament
+ * @property int|null $bible_year_portions
+ * @property string|null $bible_sample_text
+ * @property string|null $bible_sample_img
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleSampleImg($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleSampleText($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleTranslationNeed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleYear($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleYearNewTestament($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleYearPortions($value)
  */
 class Language extends Model
 {

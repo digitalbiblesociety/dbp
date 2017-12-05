@@ -42,7 +42,7 @@ class LanguageDialect extends Model
 	 */
     public function parentLanguage()
     {
-        return $this->belongsTo(Language::class);
+        return $this->belongsTo(Language::class,'language_id','id');
     }
 
 	public function childLanguage()
