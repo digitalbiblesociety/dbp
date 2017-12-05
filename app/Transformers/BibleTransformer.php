@@ -115,13 +115,10 @@ class BibleTransformer extends BaseTransformer
 			case "v4_bible.all": {
 				return [
 					"abbr"         => $bible->id,
-					"mark"         => $bible->copyright,
 					"name"         => $bible->currentTranslation->name,
 					"vname"        => @$bible->vernacularTranslation->name ?? "",
-					"organization" => $bible->organization,
 					"language"     => $bible->language->name,
-					"date"         => intval( $bible->date ),
-					"country"      => $bible->language->primaryCountry->name ?? '',
+					"date"         => intval( $bible->date )
 				];
 			}
 
