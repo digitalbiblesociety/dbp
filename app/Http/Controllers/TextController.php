@@ -17,11 +17,16 @@ use App\Http\Controllers\APIController;
 
 class TextController extends APIController
 {
-    /**
-     * Display a listing of the Verses
-     *
-     * @return JSON|View
-     */
+	/**
+	 * Display a listing of the Verses
+	 * Will either parse the path or query params to get data before passing it to the bible_equivalents table
+	 *
+	 * @param string|null $bible_url_param
+	 * @param string|null $book_url_param
+	 * @param string|null $chapter_url_param
+	 *
+	 * @return JSON|View
+	 */
     public function index($bible_url_param = null, $book_url_param = null,$chapter_url_param = null)
     {
     	// Fetch and Assign $_GET params
@@ -35,6 +40,7 @@ class TextController extends APIController
 	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$bible_id)->orWhere('equivalent_id',substr($bible_id,0,7))->first();
 	    if(!isset($bibleEquivalent)) $bible = Bible::find($bible_id);
 	    if(isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
+	    if(!$bible) return [];
 
 	    $book = Book::where('id',$book_id)->orWhere('id_usfx',$book_id)->orWhere('id_osis',$book_id)->first();
 	    if(!$book) return $this->setStatusCode(422)->replyWithError('Missing Book ID');

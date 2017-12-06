@@ -16,8 +16,8 @@ class BooksTransformer extends BaseTransformer
     {
 	    switch ($this->version) {
 		    case "jQueryDataTable": return $this->transformForDataTables($book);
-		    case "2":
-		    case "3": return $this->transformForV2($book);
+		    case "2": return $this->transformForV2($book);
+		    case "3": return $this->transformForV3($book);
 		    case "4":
 		    default: return $this->transformForV4($book);
 	    }
@@ -57,9 +57,47 @@ class BooksTransformer extends BaseTransformer
 			}
 
 		}
+    }
 
+    public function transformForV3(Book $book) {
+	    switch ( $this->route ) {
+		    case "v3_search": {
+		    	$manufactured_id = strval(random_int(0,20000));
+			    return [
+				    "id"           => $manufactured_id,
+				    "name"         => $book->name,
+				    "book_code"    => $book->id,
+				    "created_at"   => $book->created_at->toDateTimeString(),
+				    "updated_at"   => $book->updated_at->toDateTimeString(),
+				    "sort_order"   => strval($book->book_order),
+				    "volume_id"    => "3070",
+				    "enabled"      => "1",
+				    "dam_id"       => $book->bible_id,
+				    "chapter_list" => implode( ",", $book->sophia_chapters ),
+				    "_links"       => [
+					    "self" => [ "href" => "http://v3.dbt.io/search/$manufactured_id" ]
+				    ]
+			    ];
+		    }
 
+		    case "v3_books": {
+			    $manufactured_id = strval(random_int(0,20000));
+		    	return [
+				    "id"           => $manufactured_id,
+                    "name"         => $book->name,
+                    "dam_id"       => $book->bible_id,
+                    "book_code"    => $book->id,
+                    "order"        => strval($book->book_order),
+                    "enabled"      => true,
+				    "chapters"     => $book->chapters,
+				    "chapter_list" => $book->chapters->pluck('number')->implode(','),
+				    "_links"       => [
+					    "self" => [ "href" => "http://v3.dbt.io/search/$manufactured_id" ]
+				    ]
+			    ];
+		    }
 
+	    }
     }
 
 	public function transformForV4(Book $book) {

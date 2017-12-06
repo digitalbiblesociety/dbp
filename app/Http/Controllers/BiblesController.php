@@ -57,7 +57,6 @@ class BiblesController extends APIController
 	    $organization = checkParam('organization_id', null, 'optional');
 		$sort_by = checkParam('sort_by', null, 'optional');
 
-	    //Cache::remember("bibles_$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by", 1900, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by) {
 	    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent.parentLanguage','organizations')->has('filesets')->when($language, function ($query) use ($language, $full_word) {
 			    if(!$full_word) return $query->where('name', 'LIKE', "%".$language."%");
 			    return $query->where('name', $language);

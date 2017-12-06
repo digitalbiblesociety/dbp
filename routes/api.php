@@ -30,6 +30,14 @@
 	Route::name('v2_api_versionLatest')->get('api/apiversion',                            'HomeController@versionLatest');
 	Route::name('v2_api_apiReply')->get('api/reply',                                      'HomeController@versionReplyTypes');
 
+	// VERSION 3
+	// What can man do against such reckless hate
+	Route::prefix('v3')->group(function () {
+		Route::name('v3_query')->get('search',                                           'V3Controller@search');
+		Route::name('v3_books')->get('books',                                            'V3Controller@books');
+	});
+
+
 	// VERSION 4
 	Route::name('v4_bible.all')->get('bibles',                                            'BiblesController@index');
 	Route::name('v4_bible.one')->get('bibles/{id}',                                       'BiblesController@show');

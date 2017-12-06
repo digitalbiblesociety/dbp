@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Transformers\EmbeddedArraySerializer;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -38,8 +39,8 @@ class APIController extends Controller
 		    $this->api = true;
 		    if(isset($this->v)) {
 		    	switch ($this->v) {
-				    case "2":
-				    case "3": {$this->serializer = new ArraySerializer();break;}
+				    case "2": {$this->serializer = new ArraySerializer();break;}
+				    case "3": {$this->serializer = new EmbeddedArraySerializer(); break;}
 				    default: $this->serializer = new DataArraySerializer();
 			    }
 		    }
