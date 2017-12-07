@@ -12,12 +12,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  * @property string|null $created_at
  * @property string|null $updated_at
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryRegion whereCountryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryRegion whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryRegion whereLanguageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryRegion whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryRegion whereUpdatedAt($value)
- * @mixin \Eloquent
  */
 class CountryRegion extends Model
 {

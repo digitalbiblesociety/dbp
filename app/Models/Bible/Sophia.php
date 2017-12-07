@@ -3,7 +3,6 @@
 namespace App\Models\Bible;
 
 use App\Models\User\User;
-use App\Models\Bible\Bible;
 use Illuminate\Database\Eloquent\Model;
 
 /**

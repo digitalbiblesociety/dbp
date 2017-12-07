@@ -3,7 +3,6 @@
 namespace App\Models\Bible;
 
 use App\Models\Language\Language;
-use App\Models\Bible\Bible;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -23,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Bible\Bible $bible
  * @property-read \App\Models\Language\Language $language
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereBibleId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereBibleVariationId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereCreatedAt($value)
@@ -35,7 +35,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereVernacular($value)
- * @mixin \Eloquent
  */
 class BibleTranslation extends Model
 {

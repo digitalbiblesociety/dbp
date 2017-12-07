@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon $updated_at
  * @property string|null $provider
  * @property-read \App\Models\Organization\Organization $organization
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereBibleId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereId($value)
@@ -27,7 +28,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleLink whereUrl($value)
- * @mixin \Eloquent
  */
 class BibleLink extends Model
 {

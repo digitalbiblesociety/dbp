@@ -14,13 +14,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $created_at
  * @property string|null $updated_at
  * @property-read \App\Models\Bible\Bible|null $bible
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleOrganization whereBibleId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleOrganization whereBibleVariationId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleOrganization whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleOrganization whereOrganizationId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleOrganization whereRelationshipType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleOrganization whereUpdatedAt($value)
- * @mixin \Eloquent
  */
 class BibleOrganization extends Model
 {

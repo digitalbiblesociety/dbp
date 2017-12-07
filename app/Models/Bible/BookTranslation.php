@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Bible\Book $book
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BookTranslation whereBookId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BookTranslation whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BookTranslation whereIso($value)
@@ -24,7 +25,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BookTranslation whereNameLong($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BookTranslation whereNameShort($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BookTranslation whereUpdatedAt($value)
- * @mixin \Eloquent
  */
 class BookTranslation extends Model
 {

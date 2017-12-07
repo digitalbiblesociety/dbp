@@ -13,12 +13,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $created_at
  * @property string|null $updated_at
  * @property-read \App\Models\Country\Country $language
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryTranslation whereCountryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryTranslation whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryTranslation whereLanguageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryTranslation whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryTranslation whereUpdatedAt($value)
- * @mixin \Eloquent
  */
 class CountryTranslation extends Model
 {

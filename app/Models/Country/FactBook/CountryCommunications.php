@@ -21,20 +21,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $internet_population_percent
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications whereBroadcastMedia($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications whereCountryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications whereFixedPhonesSubsPer100($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications whereFixedPhonesTotal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications whereInternetCountryCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications whereInternetPopulationPercent($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications whereInternetTotalUsers($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications whereMobilePhonesSubsPer100($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications whereMobilePhonesTotal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications wherePhoneSystemDomestic($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications wherePhoneSystemGeneralAssessment($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications wherePhoneSystemInternational($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\FactBook\CountryCommunications whereUpdatedAt($value)
+ * @method static CountryCommunications whereBroadcastMedia($value)
+ * @method static CountryCommunications whereCountryId($value)
+ * @method static CountryCommunications whereCreatedAt($value)
+ * @method static CountryCommunications whereFixedPhonesSubsPer100($value)
+ * @method static CountryCommunications whereFixedPhonesTotal($value)
+ * @method static CountryCommunications whereInternetCountryCode($value)
+ * @method static CountryCommunications whereInternetPopulationPercent($value)
+ * @method static CountryCommunications whereInternetTotalUsers($value)
+ * @method static CountryCommunications whereMobilePhonesSubsPer100($value)
+ * @method static CountryCommunications whereMobilePhonesTotal($value)
+ * @method static CountryCommunications wherePhoneSystemDomestic($value)
+ * @method static CountryCommunications wherePhoneSystemGeneralAssessment($value)
+ * @method static CountryCommunications wherePhoneSystemInternational($value)
+ * @method static CountryCommunications whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class CountryCommunications extends Model

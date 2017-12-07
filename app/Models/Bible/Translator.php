@@ -16,6 +16,7 @@ use App\Models\Bible\Bible;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bibles
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Translator whereBorn($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Translator whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Translator whereDescription($value)
@@ -23,7 +24,6 @@ use App\Models\Bible\Bible;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Translator whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Translator whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Translator whereUpdatedAt($value)
- * @mixin \Eloquent
  */
 class Translator extends Model
 {

@@ -12,10 +12,10 @@ use App\Models\Language\Language;
  * @property int $language_id
  * @property int $population
  * @property-read \App\Models\Language\Language $language
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryLanguage whereCountryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryLanguage whereLanguageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryLanguage wherePopulation($value)
- * @mixin \Eloquent
  */
 class CountryLanguage extends Model
 {

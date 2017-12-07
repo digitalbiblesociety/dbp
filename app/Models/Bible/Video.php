@@ -2,11 +2,7 @@
 
 namespace App\Models\Bible;
 
-use App\Models\Language\Language;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Bible\Bible;
-use App\Models\Bible\Book;
-use App\Models\Bible\VideoTranslations;
 
 /**
  * App\Models\Bible\Video
@@ -27,6 +23,7 @@ use App\Models\Bible\VideoTranslations;
  * @property-read \App\Models\Bible\Book $book
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Video[] $related
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\VideoTranslations[] $translations
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Video whereBibleId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Video whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Video whereDuration($value)
@@ -39,7 +36,6 @@ use App\Models\Bible\VideoTranslations;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Video whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Video whereUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Video whereUrlDownload($value)
- * @mixin \Eloquent
  */
 class Video extends Model
 {

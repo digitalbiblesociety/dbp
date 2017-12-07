@@ -2,9 +2,7 @@
 
 namespace App\Models\Bible;
 
-use App\Traits\Uuids;
 use Illuminate\Database\Eloquent\Model;
-
 use App\Models\Language\Language;
 
 /**
@@ -25,6 +23,7 @@ use App\Models\Language\Language;
  * @property-read \App\Models\Bible\BibleFileTimestamp $firstReference
  * @property-read \App\Models\Language\Language $language
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileTimestamp[] $timestamps
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereBookId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereChapterEnd($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereChapterStart($value)
@@ -35,15 +34,10 @@ use App\Models\Language\Language;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereVerseEnd($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereVerseStart($value)
- * @mixin \Eloquent
  */
 class BibleFile extends Model
 {
 	protected $table = "bible_files";
-	public $incrementing = false;
-	protected $primaryKey = 'id';
-	protected $keyType = 'string';
-	use Uuids;
 
 	public function language()
 	{

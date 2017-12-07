@@ -22,9 +22,10 @@ use i18n;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Bible\BookTranslation $currentTranslation
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Text[] $text
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BookTranslation[] $translations
  * @property-read \App\Models\Bible\BookTranslation $vernacularTranslation
+ * @mixin \Eloquent
+ * @property-read \App\Models\Bible\BookTranslation $translation
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereBookGroup($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereBookOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereBookTestament($value)
@@ -38,8 +39,6 @@ use i18n;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereNotes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereVerses($value)
- * @mixin \Eloquent
- * @property-read \App\Models\Bible\BookTranslation $translation
  */
 class Book extends Model
 {

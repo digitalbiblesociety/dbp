@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Bible\BibleFileset $fileset
  * @property-read \App\Models\User\User $user
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileSetPermission whereAccessLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileSetPermission whereAccessNotes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileSetPermission whereBibleFilesetId($value)
@@ -26,7 +27,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileSetPermission whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileSetPermission whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileSetPermission whereUserId($value)
- * @mixin \Eloquent
  */
 class BibleFileSetPermission extends Model
 {

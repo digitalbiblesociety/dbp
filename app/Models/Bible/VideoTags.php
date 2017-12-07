@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float|null $time_end
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\VideoTags whereBookId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\VideoTags whereCategory($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\VideoTags whereChapter($value)
@@ -37,7 +38,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\VideoTags whereVerseEnd($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\VideoTags whereVerseStart($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\VideoTags whereVideoId($value)
- * @mixin \Eloquent
  */
 class VideoTags extends Model
 {

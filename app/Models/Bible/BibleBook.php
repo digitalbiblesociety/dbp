@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $book_id
  * @property string|null $name
  * @property string|null $name_short
- * @property \App\Models\Bible\Text $chapters
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Bible\Bible $bible
@@ -24,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static BibleBook whereNameShort($value)
  * @method static BibleBook whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string|null $chapters
  */
 class BibleBook extends Model
 {

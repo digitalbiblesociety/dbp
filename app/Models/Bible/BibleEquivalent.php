@@ -20,6 +20,7 @@ use App\Models\Organization\Organization;
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Bible\Bible $bible
  * @property-read \App\Models\Organization\Organization $organization
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleEquivalent whereBibleId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleEquivalent whereBibleVariationId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleEquivalent whereCreatedAt($value)
@@ -29,7 +30,6 @@ use App\Models\Organization\Organization;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleEquivalent whereSuffix($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleEquivalent whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleEquivalent whereUpdatedAt($value)
- * @mixin \Eloquent
  */
 class BibleEquivalent extends Model
 {

@@ -37,7 +37,6 @@ use App\Models\Language\Language;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleLink[] $links
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Organization\Organization[] $organizations
  * @property-read \App\Models\Bible\Printable $printable
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Text[] $text
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleTranslation[] $translations
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Translator[] $translators
  * @property-read \App\Models\Bible\BibleTranslation $vernacularTranslation
@@ -56,6 +55,8 @@ use App\Models\Language\Language;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesetAudio
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesetFilm
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesetText
+ * @property int $priority
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible wherePriority($value)
  */
 class Bible extends Model
 {

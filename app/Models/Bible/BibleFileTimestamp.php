@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $created_at
  * @property string|null $updated_at
  * @property-read \App\Models\Bible\Book $book
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereBibleFileId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereBibleFilesetId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereBookId($value)
@@ -30,7 +31,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereVerseEnd($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereVerseStart($value)
- * @mixin \Eloquent
  */
 class BibleFileTimestamp extends Model
 {

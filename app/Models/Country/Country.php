@@ -4,8 +4,6 @@ namespace App\Models\Country;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
-use App\Models\Country\CountryTranslation;
-use App\Models\Bible\Bible;
 
 /**
  * App\Models\Country\Country
@@ -20,6 +18,7 @@ use App\Models\Bible\Bible;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\Language[] $languages
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Country\CountryRegion[] $regions
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Country\CountryTranslation[] $translations
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\Country whereContinent($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\Country whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\Country whereFips($value)
@@ -27,7 +26,6 @@ use App\Models\Bible\Bible;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\Country whereIsoA3($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\Country whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\Country whereUpdatedAt($value)
- * @mixin \Eloquent
  */
 class Country extends Model
 {

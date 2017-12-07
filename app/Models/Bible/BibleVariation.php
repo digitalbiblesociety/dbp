@@ -3,7 +3,6 @@
 namespace App\Models\Bible;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Bible\BibleFile;
 
 /**
  * App\Models\Bible\BibleVariation
@@ -19,6 +18,7 @@ use App\Models\Bible\BibleFile;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFile[] $files
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleVariation whereCopyright($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleVariation whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleVariation whereDate($value)
@@ -29,7 +29,6 @@ use App\Models\Bible\BibleFile;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleVariation whereScript($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleVariation whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleVariation whereVariationId($value)
- * @mixin \Eloquent
  */
 class BibleVariation extends Model
 {
