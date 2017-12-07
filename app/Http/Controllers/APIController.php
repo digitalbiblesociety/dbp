@@ -34,7 +34,7 @@ class APIController extends Controller
 	    $url = explode(".",url()->current());
 	    $this->request = $request;
 	    if(substr(array_shift($url),-3,3) == "api") {
-	    	$noVersionRoutes = ['v2_api_apiversion','v4_api_versionLatest'];
+	    	$noVersionRoutes = ['v2_api_apiversion','v4_api_versionLatest','v3_query','v3_books'];
 	    	if(!in_array(\Route::currentRouteName(), $noVersionRoutes)) $this->v = checkParam('v');
 		    $this->api = true;
 		    if(isset($this->v)) {
