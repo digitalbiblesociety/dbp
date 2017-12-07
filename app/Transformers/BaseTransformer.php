@@ -14,7 +14,7 @@ class BaseTransformer extends TransformerAbstract {
 
 	public function __construct()
 	{
-		$this->version = $_GET['v'] ?? 4;
+		$this->version = $_GET['v'] ?? 3;
 		$this->iso = $_GET['iso'] ?? "eng";
 		$this->continent = $_GET['continent'] ?? false;
 		$this->route = \Route::currentRouteName();
