@@ -166,7 +166,7 @@ class CreateBiblesTable extends Migration
 	    });
 
 	    Schema::create('bible_files', function (Blueprint $table) {
-		    $table->char('id', 36)->primary();
+	    	$table->increments('id');
 		    $table->string('set_id', 16);
 		    $table->foreign('set_id',16)->references('id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
 		    $table->char('book_id',3);
@@ -195,7 +195,7 @@ class CreateBiblesTable extends Migration
 	    	$table->increments('id');
 		    $table->string('bible_fileset_id',12);
 		    $table->foreign('bible_fileset_id')->references('id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
-		    $table->uuid('bible_file_id');
+		    $table->integer('bible_file_id')->unsigned();
 		    $table->foreign('bible_file_id')->references('id')->on('bible_files');
 		    $table->char('book_id',3);
 		    $table->foreign('book_id')->references('id')->on('books');
