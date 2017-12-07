@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('head')
-
+    <title>{{ $country->name }}</title>
     <style>
         div[role="banner"] {
             background-color:#061700;
@@ -35,7 +35,7 @@
 
 @section('content')
 
-    @include('layouts.partials.banner', ['title' => 'Countries'])
+    @include('layouts.partials.banner', ['title' => $country->name])
 
     <div class="row">
     <table class="table" cellspacing="0" width="100%">
