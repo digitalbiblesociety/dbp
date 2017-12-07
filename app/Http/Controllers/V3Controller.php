@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\Book;
 use App\Transformers\BooksTransformer;
+use App\Transformers\FileSetTransformer;
+use App\Transformers\FileTransformer;
 use Illuminate\Http\Request;
 use Spatie\Fractalistic\ArraySerializer;
 
@@ -33,6 +35,16 @@ class V3Controller extends APIController
 			    'total_items' => $books->count()
 			]);
 	    }
+
+	    if($action_type == "chapters") {
+    		$files = BibleFile::where('set_id',$bible->id)->orWhere('set_id',$bible_id)->get();
+		    return $this->reply([
+			    "_links"      => ["self" => ["href" => "http://v3.dbt.io/search"]],
+			    "_embedded"   => fractal()->collection($files)->serializeWith(new ArraySerializer())->transformWith(new FileTransformer()),
+			    'total_items' => $files->count()
+		    ]);
+	    }
+
     }
 
     public function books()
