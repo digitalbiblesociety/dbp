@@ -15,7 +15,7 @@ class V3Controller extends APIController
 		$bible_id = checkParam('dam_id');
     	$action_type = checkParam('resource');
 		$bible = fetchBible($bible_id);
-		if(!$bible) return $this->setStatusCode(403)->replyWithError("Bible not found for given ID");
+		if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for given ID");
 
     	if($action_type == "books") {
 		    $booksChapters = collect(\DB::connection('sophia')->table($bible_id.'_vpl')->select('book','chapter')->distinct()->get());
@@ -40,7 +40,7 @@ class V3Controller extends APIController
 	    $bible_id = checkParam('dam_id');
 	    $children = checkParam('children', null, 'optional');
 	    $bible = fetchBible($bible_id);
-	    if(!$bible) return $this->setStatusCode(403)->replyWithError("Bible not found for given ID");
+	    if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for given ID");
 
 	    $files = ($children) ? BibleFile::where('set_id',$bible->id)->orWhere('set_id',$bible_id)->select([
 			'chapter_start as number',
