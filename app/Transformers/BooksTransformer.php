@@ -61,7 +61,7 @@ class BooksTransformer extends BaseTransformer
 
     public function transformForV3(Book $book) {
 	    switch ( $this->route ) {
-		    case "v3_search": {
+		    case "v3_query": {
 		    	$manufactured_id = strval(random_int(0,20000));
 			    return [
 				    "id"           => $manufactured_id,
