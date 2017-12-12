@@ -20,13 +20,12 @@ class BibleTransformer extends BaseTransformer
 		    case "2": return $this->transformForV2($bible);
 		    case "3": return $this->transformForV2($bible);
 		    case "4": return $this->transformForV4($bible);
-		    default: return $this->transformForV4($bible);
+		    default:  return $this->transformForV4($bible);
 	    }
     }
 
     public function transformForV2($bible)
     {
-
     	    switch($this->route) {
 
 		        case "v2_library_metadata": {
@@ -101,7 +100,7 @@ class BibleTransformer extends BaseTransformer
 				        ];
 			        }
 		        }
-
+		        default: return [];
 	        }
 
 
@@ -111,7 +110,6 @@ class BibleTransformer extends BaseTransformer
 	{
 
 		switch($this->route) {
-
 			case "v4_bible.all": {
 				return [
 					"abbr"         => $bible->id,
@@ -121,7 +119,6 @@ class BibleTransformer extends BaseTransformer
 					"date"         => intval( $bible->date )
 				];
 			}
-
 			case "v4_bible.one": {
 				return [
 					"abbr"         => $bible->id,
@@ -130,13 +127,14 @@ class BibleTransformer extends BaseTransformer
 					"vname"        => @$bible->vernacularTranslation->name ?? "",
 					"organization" => $bible->organization,
 					"language"     => $bible->language->name,
+					"iso"          => $bible->iso,
 					"date"         => intval( $bible->date ),
 					"country"      => $bible->language->primaryCountry->name ?? '',
 					"books"        => $bible->books,
 					"translations" => $bible->translations
 				];
 			}
-
+			default: return [];
 		}
 	}
 
