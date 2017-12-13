@@ -116,6 +116,7 @@ class BibleTransformer extends BaseTransformer
 					"name"         => $bible->currentTranslation->name,
 					"vname"        => @$bible->vernacularTranslation->name ?? "",
 					"language"     => $bible->language->name,
+					"iso"          => $bible->iso,
 					"date"         => intval( $bible->date )
 				];
 			}
