@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\testArmor;
+use Aws\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -20,7 +21,8 @@ class Kernel extends ConsoleKernel
 	    Commands\fetchLanguageDescriptions::class,
 	    Commands\countSophia::class,
 	    Commands\organizations_dbl_status::class,
-	    Commands\filesystem_update::class
+	    Commands\filesystem_update::class,
+	    Commands\checkIDs::class,
     ];
 
     /**

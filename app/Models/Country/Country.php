@@ -47,6 +47,11 @@ class Country extends Model
         return $this->BelongsToMany(Language::class)->distinct();
     }
 
+	public function languagesFiltered()
+	{
+		return $this->BelongsToMany(Language::class)->distinct()->select(['iso','name']);
+	}
+
     public function regions()
     {
     	return $this->HasMany(CountryRegion::class);

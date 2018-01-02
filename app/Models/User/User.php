@@ -48,7 +48,6 @@ class User extends Authenticatable
 {
 	public $incrementing = false;
     use Notifiable;
-    use Uuids;
 
     /**
      * The attributes that are mass assignable.
@@ -90,6 +89,11 @@ class User extends Authenticatable
 	public function roles()
 	{
 		return $this->HasMany(Role::class);
+	}
+
+	public function notes()
+	{
+		return $this->HasMany(Note::class);
 	}
 
 	public function archivist()

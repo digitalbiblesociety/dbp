@@ -98,6 +98,7 @@ class BibleTransformer extends BaseTransformer
 					        ],
 					        "resolution"                => []
 				        ];
+				        break;
 			        }
 		        }
 		        default: return [];

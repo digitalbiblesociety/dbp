@@ -8,6 +8,7 @@ use App\Models\Bible\Book;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 use App\Models\Organization\OrganizationTranslation;
+use App\Models\User\Access;
 use App\Transformers\BibleTransformer;
 use App\Transformers\BooksTransformer;
 use Illuminate\Support\Facades\Cache;
@@ -57,13 +58,16 @@ class BiblesController extends APIController
 	    $organization = checkParam('organization_id', null, 'optional');
 		$sort_by = checkParam('sort_by', null, 'optional');
 
-	    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent.parentLanguage','organizations')->has('filesets')->when($language, function ($query) use ($language, $full_word) {
+		$access = Access::where('key_id',$this->key)->select('bible_id')->get()->pluck('bible_id');
+	    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent.parentLanguage','organizations','alphabet','filesets')
+			->where('open_access', 1)->orWhereIn('id',$access)
+		    ->when($language, function ($query) use ($language, $full_word) {
 			    if(!$full_word) return $query->where('name', 'LIKE', "%".$language."%");
 			    return $query->where('name', $language);
 		    })->when($organization, function($q) use ($organization) {
 			    $q->where('organization_id', '>=', $organization);
 		    })->when($dam_id, function($q) use ($dam_id) {
-			    $q->where('id', '=', $dam_id);
+			    $q->where('id', $dam_id);
 		    })->when($media, function($q) use ($media) {
 			    switch ($media) {
 				    case "video": {$q->has('filesetFilm'); break;}
@@ -77,9 +81,6 @@ class BiblesController extends APIController
 		    })->when($sort_by, function($q) use ($sort_by){
 			    $q->orderBy($sort_by);
 		    })->get();
-
-	    if(($this->v == 2) OR ($this->v == 3)) $bibles->load('alphabet','filesets');
-
 	    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
     }
 

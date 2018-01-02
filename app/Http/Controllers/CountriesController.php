@@ -17,9 +17,10 @@ class CountriesController extends APIController
     public function index()
     {
     	if(!$this->api) return view('countries.index');
-
-		$countries = Country::get();
-		return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
+	    $countries = \Cache::remember('v'.$this->v.$this->api.'_countries', 2400, function() {
+			return Country::get();
+	    });
+	    return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
     }
 
     /**
@@ -30,11 +31,13 @@ class CountriesController extends APIController
      */
     public function show($id)
     {
-	    $country = Country::with('languages.bibles.filesets')->find($id);
-	    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
-
-    	if(!$this->api) return view('countries.show',compact('country'));
-		return $this->reply(fractal()->collection($country)->transformWith(new CountryTransformer())->ToArray());
+	    $country = \Cache::remember('v'.$this->v.$this->api.'_country_'.$id, 2400, function() use($id) {
+		    $country = Country::with('languages.bibles.filesets')->find($id);
+		    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
+		    if(!$this->api) return $country;
+		    return $this->reply(fractal()->collection($country)->transformWith(new CountryTransformer())->ToArray());
+	    });
+    	return view('countries.show',compact('country'));
     }
 
 	/**

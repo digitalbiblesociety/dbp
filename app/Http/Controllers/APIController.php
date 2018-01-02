@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
 use SoapBox\Formatter\Formatter;
 use App\Models\User\User;
+use App\Models\User\Access;
+use App\Models\User\Key;
 use i18n;
 use League\Fractal\Serializer\DataArraySerializer;
 use \Spatie\Fractalistic\ArraySerializer;
@@ -24,19 +26,25 @@ class APIController extends Controller
      */
     protected $statusCode = 200;
     protected $isoPreference = false;
-    protected $paginateNumber;
     protected $api;
     protected $serializer;
     protected $v;
+    protected $key;
 
     public function __construct(Request $request)
     {
 	    $url = explode(".",url()->current());
 	    $this->request = $request;
 	    if(substr(array_shift($url),-3,3) == "api") {
+		    $this->api = true;
+		    $this->v = checkParam('v');
+			$keyExists = Key::find(checkParam('key'));
+			if(!isset($keyExists)) {abort(403,'No Authentication Provided');}
+			$this->key = $keyExists->key;
+
 	    	$noVersionRoutes = ['v2_api_apiversion','v4_api_versionLatest','v3_query','v3_books'];
 	    	if(!in_array(\Route::currentRouteName(), $noVersionRoutes)) $this->v = checkParam('v');
-		    $this->api = true;
+
 		    if(isset($this->v)) {
 		    	switch ($this->v) {
 				    case "2": {$this->serializer = new ArraySerializer();break;}
@@ -44,7 +52,6 @@ class APIController extends Controller
 				    default: $this->serializer = new DataArraySerializer();
 			    }
 		    }
-		    $this->paginateNumber = $_GET["number"] ?? 20;
 	    }
         $this->middleware('auth')->only(['create','edit']);
     }
@@ -76,18 +83,9 @@ class APIController extends Controller
      * @param $object
      * @return mixed
      */
-    public function reply($object, $transformer = null, $key = 0, $pretty = 0)
+    public function reply($object, $transformer = null, $pretty = 0)
     {
     	if(isset($_GET['echo'])) $object = [$_GET,$object];
-        if (isset($_GET['key'])) {
-            $key = \DB::table('users')->where('id','=',$_GET['key'])->first();
-            if(!$key) return $this->setStatusCode(403)->replyWithError('Provided authentication key does not match a key in our records');
-        } elseif($this->request->header('authorization')) {
-            $key = User::where('api_key','=',base64_decode($this->request->header('authorization')))->first();
-            if(!$key) return $this->setStatusCode(403)->replyWithError('Provided Authentication Header does not match a key in our records');
-        } elseif($key) {
-            return $this->setStatusCode(403)->replyWithError('Missing Authentication key');
-        }
 
         $format = @$_GET['format'];
         switch ($format) {

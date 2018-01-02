@@ -22,8 +22,8 @@ class bible_equivalents_eBible extends Seeder
                 'abbr'          => $equivalent->bible->abbr,
                 'equivalent_id' => $bible_equivalent->translationId,
                 'organization_id' => $organization->id,
-                //'site'          => $site,
-                'type'          => "eBible.org",
+                'site'          => "ebible.org",
+                'type'          => "eBible",
                 'suffix'        => ''
             ]);
         }

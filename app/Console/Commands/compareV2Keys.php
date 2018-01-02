@@ -11,7 +11,7 @@ class compareV2Keys extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'data:check {}';
 
     /**
      * The console command description.

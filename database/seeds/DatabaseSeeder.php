@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-	    ini_set('memory_limit', '10024M');
+	    ini_set('memory_limit', '1000G');
 
 	    $this->call(countries_seeder::class);
 
@@ -43,15 +43,15 @@ class DatabaseSeeder extends Seeder
 	    $this->call(organizations_seeder::class);
 	    $this->call(users_seeder::class);
 
-	        // 4.1 Organization Equivalents
-	        $this->call(bible_equivalents_bibleGateway::class);
-	        $this->call(bible_equivalents_bibleSearch::class);
-	        $this->call(bible_equivalents_inScript::class);
-	        $this->call(bible_equivalents_eBible::class);
-	        $this->call(bible_equivalents_eSword::class);
-	        $this->call(bible_equivalents_dbl::class);
-	        $this->call(bible_equivalents_dbp::class);
-	        $this->call(bible_equivalents_gbc::class);
+	    // 4.1 Organization Equivalents
+	    $this->call(bible_equivalents_bibleGateway::class);
+	    $this->call(bible_equivalents_bibleSearch::class);
+	    //$this->call(bible_equivalents_inScript::class);
+	    $this->call(bible_equivalents_eBible::class);
+	    $this->call(bible_equivalents_eSword::class);
+	    $this->call(bible_equivalents_dbl::class);
+	    $this->call(bible_equivalents_dbp::class);
+	    $this->call(bible_equivalents_gbc::class);
 
 	    $this->call(bible_books_seeder::class);
 	    $this->call(bible_audio_seeder::class);

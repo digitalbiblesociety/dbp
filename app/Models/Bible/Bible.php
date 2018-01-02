@@ -2,6 +2,7 @@
 
 namespace App\Models\Bible;
 
+use App\Models\User\Access;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\Model;
@@ -134,7 +135,7 @@ class Bible extends Model
 
     public function filesets()
     {
-	    return $this->HasMany(BibleFileset::class);
+	    return $this->HasMany(BibleFileset::class,'bible_id','id');
     }
 
 	public function filesetAudio()
@@ -196,6 +197,11 @@ class Bible extends Model
     {
         return $this->BelongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type']);
     }
+
+	public function access()
+	{
+		return $this->HasMany(Access::class,'bible_id','id');
+	}
 
 
     /**

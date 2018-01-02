@@ -14,7 +14,7 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-	        $table->char('id', 36)->primary();
+	        $table->char('id', 16)->primary();
 	        $table->string('name');
 	        $table->string('password')->nullable();
 	        $table->string('nickname')->nullable();
@@ -25,10 +25,19 @@ class CreateUsersTable extends Migration
         });
 
 	    Schema::create('user_accounts', function (Blueprint $table) {
-		    $table->char('user_id', 36)->primary();
+		    $table->char('user_id', 16)->primary();
 		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
 		    $table->string('provider');
 		    $table->string('provider_user_id');
+		    $table->timestamps();
+	    });
+
+	    Schema::create('user_keys', function (Blueprint $table) {
+		    $table->char('user_id', 16)->primary();
+		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
+		    $table->string('key',24);
+		    $table->string('name');
+		    $table->text('description');
 		    $table->timestamps();
 	    });
 
@@ -49,6 +58,8 @@ class CreateUsersTable extends Migration
     {
 	    Schema::dropIfExists('cache');
 	    Schema::dropIfExists('user_accounts');
+	    Schema::dropIfExists('user_notes');
+	    Schema::dropIfExists('user_keys');
         Schema::dropIfExists('users');
     }
 }

@@ -23,12 +23,16 @@ class countries_language_seeder extends Seeder
 	    	foreach($languages as $iso => $population) {
 			    $currentLanguage = Language::where('iso',$iso)->first();
 			    $currentCountry = Country::find($country_id);
+			    //if(!$currentCountry) $currentCountry = Country::where('iso_a3',$country_id)->orWhere('fips',$country_id)->first();
 			    if($iso == "xxx") {continue;}
 			    if(!$currentLanguage) {echo "\n Language Not Found: ". $iso; continue;}
-			    if(!$currentCountry) {echo "\n Country Not Found: ". $country_id; continue;}
-			    CountryLanguage::create(['language_id' => $currentLanguage->id,'country_id' => $country_id,'population' => $population]);
+			    if(!$currentCountry) {continue;}
+			    $alreadyExists = CountryLanguage::where('language_id',$currentLanguage->id)->where('country_id',$currentCountry)->first();
+			    if($alreadyExists) { continue; }
+			    CountryLanguage::create(['language_id' => $currentLanguage->id,'country_id' => $currentCountry->id,'population' => $population]);
 		    }
 	    }
 
     }
+
 }

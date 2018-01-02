@@ -13,11 +13,17 @@ class bible_equivalents_bibleSearch extends Seeder
      */
     public function run()
     {
-        if(!file_exists(storage_path().'/data/bibles/equivalents/bible-search.json')) $this->fetchBibleSearch();
-        $bibles = json_decode(file_get_contents(storage_path().'/data/bibles/equivalents/bible-search.json'));
         $seederHelper = new SeederHelper();
         $bibleEquivalents = $seederHelper->csv_to_array('https://docs.google.com/spreadsheets/d/1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4/export?format=csv&id=1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4&gid=573804558');
-        $seederHelper->seedBibleEquivalents($bibleEquivalents,'american-bible-society','web-app','Bible Search API');
+	    $current_bibles = collect($bibleEquivalents)->pluck('equivalent_id');
+	    //$seederHelper->seedBibleEquivalents($bibleEquivalents,'american-bible-society','web-app','Bible Search API');
+
+
+	    //if(!file_exists(storage_path().'/data/bibles/equivalents/bible-search.json')) $this->fetchBibleSearch();
+	    //$possible_new_bibles = json_decode(file_get_contents(storage_path().'/data/bibles/equivalents/bible-search.json'));
+	    //$possible_new_bibles = collect($possible_new_bibles->response->versions)->pluck('id');
+	    //$new_bibles = $current_bibles->diff($possible_new_bibles);
+	    //dd($new_bibles);
     }
 
     public function fetchBibleSearch() {

@@ -17,7 +17,6 @@ Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRed
 	Route::name('docs')->get('docs',                                        'DocsController@index');
 	Route::name('history')->get('docs/history',                             'DocsController@history');
 	Route::name('swagger')->get('docs/swagger',                             'DocsController@swagger');
-
 	Route::name('docs_progress')->get('docs/progress',                      'DocsController@progress');
 	Route::name('docs_team')->get('docs/team',                              'DocsController@team');
 	Route::name('docs_bibles')->get('docs/bibles',                          'DocsController@bibles');
@@ -30,7 +29,6 @@ Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRed
 	Route::name('docs_alphabets')->get('docs/alphabets',                    'DocsController@alphabets');
 	Route::name('docs_books_BookOrderListing')->get('docs/v2/books/book-order-listing',  'BooksController@show');
 	Route::name('v2_docs_text_search')->get('docs/v2/text/search',  'TextController@search');
-
 	Route::name('data_library_volumeLanguage')->get('library/volumelanguage', 'LanguagesController@volumeLanguage');
 
 });

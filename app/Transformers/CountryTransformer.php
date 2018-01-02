@@ -48,7 +48,6 @@ class CountryTransformer extends BaseTransformer
 			'uri'            => env('APP_URL').'/countries/'.$country->id,
 			'continent_code' => $country->continent,
 			'hidden'         => (boolean) $country->hidden,
-			'languages'      => $country->languages->ToArray(),
 			'codes' => [
 				'fips'       => $country->fips,
 				'iso_a3'     => $country->iso_a3,

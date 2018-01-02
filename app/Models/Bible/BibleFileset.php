@@ -49,7 +49,7 @@ class BibleFileset extends Model
 
 	public function bible()
 	{
-		return $this->belongsTo(Bible::class);
+		return $this->belongsTo(Bible::class,'bible_id','id');
 	}
 
 	public function organization()

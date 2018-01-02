@@ -7,7 +7,6 @@
             background-color:#061700;
             color:#FFF;
         }
-
         h1 {
             padding:50px 0;
             text-transform: uppercase;
@@ -28,9 +27,7 @@
         tr[data-links="0"][data-filesets="0"] {
             opacity: .3;
         }
-
     </style>
-
 @endsection
 
 @section('content')

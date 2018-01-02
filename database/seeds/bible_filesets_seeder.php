@@ -29,10 +29,10 @@ class bible_filesets_seeder extends Seeder
 			    if(in_array($volume['dam_id_root'],$equivalents)) {
 			    	if($volume['media_code'] == "ET") {$set_type = 'text';}
 				    if($volume['media_code'] == "DV") {$set_type = 'video';}
-				    if($volume['media_code'] == "DA") {continue;}
+				    if($volume['media_code'] == "DA") {$set_type = 'audio';}
 
 				    $bible_exists = \App\Models\Bible\Bible::where('id',$bible_id)->first();
-				    if(!$bible_exists) {continue;}
+				    if(!$bible_exists) {echo "\n Missing:".$bible_id;continue;}
 				    switch($volume['collection_code']) {
 					    case "NT": {$size_name = "New Testament";break;}
 					    case "OT": {$size_name = "Old Testament";break;}

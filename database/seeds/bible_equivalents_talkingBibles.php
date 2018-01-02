@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-
+use database\seeds\SeederHelper;
 class bible_equivalents_talkingBibles extends Seeder
 {
     /**
@@ -11,21 +11,23 @@ class bible_equivalents_talkingBibles extends Seeder
      */
     public function run()
     {
-        $this->fetch();
+	    $seederHelper = new SeederHelper();
+	    $bibleEquivalents = $seederHelper->csv_to_array('https://docs.google.com/spreadsheets/d/1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4/export?format=csv&id=1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4&gid=760436889');
+	    $seederHelper->seedBibleEquivalents($bibleEquivalents,'talking-bibles-international','web-app','talkingBibles');
+        //$this->fetch();
     }
 
     public function fetch()
     {
 
-        $opts = array(
-        'http'=>array(
-            'method'=>"GET",
-            'header'=>"Authorization:Token token=\"5ef65c3e6aa59f9290939a0999e32d07\""
-        )
-    );
+        $opts = [
+			'http' => [
+				'method' => "GET",
+				'header' => "Authorization:Token token=\"5ef65c3e6aa59f9290939a0999e32d07\""
+			]
+        ];
         $context = stream_context_create($opts);
         $file = file_get_contents('https://listen.talkingbibles.org/api/v1/recordings.json?page=1', false, $context);
-        dd($file);
         $count = 25;
         while($count == 25) {
             $page = 1;
@@ -34,6 +36,7 @@ class bible_equivalents_talkingBibles extends Seeder
             $count = count($bibles);
             $output[] = $bibles;
         }
+        file_put_contents(storage_path('/data/bibles/equivalents/TalkingBibles.json'));
 
     }
 }

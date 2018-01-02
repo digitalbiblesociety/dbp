@@ -124,7 +124,6 @@ class language_seeder extends Seeder
 		    $current_dialect->dialect_id = $dialect_id;
 		    $current_dialect->name = $current_languages->where('iso',$language_dialect["I_Id"])->first()->name;
 		    $current_dialect->save();
-		    echo "\n Language Dialect Saved";
 	    }
 
     }

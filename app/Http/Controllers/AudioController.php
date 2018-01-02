@@ -35,7 +35,7 @@ class AudioController extends APIController
 		    $chapter['bible_id'] = $bible_id;
 		    return $chapter;
 	    });
-	    
+
         return $this->reply(fractal()->collection($audioChapters)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
     }
 
