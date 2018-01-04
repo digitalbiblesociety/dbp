@@ -44,11 +44,6 @@ class BiblesController extends APIController
 	    // Return the documentation if it's not an API request
 	    if(!$this->api) return view('bibles.index');
 
-	    // $delivery = checkParam('delivery', null,'optional');
-	    // $expired = checkParam('expired', null,'optional');
-	    // $status = checkParam('status', null,'optional');
-	    // $dbp_agreement = checkParam('dbp_agreement', null,'optional');
-	    // $resolution = checkParam('resolution', null,'optional');
 	    $dam_id = checkParam('dam_id', null, 'optional') ?? checkParam('fcbh_id', null,'optional');
 	    $media = checkParam('media', null, 'optional');
 	    $language = checkParam('language', null, 'optional');
@@ -58,7 +53,8 @@ class BiblesController extends APIController
 	    $organization = checkParam('organization_id', null, 'optional');
 		$sort_by = checkParam('sort_by', null, 'optional');
 
-		$access = Access::where('key_id',$this->key)->select('bible_id')->get()->pluck('bible_id');
+		$access = Access::where('key_id',$this->key)->where('access_api',1)->get()->pluck('bible_id');
+
 	    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent.parentLanguage','organizations','alphabet','filesets')
 			->where('open_access', 1)->orWhereIn('id',$access)
 		    ->when($language, function ($query) use ($language, $full_word) {

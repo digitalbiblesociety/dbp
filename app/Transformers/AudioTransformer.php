@@ -34,7 +34,7 @@ class AudioTransformer extends BaseTransformer
 			    return [
 				    "book_id"    => ucfirst(strtolower($audio->book->id_osis)),
 				    "chapter_id" => (string) $audio->chapter_start,
-				    "path"       => $audio->bible_id."/".$audio->file_name
+				    "path"       => $audio->file_name
 			    ];
 		    }
 

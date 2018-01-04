@@ -8,6 +8,8 @@ use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileTimestamp;
 use App\Transformers\AudioTransformer;
 
+use App\Helpers\AWS\Bucket;
+
 class AudioController extends APIController
 {
 
@@ -18,24 +20,22 @@ class AudioController extends APIController
 	 */
 	public function index($id = null)
     {
-	    $bible_id = CheckParam('fileset_id',$id, 'optional');
-		if(!$bible_id) $bible_id = CheckParam('dam_id',$id,'optional');
-		if(!$bible_id) return $this->setStatusCode(422)->replyWithError("Missing dam_id param");
-
+	    $bible_id = CheckParam('dam_id',$id);
 	    $chapter_id = CheckParam('chapter_id',null,'optional');
 	    $book_id = CheckParam('book_id',null,'optional');
-	    $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
-	    if($book) $book_id = $book->id;
+	    if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
+	    if(isset($book)) $book_id = $book->id;
 
-    	$audioChapters = BibleFile::with('book')->where('set_id',$bible_id)->when($chapter_id, function ($query) use ($chapter_id) {
+    	$audioChapters = BibleFile::with('book')->where('set_id',$bible_id)
+		->when($chapter_id, function ($query) use ($chapter_id) {
 		    return $query->where('chapter_start', $chapter_id);
 	    })->when($book_id, function ($query) use ($book_id) {
 		    return $query->where('book_id', $book_id);
-	    })->orderBy('file_name')->get()->map(function ($chapter) use ($bible_id) {
-		    $chapter['bible_id'] = $bible_id;
-		    return $chapter;
-	    });
+	    })->orderBy('file_name')->get();
 
+    	foreach ($audioChapters as $key => $audio_chapter) {
+    		$audioChapters[$key]->file_name = Bucket::signedUrl('audio/'.$bible_id.'/'.$audio_chapter->file_name);
+	    }
         return $this->reply(fractal()->collection($audioChapters)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
     }
 
