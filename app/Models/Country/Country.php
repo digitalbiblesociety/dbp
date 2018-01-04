@@ -31,10 +31,9 @@ class Country extends Model
 {
 
     protected $table = 'countries';
-    protected $hidden = ["pivot"];
+    protected $hidden = ["pivot","created_at","updated_at"];
     public $incrementing = false;
     public $keyType = 'string';
-
     public function translations($iso = null)
     {
     	if(!isset($iso)) return $this->HasMany(CountryTranslation::class);
