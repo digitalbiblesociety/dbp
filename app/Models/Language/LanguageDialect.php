@@ -28,7 +28,7 @@ use App\Models\Language\Language;
 class LanguageDialect extends Model
 {
     public $primaryKey = 'glotto_id';
-    protected $table = 'languages_dialects';
+    protected $table = 'language_dialects';
 	protected $hidden = ['language_id','id'];
     public $incrementing = false;
 

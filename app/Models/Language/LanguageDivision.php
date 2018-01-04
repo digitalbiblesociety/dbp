@@ -15,7 +15,7 @@ use App\Models\Language\Language;
 class LanguageDivision extends Model
 {
 
-    protected $table = 'languages_divisions';
+    protected $table = 'language_divisions';
 
     public function macros()
     {

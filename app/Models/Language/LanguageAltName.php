@@ -24,7 +24,7 @@ use App\Models\Language\Language;
 class LanguageAltName extends Model
 {
 
-    protected $table = 'languages_altNames';
+    protected $table = 'language_altNames';
     protected $fillable = ['name', 'language_id'];
 	protected $hidden = ['language_id','id'];
 

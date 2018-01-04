@@ -26,7 +26,7 @@ use App\Models\Language\Language;
 class LanguageCode extends Model
 {
 
-    protected $table = 'languages_codes';
+    protected $table = 'language_codes';
     protected $fillable = ['code', 'source', 'glotto_id'];
 	protected $hidden = ['language_id'];
 

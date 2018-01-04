@@ -58,18 +58,19 @@ class CreateLanguagesTable extends Migration
         });
 	    DB::statement('ALTER TABLE languages ADD CONSTRAINT CHECK (iso IS NOT NULL OR glotto_id IS NOT NULL)');
 
-        Schema::create('languages_translations', function (Blueprint $table) {
+        Schema::create('language_translations', function (Blueprint $table) {
 	        $table->increments('id');
-            $table->integer('language_source')->unsigned();
-            $table->foreign('language_source')->references('id')->on('languages')->onUpdate('cascade');
-            $table->integer('language_translation')->unsigned();
-            $table->foreign('language_translation')->references('id')->on('languages')->onUpdate('cascade');
-            $table->string('name');
+	        $table->integer('language_source')->unsigned();
+	        $table->foreign('language_source')->references('id')->on('languages')->onUpdate('cascade');
+	        $table->integer('language_translation')->unsigned();
+	        $table->foreign('language_translation')->references('id')->on('languages')->onUpdate('cascade');
+	        $table->string('name');
 	        $table->text('description')->nullable();
+	        $table->boolean('vernacular')->default(0);
 	        $table->timestamps();
         });
 
-        Schema::create('languages_altNames', function (Blueprint $table) {
+        Schema::create('language_altNames', function (Blueprint $table) {
         	$table->increments('id');
             $table->integer('language_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
@@ -77,7 +78,7 @@ class CreateLanguagesTable extends Migration
 	        $table->timestamps();
         });
 
-        Schema::create('languages_dialects', function (Blueprint $table) {
+        Schema::create('language_dialects', function (Blueprint $table) {
 	        $table->increments('id');
             $table->integer('language_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
@@ -86,7 +87,19 @@ class CreateLanguagesTable extends Migration
 	        $table->timestamps();
         });
 
-        Schema::create('languages_classifications', function (Blueprint $table) {
+	    Schema::create('language_relationships', function (Blueprint $table) {
+		    $table->increments('id');
+		    $table->integer('language_id')->unsigned();
+		    $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
+		    $table->integer('relationship_id')->unsigned();
+		    $table->foreign('relationship_id')->references('id')->on('languages')->onUpdate('cascade');
+		    $table->string('relationship_type');
+		    $table->string('name');
+		    $table->text('description');
+		    $table->timestamps();
+	    });
+
+        Schema::create('language_classifications', function (Blueprint $table) {
 	        $table->increments('id');
             $table->integer('language_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
@@ -96,7 +109,7 @@ class CreateLanguagesTable extends Migration
 	        $table->timestamps();
         });
 
-        Schema::create('languages_codes', function (Blueprint $table) {
+        Schema::create('language_codes', function (Blueprint $table) {
 	        $table->increments('id');
             $table->integer('language_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
@@ -206,11 +219,12 @@ class CreateLanguagesTable extends Migration
 	    Schema::dropIfExists('alphabet_numbers');
         Schema::dropIfExists('alphabet_fonts');
         Schema::dropIfExists('alphabets');
-        Schema::dropIfExists('languages_translations');
-        Schema::dropIfExists('languages_codes');
-        Schema::dropIfExists('languages_classifications');
-        Schema::dropIfExists('languages_altNames');
-        Schema::dropIfExists('languages_dialects');
+	    Schema::dropIfExists('language_classifications');
+	    Schema::dropIfExists('language_relationships');
+	    Schema::dropIfExists('language_translations');
+	    Schema::dropIfExists('language_altNames');
+	    Schema::dropIfExists('language_dialects');
+	    Schema::dropIfExists('language_codes');
         Schema::dropIfExists('country_regions');
         Schema::dropIfExists('country_translations');
         Schema::dropIfExists('country_language');

@@ -28,7 +28,7 @@ use App\Models\Language\Language;
 class LanguageClassification extends Model
 {
 
-    protected $table = 'languages_classifications';
+    protected $table = 'language_classifications';
     protected $fillable = ['language_id', 'classification_id', 'order', 'name'];
     protected $hidden = ['language_id','id'];
 
