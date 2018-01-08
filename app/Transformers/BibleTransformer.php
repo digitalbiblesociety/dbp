@@ -118,7 +118,8 @@ class BibleTransformer extends BaseTransformer
 					"vname"        => @$bible->vernacularTranslation->name ?? "",
 					"language"     => $bible->language->name,
 					"iso"          => $bible->iso,
-					"date"         => intval( $bible->date )
+					"date"         => intval( $bible->date ),
+					"filesets"     => $bible->filesets->pluck('set_type','id')
 				];
 			}
 			case "v4_bible.one": {
