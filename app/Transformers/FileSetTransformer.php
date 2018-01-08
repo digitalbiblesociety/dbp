@@ -35,5 +35,15 @@ class FileSetTransformer extends BaseTransformer
 	    ];
     }
 
+    public function transformForV4($fileset) {
+	    return [
+		    $fileset->id,
+		    $fileset->name,
+		    $fileset->set_type,
+		    $fileset->organization_id,
+		    $fileset->bible_id
+	    ];
+    }
+
 
 }
