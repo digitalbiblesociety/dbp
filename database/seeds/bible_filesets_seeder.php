@@ -25,11 +25,16 @@ class bible_filesets_seeder extends Seeder
 	    }
 	    foreach($bibles as $bible_id => $equivalents) {
 	    	foreach($allVolumes as $volume) {
-
+				// N2 is drama
 			    if(in_array($volume['dam_id_root'],$equivalents)) {
-			    	if($volume['media_code'] == "ET") {$set_type = 'text';}
-				    if($volume['media_code'] == "DV") {$set_type = 'video';}
-				    if($volume['media_code'] == "DA") {$set_type = 'audio';}
+			    	if($volume['media_code'] == "ET") {$set_type = 'text_plain';}
+				    if($volume['media_code'] == "DV") {
+			    		$set_type = 'video';
+			    	}
+				    if($volume['media_code'] == "DA") {
+			    		$drama_type = ($volume['media_code_ext'] == 2) ? '_drama' : '';
+			    		$set_type = 'audio'.$drama_type;
+			    	}
 
 				    $bible_exists = \App\Models\Bible\Bible::where('id',$bible_id)->first();
 				    if(!$bible_exists) {echo "\n Missing:".$bible_id;continue;}

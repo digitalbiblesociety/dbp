@@ -123,20 +123,16 @@ class BiblesController extends APIController
 	 */
 	public function libraryMetadata()
 	{
-		$bible_id = null;
-		$bible = null;
 		$dam_id = checkParam('dam_id', null, 'optional');
-		$bibleEquivalent = BibleEquivalent::where('equivalent_id',$dam_id)->first();
 
-		if(isset($bibleEquivalent)) $bible = $bibleEquivalent->bible;
-		if(!$bible) $bible = Bible::find($dam_id);
-		if(!$bible) return $this->replyWithError("No Bible found for given dam_id");
-		if($bible) $bible_id = $bible->id;
+		if($dam_id == null) {
+			$bibles = Bible::with('organizations')->get();
+			return $this->reply(fractal()->collection($bibles)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
+		}
 
-		$bible = Bible::with('organizations')->when($bible_id, function ($query) use ($bible_id) {
-			return $query->where('id', $bible_id);
-		})->first();
+		$bible = Bible::with('organizations')->find($dam_id);
 		return $this->reply(fractal()->item($bible)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
+
 	}
 
     /**

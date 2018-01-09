@@ -62,7 +62,7 @@ class BooksController extends APIController
 					$book['sophia_chapters'] = $chapters[$book->id_usfx];
 					return $book;
 				});
-				return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer)->toArray());
+				return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer));
 			}
 		}
 	    if($this->v == 2) return [];

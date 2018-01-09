@@ -5,6 +5,48 @@ namespace App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Bible\Bible;
 
+/**
+ * App\Models\User\Access
+ *
+ * @property int $id
+ * @property string $key_id
+ * @property string $user_id
+ * @property string|null $bible_id
+ * @property string $fileset_id
+ * @property int|null $organization_id
+ * @property int $whitelist
+ * @property int $access_api
+ * @property int $access_apps
+ * @property int $access_store
+ * @property int $access_stream
+ * @property int $access_iTunes
+ * @property int $access_fairUse
+ * @property int $access_website
+ * @property int $access_download
+ * @property int $access_peer2peer
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\Bible\Bible|null $bible
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessApi($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessApps($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessDownload($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessFairUse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessITunes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessPeer2peer($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessStore($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessStream($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessWebsite($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereBibleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereFilesetId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereKeyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereOrganizationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereWhitelist($value)
+ * @mixin \Eloquent
+ */
 class Access extends Model
 {
 	protected $table = 'user_access';

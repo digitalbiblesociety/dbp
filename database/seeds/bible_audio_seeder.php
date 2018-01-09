@@ -26,27 +26,27 @@ class bible_audio_seeder extends Seeder
 	    $chapters = $seederhelper->csv_to_array(storage_path() . "/data/dbp3/audio.csv");
 	    $setsCreated = array();
 	    $fcbh_id = \App\Models\Organization\Organization::where('slug','faith-comes-by-hearing')->first()->id;
-
 	    foreach($chapters as $chapter) {
-			if(!isset($chapter['audio_path'])) { continue; }
+		    if(!isset($chapter['audio_path'])) { continue; }
 	    	$dam_id = $chapter['dam_id'];
+		    $testament = (substr($dam_id,-4,1) == 'N') ? "New Testament" : "Old Testament";
+		    $testament_code = (substr($dam_id,-4,1) == 'N') ? "NT" : "OT";
+		    if(substr($dam_id,-2,1) == 'D') {
+			    $type = (substr($dam_id,-3,1) == 2) ? "audio_drama" : "audio";
+		    } else {
+		    	$type = "text";
+		    }
+
 	    	if(!in_array($dam_id,$setsCreated)) {
 			    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$dam_id)->first();
 			    if(!$bibleEquivalent) {$missing[] = $dam_id;continue;}
 
-			    $collectionCode = $chapter['collection_code'] ?? "";
-			    switch($collectionCode) {
-				    case "NT": {$size_name = "New Testament";break;}
-				    case "OT": {$size_name = "Old Testament";break;}
-				    default: $size_name = "";
-			    }
-
 	    		$audioSet = BibleFileset::create([
 				    'id'              => $chapter['dam_id'],
 			        'variation_id'    => null,
-					'set_type'        => 'Audio',
-				    'size_code'       => $collectionCode,
-				    'size_name'       => $size_name,
+					'set_type'        => $type,
+				    'size_code'       => $testament_code,
+				    'size_name'       => $testament,
 					'name'            => 'Faith Comes by Hearing',
 					'bible_id'        => $bibleEquivalent->bible->id,
 					'organization_id' => $fcbh_id,

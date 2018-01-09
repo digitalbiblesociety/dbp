@@ -68,7 +68,7 @@ class bible_links_seeder extends Seeder
 		    if (!$bible) {continue;}
 			$organizationTranslation = OrganizationTranslation::where('name', $item['provider'])->first();
 		    if(!$organizationTranslation) {
-		    	$slug = (key_exists($item['provider'],$mapped)) ? $mapped[$item['provider']] : $item['provider'];
+		    	$slug = (key_exists($item['provider'],$mapped)) ? $seederHelper->slug($mapped[$item['provider']]) : $seederHelper->slug($item['provider']);
 		    	$organization = Organization::where('slug',$slug)->first();
 		    } else {
 		    	$organization = $organizationTranslation->organization;

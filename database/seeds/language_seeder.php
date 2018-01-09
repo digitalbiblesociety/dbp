@@ -15,11 +15,11 @@ class language_seeder extends Seeder
 
     public function run()
     {
-	    \DB::table('languages_translations')->delete();
-	    \DB::table('languages_dialects')->delete();
-	    \DB::table('languages_codes')->delete();
-	    \DB::table('languages_classifications')->delete();
-	    \DB::table('languages_altNames')->delete();
+	    \DB::table('language_translations')->delete();
+	    \DB::table('language_dialects')->delete();
+	    \DB::table('language_codes')->delete();
+	    \DB::table('language_classifications')->delete();
+	    \DB::table('language_altNames')->delete();
     	\DB::table('languages')->delete();
 
 	    $seederHelper = new \database\seeds\SeederHelper();

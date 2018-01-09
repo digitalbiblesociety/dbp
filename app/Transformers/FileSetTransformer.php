@@ -2,8 +2,7 @@
 
 namespace App\Transformers;
 
-use App\Models\Bible\BibleFileset;
-use League\Fractal\TransformerAbstract;
+use App\Models\Bible\Audio;
 
 class FileSetTransformer extends BaseTransformer
 {
@@ -13,37 +12,49 @@ class FileSetTransformer extends BaseTransformer
      *
      * @return array
      */
-    public function transform(BibleFileset $fileset)
-    {
-	    switch ($this->version) {
-		    case "jQueryDataTable": return $this->transformForDataTables($fileset);
-		    case "2": return $this->transformForV2($fileset);
-		    case "3":
-		    case "4":
-		    default: return $this->transformForV4($fileset);
-	    }
-    }
+	public function transform($audio)
+	{
+		switch ($this->version) {
+			case "jQueryDataTable": return $this->transformForDataTables($audio);
+			case "2":
+			case "3": return $this->transformForV2($audio);
+			case "4":
+			default: return $this->transformForV4($audio);
+		}
+	}
 
-    public function transformForDataTables($fileset)
-    {
-    	return [
-		    "<a href='/bibles/filesets/$fileset->id'>$fileset->id</a>",
-			$fileset->name,
-		    $fileset->set_type,
-		    $fileset->organization_id,
-		    $fileset->bible_id
-	    ];
-    }
+	public function transformForV2($audio) {
+		switch($this->route) {
+			case "v2_audio_timestamps": {
+				return [
+					"verse_id"    => (string) $audio->verse_start,
+					"verse_start" => $audio->timestamp
+				];
+			}
 
-    public function transformForV4($fileset) {
-	    return [
-		    $fileset->id,
-		    $fileset->name,
-		    $fileset->set_type,
-		    $fileset->organization_id,
-		    $fileset->bible_id
-	    ];
-    }
+			case "v2_audio_path": {
+				return [
+					"book_id"    => ucfirst(strtolower($audio->book->id_osis)),
+					"chapter_id" => (string) $audio->chapter_start,
+					"path"       => $audio->file_name
+				];
+			}
+
+		}
+	}
+
+	public function transformForV4($audio) {
+		return [
+			"book_id"       => $audio->book_id,
+			"book_name"     => $audio->book->currentTranslation->name ?? $audio->book->name,
+			"chapter_start" => $audio->chapter_start,
+			"chapter_end"   => $audio->chapter_end,
+			"verse_start"   => $audio->verse_start,
+			"verse_end"     => $audio->verse_end,
+			"timestamp"     => $audio->timestamp,
+			"path"          => $audio->file_name
+		];
+	}
 
 
 }

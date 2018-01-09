@@ -37,15 +37,9 @@ class CreateUsersBiblesTable extends Migration
 		    $table->integer('organization_id')->unsigned()->nullable();
 		    $table->foreign('organization_id')->references('id')->on('organizations');
 		    $table->boolean('whitelist')->default(1);
-		    $table->boolean('access_api')->default(1);
-		    $table->boolean('access_apps')->default(1);
-		    $table->boolean('access_store')->default(1);
-		    $table->boolean('access_stream')->default(1);
-		    $table->boolean('access_iTunes')->default(1);
-		    $table->boolean('access_fairUse')->default(1);
-		    $table->boolean('access_website')->default(1);
-		    $table->boolean('access_download')->default(1);
-		    $table->boolean('access_peer2peer')->default(1);
+		    $table->text('access_notes')->nullable();
+		    $table->string('access_type')->nullable();
+		    $table->boolean('access_given')->default(1);
 		    $table->timestamps();
 	    });
     }

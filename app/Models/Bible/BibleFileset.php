@@ -45,6 +45,7 @@ class BibleFileset extends Model
 	public $primaryKey = 'id';
 	public $incrementing = false;
 	protected $keyType = "string";
+	protected $hidden = ["created_at","updated_at","response_time","hidden","bible_id","variation_id"];
 	protected $fillable = ['name','set_type','organization_id','variation_id','bible_id'];
 
 	public function bible()

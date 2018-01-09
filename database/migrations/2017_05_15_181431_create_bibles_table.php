@@ -182,18 +182,6 @@ class CreateBiblesTable extends Migration
 		    $table->timestamps();
 	    });
 
-	    Schema::create('bible_file_permissions', function (Blueprint $table) {
-		    $table->increments('id');
-		    $table->string('bible_fileset_id',12);
-		    $table->foreign('bible_fileset_id')->references('id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
-		    $table->char('user_id', 36);
-		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
-		    $table->string('access_level');
-		    $table->text('access_notes')->nullable();
-		    $table->timestamp('first_response_time');
-		    $table->timestamps();
-	    });
-
 	    Schema::create('bible_file_timestamps', function (Blueprint $table) {
 	    	$table->increments('id');
 		    $table->string('bible_fileset_id',12);
@@ -210,22 +198,6 @@ class CreateBiblesTable extends Migration
 		    $table->timestamps();
 	    });
 
-	    Schema::create('bible_text', function (Blueprint $table) {
-		    $table->string('id', 32)->primary()->unique()->index();
-		    $table->string('bible_id', 12);
-		    $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
-		    $table->string('bible_variation_id',16)->nullable();
-		    $table->foreign('bible_variation_id')->references('variation_id')->on('bible_variations')->onUpdate('cascade')->onDelete('cascade');
-		    $table->char('book_id',3);
-		    $table->foreign('book_id')->references('id')->on('books');
-		    $table->tinyInteger('chapter_number')->unsigned();
-		    $table->tinyInteger('verse_start')->unsigned();
-		    $table->tinyInteger('verse_end')->unsigned()->nullable();
-		    $table->text('verse_text');
-		    $table->timestamps();
-	    });
-	    DB::statement('ALTER TABLE bible_text ADD FULLTEXT(verse_text);');
-
     }
 
     /**
@@ -235,8 +207,6 @@ class CreateBiblesTable extends Migration
      */
     public function down()
     {
-	    Schema::dropIfExists('bible_text');
-        Schema::dropIfExists('bible_file_permissions');
 	    Schema::dropIfExists('bible_file_timestamps');
         Schema::dropIfExists('bible_files');
 	    Schema::dropIfExists('bible_fileset_tags');

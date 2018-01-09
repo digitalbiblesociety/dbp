@@ -25,7 +25,11 @@ class VerseController extends APIController
 			['verse_start',     '>=', $verse_start]
 		])->when($verse_end, function ($query) use ($verse_end) {
 			return $query->where('verse_start', '<=', $verse_end);
-		})->get();
+		})->select(['book as book_id','chapter as chapter_number','verse_start','verse_end','verse_text','canon_order as id'])->get();
+		foreach($verse_info as $key => $verse) {
+			$verse_info[$key]->bible_id = $bible->id;
+			$verse_info[$key]->bible_variation_id = null;
+		}
 		return $this->reply($verse_info);
     }
 }

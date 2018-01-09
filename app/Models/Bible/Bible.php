@@ -58,6 +58,13 @@ use App\Models\Language\Language;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesetText
  * @property int $priority
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible wherePriority($value)
+ * @property int $open_access
+ * @property int $connection_fab
+ * @property int $connection_dbs
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Access[] $access
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible whereConnectionDbs($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible whereConnectionFab($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible whereOpenAccess($value)
  */
 class Bible extends Model
 {

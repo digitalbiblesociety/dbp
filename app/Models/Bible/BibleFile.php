@@ -38,6 +38,7 @@ use App\Models\Language\Language;
 class BibleFile extends Model
 {
 	protected $table = "bible_files";
+	protected $hidden = ["created_at","updated_at"];
 
 	public function language()
 	{

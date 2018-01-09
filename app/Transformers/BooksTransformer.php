@@ -2,9 +2,6 @@
 
 namespace App\Transformers;
 
-use App\Models\Bible\Book;
-use Faker\Provider\Base;
-
 class BooksTransformer extends BaseTransformer
 {
     /**
@@ -59,7 +56,7 @@ class BooksTransformer extends BaseTransformer
 		}
     }
 
-    public function transformForV3(Book $book) {
+    public function transformForV3($book) {
 	    switch ( $this->route ) {
 		    case "v3_query": {
 		    	$manufactured_id = strval(random_int(0,20000));
@@ -98,9 +95,10 @@ class BooksTransformer extends BaseTransformer
 		    }
 
 	    }
+	    return [];
     }
 
-	public function transformForV4(Book $book) {
+	public function transformForV4($book) {
 		return [
 			$book
 		];

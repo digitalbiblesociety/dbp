@@ -43,6 +43,7 @@ use App\Traits\Uuids;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User wherePassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereUpdatedAt($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Note[] $notes
  */
 class User extends Authenticatable
 {

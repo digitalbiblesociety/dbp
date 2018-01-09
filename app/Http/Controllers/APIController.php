@@ -37,13 +37,10 @@ class APIController extends Controller
 	    $this->request = $request;
 	    if(substr(array_shift($url),-3,3) == "api") {
 		    $this->api = true;
-		    $this->v = checkParam('v');
+		    $this->v = checkParam('v',null,'optional') ?? 2;
 			$keyExists = Key::find(checkParam('key'));
 			if(!isset($keyExists)) {abort(403,'No Authentication Provided');}
 			$this->key = $keyExists->key;
-
-	    	$noVersionRoutes = ['v2_api_apiversion','v4_api_versionLatest','v3_query','v3_books'];
-	    	if(!in_array(\Route::currentRouteName(), $noVersionRoutes)) $this->v = checkParam('v');
 
 		    if(isset($this->v)) {
 		    	switch ($this->v) {

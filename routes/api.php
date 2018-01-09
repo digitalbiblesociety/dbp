@@ -38,6 +38,8 @@
 	});
 
 	// VERSION 4
+	Route::name('v4_bible_filesets.permissions')->get('bibles/filesets/{id}/permissions', 'BibleFileSetPermissionsController@index');
+	Route::name('v4_bible_filesets.index')->get('bibles/filesets/{ id }',                 'BibleFilesSetsController@show');
 	Route::name('v4_bible.all')->get('bibles',                                            'BiblesController@index');
 	Route::name('v4_bible.one')->get('bibles/{id}',                                       'BiblesController@show');
 	Route::name('v4_bible.equivalents')->get('bible/{id}/equivalents',                    'BiblesController@equivalents');
@@ -46,10 +48,6 @@
 	Route::name('v4_bible.read')->get('bible/{id}/{book}/{chapter}',                      'TextController@index');
 	Route::name('v4_bible_books.all')->get('bibles/books/',                               'BooksController@index');
 	Route::name('v4_bible_books.one')->get('bibles/books/{id}',                           'BooksController@show');
-	Route::name('v4_bible_filesets.all')->get('bibles/{id}/filesets',                     'BibleFileSetsController@index');
-	Route::name('v4_bible_filesets.one')->get('bibles/{id}/filesets/{fileset_id}',        'BibleFileSetsController@show');
-	Route::name('v4_bible_filesets.permissions')->get('bibles/filesets/{id}/permissions', 'BibleFileSetPermissionsController@index');
-	Route::name('v4_bibleFiles.one')->get('bibles/files/{ id }',                          'BibleFilesController@show');
 	Route::name('v4_timestamps')->get('timestamps',                                       'AudioController@availableTimestamps');
 	Route::name('v4_timestamps.tag')->get('timestamps/{id}',                              'AudioController@timestampsByTag');
 	Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',           'AudioController@timestampsByReference');

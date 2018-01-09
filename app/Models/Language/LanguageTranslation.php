@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\LanguageTranslation whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\LanguageTranslation whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $vernacular
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\LanguageTranslation whereVernacular($value)
  */
 class LanguageTranslation extends Model
 {

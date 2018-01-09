@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
-use App\Transformers\FileSetTransformer;
+use App\Models\Bible\BibleFile;
+use App\Helpers\AWS\Bucket;
 use ZipArchive;
+
+use App\Transformers\FileSetTransformer;
 
 class BibleFileSetsController extends APIController
 {
@@ -13,12 +16,27 @@ class BibleFileSetsController extends APIController
 	/**
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
-	public function index()
+	public function show($id)
     {
-    	if(!$this->api) return view('bibles.filesets.index');
+	    if(!$this->api) return view('bibles.filesets.index');
 
-	    $filesets = BibleFileset::all();
-	    return $this->reply(fractal()->collection($filesets)->transformWith(FileSetTransformer::class)->serializeWith($this->serializer));
+	    $bible_id = CheckParam('dam_id',$id);
+	    $chapter_id = CheckParam('chapter_id',null,'optional');
+	    $book_id = CheckParam('book_id',null,'optional');
+	    if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
+	    if(isset($book)) $book_id = $book->id;
+
+	    $fileSetChapters = BibleFile::with('book.currentTranslation')->where('set_id',$bible_id)
+	                                ->when($chapter_id, function ($query) use ($chapter_id) {
+		                                return $query->where('chapter_start', $chapter_id);
+	                                })->when($book_id, function ($query) use ($book_id) {
+			    return $query->where('book_id', $book_id);
+		    })->orderBy('file_name')->get();
+
+	    foreach ($fileSetChapters as $key => $fileSet_chapter) {
+		    $fileSetChapters[$key]->file_name = Bucket::signedUrl('fileSet/'.$bible_id.'/'.$fileSet_chapter->file_name);
+	    }
+	    return $this->reply(fractal()->collection($fileSetChapters)->serializeWith($this->serializer)->transformWith(new FileSetTransformer()));
     }
 
 
@@ -61,17 +79,6 @@ class BibleFileSetsController extends APIController
 
 	    // ProcessBible::dispatch($request->file('zip'), $fileset->id);
 	    return view('bibles.filesets.thanks', compact('fileset'));
-    }
-
-	/**
-	 * @param $id
-	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-	 */
-	public function show($id)
-    {
-	    $fileset = BibleFileset::with('files')->find($id);
-        return view('bibles.filesets.show', compact('fileset'));
     }
 
 	/**

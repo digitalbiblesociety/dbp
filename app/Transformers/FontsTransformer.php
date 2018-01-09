@@ -14,11 +14,11 @@ class FontsTransformer extends BaseTransformer
         return [
 			"id"       => $font->id,
 			"name"     => $font->fontName,
-			"base_url" => url(public_path('fonts/'.$font->fontFileName.'.ttf')),
+			"base_url" => 'https://cdn.bible.build/fonts/'.$font->fontFileName.'.ttf',
 			"files"    => [
-				"zip"  => url(public_path('fonts/'.$font->fontFileName.'.zip')),
-				"svg"  => url(public_path('fonts/'.$font->fontFileName.'.svg')),
-				"ttf"  => url(public_path('fonts/'.$font->fontFileName.'.ttf')),
+				"zip"  => 'https://cdn.bible.build/fonts/'.$font->fontFileName.'.zip',
+				"svg"  => 'https://cdn.bible.build/fonts/'.$font->fontFileName.'.svg',
+				"ttf"  => 'https://cdn.bible.build/fonts/'.$font->fontFileName.'.ttf',
 				   "platforms" => [
 				       "android" => true,
 				       "ios"     => true,

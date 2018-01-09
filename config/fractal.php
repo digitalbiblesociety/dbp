@@ -31,7 +31,7 @@ return [
          * If enabled Fractal will automatically add the includes who's
          * names are present in the `include` request parameter.
          */
-        'enabled' => true,
+        'enabled' => false,
 
         /*
          * The name of key in the request to where we should look for the includes to include.

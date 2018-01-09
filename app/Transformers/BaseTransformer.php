@@ -9,15 +9,17 @@
 namespace App\Transformers;
 
 use League\Fractal\TransformerAbstract;
-
+use Route;
 class BaseTransformer extends TransformerAbstract {
+
+	protected $currentScope = [];
 
 	public function __construct()
 	{
-		$this->version = $_GET['v'] ?? 3;
+		$this->version = $_GET['v'] ?? 2;
 		$this->iso = $_GET['iso'] ?? "eng";
 		$this->continent = $_GET['continent'] ?? false;
-		$this->route = \Route::currentRouteName();
+		$this->route = Route::currentRouteName();
 	}
 
 }
