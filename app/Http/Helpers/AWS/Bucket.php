@@ -8,7 +8,7 @@ class Bucket {
 
 	// $url = Bucket::signedUrl('s3_fcbh','dbp_dev','basha.png',1);
 	// return $url;
-	public static function signedUrl(string $file, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5)
+	public static function signedUrl(string $file, string $name = 's3_fcbh', string $bucket = 'dbp-dev', int $expiry = 5)
 	{
 		$s3 = Storage::disk($name);
 		$client = $s3->getDriver()->getAdapter()->getClient();

@@ -25,16 +25,16 @@ class BibleFileSetsController extends APIController
 	    $book_id = CheckParam('book_id',null,'optional');
 	    if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
 	    if(isset($book)) $book_id = $book->id;
-
+		$fileset = BibleFileset::find($bible_id);
+		$fileset_type = (strpos($fileset->set_type, 'audio') !== false) ? 'audio' : 'text';
 	    $fileSetChapters = BibleFile::with('book.currentTranslation')->where('set_id',$bible_id)
 	                                ->when($chapter_id, function ($query) use ($chapter_id) {
 		                                return $query->where('chapter_start', $chapter_id);
 	                                })->when($book_id, function ($query) use ($book_id) {
 			    return $query->where('book_id', $book_id);
 		    })->orderBy('file_name')->get();
-
 	    foreach ($fileSetChapters as $key => $fileSet_chapter) {
-		    $fileSetChapters[$key]->file_name = Bucket::signedUrl('fileSet/'.$bible_id.'/'.$fileSet_chapter->file_name);
+		    $fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type.'/'.$bible_id.'/'.$fileSet_chapter->file_name);
 	    }
 	    return $this->reply(fractal()->collection($fileSetChapters)->serializeWith($this->serializer)->transformWith(new FileSetTransformer()));
     }
