@@ -31,12 +31,10 @@ class CountriesController extends APIController
      */
     public function show($id)
     {
-	    $country = \Cache::remember('v'.$this->v.$this->api.'_country_'.$id, 2400, function() use($id) {
-		    $country = Country::with('languages.bibles.filesets')->find($id);
-		    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
-		    if(!$this->api) return $country;
-		    return $this->reply(fractal()->collection($country)->transformWith(new CountryTransformer())->ToArray());
-	    });
+		$country = Country::with('languages')->find($id);
+	    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
+	    return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->ToArray());
+
     	return view('countries.show',compact('country'));
     }
 

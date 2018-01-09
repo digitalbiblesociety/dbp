@@ -16,7 +16,7 @@ class CountryTransformer extends BaseTransformer
 	 *
 	 * @return array
 	 */
-	public function transform(Country $country)
+	public function transform($country)
 	{
 		switch ($this->version) {
 			case "jQueryDataTable": return $this->transformForDataTables($country);
@@ -27,7 +27,7 @@ class CountryTransformer extends BaseTransformer
 		}
 	}
 
-	public function transformForDataTables(Country $country)
+	public function transformForDataTables($country)
 	{
 		if(!$country->hidden) {
 			$name = $country->currentTranslation->name ?? $country->name;
@@ -41,13 +41,14 @@ class CountryTransformer extends BaseTransformer
 		}
 	}
 
-	public function transformForV4(Country $country)
+	public function transformForV4($country)
 	{
 		return [
 			'name'           => $country->translations($this->iso)->first() ?? $country->name,
 			'uri'            => env('APP_URL').'/countries/'.$country->id,
 			'continent_code' => $country->continent,
 			'hidden'         => (boolean) $country->hidden,
+			'languages'      => $country->languages->pluck('name','iso'),
 			'codes' => [
 				'fips'       => $country->fips,
 				'iso_a3'     => $country->iso_a3,
