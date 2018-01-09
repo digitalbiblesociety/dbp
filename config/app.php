@@ -182,7 +182,6 @@ return [
 	     */
 	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
 	    Laravel\Socialite\SocialiteServiceProvider::class,
-	    Barryvdh\Cors\ServiceProvider::class,
 	    Intouch\LaravelNewrelic\NewrelicServiceProvider::class,
 	    //Lanin\Laravel\ApiDebugger\ServiceProvider::class,
 	    Yajra\DataTables\DataTablesServiceProvider::class,

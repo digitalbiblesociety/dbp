@@ -8,7 +8,6 @@
         "php": ">=7.0",
         "anhskohbo/no-captcha": "^2.4",
         "aws/aws-sdk-php-laravel": "^3.1",
-        "barryvdh/laravel-cors": "^0.9.2",
         "barryvdh/laravel-ide-helper": "^2.4",
         "doctrine/dbal": "^2.6",
         "intouch/laravel-newrelic": "~2.0",

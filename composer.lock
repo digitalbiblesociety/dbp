@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a55d366a99adbcce21f9fb7af9964842",
+    "content-hash": "1ec821ed0bfd6cff535d5fc8cbbba201",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -121,16 +121,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.48.8",
+            "version": "3.48.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "40dc24b2152cb00a5a6b2f2fe1678b86b6f0ba57"
+                "reference": "4159562ee5c2b2d322cfcccd2401d90bfaceaf1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/40dc24b2152cb00a5a6b2f2fe1678b86b6f0ba57",
-                "reference": "40dc24b2152cb00a5a6b2f2fe1678b86b6f0ba57",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4159562ee5c2b2d322cfcccd2401d90bfaceaf1d",
+                "reference": "4159562ee5c2b2d322cfcccd2401d90bfaceaf1d",
                 "shasum": ""
             },
             "require": {
@@ -197,7 +197,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2018-01-05T22:21:07+00:00"
+            "time": "2018-01-09T22:01:13+00:00"
         },
         {
             "name": "aws/aws-sdk-php-laravel",
@@ -254,69 +254,6 @@
                 "sdk"
             ],
             "time": "2016-01-18T06:57:07+00:00"
-        },
-        {
-            "name": "barryvdh/laravel-cors",
-            "version": "v0.9.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/barryvdh/laravel-cors.git",
-                "reference": "2551489de60486471434b0c7050f7fc65f9c9119"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/barryvdh/laravel-cors/zipball/2551489de60486471434b0c7050f7fc65f9c9119",
-                "reference": "2551489de60486471434b0c7050f7fc65f9c9119",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "5.3.x|5.4.x|5.5.x",
-                "php": ">=5.5.9",
-                "symfony/http-foundation": "~3.1",
-                "symfony/http-kernel": "~3.1"
-            },
-            "require-dev": {
-                "orchestra/testbench": "3.x",
-                "phpunit/phpunit": "^4.8|^5.2",
-                "squizlabs/php_codesniffer": "^2.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.9-dev"
-                },
-                "laravel": {
-                    "providers": [
-                        "Barryvdh\\Cors\\ServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Barryvdh\\Cors\\": "src/"
-                },
-                "classmap": [
-                    "tests"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Barry vd. Heuvel",
-                    "email": "barryvdh@gmail.com"
-                }
-            ],
-            "description": "Adds CORS (Cross-Origin Resource Sharing) headers support in your Laravel application",
-            "keywords": [
-                "api",
-                "cors",
-                "crossdomain",
-                "laravel"
-            ],
-            "time": "2017-08-28T11:42:05+00:00"
         },
         {
             "name": "barryvdh/laravel-ide-helper",
@@ -887,20 +824,20 @@
         },
         {
             "name": "doctrine/inflector",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
-                "reference": "e11d84c6e018beedd929cff5220969a3c6d1d462"
+                "reference": "5527a48b7313d15261292c149e55e26eae771b0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/e11d84c6e018beedd929cff5220969a3c6d1d462",
-                "reference": "e11d84c6e018beedd929cff5220969a3c6d1d462",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/5527a48b7313d15261292c149e55e26eae771b0a",
+                "reference": "5527a48b7313d15261292c149e55e26eae771b0a",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0"
+                "php": "^7.1"
             },
             "require-dev": {
                 "phpunit/phpunit": "^6.2"
@@ -908,7 +845,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2.x-dev"
+                    "dev-master": "1.3.x-dev"
                 }
             },
             "autoload": {
@@ -950,7 +887,7 @@
                 "singularize",
                 "string"
             ],
-            "time": "2017-07-22T12:18:28+00:00"
+            "time": "2018-01-09T20:05:19+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -2779,16 +2716,16 @@
         },
         {
             "name": "parsedown/laravel",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/parsedown/laravel.git",
-                "reference": "d97b0b4ae21340ecbaa04f4f0a8fde9f33df0117"
+                "reference": "a1dd13b4c4309be3f48c9ceb02e3a29ba81548b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/parsedown/laravel/zipball/d97b0b4ae21340ecbaa04f4f0a8fde9f33df0117",
-                "reference": "d97b0b4ae21340ecbaa04f4f0a8fde9f33df0117",
+                "url": "https://api.github.com/repos/parsedown/laravel/zipball/a1dd13b4c4309be3f48c9ceb02e3a29ba81548b0",
+                "reference": "a1dd13b4c4309be3f48c9ceb02e3a29ba81548b0",
                 "shasum": ""
             },
             "require": {
@@ -2832,7 +2769,7 @@
                 "laravel",
                 "parsedown"
             ],
-            "time": "2017-08-23T02:26:10+00:00"
+            "time": "2018-01-09T22:08:08+00:00"
         },
         {
             "name": "php-ffmpeg/php-ffmpeg",
