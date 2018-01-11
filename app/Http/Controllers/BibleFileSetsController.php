@@ -6,6 +6,7 @@ use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFile;
 use App\Helpers\AWS\Bucket;
+use App\Models\User\Access;
 use ZipArchive;
 
 use App\Transformers\FileSetTransformer;
@@ -117,4 +118,5 @@ class BibleFileSetsController extends APIController
 	    $fileset = BibleFileset::find($id);
 	    return view('bibles.filesets.thanks', compact('fileset'));
     }
+
 }

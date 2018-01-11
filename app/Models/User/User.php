@@ -66,6 +66,10 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+	public function key()
+	{
+		return $this->HasMany(Key::class);
+	}
 
 	public function accounts()
 	{
@@ -119,7 +123,7 @@ class User extends Authenticatable
 
 	public function permissions()
 	{
-		return $this->hasMany(BibleFileSetPermission::class);
+		return $this->hasMany(Access::class);
 	}
 
 }

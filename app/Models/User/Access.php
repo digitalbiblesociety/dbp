@@ -46,6 +46,12 @@ use App\Models\Bible\Bible;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereWhitelist($value)
  * @mixin \Eloquent
+ * @property string|null $access_notes
+ * @property string|null $access_type
+ * @property int $access_given
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessGiven($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessType($value)
  */
 class Access extends Model
 {

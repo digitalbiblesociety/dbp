@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bible\BibleFileset;
-use App\Models\Bible\BibleFileSetPermission;
 use App\Models\User\User;
-use App\Transformers\BibleFilePermissionsTransformer;
+use App\Models\User\Access;
 
 class BibleFileSetPermissionsController extends APIController
 {
@@ -17,9 +16,10 @@ class BibleFileSetPermissionsController extends APIController
 	 */
 	public function index()
 	{
-		if(!$this->api) return view('bibles.filesets.permissions.index');
-		$bibleFileSetPermissions = BibleFileSetPermission::all();
-		return $this->reply(fractal()->collection($bibleFileSetPermissions)->transformWith(BibleFilePermissionsTransformer::class)->serializeWith($this->serializer));
+		$user = Auth::user();
+		if(!$user) return $this->setStatusCode(401)->replyWithError("you need to be logged in to see this page");
+		$access = Access::where('user_id',$user->id)->get();
+		return view('bibles.filesets.permissions.index',compact('access'));
 	}
 
 
@@ -110,8 +110,8 @@ class BibleFileSetPermissionsController extends APIController
 	public function user()
 	{
 		$user = \Auth::user();
-		if(!$user) return $this->replyWithError('You must be logged in to view this page');
-		return view('dashboard.permissions',compact('user'));
+		if(!$user) return $this->setStatusCode(401)->replyWithError("you need to be logged in to see this page");
+		return view('bibles.filesets.permissions.user',compact('user'));
 	}
 
 }
