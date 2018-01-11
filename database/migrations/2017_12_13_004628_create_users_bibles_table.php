@@ -14,7 +14,7 @@ class CreateUsersBiblesTable extends Migration
     public function up()
     {
 	    Schema::create('user_notes', function (Blueprint $table) {
-		    $table->char('user_id', 36)->primary();
+		    $table->string('user_id', 64)->primary();
 		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
 		    $table->string('bible_id',12);
 		    $table->foreign('bible_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
@@ -26,10 +26,10 @@ class CreateUsersBiblesTable extends Migration
 	    });
 
 	    Schema::create('user_access', function (Blueprint $table) {
-	    	$table->increments('id');
-		    $table->char('key_id', 24);
-		    $table->char('user_id', 16);
+		    $table->string('user_id', 64)->primary();
 		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
+		    $table->string('key_id', 64);
+		    $table->foreign('key_id')->references('key')->on('user_keys')->onUpdate('cascade');
 		    $table->string('bible_id',12)->nullable();
 		    $table->foreign('bible_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
 		    $table->string('fileset_id',16);

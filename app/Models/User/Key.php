@@ -27,4 +27,9 @@ class Key extends Model
     protected $primaryKey = 'key';
     public $incrementing = 'false';
     protected $keyType = 'string';
+
+    public function user() {
+    	return $this->belongsTo(User::class);
+	}
+
 }

@@ -11,6 +11,8 @@ class users_seeder extends Seeder
      */
     public function run()
     {
+	    \DB::table('user_keys')->delete();
+    	\DB::table('users')->delete();
 
 	    $user = new User();
 	    $user->id = $this->generateRandomString();
@@ -21,8 +23,13 @@ class users_seeder extends Seeder
 
 	    $user = new User();
 	    $user->id = $this->generateRandomString();
-	    $user->name = "Test Build IOS";
+	    $user->name = "Test Build Bible.is";
 	    $user->save();
+
+	    $key = \App\Models\User\Key::create([
+	    	'key' => "e8a946a0-d9e2-11e7-bfa7-b1fb2d7f5824",
+		    'user_id' => $user->id
+	    ])->save();
 
 	    $user = new User();
 	    $user->id = $this->generateRandomString();

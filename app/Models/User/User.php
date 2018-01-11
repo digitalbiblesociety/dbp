@@ -101,6 +101,13 @@ class User extends Authenticatable
 		return $this->HasMany(Note::class);
 	}
 
+	// Roles
+
+	public function canCreateUsers()
+	{
+		return $this->hasOne(Role::class)->where('role','admin')->OrWhere('role','user_creator');
+	}
+
 	public function archivist()
 	{
 		return $this->hasOne(Role::class)->where('role','archivist');
@@ -111,9 +118,9 @@ class User extends Authenticatable
 		return $this->hasOne(Role::class)->where('role','archivist')->where('organization_id',$id);
 	}
 
-	public function role($id = null)
+	public function role($role)
 	{
-		return $this->HasOne(Role::class)->where('organization_id',$id);
+		return $this->HasOne(Role::class)->where('role',$role);
 	}
 
 	public function organizations()
