@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFile;
+use App\Models\Bible\Book;
 use App\Helpers\AWS\Bucket;
 use App\Models\User\Access;
 use ZipArchive;
