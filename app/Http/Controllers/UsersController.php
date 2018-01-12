@@ -40,6 +40,7 @@ class UsersController extends APIController
 		    'name'  => $request->name,
 		    'password' => Hash::make($request->password)
 	    ]);
+	    return $this->reply(["success" => "User created"]);
     }
 
 }

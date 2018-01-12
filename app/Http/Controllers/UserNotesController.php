@@ -29,6 +29,8 @@ class UserNotesController extends APIController
 			'highlights'   => $request->highlights,
 			'notes'        => $request->notes
 	    ]);
+
+    	return $this->reply(["success" => "Note created"]);
     }
 
     public function update(Request $request) {
@@ -36,5 +38,6 @@ class UserNotesController extends APIController
     	$note->highlights = $request->highlights;
 	    $note->notes = $request->notes;
 	    $note->save();
+	    return $this->reply(["success" => "Note Updated"]);
     }
 }
