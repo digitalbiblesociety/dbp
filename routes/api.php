@@ -68,6 +68,7 @@
 	Route::name('v4_api.versionLatest')->get('/api/versions/latest',                      'HomeController@versionLatest');
 	Route::name('v4_api.replyTypes')->get('/api/versions/replyTypes',                     'HomeController@versionReplyTypes');
 	Route::name('v4_api.sign')->get('sign',                                               'HomeController@signedUrls');
+	Route::name('v4_user.create')->post('users',                                          'UsersController@store');
 	Route::name('v4_notes.index')->get('users/{user_id}/notes',                           'UserNotesController@index');
 	Route::name('v4_notes.store')->post('users/{user_id}/notes',                          'UserNotesController@store');
 	Route::name('v4_notes.update')->put('users/{user_id}/notes',                          'UserNotesController@update');

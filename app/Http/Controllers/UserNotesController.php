@@ -32,7 +32,7 @@ class UserNotesController extends APIController
     }
 
     public function update(Request $request) {
-    	$note = Note::find($request->user_id);
+    	$note = Note::where('user_id',$request->user_id)->where('');
     	$note->highlights = $request->highlights;
 	    $note->notes = $request->notes;
 	    $note->save();
