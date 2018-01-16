@@ -19,6 +19,13 @@ class UsersController extends APIController
 		return view('users');
     }
 
+    public function login(Request $request)
+    {
+    	$user = User::where('email',$request->email)->first();
+    	if(Hash::check($request->password, $user->password)) return $this->reply(['user_id' => $user->id]);
+		return $this->replyWithError("No User Found");
+    }
+
     public function store(Request $request)
     {
 
