@@ -43,8 +43,9 @@ class CountryTransformer extends BaseTransformer
 
 	public function transformForV4($country)
 	{
+		$translation = $country->translations($this->iso)->first();
 		return [
-			'name'           => $country->translations($this->iso)->first() ?? $country->name,
+			'name'           => ($translation) ? $translation->name : $country->name,
 			'uri'            => env('APP_URL').'/countries/'.$country->id,
 			'continent_code' => $country->continent,
 			'hidden'         => (boolean) $country->hidden,
