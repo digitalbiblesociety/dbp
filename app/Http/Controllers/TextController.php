@@ -4,16 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Helpers\AWS\Bucket;
 use App\Models\Bible\Bible;
-use App\Models\Bible\BibleEquivalent;
 use App\Models\Bible\Book;
-use App\Models\Bible\Text;
-use App\Models\Bible\TextConcordance;
+use App\Models\Bible\BibleEquivalent;
 use App\Models\Language\AlphabetFont;
 use App\Transformers\FontsTransformer;
 use App\Transformers\TextTransformer;
-
-use Illuminate\Http\Request;
-use App\Http\Controllers\APIController;
+use DB;
 
 class TextController extends APIController
 {
@@ -47,7 +43,7 @@ class TextController extends APIController
 	    $book->push('name_vernacular', $book->translation($bible->iso)->first());
 
 	    // Fetch Verses
-		$verses = \DB::connection('sophia')->table($bible->id.'_vpl')
+		$verses = DB::connection('sophia')->table($bible->id.'_vpl')
 		->where([['book',$book->id_usfx], ['chapter',$chapter]])
 		->when($verse_start, function ($query) use ($verse_start) {
 			return $query->where('verse_end', '>=', $verse_start);
@@ -56,13 +52,25 @@ class TextController extends APIController
 			return $query->where('verse_end', '<=', $verse_end);
 		})->get();
 
-	    $verses->map(function ($verse) use ($book) {
+		// Fetch Vernacular Numbers
+	    $vernacular_numbers[] = $verses->pluck('verse_start')->ToArray();
+	    $vernacular_numbers[] = $verses->pluck('verse_end')->ToArray();
+	    $vernacular_numbers[] = $verses->first()->chapter;
+	    $vernacular_numbers = array_unique(array_flatten($vernacular_numbers));
+	    $vernacular_numbers = fetchVernacularNumbers($bible->script,$bible->iso,min($vernacular_numbers),max($vernacular_numbers));
+
+	    $verses->map(function ($verse) use ($book,$bible,$vernacular_numbers) {
 		    $verse->osis_id = $book->id_osis;
 		    $verse->book_order = ltrim(substr($verse->canon_order,0,3),"0");
-		    $verse->book_name = $book->name_vernacular->name ?? $book->name;
+		    $verse->book_vernacular_name = $book->translation($bible->iso)->name ?? "";
+		    $book->book_name = $book->name;
+		    $verse->chapter_vernacular =  $vernacular_numbers[$verse->chapter];
+            $verse->verse_start_vernacular =  $vernacular_numbers[$verse->verse_start];
+            $verse->verse_end_vernacular =  $vernacular_numbers[$verse->verse_end];
 		    return $verse;
 	    });
 
+		return $this->reply($verses);
 	    if(count($verses) == 0) return $this->setStatusCode(404)->replyWithError("No Verses Were found with the provided params");
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)->toArray());
     }
@@ -114,8 +122,8 @@ class TextController extends APIController
 	    $bible_id = checkParam('dam_id');
 	    $limit = checkParam('limit', null, 'optional') ?? 15;
 
-		$query = \DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).' -'.$exclude);
-	    $verses = \DB::connection('sophia')->table($bible_id.'_vpl')->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)->get();
+		$query = DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).' -'.$exclude);
+	    $verses = DB::connection('sophia')->table($bible_id.'_vpl')->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)->get();
 
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
     }
@@ -135,8 +143,8 @@ class TextController extends APIController
 	    $bible_id = checkParam('dam_id');
 
 	    if($exclude) $exclude = ' -'.$exclude;
-	    $query = \DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).$exclude);
-	    $verses = \DB::connection('sophia')->table($bible_id.'_vpl')->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->select('book_id')->get();
+	    $query = DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).$exclude);
+	    $verses = DB::connection('sophia')->table($bible_id.'_vpl')->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->select('book_id')->get();
 
 	    foreach($verses->groupBy('book_id') as $key => $verse) $verseCount[$key] = $verse->count();
 

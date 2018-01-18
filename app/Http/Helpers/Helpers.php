@@ -85,6 +85,30 @@ function fetchBible($bible_id)
 	if(!$bible) return [];
 }
 
+function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
+{
+	$numbers = \App\Models\Language\AlphabetNumber::where('script_id',$script)->where('script_variant_iso', $iso)->get()->keyBy('numeral')->ToArray();
+
+	// Run through the numbers and return the vernaculars
+	$current_number = $start_number;
+	while($end_number >= $current_number) {
+		$number_vernacular = "";
+		// If it's not supported by the system return "normal" numbers
+		if(empty($numbers)) {
+			$number_vernacular = $current_number;
+		} else {
+			foreach(str_split($current_number) as $i) $number_vernacular .= $numbers[$i]['numeral_vernacular'];
+		}
+		$out_numbers[] = [
+			"numeral"            => intval($current_number),
+			"numeral_vernacular" => $number_vernacular
+		];
+		$current_number++;
+	}
+	return collect($out_numbers)->pluck('numeral_vernacular','numeral');
+}
+
+
 if( ! function_exists('unique_random') ){
 	/**
 	 *
