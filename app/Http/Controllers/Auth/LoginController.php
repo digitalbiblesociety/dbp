@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\APIController;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User\User;
 use App\Models\User\Account;
 
-class LoginController extends Controller
+class LoginController extends APIController
 {
     /*
     |--------------------------------------------------------------------------
@@ -30,18 +31,10 @@ class LoginController extends Controller
      */
     protected $redirectTo = '/home';
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('guest')->except('logout');
-    }
 
 	public function redirectToProvider($provider)
 	{
+		if($this->api) return $this->reply(Socialite::driver($provider)->stateless()->redirect()->getTargetUrl());
 		return Socialite::driver($provider)->redirect();
 	}
 
@@ -50,6 +43,7 @@ class LoginController extends Controller
 		$user = \Socialite::driver($provider)->user();
 		$user = $this->createOrGetUser($user,$provider);
 		\Auth::login($user);
+		if($this->api) return $user;
 		return redirect()->route('home');
 	}
 
