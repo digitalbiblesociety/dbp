@@ -53,7 +53,7 @@ class BiblesController extends APIController
 	    $organization = checkParam('organization_id', null, 'optional');
 		$sort_by = checkParam('sort_by', null, 'optional');
 
-		$access = Access::where('key_id',$this->key)->where('access_api',1)->get()->pluck('bible_id');
+		$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
 
 	    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent.parentLanguage','organizations','alphabet','filesets')
 			->where('open_access', 1)->orWhereIn('id',$access)
