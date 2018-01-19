@@ -31,7 +31,7 @@ class CountriesController extends APIController
      */
     public function show($id)
     {
-		$country = Country::with('languages')->find($id);
+		$country = Country::with('languagesFiltered')->find($id);
 	    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
 	    return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->ToArray());
 
