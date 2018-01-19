@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CountryEthnicity extends Model
 {
+	public $table = "country_people_ethnicities";
 	public $incrementing = false;
 
 }

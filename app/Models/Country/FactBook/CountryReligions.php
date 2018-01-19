@@ -24,5 +24,6 @@ use Illuminate\Database\Eloquent\Model;
 class CountryReligions extends Model
 {
 	public $incrementing = false;
+	public $table = "country_religions";
 
 }
