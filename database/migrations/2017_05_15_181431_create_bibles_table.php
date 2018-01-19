@@ -145,6 +145,7 @@ class CreateBiblesTable extends Migration
 		    $table->foreign('bible_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
 		    $table->string('variation_id',12)->nullable();
 		    $table->foreign('variation_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
+		    $table->string('bucket_id',24)->default('dbp_dev');
 		    $table->string('name');
 		    $table->string('set_type', 12);
 		    $table->string('size_code',64);
