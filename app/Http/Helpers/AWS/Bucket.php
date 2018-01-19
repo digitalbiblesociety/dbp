@@ -20,7 +20,7 @@ class Bucket {
 		]);
 
 		$request = $client->createPresignedRequest($command, $expiry);
-		return $base_url.str_replace($bucket.'/','',$request->getUri()->getPath()).$request->getUri()->getQuery();
+		return $base_url.str_replace($bucket.'/','',$request->getUri()->getPath())."?".$request->getUri()->getQuery();
 	}
 
 }
