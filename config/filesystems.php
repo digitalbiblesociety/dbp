@@ -71,13 +71,22 @@ return [
 	        'bucket' => env('FCBH_AWS_BUCKET'),
         ],
 
+        's3_fcbh_ccdn' => [
+	        'driver' => 's3',
+	        'key'    => env('FCBH_AWS_KEY'),
+	        'secret' => env('FCBH_AWS_SECRET'),
+	        'region' => env('FCBH_AWS_REGION'),
+	        'bucket' => env('FCBH_AWS_BUCKET'),
+	        'url'    => 'https://ccdn.bible.build',
+        ],
+
 	    's3_fcbh_stream' => [
 		    'driver' => 's3',
 		    'key'    => env('FCBH_AWS_KEY'),
 		    'secret' => env('FCBH_AWS_SECRET'),
 		    'region' => env('FCBH_AWS_REGION'),
 		    'bucket' => env('FCBH_AWS_BUCKET'),
-		    'url'    => 'rtpm://stream.bible.build/cfx/st',
+		    'url'    => 'rtmp://stream.bible.build/cfx/st',
 		],
 
     ],
