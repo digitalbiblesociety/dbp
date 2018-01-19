@@ -8,6 +8,7 @@ use App\Models\Bible\BibleFile;
 use App\Models\Bible\Book;
 use App\Helpers\AWS\Bucket;
 use App\Models\User\Access;
+use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 
 use App\Transformers\FileSetTransformer;
@@ -25,6 +26,7 @@ class BibleFileSetsController extends APIController
 	    $bible_id = CheckParam('dam_id',$id);
 	    $chapter_id = CheckParam('chapter_id',null,'optional');
 	    $book_id = CheckParam('book_id',null,'optional');
+	    $bucket = CheckParam('bucket',null,'optional') ?? "s3_fcbh";
 	    if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
 	    if(isset($book)) $book_id = $book->id;
 		$fileset = BibleFileset::find($bible_id);
@@ -36,7 +38,7 @@ class BibleFileSetsController extends APIController
 			    return $query->where('book_id', $book_id);
 		    })->orderBy('file_name')->get();
 	    foreach ($fileSetChapters as $key => $fileSet_chapter) {
-		    $fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type.'/'.$bible_id.'/'.$fileSet_chapter->file_name);
+			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type.'/'.$bible_id.'/'.$fileSet_chapter->file_name, $bucket);
 	    }
 	    return $this->reply(fractal()->collection($fileSetChapters)->serializeWith($this->serializer)->transformWith(new FileSetTransformer()));
     }

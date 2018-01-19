@@ -52,7 +52,7 @@ class FileSetTransformer extends BaseTransformer
 			"verse_start"   => $audio->verse_start,
 			"verse_end"     => $audio->verse_end,
 			"timestamp"     => $audio->timestamp,
-			"path"          => $audio->file_name
+			"path"          => $audio->file_name,
 		];
 	}
 

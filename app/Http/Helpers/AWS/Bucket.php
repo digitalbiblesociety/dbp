@@ -5,11 +5,11 @@ namespace App\Helpers\AWS;
 use Illuminate\Support\Facades\Storage;
 
 class Bucket {
-
-	// $url = Bucket::signedUrl('s3_fcbh','dbp_dev','basha.png',1);
-	// return $url;
-	public static function signedUrl(string $file, string $name = 's3_fcbh', string $bucket = 'dbp-dev', int $expiry = 5)
+	public static function signedUrl(string $file, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5)
 	{
+		$base_url = Storage::disk($name)->getConfig()->get('url');
+		if(!isset($base_url)) return Storage::disk($name)->temporaryUrl($file, now()->addMinutes($expiry));
+
 		$s3 = Storage::disk($name);
 		$client = $s3->getDriver()->getAdapter()->getClient();
 		$expiry = "+" . $expiry . " minutes";
@@ -20,8 +20,7 @@ class Bucket {
 		]);
 
 		$request = $client->createPresignedRequest($command, $expiry);
-
-		return (string) $request->getUri();
+		return $base_url.str_replace($bucket.'/','',$request->getUri()->getPath()).$request->getUri()->getQuery();
 	}
 
 }
