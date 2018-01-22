@@ -10,6 +10,7 @@ use App\Models\Language\AlphabetFont;
 use App\Transformers\FontsTransformer;
 use App\Transformers\TextTransformer;
 use DB;
+use Illuminate\Support\Facades\Storage;
 
 class TextController extends APIController
 {
@@ -31,16 +32,28 @@ class TextController extends APIController
 	    $chapter = checkParam('chapter_id', $chapter_url_param);
     	$verse_start = checkParam('verse_start', null, 'optional') ?? 1;
 	    $verse_end = checkParam('verse_end', null, 'optional');
+	    $formatted = checkParam('bucket_id', null, 'optional');
 
 	    // Fetch Bible for Book Translations
 	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$bible_id)->orWhere('equivalent_id',substr($bible_id,0,7))->first();
 	    if(!isset($bibleEquivalent)) $bible = Bible::find($bible_id);
 	    if(isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
-	    if(!$bible) return [];
+	    if(!$bible) {
+	    	if($this->v > 4) return [];
+	    	return $this->setStatusCode(404)->replyWithError("Bible ID not Found");
+	    }
 
 	    $book = Book::where('id',$book_id)->orWhere('id_usfx',$book_id)->orWhere('id_osis',$book_id)->first();
-	    if(!$book) return $this->setStatusCode(422)->replyWithError('Missing Book ID');
+	    if(!$book) return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
 	    $book->push('name_vernacular', $book->translation($bible->iso)->first());
+
+	    if($formatted) {
+		    $bibleEquivalent = (isset($bibleEquivalent)) ? $bibleEquivalent : $bible->id;
+		    $path = 'text/'.$bible->id.'/'.$bibleEquivalent.'/'.$book_id.$chapter.'.html';
+		    $exists = Storage::disk($formatted)->exists($path);
+		    if(!$exists) return $this->replyWithError("The path: $path did not result in a valid file");
+	    	return $this->reply(["filepath" => Bucket::signedUrl($path)]);
+	    }
 
 	    // Fetch Verses
 		$verses = DB::connection('sophia')->table($bible->id.'_vpl')
