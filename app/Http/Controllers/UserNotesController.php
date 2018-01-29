@@ -57,6 +57,7 @@ class UserNotesController extends APIController
 
 	    $validator = Validator::make($request->all(), [
 		    'bible_id'     => 'required|exists:bibles,id',
+		    'book_id'      => 'required',
 		    'chapter'      => 'required',
 		    'verse_start'  => 'required',
 		    'notes'        => 'required',

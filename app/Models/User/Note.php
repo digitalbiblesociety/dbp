@@ -28,6 +28,16 @@ use Illuminate\Database\Eloquent\Model;
 class Note extends Model
 {
     protected $table = "user_notes";
-    protected $fillable = ['user_id','bible_id','reference_id','highlights','notes'];
+    protected $fillable = ['user_id','bible_id','book_id','chapter','verse_start','verse_end','highlights','notes'];
+
+    public function user()
+    {
+    	return $this->belongsTo(User::class);
+    }
+
+    public function tags()
+    {
+    	return $this->hasMany(NoteTag::class);
+    }
 
 }
