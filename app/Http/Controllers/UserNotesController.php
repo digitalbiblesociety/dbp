@@ -65,6 +65,7 @@ class UserNotesController extends APIController
     	Note::create([
     		'user_id'      => $request->user_id,
 			'bible_id'     => $request->bible_id,
+			'book_id'      => $request->book_id,
 			'chapter'      => $request->chapter,
 		    'verse_start'  => $request->verse_start,
 		    'verse_end'    => $request->verse_start,
