@@ -63,7 +63,7 @@ class UserNotesController extends APIController
 		    'notes'        => 'required',
 	    ]);
 	    if ($validator->fails()) return ['errors' => $validator->errors() ];
-    	Note::create([
+    	$note = Note::create([
     		'user_id'      => $request->user_id,
 			'bible_id'     => $request->bible_id,
 			'book_id'      => $request->book_id,
@@ -71,7 +71,7 @@ class UserNotesController extends APIController
 		    'verse_start'  => $request->verse_start,
 		    'verse_end'    => $request->verse_start,
 			'highlights'   => $request->highlights,
-			'notes'        => $request->notes
+			'notes'        => encrypt($request->notes)
 	    ]);
 
     	return $this->reply(["success" => "Note created"]);
