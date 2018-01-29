@@ -73,6 +73,25 @@ class UserNotesController extends APIController
 			'highlights'   => $request->highlights,
 			'notes'        => encrypt($request->notes)
 	    ]);
+    	//dd($request->tags);
+	    $tags = collect(explode(',',$request->tags))->map(function ($tag) {
+	    	if(strpos($tag, ':') !== false) {
+			    $tag = explode(':',$tag);
+			    return [
+				    'value' => ltrim($tag[1]),
+				    'type'  => ltrim($tag[0])
+			    ];
+		    } else {
+			    return [
+				    'value' => ltrim($tag),
+				    'type'  => 'general'
+			    ];
+		    }
+	    })->toArray();
+
+    	if(isset($request->tags)) {
+			$note->tags()->createMany($tags);
+	    }
 
     	return $this->reply(["success" => "Note created"]);
     }
@@ -83,5 +102,12 @@ class UserNotesController extends APIController
 	    $note->notes = $request->notes;
 	    $note->save();
 	    return $this->reply(["success" => "Note Updated"]);
+    }
+
+    public function destroy(Request $request)
+    {
+	    $note = Note::where('user_id',$request->user_id)->where('id',$request->id)->first();
+	    $note->delete();
+	    return $this->reply(["success" => "Note Deleted"]);
     }
 }

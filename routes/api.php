@@ -38,19 +38,20 @@
 	});
 
 	// VERSION 4
+
+	// VERSION 4 | BIBLE
 	Route::name('v4_bible_filesets.permissions')->get('bibles/filesets/{id}/permissions', 'BibleFileSetPermissionsController@index');
 	Route::name('v4_bible_filesets.index')->get('bibles/filesets/{ id }',                 'BibleFilesSetsController@show');
 	Route::name('v4_bible.all')->get('bibles',                                            'BiblesController@index');
 	Route::name('v4_bible.one')->get('bibles/{id}',                                       'BiblesController@show');
-	Route::name('v4_bible.equivalents')->get('bible/{id}/equivalents',                    'BiblesController@equivalents');
-	Route::name('v4_bible.books_all')->get('bible/{id}/book/{book}',                      'BiblesController@books');
-	Route::name('v4_bible.books_one')->get('bible/{id}/book/{book}',                      'BiblesController@book');
-	Route::name('v4_bible.read')->get('bible/{id}/{book}/{chapter}',                      'TextController@index');
-	Route::name('v4_bible_books.all')->get('bibles/books/',                               'BooksController@index');
-	Route::name('v4_bible_books.one')->get('bibles/books/{id}',                           'BooksController@show');
+	Route::name('v4_bible.books')->get('bible/{id}/book/{book}',                          'BiblesController@books');
+	Route::name('v4_bible.chapter')->get('bible/{id}/{book}/{chapter}',                   'TextController@index');
+	Route::name('v4_bible_books')->get('bibles/books/',                                   'BooksController@index');
 	Route::name('v4_timestamps')->get('timestamps',                                       'AudioController@availableTimestamps');
 	Route::name('v4_timestamps.tag')->get('timestamps/{id}',                              'AudioController@timestampsByTag');
 	Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',           'AudioController@timestampsByReference');
+
+	// VERSION 4 | WIKI
 	Route::name('v4_countries.all')->get('countries',                                     'CountriesController@index');
 	Route::name('v4_countries.one')->get('countries/{id}',                                'CountriesController@show');
 	Route::name('v4_languages.all')->get('languages',                                     'LanguagesController@index');
@@ -60,18 +61,25 @@
 	Route::name('v4_numbers.range')->get('numbers/range',                                 'NumbersController@customRange');
 	Route::name('v4_numbers.all')->get('numbers/',                                        'NumbersController@index');
 	Route::name('v4_numbers.one')->get('numbers/{id}',                                    'NumbersController@show');
-	Route::name('v4_organizations.all')->get('organizations/',                            'OrganizationsController@index');
-	Route::name('v4_organizations.one')->get('organizations/{id}',                        'OrganizationsController@show');
-	Route::name('v4_users.all')->get('organizations/',                                    'UsersController@index');
-	Route::name('v4_users.one')->get('organizations/{id}',                                'UsersController@show');
-	Route::name('v4_api.versions')->get('/api/versions',                                  'HomeController@versions');
-	Route::name('v4_api.versionLatest')->get('/api/versions/latest',                      'HomeController@versionLatest');
-	Route::name('v4_api.replyTypes')->get('/api/versions/replyTypes',                     'HomeController@versionReplyTypes');
-	Route::name('v4_api.sign')->get('sign',                                               'HomeController@signedUrls');
+
+	// VERSION 4 | USERS
+	Route::name('v4_user.index')->get('users',                                            'UsersController@index');
 	Route::name('v4_user.create')->post('users',                                          'UsersController@store');
+
 	Route::name('v4_user.login')->post('users/login',                                     'UsersController@login');
 	Route::name('v4_user.oAuth')->get('users/login/{driver}',                             'Auth\LoginController@redirectToProvider');
 	Route::name('v4_user.oAuth')->get('users/login/{driver}/callback',                    'Auth\LoginController@handleProviderCallback');
 	Route::name('v4_notes.index')->get('users/{user_id}/notes',                           'UserNotesController@index');
 	Route::name('v4_notes.store')->post('users/{user_id}/notes',                          'UserNotesController@store');
 	Route::name('v4_notes.update')->put('users/{user_id}/notes',                          'UserNotesController@update');
+	Route::name('v4_user.destroy')->delete('users/{user_id}/notes',                       'UserNotesController@destroy');
+	Route::name('v4_organizations.all')->get('organizations/',                            'OrganizationsController@index');
+	Route::name('v4_organizations.one')->get('organizations/{id}',                        'OrganizationsController@show');
+	Route::name('v4_api.versions')->get('/api/versions',                                  'HomeController@versions');
+	Route::name('v4_api.versionLatest')->get('/api/versions/latest',                      'HomeController@versionLatest');
+	Route::name('v4_api.replyTypes')->get('/api/versions/replyTypes',                     'HomeController@versionReplyTypes');
+	Route::name('v4_api.sign')->get('sign',                                               'HomeController@signedUrls');
+
+
+	// Error Handling
+	// Route::name('v4_api.sign')->get('sign',                                               'HomeController@signedUrls');

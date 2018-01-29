@@ -7,5 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class NoteTag extends Model
 {
     public $table = "user_note_tags";
+	protected $fillable = ['type','value'];
 
 }
