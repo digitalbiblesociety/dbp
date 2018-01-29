@@ -31,9 +31,10 @@ class UserNotesController extends APIController
 		$notes = Note::where('user_id',$user_id)
 		->when($bible_id, function($q) use ($bible_id) {
 			$q->where('bible_id', '=', $bible_id);
-		})->when($bible_id, function($q) use ($book_id) {
+		})->when($book_id, function($q) use ($book_id) {
 			$q->where('book_id', '=', $book_id);
 		})->paginate(25);
+
     	foreach($notes as $key => $note) {
 		    $notes[$key]->notes = decrypt($note->notes);
 	    }
