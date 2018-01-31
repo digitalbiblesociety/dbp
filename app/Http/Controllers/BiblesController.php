@@ -53,9 +53,9 @@ class BiblesController extends APIController
 	    $organization = checkParam('organization_id', null, 'optional');
 		$sort_by = checkParam('sort_by', null, 'optional');
 
+	    return Cache::remember($this->v.'_bibles_'.$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by, 2400, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by) {
 		$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
-
-	    $bibles = Bible::with('currentTranslation','vernacularTranslation','language.parent.parentLanguage','organizations','alphabet','filesets')
+	    $bibles = Bible::with('currentTranslation','vernacularTranslation','filesets','language')
 			->where('open_access', 1)->orWhereIn('id',$access)
 		    ->when($language, function ($query) use ($language, $full_word) {
 			    if(!$full_word) return $query->where('name', 'LIKE', "%".$language."%");
@@ -77,7 +77,9 @@ class BiblesController extends APIController
 		    })->when($sort_by, function($q) use ($sort_by){
 			    $q->orderBy($sort_by);
 		    })->get();
-	    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
+		    if($this->v == 2) $bibles->load('language.parent.parentLanguage'.'alphabet','organizations');
+		    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
+	    });
     }
 
 
@@ -192,34 +194,9 @@ class BiblesController extends APIController
 	{
 		if(!$this->api) return view('bibles.books.index');
 
-		$books = Book::select(['id','book_order','name'])->orderBy('book_order')->get();
+		$books = Book::select(['id','book_order','name'])->with('codes','translations')->orderBy('book_order')->get();
 		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer)->toArray());
 	}
-
-
-	/**
-	 * Display the equivalents for this resource.
-	 *
-	 * @param  string $id
-	 * @return \Illuminate\Http\Response
-	 */
-	public function equivalents(string $id)
-	{
-		if(!$this->api) return view('bibles.books.index');
-
-		$equivalents = BibleEquivalent::where('bible_id',$id)->get();
-		return $this->reply($equivalents);
-	}
-
-
-	public function book($id)
-	{
-		if(!$this->api) return view('bibles.books.show');
-
-		$book = Book::with('codes','translations')->find($id);
-		return $this->reply(fractal()->item($book)->transformWith(new BooksTransformer)->toArray());
-	}
-
 
 	public function edit($id)
 	{
