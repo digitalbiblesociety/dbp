@@ -2,6 +2,7 @@
 
 namespace App\Models\Organization;
 
+use App\Models\Bible\BibleFileset;
 use App\Models\Language\Language;
 use App\Models\Resource\Resource;
 use App\Models\Bible\Bible;
@@ -67,6 +68,9 @@ use App\Traits\Uuids;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereUrlWebsite($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereZip($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesets
+ * @property-read mixed $bibles_count
+ * @property-read mixed $filesets_count
  */
 class Organization extends Model
 {
@@ -99,6 +103,21 @@ class Organization extends Model
     {
         return $this->belongsToMany(Bible::class,'bible_organizations');
     }
+
+	public function getBiblesCountAttribute()
+	{
+		return $this->bibles ? $this->bibles->count() : 0;
+	}
+
+    public function filesets()
+    {
+    	return $this->HasMany(BibleFileset::class);
+    }
+
+	public function getFilesetsCountAttribute()
+	{
+		return $this->filesets ? $this->filesets->count() : 0;
+	}
 
     public function resources()
     {

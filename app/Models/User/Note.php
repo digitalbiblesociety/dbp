@@ -24,6 +24,18 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Note whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Note whereUserId($value)
  * @mixin \Eloquent
+ * @property int $id
+ * @property string $book_id
+ * @property int $chapter
+ * @property int $verse_start
+ * @property int|null $verse_end
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\NoteTag[] $tags
+ * @property-read \App\Models\User\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Note whereBookId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Note whereChapter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Note whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Note whereVerseEnd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Note whereVerseStart($value)
  */
 class Note extends Model
 {

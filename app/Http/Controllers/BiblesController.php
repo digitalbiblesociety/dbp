@@ -53,32 +53,32 @@ class BiblesController extends APIController
 	    $organization = checkParam('organization_id', null, 'optional');
 		$sort_by = checkParam('sort_by', null, 'optional');
 
-	    return Cache::remember($this->v.'_bibles_'.$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by, 2400, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by) {
-		$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
-	    $bibles = Bible::with('currentTranslation','vernacularTranslation','filesets','language')
-			->where('open_access', 1)->orWhereIn('id',$access)
-		    ->when($language, function ($query) use ($language, $full_word) {
-			    if(!$full_word) return $query->where('name', 'LIKE', "%".$language."%");
-			    return $query->where('name', $language);
-		    })->when($organization, function($q) use ($organization) {
-			    $q->where('organization_id', '>=', $organization);
-		    })->when($dam_id, function($q) use ($dam_id) {
-			    $q->where('id', $dam_id);
-		    })->when($media, function($q) use ($media) {
-			    switch ($media) {
-				    case "video": {$q->has('filesetFilm'); break;}
-				    case "audio": {$q->has('filesetAudio');break;}
-				    case "text":  {$q->has('filesetText'); break;}
-			    }
-		    })->when($updated, function($q) use ($updated) {
-			    $q->where('updated_at', '>', $updated);
-		    })->when($iso, function($q) use ($iso){
-			    $q->where('iso', $iso);
-		    })->when($sort_by, function($q) use ($sort_by){
-			    $q->orderBy($sort_by);
-		    })->get();
-		    if($this->v == 2) $bibles->load('language.parent.parentLanguage'.'alphabet','organizations');
-		    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
+	    return \Cache::remember($this->v.'_bibles_'.$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by, 2400, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by) {
+			$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
+	        $bibles = Bible::with('currentTranslation','vernacularTranslation','filesets','language')
+				->where('open_access', 1)->orWhereIn('id',$access)
+			    ->when($language, function ($query) use ($language, $full_word) {
+				    if(!$full_word) return $query->where('name', 'LIKE', "%".$language."%");
+				    return $query->where('name', $language);
+			    })->when($organization, function($q) use ($organization) {
+				    $q->where('organization_id', '>=', $organization);
+			    })->when($dam_id, function($q) use ($dam_id) {
+				    $q->where('id', $dam_id);
+			    })->when($media, function($q) use ($media) {
+				    switch ($media) {
+					    case "video": {$q->has('filesetFilm'); break;}
+					    case "audio": {$q->has('filesetAudio');break;}
+					    case "text":  {$q->has('filesetText'); break;}
+				    }
+			    })->when($updated, function($q) use ($updated) {
+				    $q->where('updated_at', '>', $updated);
+			    })->when($iso, function($q) use ($iso){
+				    $q->where('iso', $iso);
+			    })->when($sort_by, function($q) use ($sort_by){
+				    $q->orderBy($sort_by);
+			    })->get();
+			if($this->v == 2) $bibles->load('language.parent.parentLanguage'.'alphabet','organizations');
+			return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
 	    });
     }
 

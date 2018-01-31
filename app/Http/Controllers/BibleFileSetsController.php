@@ -22,11 +22,11 @@ class BibleFileSetsController extends APIController
 	public function show($id)
     {
 	    if(!$this->api) return view('bibles.filesets.index');
-
 	    $bible_id = CheckParam('dam_id',$id);
 	    $chapter_id = CheckParam('chapter_id',null,'optional');
 	    $book_id = CheckParam('book_id',null,'optional');
-	    $bucket = CheckParam('bucket',null,'optional') ?? "s3_fcbh";
+	    $driver = CheckParam('bucket',null,'optional') ?? "s3_fcbh";
+	    $lifespan = CheckParam('lifespan',null,'optional') ?? 5;
 	    if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
 	    if(isset($book)) $book_id = $book->id;
 		$fileset = BibleFileset::find($bible_id);
@@ -37,8 +37,9 @@ class BibleFileSetsController extends APIController
 	                                })->when($book_id, function ($query) use ($book_id) {
 			    return $query->where('book_id', $book_id);
 		    })->orderBy('file_name')->get();
+
 	    foreach ($fileSetChapters as $key => $fileSet_chapter) {
-			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type.'/'.$bible_id.'/'.$fileSet_chapter->file_name, $bucket);
+			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type.'/'.$bible_id.'/'.$fileSet_chapter->file_name, $driver, "dbp_dev", $lifespan);
 	    }
 	    return $this->reply(fractal()->collection($fileSetChapters)->serializeWith($this->serializer)->transformWith(new FileSetTransformer()));
     }

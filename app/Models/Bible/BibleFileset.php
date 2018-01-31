@@ -38,6 +38,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSizeName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereVariationId($value)
+ * @property string $bucket_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereBucketId($value)
  */
 class BibleFileset extends Model
 {
@@ -61,15 +63,5 @@ class BibleFileset extends Model
 	public function files()
 	{
 		return $this->HasMany(BibleFile::class,'set_id', 'id');
-	}
-
-	public function permissions()
-	{
-		return $this->hasMany(BibleFileSetPermission::class);
-	}
-
-	public function users()
-	{
-		return $this->hasMany(BibleFileSetPermission::class)->select('user_id');
 	}
 }

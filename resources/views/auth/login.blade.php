@@ -240,6 +240,15 @@
 
     @include('layouts.partials.banner', ['title' => "Login" ])
 
+    <div class="row">
+    @if(isset($errors))
+        @foreach($errors as $error)
+                {{ dd($error) }}
+            {{ $error }}
+        @endforeach
+    @endif
+    </div>
+
     <div class="row row-padding align-center">
         <div class="login-box row">
             <div class="small-12 medium-6 columns small-order-2 medium-order-1">

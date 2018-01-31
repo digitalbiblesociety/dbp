@@ -111,7 +111,6 @@
             </a>
         </div>
 
-
         <div class="row">
 
             <div class="medium-4 columns">

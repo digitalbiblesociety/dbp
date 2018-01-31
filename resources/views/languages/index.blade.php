@@ -67,7 +67,3 @@
         </table>
     </div>
 @endsection
-
-@section('footer')
-
-@endsection

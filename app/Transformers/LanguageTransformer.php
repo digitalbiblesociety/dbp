@@ -141,10 +141,10 @@ class LanguageTransformer extends BaseTransformer
 			];
 		}
 			return [
-				'glotto_code'     => $language->id,
+				'glotto_code'     => $language->glotto_id,
 				'iso_code'        => $language->iso,
 				'name'            => $language->name,
-				'count_bible'     => $language->bibles_count
+				'bible_count'     => $language->bibles_count
 			];
 	}
 

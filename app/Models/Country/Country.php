@@ -27,6 +27,8 @@ use App\Models\Language\Language;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\Country whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\Country whereUpdatedAt($value)
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\Language[] $languagesFiltered
+ * @property string|null $introduction
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\Country whereIntroduction($value)
  */
 class Country extends Model
 {

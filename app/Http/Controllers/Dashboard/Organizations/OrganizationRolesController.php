@@ -57,7 +57,7 @@ class OrganizationRolesController extends Controller
 	        'organization_id' => $request->organizations,
 			'role' => "requesting-access"
         ]);
-        redirect()->action('HomeController@index');
+	    return view('dashboard.organizations.roles.index',compact('user'));
     }
 
     /**

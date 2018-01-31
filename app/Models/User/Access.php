@@ -52,6 +52,8 @@ use App\Models\Bible\Bible;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessGiven($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessNotes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessType($value)
+ * @property int $access_granted
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessGranted($value)
  */
 class Access extends Model
 {

@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Key whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Key whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\User\User $user
  */
 class Key extends Model
 {

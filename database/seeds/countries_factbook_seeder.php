@@ -33,6 +33,7 @@ class countries_factbook_seeder extends Seeder
 	        $countryData['code'] = strtoupper(basename($path,'.json'));
         	$country = Country::find($countryData['code']);
         	if($country) {
+        		$this->seedEthnicGroups($countryData);
 		        $this->seedEnergy($countryData);
 		        $this->seedGeography($countryData);
 		        $this->seedCommunications($countryData);
@@ -41,8 +42,58 @@ class countries_factbook_seeder extends Seeder
 		        $this->seedPeople($countryData);
 		        $this->seedGovernment($countryData);
 		        $this->seedEconomy($countryData);
+		        $this->seedIntroduction($countryData);
+		        $this->seedReligions($countryData);
 	        }
         }
+    }
+
+    public function seedIntroduction($country)
+    {
+    	$introduction = $country['Introduction']['Background']['text'] ?? false;
+    	if($introduction) {
+		    $country = Country::where('fips',$country['code'])->first();
+		    if($country) {
+			    $country->introduction = $introduction;
+			    $country->save();
+		    }
+	    }
+
+    }
+
+    public function seedEthnicGroups($country)
+    {
+    	$ethnicGroups = $country['People and Society']['Ethnic groups'] ?? false;
+    	if(isset($ethnicGroups)) {
+		    $ethnicGroups = $ethnicGroups['text'];
+    	    $ethnicGroups = explode(', ', $ethnicGroups);
+    	    foreach ($ethnicGroups as $ethnic_group) {
+			    preg_match("/(.*) (\d+.*?)\%/", $ethnic_group, $ethnicity);
+			    if(isset($ethnicity[2])) {
+				    \App\Models\Country\FactBook\CountryEthnicity::create([
+					    'country_id'                    => $country['code'],
+					    'name'                          => $ethnicity[1],
+					    'population_percentage'         => $ethnicity[2],
+				    ]);
+			    }
+	        }
+		}
+    }
+
+    public function seedReligions($country) {
+    	$religions = $country['People and Society']['Religions'] ?? false;
+    	if($religions) {
+		    $religions = explode(', ', $religions['text']);
+		    foreach ($religions as $religion) {
+			    preg_match("/(.*) (\d+.*?)\%/", $religion, $religiousGroup);
+
+				\App\Models\Country\FactBook\CountryReligions::create([
+				    'country_id'                    => $country['code'],
+				    'name'                          => $religiousGroup[1] ?? $religion,
+				    'population_percentage'         => (isset($religiousGroup[2])) ? intval($religiousGroup[2]) : null,
+				]);
+		    }
+	    }
     }
 
 
@@ -115,8 +166,8 @@ class countries_factbook_seeder extends Seeder
 		CountryGeography::create([
 			'country_id'           => $country['code'],
 			'location_description' => $geography["Location"]["text"],
-			'latitude'             => $lng ?? null,
-			'longitude'            => $lat ?? null,
+			'latitude'             => $lat ?? null,
+			'longitude'            => $lng ?? null,
 			'mapReferences'        => $geography["Map references"]["text"],
 			'area_sqkm_total'      => intval($geography["Area"]["total"]["text"]),
 			'area_sqkm_land'       => intval($geography["Area"]["land"]["text"]),

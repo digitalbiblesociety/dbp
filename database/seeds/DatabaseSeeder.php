@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
 	    $this->call(countries_regions_seeder::class);
 	    $this->call(countries_factbook_seeder::class);
 	    $this->call(countries_language_seeder::class);
+	    $this->call(countries_joshuaProject_seeder::class);
 
 		// 3. Bibles
 	    $this->call(bible_seeder::class);
@@ -41,7 +42,9 @@ class DatabaseSeeder extends Seeder
 
 	    // 4. Organizations
 	    $this->call(organizations_seeder::class);
+	    $this->call(organizations_relationships::class);
 	    $this->call(users_seeder::class);
+	    $this->call(bible_organization::class);
 
 	    // 4.1 Organization Equivalents
 	    $this->call(bible_equivalents_bibleGateway::class);

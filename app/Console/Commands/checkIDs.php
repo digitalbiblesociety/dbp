@@ -37,9 +37,7 @@ class checkIDs extends Command
      */
     public function handle()
     {
-	    $connection = explode('=',$this->argument('connection'));
-
-        switch($connection[1]) {
+        switch($this->argument('connection')) {
 
 	        case "sophiaToBiblesTable": {
 		        $tables = collect(\DB::connection('sophia')->select('SHOW TABLES'))->pluck('Tables_in_sophia');
@@ -55,7 +53,6 @@ class checkIDs extends Command
 	        }
 
 	        case "dbt_vs_dbp4": {
-
 				$context = ["ssl" => ["verify_peer"=> false]];
 		        $dbp4_bibles = collect(json_decode(file_get_contents('https://api.dbp.dev/library/volume?key=809db3bd83c66f3bc41be0cbd6bd1e3f&v=2', false, stream_context_create($context))))->pluck('dam_id')->toArray();
 		        $dbt_bibles =  collect(json_decode(file_get_contents('https://dbt.io/library/volume?key=809db3bd83c66f3bc41be0cbd6bd1e3f&v=2', false, stream_context_create($context))))->pluck('dam_id')->toArray();

@@ -72,7 +72,7 @@
 	Route::name('v4_notes.index')->get('users/{user_id}/notes',                           'UserNotesController@index');
 	Route::name('v4_notes.store')->post('users/{user_id}/notes',                          'UserNotesController@store');
 	Route::name('v4_notes.update')->put('users/{user_id}/notes',                          'UserNotesController@update');
-	Route::name('v4_user.destroy')->delete('users/{user_id}/notes',                       'UserNotesController@destroy');
+	Route::name('v4_user.destroy')->delete('users/{user_id}/notes/{note_id}',             'UserNotesController@destroy');
 	Route::name('v4_organizations.all')->get('organizations/',                            'OrganizationsController@index');
 	Route::name('v4_organizations.one')->get('organizations/{id}',                        'OrganizationsController@show');
 	Route::name('v4_api.versions')->get('/api/versions',                                  'HomeController@versions');

@@ -19,6 +19,7 @@ class CreateLanguagesTable extends Migration
             $table->char('fips', 2);
             $table->char('continent', 2);
             $table->string('name');
+		    $table->text('introduction')->nullable();
 		    $table->timestamps();
         });
 
@@ -47,13 +48,6 @@ class CreateLanguagesTable extends Migration
             $table->float('longitude',11,7)->nullable();
             $table->text('status')->nullable();
             $table->char('country_id',2)->nullable();
-	        $table->tinyInteger('bible_status')->nullable();
-	        $table->boolean('bible_translation_need')->nullable();
-	        $table->integer('bible_year')->nullable();
-	        $table->integer('bible_year_newTestament')->nullable();
-	        $table->integer('bible_year_portions')->nullable();
-	        $table->text('bible_sample_text')->nullable();
-	        $table->string('bible_sample_img')->nullable();
             $table->timestamps();
         });
 	    DB::statement('ALTER TABLE languages ADD CONSTRAINT CHECK (iso IS NOT NULL OR glotto_id IS NOT NULL)');
@@ -67,6 +61,19 @@ class CreateLanguagesTable extends Migration
 	        $table->string('name');
 	        $table->text('description')->nullable();
 	        $table->boolean('vernacular')->default(0);
+	        $table->timestamps();
+        });
+
+        Schema::create('language_bibleInfo', function(Blueprint $table) {
+	        $table->integer('language_id')->unsigned();
+	        $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
+	        $table->tinyInteger('bible_status')->nullable();
+	        $table->boolean('bible_translation_need')->nullable();
+	        $table->integer('bible_year')->nullable();
+	        $table->integer('bible_year_newTestament')->nullable();
+	        $table->integer('bible_year_portions')->nullable();
+	        $table->text('bible_sample_text')->nullable();
+	        $table->string('bible_sample_img')->nullable();
 	        $table->timestamps();
         });
 
@@ -222,6 +229,7 @@ class CreateLanguagesTable extends Migration
 	    Schema::dropIfExists('language_classifications');
 	    Schema::dropIfExists('language_relationships');
 	    Schema::dropIfExists('language_translations');
+	    Schema::dropIfExists('language_bibleInfo');
 	    Schema::dropIfExists('language_altNames');
 	    Schema::dropIfExists('language_dialects');
 	    Schema::dropIfExists('language_codes');

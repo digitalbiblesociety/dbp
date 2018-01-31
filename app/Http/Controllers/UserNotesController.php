@@ -104,10 +104,9 @@ class UserNotesController extends APIController
 	    return $this->reply(["success" => "Note Updated"]);
     }
 
-    public function destroy(Request $request)
+    public function destroy($user_id,$note_id)
     {
-	    $note = Note::where('user_id',$request->user_id)->where('id',$request->id)->first();
-	    $note->delete();
+	    $note = Note::where('user_id',$user_id)->where('id',$note_id)->first()->delete();
 	    return $this->reply(["success" => "Note Deleted"]);
     }
 }

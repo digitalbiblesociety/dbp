@@ -31,9 +31,12 @@ class LanguagesController extends APIController
 		$code = checkParam('code', null, 'optional');
 	    $language_name_portion = checkParam('full_word', null, 'optional');
 	    $sort_by = checkParam('sort_by', null, 'optional');
+	    $has_bibles = checkParam('has_bibles', null, 'optional');
 
-		$languages = Language::select(['id','iso','name'])
-			->when($country, function ($query) use ($country) {
+		$languages = Language::select(['id','glotto_id','iso','name'])->withCount('bibles')
+			->when($has_bibles, function ($query) use ($has_bibles) {
+				return $query->has('bibles');
+			})->when($country, function ($query) use ($country) {
 				return $query->where('country_id', $country);
 			})->when($code, function ($query) use ($code) {
 				return $query->where('iso', $code);

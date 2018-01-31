@@ -46,15 +46,12 @@ class CountryTransformer extends BaseTransformer
 		$translation = $country->translations($this->iso)->first();
 		return [
 			'name'           => ($translation) ? $translation->name : $country->name,
-			'uri'            => env('APP_URL').'/countries/'.$country->id,
 			'continent_code' => $country->continent,
-			'hidden'         => (boolean) $country->hidden,
-			'languages'      => $country->languages->pluck('name','iso'),
+			'languages'      => $country->languagesFiltered->pluck('name','iso'),
 			'codes' => [
 				'fips'       => $country->fips,
 				'iso_a3'     => $country->iso_a3,
-				'iso_a2'     => $country->id,
-				'iso_num'    => $country->iso_num,
+				'iso_a2'     => $country->id
 			]
 		];
 	}

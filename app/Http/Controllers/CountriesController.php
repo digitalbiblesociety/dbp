@@ -14,12 +14,13 @@ class CountriesController extends APIController
      *
      * @return mixed
      */
-    public function index()
+    public function index($id = null)
     {
     	if(!$this->api) return view('countries.index');
-	    $countries = \Cache::remember('v'.$this->v.$this->api.'_countries', 2400, function() {
-			return Country::get();
-	    });
+    	// \Cache::forget('v'.$this->v.$this->api.'_countries');
+	    // $countries = \Cache::remember('v'.$this->v.$this->api.'_countries', 2400, function() {
+			$countries = Country::with('languagesFiltered','translations')->get();
+	    // });
 	    return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
     }
 

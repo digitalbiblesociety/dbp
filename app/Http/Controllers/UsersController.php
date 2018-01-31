@@ -4,43 +4,49 @@ namespace App\Http\Controllers;
 
 use App\Models\User\Key;
 use App\Models\User\User;
+use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use Validator;
-
+use Laravel\Socialite\Facades\Socialite;
 class UsersController extends APIController
 {
-	/**
-	 *
-	 */
 	public function index()
     {
-		return view('users');
+		$authorized_user = checkUser();
+	    if(!$authorized_user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
+		if(!$this->api) return view('dashboard.users.index');
+
+		$users = User::with('organizations.currentTranslation')->get();
+		return $this->reply(fractal()->transformWith(UserTransformer::class)->collection($users));
+    }
+
+    public function show($id)
+    {
+    	//$user = check
     }
 
     public function login(Request $request)
     {
+    	$current_locale = $request->iso ?? \i18n::getCurrentLocale();
     	$user = User::where('email',$request->email)->first();
     	if(Hash::check($request->password, $user->password)) return $this->reply(['user_id' => $user->id]);
-		return $this->replyWithError("No User Found");
+		return $this->replyWithError(trans('auth.failed',[],$current_locale));
     }
 
     public function store(Request $request)
     {
-
-    	$user_authorized = Key::where('key',$_GET['key'])->first()->user;
-    	if(!$user_authorized) return $this->setStatusCode(401)->replyWithError("You are not a user");
-    	if(!$user_authorized->canCreateUsers()) return $this->setStatusCode(401)->replyWithError("You are not authorized to create users");
+	    $user = checkUser();
+	    if(!$user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
+    	if(!$user->canCreateUsers()) return $this->setStatusCode(401)->replyWithError("You are not authorized to create users");
 
 	    $validator = Validator::make($request->all(), [
 		    'email' => 'required|unique:users,email|max:255',
 		    'name'  => 'required'
 	    ]);
 
-
 	    if ($validator->fails()) return $this->replyWithError($validator->errors());
-
     	$user = User::create([
     		'id'    => unique_random('users','id',32),
     		'email' => $request->email,

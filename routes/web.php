@@ -13,7 +13,6 @@
 
 Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]], function()
 {
-
 	Route::name('docs')->get('docs',                                        'DocsController@index');
 	Route::name('history')->get('docs/history',                             'DocsController@history');
 	Route::name('swagger')->get('docs/swagger',                             'DocsController@swagger');
@@ -120,17 +119,19 @@ Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCall
 Auth::routes();
 
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('dashboard', 'HomeController@index')->name('home');
+Route::resource('dashboard/users', 'UsersController');
+Route::get('/dashboard/users/notes', 'UserNotesController@index')->name('users.notes_index');
 
 
 // Organizations Dashboard
-Route::resource('home/organizations/roles',       'Dashboard\Organizations\OrganizationRolesController', ['names' => [
+Route::resource('dashboard/organizations/roles',       'Dashboard\Organizations\OrganizationRolesController', ['names' => [
 	'index'   => 'dashboard_organization_roles.index',
 	'edit'    => 'dashboard_organization_roles.edit',
 	'create'  => 'dashboard_organization_roles.create',
 	'show'    => 'dashboard_organization_roles.show',
 ]]);
-Route::resource('/home/organizations', 'OrganizationsController', ['names' => [
+Route::resource('dashboard/organizations', 'OrganizationsController', ['names' => [
 	'index'   => 'dashboard_organizations.index',
 	'edit'    => 'dashboard_organizations.edit',
 	'create'  => 'dashboard_organizations.create',

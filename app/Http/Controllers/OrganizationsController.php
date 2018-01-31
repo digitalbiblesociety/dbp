@@ -38,12 +38,7 @@ class OrganizationsController extends APIController
 	 */
 	public function show($slug)
 	{
-		// Support both incrementing ID or Slug
-		if(preg_match("/\d+/",$slug)) {
-			$organization = Organization::with("bibles.translations","bibles.language","translations","logos","currentTranslation")->where('id',$slug)->first();
-		} else {
-			$organization = Organization::with("bibles.translations","bibles.language","translations","logos","currentTranslation")->where('slug',$slug)->first();
-		}
+		$organization = Organization::with("bibles.translations","bibles.language","translations","logos","currentTranslation")->where('id',$slug)->orWhere('slug',$slug)->first();
 		if(!$organization) return $this->setStatusCode(404)->replyWithError("Sorry we don't have any record for $slug");
 
 		// Handle API First
@@ -51,7 +46,10 @@ class OrganizationsController extends APIController
 
 		// Than Try Admin
 		$user = \Auth::user();
-		if($user) return view('dashboard.organizations.show',compact('user','organization'));
+		if($user) {
+			$organization->load('filesets.bible.currentTranslation');
+			return view('dashboard.organizations.show',compact('user','organization'));
+		}
 
 		// Finally send them to the public view
 		return view('organizations.show', compact('organization'));

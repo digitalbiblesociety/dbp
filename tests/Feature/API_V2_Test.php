@@ -229,7 +229,7 @@ class API_V2_Test extends TestCase
 		$response = $this->get(route('v2_library_metadata'), ['v' => 2,'dam_id' => $bible_id, 'key' => $this->params['key']]);
 		echo "\nTesting: ".route('v2_library_metadata', ['v' => 2, 'dam_id' => $bible_id, 'key' => $this->params['key']]);
 		$response->assertSuccessful();
-		$response->assertJsonStructure([$this->getSchemaKeys('LibraryMetaData')]);
+		$response->assertJsonStructure($this->getSchemaKeys('LibraryMetaData'));
 	}
 
 	/**

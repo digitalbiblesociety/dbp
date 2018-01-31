@@ -26,7 +26,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/dashboard';
 
     /**
      * Create a new controller instance.
@@ -63,6 +63,7 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
+	        'id'       => unique_random('users','id',32),
             'name'     => $data['name'],
             'email'    => $data['email'],
             'password' => bcrypt($data['password']),
@@ -90,7 +91,7 @@ class RegisterController extends Controller
 		$confirmation_code = str_random(24);
 
 		User::create([
-			'id'                => str_random(24),
+			'id'                => unique_random('users','id',32),
 			'username'          => Input::get('username'),
 			'email'             => Input::get('email'),
 			'password'          => Hash::make(Input::get('password')),

@@ -5,6 +5,12 @@ function bookCodeConvert($code = null, $source_type = null, $destination_type = 
 	return BookCode::where('type',$destination_type)->where('book_id',$book->book_id)->first()->code;
 }
 
+function checkUser()
+{
+	$user = (isset($_GET['key'])) ? \App\Models\User\Key::where('key',$_GET['key'])->first()->user : \Auth::user();
+	return $user;
+}
+
 function checkParam($param, $v4Style = null, $optional = false)
 {
 	$url_param = (isset($_GET[$param])) ? $_GET[$param] : false;

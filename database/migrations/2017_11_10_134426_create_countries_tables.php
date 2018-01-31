@@ -112,8 +112,8 @@ class CreateCountriesTables extends Migration
 		    $table->char('country_id', 2);
 		    $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
 		    $table->string('name');
-		    $table->decimal('population_percentage', 4, 2)->unsigned();
-		    $table->tinyInteger('date')->unsigned();
+		    $table->decimal('population_percentage', 5, 2)->unsigned();
+		    $table->tinyInteger('date')->unsigned()->nullable();
 		    $table->timestamps();
 	    });
 
@@ -121,8 +121,8 @@ class CreateCountriesTables extends Migration
 		    $table->char('country_id', 2);
 		    $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
 		    $table->string('name');
-		    $table->decimal('population_percentage', 4, 2)->unsigned();
-		    $table->tinyInteger('date')->unsigned();
+		    $table->decimal('population_percentage', 5, 2)->unsigned()->nullable();
+		    $table->tinyInteger('date')->unsigned()->nullable();
 		    $table->timestamps();
 	    });
 
@@ -292,6 +292,24 @@ class CreateCountriesTables extends Migration
 		    $table->timestamps();
 	    });
 
+	    Schema::create('country_joshua_project', function (Blueprint $table) {
+	    	$table->char('country_id', 2);
+		    $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
+		    $table->char('language_official_iso', 3);
+		    $table->foreign('language_official_iso')->references('iso')->on('languages')->onUpdate('cascade');
+		    $table->string('language_official_name')->nullable();
+		    $table->bigInteger('population')->unsigned()->default(0);
+		    $table->bigInteger('population_unreached')->unsigned()->default(0);
+		    $table->integer('people_groups')->unsigned()->default(0);
+		    $table->integer('people_groups_unreached')->unsigned()->default(0);
+		    $table->tinyinteger('joshua_project_scale')->unsigned()->default(0);
+		    $table->string('primary_religion')->nullable();
+		    $table->float('percent_christian')->nullable();
+		    $table->boolean('resistant_belt')->default(0);
+		    $table->float('percent_literate')->nullable();
+		    $table->timestamps();
+	    });
+
 
     }
 
@@ -302,6 +320,7 @@ class CreateCountriesTables extends Migration
      */
     public function down()
     {
+    	# Factbook
 	    Schema::dropIfExists('country_people');
 	    Schema::dropIfExists('country_energy');
 	    Schema::dropIfExists('country_issues');
@@ -312,5 +331,6 @@ class CreateCountriesTables extends Migration
 	    Schema::dropIfExists('country_communications');
 	    Schema::dropIfExists('country_transportation');
 	    Schema::dropIfExists('country_people_ethnicities');
+	    Schema::dropIfExists('country_joshua_project');
     }
 }

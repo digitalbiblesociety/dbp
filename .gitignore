@@ -3,6 +3,7 @@
 
 /node_modules
 /public/hot
+/public/maps/*
 /public/storage
 /public/bibles
 /public/scriptures

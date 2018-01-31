@@ -2,7 +2,6 @@
 
 namespace App\Models\User;
 
-use App\Models\Bible\BibleFileSetPermission;
 use App\Models\Organization\Organization;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -44,6 +43,9 @@ use App\Traits\Uuids;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereUpdatedAt($value)
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Note[] $notes
+ * @property-read \App\Models\User\Role $admin
+ * @property-read \App\Models\User\Role $canCreateUsers
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Key[] $key
  */
 class User extends Authenticatable
 {
@@ -103,6 +105,11 @@ class User extends Authenticatable
 
 	// Roles
 
+	public function admin()
+	{
+		return $this->hasOne(Role::class)->where('role','admin');
+	}
+
 	public function canCreateUsers()
 	{
 		return $this->hasOne(Role::class)->where('role','admin')->OrWhere('role','user_creator');
@@ -118,7 +125,7 @@ class User extends Authenticatable
 		return $this->hasOne(Role::class)->where('role','archivist')->where('organization_id',$id);
 	}
 
-	public function role($role)
+	public function role($role = null)
 	{
 		return $this->HasOne(Role::class)->where('role',$role);
 	}
