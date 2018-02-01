@@ -40,8 +40,23 @@
 	// VERSION 4
 
 	// VERSION 4 | BIBLE
-	Route::name('v4_bible_filesets.permissions')->get('bibles/filesets/{id}/permissions', 'BibleFileSetPermissionsController@index');
 	Route::name('v4_bible_filesets.index')->get('bibles/filesets/{ id }',                 'BibleFilesSetsController@show');
+	Route::post('bibles/filesets/{id}/files/{file_id}',    'BibleFilesController@update');
+	Route::resource('bibles/filesets/{id}/permissions',    'BibleFileSetPermissionsController', ['names' => [
+		'v4_bible_filesets.permissions_index'   => 'view_bible_filesets_permissions.index',
+		'v4_bible_filesets.permissions_edit'    => 'view_bible_filesets_permissions.edit',
+		'v4_bible_filesets.permissions_create'  => 'view_bible_filesets_permissions.create',
+		'v4_bible_filesets.permissions_store'   => 'view_bible_filesets_permissions.store',
+		'v4_bible_filesets.permissions_show'    => 'view_bible_filesets_permissions.show',
+		'v4_bible_filesets.permissions_update'  => 'view_bible_filesets_permissions.update'
+	]]);
+	Route::resource('bibles/filesets',       'BibleFileSetsController', ['names' => [
+		'v4_bible_filesets.index'   => 'view_bible_filesets.index',
+		'v4_bible_filesets.edit'    => 'view_bible_filesets.edit',
+		'v4_bible_filesets.create'  => 'view_bible_filesets.create',
+		'v4_bible_filesets.show'    => 'view_bible_filesets.show',
+	]]);
+
 	Route::name('v4_bible.all')->get('bibles',                                            'BiblesController@index');
 	Route::name('v4_bible.one')->get('bibles/{id}',                                       'BiblesController@show');
 	Route::name('v4_bible.books')->get('bible/{id}/book/{book}',                          'BiblesController@books');

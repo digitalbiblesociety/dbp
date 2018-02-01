@@ -39,7 +39,7 @@ Route::resource('bibles/ocr',               'PrintProcesses');
 Route::resource('dbl',                      'Connections\DigitalBibleLibraryController');
 
 
-Route::post('bibles/filesets/{id}/files/{file_id}' , 'BibleFilesController@update');
+
 
 Route::post('/search',                          'BibleDisplayController@search');
 Route::get('/read/',                            'BibleDisplayController@chapter')->name('view_bible_chapter');
@@ -48,7 +48,7 @@ Route::get('/read/{id}/{book}/{chapter}',       'BibleDisplayController@chapter'
 
 
 Route::get('/permissions',       'BibleFileSetPermissionsController@user')->name('view_bible_filesets_permissions.user');
-Route::resource('bibles/filesets/{id}/permissions',       'BibleFileSetPermissionsController', ['names' => [
+Route::resource('bibles/files/{id}/permissions',       'BibleFileSetPermissionsController', ['names' => [
 	'index'   => 'view_bible_filesets_permissions.index',
 	'edit'    => 'view_bible_filesets_permissions.edit',
 	'create'  => 'view_bible_filesets_permissions.create',
@@ -56,7 +56,7 @@ Route::resource('bibles/filesets/{id}/permissions',       'BibleFileSetPermissio
 	'show'    => 'view_bible_filesets_permissions.show',
 	'update'  => 'view_bible_filesets_permissions.update'
 ]]);
-Route::resource('bibles/filesets',       'BibleFileSetsController', ['names' => [
+Route::resource('bibles/files',       'BibleFileSetsController', ['names' => [
 	'index'   => 'view_bible_filesets.index',
 	'edit'    => 'view_bible_filesets.edit',
 	'create'  => 'view_bible_filesets.create',
