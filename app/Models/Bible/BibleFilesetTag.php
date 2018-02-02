@@ -11,7 +11,7 @@ class BibleFilesetTag extends Model
 	public $primaryKey = 'bible_fileset_id';
 	public $incrementing = false;
 	protected $keyType = "string";
-	protected $hidden = ["created_at","updated_at"];
+	protected $hidden = ["created_at","updated_at",'bible_fileset_id','admin_only','notes'];
 	protected $fillable = ['name','description','admin_only','notes','iso'];
 
 	public function fileset()
