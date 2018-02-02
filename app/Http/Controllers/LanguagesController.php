@@ -29,7 +29,7 @@ class LanguagesController extends APIController
 
 		$country = checkParam('country',null,'optional');
 		$code = checkParam('code', null, 'optional');
-	    $language_name_portion = checkParam('full_word', null, 'optional');
+	    $language_name_portion = checkParam('full_word', null, 'optional') ?? checkParam('language_name', null, 'optional') ;
 	    $sort_by = checkParam('sort_by', null, 'optional');
 	    $has_bibles = checkParam('has_bibles', null, 'optional');
 
@@ -41,7 +41,9 @@ class LanguagesController extends APIController
 			})->when($code, function ($query) use ($code) {
 				return $query->where('iso', $code);
 			})->when($language_name_portion, function ($query) use ($language_name_portion) {
-				return $query->where('name', 'contains', $language_name_portion);
+				return $query->whereHas('alternativeNames', function ($query) use ($language_name_portion) {
+					$query->where('name', $language_name_portion);
+				})->orWhere('name', $language_name_portion);
 			})->when($sort_by, function ($query) use ($sort_by) {
 				return $query->orderBy($sort_by);
 			})->get();
