@@ -119,7 +119,15 @@ class BibleTransformer extends BaseTransformer
 					"language"     => $bible->language->name,
 					"iso"          => $bible->iso,
 					"date"         => intval( $bible->date ),
-					"filesets"     => $bible->filesets->groupBy('id')
+					"filesets"     => $bible->filesets->mapWithKeys(function ($item) {
+						return [
+							$item['id'] => [
+								"bucket_id" => $item["bucket_id"],
+                                "set_type"  => $item["set_type"],
+                                "size_code" => $item["size_code"],
+                                "meta"      => $item["meta"]
+							]];
+					})
 				];
 			}
 			case "v4_bible.one": {
