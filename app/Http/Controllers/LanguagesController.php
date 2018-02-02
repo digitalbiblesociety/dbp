@@ -32,6 +32,7 @@ class LanguagesController extends APIController
 	    $language_name_portion = checkParam('full_word', null, 'optional') ?? checkParam('language_name', null, 'optional') ;
 	    $sort_by = checkParam('sort_by', null, 'optional');
 	    $has_bibles = checkParam('has_bibles', null, 'optional');
+	    $include_alt_names = checkParam('include_alt_names', null, 'optional');
 
 		$languages = Language::select(['id','glotto_id','iso','name'])->withCount('bibles')
 			->when($has_bibles, function ($query) use ($has_bibles) {
@@ -40,10 +41,12 @@ class LanguagesController extends APIController
 				return $query->where('country_id', $country);
 			})->when($code, function ($query) use ($code) {
 				return $query->where('iso', $code);
+			})->when($include_alt_names, function ($query) use ($has_bibles) {
+				return $query->with('alternativeNames');
 			})->when($language_name_portion, function ($query) use ($language_name_portion) {
 				return $query->whereHas('alternativeNames', function ($query) use ($language_name_portion) {
 					$query->where('name', $language_name_portion);
-				})->orWhere('name', $language_name_portion);
+			})->orWhere('name', $language_name_portion);
 			})->when($sort_by, function ($query) use ($sort_by) {
 				return $query->orderBy($sort_by);
 			})->get();

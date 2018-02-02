@@ -135,17 +135,19 @@ class LanguageTransformer extends BaseTransformer
                 "population"           => $language->population,
 				"country_id"           => $language->country_id,
 				'codes'                => $language->codes->pluck('code','source') ?? '',
-				'alternativeNames'     => array_flatten($language->alternativeNames->ToArray()) ?? '',
+				'alternativeNames'     => array_flatten($language->alternativeNames->pluck('name')->ToArray()) ?? '',
 				'dialects'             => $language->dialects->pluck('name') ?? '',
 				'classifications'      => $language->classifications->pluck('name','classification_id') ?? '',
 			];
 		}
-			return [
-				'glotto_code'     => $language->glotto_id,
-				'iso_code'        => $language->iso,
-				'name'            => $language->name,
-				'bible_count'     => $language->bibles_count
-			];
+		$return = [
+			'glotto_code'     => $language->glotto_id,
+			'iso_code'        => $language->iso,
+			'name'            => $language->name,
+			'bible_count'     => $language->bibles_count
+		];
+		if($language->relationLoaded('alternativeNames')) $return['alt_names'] = array_flatten($language->alternativeNames->pluck('name')->ToArray());
+		return $return;
 	}
 
 }
