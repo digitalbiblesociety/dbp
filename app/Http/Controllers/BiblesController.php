@@ -52,10 +52,13 @@ class BiblesController extends APIController
 	    $updated = checkParam('updated', null, 'optional');
 	    $organization = checkParam('organization_id', null, 'optional');
 		$sort_by = checkParam('sort_by', null, 'optional');
-
-	    return \Cache::remember($this->v.'_bibles_'.$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by, 2400, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by) {
+		// hide cache
+		//\Cache::forget($this->v.'_bibles_'.$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by);
+	    //return \Cache::remember($this->v.'_bibles_'.$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by, 2400, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by) {
 			$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
 	        $bibles = Bible::with('currentTranslation','vernacularTranslation','filesets','language')
+		        // Temporary empty bible file remover
+		        ->has('filesets.files')
 				->where('open_access', 1)->orWhereIn('id',$access)
 			    ->when($language, function ($query) use ($language, $full_word) {
 				    if(!$full_word) return $query->where('name', 'LIKE', "%".$language."%");
@@ -77,9 +80,10 @@ class BiblesController extends APIController
 			    })->when($sort_by, function($q) use ($sort_by){
 				    $q->orderBy($sort_by);
 			    })->get();
+	        
 			if($this->v == 2) $bibles->load('language.parent.parentLanguage'.'alphabet','organizations');
 			return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
-	    });
+	    //});
     }
 
 
