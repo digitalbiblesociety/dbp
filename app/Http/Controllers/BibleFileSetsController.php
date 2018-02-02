@@ -39,7 +39,7 @@ class BibleFileSetsController extends APIController
 		    })->orderBy('file_name')->get();
 
 	    foreach ($fileSetChapters as $key => $fileSet_chapter) {
-			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type.'/'.$bible_id.'/'.$fileSet_chapter->file_name, $driver, "dbp_dev", $lifespan);
+			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type.'/'.$fileset->bible_id.'/'.$fileset->id.'/'.$fileSet_chapter->file_name, $driver, "dbp_dev", $lifespan);
 	    }
 	    return $this->reply(fractal()->collection($fileSetChapters)->serializeWith($this->serializer)->transformWith(new FileSetTransformer()));
     }
