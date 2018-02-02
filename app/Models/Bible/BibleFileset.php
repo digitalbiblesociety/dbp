@@ -64,4 +64,9 @@ class BibleFileset extends Model
 	{
 		return $this->HasMany(BibleFile::class,'set_id', 'id');
 	}
+
+	public function meta()
+	{
+		return $this->HasMany(BibleFilesetTag::class);
+	}
 }
