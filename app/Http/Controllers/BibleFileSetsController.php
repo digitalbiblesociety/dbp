@@ -13,6 +13,11 @@ use ZipArchive;
 
 use App\Transformers\FileSetTransformer;
 
+// for download
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+
+
 class BibleFileSetsController extends APIController
 {
 
@@ -43,6 +48,28 @@ class BibleFileSetsController extends APIController
 	    }
 	    return $this->reply(fractal()->collection($fileSetChapters)->serializeWith($this->serializer)->transformWith(new FileSetTransformer()));
     }
+
+    public function download($id)
+    {
+	    $set_id = CheckParam('set_id',$id);
+	    $books = CheckParam('books',null,'optional');
+
+	    $fileset = BibleFileset::where('id',$set_id)->first();
+	    if(!$fileset) return $this->replyWithError("Fileset ID not found");
+
+	    // Filter Download By Books
+	    if($books) {
+	    	$books = explode(',',$books);
+		    $files = BibleFile::with('book')->where('set_id',$fileset->id)->whereIn('book_id',$books)->get();
+		    $books = $files->map(function ($file) {
+		    	$testamentLetter = ($file->book->book_testament == "NT") ? "B" : "A";
+			    return $testamentLetter.str_pad($file->book->testament_order, 2, 0);
+		    });
+	    }
+	    Bucket::download($files,'s3_fcbh', 'dbp_dev', 5, $books);
+    }
+
+
 
 
 	/**

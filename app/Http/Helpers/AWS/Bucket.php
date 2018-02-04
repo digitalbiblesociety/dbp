@@ -2,7 +2,11 @@
 
 namespace App\Helpers\AWS;
 
+use App\Models\Bible\BibleFile;
 use Illuminate\Support\Facades\Storage;
+
+
+use App\Helpers\AWS\S3StreamZip;
 
 class Bucket {
 	public static function signedUrl(string $file, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5)
@@ -21,6 +25,28 @@ class Bucket {
 
 		$request = $client->createPresignedRequest($command, $expiry);
 		return $base_url.str_replace($bucket.'/','',$request->getUri()->getPath())."?".$request->getUri()->getQuery();
+	}
+
+	// public static function signedUrl(string $file, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5)
+
+	public static function download($files, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5, $books = null)
+	{
+		set_time_limit(0);
+		$fileset_id = $files->first()->fileset->id;
+		$stream = new S3StreamZip([
+			'key'    => env('FCBH_AWS_KEY'),
+			'secret' => env('FCBH_AWS_SECRET'),
+			'bucket' => env('FCBH_AWS_BUCKET'),
+			'region' => env('FCBH_AWS_REGION'),
+		]);
+
+		try {
+			$stream->bucket('dbp-dev')->prefix("audio/$fileset_id")->send($fileset_id."_".$books->implode("_").".zip",$books->toArray());
+		} catch (InvalidParameterException $e) {
+			echo $e->getMessage();
+		} catch (S3Exception $e) {
+			echo $e->getMessage();
+		}
 	}
 
 }

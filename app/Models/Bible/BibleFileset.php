@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereVariationId($value)
  * @property string $bucket_id
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereBucketId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFilesetTag[] $meta
  */
 class BibleFileset extends Model
 {

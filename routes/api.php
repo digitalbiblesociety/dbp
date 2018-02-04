@@ -42,6 +42,7 @@
 	// VERSION 4 | BIBLE
 	Route::name('v4_bible_filesets.index')->get('bibles/filesets/{ id }',                 'BibleFilesSetsController@show');
 	Route::post('bibles/filesets/{id}/files/{file_id}',    'BibleFilesController@update');
+
 	Route::resource('bibles/filesets/{id}/permissions',    'BibleFileSetPermissionsController', ['names' => [
 		'v4_bible_filesets.permissions_index'   => 'view_bible_filesets_permissions.index',
 		'v4_bible_filesets.permissions_edit'    => 'view_bible_filesets_permissions.edit',
@@ -50,7 +51,8 @@
 		'v4_bible_filesets.permissions_show'    => 'view_bible_filesets_permissions.show',
 		'v4_bible_filesets.permissions_update'  => 'view_bible_filesets_permissions.update'
 	]]);
-	Route::resource('bibles/filesets',       'BibleFileSetsController', ['names' => [
+	Route::get('bibles/filesets/{id}/download', 'BibleFileSetsController@download')->name('v4_bible_filesets.download');
+	Route::resource('bibles/filesets',           'BibleFileSetsController', ['names' => [
 		'v4_bible_filesets.index'   => 'view_bible_filesets.index',
 		'v4_bible_filesets.edit'    => 'view_bible_filesets.edit',
 		'v4_bible_filesets.create'  => 'view_bible_filesets.create',

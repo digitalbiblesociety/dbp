@@ -34,6 +34,7 @@ use App\Models\Language\Language;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereVerseEnd($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereVerseStart($value)
+ * @property-read \App\Models\Bible\BibleFileset $fileset
  */
 class BibleFile extends Model
 {
@@ -45,6 +46,11 @@ class BibleFile extends Model
 		return $this->hasOne(Language::class);
 	}
 
+	public function fileset()
+	{
+		return $this->BelongsTo(BibleFileset::class,'set_id');
+	}
+
 	public function bible()
 	{
 		return $this->BelongsTo(Bible::class);
@@ -52,7 +58,7 @@ class BibleFile extends Model
 
 	public function book()
 	{
-		return $this->BelongsTo(Book::class);
+		return $this->BelongsTo(Book::class,'book_id','id');
 	}
 
 	public function timestamps()

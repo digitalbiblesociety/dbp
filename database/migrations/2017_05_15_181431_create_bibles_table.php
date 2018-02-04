@@ -105,7 +105,8 @@ class CreateBiblesTable extends Migration
 	        $table->char('id', 3)->primary(); // Code USFM
 	        $table->char('id_usfx',2);
 	        $table->string('id_osis',12);
-            $table->tinyInteger('book_order'); // Genesis 01
+            $table->tinyInteger('book_order')->unsigned(); // Genesis 01
+	        $table->tinyInteger('testament_order')->unsigned();
 	        $table->string('book_testament');
 	        $table->string('book_group');
             $table->Integer('chapters')->nullable()->unsigned();
