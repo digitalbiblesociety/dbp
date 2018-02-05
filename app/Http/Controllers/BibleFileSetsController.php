@@ -63,8 +63,8 @@ class BibleFileSetsController extends APIController
 		    $files = BibleFile::with('book')->where('set_id',$fileset->id)->whereIn('book_id',$books)->get();
 		    $books = $files->map(function ($file) {
 		    	$testamentLetter = ($file->book->book_testament == "NT") ? "B" : "A";
-			    return $testamentLetter.str_pad($file->book->testament_order, 2, 0);
-		    });
+			    return $testamentLetter.str_pad($file->book->testament_order, 2, 0, STR_PAD_LEFT);
+		    })->unique();
 	    }
 	    Bucket::download($files,'s3_fcbh', 'dbp_dev', 5, $books);
     }
