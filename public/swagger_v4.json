@@ -765,8 +765,44 @@
       }
     },
     "/users": {
+      "get": {
+        "operationId": "v4_user.index",
+        "summary": "List the Users",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
-        "operationId": "v4_organizations.one",
+        "operationId": "v4_user.create",
         "summary": "Create a User",
         "parameters": [
           {
@@ -787,11 +823,48 @@
         ],
         "responses": {
           "200": {
-            "description": "An array of organizations",
+            "description": "The Route responsible for User Creation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "type": "string",
+                  "example": "User Created"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "put": {
+        "operationId": "v4_user.update",
+        "summary": "Update an existing User",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "A success message to let you know the operation did not encounter an error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "User Updated"
                 }
               }
             }
@@ -857,11 +930,12 @@
         ],
         "responses": {
           "200": {
-            "description": "An array of organizations",
+            "description": "A link to begin the oauth process",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "type": "string",
+                  "example": "https://github.com/login/oauth/authorize?client_id=f3706453a3b05b07d434&redirect_uri=https%3A%2F%2Fapi.bible.build%2Flogin%2Fgithub%2Fcallback&scope=user%3Aemail&response_type=code"
                 }
               }
             }
@@ -871,8 +945,8 @@
     },
     "/users/login/{driver}/callback": {
       "get": {
-        "operationId": "v4_user.oAuth",
-        "summary": "Login via oAuth",
+        "operationId": "v4_user.oAuthCallback",
+        "summary": "The callback URL for oAuth",
         "parameters": [
           {
             "$ref": "#/components/parameters/key"
@@ -892,11 +966,11 @@
         ],
         "responses": {
           "200": {
-            "description": "An array of organizations",
+            "description": "Returns the User that has just been created or logged in.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "$ref": "#/components/schemas/User"
                 }
               }
             }
@@ -927,11 +1001,11 @@
         ],
         "responses": {
           "200": {
-            "description": "An array of organizations",
+            "description": "An array of user notes",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "$ref": "#/components/schemas/Note"
                 }
               }
             }
@@ -960,11 +1034,12 @@
         ],
         "responses": {
           "200": {
-            "description": "An array of organizations",
+            "description": "A confirmation message of success",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "type": "string",
+                  "example": "success"
                 }
               }
             }
@@ -993,11 +1068,12 @@
         ],
         "responses": {
           "200": {
-            "description": "An array of organizations",
+            "description": "A confirmation message of success",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "type": "string",
+                  "example": "success"
                 }
               }
             }
@@ -1321,6 +1397,112 @@
           "direction": {
             "type": "string",
             "example": "rtl"
+          }
+        }
+      },
+      "User": {
+        "required": [
+          "id",
+          "name",
+          "password",
+          "email",
+          "nickname"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "58DSGCFUH3rV2Y3"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Smith"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "Xk7wZcQUU2CuHkc"
+          },
+          "nickname": {
+            "type": "string",
+            "example": "smitheringz"
+          },
+          "avatar": {
+            "type": "string",
+            "example": "cdn.bible.build/images/users/19951842.png"
+          },
+          "email": {
+            "type": "string",
+            "example": "smitheringz@hotmail.com"
+          }
+        }
+      },
+      "Note": {
+        "required": [
+          "id",
+          "bible_id",
+          "book_id",
+          "chapter",
+          "verse_start"
+        ],
+        "properties": {
+          "id": {
+            "example": 38,
+            "type": "integer"
+          },
+          "bible_id": {
+            "example": "BAON10",
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 12
+          },
+          "book_id": {
+            "example": "TIT",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3
+          },
+          "chapter": {
+            "type": "string",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 150
+          },
+          "verse_start": {
+            "type": "integer",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 176
+          },
+          "verse_end": {
+            "type": "integer",
+            "example": null,
+            "minimum": 1,
+            "maximum": 176,
+            "nullable": true
+          },
+          "notes": {
+            "example": "I found this passage rather interesting",
+            "type": "string"
+          },
+          "highlights": {
+            "example": [
+              "a",
+              "few",
+              "interesting",
+              "words"
+            ],
+            "type": "array"
+          },
+          "bookmark": {
+            "example": true,
+            "type": "boolean"
+          },
+          "created_at": {
+            "example": "2018-02-06 02:48:21",
+            "type": "string"
+          },
+          "updated_at": {
+            "example": "2018-02-06 02:48:21"
           }
         }
       }
