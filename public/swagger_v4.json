@@ -2,11 +2,11 @@
   "openapi": "3.0.0",
   "servers": [
     {
-      "url": "https://api.bible.build/v2",
+      "url": "https://api.bible.build/",
       "description": "Online Staging server for testing"
     },
     {
-      "url": "https://api.dbp.dev/v2",
+      "url": "https://api.dbp.dev/",
       "description": "Internal Staging server for testing"
     }
   ],
@@ -1527,7 +1527,7 @@
         }
       },
       "version": {
-        "name": "version",
+        "name": "v",
         "in": "query",
         "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
         "required": true,
