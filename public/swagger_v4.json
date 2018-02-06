@@ -12,7 +12,7 @@
   ],
   "info": {
     "title": "Digital Bible Platform [Koinos]",
-    "description": "This is a simple API",
+    "description": "The 4th interation of the dbp",
     "version": "4.0.0",
     "contact": {
       "name": "API Support",
@@ -27,11 +27,15 @@
   "tags": [
     {
       "name": "Bible",
-      "description": "Secured Admin-only calls"
+      "description": "Routes regarding Bibles"
     },
     {
-      "name": "Library",
-      "description": "Different Organizational Routes to fetch Bible Resources"
+      "name": "Organizations",
+      "description": "Create and edit user organizations"
+    },
+    {
+      "name": "Users",
+      "description": "Create, login, and manage users and their notes"
     },
     {
       "name": "Wiki",
@@ -39,18 +43,32 @@
     }
   ],
   "paths": {
-    "/library/volume": {
+    "/bibles": {
       "get": {
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
         "tags": [
-          "Library"
+          "Bible"
         ],
         "responses": {
           "200": {
-            "description": "An paginated array of langauges",
+            "description": "An array of Bibles",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LanguageVolume"
+                  "$ref": "#/components/schemas/Bibles"
                 }
               }
             }
@@ -58,20 +76,963 @@
         }
       }
     },
-    "/library/volumelanguagefamily": {
+    "/bibles/{id}": {
       "get": {
-        "tags": [
-          "Library"
+        "operationId": "v4_bible.one",
+        "summary": "Get extended Metadata for a single Bible",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
         ],
-        "summary": "Get an index of the languages of the world",
-        "operationId": "language.index",
+        "tags": [
+          "Bible"
+        ],
         "responses": {
           "200": {
-            "description": "An paginated array of langauges",
+            "description": "A single Bible",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Language"
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bibles/{id}/book/{book}": {
+      "get": {
+        "operationId": "v4_bible.books",
+        "summary": "Get books for a Bible",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Books for a specific Bible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bibles/{id}/{book_id}/{chapter}": {
+      "get": {
+        "operationId": "v4_bible.chapter",
+        "summary": "Get plain text for a chapter via the API",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "The chapter text",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Chapter"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bibles/filesets/{id}/download": {
+      "get": {
+        "operationId": "v4_bible_filesets.download",
+        "summary": "Download either a full zipped audio Bible or a selection",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/fileset_id"
+          },
+          {
+            "$ref": "#/components/parameters/book_ids"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "An zipped Audio Bible or selected books from that Bible.",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bibles/filesets/{id}/": {
+      "get": {
+        "operationId": "v4_bible_filesets.show",
+        "summary": "Recieve the signed URLs from the S3 Bucket",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/fileset_id"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "$ref": "#/components/parameters/chapter_id"
+          },
+          {
+            "$ref": "#/components/parameters/book_id"
+          },
+          {
+            "$ref": "#/components/parameters/bucket"
+          },
+          {
+            "$ref": "#/components/parameters/lifespan"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of chapters with a some metadata and a signed url to s3.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Fileset"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "v4_bible_filesets.store",
+        "summary": "Create a new Fileset and associate files with it",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "A success message congradulating you on creating a fileset.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "You have successfully created a new Fileset"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "v4_bible_filesets.update",
+        "summary": "Alter an existing Fileset and the files associated with it",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "A success message congradulating you on updating a fileset.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "You have successfully updated a  Fileset"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bibles/books": {
+      "get": {
+        "operationId": "v4_bible_books",
+        "summary": "Get generalized data for books of the Bible",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Bibles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/timestamps": {
+      "get": {
+        "operationId": "v4_timestamps",
+        "summary": "Get List of available timestamps",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Bibles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/timestamps/{id}": {
+      "get": {
+        "operationId": "v4_timestamps.tag",
+        "summary": "Get List of available timestamps",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Bibles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/timestamps/{id}/{book}/{chapter}": {
+      "get": {
+        "operationId": "v4_timestamps.verse",
+        "summary": "Get List of available timestamps",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Bibles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/countries": {
+      "get": {
+        "operationId": "v4_countries.all",
+        "summary": "Get List of countries",
+        "description": "Returns a list of countries with generalized data",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Wiki"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Countries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Countries"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/countries/{id}": {
+      "get": {
+        "operationId": "v4_countries.one",
+        "summary": "Get a single Country",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Wiki"
+        ],
+        "responses": {
+          "200": {
+            "description": "A Country",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Countries"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/languages": {
+      "get": {
+        "operationId": "v4_languages.all",
+        "summary": "Get List of Languages",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Wiki"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Languages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Languages"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/languages/{id}": {
+      "get": {
+        "operationId": "v4_languages.one",
+        "summary": "Get a specific Language",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Wiki"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Languages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Languages"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/alphabets": {
+      "get": {
+        "operationId": "v4_alphabets.all",
+        "summary": "Get Alphabets",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Wiki"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Alphabets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Alphabets"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/alphabets/{id}": {
+      "get": {
+        "operationId": "v4_alphabets.one",
+        "summary": "A single Alphabet",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Wiki"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Alphabets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Alphabets"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizations": {
+      "get": {
+        "operationId": "v4_organizations.all",
+        "summary": "Get Organizations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Organizations"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organizations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizations/{id}": {
+      "get": {
+        "operationId": "v4_organizations.one",
+        "summary": "Get Organizations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Organizations"
+        ],
+        "responses": {
+          "200": {
+            "description": "Data for an organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organizations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "operationId": "v4_organizations.one",
+        "summary": "Create a User",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "operationId": "v4_user.login",
+        "summary": "Login a User",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login/{driver}": {
+      "get": {
+        "operationId": "v4_user.oAuth",
+        "summary": "Login via oAuth",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login/{driver}/callback": {
+      "get": {
+        "operationId": "v4_user.oAuth",
+        "summary": "Login via oAuth",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}/notes": {
+      "get": {
+        "operationId": "v4_notes.index",
+        "summary": "Get notes for a specific user",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "v4_notes.store",
+        "summary": "Create a new note for a user",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "v4_notes.update",
+        "summary": "Edit an existing note for a user",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/versions": {
+      "get": {
+        "operationId": "v4_user.oAuth",
+        "summary": "Login via oAuth",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bibles"
                 }
               }
             }
@@ -82,7 +1043,7 @@
   },
   "components": {
     "schemas": {
-      "LanguageBasic": {
+      "Bibles": {
         "required": [
           "id",
           "name",
@@ -95,362 +1056,382 @@
             "uniqueItems": true,
             "description": "An incrementing ID for the languages resources",
             "example": 1
-          },
-          "glotto_id": {
-            "type": "string",
-            "uniqueItems": true,
-            "pattern": "[a-z0-9]{8,8}",
-            "minLength": 8,
-            "maxLength": 8,
-            "description": "An eight character identifier for the langauges resources. This is based on the codes from the [glottolog.org](http://glottolog.org). Custom Glotto Codes may Exist for certain resources. They'll be indentifable by the string `XXX`. If the Glotto Code Exists the Iso Code is not required but may exist! An incrementing ID for the languages resources",
-            "example": "stan1290"
           },
           "iso": {
             "type": "string",
-            "uniqueItems": true,
-            "pattern": "[a-z]",
+            "description": "An iso code for the languages",
+            "example": "eng"
+          },
+          "date": {
+            "type": "integer",
+            "example": 1816
+          },
+          "scope": {
+            "type": "string",
+            "example": "NT"
+          },
+          "script": {
+            "type": "string",
+            "example": "Latn"
+          },
+          "derived": {
+            "type": "string",
+            "example": "ENGKJV"
+          },
+          "copyright": {
+            "type": "string",
+            "example": "Public Domain"
+          }
+        }
+      },
+      "Fileset": {
+        "required": [
+          "book_id",
+          "book_name",
+          "chapter_start",
+          "verse_start",
+          "path"
+        ],
+        "properties": {
+          "book_id": {
+            "type": "string",
+            "example": "MAT"
+          },
+          "book_name": {
+            "type": "string",
+            "example": "Matthew"
+          },
+          "chapter_start": {
+            "type": "string",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 150
+          },
+          "chapter_end": {
+            "type": "string",
+            "example": null,
+            "minimum": 1,
+            "maximum": 150,
+            "nullable": true
+          },
+          "verse_start": {
+            "type": "integer",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 176
+          },
+          "verse_end": {
+            "type": "integer",
+            "example": null,
+            "minimum": 1,
+            "maximum": 176,
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "string",
+            "example": null,
+            "nullable": true
+          },
+          "path": {
+            "type": "string",
+            "example": "https://dbp-dev.s3.us-west-2.amazonaws.com/text/ENGNAB/ENGNABN2ET/B01___01_Matthew_______N2NABXXX.mp3?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJOMYRUAEFXAK5KDQ%2F20180206%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20180206T011909Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Signature=f72f1c676c32b78681fbe77c02084d96c0f819a098f3c9eb1f0cfd0b38d2b062"
+          }
+        }
+      },
+      "Chapter": {
+        "required": [
+          "book_id",
+          "book_name",
+          "chapter_start",
+          "verse_start",
+          "path"
+        ],
+        "properties": {
+          "book_id": {
+            "type": "string",
+            "example": "MAT"
+          },
+          "chapter": {
+            "type": "string",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 150
+          },
+          "verse_start": {
+            "type": "integer",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 176
+          },
+          "verse_end": {
+            "type": "integer",
+            "example": null,
+            "minimum": 1,
+            "maximum": 176,
+            "nullable": true
+          },
+          "book_name": {
+            "type": "string",
+            "example": "Matthew"
+          },
+          "book_name_alt": {
+            "type": "string",
+            "example": "মথি"
+          },
+          "chapter_alt": {
+            "type": "string",
+            "example": "১"
+          },
+          "verse_start_alt": {
+            "type": "string",
+            "example": "১"
+          },
+          "verse_end_alt": {
+            "type": "string",
+            "example": "১"
+          },
+          "verse_text": {
+            "type": "string",
+            "example": "যীশু খ্রীষ্টের বংশ তালিকা, তিনি দায়ূদের সন্তান, অব্রাহামের সন্তান। "
+          }
+        }
+      },
+      "Countries": {
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Andorra"
+          },
+          "continent_code": {
+            "type": "string",
+            "description": "An code for the continent",
+            "example": "EU"
+          },
+          "codes": {
+            "type": "object",
+            "properties": {
+              "fips": {
+                "type": "string",
+                "maxLength": 2,
+                "example": "AN"
+              },
+              "iso_a3": {
+                "type": "string",
+                "maxLength": 3,
+                "example": "AND"
+              },
+              "iso_a2": {
+                "type": "string",
+                "maxLength": 2,
+                "example": "AD"
+              }
+            }
+          },
+          "languages": {
+            "type": "object",
+            "example": {
+              "eng": "English",
+              "spa": "Spanish"
+            },
+            "additionalProperties": {
+              "type": "string",
+              "example": "English"
+            }
+          }
+        }
+      },
+      "Languages": {
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "glotto_code": {
+            "type": "string",
+            "example": "aari1239",
+            "minLength": 8,
+            "maxLength": 8
+          },
+          "iso_code": {
+            "type": "string",
+            "example": "aiw",
             "minLength": 3,
-            "maxLength": 3,
-            "description": "A three letter identifier for the languages resources. This code matches up exactly with the codes from the [ISO 639-3 standard](http://www-01.sil.org/iso639-3/default.asp). If the Iso Code Exists the Glotto Code is not required but may exist!",
-            "example": "fra"
+            "maxLength": 3
           },
           "name": {
             "type": "string",
-            "maxLength": 191,
-            "description": "The Name of the Language in English",
-            "example": "French"
+            "example": "Aari"
           },
-          "autonym": {
-            "type": "string",
-            "maxLength": 191,
-            "description": "The Name of the Language in the Vernacular of that Language",
-            "example": "Français"
-          },
-          "country_id": {
-            "type": "string",
-            "pattern": "[a-z]{2,2}",
-            "description": "The Primary Country for this Language",
-            "minLength": 2,
-            "maxLength": 2,
-            "example": "FR"
+          "bible_count": {
+            "type": "integer",
+            "example": 3
           }
         }
       },
-      "Language": {
+      "Alphabets": {
         "required": [
-          "id",
-          "name",
-          "glotto_id",
-          "iso"
+          "name"
         ],
         "properties": {
-          "id": {
-            "type": "integer",
-            "uniqueItems": true,
-            "description": "An incrementing ID for the languages resources",
-            "example": 1
-          },
-          "glotto_id": {
-            "type": "string",
-            "uniqueItems": true,
-            "pattern": "[a-z0-9]{8,8}",
-            "minLength": 8,
-            "maxLength": 8,
-            "description": "An eight character identifier for the langauges resources. This is based on the codes from the [glottolog.org](http://glottolog.org). Custom Glotto Codes may Exist for certain resources. They'll be indentifable by the string `XXX`. If the Glotto Code Exists the Iso Code is not required but may exist! An incrementing ID for the languages resources",
-            "example": "stan1290"
-          },
-          "iso": {
-            "type": "string",
-            "uniqueItems": true,
-            "pattern": "[a-z]",
-            "minLength": 3,
-            "maxLength": 3,
-            "description": "A three letter identifier for the languages resources. This code matches up exactly with the codes from the [ISO 639-3 standard](http://www-01.sil.org/iso639-3/default.asp). If the Iso Code Exists the Glotto Code is not required but may exist!",
-            "example": "fra"
-          },
           "name": {
             "type": "string",
-            "maxLength": 191,
-            "description": "The Name of the Language in English",
-            "example": "French"
+            "example": "Adlam Script"
           },
-          "autonym": {
+          "script": {
             "type": "string",
-            "maxLength": 191,
-            "description": "The Name of the Language in the Vernacular of that Language",
-            "example": "Français"
+            "example": "Adlm"
           },
-          "country_id": {
+          "family": {
             "type": "string",
-            "pattern": "[a-z]{2,2}",
-            "description": "The Primary Country for this Language",
-            "minLength": 2,
-            "maxLength": 2,
-            "example": "FR"
+            "example": "African"
           },
-          "level": {
+          "type": {
             "type": "string",
-            "maxLength": 191
+            "example": "alphabet"
           },
-          "maps": {
+          "direction": {
             "type": "string",
-            "maxLength": 191
-          },
-          "development": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "use": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "location": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "area": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "population": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "population_notes": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "notes": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "typology": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "writing": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "description": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "family_pk": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "father_pk": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "child_dialect_count": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "child_family_count": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "child_language_count": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "latitude": {
-            "type": "number",
-            "format": "float",
-            "example": 2.0201058,
-            "description": "A rough approximation of the latitude where the language can be found"
-          },
-          "longitude": {
-            "type": "number",
-            "format": "float",
-            "example": 48.0201058,
-            "description": "A rough longitude of the latitude where the language can be found"
-          },
-          "pk": {
-            "type": "integer"
-          },
-          "status": {
-            "type": "string",
-            "description": "The `Health` of the current Language",
-            "example": "1 (National). Statutory national language (1958, Consitution, Article 2.1)"
+            "example": "rtl"
           }
         }
       },
-      "LanguageVolume": {
+      "Organizations": {
         "required": [
-          "id",
-          "name",
-          "glotto_id",
-          "iso"
+          "name"
         ],
         "properties": {
-          "language_name": {
+          "name": {
             "type": "string",
-            "maxLength": 191,
-            "example": "Shqip"
+            "example": "Adlam Script"
           },
-          "english_name": {
+          "script": {
             "type": "string",
-            "maxLength": 191,
-            "example": "Albanian"
+            "example": "Adlm"
           },
-          "language_code": {
+          "family": {
             "type": "string",
-            "pattern": "[a-z]",
-            "minLength": 3,
-            "maxLength": 3,
-            "description": "This field is a legacy field from when it was possible for there to be a different language code than the iso code. Now it's just a duplicate of language_iso.",
-            "example": "sqi"
+            "example": "African"
           },
-          "language_iso": {
+          "type": {
             "type": "string",
-            "pattern": "[a-z]",
-            "minLength": 3,
-            "maxLength": 3,
-            "description": "A three letter identifier for the languages resources. This code matches up exactly with the codes from the [ISO 639-3 standard](http://www-01.sil.org/iso639-3/default.asp). If the Iso Code Exists the Glotto Code is not required but may exist!",
-            "example": "sqi"
+            "example": "alphabet"
           },
-          "language_iso_2B": {
+          "direction": {
             "type": "string",
-            "pattern": "[a-z]",
-            "minLength": 2,
-            "maxLength": 2,
-            "description": "The Bibliographic two letter identifier for the languages resources. This code matches up exactly with the codes from the [ISO 639-2B standard](https://www.loc.gov/standards/iso639-2/php/code_list.php).",
-            "example": "sqi"
-          },
-          "language_iso_2T": {
-            "type": "string",
-            "pattern": "[a-z]",
-            "minLength": 2,
-            "maxLength": 2,
-            "description": "The Terminological two letter identifier for the languages resources. This code matches up exactly with the codes from the [ISO 639-2T standard](https://www.loc.gov/standards/iso639-2/php/code_list.php).",
-            "example": "alb"
-          },
-          "language_iso_1": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 2,
-            "example": "sq"
-          },
-          "language_iso_name": {
-            "type": "string",
-            "maxLength": 191,
-            "description": "Duplicate of language_name",
-            "example": "Albanian"
-          },
-          "language_family_code": {
-            "type": "string",
-            "maxLength": 191,
-            "example": "sqi"
-          },
-          "language_family_name": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "language_family_english": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "language_family_iso": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "language_family_iso_2B": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "language_family_iso_2T": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "language_family_iso_1": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "media_text": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "delivery_mobile": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "delivery_web": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "delivery_subsplash": {
-            "type": "string",
-            "maxLength": 191
-          },
-          "resolution": {
-            "type": "string",
-            "maxLength": 191
+            "example": "rtl"
           }
         }
-      },
-      "Alphabet": {
-        "required": [
-          "id",
-          "name",
-          "glotto_id",
-          "iso"
-        ],
-        "properties": {
-          "id": {
-            "type": "integer",
-            "uniqueItems": true,
-            "description": "An incrementing ID for the languages resources",
-            "example": 1
-          },
-          "glotto_id": {
-            "type": "string",
-            "uniqueItems": true,
-            "pattern": "[a-z0-9]{8,8}",
-            "minLength": 8,
-            "maxLength": 8,
-            "description": "An eight character identifier for the langauges resources. This is based on the codes from the [glottolog.org](http://glottolog.org). Custom Glotto Codes may Exist for certain resources. They'll be indentifable by the string `XXX`. If the Glotto Code Exists the Iso Code is not required but may exist! An incrementing ID for the languages resources",
-            "example": "stan1290"
-          }
+      }
+    },
+    "parameters": {
+      "key": {
+        "name": "key",
+        "in": "query",
+        "description": "The API key that's been generated for you.",
+        "required": true,
+        "schema": {
+          "type": "string"
         }
       },
-      "Number": {
-        "required": [
-          "script_id",
-          "numeral",
-          "numeral_vernacular"
-        ],
-        "properties": {
-          "script_id": {
-            "type": "string",
-            "maxLength": 4,
-            "minLength": 4,
-            "description": "This should match exactly the codes from the ISO 15924 Registration Authority.",
-            "example": "Khmr"
-          },
-          "script_variant_iso": {
-            "type": "string",
-            "maxLength": 3,
-            "minLength": 3,
-            "description": "A three letter identifier for the languages resources. This code matches up exactly with the codes from the ISO 639-3 standard."
-          },
-          "numeral": {
-            "type": "integer",
-            "description": "The integer value for the vernacular number",
-            "example": 1
-          },
-          "numeral_vernacular": {
-            "type": "string",
-            "description": "The vernacular number",
-            "example": "១"
-          },
-          "numeral_written": {
-            "type": "string",
-            "description": "The written word for the vernacular number",
-            "example": "មួយ"
-          }
+      "pretty": {
+        "name": "pretty",
+        "in": "query",
+        "description": "A sugar param, simply will format the call for human eyes",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "version": {
+        "name": "version",
+        "in": "query",
+        "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "example": 4
+        }
+      },
+      "reply": {
+        "name": "reply",
+        "in": "query",
+        "description": "Specifies the response type requested by the caller. Default is json.",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "json",
+            "html",
+            "jsonp",
+            "yaml",
+            "xml"
+          ]
+        }
+      },
+      "callback": {
+        "name": "callback",
+        "in": "query",
+        "description": "If unused the results are as before. If set to true, the results will be prepended with the array of calling arguments used. This does mean that the results will be one layer deeper as the results will be an array where the first element is the array of input arguments and the second element will be the results as normally returned.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "dam_id": {
+        "name": "dam_id",
+        "in": "query",
+        "description": "To get the location directory and asset file basename for a specific volume.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "fileset_id": {
+        "name": "fileset_id",
+        "in": "query",
+        "description": "The id of the fileset",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "chapter_id": {
+        "name": "chapter_id",
+        "in": "query",
+        "description": "The number of the chapter you wish to query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "book_id": {
+        "name": "book_id",
+        "in": "query",
+        "description": "The corresponding USFM 2.4 ID for book you wish to query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "book_ids": {
+        "name": "book_ids",
+        "in": "query",
+        "description": "The corresponding USFM 2.4 IDs for the books you wish to query",
+        "schema": {
+          "type": "array"
+        }
+      },
+      "bucket": {
+        "name": "bucket",
+        "in": "query",
+        "description": "The name of the bucket from which you wish to query content.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "lifespan": {
+        "name": "lifespan",
+        "in": "query",
+        "description": "The number of minutes that the link will be good for.",
+        "schema": {
+          "type": "string"
         }
       }
     }
