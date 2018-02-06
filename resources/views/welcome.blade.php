@@ -40,8 +40,9 @@
     <section id="banner">
         <h1 class="text-center">The Bible in your language on your Site</h1>
         <div class="medium-6 columns centered">
-            <a class="button medium-6 columns" href="{{ route('swagger') }}">Read the documentation</a>
-            <a class="button secondary medium-6 columns" href="{{ route('register') }}">Get Started</a>
+            <a class="button medium-4 columns" href="{{ route('swagger_v4') }}">v4 Documentation</a>
+            <a class="button secondary medium-4 columns" href="{{ route('register') }}">Get Started</a>
+            <a class="button medium-4 columns" href="{{ route('swagger_v2') }}">v2 Documentation</a>
         </div>
     </section>
 

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('head')
-    <title>Swagger API</title>
+    <title>Swagger v2 API</title>
 @endsection
 
 @section('content')
