@@ -46,6 +46,9 @@ class DatabaseSeeder extends Seeder
 	    $this->call(users_seeder::class);
 	    $this->call(bible_organization::class);
 
+	    // 4.0 Projects
+	    // $this->call(projects_seeder::class);
+
 	    // 4.1 Organization Equivalents
 	    $this->call(bible_equivalents_bibleGateway::class);
 	    $this->call(bible_equivalents_bibleSearch::class);
