@@ -58,14 +58,12 @@ class BiblesController extends APIController
 			$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
 
 	        $bibles = Bible::with('currentTranslation','vernacularTranslation','filesets.meta','language')
+		        ->has('filesets.files')
 		        ->when($iso, function($q) use ($iso){
 			        $q->where('iso', $iso);
 		        })
 				->where('open_access', 1)->orWhereIn('id',$access)
-			    ->when($language, function ($query) use ($language, $full_word) {
-				    if($full_word) return $query->where('name', 'LIKE', "%".$language."%");
-				    return $query->where('name', $language);
-			    })->when($organization, function($q) use ($organization) {
+			    ->when($organization, function($q) use ($organization) {
 				    $q->where('organization_id', '>=', $organization);
 			    })->when($dam_id, function($q) use ($dam_id) {
 				    $q->where('id', $dam_id);
@@ -81,9 +79,19 @@ class BiblesController extends APIController
 				    $q->orderBy($sort_by);
 			    })
 		        // Temporary empty bible file remover
-		        ->has('filesets.files')
 		        ->orderBy('priority')
 	            ->get();
+
+	        // Filter by $language
+			if(isset($language)) {
+				$bibles->load('language.alternativeNames');
+				$bibles = $bibles->filter(function($bible) use ($language,$full_word) {
+					$altNameList = [];
+					if(isset($bible->language->alternativeNames)) $altNameList = $bible->language->alternativeNames->pluck('name')->toArray();
+					if(isset($full_word)) return ($bible->language->name == $language) || in_array($language, $altNameList);
+					return (stripos($bible->language->name, $language) || ($bible->language->name == $language) || stripos(implode($altNameList), $language));
+				});
+			}
 
 			if($this->v == 2) $bibles->load('language.parent.parentLanguage'.'alphabet','organizations');
 			return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
