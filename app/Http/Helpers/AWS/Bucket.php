@@ -33,6 +33,7 @@ class Bucket {
 	{
 		set_time_limit(0);
 		$fileset_id = $files->first()->fileset->id;
+		$bible_id = $files->first()->fileset->bible->id;
 		$stream = new S3StreamZip([
 			'key'    => env('FCBH_AWS_KEY'),
 			'secret' => env('FCBH_AWS_SECRET'),
@@ -41,7 +42,7 @@ class Bucket {
 		]);
 
 		try {
-			$stream->bucket('dbp-dev')->prefix("audio/$fileset_id")->send($fileset_id."_".$books->implode("_").".zip",$books->toArray());
+			$stream->bucket('dbp-dev')->prefix("audio/$bible_id/$fileset_id")->send($fileset_id."_".$books->implode("_").".zip",$books->toArray());
 		} catch (InvalidParameterException $e) {
 			echo $e->getMessage();
 		} catch (S3Exception $e) {
