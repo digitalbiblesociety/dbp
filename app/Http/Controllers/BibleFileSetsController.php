@@ -27,7 +27,7 @@ class BibleFileSetsController extends APIController
 	public function show($id)
     {
 	    if(!$this->api) return view('bibles.filesets.index');
-	    $bible_id = CheckParam('dam_id',$id);
+	    $bible_id = CheckParam('dam_id',$id) ?? CheckParam('fileset_id',$id) ;
 	    $chapter_id = CheckParam('chapter_id',null,'optional');
 	    $book_id = CheckParam('book_id',null,'optional');
 	    $driver = CheckParam('bucket',null,'optional') ?? "s3_fcbh";
@@ -36,10 +36,11 @@ class BibleFileSetsController extends APIController
 	    if(isset($book)) $book_id = $book->id;
 		$fileset = BibleFileset::with('meta')->find($bible_id);
 		$fileset_type = (strpos(strtolower($fileset->set_type), 'audio') !== false) ? 'audio' : 'text';
-	    $fileSetChapters = BibleFile::with('book.currentTranslation')->where('set_id',$bible_id)
-	                                ->when($chapter_id, function ($query) use ($chapter_id) {
-		                                return $query->where('chapter_start', $chapter_id);
-	                                })->when($book_id, function ($query) use ($book_id) {
+	    $fileSetChapters = BibleFile::with(['book' => function($q) {$q->orderBy('book_order', 'asc');},'book.currentTranslation' ])
+				->where('set_id',$bible_id)
+				->when($chapter_id, function ($query) use ($chapter_id) {
+				    return $query->where('chapter_start', $chapter_id);
+				})->when($book_id, function ($query) use ($book_id) {
 			    return $query->where('book_id', $book_id);
 		    })->orderBy('file_name')->get();
 
@@ -51,8 +52,8 @@ class BibleFileSetsController extends APIController
 
     public function download($id)
     {
-	    $set_id = CheckParam('set_id',$id);
-	    $books = CheckParam('books',null,'optional');
+	    $set_id = CheckParam('fileset_id',$id);
+	    $books = CheckParam('book_ids',null,'optional');
 
 	    $fileset = BibleFileset::where('id',$set_id)->first();
 	    if(!$fileset) return $this->replyWithError("Fileset ID not found");
@@ -68,9 +69,6 @@ class BibleFileSetsController extends APIController
 	    }
 	    Bucket::download($files,'s3_fcbh', 'dbp_dev', 5, $books);
     }
-
-
-
 
 	/**
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
