@@ -36,13 +36,14 @@ class BibleFileSetsController extends APIController
 	    if(isset($book)) $book_id = $book->id;
 		$fileset = BibleFileset::with('meta')->find($bible_id);
 		$fileset_type = (strpos(strtolower($fileset->set_type), 'audio') !== false) ? 'audio' : 'text';
-	    $fileSetChapters = BibleFile::with(['book' => function($q) {$q->orderBy('book_order', 'asc');},'book.currentTranslation' ])
-				->where('set_id',$bible_id)
-				->when($chapter_id, function ($query) use ($chapter_id) {
-				    return $query->where('chapter_start', $chapter_id);
-				})->when($book_id, function ($query) use ($book_id) {
+	    $fileSetChapters = BibleFile::with('book.currentTranslation')
+		    ->join('books', 'books.id', '=', 'bible_files.book_id')
+			->where('set_id',$bible_id)
+			->when($chapter_id, function ($query) use ($chapter_id) {
+			    return $query->where('chapter_start', $chapter_id);
+			})->when($book_id, function ($query) use ($book_id) {
 			    return $query->where('book_id', $book_id);
-		    })->orderBy('file_name')->get();
+		    })->orderBy('books.book_order')->orderBy('chapter_start')->get();
 
 	    foreach ($fileSetChapters as $key => $fileSet_chapter) {
 			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type.'/'.$fileset->bible_id.'/'.$fileset->id.'/'.$fileSet_chapter->file_name, $driver, "dbp_dev", $lifespan);
