@@ -23,7 +23,7 @@ class S3StreamZip
 	 *
 	 * @param array $auth - AWS key and secret
 	 *
-	 * @throws InvalidParameterException
+	 * @throws \Exception
 	 */
 	public function __construct($auth, $part = 0)
 	{
@@ -78,7 +78,7 @@ class S3StreamZip
 	 *                         $filename will be what is sent in the content-disposition header
 	 * @param array $file_prefix - Restricts the results from s3 to match the first 3 letters of the prefix
 	 *
-	 * @throws InvalidParameterException
+	 * @throws \Exception
 	 *
 	 * @internal param array - See the documentation for the List Objects API for valid parameters.
 	 * Only `Bucket` is required.
@@ -147,12 +147,12 @@ class S3StreamZip
 	{
 		// We require the AWS key to be passed in $auth.
 		if (!isset($auth['key'])) {
-			throw new InvalidParameterException('$auth parameter to constructor requires a `key` attribute');
+			throw new \Exception('$auth parameter to constructor requires a `key` attribute');
 		}
 
 		// We require the AWS secret to be passed in $auth.
 		if (!isset($auth['secret'])) {
-			throw new InvalidParameterException('$auth parameter to constructor requires a `secret` attribute');
+			throw new \Exception('$auth parameter to constructor requires a `secret` attribute');
 		}
 	}
 
@@ -164,7 +164,7 @@ class S3StreamZip
 			$result = $this->s3Client->execute($command);
 
 			if (empty($result['Contents']) && empty($result['CommonPrefixes'])) {
-				throw new InvalidParameterException('Bucket or Prefix does not exist');
+				throw new \Exception('Bucket or Prefix does not exist');
 			}
 		} catch (S3Exception $e) {
 			if ($e->getStatusCode() === 403) {
