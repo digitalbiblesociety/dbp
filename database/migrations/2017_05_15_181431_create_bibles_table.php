@@ -141,8 +141,8 @@ class CreateBiblesTable extends Migration
         });
 
 	    Schema::create('bible_filesets', function (Blueprint $table) {
-		    $table->string('id', 16)->index();
-		    $table->string('bible_id',12);
+		    $table->string('id', 16)->primary();
+		    $table->string('bible_id',12)->index();
 		    $table->foreign('bible_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
 		    $table->string('variation_id',12)->nullable();
 		    $table->foreign('variation_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
@@ -180,7 +180,8 @@ class CreateBiblesTable extends Migration
 		    $table->tinyInteger('chapter_end')->unsigned()->nullable();
 		    $table->tinyInteger('verse_start')->unsigned()->nullable();
 		    $table->tinyInteger('verse_end')->unsigned()->nullable();
-		    $table->string('file_name');
+		    $table->string('file_name')->unique();
+		    $table->unique(['set_id', 'book_id', 'chapter_start', 'verse_start'], 'unique_bible_file_by_reference');
 		    $table->timestamps();
 	    });
 
