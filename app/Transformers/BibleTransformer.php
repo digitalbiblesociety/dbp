@@ -114,20 +114,12 @@ class BibleTransformer extends BaseTransformer
 			case "v4_bible.all": {
 				return [
 					"abbr"         => $bible->id,
-					"name"         => $bible->currentTranslation->name,
+					"name"         => @$bible->currentTranslation->name,
 					"vname"        => @$bible->vernacularTranslation->name ?? "",
 					"language"     => $bible->language->name,
 					"iso"          => $bible->iso,
 					"date"         => intval( $bible->date ),
-					"filesets"     => $bible->filesets->mapWithKeys(function ($item) {
-						return [
-							$item['id'] => [
-								"bucket_id" => $item["bucket_id"],
-                                "set_type"  => $item["set_type"],
-                                "size_code" => $item["size_code"],
-                                "meta"      => $item["meta"]
-							]];
-					})
+					"filesets"     => $bible->filesets
 				];
 			}
 			case "v4_bible.one": {
@@ -141,7 +133,13 @@ class BibleTransformer extends BaseTransformer
 					"iso"          => $bible->iso,
 					"date"         => intval( $bible->date ),
 					"country"      => $bible->language->primaryCountry->name ?? '',
-					"books"        => $bible->books,
+					"books"        => $bible->books->each(function ($book) {
+						// convert to integer array
+						$chapters = explode(',',$book->chapters);
+						foreach ($chapters as $key => $chapter) $chapters[$key] = intval($chapter);
+						$book->chapters = $chapters;
+						return $book;
+					}),
 					"translations" => $bible->translations
 				];
 			}
