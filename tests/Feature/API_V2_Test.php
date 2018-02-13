@@ -2,8 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Http\Controllers\BiblesController;
-use App\Http\Controllers\HomeController;
 use App\Models\User\User;
 use Tests\TestCase;
 
@@ -24,7 +22,7 @@ class API_V2_Test extends TestCase
 	function setUp() {
 		parent::setUp();
 		$user = User::inRandomOrder()->first();
-		$this->params = ['v' => 2,'key' => '3e0eed1a69fc6e012fef51b8a28cc6ff','pretty'];
+		$this->params = ['v' => 2,'key' => 'e8a946a0-d9e2-11e7-bfa7-b1fb2d7f5824','pretty'];
 
 		// Fetch the Swagger Docs for Structure Validation
 		$arrContextOptions= [ "ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]];
