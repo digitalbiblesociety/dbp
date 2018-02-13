@@ -83,7 +83,7 @@ class APIController extends Controller
     public function reply($object, $transformer = null, $pretty = 0)
     {
     	if(isset($_GET['echo'])) $object = [$_GET,$object];
-
+		$input = checkParam('callback', null, 'optional') ?? checkParam('jsonp', null, 'optional');
         $format = @$_GET['format'];
         switch ($format) {
             case 'xml':
@@ -97,9 +97,9 @@ class APIController extends Controller
                 return response()->make($formatter->toCsv(), $this->getStatusCode())->header('Content-Type', 'text/csv; charset=utf-8');
             default:
                 if(isset($_GET['pretty']) OR $pretty != 0) {
-                    return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)->header('Content-Type', 'application/json; charset=utf-8');
+                    return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
                 } else {
-                    return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'application/json; charset=utf-8');
+                    return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
                 }
         }
     }
