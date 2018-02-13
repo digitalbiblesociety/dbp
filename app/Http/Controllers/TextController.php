@@ -165,9 +165,7 @@ class TextController extends APIController
 			    $vernacular_numbers = fetchVernacularNumbers($bible->script,$bible->iso,min($vernacular_numbers),max($vernacular_numbers));
 		    }
 	    }
-	    // Fetch Vernacular Numbers
-	    $vernacular_numbers = null;
-
+	    // Fetch Vernacular Number
 	    $verses->map(function ($verse) use ($books,$bible_id,$vernacular_numbers) {
 		    $currentBook = $books->where('id_usfx',$verse->book)->first();
 		    $verse->bible_id = $bible_id;
