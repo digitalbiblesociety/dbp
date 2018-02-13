@@ -38,7 +38,7 @@ class BibleFileSetsController extends APIController
 		$fileset_type = (strpos(strtolower($fileset->set_type), 'audio') !== false) ? 'audio' : 'text';
 	    $fileSetChapters = BibleFile::with('book.currentTranslation')
 		    ->join('books', 'books.id', '=', 'bible_files.book_id')
-			->where('set_id',$bible_id)
+			->where('hash_id',$fileset->hash_id)
 			->when($chapter_id, function ($query) use ($chapter_id) {
 			    return $query->where('chapter_start', $chapter_id);
 			})->when($book_id, function ($query) use ($book_id) {
