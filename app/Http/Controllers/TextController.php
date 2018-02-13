@@ -151,7 +151,8 @@ class TextController extends APIController
     public function addMetaDataToVerses($verses,$bible_id)
     {
 	    $books = Book::whereIn('id_usfx',$verses->pluck('book'))->get();
-
+	    $vernacular_numbers = null;
+	    
 	    // Fetch Bible for Book Translations
 	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$bible_id)->orWhere('equivalent_id',substr($bible_id,0,7))->first();
 	    if(!isset($bibleEquivalent)) $bible = Bible::find($bible_id);
