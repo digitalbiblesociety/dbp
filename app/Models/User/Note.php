@@ -36,10 +36,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Note whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Note whereVerseEnd($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Note whereVerseStart($value)
+ * @property int $bookmark
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Note whereBookmark($value)
  */
 class Note extends Model
 {
     protected $table = "user_notes";
+    protected $hidden = ['user_id','project_id'];
     protected $fillable = ['user_id','bible_id','book_id','chapter','verse_start','verse_end','highlights','notes'];
 
     public function user()

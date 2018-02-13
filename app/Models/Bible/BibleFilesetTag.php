@@ -27,11 +27,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFilesetTag whereNotes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFilesetTag whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $set_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFilesetTag whereSetId($value)
  */
 class BibleFilesetTag extends Model
 {
 	public $table = 'bible_fileset_tags';
-	public $primaryKey = 'bible_fileset_id';
+	public $primaryKey = 'set_id';
 	public $incrementing = false;
 	protected $keyType = "string";
 	protected $hidden = ["created_at","updated_at",'bible_fileset_id','admin_only','notes'];

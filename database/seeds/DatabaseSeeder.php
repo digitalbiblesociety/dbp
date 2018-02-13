@@ -40,6 +40,7 @@ class DatabaseSeeder extends Seeder
 	    $this->call(bible_seeder::class);
 	    $this->call(bible_links_seeder::class);
 
+
 	    // 4. Organizations
 	    $this->call(organizations_seeder::class);
 	    $this->call(organizations_relationships::class);
@@ -60,9 +61,11 @@ class DatabaseSeeder extends Seeder
 	    $this->call(bible_equivalents_gbc::class);
 
 	    $this->call(bible_books_seeder::class);
+	    $this->call(book_translations_seeder::class);
 	    $this->call(bible_audio_seeder::class);
 	    $this->call(bible_file_timestamps_seeder::class);
-	    $this->call(bible_filesets_seeder::class);
+	    //$this->call(bible_fileset_type_seeder::class);
+	    //$this->call(bible_filesets_seeder::class);
 	    $this->call(bible_translators_seeder::class);
 
     }

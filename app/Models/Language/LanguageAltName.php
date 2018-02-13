@@ -26,7 +26,7 @@ class LanguageAltName extends Model
 
     protected $table = 'language_altNames';
     protected $fillable = ['name', 'language_id'];
-	protected $hidden = ['language_id','id'];
+
 
     public function language()
     {

@@ -22,7 +22,9 @@ class bible_file_timestamps_seeder extends Seeder
 	    $timestamps = $seederhelper->csv_to_array(storage_path("data/dbp2/tlibrary_audio_timestamps.csv"));
 	    foreach ($timestamps as $timestamp) {
 
-		    $dam_id = $timestamp['dam_id'];
+		    $dam_id = \App\Models\Bible\BibleFileset::where('id',$timestamp['dam_id'])->first();
+		    if(!$dam_id) { continue; }
+		    $dam_id = $dam_id->hash_id;
 		    if(in_array($dam_id,$skip)) {continue;}
 
 		    // Create the Audio Resource
@@ -32,7 +34,7 @@ class bible_file_timestamps_seeder extends Seeder
 		    $bibleFile = BibleFile::where([
 		    	['book_id', $book->id],
 			    ['chapter_start', $timestamp['chapter_number']],
-			    ['set_id', $dam_id]
+			    ['hash_id', $dam_id]
 		    ])->first();
 
 		    if(!$bibleFile) {
@@ -42,11 +44,7 @@ class bible_file_timestamps_seeder extends Seeder
 		    }
 
 		    BibleFileTimestamp::create([
-			    'bible_file_id'     => $bibleFile->id,
-			    'bible_fileset_id'  => $dam_id,
-			    'book_id'           => $book->id,
-			    'chapter_start'     => $timestamp['chapter_number'],
-			    'chapter_end'       => null,
+			    'file_id'           => $bibleFile->id,
 			    'verse_start'       => $timestamp['verse_number'],
 			    'verse_end'         => null,
 			    'timestamp'         => $timestamp['timestamp']

@@ -142,7 +142,7 @@ class Bible extends Model
 
     public function filesets()
     {
-	    return $this->HasMany(BibleFileset::class,'bible_id','id')->select(['id','bible_id','bucket_id','set_type','size_code']);
+	    return $this->hasManyThrough(BibleFileset::class,BibleFilesetConnection::class, 'bible_id','hash_id','id','hash_id');
     }
 
 	public function filesetAudio()

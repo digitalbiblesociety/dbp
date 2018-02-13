@@ -79,11 +79,8 @@ class SeederHelper
 			}
 			$alreadyExist = BibleEquivalent::where('equivalent_id',$equivalent['equivalent_id'])->where('organization_id',$partner)->where('site',$site)->first();
 			if(!$alreadyExist) {
-				$equivalent['bible_variation_id'] = ($equivalent['bible_variation_id'] != "") ? $equivalent['bible_variation_id'] : null;
-
 				BibleEquivalent::create([
 					'bible_id'            => $equivalent['bible_id'],
-					'bible_variation_id'  => $equivalent['bible_variation_id'],
 					'equivalent_id'       => $equivalent['equivalent_id'],
 					'organization_id'     => $partner,
 					'type'                => $type,

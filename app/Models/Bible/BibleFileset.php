@@ -41,6 +41,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $bucket_id
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereBucketId($value)
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFilesetTag[] $meta
+ * @property string|null $hash_id
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFilesetConnection[] $connections
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereHashId($value)
  */
 class BibleFileset extends Model
 {
@@ -48,12 +51,17 @@ class BibleFileset extends Model
 	public $primaryKey = 'id';
 	public $incrementing = false;
 	protected $keyType = "string";
-	protected $hidden = ["created_at","updated_at","response_time","hidden","bible_id","variation_id"];
+	protected $hidden = ["created_at","updated_at","response_time","hidden","bible_id","hash_id"];
 	protected $fillable = ['name','set_type','organization_id','variation_id','bible_id'];
 
 	public function bible()
 	{
 		return $this->belongsTo(Bible::class,'bible_id','id');
+	}
+
+	public function connections()
+	{
+		return $this->hasMany(BibleFilesetConnection::class,'hash_id','hash_id');
 	}
 
 	public function organization()
@@ -63,11 +71,11 @@ class BibleFileset extends Model
 
 	public function files()
 	{
-		return $this->HasMany(BibleFile::class,'set_id', 'id');
+		return $this->HasMany(BibleFile::class,'hash_id', 'hash_id');
 	}
 
 	public function meta()
 	{
-		return $this->HasMany(BibleFilesetTag::class);
+		return $this->HasMany(BibleFilesetTag::class,'hash_id','hash_id');
 	}
 }

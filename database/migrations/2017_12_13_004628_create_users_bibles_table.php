@@ -13,6 +13,26 @@ class CreateUsersBiblesTable extends Migration
      */
     public function up()
     {
+
+	    Schema::create('projects', function (Blueprint $table) {
+		    $table->string('id', 24)->primary();
+		    $table->string('name');
+		    $table->string('url_avatar')->nullable();
+		    $table->string('url_avatar_icon')->nullable();
+		    $table->string('url_site')->nullable();
+		    $table->text('description')->nullable();
+		    $table->timestamps();
+	    });
+
+	    Schema::create('project_members', function (Blueprint $table) {
+		    $table->string('user_id', 64);
+		    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+		    $table->string('project_id', 24);
+		    $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
+		    $table->string('role');
+		    $table->timestamps();
+	    });
+
 	    Schema::create('user_notes', function (Blueprint $table) {
 	    	$table->increments('id');
 		    $table->string('user_id', 64);
@@ -24,9 +44,28 @@ class CreateUsersBiblesTable extends Migration
 		    $table->integer('chapter')->unsigned();
 		    $table->integer('verse_start')->unsigned();
 		    $table->integer('verse_end')->unsigned()->nullable();
-		    $table->unsignedInteger('project_id')->nullable();
+		    $table->string('project_id', 24)->nullable();
+		    $table->foreign('project_id')->references('id')->on('projects')->onUpdate('cascade');
 		    $table->text('notes')->nullable();
-		    $table->text('highlights')->nullable();
+		    $table->boolean('bookmark')->default(false);
+		    $table->timestamps();
+	    });
+
+	    Schema::create('user_highlights', function (Blueprint $table) {
+		    $table->increments('id');
+		    $table->string('user_id', 64);
+		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
+		    $table->string('bible_id', 12);
+		    $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
+		    $table->char('book_id', 3);
+		    $table->foreign('book_id')->references('id')->on('books');
+		    $table->integer('chapter')->unsigned();
+		    $table->integer('verse_start')->unsigned();
+		    $table->integer('verse_end')->unsigned()->nullable();
+		    $table->string('project_id', 24)->nullable();
+		    $table->foreign('project_id')->references('id')->on('projects')->onUpdate('cascade');
+		    $table->string('highlight_start')->nullable();
+		    $table->tinyInteger('highlighted_words')->unsigned();
 		    $table->timestamps();
 	    });
 
@@ -37,7 +76,6 @@ class CreateUsersBiblesTable extends Migration
 		    $table->string('value', 64);
 		    $table->timestamps();
 	    });
-
 
 	    Schema::create('user_access', function (Blueprint $table) {
 		    $table->string('user_id', 64)->primary();
@@ -68,5 +106,8 @@ class CreateUsersBiblesTable extends Migration
 	    Schema::dropIfExists('user_note_tags');
 	    Schema::dropIfExists('user_access');
         Schema::dropIfExists('user_notes');
+	    Schema::dropIfExists('user_highlights');
+	    Schema::dropIfExists('project_members');
+	    Schema::dropIfExists('projects');
     }
 }

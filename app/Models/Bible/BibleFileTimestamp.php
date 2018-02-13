@@ -31,6 +31,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereVerseEnd($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereVerseStart($value)
+ * @property string $set_id
+ * @property int $file_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereFileId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereSetId($value)
  */
 class BibleFileTimestamp extends Model
 {
