@@ -56,7 +56,7 @@ class BibleFileset extends Model
 
 	public function bible()
 	{
-		return $this->belongsTo(Bible::class,'bible_id','id');
+		return $this->hasManyThrough(Bible::class,BibleFilesetConnection::class, 'hash_id','id','hash_id','bible_id');
 	}
 
 	public function connections()

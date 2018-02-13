@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 class BibleFilesetConnection extends Model
 {
     public $incrementing = false;
+    public $keyType = 'string';
+    public $primaryKey = 'hash_id';
 
     public function fileset()
     {
