@@ -121,9 +121,10 @@ Auth::routes();
 
 
 Route::get('dashboard', 'HomeController@index')->name('home');
-Route::resource('dashboard/users', 'UsersController');
-Route::get('/dashboard/users/notes', 'UserNotesController@index')->name('users.notes_index');
+Route::resource('dashboard/users',    'UsersController');
+Route::resource('dashboard/projects', 'ProjectsController');
 
+Route::get('/dashboard/users/notes', 'UserNotesController@index')->name('users.notes_index');
 
 // Organizations Dashboard
 Route::resource('dashboard/organizations/roles',       'Dashboard\Organizations\OrganizationRolesController', ['names' => [

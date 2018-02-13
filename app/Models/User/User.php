@@ -46,10 +46,12 @@ use App\Traits\Uuids;
  * @property-read \App\Models\User\Role $admin
  * @property-read \App\Models\User\Role $canCreateUsers
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Key[] $key
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Project[] $projects
  */
 class User extends Authenticatable
 {
 	public $incrementing = false;
+	public $keyType = 'string';
     use Notifiable;
 
     /**
@@ -142,7 +144,7 @@ class User extends Authenticatable
 
 	public function projects()
 	{
-		return $this->belongsToMany(Project::class);
+		return $this->belongsToMany(Project::class,'project_members');
 	}
 
 }

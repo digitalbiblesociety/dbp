@@ -44,12 +44,12 @@
 	Route::post('bibles/filesets/{id}/files/{file_id}',    'BibleFilesController@update');
 
 	Route::resource('bibles/filesets/{id}/permissions',    'BibleFileSetPermissionsController', ['names' => [
-		'v4_bible_filesets.permissions_index'   => 'view_bible_filesets_permissions.index',
-		'v4_bible_filesets.permissions_edit'    => 'view_bible_filesets_permissions.edit',
-		'v4_bible_filesets.permissions_create'  => 'view_bible_filesets_permissions.create',
-		'v4_bible_filesets.permissions_store'   => 'view_bible_filesets_permissions.store',
-		'v4_bible_filesets.permissions_show'    => 'view_bible_filesets_permissions.show',
-		'v4_bible_filesets.permissions_update'  => 'view_bible_filesets_permissions.update'
+		'v4_bible_filesets.permissions_index'   => 'v4_bible_filesets_permissions.index',
+		'v4_bible_filesets.permissions_edit'    => 'v4_bible_filesets_permissions.edit',
+		'v4_bible_filesets.permissions_create'  => 'v4_bible_filesets_permissions.create',
+		'v4_bible_filesets.permissions_store'   => 'v4_bible_filesets_permissions.store',
+		'v4_bible_filesets.permissions_show'    => 'v4_bible_filesets_permissions.show',
+		'v4_bible_filesets.permissions_update'  => 'v4_bible_filesets_permissions.update'
 	]]);
 	Route::get('bibles/filesets/{id}/download', 'BibleFileSetsController@download')->name('v4_bible_filesets.download');
 	Route::resource('bibles/filesets',           'BibleFileSetsController', ['names' => [
@@ -82,14 +82,18 @@
 	// VERSION 4 | USERS
 	Route::name('v4_user.index')->get('users',                                            'UsersController@index');
 	Route::name('v4_user.create')->post('users',                                          'UsersController@store');
-
+	Route::name('v4_user.update')->put('users/{user_id}',                                 'UsersController@update');
+	Route::name('v4_user.destroy')->delete('users/{user_id}',                             'UsersController@destroy');
 	Route::name('v4_user.login')->post('users/login',                                     'UsersController@login');
 	Route::name('v4_user.oAuth')->get('users/login/{driver}',                             'Auth\LoginController@redirectToProvider');
-	Route::name('v4_user.oAuth')->get('users/login/{driver}/callback',                    'Auth\LoginController@handleProviderCallback');
+	Route::name('v4_user.oAuthCallback')->get('users/login/{driver}/callback',            'Auth\LoginController@handleProviderCallback');
+
+	// VERSION 4 | USER NOTES
 	Route::name('v4_notes.index')->get('users/{user_id}/notes',                           'UserNotesController@index');
 	Route::name('v4_notes.store')->post('users/{user_id}/notes',                          'UserNotesController@store');
 	Route::name('v4_notes.update')->put('users/{user_id}/notes',                          'UserNotesController@update');
-	Route::name('v4_user.destroy')->delete('users/{user_id}/notes/{note_id}',             'UserNotesController@destroy');
+	Route::name('v4_notes.destroy')->delete('users/{user_id}/notes/{note_id}',            'UserNotesController@destroy');
+
 	Route::name('v4_organizations.all')->get('organizations/',                            'OrganizationsController@index');
 	Route::name('v4_organizations.one')->get('organizations/{id}',                        'OrganizationsController@show');
 	Route::name('v4_api.versions')->get('/api/versions',                                  'HomeController@versions');
@@ -97,6 +101,12 @@
 	Route::name('v4_api.replyTypes')->get('/api/versions/replyTypes',                     'HomeController@versionReplyTypes');
 	Route::name('v4_api.sign')->get('sign',                                               'HomeController@signedUrls');
 
+	// VERSION 4 | PROJECTS
+	Route::name('v4_projects.index')->get('projects',                                      'ProjectsController@index');
+	Route::name('v4_projects.show')->get('projects/{project_id}',                          'ProjectsController@show');
+	Route::name('v4_projects.update')->put('projects/{project_id}',                        'ProjectsController@update');
+	Route::name('v4_projects.store')->post('projects',                                     'ProjectsController@store');
+	Route::name('v4_projects.destroy')->delete('projects/{project_id}',                    'ProjectsController@destroy');
 
 	// Error Handling
 	// Route::name('v4_api.sign')->get('sign',                                               'HomeController@signedUrls');
