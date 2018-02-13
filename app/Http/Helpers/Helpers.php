@@ -93,7 +93,7 @@ function fetchBible($bible_id)
 
 function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
 {
-	$numbers = \App\Models\Language\AlphabetNumber::where('script_id',$script)->where('script_variant_iso', $iso)->get()->keyBy('numeral')->ToArray();
+	$numbers = \App\Models\Language\AlphabetNumber::where('script_id',$script)->get()->keyBy('numeral')->ToArray();
 
 	// Run through the numbers and return the vernaculars
 	$current_number = $start_number;
@@ -103,7 +103,7 @@ function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
 		if(empty($numbers)) {
 			$number_vernacular = $current_number;
 		} else {
-			foreach(str_split($current_number) as $i) $number_vernacular .= $numbers[$i]['numeral_vernacular'];
+			foreach(str_split($current_number) as $i) $number_vernacular .= $numbers[$i + 1]['numeral_vernacular'];
 		}
 		$out_numbers[] = [
 			"numeral"            => intval($current_number),
