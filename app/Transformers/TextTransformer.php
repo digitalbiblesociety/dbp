@@ -22,25 +22,25 @@ class TextTransformer extends BaseTransformer
 		    case "v2_text_search": {
 		    	return [
 			        "dam_id"           => $text->bible_id,
-                    "book_name"        => $text->book->name,
-                    "book_id"          => $text->book->osis_id,
-                    "chapter_id"       => "$text->chapter_number",
+                    "book_name"        => $text->book_name,
+                    "book_id"          => $text->osis_id,
+                    "chapter_id"       => "$text->chapter",
                     "verse_id"         => "$text->verse_start",
                     "verse_text"       => "$text->verse_text",
-                    "book_order"       => "$text->book->book_order"
+                    "book_order"       => "$text->book_order"
 				];
 		    }
 
 		    case "v2_text_search_group": {
 		    	return [
 				    "dam_id"           => $text->bible_id,
-				    "book_name"        => $text->book->name,
-				    "book_id"          => $text->book->osis_id,
-				    "chapter_id"       => "$text->chapter_number",
+				    "book_name"        => $text->book_name,
+				    "book_id"          => $text->osis_id,
+				    "chapter_id"       => "$text->chapter",
 				    "verse_id"         => "$text->verse_start",
 				    "verse_text"       => $text->verse_text,
 				    "results"		   => "$text->resultsCount",
-				    "book_order"	   => "$text->book->order"
+				    "book_order"	   => "$text->book_order"
 			    ];
 		    }
 
@@ -63,10 +63,15 @@ class TextTransformer extends BaseTransformer
 	public function transformforV4($text)
 	{
 		return [
-			"book"             => $text->book,
+			"book_id"          => $text->usfm_id,
+			"book_name"        => $text->book_name,
+			"book_name_alt"    => $text->book_vernacular_name,
 			"chapter"          => $text->chapter,
+			"chapter_alt"      => (string) $text->chapter_vernacular,
 			"verse_start"      => $text->verse_start,
+			"verse_start_alt"  => (string) $text->verse_start_vernacular,
 			"verse_end"        => $text->verse_end,
+			"verse_end_alt"    => (string) $text->verse_end_vernacular,
 			"verse_text"       => $text->verse_text
 		];
 	}

@@ -64,26 +64,8 @@ class TextController extends APIController
 		->when($verse_end, function ($query) use ($verse_end) {
 			return $query->where('verse_end', '<=', $verse_end);
 		})->get();
+	    $this->addMetaDataToVerses($verses,$bible_id);
 
-		// Fetch Vernacular Numbers
-	    $vernacular_numbers[] = $verses->pluck('verse_start')->ToArray();
-	    $vernacular_numbers[] = $verses->pluck('verse_end')->ToArray();
-	    $vernacular_numbers[] = $verses->first()->chapter;
-	    $vernacular_numbers = array_unique(array_flatten($vernacular_numbers));
-	    $vernacular_numbers = fetchVernacularNumbers($bible->script,$bible->iso,min($vernacular_numbers),max($vernacular_numbers));
-
-	    $verses->map(function ($verse) use ($book,$bible,$vernacular_numbers) {
-		    $verse->osis_id = $book->id_osis;
-		    $verse->book_order = ltrim(substr($verse->canon_order,0,3),"0");
-		    $verse->book_vernacular_name = $book->translation($bible->iso)->name ?? "";
-		    $book->book_name = $book->name;
-		    $verse->chapter_vernacular =  $vernacular_numbers[$verse->chapter];
-            $verse->verse_start_vernacular =  $vernacular_numbers[$verse->verse_start];
-            $verse->verse_end_vernacular =  $vernacular_numbers[$verse->verse_end];
-		    return $verse;
-	    });
-
-		return $this->reply($verses);
 	    if(count($verses) == 0) return $this->setStatusCode(404)->replyWithError("No Verses Were found with the provided params");
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)->toArray());
     }
@@ -137,6 +119,7 @@ class TextController extends APIController
 
 		$query = DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).' -'.$exclude);
 	    $verses = DB::connection('sophia')->table($bible_id.'_vpl')->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)->get();
+	    $this->addMetaDataToVerses($verses,$bible_id);
 
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
     }
@@ -158,10 +141,47 @@ class TextController extends APIController
 	    if($exclude) $exclude = ' -'.$exclude;
 	    $query = DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).$exclude);
 	    $verses = DB::connection('sophia')->table($bible_id.'_vpl')->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->select('book_id')->get();
+	    $this->addMetaDataToVerses($verses,$bible_id);
 
 	    foreach($verses->groupBy('book_id') as $key => $verse) $verseCount[$key] = $verse->count();
 
 	    return $this->reply($verseCount);
+    }
+
+    public function addMetaDataToVerses($verses,$bible_id)
+    {
+	    $books = Book::whereIn('id_usfx',$verses->pluck('book'))->get();
+
+	    // Fetch Bible for Book Translations
+	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$bible_id)->orWhere('equivalent_id',substr($bible_id,0,7))->first();
+	    if(!isset($bibleEquivalent)) $bible = Bible::find($bible_id);
+	    if(isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
+	    if($bible) {
+		    if($bible->script != "Latn") {
+			    $vernacular_numbers[] = $verses->pluck('verse_start')->ToArray();
+			    $vernacular_numbers[] = $verses->pluck('verse_end')->ToArray();
+			    $vernacular_numbers[] = $verses->first()->chapter;
+			    $vernacular_numbers = array_unique(array_flatten($vernacular_numbers));
+			    $vernacular_numbers = fetchVernacularNumbers($bible->script,$bible->iso,min($vernacular_numbers),max($vernacular_numbers));
+		    }
+	    }
+	    // Fetch Vernacular Numbers
+	    $vernacular_numbers = null;
+
+	    $verses->map(function ($verse) use ($books,$bible_id,$vernacular_numbers) {
+		    $currentBook = $books->where('id_usfx',$verse->book)->first();
+		    $verse->bible_id = $bible_id;
+		    $verse->usfm_id = $currentBook->id;
+		    $verse->osis_id = $currentBook->id_osis;
+		    $verse->book_order = ltrim(substr($verse->canon_order,0,3),"0");
+		    $verse->book_vernacular_name = $currentBook->name;
+		    $verse->book_name = $currentBook->name;
+		    $verse->chapter_vernacular =  isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->chapter] : $verse->chapter;
+		    $verse->verse_start_vernacular =  isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->verse_start] : $verse->verse_start;
+		    $verse->verse_end_vernacular =  isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->verse_end] : $verse->verse_end;
+		    return $verse;
+	    });
+	    return $verses;
     }
 
 
