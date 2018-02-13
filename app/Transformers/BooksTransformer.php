@@ -119,7 +119,7 @@ class BooksTransformer extends BaseTransformer
 						"name_abbreviation" => $value->name_abbreviation,
 					]];
 			}) : null,
-			"bible" => $book->bible->implode('id', ', ') ?? null
+			"bible" => ($book->relationLoaded('bible')) ? $book->bible->implode('id', ', ') : null
 		];
 	}
 
