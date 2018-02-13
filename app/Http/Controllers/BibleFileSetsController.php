@@ -62,7 +62,7 @@ class BibleFileSetsController extends APIController
 	    // Filter Download By Books
 	    if($books) {
 	    	$books = explode(',',$books);
-		    $files = BibleFile::with('book')->where('set_id',$fileset->id)->whereIn('book_id',$books)->get();
+		    $files = BibleFile::with('book')->where('hash_id',$fileset->hash_id)->whereIn('book_id',$books)->get();
 		    $books = $files->map(function ($file) {
 		    	$testamentLetter = ($file->book->book_testament == "NT") ? "B" : "A";
 			    return $testamentLetter.str_pad($file->book->testament_order, 2, 0, STR_PAD_LEFT);
