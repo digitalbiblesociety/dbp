@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bible\Bible;
+use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleEquivalent;
 use App\Models\Bible\Book;
 use App\Models\Language\Alphabet;
@@ -205,11 +206,37 @@ class BiblesController extends APIController
 		return view('bibles.manage',compact('bible'));
 	}
 
-	public function books()
+	/**
+	 *  Query books with the optional constraints of bible_id, book_id and language translations
+	 *
+	 * @param string $bible_id
+	 * @param string|null $book_id
+	 *
+	 * @return APIController::reply()
+	 */
+	public function books($bible_id, $book_id = null)
 	{
 		if(!$this->api) return view('bibles.books.index');
 
-		$books = Book::select(['id','book_order','name'])->with('codes','translations')->orderBy('book_order')->get();
+		$book_id = checkParam('book_id',$book_id,'optional');
+
+		$translation_languages = checkParam('language_codes',null,'optional');
+		if($translation_languages) $translation_languages = explode('|',$translation_languages);
+
+		$bible_books = BibleBook::where('bible_id',$bible_id)->first();
+		$books = Book::when($translation_languages, function($q) use ($translation_languages){
+			$q->with(['translations' => function ($query) use($translation_languages) {
+				$query->whereIn('iso', $translation_languages);
+			}]);
+		})->when($bible_id, function($q) use ($bible_id,$bible_books){
+			if(isset($bible_books)) $q->whereHas('bible', function ($query) use($bible_id) { $query->where('bible_id', $bible_id); });
+			$q->with(['bible' => function ($query) use($bible_id) {
+				$query->where('bible_id', $bible_id)->select('id');
+			}]);
+		})->when($book_id, function($q) use ($book_id){
+			$q->where('id',$book_id);
+		})->orderBy('book_order')->get();
+
 		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer)->toArray());
 	}
 

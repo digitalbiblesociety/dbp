@@ -39,6 +39,8 @@ use i18n;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereNotes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereVerses($value)
+ * @property int|null $testament_order
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereTestamentOrder($value)
  */
 class Book extends Model
 {
@@ -64,6 +66,11 @@ class Book extends Model
     public function vernacularTranslation($iso = null)
     {
         return $this->HasOne(BookTranslation::class, 'book_id')->where('iso',$iso);
+    }
+
+    public function bible()
+    {
+    	return $this->belongsToMany(Bible::class,'bible_books');
     }
 
 }

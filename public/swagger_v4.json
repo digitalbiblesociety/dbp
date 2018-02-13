@@ -45,6 +45,8 @@
   "paths": {
     "/bibles": {
       "get": {
+        "summary": "This route serves as the base point for ",
+        "description": "The usual query tree to return a file will often start with this route. Bibles to get filesets and then query the fileset of your choice.",
         "parameters": [
           {
             "$ref": "#/components/parameters/key"
@@ -76,7 +78,7 @@
         }
       }
     },
-    "/bibles/{id}": {
+    "/bibles/{bible_id}": {
       "get": {
         "operationId": "v4_bible.one",
         "summary": "Get extended Metadata for a single Bible",
@@ -92,6 +94,9 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "$ref": "#/components/parameters/bible_id_path"
           }
         ],
         "tags": [
@@ -111,10 +116,11 @@
         }
       }
     },
-    "/bibles/{id}/book/{book}": {
+    "/bibles/{bible_id}/book/{book_id}": {
       "get": {
         "operationId": "v4_bible.books",
         "summary": "Get books for a Bible",
+        "description": "The purpose of this route is to provide a concise collection of meta data primarily for multilingual apps. It will return an array of books with metadata. You can query additional book names by including the `language_codes` param. `language_codes` is simply an array of ISO639-3 codes deliminated by a `|` bar character. Including a param of `spa|eng` will return translations for both Spanish and English. If the system is unable to find the bible_id provided it will return all books by default and the `bible` field will be set to an empty string.",
         "parameters": [
           {
             "$ref": "#/components/parameters/key"
@@ -123,10 +129,35 @@
             "$ref": "#/components/parameters/version"
           },
           {
+            "$ref": "#/components/parameters/bible_id_path"
+          },
+          {
             "$ref": "#/components/parameters/reply"
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "language_codes",
+            "in": "query",
+            "description": "An array of ISO639-3 codes deliminated by a `|` bar character for which book names are desired.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "eng|spa"
+            }
+          },
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "The corresponding USFM 2.4 ID for the book in the path",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 3,
+              "example": "GEN"
+            }
           }
         ],
         "tags": [
@@ -138,7 +169,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "$ref": "#/components/schemas/Books"
                 }
               }
             }
@@ -146,7 +177,7 @@
         }
       }
     },
-    "/bibles/{id}/{book_id}/{chapter}": {
+    "/bibles/{bible_id}/{book_id}/{chapter_id}": {
       "get": {
         "operationId": "v4_bible.chapter",
         "summary": "Get plain text for a chapter via the API",
@@ -162,6 +193,15 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "$ref": "#/components/parameters/bible_id_path"
+          },
+          {
+            "$ref": "#/components/parameters/book_id_path"
+          },
+          {
+            "$ref": "#/components/parameters/chapter_id_path"
           }
         ],
         "tags": [
@@ -181,7 +221,7 @@
         }
       }
     },
-    "/bibles/filesets/{id}/download": {
+    "/bibles/filesets/{fileset_id}/download": {
       "get": {
         "operationId": "v4_bible_filesets.download",
         "summary": "Download either a full zipped audio Bible or a selection",
@@ -193,7 +233,7 @@
             "$ref": "#/components/parameters/version"
           },
           {
-            "$ref": "#/components/parameters/fileset_id"
+            "$ref": "#/components/parameters/fileset_id_path"
           },
           {
             "$ref": "#/components/parameters/book_ids"
@@ -222,7 +262,7 @@
         }
       }
     },
-    "/bibles/filesets/{id}/": {
+    "/bibles/filesets/{fileset_id}/": {
       "get": {
         "operationId": "v4_bible_filesets.show",
         "summary": "Recieve the signed URLs from the S3 Bucket",
@@ -234,7 +274,7 @@
             "$ref": "#/components/parameters/version"
           },
           {
-            "$ref": "#/components/parameters/fileset_id"
+            "$ref": "#/components/parameters/fileset_id_path"
           },
           {
             "$ref": "#/components/parameters/reply"
@@ -413,7 +453,7 @@
         }
       }
     },
-    "/timestamps/{id}": {
+    "/timestamps/{bible_id}": {
       "get": {
         "operationId": "v4_timestamps.tag",
         "summary": "Get List of available timestamps",
@@ -429,6 +469,9 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "$ref": "#/components/parameters/bible_id_path"
           }
         ],
         "tags": [
@@ -448,7 +491,7 @@
         }
       }
     },
-    "/timestamps/{id}/{book}/{chapter}": {
+    "/timestamps/{bible_id}/{book_id}/{chapter_id}": {
       "get": {
         "operationId": "v4_timestamps.verse",
         "summary": "Get List of available timestamps",
@@ -464,6 +507,15 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "$ref": "#/components/parameters/bible_id_path"
+          },
+          {
+            "$ref": "#/components/parameters/book_id_path"
+          },
+          {
+            "$ref": "#/components/parameters/chapter_id_path"
           }
         ],
         "tags": [
@@ -519,7 +571,7 @@
         }
       }
     },
-    "/countries/{id}": {
+    "/countries/{country_id}": {
       "get": {
         "operationId": "v4_countries.one",
         "summary": "Get a single Country",
@@ -535,6 +587,16 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "country_id",
+            "in": "path",
+            "description": "The ID of the country.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "US"
+            }
           }
         ],
         "tags": [
@@ -589,7 +651,7 @@
         }
       }
     },
-    "/languages/{id}": {
+    "/languages/{language_id}": {
       "get": {
         "operationId": "v4_languages.one",
         "summary": "Get a specific Language",
@@ -605,6 +667,18 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "language_id",
+            "in": "path",
+            "description": "The ID of the language.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 3,
+              "example": "spa"
+            }
           }
         ],
         "tags": [
@@ -659,7 +733,7 @@
         }
       }
     },
-    "/alphabets/{id}": {
+    "/alphabets/{alphabet_id}": {
       "get": {
         "operationId": "v4_alphabets.one",
         "summary": "A single Alphabet",
@@ -675,6 +749,18 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "alphabet_id",
+            "in": "path",
+            "description": "The ID of the alphabet.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 4,
+              "example": "Latn"
+            }
           }
         ],
         "tags": [
@@ -729,7 +815,7 @@
         }
       }
     },
-    "/organizations/{id}": {
+    "/organizations/{organization_id}": {
       "get": {
         "operationId": "v4_organizations.one",
         "summary": "Get Organizations",
@@ -745,6 +831,16 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the organization.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "american-bible-society"
+            }
           }
         ],
         "tags": [
@@ -833,6 +929,46 @@
               }
             }
           }
+        },
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "description": "The User's email",
+                    "type": "string",
+                    "example": "silmaril@gmail.com"
+                  },
+                  "name": {
+                    "description": "The User's name",
+                    "type": "string",
+                    "example": "Fëanor"
+                  },
+                  "avatar": {
+                    "description": "The User's avatar",
+                    "type": "string",
+                    "example": "https://vignette.wikia.nocookie.net/lotr/images/7/7f/Anna_Lee_-_Feanor.jpg"
+                  },
+                  "nickname": {
+                    "description": "The User's nickname",
+                    "type": "string",
+                    "example": "Curufinwë"
+                  },
+                  "password": {
+                    "description": "The User's password",
+                    "type": "string",
+                    "example": "*******"
+                  }
+                },
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
         }
       }
     },
@@ -852,6 +988,16 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "H3S2Ky85dRt2yzT33HFmtSEG"
+            }
           }
         ],
         "tags": [
@@ -865,6 +1011,93 @@
                 "schema": {
                   "type": "string",
                   "example": "User Updated"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "description": "The User's email",
+                    "type": "string",
+                    "example": "broideress@gmail.com"
+                  },
+                  "name": {
+                    "description": "The User's name",
+                    "type": "string",
+                    "example": "Míriel Therindë"
+                  },
+                  "avatar": {
+                    "description": "The User's avatar",
+                    "type": "string",
+                    "example": "https://vignette.wikia.nocookie.net/lotr/images/b/bd/Jenny_Dolfen_-_A_Tapestry_of_Sorrows.jpg"
+                  },
+                  "nickname": {
+                    "description": "The User's nickname",
+                    "type": "string",
+                    "example": "Serindë"
+                  },
+                  "password": {
+                    "description": "The User's password",
+                    "type": "string",
+                    "example": "*******"
+                  },
+                  "user_id": {
+                    "description": "The User's ID",
+                    "type": "string",
+                    "example": "YT1170QONOLDOR"
+                  }
+                },
+                "required": [
+                  "user_id"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "v4_user.delete",
+        "summary": "Delete an existing User",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "H3S2Ky85dRt2yzT33HFmtSEG"
+            }
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "A success message to let you know the operation did not encounter an error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "User Deleted"
                 }
               }
             }
@@ -895,11 +1128,12 @@
         ],
         "responses": {
           "200": {
-            "description": "An array of organizations",
+            "description": "A Success Message",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "type": "object",
+                  "example": "user id is 142091"
                 }
               }
             }
@@ -907,10 +1141,11 @@
         }
       }
     },
-    "/users/login/{driver}": {
+    "/users/login/{driver_id}": {
       "get": {
         "operationId": "v4_user.oAuth",
         "summary": "Login via oAuth",
+        "description": "This route will return a single URL for your app to communicate with a third party provider for oAuthentication.",
         "parameters": [
           {
             "$ref": "#/components/parameters/key"
@@ -923,6 +1158,9 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "$ref": "#/components/parameters/driver_id"
           }
         ],
         "tags": [
@@ -943,7 +1181,7 @@
         }
       }
     },
-    "/users/login/{driver}/callback": {
+    "/users/login/{driver_id}/callback": {
       "get": {
         "operationId": "v4_user.oAuthCallback",
         "summary": "The callback URL for oAuth",
@@ -959,6 +1197,9 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "$ref": "#/components/parameters/driver_id"
           }
         ],
         "tags": [
@@ -994,6 +1235,16 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "H3S2Ky85dRt2yzT33HFmtSEG"
+            }
           }
         ],
         "tags": [
@@ -1027,6 +1278,16 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "H3S2Ky85dRt2yzT33HFmtSEG"
+            }
           }
         ],
         "tags": [
@@ -1061,6 +1322,60 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "H3S2Ky85dRt2yzT33HFmtSEG"
+            }
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "A confirmation message of success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "success"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "v4_notes.destroy",
+        "summary": "Destroy an existing note for a user",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "H3S2Ky85dRt2yzT33HFmtSEG"
+            }
           }
         ],
         "tags": [
@@ -1157,6 +1472,112 @@
           "copyright": {
             "type": "string",
             "example": "Public Domain"
+          },
+          "filesets": {
+            "type": "object",
+            "description": "A hashmap with language code as a key and the text as the value.",
+            "properties": {
+              "en": {
+                "type": "string",
+                "description": "English text of a delay reason."
+              }
+            },
+            "example": {
+              "ENGKJV1DA": {
+                "bucket_id": "dbp_dev",
+                "set_type": "audio",
+                "size_code": "NT",
+                "meta": [
+                  "full voice cast",
+                  "aprocryphal"
+                ]
+              },
+              "ENGKJVO2DA": {
+                "bucket_id": "dbp_dev",
+                "set_type": "audio",
+                "size_code": "NT",
+                "meta": [
+                  "music",
+                  "single narrator"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "Books": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "MAT"
+          },
+          "id_usfx": {
+            "type": "string",
+            "example": "MT"
+          },
+          "id_osis": {
+            "type": "string",
+            "example": "Matt"
+          },
+          "book_order": {
+            "type": "integer",
+            "example": 41
+          },
+          "testament_order": {
+            "type": "string",
+            "example": 1
+          },
+          "book_testament": {
+            "type": "string",
+            "example": "NT"
+          },
+          "book_group": {
+            "type": "string",
+            "example": "Gospels"
+          },
+          "chapters": {
+            "type": "integer",
+            "example": 28
+          },
+          "verses": {
+            "type": "integer",
+            "example": 1071
+          },
+          "name": {
+            "type": "string",
+            "example": "Matthew"
+          },
+          "translations": {
+            "type": "object",
+            "description": "A hashmap with language code as a key and the text as the value.",
+            "properties": {
+              "eng": {
+                "type": "string",
+                "description": "English text of a delay reason."
+              }
+            },
+            "example": {
+              "eng": {
+                "name": "Matthew",
+                "name_long": "The Gospel of Saint Matthew",
+                "name_short": "Matthew",
+                "name_abbreviation": "Mat."
+              },
+              "spa": {
+                "name": "San Mateo",
+                "name_long": "El Evangelio de San Mateo",
+                "name_short": "Mateo",
+                "name_abbreviation": "Mat."
+              }
+            }
+          },
+          "bible": {
+            "type": "string",
+            "example": "ENGKJV"
           }
         }
       },
@@ -1527,7 +1948,7 @@
         }
       },
       "version": {
-        "name": "v",
+        "name": "version",
         "in": "query",
         "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
         "required": true,
@@ -1567,9 +1988,30 @@
           "type": "string"
         }
       },
+      "bible_id_path": {
+        "name": "bible_id",
+        "in": "path",
+        "description": "The ID of the bible.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 12,
+          "example": "ENGKJV"
+        }
+      },
       "fileset_id": {
         "name": "fileset_id",
         "in": "query",
+        "description": "The id of the fileset",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "fileset_id_path": {
+        "name": "fileset_id",
+        "in": "path",
         "description": "The id of the fileset",
         "required": true,
         "schema": {
@@ -1581,15 +2023,45 @@
         "in": "query",
         "description": "The number of the chapter you wish to query",
         "schema": {
-          "type": "string"
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 150,
+          "example": 1
+        }
+      },
+      "chapter_id_path": {
+        "name": "chapter_id",
+        "in": "path",
+        "description": "The number of the chapter",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 150,
+          "example": 1
         }
       },
       "book_id": {
         "name": "book_id",
         "in": "query",
-        "description": "The corresponding USFM 2.4 ID for book you wish to query",
+        "description": "The corresponding USFM 2.4 ID for the book you wish to query",
         "schema": {
-          "type": "string"
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 3,
+          "example": "GEN"
+        }
+      },
+      "book_id_path": {
+        "name": "book_id",
+        "in": "path",
+        "description": "The corresponding USFM 2.4 ID for the book in the path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 3,
+          "example": "GEN"
         }
       },
       "book_ids": {
@@ -1614,6 +2086,22 @@
         "description": "The number of minutes that the link will be good for.",
         "schema": {
           "type": "string"
+        }
+      },
+      "driver_id": {
+        "name": "driver",
+        "in": "path",
+        "description": "There are currently four different providers that are availalble for use via the API. google, facebook, reddit, & github",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "google",
+          "enum": [
+            "google",
+            "facebook",
+            "reddit",
+            "github"
+          ]
         }
       }
     }

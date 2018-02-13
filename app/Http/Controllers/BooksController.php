@@ -20,7 +20,7 @@ class BooksController extends APIController
 	{
 		if(!$this->api) return view('docs.books');
 		return \Cache::remember('v4_books_index', 2400, function() {
-			$books = Book::with('codes')->orderBy('book_order')->get();
+			$books = Book::orderBy('book_order')->get();
 			return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer()));
 		});
 	}
