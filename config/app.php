@@ -181,7 +181,8 @@ return [
 	     * API Service Providers
 	     */
 	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
-	    Laravel\Socialite\SocialiteServiceProvider::class,
+	    //Laravel\Socialite\SocialiteServiceProvider::class,
+	    SocialiteProviders\Manager\ServiceProvider::class,
 	    Intouch\LaravelNewrelic\NewrelicServiceProvider::class,
 	    //Lanin\Laravel\ApiDebugger\ServiceProvider::class,
 	    Yajra\DataTables\DataTablesServiceProvider::class,

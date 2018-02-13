@@ -32,5 +32,17 @@ return [
 	    'redirect'      => env('APP_URL').'/login/twitter/callback',
     ],
 
+    'google' => [
+	    'client_id'     => env('GOOGLE_CLIENT_ID') ?? env('DEV_GOOGLE_CLIENT_ID'),
+	    'client_secret' => env('GOOGLE_CLIENT_SECRET') ?? env('DEV_GOOGLE_CLIENT_SECRET'),
+	    'redirect'      => env('APP_URL').'/login/google/callback',
+    ],
+
+    'reddit' => [
+	    'client_id'     => env('REDDIT_CLIENT_ID'),
+	    'client_secret' => env('REDDIT_CLIENT_SECRET'),
+	    'redirect'      => env('APP_URL').'/login/reddit/callback',
+    ],
+
 
 ];
