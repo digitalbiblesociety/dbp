@@ -10,6 +10,7 @@ use Validator;
 
 class UserNotesController extends APIController
 {
+
     public function index($user_id = null)
     {
     	if(!$this->api) {
@@ -27,17 +28,18 @@ class UserNotesController extends APIController
 	    $bible_id = checkParam('bible_id', null, 'optional');
 	    $book_id = checkParam('book_id', null, 'optional');
 	    $chapter_id = checkParam('chapter_id', null, 'optional');
+	    $bookmarks = checkParam('bookmarks', null, 'optional');
 
 		$notes = Note::where('user_id',$user_id)
 		->when($bible_id, function($q) use ($bible_id) {
 			$q->where('bible_id', '=', $bible_id);
 		})->when($book_id, function($q) use ($book_id) {
 			$q->where('book_id', '=', $book_id);
-		})->paginate(25);
+		})->when($bookmarks, function($q) {
+			$q->where('bookmark', true);
+		})->orderBy('updated_at')->paginate(25);
 
-    	foreach($notes as $key => $note) {
-		    $notes[$key]->notes = decrypt($note->notes);
-	    }
+    	foreach($notes as $key => $note) $notes[$key]->notes = decrypt($note->notes);
 		if(!$notes) return $this->setStatusCode(404)->replyWithError("No User found for the specified ID");
 		return $this->reply($notes);
     }
@@ -57,10 +59,12 @@ class UserNotesController extends APIController
 
 	    $validator = Validator::make($request->all(), [
 		    'bible_id'     => 'required|exists:bibles,id',
-		    'book_id'      => 'required',
-		    'chapter'      => 'required',
-		    'verse_start'  => 'required',
-		    'notes'        => 'required',
+		    'user_id'      => 'required|exists:users,id',
+		    'book_id'      => 'required|exists:books,id',
+		    'chapter'      => 'required|max:150|min:1',
+		    'verse_start'  => 'required|max:177|min:1',
+		    'notes'        => 'required_without:bookmark',
+		    'bookmark'     => 'required_without:notes',
 	    ]);
 	    if ($validator->fails()) return ['errors' => $validator->errors() ];
     	$note = Note::create([
@@ -70,7 +74,7 @@ class UserNotesController extends APIController
 			'chapter'      => $request->chapter,
 		    'verse_start'  => $request->verse_start,
 		    'verse_end'    => $request->verse_start,
-			'highlights'   => $request->highlights,
+		    'bookmark'     => $request->bookmark,
 			'notes'        => encrypt($request->notes)
 	    ]);
     	//dd($request->tags);
@@ -98,7 +102,6 @@ class UserNotesController extends APIController
 
     public function update(Request $request) {
     	$note = Note::where('user_id',$request->user_id)->where('id',$request->id)->first();
-    	$note->highlights = $request->highlights;
 	    $note->notes = $request->notes;
 	    $note->save();
 	    return $this->reply(["success" => "Note Updated"]);
