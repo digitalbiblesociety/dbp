@@ -34,7 +34,11 @@ class LoginController extends APIController
 
 	public function redirectToProvider($provider)
 	{
-		if($this->api) return $this->reply(Socialite::driver($provider)->stateless()->redirect()->getTargetUrl());
+		if($this->api) {
+			if($provider == "twitter") return $this->setStatusCode(422)->replyWithError('Twitter does not support stateless Authentication');
+			//if($provider == "google") return $this->setStatusCode(422)->replyWithError('Twitter does not support stateless Authentication');
+			return $this->reply(Socialite::driver($provider)->stateless()->redirect()->getTargetUrl());
+		}
 		return Socialite::driver($provider)->redirect();
 	}
 
