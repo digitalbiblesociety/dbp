@@ -40,9 +40,10 @@
 	// VERSION 4
 
 	Route::name('v4_bible.all')->get('bibles',                                            'BiblesController@index');
-	Route::name('v4_bible.allBooks')->get('bibles/books/',                                 'BooksController@index');
-	Route::name('v4_bible.books')->get('bibles/{id}/book/{book?}',                         'BiblesController@books');
-	Route::name('v4_bible.chapter')->get('bibles/{id}/{book}/{chapter}',                   'TextController@index');
+	Route::name('v4_bible.allBooks')->get('bibles/books/',                                'BooksController@index');
+	Route::name('v4_bible.books')->get('bibles/{id}/book/{book?}',                        'BiblesController@books');
+	Route::name('v4_bible.chapter')->get('bibles/{id}/{book}/{chapter}',                  'TextController@index');
+	Route::name('v4_bible.podcast')->get('bibles/{id}/podcast',                           'BiblesController@podcast');
 	Route::name('v4_bible.one')->get('bibles/{id}',                                       'BiblesController@show');
 	Route::name('v4_timestamps')->get('timestamps',                                       'AudioController@availableTimestamps');
 	Route::name('v4_timestamps.tag')->get('timestamps/{id}',                              'AudioController@timestampsByTag');
@@ -93,6 +94,12 @@
 	Route::name('v4_notes.store')->post('users/{user_id}/notes',                          'UserNotesController@store');
 	Route::name('v4_notes.update')->put('users/{user_id}/notes',                          'UserNotesController@update');
 	Route::name('v4_notes.destroy')->delete('users/{user_id}/notes/{note_id}',            'UserNotesController@destroy');
+
+	// VERSION 4 | USER HIGHLIGHTS
+	Route::name('v4_highlights.index')->get('users/{user_id}/highlights',                      'UserHighlightsController@index');
+	Route::name('v4_highlights.store')->post('users/{user_id}/highlights',                     'UserHighlightsController@store');
+	Route::name('v4_highlights.update')->put('users/{user_id}/highlights',                     'UserHighlightsController@update');
+	Route::name('v4_highlights.destroy')->delete('users/{user_id}/highlights/{highlight_id}',  'UserHighlightsController@destroy');
 
 	Route::name('v4_organizations.all')->get('organizations/',                            'OrganizationsController@index');
 	Route::name('v4_organizations.one')->get('organizations/{id}',                        'OrganizationsController@show');
