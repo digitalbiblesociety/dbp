@@ -116,7 +116,7 @@ class BibleTransformer extends BaseTransformer
 					"abbr"         => $bible->id,
 					"name"         => @$bible->currentTranslation->name,
 					"vname"        => @$bible->vernacularTranslation->name ?? "",
-					"language"     => $bible->language->name,
+					"language"     => @$bible->language->name ?? null,
 					"iso"          => $bible->iso,
 					"date"         => intval( $bible->date ),
 					"filesets"     => $bible->filesets->mapWithKeys(function ($value) {
