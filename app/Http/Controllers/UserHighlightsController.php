@@ -59,6 +59,7 @@ class UserHighlightsController extends APIController
 			'verse_start'       => 'required|max:177|min:1|integer',
 			'highlight_start'   => 'required|min:1|integer',
 			'highlighted_words' => 'required|min:1|integer',
+			'highlighted_color' => 'max:3|min:3',
 		]);
 		if ($validator->fails()) return ['errors' => $validator->errors() ];
 		Highlight::create([
@@ -69,6 +70,7 @@ class UserHighlightsController extends APIController
 			'verse_start'       => $request->verse_start,
 			'highlight_start'   => $request->highlight_start,
 			'highlighted_words' => $request->highlighted_words,
+			'highlighted_color' => $request->highlighted_color ?? "EE0",
 		]);
 		return $this->reply(["success" => "Highlight created"]);
 	}
