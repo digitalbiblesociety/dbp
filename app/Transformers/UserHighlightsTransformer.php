@@ -20,7 +20,8 @@ class UserHighlightsTransformer extends TransformerAbstract
             "chapter"           => $highlight->chapter,
             "verse_start"       => $highlight->verse_start,
             "highlight_start"   => $highlight->highlight_start,
-            "highlighted_words" => $highlight->highlighted_words
+            "highlighted_words" => $highlight->highlighted_words,
+	        "highlighted_color" => $highlight->highlighted_color
         ];
     }
 }
