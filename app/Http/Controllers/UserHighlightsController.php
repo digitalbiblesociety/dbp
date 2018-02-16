@@ -18,7 +18,7 @@ class UserHighlightsController extends APIController
     {
 	    $bible_id = checkParam('bible_id', null, 'optional');
 	    $book_id = checkParam('book_id', null, 'optional');
-	    $chapter_id = checkParam('chapter_id', null, 'optional');
+	    $chapter_id = checkParam('chapter', null, 'optional');
 
 	    $highlights = Highlight::select(['id','bible_id', 'book_id', 'chapter', 'verse_start', 'highlight_start', 'highlighted_words'])
 			->where('user_id',$user_id)
@@ -27,7 +27,7 @@ class UserHighlightsController extends APIController
 	        })->when($book_id, function($q) use ($book_id) {
 			    $q->where('book_id', '=', $book_id);
 		    })->when($chapter_id, function($q) use($chapter_id) {
-			    $q->where('chapter_id', $chapter_id);
+			    $q->where('chapter', $chapter_id);
 		    })->orderBy('updated_at')->get();
 
 	    if(!$highlights) return $this->setStatusCode(404)->replyWithError("No User found for the specified ID");
