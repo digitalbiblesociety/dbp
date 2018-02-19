@@ -193,7 +193,7 @@ class BiblesController extends APIController
      */
     public function show($id)
     {
-	    $bible = Bible::with('filesets','translations','book')->find($id);
+	    $bible = Bible::with('filesets','translations','books')->find($id);
 	    if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
     	if(!$this->api) return view('bibles.show',compact('bible'));
 
@@ -257,7 +257,7 @@ class BiblesController extends APIController
 				'title'       => 'Matthew 1',
 				'link'        => 'http://podcastdownload.faithcomesbyhearing.com/mp3.php/ENGESVC2DA/B01___01_Matthew_____ENGESVC2DA.mp3',
 				'guid'        => 'http://podcastdownload.faithcomesbyhearing.com/mp3.php/ENGESVC2DA/B01___01_Matthew_____ENGESVC2DA.mp3',
-				'description' => ($file->currentTitle) ? $file->currentTitle->title : "",
+				//'description' => ($file->currentTitle) ? htmlspecialchars($file->currentTitle->title) : "",
 				'enclosure'   => [
 					'name'   => "name",
 					'_attributes' => [
@@ -269,8 +269,8 @@ class BiblesController extends APIController
 				'pubDate'              => 'Wed, 30 Dec 2009 22:22:16 -0700',
 				'itunes:author'        => 'Faith Comes By Hearing',
 				'itunes:explicit'      => 'no',
-				'itunes:subtitle'      =>  ($file->currentTitle) ? $file->currentTitle->title : "",
-				'itunes:summary'       =>  ($file->currentTitle) ? $file->currentTitle->title : "",
+				//'itunes:subtitle'      =>  ($file->currentTitle) ? htmlentities($file->currentTitle->title,ENT_XML1) : "",
+				//'itunes:summary'       =>  ($file->currentTitle) ? htmlentities($file->currentTitle->title,ENT_XML1) : "",
 				'itunes:duration'      => '3:15',
 				'itunes:keywords'      => 'Bible, Testament, Jesus, Scripture, Holy, God, Heaven, Hell, Gospel, Christian, Bible.is, Church'
 			];
