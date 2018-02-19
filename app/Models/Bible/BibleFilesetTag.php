@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property string $set_id
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFilesetTag whereSetId($value)
+ * @property string $hash_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFilesetTag whereHashId($value)
  */
 class BibleFilesetTag extends Model
 {

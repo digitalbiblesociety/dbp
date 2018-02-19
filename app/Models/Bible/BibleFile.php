@@ -35,6 +35,9 @@ use App\Models\Language\Language;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereVerseEnd($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereVerseStart($value)
  * @property-read \App\Models\Bible\BibleFileset $fileset
+ * @property string $hash_id
+ * @property-read \App\Models\Bible\BibleFileTitle $title
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereHashId($value)
  */
 class BibleFile extends Model
 {
@@ -69,6 +72,11 @@ class BibleFile extends Model
 	public function firstReference()
 	{
 		return $this->hasOne(BibleFileTimestamp::class);
+	}
+
+	public function currentTitle()
+	{
+		return $this->hasOne(BibleFileTitle::class,'file_id', 'id');
 	}
 
 }

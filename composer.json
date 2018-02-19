@@ -25,6 +25,7 @@
         "soapbox/laravel-formatter": "^2.0",
         "socialiteproviders/google": "^3.0",
         "socialiteproviders/reddit": "^3.0",
+        "spatie/array-to-xml": "^2.7",
         "spatie/laravel-fractal": "^5.2",
         "spatie/pdf-to-image": "^1.4",
         "symfony/yaml": "^3.3",

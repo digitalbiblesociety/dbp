@@ -20,6 +20,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSizeTranslation whereSizeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSizeTranslation whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $set_size_code
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSizeTranslation whereSetSizeCode($value)
  */
 class BibleSizeTranslation extends Model
 {

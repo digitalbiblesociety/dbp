@@ -105,6 +105,11 @@ class User extends Authenticatable
 		return $this->HasMany(Note::class);
 	}
 
+	public function projects()
+	{
+		return $this->HasMany(Project::class);
+	}
+
 	// Roles
 
 	public function admin()
@@ -140,11 +145,6 @@ class User extends Authenticatable
 	public function permissions()
 	{
 		return $this->hasMany(Access::class);
-	}
-
-	public function projects()
-	{
-		return $this->belongsToMany(Project::class,'project_members');
 	}
 
 }

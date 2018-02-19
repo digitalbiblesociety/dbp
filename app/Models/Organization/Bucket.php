@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Bucket whereOrganizationId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Bucket whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $hidden
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Bucket whereHidden($value)
  */
 class Bucket extends Model
 {

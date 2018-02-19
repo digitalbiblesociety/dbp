@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Project whereUrlAvatarIcon($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Project whereUrlSite($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\User[] $admins
  */
 class Project extends Model
 {

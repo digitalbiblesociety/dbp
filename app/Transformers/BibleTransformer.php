@@ -118,7 +118,7 @@ class BibleTransformer extends BaseTransformer
 					"vname"        => @$bible->vernacularTranslation->name ?? "",
 					"language"     => @$bible->language->name ?? null,
 					"iso"          => $bible->iso,
-					"date"         => intval( $bible->date ),
+					"date"         => $bible->date,
 					"filesets"     => $bible->filesets->mapWithKeys(function ($value) {
 						return [
 							$value->id => [
@@ -139,7 +139,7 @@ class BibleTransformer extends BaseTransformer
 					"organization" => $bible->organization,
 					"language"     => $bible->language->name,
 					"iso"          => $bible->iso,
-					"date"         => intval( $bible->date ),
+					"date"         => $bible->date,
 					"country"      => $bible->language->primaryCountry->name ?? '',
 					"books"        => $bible->books->each(function ($book) {
 						// convert to integer array

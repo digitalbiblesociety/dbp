@@ -8,6 +8,18 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\Bible\BibleFilesetConnection
  *
  * @mixin \Eloquent
+ * @property string $hash_id
+ * @property string $bible_id
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\Bible\Bible $bible
+ * @property-read \App\Models\Bible\BibleFileset $fileset
+ * @property-read \App\Models\Bible\BibleFilesetSize $size
+ * @property-read \App\Models\Bible\BibleFilesetType $type
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFilesetConnection whereBibleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFilesetConnection whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFilesetConnection whereHashId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFilesetConnection whereUpdatedAt($value)
  */
 class BibleFilesetConnection extends Model
 {

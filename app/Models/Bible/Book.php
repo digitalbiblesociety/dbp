@@ -41,6 +41,7 @@ use i18n;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereVerses($value)
  * @property int|null $testament_order
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Book whereTestamentOrder($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bible
  */
 class Book extends Model
 {

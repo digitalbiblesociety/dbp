@@ -44,6 +44,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $hash_id
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFilesetConnection[] $connections
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereHashId($value)
+ * @property string $set_type_code
+ * @property string $set_size_code
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSetSizeCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSetTypeCode($value)
  */
 class BibleFileset extends Model
 {
