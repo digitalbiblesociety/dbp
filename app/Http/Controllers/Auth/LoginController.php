@@ -29,7 +29,7 @@ class LoginController extends APIController
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/dashboard';
 
 
 	public function redirectToProvider($provider)
@@ -48,6 +48,7 @@ class LoginController extends APIController
 		$user = $this->createOrGetUser($user,$provider);
 		\Auth::login($user);
 		if($this->api) return $user;
+		if($user->admin) return redirect()->route('admin');
 		return redirect()->route('home');
 	}
 
@@ -71,4 +72,13 @@ class LoginController extends APIController
 		}
 		return $account->user;
 	}
+
+	public function verify($token) {
+		$user = User::where('email_token', $token)->first();
+		$user->verified = 1;
+		$user->save();
+		\Auth::login($user);
+		return redirect()->route('home');
+	}
+
 }

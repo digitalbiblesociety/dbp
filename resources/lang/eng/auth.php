@@ -16,9 +16,9 @@ return [
     'failed' => 'These credentials do not match our records.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
-	'permissions_noneGranted_title' => 'noneGranted_title',
-	'permissions_noneGranted_description' => 'noneGranted_description',
-	'permissions_noneGranted_action' => 'noneGranted_action',
+	'permissions_noneGranted_title' => 'No Special Permissions have been granted to this API Key',
+	'permissions_noneGranted_description' => '',
+	'permissions_noneGranted_action' => 'Request Some!',
 	'permissions_granted' => 'Granted',
 	'permissions_denied' => 'Denied',
 

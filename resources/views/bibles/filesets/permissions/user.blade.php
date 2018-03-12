@@ -23,15 +23,23 @@
         .global-permissions .denied b {
             color:darkred;
         }
+
+        .no-permissions {
+            margin:0 auto;
+            width:800px;
+            text-align: center;
+        }
     </style>
 @endsection
 
 @section('content')
 
     @if($user->permissions->count() == 0 )
-        <h2>{{ trans('auth.permissions_noneGranted_title')  }}</h2>
-        <p>{{ trans('auth.permissions_noneGranted_description')  }}</p>
-        <a href="">{{ trans('auth.permissions_noneGranted_action') }}</a>
+        <section class="no-permissions">
+            <h5>{{ trans('auth.permissions_noneGranted_title')  }}</h5>
+            <p>{{ trans('auth.permissions_noneGranted_description')  }}</p>
+            <a href="/permissions/request/">{{ trans('auth.permissions_noneGranted_action') }}</a>
+        </section>
     @else
     <div class="row">
 

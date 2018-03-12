@@ -127,6 +127,7 @@ Route::get('admin', 'HomeController@admin')->name('admin');
 Route::resource('dashboard/users',    'UsersController');
 Route::resource('dashboard/projects', 'ProjectsController');
 
+Route::get('/verify-email/{token}', 'Auth\LoginController@verify');
 Route::get('/dashboard/users/notes', 'UserNotesController@index')->name('users.notes_index');
 
 // Organizations Dashboard

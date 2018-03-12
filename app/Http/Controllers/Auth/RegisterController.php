@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Mail\EmailVerification;
 use App\Models\User\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\Request;
+use App\Jobs\SendVerificationEmail;
+
 class RegisterController extends Controller
 {
     /*
@@ -38,21 +44,21 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'g-recaptcha-response' => 'required|captcha'
-        ]);
-    }
+	/**
+	 * Get a validator for an incoming registration request.
+	 *
+	 * @param  array  $data
+	 * @return \Illuminate\Contracts\Validation\Validator
+	 */
+	protected function validator(array $data)
+	{
+		return Validator::make($data, [
+			'name'                 => 'required|string|max:255',
+			'email'                => 'required|string|email|max:255|unique:users',
+			'password'             => 'required|string|min:6|confirmed',
+			'g-recaptcha-response' => 'required|captcha'
+		]);
+	}
 
     /**
      * Create a new user instance after a valid registration.
@@ -62,49 +68,15 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-	        'id'       => unique_random('users','id',32),
-            'name'     => $data['name'],
-            'email'    => $data['email'],
-            'password' => bcrypt($data['password']),
-        ]);
+	    $user = User::create([
+		    'id'                => unique_random('users','id',32),
+		    'name'              => $data['name'],
+		    'email'             => $data['email'],
+		    'password'          => \Hash::make($data['password']),
+		    'email_token'       => base64_encode($data['email'])
+	    ]);
+	    \Mail::to($data['email'])->send(new EmailVerification($user));
+	    return $user;
     }
-
-
-	public function store()
-	{
-		$rules = [
-			'username' => 'required|min:6|unique:users',
-			'email'    => 'required|email|unique:users',
-			'password' => 'required|confirmed|min:6'
-		];
-
-		$input = Input::only('username','email','password','password_confirmation');
-
-		$validator = Validator::make($input, $rules);
-
-		if($validator->fails())
-		{
-			return Redirect::back()->withInput()->withErrors($validator);
-		}
-
-		$confirmation_code = str_random(24);
-
-		User::create([
-			'id'                => unique_random('users','id',32),
-			'username'          => Input::get('username'),
-			'email'             => Input::get('email'),
-			'password'          => Hash::make(Input::get('password')),
-			'confirmation_code' => $confirmation_code
-		]);
-
-		Mail::send('email.verify', $confirmation_code, function($message) {
-			$message->to(Input::get('email'), Input::get('username'))->subject('Verify your email address');
-		});
-
-		Flash::message('Thanks for signing up! Please check your email.');
-
-		return Redirect::home();
-	}
 
 }
