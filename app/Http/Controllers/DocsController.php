@@ -61,6 +61,19 @@ class DocsController extends APIController
 		return view('docs.swagger_v4');
 	}
 
+	public function swagger_database()
+	{
+		$docs = json_decode(file_get_contents(public_path('/swagger_database.json')),true);
+		return view('docs.swagger_database',compact('docs'));
+	}
+
+	public function swagger_database_model($id)
+	{
+		$docs = json_decode(file_get_contents(public_path('/swagger_database.json')),true);
+		if(!isset($docs['components']['schemas'][$id]['properties'])) return $this->setStatusCode(404)->replyWithError("Missing Model");
+		return view('docs.swagger_database',compact('docs','id'));
+	}
+
 	public function history()
 	{
 		return view('docs.history');

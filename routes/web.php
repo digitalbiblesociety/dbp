@@ -17,6 +17,8 @@ Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRed
 	Route::name('history')->get('docs/history',                             'DocsController@history');
 	Route::name('swagger_v2')->get('docs/swagger/v2',                       'DocsController@swagger_v2');
 	Route::name('swagger_v4')->get('docs/swagger/v4',                       'DocsController@swagger_v4');
+	Route::name('swagger_database')->get('docs/swagger/database',           'DocsController@swagger_database');
+	Route::name('swagger_database_model')->get('docs/swagger/database/{id}','DocsController@swagger_database_model');
 	Route::name('docs_progress')->get('docs/progress',                      'DocsController@progress');
 	Route::name('docs_team')->get('docs/team',                              'DocsController@team');
 	Route::name('docs_bibles')->get('docs/bibles',                          'DocsController@bibles');
@@ -121,6 +123,7 @@ Auth::routes();
 
 
 Route::get('dashboard', 'HomeController@index')->name('home');
+Route::get('admin', 'HomeController@admin')->name('admin');
 Route::resource('dashboard/users',    'UsersController');
 Route::resource('dashboard/projects', 'ProjectsController');
 

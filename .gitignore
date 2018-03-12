@@ -16,6 +16,7 @@
 /vendor
 
 # Locally Generated Development Files
+resources/assets/react/
 /.idea
 /.vagrant
 Homestead.json

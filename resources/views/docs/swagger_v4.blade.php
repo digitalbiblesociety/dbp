@@ -11,7 +11,6 @@
 @endsection
 
 @section('footer')
-
     <script src="/js/swagger-ui-bundle.js"> </script>
     <script src="/js/swagger-ui-standalone-preset.js"> </script>
     <script>
@@ -22,6 +21,7 @@
                 url: "/swagger_v4.json",
                 dom_id: '#swagger-ui',
                 deepLinking: true,
+                docExpansion: 'none',
                 presets: [
                     SwaggerUIBundle.presets.apis,
                     SwaggerUIStandalonePreset

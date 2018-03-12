@@ -138,18 +138,8 @@
             "$ref": "#/components/parameters/pretty"
           },
           {
-            "name": "language_codes",
-            "in": "query",
-            "description": "An array of ISO639-3 codes deliminated by a `|` bar character for which book names are desired.",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "example": "eng|spa"
-            }
-          },
-          {
             "name": "book_id",
-            "in": "path",
+            "in": "query",
             "description": "The corresponding USFM 2.4 ID for the book in the path",
             "required": false,
             "schema": {
@@ -157,6 +147,16 @@
               "minLength": 3,
               "maxLength": 3,
               "example": "GEN"
+            }
+          },
+          {
+            "name": "language_codes",
+            "in": "query",
+            "description": "An array of ISO639-3 codes deliminated by a `|` bar character for which book names are desired.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "eng|spa"
             }
           }
         ],
@@ -1396,6 +1396,183 @@
         }
       }
     },
+    "/users/{user_id}/highlights": {
+      "get": {
+        "operationId": "v4_highlights.index",
+        "summary": "Get highlights for a specific user",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "H3S2Ky85dRt2yzT33HFmtSEG"
+            }
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of user highlights",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Highlight"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "v4_highlights.store",
+        "summary": "Create a new highlight for a user",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "H3S2Ky85dRt2yzT33HFmtSEG"
+            }
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "A confirmation message of success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "success"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "v4_highlights.update",
+        "summary": "Edit an existing highlight for a user",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "H3S2Ky85dRt2yzT33HFmtSEG"
+            }
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "A confirmation message of success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "success"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "v4_highlights.destroy",
+        "summary": "Destroy an existing highlight for a user",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "H3S2Ky85dRt2yzT33HFmtSEG"
+            }
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "A confirmation message of success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/versions": {
       "get": {
         "operationId": "v4_user.oAuth",
@@ -1924,6 +2101,66 @@
           },
           "updated_at": {
             "example": "2018-02-06 02:48:21"
+          }
+        }
+      },
+      "Highlight": {
+        "required": [
+          "id",
+          "bible_id",
+          "book_id",
+          "chapter",
+          "verse_start",
+          "highlight_start",
+          "highlighted_words"
+        ],
+        "properties": {
+          "id": {
+            "example": 38,
+            "type": "integer"
+          },
+          "bible_id": {
+            "example": "BAON10",
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 12
+          },
+          "book_id": {
+            "example": "TIT",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3
+          },
+          "chapter": {
+            "type": "string",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 150
+          },
+          "verse_start": {
+            "type": "integer",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 176
+          },
+          "verse_end": {
+            "type": "integer",
+            "example": null,
+            "minimum": 1,
+            "maximum": 176,
+            "nullable": true
+          },
+          "highlight_start": {
+            "description": "The word at which the highlighting count begins. For example: a highlight starting at the word `beginning` for the verse `In the beginning God created the heavens and the earth` would have a value of 3",
+            "example": 3,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "highlighted_words": {
+            "description": "The number of words to be highlighted. A highlight starting at the word `beginning` and ending at the word heavens for the verse `In the beginning God created the heavens and the earth` would have a value of 5",
+            "example": 9,
+            "minimum": 1,
+            "type": "integer"
           }
         }
       }
