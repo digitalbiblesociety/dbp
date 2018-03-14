@@ -72,12 +72,23 @@ class Alphabet extends Model
     protected $primaryKey = 'script';
     public $incrementing = false;
 
+	protected $casts = [
+		'complex_positioning' => 'boolean',
+		'requires_font'       => 'boolean',
+		'unicode'             => 'boolean',
+		'diacritics'          => 'boolean',
+		'contextual_forms'    => 'boolean',
+		'reordering'          => 'boolean',
+		'case'                => 'boolean',
+		'split_graphs'        => 'boolean',
+	];
+
     protected $hidden = ["created_at","updated_at","directionNotes","requiresFont"];
     protected $fillable = [ "script", "name", "unicode_pdf", "family", "type", "white_space", "open_type_tag", "complex_positioning", "requires_font", "unicode", "diacritics", "contextual_forms", "reordering", "case", "split_graphs", "status", "baseline", "ligatures", "direction", "sample", "sample_img"];
 
     public function languages()
     {
-        return $this->BelongsToMany(Language::class,'alphabet_language','script');
+        return $this->BelongsToMany(Language::class,'alphabet_language','script_id');
     }
 
     public function fonts()

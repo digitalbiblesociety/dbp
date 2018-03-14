@@ -84,7 +84,7 @@
 @section('content')
     <div id="alphabet-show">
 
-        <div class="row">
+        <div class="row" role="banner">
             <h1 class='title'>{{ $alphabet->name }} <small class='subtitle'>{{ $alphabet->subtitle }}</small></h1>
             <small class="code"></small>
             <div class="features">
@@ -94,8 +94,8 @@
                 <li class="{{ ($alphabet->split_graphs) ? "enabled" : "disabled" }}">Graphs</li>
                 <li class="{{ ($alphabet->ligatures) ? "enabled" : "disabled" }}">Ligatures</li>
             </div>
+            <div class="overlay">{{ $alphabet->sample }}</div>
         </div>
-
         {{ $alphabet->unicode_pdf }}
         {{ $alphabet->white_space }}
         {{ $alphabet->complex_positioning }}
@@ -104,12 +104,7 @@
         {{ $alphabet->case }}
         {{ $alphabet->status }}
         {{ $alphabet->baseline }}
-        {{ $alphabet->sample }}
         {{ $alphabet->sample_img }}
-
-        <div class="overlay">
-            <span>{{ $alphabet->sample }}</span>
-        </div>
 
         <div class="row">
             <div class="small-4 columns">

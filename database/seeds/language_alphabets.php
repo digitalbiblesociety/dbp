@@ -21,7 +21,7 @@ class language_alphabets extends Seeder
                 $language = Language::where('iso',$languageId)->first();
                 if($language) {
                     if(Alphabet::where('script','=',ucwords($id))->count() != 0) {
-                        DB::table('alphabet_language')->insert(['script' => ucwords($id), 'language_id' => $language->id]);
+                        DB::table('alphabet_language')->insert(['script_id' => ucwords($id), 'language_id' => $language->id]);
                     } else {
                         echo "\nBroken Alphabet Code: ".ucwords($id);
                     }
