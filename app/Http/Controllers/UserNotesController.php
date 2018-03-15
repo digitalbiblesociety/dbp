@@ -28,9 +28,10 @@ class UserNotesController extends APIController
 	    $bible_id = checkParam('bible_id', null, 'optional');
 	    $book_id = checkParam('book_id', null, 'optional');
 	    $chapter_id = checkParam('chapter_id', null, 'optional');
+	    $project_id = checkParam('project_id', null, 'optional');
 	    $bookmarks = checkParam('bookmarks', null, 'optional');
 
-		$notes = Note::where('user_id',$user_id)
+		$notes = Note::where('user_id',$user_id)->where('project_id',$project_id)
 		->when($bible_id, function($q) use ($bible_id) {
 			$q->where('bible_id', '=', $bible_id);
 		})->when($book_id, function($q) use ($book_id) {
@@ -50,66 +51,72 @@ class UserNotesController extends APIController
 		    if(!Auth::user()->hasRole('admin')) return $this->setStatusCode(401)->replyWithError('You must have admin class access to manage user notes');
 		    return view('dashboard.notes.index');
 	    }
-	    $note = Note::find($note_id);
+
+	    $project_id = checkParam('project_id');
+	    $note = Note::where('project_id',$project_id)->find($note_id);
 	    if(!$note) return $this->setStatusCode(404)->replyWithError("No Note found for the specified ID");
 	    return $this->reply($note);
     }
 
     public function store(Request $request) {
-
 	    $validator = Validator::make($request->all(), [
 		    'bible_id'     => 'required|exists:bibles,id',
 		    'user_id'      => 'required|exists:users,id',
 		    'book_id'      => 'required|exists:books,id',
+		    'project_id'   => 'required|exists:projects,id',
 		    'chapter'      => 'required|max:150|min:1',
 		    'verse_start'  => 'required|max:177|min:1',
 		    'notes'        => 'required_without:bookmark',
-		    'bookmark'     => 'required_without:notes',
+		    'bookmark'     => 'required_without:notes|boolean',
 	    ]);
 	    if ($validator->fails()) return ['errors' => $validator->errors() ];
     	$note = Note::create([
     		'user_id'      => $request->user_id,
 			'bible_id'     => $request->bible_id,
 			'book_id'      => $request->book_id,
+			'project_id'   => $request->project_id,
 			'chapter'      => $request->chapter,
 		    'verse_start'  => $request->verse_start,
 		    'verse_end'    => $request->verse_start,
 		    'bookmark'     => $request->bookmark,
-			'notes'        => encrypt($request->notes)
+			'notes'        => isset($request->notes) ? encrypt($request->notes) : null
 	    ]);
-    	//dd($request->tags);
-	    $tags = collect(explode(',',$request->tags))->map(function ($tag) {
-	    	if(strpos($tag, ':') !== false) {
-			    $tag = explode(':',$tag);
-			    return [
-				    'value' => ltrim($tag[1]),
-				    'type'  => ltrim($tag[0])
-			    ];
-		    } else {
-			    return [
-				    'value' => ltrim($tag),
-				    'type'  => 'general'
-			    ];
-		    }
-	    })->toArray();
 
-    	if(isset($request->tags)) {
-			$note->tags()->createMany($tags);
-	    }
-
+	    $this->handleTags($request, $note);
     	return $this->reply(["success" => "Note created"]);
     }
 
-    public function update(Request $request) {
-    	$note = Note::where('user_id',$request->user_id)->where('id',$request->id)->first();
-	    $note->notes = $request->notes;
-	    $note->save();
+    public function update(Request $request, $user_id, $note_id) {
+    	$note = Note::where('project_id',$request->project_id)->where('user_id',$user_id)->where('id',$note_id)->first();
+	    $note->fill($request->all())->save();
+
+	    $this->handleTags($request, $note);
 	    return $this->reply(["success" => "Note Updated"]);
     }
 
     public function destroy($user_id,$note_id)
     {
-	    $note = Note::where('user_id',$user_id)->where('id',$note_id)->first()->delete();
+	    $project_id = checkParam('project_id');
+	    $note = Note::where('project_id',$project_id)->where('user_id',$user_id)->where('id',$note_id)->first();
+	    if(!$note) $this->setStatusCode(404)->replyWithError("Note Not Found");
+	    $note->delete();
 	    return $this->reply(["success" => "Note Deleted"]);
     }
+
+    public function handleTags(Request $request, $note)
+    {
+	    $tags = collect(explode(',',$request->tags))->map(function ($tag) {
+		    if(strpos($tag, ':') !== false) {
+			    $tag = explode(':',$tag);
+			    return ['value' => ltrim($tag[1]), 'type'  => ltrim($tag[0])];
+		    } else {
+			    return ['value' => ltrim($tag), 'type'  => 'general'];
+		    }
+	    })->toArray();
+
+	    if($request->method() == "POST") $note->tags()->createMany($tags);
+	    if($request->method() == "PUT")  $note->tags()->delete(); $note->tags()->createMany($tags);
+
+    }
+
 }

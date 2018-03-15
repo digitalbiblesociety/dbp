@@ -43,7 +43,7 @@ class Note extends Model
 {
     protected $table = "user_notes";
     protected $hidden = ['user_id','project_id'];
-    protected $fillable = ['user_id','bible_id','book_id','chapter','verse_start','verse_end','bookmark','notes'];
+    protected $fillable = ['user_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','bookmark','notes'];
 
     public function user()
     {

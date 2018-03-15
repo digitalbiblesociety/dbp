@@ -19,9 +19,10 @@ class UserHighlightsController extends APIController
 	    $bible_id = checkParam('bible_id', null, 'optional');
 	    $book_id = checkParam('book_id', null, 'optional');
 	    $chapter_id = checkParam('chapter', null, 'optional');
+	    $project_id = checkParam('project_id');
 
 	    $highlights = Highlight::select(['id','bible_id', 'book_id', 'chapter', 'verse_start', 'highlight_start', 'highlighted_words'])
-			->where('user_id',$user_id)
+			->where('user_id',$user_id)->where('project_id',$project_id)
 	        ->when($bible_id, function($q) use ($bible_id) {
 		        $q->where('bible_id', '=', $bible_id);
 	        })->when($book_id, function($q) use ($book_id) {
@@ -55,6 +56,7 @@ class UserHighlightsController extends APIController
 			'bible_id'          => 'required|exists:bibles,id',
 			'user_id'           => 'required|exists:users,id',
 			'book_id'           => 'required|exists:books,id',
+			'project_id'        => 'required|exists:projects,id',
 			'chapter'           => 'required|max:150|min:1|integer',
 			'verse_start'       => 'required|max:177|min:1|integer',
 			'highlight_start'   => 'required|min:1|integer',
@@ -67,6 +69,7 @@ class UserHighlightsController extends APIController
 			'bible_id'          => $request->bible_id,
 			'book_id'           => $request->book_id,
 			'chapter'           => $request->chapter,
+			'project_id'        => $request->project_id,
 			'verse_start'       => $request->verse_start,
 			'highlight_start'   => $request->highlight_start,
 			'highlighted_words' => $request->highlighted_words,
@@ -83,7 +86,8 @@ class UserHighlightsController extends APIController
      */
     public function show($id)
     {
-        $highlight = Highlight::find($id);
+	    $project_id = checkParam('project_id');
+        $highlight = Highlight::where('project_id',$project_id)->where('id',$id)->first();
 	    if(!$highlight) return $this->setStatusCode(404)->replyWithError("No Note found for the specified ID");
         return $highlight;
     }
@@ -106,12 +110,12 @@ class UserHighlightsController extends APIController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $user_id,$id)
     {
-	    $note = Note::where('user_id',$request->user_id)->where('id',$request->id)->first();
-	    $note->highlight_start = $request->highlight_start;
-	    $note->highlighted_words = $request->highlighted_words;
-	    $note->save();
+	    $highlight = Highlight::where('user_id',$user_id)->where('project_id', $request->project_id)->where('id',$id)->first();
+	    if(!$highlight) return $this->setStatusCode(404)->replyWithError('Sorry The Highlight was not found');
+
+	    $highlight->fill($request->all())->save();
 	    return $this->reply(["success" => "Highlight Updated"]);
     }
 
@@ -123,6 +127,10 @@ class UserHighlightsController extends APIController
      */
     public function destroy($id)
     {
-        //
+	    $project_id = checkParam('project_id');
+	    $highlight = Highlight::where('project_id',$project_id)->where('id',$id)->first();
+	    if(!$highlight) return $this->setStatusCode(404)->replyWithError("Highlight not found");
+	    $highlight->delete();
+	    return $this->reply(["success" => "Highlight Deleted"]);
     }
 }
