@@ -35,7 +35,8 @@ class ArclightController extends APIController
 
     public function sync()
     {
-    	if(!file_exists(storage_path('data/jfm'))) mkdir(storage_path('data/jfm'), 0777, true);
+	    if(!file_exists(storage_path('data/jfm/languages'))) mkdir(storage_path('data/jfm/languages'), 0777, true);
+
     	$this->syncLanguages();
 	    $this->syncTypes();
     }
