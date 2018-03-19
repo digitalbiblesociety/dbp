@@ -33,20 +33,28 @@ class ArclightController extends APIController
 	    return $this->fetchMediaForLanguage($iso);
     }
 
-    public function syncTypes()
+    public function sync()
+    {
+    	if(!file_exists(storage_path('data/jfm'))) mkdir(storage_path('data/jfm'));
+
+    	$this->syncLanguages();
+	    $this->syncTypes();
+    }
+
+    private function syncTypes()
     {
 	    $media_components = $this->fetch('media-components');
 	    foreach($media_components->mediaComponents as $component) $output[$component->subType][$component->mediaComponentId] = $component->title;
 	    file_put_contents(storage_path('/data/jfm/types.json'), json_encode(collect($output), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 
-    public function syncLanguages()
+	private function syncLanguages()
     {
     	$languages = collect($this->fetch('media-languages')->mediaLanguages)->pluck('languageId','iso3');
 	    file_put_contents(storage_path('/data/jfm/languages.json'), json_encode(collect($languages), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 
-    public function fetchMediaForLanguage($iso)
+	private function fetchMediaForLanguage($iso)
     {
 	    // Fetch Language Id equivalent
 	    $languages = $this->fetchLocal('languages.json');

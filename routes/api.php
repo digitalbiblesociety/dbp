@@ -127,6 +127,5 @@
 
 	// VERSION 4 | CONNECTIONS
 
+	Route::name('v4_connections_jfm.sync')->get('connections/jesus-film/sync',                  'ArclightController@sync');
 	Route::name('v4_connections_jfm.index')->get('connections/jesus-film/{iso}',                'ArclightController@index');
-	Route::name('v4_connections_jfm.languages')->get('connections/jesus-film/sync/languages',   'ArclightController@syncLanguages');
-	Route::name('v4_connections_jfm.types')->get('connections/jesus-film/sync/types',           'ArclightController@syncTypes');
