@@ -95,6 +95,13 @@
 	Route::name('v4_notes.update')->put('users/{user_id}/notes/{note_id}',                'UserNotesController@update');
 	Route::name('v4_notes.destroy')->delete('users/{user_id}/notes/{note_id}',            'UserNotesController@destroy');
 
+	// VERSION 4 | USER BOOKMARKS
+	Route::name('v4_bookmarks.index')->get('users/{user_id}/bookmarks',                     'UserNotesController@index');
+	Route::name('v4_bookmarks.show')->get('users/{user_id}/bookmarks/{bookmark_id}',        'UserNotesController@show');
+	Route::name('v4_bookmarks.store')->post('users/{user_id}/bookmarks',                    'UserNotesController@store');
+	Route::name('v4_bookmarks.update')->put('users/{user_id}/bookmarks/{bookmark_id}',      'UserNotesController@update');
+	Route::name('v4_bookmarks.destroy')->delete('users/{user_id}/bookmarks/{bookmark_id}',  'UserNotesController@destroy');
+
 	// VERSION 4 | USER HIGHLIGHTS
 	Route::name('v4_highlights.index')->get('users/{user_id}/highlights',                      'UserHighlightsController@index');
 	Route::name('v4_highlights.store')->post('users/{user_id}/highlights',                     'UserHighlightsController@store');
@@ -117,3 +124,9 @@
 
 	// Error Handling
 	Route::name('v4_api.logs')->get('sign',                                               'HomeController@signedUrls');
+
+	// VERSION 4 | CONNECTIONS
+
+	Route::name('v4_connections_jfm.index')->get('connections/jesus-film/{iso}',                'ArclightController@index');
+	Route::name('v4_connections_jfm.languages')->get('connections/jesus-film/sync/languages',   'ArclightController@syncLanguages');
+	Route::name('v4_connections_jfm.types')->get('connections/jesus-film/sync/types',           'ArclightController@syncTypes');
