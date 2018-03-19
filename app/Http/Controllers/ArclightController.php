@@ -26,7 +26,7 @@ class ArclightController extends APIController
     public function index($iso)
     {
 		// Fetch Language Id equivalent
-    	$languages = fetchLocal('languages.json');
+    	$languages = $this->fetchLocal('languages.json');
 		$language_id = $languages[$iso];
 	    if(!$language_id) return $this->setStatusCode(404)->replyWithError("Unable to locate language");
 
