@@ -59,7 +59,7 @@ class UserHighlightsController extends APIController
 			'project_id'        => 'required|exists:projects,id',
 			'chapter'           => 'required|max:150|min:1|integer',
 			'verse_start'       => 'required|max:177|min:1|integer',
-			'highlight_start'   => 'required|min:1|integer',
+			'highlight_start'   => 'required|min:0|integer',
 			'highlighted_words' => 'required|min:1|integer',
 			'highlighted_color' => 'max:3|min:3',
 		]);
