@@ -1,3 +1,4 @@
+import DataTable from "dataTables.net";
 $(document).ready(function () {
     var tables = $(".table");
 

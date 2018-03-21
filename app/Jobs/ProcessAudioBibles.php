@@ -56,8 +56,8 @@ class ProcessAudioBibles implements ShouldQueue
 
 	    $audio = $ffmpeg->open( $pathToAudio );
 	    $audio->filters()->addMetadata();
-	    $audio->filters()->addMetadata(["title" => "DOTA", "track" => 1]);
-	    $audio->filters()->addMetadata(["description" => "A techno song about a popular Game"]);
+	    $audio->filters()->addMetadata(["title" => "", "track" => 1]);
+	    $audio->filters()->addMetadata(["description" => ""]);
 	    $audio->save($mp3Format, public_path().'/uploads/dota_refactored.mp3');
 	    $audio->save($oggFormat, public_path().'/uploads/dota_refactored.ogg');
 

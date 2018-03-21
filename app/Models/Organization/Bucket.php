@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Bucket extends Model
 {
+	public $primaryKey = 'id';
     public $incrementing = false;
     public $keyType = 'string';
 

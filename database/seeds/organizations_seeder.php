@@ -20,7 +20,6 @@ class organizations_seeder extends Seeder
 
 		DB::table('organization_logos')->delete();
 		DB::table('organization_translations')->delete();
-		DB::table('organization_services')->delete();
 		DB::table('organizations')->delete();
 		$organizations = $seederHelper->csv_to_array("https://docs.google.com/spreadsheets/d/".$googleSheetID."/export?format=csv&id=".$googleSheetID."&gid=0");
 		foreach ($organizations as $key => $data) {

@@ -69,15 +69,6 @@ class CreateOrganizationsTable extends Migration
 		    $table->timestamps();
 	    });
 
-	    Schema::create('organization_services', function($table) {
-		    $table->integer('organization_id')->unsigned();
-		    $table->foreign('organization_id')->references('id')->on('organizations');
-		    $table->string('type');
-		    $table->string('name');
-		    $table->text('description')->nullable();
-		    $table->timestamps();
-	    });
-
 	    Schema::create('organization_logos', function($table) {
 		    $table->integer('organization_id')->unsigned();
 		    $table->foreign('organization_id')->references('id')->on('organizations');
@@ -101,7 +92,6 @@ class CreateOrganizationsTable extends Migration
 	    Schema::dropIfExists('organization_logos');
 	    Schema::dropIfExists('organization_relationships');
 	    Schema::dropIfExists('organization_translations');
-        Schema::dropIfExists('organization_services');
         Schema::dropIfExists('organizations');
     }
 }

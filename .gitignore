@@ -6,6 +6,7 @@
 /public/maps/*
 /public/storage
 /public/bibles
+/public/sdk
 /public/scriptures
 /public/uploads
 /public/swagger-editor

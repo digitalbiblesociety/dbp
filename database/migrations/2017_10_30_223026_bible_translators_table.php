@@ -34,7 +34,7 @@ class BibleTranslatorsTable extends Migration
 			$table->string('translator_id',191);
 			$table->foreign('translator_id')->references('id')->on('translators')->onDelete('cascade')->onUpdate('cascade');
 			$table->string('translator_relation_id',191);
-			$table->foreign('translator_relation_id')->references('id')->on('translators')->onUpdate('cascade');
+			$table->foreign('translator_relation_id')->references('id')->on('translators')->onUpdate('cascade')->onDelete('cascade');
 			$table->integer('organization_id')->unsigned()->nullable();
 			$table->foreign('organization_id')->references('id')->on('organizations');
 			$table->string('type');

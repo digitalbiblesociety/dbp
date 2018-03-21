@@ -75,7 +75,7 @@ use App\Traits\Uuids;
 class Organization extends Model
 {
     protected $fillable = ['name', 'email', 'password','facebook','twitter','website','address','phone'];
-
+	public $incrementing = false;
     /**
      * The attributes excluded from the model's JSON form.
      *
@@ -86,12 +86,12 @@ class Organization extends Model
     public function translations($iso = null)
     {
     	if($iso) return $this->HasOne(OrganizationTranslation::class,'organization_id','id')->where('language_iso', $iso);
-        return $this->HasMany(OrganizationTranslation::class);
+        return $this->HasMany(OrganizationTranslation::class,'organization_id','id');
     }
 
     public function currentTranslation()
     {
-        return $this->HasOne(OrganizationTranslation::class)->where('language_iso',\i18n::getCurrentLocale());
+        return $this->HasOne(OrganizationTranslation::class,'organization_id','id')->where('language_iso',\i18n::getCurrentLocale());
     }
 
 	public function vernacularTranslation()

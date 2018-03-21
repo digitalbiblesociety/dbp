@@ -12,14 +12,13 @@
     @yield('head')
 </head>
 <body>
-
 @include('layouts.nav')
 
 <main>
 @yield('content')
 </main>
 
-<script src="/js/app.js"></script>
+<script src="{{ mix('js/app.js') }}"></script>
 @yield('footer')
 </body>
 </html>

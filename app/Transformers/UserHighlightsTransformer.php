@@ -19,8 +19,8 @@ class UserHighlightsTransformer extends TransformerAbstract
             "book_id"           => $highlight->book_id,
             "chapter"           => $highlight->chapter,
             "verse_start"       => $highlight->verse_start,
-            "highlight_start"   => $highlight->highlight_start,
-            "highlighted_words" => $highlight->highlighted_words,
+            "highlight_start"   => intval($highlight->highlight_start),
+            "highlighted_words" => intval($highlight->highlighted_words),
 	        "highlighted_color" => $highlight->highlighted_color
         ];
     }

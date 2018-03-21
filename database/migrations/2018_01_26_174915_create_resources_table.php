@@ -16,9 +16,9 @@ class CreateResourcesTable extends Migration
         Schema::create('resources', function (Blueprint $table) {
             $table->increments('id');
 	        $table->char('iso', 3)->index();
-	        $table->foreign('iso')->references('iso')->on('languages')->onUpdate('cascade');
+	        $table->foreign('iso')->references('iso')->on('languages')->onUpdate('cascade')->onDelete('cascade');
 	        $table->integer('organization_id')->unsigned();
-	        $table->foreign('organization_id')->references('id')->on('organizations');
+	        $table->foreign('organization_id')->references('id')->on('organizations')->onUpdate('cascade')->onDelete('cascade');
 	        $table->string('source_id')->nullable();
 	        $table->string('cover')->nullable();
 	        $table->string('cover_thumbnail')->nullable();

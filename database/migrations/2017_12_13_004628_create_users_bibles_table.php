@@ -72,6 +72,7 @@ class CreateUsersBiblesTable extends Migration
 	    Schema::create('user_note_tags', function (Blueprint $table) {
 		    $table->increments('id');
 		    $table->integer('note_id')->unsigned();
+		    $table->foreign('note_id')->references('id')->on('user_notes')->onUpdate('cascade')->onDelete('cascade');
 		    $table->string('type', 64);
 		    $table->string('value', 64);
 		    $table->timestamps();
@@ -84,11 +85,10 @@ class CreateUsersBiblesTable extends Migration
 		    $table->foreign('key_id')->references('key')->on('user_keys')->onUpdate('cascade')->onDelete('cascade');
 		    $table->string('bible_id',12)->nullable();
 		    $table->foreign('bible_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
-		    $table->string('fileset_id',16);
-		    $table->foreign('fileset_id')->references('id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
+		    $table->char('hash_id',16);
+		    $table->foreign('hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
 		    $table->unsignedInteger('organization_id')->nullable();
 		    $table->foreign('organization_id')->references('id')->on('organizations');
-		    $table->boolean('whitelist')->default(1);
 		    $table->text('access_notes')->nullable();
 		    $table->string('access_type')->nullable();
 		    $table->boolean('access_granted')->default(1);

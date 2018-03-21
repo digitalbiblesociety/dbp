@@ -6,6 +6,7 @@ use App\Models\User\Note;
 use App\Models\User\User;
 use App\Models\Bible\Bible;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Validator;
 
 class UserNotesController extends APIController
@@ -29,14 +30,15 @@ class UserNotesController extends APIController
 	    $book_id = checkParam('book_id', null, 'optional');
 	    $chapter_id = checkParam('chapter_id', null, 'optional');
 	    $project_id = checkParam('project_id', null, 'optional');
-	    $bookmarks = checkParam('bookmarks', null, 'optional');
+	    $bookmark = explode('.',\Request::route()->getName());
+	    $bookmark = ($bookmark[1] == "v4_bookmark") ? true : false;
 
 		$notes = Note::where('user_id',$user_id)->where('project_id',$project_id)
 		->when($bible_id, function($q) use ($bible_id) {
 			$q->where('bible_id', '=', $bible_id);
 		})->when($book_id, function($q) use ($book_id) {
 			$q->where('book_id', '=', $book_id);
-		})->when($bookmarks, function($q) {
+		})->when($bookmark, function($q) {
 			$q->where('bookmark', true);
 		})->orderBy('updated_at')->paginate(25);
 

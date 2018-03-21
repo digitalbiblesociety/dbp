@@ -45,11 +45,22 @@ class fetch_s3_audio_length extends Command
 	    $disk = 's3_fcbh';
 	    $audio_files = Storage::disk($disk)->files("audio/AFRABY/AFRNVVP2DA");
 	    foreach($audio_files as $audio_file) {
-	    	// $audio_file = Storage::disk($disk)->get($audio_file);
+		    // $audio_file = Storage::disk($disk)->get($audio_file);
 		    $audio_file_url = Bucket::signedUrl($audio_file);
+		    $audio_file_path = storage_path('temp/'.basename($audio_file));
+
+		    $fp = fopen($audio_file_url,'rb');
+		    if ($fp2 = fopen('boo', 'wb')) {
+			    $first32kb = fread($fp, 32*1024);
+			    fwrite($fp2,$first32kb);
+		    }
+		    fclose($fp);
+
+
+
 		    //$audio_file_url = "https://downloads.dbs.org/treasures/bengali/Bible/StudyBible/content/audio/WBTCBEN/40_Matthew_01.mp3";
-		    $output = shell_exec("ffprobe -i ".$audio_file_url);
-		    dd($output);
+		    //$output = shell_exec('ffprobe -loglevel debug -i '.$audio_file_path);
+		    //dd($output);
 	    }
 	    // $output = shell_exec("ffmpeg -i ");
 

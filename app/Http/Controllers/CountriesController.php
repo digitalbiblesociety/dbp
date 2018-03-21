@@ -19,8 +19,12 @@ class CountriesController extends APIController
     	if(!$this->api) return view('countries.index');
     	// \Cache::forget('v'.$this->v.$this->api.'_countries');
 	    // $countries = \Cache::remember('v'.$this->v.$this->api.'_countries', 2400, function() {
-			$countries = Country::with('languagesFiltered','translations')->get();
-	    // });
+			//$countries = Country::with('languagesFiltered','translations')->get();
+			$countries = Country::raw('
+			SELECT countries.name,countries.continent,GROUP_CONCAT(CONCAT(languages.iso,languages.name))
+			AS languages,countries.fips,countries.iso_a3,countries.id FROM languages,countries,country_language)
+			WHERE languages.id=country_language.language_id AND country_language.country_id=countries.id;')->get();
+
 	    return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
     }
 
@@ -38,6 +42,26 @@ class CountriesController extends APIController
 
     	return view('countries.show',compact('country'));
     }
+
+	public function create()
+	{
+		return view('countries.create');
+	}
+
+	public function store(Request $request)
+	{
+		$validator = $request->validate([
+			'id'                  => 'string|max:2|min:2|required',
+			'iso_a3'              => 'string|max:3|min:3|required',
+			'fips'                => 'string|max:2|min:2|required',
+			'continent'           => 'string|max:2|min:2|required',
+			'name'                => 'string|max:191|required',
+			'introduction'        => 'string|min:6|nullable',
+		]);
+
+
+
+	}
 
 	/**
 	 * Edit the Specified Country

@@ -23,6 +23,13 @@ class HomeController extends APIController
         return view('home',compact('user'));
     }
 
+    public function admin()
+    {
+    	$status['updates'] = '';
+
+    	return view('dashboard.admin', compact('status'));
+    }
+
 	/**
 	 * Show the application dashboard.
 	 *
@@ -81,4 +88,20 @@ class HomeController extends APIController
 		}
 		return $this->reply($urls);
 	}
+
+	public function status_dbl()
+	{
+		// Fetch Current number of DBL scriptures
+		// compare to existing equivalents to DBL
+		// return any discrepancy as a to do item
+		$status_dbl = '';
+		return $status_dbl;
+	}
+
+	public function status_biblegateway()
+	{
+		$status_gateway = '';
+		return $status_gateway;
+	}
+
 }

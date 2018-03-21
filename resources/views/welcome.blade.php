@@ -1,7 +1,16 @@
 @extends('layouts.app')
 
 @section('head')
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/androidstudio.min.css" rel="stylesheet" />
     <style>
+        #stats {
+            padding-bottom: 5px;
+            height:80px;
+            margin:0 auto 10px;
+            border-bottom: thick solid #00b09b;
+        }
+
+
         .stat {
             font-size:1rem;
         }
@@ -53,5 +62,23 @@
         <a class="small-6 medium-3 columns stat" href="/bibles" data-stat="{{ $count['bibles'] or 0 }}">{{ trans('docs.bibles') }}</a>
     </section>
 
+    <div class="row">
+        <div class="medium-9 columns centered">
+            <pre><code class="markup"><?php echo file_get_contents(base_path('CHANGELOG')); ?></code></pre>
+        </div>
+    </div>
 
+@endsection
+
+@section('footer')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/markdown.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+        $(document).ready(function() {
+            $('pre code').each(function(i, block) {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
 @endsection

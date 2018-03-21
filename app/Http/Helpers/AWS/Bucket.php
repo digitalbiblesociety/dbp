@@ -4,8 +4,6 @@ namespace App\Helpers\AWS;
 
 use App\Models\Bible\BibleFile;
 use Illuminate\Support\Facades\Storage;
-
-
 use App\Helpers\AWS\S3StreamZip;
 
 class Bucket {
@@ -24,7 +22,7 @@ class Bucket {
 		]);
 
 		$request = $client->createPresignedRequest($command, $expiry);
-		return $base_url.str_replace($bucket.'/','',$request->getUri()->getPath())."?".$request->getUri()->getQuery();
+		return (string) $request->getUri();
 	}
 
 	// public static function signedUrl(string $file, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5)

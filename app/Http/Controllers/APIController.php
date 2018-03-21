@@ -14,6 +14,8 @@ use App\Models\User\Key;
 use i18n;
 use League\Fractal\Serializer\DataArraySerializer;
 use \Spatie\Fractalistic\ArraySerializer;
+use Spatie\ArrayToXml\ArrayToXml;
+
 class APIController extends Controller
 {
 
@@ -80,15 +82,18 @@ class APIController extends Controller
      * @param $object
      * @return mixed
      */
-    public function reply($object, $transformer = null, $pretty = 0)
+    public function reply($object, $meta = [])
     {
     	if(isset($_GET['echo'])) $object = [$_GET,$object];
 		$input = checkParam('callback', null, 'optional') ?? checkParam('jsonp', null, 'optional');
         $format = @$_GET['format'];
         switch ($format) {
             case 'xml':
-                $formatter = Formatter::make($object, Formatter::ARR);
-                return response()->make($formatter->toXml(), $this->getStatusCode())->header('Content-Type', 'text/xml; charset=utf-8');
+                $formatter = ArrayToXml::convert($object, [
+	                	'rootElementName' => (isset($meta['rootElementName'])) ? $meta['rootElementName'] : 'root',
+                        '_attributes' => (isset($meta['rootAttributes'])) ? $meta['rootAttributes'] : []
+	                ],true,"utf-8");
+                return response()->make($formatter, $this->getStatusCode())->header('Content-Type', 'text/xml; charset=utf-8');
             case 'yaml':
                 $formatter = Formatter::make($object, Formatter::ARR);
                 return response()->make($formatter->toYaml(), $this->getStatusCode())->header('Content-Type', 'text/yaml; charset=utf-8');
@@ -96,7 +101,7 @@ class APIController extends Controller
                 $formatter = Formatter::make($object, Formatter::ARR);
                 return response()->make($formatter->toCsv(), $this->getStatusCode())->header('Content-Type', 'text/csv; charset=utf-8');
             default:
-                if(isset($_GET['pretty']) OR $pretty != 0) {
+                if(isset($_GET['pretty'])) {
                     return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
                 } else {
                     return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
@@ -130,6 +135,11 @@ class APIController extends Controller
 
 		$url = Bucket::signedUrl($url,$signer,$bucket,$expiry);
 		return $this->reply($url);
+	}
+
+	function utf8_for_xml($string)
+	{
+		return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $string);
 	}
 
 }

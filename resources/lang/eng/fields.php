@@ -1,13 +1,14 @@
 <?php
 
 return [
-
-	'alternativeNames' => 'Alternative Names',
+	
 	'name'             => 'Name',
 	'id'               => 'id',
 	'iso'              => 'iso',
 	'bibles_count'     => 'Bibles Count',
 	'requesting-access'=> 'Access Pending',
+
+	'alphabets'                             => 'Alphabets',
 
 	'alphabets_direction'                   => 'Direction',
 	'alphabets_requires_font'               => 'Requires Font',
@@ -72,6 +73,12 @@ return [
 	'alphabets_baseline_hanging'            => 'Hanging',
 	'alphabets_baseline_centered'           => 'Centered',
 	'alphabets_baseline_vertical'           => 'Vertical',
+
+	'set_size_code_OT'                      => 'Old Testament',
+	'set_size_code_NT'                      => 'New Testament',
+
+	'set_type_code_audio'                   => 'Audio',
+	'set_type_code_audio_drama'             => 'Dramatized Audio',
 
 
 ];
