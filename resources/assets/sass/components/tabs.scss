@@ -25,6 +25,11 @@ nav[role="tablist"] a {
   padding: 10px 0;
 }
 
+section[role="banner"] nav[role="tablist"] a {
+  color:#FFF;
+  font-size:1.4rem;
+}
+
 nav[role="tablist"] a[aria-hidden="false"] {
   color: #74777b
 }
@@ -34,13 +39,8 @@ nav[role="tablist"] a:focus {
   outline: none
 }
 
-section[role="tabpanel"] {
-  display: none;
-}
-
-section[aria-hidden="false"] {
-  display: block
-}
+section[role="tabpanel"]     {display: none}
+section[aria-hidden="false"] {display: block}
 
 /* Fallback */
 // .no-js section[role="tabpanel"] 	{display:block;padding-bottom:2em;border-bottom:thin solid rgba(255, 255, 255, 0.6)}

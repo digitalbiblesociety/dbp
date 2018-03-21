@@ -62,11 +62,15 @@
 
 .dataTables_header {
   position: relative;
-  height:70px;
-  background: #fafafa;
-  border: thin solid #ccc;
+  height: 30px;
+  /* background: #fafafa; */
+  /* border: thin solid #ccc; */
   padding: 0px 10px;
   box-sizing: border-box;
+  margin-top: -30px;
+  background: rgba(255,255,255,.5);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 
   .dataTables_length {
     position: absolute;

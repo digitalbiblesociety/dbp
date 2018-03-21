@@ -13,6 +13,7 @@ const { mix } = require('laravel-mix');
 
 mix.sass('resources/assets/sass/app.scss', 'public/css');
 mix.js('resources/assets/js/main.js', 'public/js/app.js');
+//mix.js('resources/assets/js/swagger.js', 'public/js/swagger.js');
 
 mix.browserSync({
     proxy: 'https://dbp.dev'

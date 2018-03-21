@@ -1,0 +1,672 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://api.bible.build/v2'
+    description: Online Staging server for testing
+  - url: 'https://api.dbp.dev/v2'
+    description: Internal Staging server for testing
+info:
+  title: 'Digital Bible Platform [Koinos]'
+  description: This is a simple API
+  version: 4.0.0
+  contact:
+    name: API Support
+    url: 'https://dbs.org/contact'
+    email: jon@dbs.org
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: Bible
+    description: Routes regarding Bibles
+  - name: Organizations
+    description: Create and edit user organizations
+  - name: Users
+    description: 'Create, login, and manage users and their notes'
+  - name: Wiki
+    description: >-
+      A series of Routes for Language, Alphabet, Country, and other
+      Geo-socio-political data.
+paths:
+  /bibles:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/callback'
+      tags:
+        - Bible
+      responses:
+        '200':
+          description: An array of Bibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  '/bibles/{id}':
+    get:
+      operationId: v4_bible.one
+      summary: Get extended Metadata for a single Bible
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Bible
+      responses:
+        '200':
+          description: An array of Bibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  '/bibles/{id}/book/{book}':
+    get:
+      operationId: v4_bible.books
+      summary: Get books for a Bible
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Bible
+      responses:
+        '200':
+          description: An array of Bibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  '/bibles/{id}/{book_id}/{chapter}':
+    get:
+      operationId: v4_bible.chapter
+      summary: Get text for a chapter
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Bible
+      responses:
+        '200':
+          description: An array of Bibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  '/bibles/filesets/{id}/permissions':
+    get:
+      operationId: v4_bible.chapter
+      summary: Get text for a chapter
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Bible
+      responses:
+        '200':
+          description: An array of Bibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  '/bibles/filesets/{id}/download':
+    get:
+      operationId: v4_bible_filesets.download
+      summary: Download either a full zipped audio Bible or a selection
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Bible
+      responses:
+        '200':
+          description: An array of Bibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  /bibles/books:
+    get:
+      operationId: v4_bible_books
+      summary: Get generalized data for books of the Bible
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Bible
+      responses:
+        '200':
+          description: An array of Bibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  /timestamps:
+    get:
+      operationId: v4_timestamps
+      summary: Get List of available timestamps
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Bible
+      responses:
+        '200':
+          description: An array of Bibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  '/timestamps/{id}':
+    get:
+      operationId: v4_timestamps.tag
+      summary: Get List of available timestamps
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Bible
+      responses:
+        '200':
+          description: An array of Bibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  '/timestamps/{id}/{book}/{chapter}':
+    get:
+      operationId: v4_timestamps.verse
+      summary: Get List of available timestamps
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Bible
+      responses:
+        '200':
+          description: An array of Bibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  /countries:
+    get:
+      operationId: v4_countries.all
+      summary: Get List of countries
+      description: Returns a list of countries with generalized data
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Wiki
+      responses:
+        '200':
+          description: An array of Countries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Countries'
+  '/countries/{id}':
+    get:
+      operationId: v4_countries.one
+      summary: Get a single Country
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Wiki
+      responses:
+        '200':
+          description: A Country
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Countries'
+  /languages:
+    get:
+      operationId: v4_languages.all
+      summary: Get List of Languages
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Wiki
+      responses:
+        '200':
+          description: An array of Languages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Languages'
+  '/languages/{id}':
+    get:
+      operationId: v4_languages.one
+      summary: Get a specific Language
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Wiki
+      responses:
+        '200':
+          description: An array of Languages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Languages'
+  /alphabets:
+    get:
+      operationId: v4_alphabets.all
+      summary: Get Alphabets
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Wiki
+      responses:
+        '200':
+          description: An array of Alphabets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alphabets'
+  '/alphabets/{id}':
+    get:
+      operationId: v4_alphabets.one
+      summary: A single Alphabet
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Wiki
+      responses:
+        '200':
+          description: An array of Alphabets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alphabets'
+  /organizations:
+    get:
+      operationId: v4_organizations.all
+      summary: Get Organizations
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Organizations
+      responses:
+        '200':
+          description: An array of Organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organizations'
+  '/organizations/{id}':
+    get:
+      operationId: v4_organizations.one
+      summary: Get Organizations
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Organizations
+      responses:
+        '200':
+          description: Data for an organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organizations'
+  /users:
+    post:
+      operationId: v4_organizations.one
+      summary: Create a User
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Users
+      responses:
+        '200':
+          description: An array of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  /users/login:
+    post:
+      operationId: v4_user.login
+      summary: Login a User
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Users
+      responses:
+        '200':
+          description: An array of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  '/users/login/{driver}':
+    get:
+      operationId: v4_user.oAuth
+      summary: Login via oAuth
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Users
+      responses:
+        '200':
+          description: An array of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  '/users/login/{driver}/callback':
+    get:
+      operationId: v4_user.oAuth
+      summary: Login via oAuth
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Users
+      responses:
+        '200':
+          description: An array of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  '/users/{user_id}/notes':
+    get:
+      operationId: v4_notes.index
+      summary: Get notes for a specific user
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Users
+      responses:
+        '200':
+          description: An array of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+    post:
+      operationId: v4_notes.store
+      summary: Create a new note for a user
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Users
+      responses:
+        '200':
+          description: An array of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+    put:
+      operationId: v4_notes.store
+      summary: Edit an existing note for a user
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Users
+      responses:
+        '200':
+          description: An array of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+  /api/versions:
+    get:
+      operationId: v4_user.oAuth
+      summary: Login via oAuth
+      parameters:
+        - $ref: '#/components/parameters/key'
+        - $ref: '#/components/parameters/version'
+        - $ref: '#/components/parameters/reply'
+        - $ref: '#/components/parameters/pretty'
+      tags:
+        - Users
+      responses:
+        '200':
+          description: An array of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bibles'
+components:
+  schemas:
+    Bibles:
+      required:
+        - id
+        - name
+        - glotto_id
+        - iso
+      properties:
+        id:
+          type: integer
+          uniqueItems: true
+          description: An incrementing ID for the languages resources
+          example: 1
+        iso:
+          type: string
+          description: An iso code for the languages
+          example: eng
+        date:
+          type: integer
+          example: 1816
+        scope:
+          type: string
+          example: NT
+        script:
+          type: string
+          example: Latn
+        derived:
+          type: string
+          example: ENGKJV
+        copyright:
+          type: string
+          example: Public Domain
+    Countries:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Andorra
+        continent_code:
+          type: string
+          description: An code for the continent
+          example: EU
+        codes:
+          type: object
+          properties:
+            fips:
+              type: string
+              maxLength: 2
+              example: AN
+            iso_a3:
+              type: string
+              maxLength: 3
+              example: AND
+            iso_a2:
+              type: string
+              maxLength: 2
+              example: AD
+        languages:
+          type: object
+          example:
+            eng: English
+            spa: Spanish
+          additionalProperties:
+            type: string
+            example: English
+    Languages:
+      required:
+        - name
+      properties:
+        glotto_code:
+          type: string
+          example: aari1239
+          minLength: 8
+          maxLength: 8
+        iso_code:
+          type: string
+          example: aiw
+          minLength: 3
+          maxLength: 3
+        name:
+          type: string
+          example: Aari
+        bible_count:
+          type: integer
+          example: 3
+    Alphabets:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Adlam Script
+        script:
+          type: string
+          example: Adlm
+        family:
+          type: string
+          example: African
+        type:
+          type: string
+          example: alphabet
+        direction:
+          type: string
+          example: rtl
+    Organizations:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Adlam Script
+        script:
+          type: string
+          example: Adlm
+        family:
+          type: string
+          example: African
+        type:
+          type: string
+          example: alphabet
+        direction:
+          type: string
+          example: rtl
+  parameters:
+    key:
+      name: key
+      in: query
+      description: The API key that's been generated for you.
+      required: true
+      schema:
+        type: string
+    pretty:
+      name: pretty
+      in: query
+      description: 'A sugar param, simply will format the call for human eyes'
+      required: false
+      schema:
+        type: string
+    version:
+      name: key
+      in: query
+      description: The API key that's been generated for you.
+      required: true
+      schema:
+        type: string
+    reply:
+      name: reply
+      in: query
+      description: Specifies the response type requested by the caller. Default is json.
+      schema:
+        type: string
+        enum:
+          - json
+          - html
+          - jsonp
+          - yaml
+          - xml
+    callback:
+      name: callback
+      in: query
+      description: >-
+        If unused the results are as before. If set to true, the results will be
+        prepended with the array of calling arguments used. This does mean that
+        the results will be one layer deeper as the results will be an array
+        where the first element is the array of input arguments and the second
+        element will be the results as normally returned.
+      schema:
+        type: string
+    dam_id:
+      name: dam_id
+      in: query
+      description: >-
+        To get the location directory and asset file basename for a specific
+        volume.
+      schema:
+        type: string

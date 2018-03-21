@@ -25,6 +25,7 @@ li                     {list-style: none}
 .shadow                {box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)!important}
 
 // GRID
+main {height: 100%;}
 section {position: relative}
 .row 					{margin:0 auto;max-width:1200px;width:100%}
 main:after,
@@ -38,8 +39,8 @@ main:after,
 .columns 				{padding-left:1.1rem;padding-right:1.1rem;width:100%;float:left}
 .centered 				{margin-left:auto!important;margin-right:auto!important;float:none}
 .centered:last-child 	{float:none}
-.clearfix:after {content: ""; display: table; clear: both; }
-.disabled {opacity:.5}
+.clearfix:after         {content: ""; display: table; clear: both; }
+.disabled               {opacity:.5}
 
 .hidden,
 .no-fouc {visibility: hidden!important;}

@@ -2,11 +2,8 @@
 {
     font-size: 14px;
     font-weight: bold;
-
     padding: 5px 23px;
-
     transition: all .3s;
-
     border: 2px solid #888;
     border-radius: 4px;
     background: transparent;
@@ -150,21 +147,8 @@
 .expand-methods
 {
     padding: 0 10px;
-
-    &:hover
-    {
-        svg
-        {
-            fill: #444;
-        }
-    }
-
-    svg
-    {
-        transition: all .3s;
-
-        fill: #777;
-    }
+    &:hover { svg {fill: #444} }
+    svg {transition: all .3s;fill: #777}
 }
 
 

@@ -1,0 +1,3039 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "contact": {
+      "email": "jon@dbs.org",
+      "name": "API Support",
+      "url": "https://dbs.org/contact"
+    },
+    "description": "The 4th interation of the dbp",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "title": "Digital Bible Platform [Koinos]",
+    "version": "4.0.0"
+  },
+  "host": "api.bible.build",
+  "basePath": "/",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/alphabets": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Alphabets",
+            "schema": {
+              "$ref": "#/definitions/Alphabets"
+            }
+          }
+        },
+        "tags": [
+          "Wiki"
+        ],
+        "operationId": "v4_alphabets.all",
+        "summary": "Get Alphabets"
+      }
+    },
+    "/alphabets/{alphabet_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the alphabet.",
+            "in": "path",
+            "maxLength": 4,
+            "minLength": 4,
+            "name": "alphabet_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Alphabets",
+            "schema": {
+              "$ref": "#/definitions/Alphabets"
+            }
+          }
+        },
+        "tags": [
+          "Wiki"
+        ],
+        "operationId": "v4_alphabets.one",
+        "summary": "A single Alphabet"
+      }
+    },
+    "/api/versions": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of organizations",
+            "schema": {
+              "$ref": "#/definitions/Bibles"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_user.oAuth",
+        "summary": "Login via oAuth"
+      }
+    },
+    "/bibles": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Bibles",
+            "schema": {
+              "$ref": "#/definitions/Bibles"
+            }
+          }
+        },
+        "tags": [
+          "Bible"
+        ],
+        "description": "The usual query tree to return a file will often start with this route. Bibles to get filesets and then query the fileset of your choice.",
+        "summary": "This route serves as the base point for "
+      }
+    },
+    "/bibles/books": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Bibles",
+            "schema": {
+              "$ref": "#/definitions/Bibles"
+            }
+          }
+        },
+        "tags": [
+          "Bible"
+        ],
+        "operationId": "v4_bible_books",
+        "summary": "Get generalized data for books of the Bible"
+      }
+    },
+    "/bibles/filesets/{fileset_id}/": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "The id of the fileset",
+            "in": "path",
+            "name": "fileset_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The number of the chapter you wish to query",
+            "in": "query",
+            "maximum": 150,
+            "minimum": 1,
+            "name": "chapter_id",
+            "type": "integer"
+          },
+          {
+            "description": "The corresponding USFM 2.4 ID for the book you wish to query",
+            "in": "query",
+            "maxLength": 3,
+            "minLength": 3,
+            "name": "book_id",
+            "type": "string"
+          },
+          {
+            "description": "The name of the bucket from which you wish to query content.",
+            "in": "query",
+            "name": "bucket",
+            "type": "string"
+          },
+          {
+            "description": "The number of minutes that the link will be good for.",
+            "in": "query",
+            "name": "lifespan",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of chapters with a some metadata and a signed url to s3.",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Fileset"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "tags": [
+          "Bible"
+        ],
+        "operationId": "v4_bible_filesets.show",
+        "summary": "Recieve the signed URLs from the S3 Bucket"
+      },
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A success message congradulating you on creating a fileset.",
+            "schema": {
+              "example": "You have successfully created a new Fileset",
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "Bible"
+        ],
+        "operationId": "v4_bible_filesets.store",
+        "summary": "Create a new Fileset and associate files with it"
+      },
+      "put": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A success message congradulating you on updating a fileset.",
+            "schema": {
+              "example": "You have successfully updated a  Fileset",
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "Bible"
+        ],
+        "operationId": "v4_bible_filesets.update",
+        "summary": "Alter an existing Fileset and the files associated with it"
+      }
+    },
+    "/bibles/filesets/{fileset_id}/download": {
+      "get": {
+        "produces": [
+          "application/zip"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "The id of the fileset",
+            "in": "path",
+            "name": "fileset_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The corresponding USFM 2.4 IDs for the books you wish to query",
+            "in": "query",
+            "name": "book_ids",
+            "type": "array"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An zipped Audio Bible or selected books from that Bible.",
+            "format": "binary",
+            "schema": {}
+          }
+        },
+        "tags": [
+          "Bible"
+        ],
+        "operationId": "v4_bible_filesets.download",
+        "summary": "Download either a full zipped audio Bible or a selection"
+      }
+    },
+    "/bibles/{bible_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the bible.",
+            "in": "path",
+            "maxLength": 12,
+            "minLength": 6,
+            "name": "bible_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single Bible",
+            "schema": {
+              "$ref": "#/definitions/Bibles"
+            }
+          }
+        },
+        "tags": [
+          "Bible"
+        ],
+        "operationId": "v4_bible.one",
+        "summary": "Get extended Metadata for a single Bible"
+      }
+    },
+    "/bibles/{bible_id}/book/{book_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "The ID of the bible.",
+            "in": "path",
+            "maxLength": 12,
+            "minLength": 6,
+            "name": "bible_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The corresponding USFM 2.4 ID for the book in the path",
+            "in": "query",
+            "maxLength": 3,
+            "minLength": 3,
+            "name": "book_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "An array of ISO639-3 codes deliminated by a `|` bar character for which book names are desired.",
+            "in": "query",
+            "name": "language_codes",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Books for a specific Bible",
+            "schema": {
+              "$ref": "#/definitions/Books"
+            }
+          }
+        },
+        "tags": [
+          "Bible"
+        ],
+        "description": "The purpose of this route is to provide a concise collection of meta data primarily for multilingual apps. It will return an array of books with metadata. You can query additional book names by including the `language_codes` param. `language_codes` is simply an array of ISO639-3 codes deliminated by a `|` bar character. Including a param of `spa|eng` will return translations for both Spanish and English. If the system is unable to find the bible_id provided it will return all books by default and the `bible` field will be set to an empty string.",
+        "operationId": "v4_bible.books",
+        "summary": "Get books for a Bible"
+      }
+    },
+    "/bibles/{bible_id}/{book_id}/{chapter_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the bible.",
+            "in": "path",
+            "maxLength": 12,
+            "minLength": 6,
+            "name": "bible_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The corresponding USFM 2.4 ID for the book in the path",
+            "in": "path",
+            "maxLength": 3,
+            "minLength": 3,
+            "name": "book_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The number of the chapter",
+            "in": "path",
+            "maximum": 150,
+            "minimum": 1,
+            "name": "chapter_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The chapter text",
+            "schema": {
+              "$ref": "#/definitions/Chapter"
+            }
+          }
+        },
+        "tags": [
+          "Bible"
+        ],
+        "operationId": "v4_bible.chapter",
+        "summary": "Get plain text for a chapter via the API"
+      }
+    },
+    "/countries": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Countries",
+            "schema": {
+              "$ref": "#/definitions/Countries"
+            }
+          }
+        },
+        "tags": [
+          "Wiki"
+        ],
+        "description": "Returns a list of countries with generalized data",
+        "operationId": "v4_countries.all",
+        "summary": "Get List of countries"
+      }
+    },
+    "/countries/{country_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the country.",
+            "in": "path",
+            "name": "country_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A Country",
+            "schema": {
+              "$ref": "#/definitions/Countries"
+            }
+          }
+        },
+        "tags": [
+          "Wiki"
+        ],
+        "operationId": "v4_countries.one",
+        "summary": "Get a single Country"
+      }
+    },
+    "/languages": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Languages",
+            "schema": {
+              "$ref": "#/definitions/Languages"
+            }
+          }
+        },
+        "tags": [
+          "Wiki"
+        ],
+        "operationId": "v4_languages.all",
+        "summary": "Get List of Languages"
+      }
+    },
+    "/languages/{language_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the language.",
+            "in": "path",
+            "maxLength": 3,
+            "minLength": 3,
+            "name": "language_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Languages",
+            "schema": {
+              "$ref": "#/definitions/Languages"
+            }
+          }
+        },
+        "tags": [
+          "Wiki"
+        ],
+        "operationId": "v4_languages.one",
+        "summary": "Get a specific Language"
+      }
+    },
+    "/organizations": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Organizations",
+            "schema": {
+              "$ref": "#/definitions/Organizations"
+            }
+          }
+        },
+        "tags": [
+          "Organizations"
+        ],
+        "operationId": "v4_organizations.all",
+        "summary": "Get Organizations"
+      }
+    },
+    "/organizations/{organization_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the organization.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data for an organization",
+            "schema": {
+              "$ref": "#/definitions/Organizations"
+            }
+          }
+        },
+        "tags": [
+          "Organizations"
+        ],
+        "operationId": "v4_organizations.one",
+        "summary": "Get Organizations"
+      }
+    },
+    "/timestamps": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Bibles",
+            "schema": {
+              "$ref": "#/definitions/Bibles"
+            }
+          }
+        },
+        "tags": [
+          "Bible"
+        ],
+        "operationId": "v4_timestamps",
+        "summary": "Get List of available timestamps"
+      }
+    },
+    "/timestamps/{bible_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the bible.",
+            "in": "path",
+            "maxLength": 12,
+            "minLength": 6,
+            "name": "bible_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Bibles",
+            "schema": {
+              "$ref": "#/definitions/Bibles"
+            }
+          }
+        },
+        "tags": [
+          "Bible"
+        ],
+        "operationId": "v4_timestamps.tag",
+        "summary": "Get List of available timestamps"
+      }
+    },
+    "/timestamps/{bible_id}/{book_id}/{chapter_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the bible.",
+            "in": "path",
+            "maxLength": 12,
+            "minLength": 6,
+            "name": "bible_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The corresponding USFM 2.4 ID for the book in the path",
+            "in": "path",
+            "maxLength": 3,
+            "minLength": 3,
+            "name": "book_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The number of the chapter",
+            "in": "path",
+            "maximum": 150,
+            "minimum": 1,
+            "name": "chapter_id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Bibles",
+            "schema": {
+              "$ref": "#/definitions/Bibles"
+            }
+          }
+        },
+        "tags": [
+          "Bible"
+        ],
+        "operationId": "v4_timestamps.verse",
+        "summary": "Get List of available timestamps"
+      }
+    },
+    "/users": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of users",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/User"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_user.index",
+        "summary": "List the Users"
+      },
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "body"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Route responsible for User Creation",
+            "schema": {
+              "example": "User Created",
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_user.create",
+        "summary": "Create a User"
+      }
+    },
+    "/users/login": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A Success Message",
+            "schema": {
+              "example": "user id is 142091",
+              "type": "object"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_user.login",
+        "summary": "Login a User"
+      }
+    },
+    "/users/login/{driver_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "There are currently four different providers that are availalble for use via the API. google, facebook, reddit, & github",
+            "enum": [
+              "google",
+              "facebook",
+              "reddit",
+              "github"
+            ],
+            "in": "path",
+            "name": "driver",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A link to begin the oauth process",
+            "schema": {
+              "example": "https://github.com/login/oauth/authorize?client_id=f3706453a3b05b07d434&redirect_uri=https%3A%2F%2Fapi.bible.build%2Flogin%2Fgithub%2Fcallback&scope=user%3Aemail&response_type=code",
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "description": "This route will return a single URL for your app to communicate with a third party provider for oAuthentication.",
+        "operationId": "v4_user.oAuth",
+        "summary": "Login via oAuth"
+      }
+    },
+    "/users/login/{driver_id}/callback": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "There are currently four different providers that are availalble for use via the API. google, facebook, reddit, & github",
+            "enum": [
+              "google",
+              "facebook",
+              "reddit",
+              "github"
+            ],
+            "in": "path",
+            "name": "driver",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the User that has just been created or logged in.",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_user.oAuthCallback",
+        "summary": "The callback URL for oAuth"
+      }
+    },
+    "/users/{user_id}": {
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the user.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A success message to let you know the operation did not encounter an error.",
+            "schema": {
+              "example": "User Deleted",
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_user.delete",
+        "summary": "Delete an existing User"
+      },
+      "put": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the user.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "body"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A success message to let you know the operation did not encounter an error.",
+            "schema": {
+              "example": "User Updated",
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_user.update",
+        "summary": "Update an existing User"
+      }
+    },
+    "/users/{user_id}/highlights": {
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the user.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A confirmation message of success",
+            "schema": {
+              "example": "success",
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_highlights.destroy",
+        "summary": "Destroy an existing highlight for a user"
+      },
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the user.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of user highlights",
+            "schema": {
+              "$ref": "#/definitions/Highlight"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_highlights.index",
+        "summary": "Get highlights for a specific user"
+      },
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the user.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A confirmation message of success",
+            "schema": {
+              "example": "success",
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_highlights.store",
+        "summary": "Create a new highlight for a user"
+      },
+      "put": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the user.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A confirmation message of success",
+            "schema": {
+              "example": "success",
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_highlights.update",
+        "summary": "Edit an existing highlight for a user"
+      }
+    },
+    "/users/{user_id}/notes": {
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the user.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A confirmation message of success",
+            "schema": {
+              "example": "success",
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_notes.destroy",
+        "summary": "Destroy an existing note for a user"
+      },
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the user.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of user notes",
+            "schema": {
+              "$ref": "#/definitions/Note"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_notes.index",
+        "summary": "Get notes for a specific user"
+      },
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the user.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A confirmation message of success",
+            "schema": {
+              "example": "success",
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_notes.store",
+        "summary": "Create a new note for a user"
+      },
+      "put": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The API key that's been generated for you.",
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Specifies the response type requested by the caller. Default is json.",
+            "enum": [
+              "json",
+              "html",
+              "jsonp",
+              "yaml",
+              "xml"
+            ],
+            "in": "query",
+            "name": "reply",
+            "type": "string"
+          },
+          {
+            "description": "A sugar param, simply will format the call for human eyes",
+            "in": "query",
+            "name": "pretty",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The ID of the user.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A confirmation message of success",
+            "schema": {
+              "example": "success",
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "operationId": "v4_notes.update",
+        "summary": "Edit an existing note for a user"
+      }
+    }
+  },
+  "definitions": {
+    "Alphabets": {
+      "properties": {
+        "direction": {
+          "example": "rtl",
+          "type": "string"
+        },
+        "family": {
+          "example": "African",
+          "type": "string"
+        },
+        "name": {
+          "example": "Adlam Script",
+          "type": "string"
+        },
+        "script": {
+          "example": "Adlm",
+          "type": "string"
+        },
+        "type": {
+          "example": "alphabet",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "Bibles": {
+      "properties": {
+        "copyright": {
+          "example": "Public Domain",
+          "type": "string"
+        },
+        "date": {
+          "example": 1816,
+          "type": "integer"
+        },
+        "derived": {
+          "example": "ENGKJV",
+          "type": "string"
+        },
+        "filesets": {
+          "description": "A hashmap with language code as a key and the text as the value.",
+          "example": {
+            "ENGKJV1DA": {
+              "bucket_id": "dbp_dev",
+              "meta": [
+                "full voice cast",
+                "aprocryphal"
+              ],
+              "set_type": "audio",
+              "size_code": "NT"
+            },
+            "ENGKJVO2DA": {
+              "bucket_id": "dbp_dev",
+              "meta": [
+                "music",
+                "single narrator"
+              ],
+              "set_type": "audio",
+              "size_code": "NT"
+            }
+          },
+          "properties": {
+            "en": {
+              "description": "English text of a delay reason.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "id": {
+          "description": "An incrementing ID for the languages resources",
+          "example": 1,
+          "type": "integer",
+          "uniqueItems": true
+        },
+        "iso": {
+          "description": "An iso code for the languages",
+          "example": "eng",
+          "type": "string"
+        },
+        "scope": {
+          "example": "NT",
+          "type": "string"
+        },
+        "script": {
+          "example": "Latn",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "glotto_id",
+        "iso"
+      ]
+    },
+    "Books": {
+      "properties": {
+        "bible": {
+          "example": "ENGKJV",
+          "type": "string"
+        },
+        "book_group": {
+          "example": "Gospels",
+          "type": "string"
+        },
+        "book_order": {
+          "example": 41,
+          "type": "integer"
+        },
+        "book_testament": {
+          "example": "NT",
+          "type": "string"
+        },
+        "chapters": {
+          "example": 28,
+          "type": "integer"
+        },
+        "id": {
+          "example": "MAT",
+          "type": "string"
+        },
+        "id_osis": {
+          "example": "Matt",
+          "type": "string"
+        },
+        "id_usfx": {
+          "example": "MT",
+          "type": "string"
+        },
+        "name": {
+          "example": "Matthew",
+          "type": "string"
+        },
+        "testament_order": {
+          "example": 1,
+          "type": "string"
+        },
+        "translations": {
+          "description": "A hashmap with language code as a key and the text as the value.",
+          "example": {
+            "eng": {
+              "name": "Matthew",
+              "name_abbreviation": "Mat.",
+              "name_long": "The Gospel of Saint Matthew",
+              "name_short": "Matthew"
+            },
+            "spa": {
+              "name": "San Mateo",
+              "name_abbreviation": "Mat.",
+              "name_long": "El Evangelio de San Mateo",
+              "name_short": "Mateo"
+            }
+          },
+          "properties": {
+            "eng": {
+              "description": "English text of a delay reason.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "verses": {
+          "example": 1071,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "Chapter": {
+      "properties": {
+        "book_id": {
+          "example": "MAT",
+          "type": "string"
+        },
+        "book_name": {
+          "example": "Matthew",
+          "type": "string"
+        },
+        "book_name_alt": {
+          "example": "মথি",
+          "type": "string"
+        },
+        "chapter": {
+          "example": 1,
+          "maximum": 150,
+          "minimum": 1,
+          "type": "string"
+        },
+        "chapter_alt": {
+          "example": "১",
+          "type": "string"
+        },
+        "verse_end": {
+          "maximum": 176,
+          "minimum": 1,
+          "nullable": true,
+          "type": "integer"
+        },
+        "verse_end_alt": {
+          "example": "১",
+          "type": "string"
+        },
+        "verse_start": {
+          "example": 1,
+          "maximum": 176,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "verse_start_alt": {
+          "example": "১",
+          "type": "string"
+        },
+        "verse_text": {
+          "example": "যীশু খ্রীষ্টের বংশ তালিকা, তিনি দায়ূদের সন্তান, অব্রাহামের সন্তান। ",
+          "type": "string"
+        }
+      },
+      "required": [
+        "book_id",
+        "book_name",
+        "chapter_start",
+        "verse_start",
+        "path"
+      ]
+    },
+    "Countries": {
+      "properties": {
+        "codes": {
+          "properties": {
+            "fips": {
+              "example": "AN",
+              "maxLength": 2,
+              "type": "string"
+            },
+            "iso_a2": {
+              "example": "AD",
+              "maxLength": 2,
+              "type": "string"
+            },
+            "iso_a3": {
+              "example": "AND",
+              "maxLength": 3,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "continent_code": {
+          "description": "An code for the continent",
+          "example": "EU",
+          "type": "string"
+        },
+        "languages": {
+          "additionalProperties": {
+            "example": "English",
+            "type": "string"
+          },
+          "example": {
+            "eng": "English",
+            "spa": "Spanish"
+          },
+          "type": "object"
+        },
+        "name": {
+          "example": "Andorra",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "Fileset": {
+      "properties": {
+        "book_id": {
+          "example": "MAT",
+          "type": "string"
+        },
+        "book_name": {
+          "example": "Matthew",
+          "type": "string"
+        },
+        "chapter_end": {
+          "maximum": 150,
+          "minimum": 1,
+          "nullable": true,
+          "type": "string"
+        },
+        "chapter_start": {
+          "example": 1,
+          "maximum": 150,
+          "minimum": 1,
+          "type": "string"
+        },
+        "path": {
+          "example": "https://dbp-dev.s3.us-west-2.amazonaws.com/text/ENGNAB/ENGNABN2ET/B01___01_Matthew_______N2NABXXX.mp3?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJOMYRUAEFXAK5KDQ%2F20180206%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20180206T011909Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Signature=f72f1c676c32b78681fbe77c02084d96c0f819a098f3c9eb1f0cfd0b38d2b062",
+          "type": "string"
+        },
+        "timestamp": {
+          "nullable": true,
+          "type": "string"
+        },
+        "verse_end": {
+          "maximum": 176,
+          "minimum": 1,
+          "nullable": true,
+          "type": "integer"
+        },
+        "verse_start": {
+          "example": 1,
+          "maximum": 176,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "book_id",
+        "book_name",
+        "chapter_start",
+        "verse_start",
+        "path"
+      ]
+    },
+    "Highlight": {
+      "properties": {
+        "bible_id": {
+          "example": "BAON10",
+          "maxLength": 12,
+          "minLength": 6,
+          "type": "string"
+        },
+        "book_id": {
+          "example": "TIT",
+          "maxLength": 3,
+          "minLength": 3,
+          "type": "string"
+        },
+        "chapter": {
+          "example": 1,
+          "maximum": 150,
+          "minimum": 1,
+          "type": "string"
+        },
+        "highlight_start": {
+          "description": "The word at which the highlighting count begins. For example: a highlight starting at the word `beginning` for the verse `In the beginning God created the heavens and the earth` would have a value of 3",
+          "example": 3,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "highlighted_words": {
+          "description": "The number of words to be highlighted. A highlight starting at the word `beginning` and ending at the word heavens for the verse `In the beginning God created the heavens and the earth` would have a value of 5",
+          "example": 9,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "id": {
+          "example": 38,
+          "type": "integer"
+        },
+        "verse_end": {
+          "maximum": 176,
+          "minimum": 1,
+          "nullable": true,
+          "type": "integer"
+        },
+        "verse_start": {
+          "example": 1,
+          "maximum": 176,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "bible_id",
+        "book_id",
+        "chapter",
+        "verse_start",
+        "highlight_start",
+        "highlighted_words"
+      ]
+    },
+    "Languages": {
+      "properties": {
+        "bible_count": {
+          "example": 3,
+          "type": "integer"
+        },
+        "glotto_code": {
+          "example": "aari1239",
+          "maxLength": 8,
+          "minLength": 8,
+          "type": "string"
+        },
+        "iso_code": {
+          "example": "aiw",
+          "maxLength": 3,
+          "minLength": 3,
+          "type": "string"
+        },
+        "name": {
+          "example": "Aari",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "Note": {
+      "properties": {
+        "bible_id": {
+          "example": "BAON10",
+          "maxLength": 12,
+          "minLength": 6,
+          "type": "string"
+        },
+        "book_id": {
+          "example": "TIT",
+          "maxLength": 3,
+          "minLength": 3,
+          "type": "string"
+        },
+        "bookmark": {
+          "example": true,
+          "type": "boolean"
+        },
+        "chapter": {
+          "example": 1,
+          "maximum": 150,
+          "minimum": 1,
+          "type": "string"
+        },
+        "created_at": {
+          "example": "2018-02-06 02:48:21",
+          "type": "string"
+        },
+        "highlights": {
+          "example": [
+            "a",
+            "few",
+            "interesting",
+            "words"
+          ],
+          "type": "array"
+        },
+        "id": {
+          "example": 38,
+          "type": "integer"
+        },
+        "notes": {
+          "example": "I found this passage rather interesting",
+          "type": "string"
+        },
+        "updated_at": {
+          "example": "2018-02-06 02:48:21"
+        },
+        "verse_end": {
+          "maximum": 176,
+          "minimum": 1,
+          "nullable": true,
+          "type": "integer"
+        },
+        "verse_start": {
+          "example": 1,
+          "maximum": 176,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "bible_id",
+        "book_id",
+        "chapter",
+        "verse_start"
+      ]
+    },
+    "Organizations": {
+      "properties": {
+        "direction": {
+          "example": "rtl",
+          "type": "string"
+        },
+        "family": {
+          "example": "African",
+          "type": "string"
+        },
+        "name": {
+          "example": "Adlam Script",
+          "type": "string"
+        },
+        "script": {
+          "example": "Adlm",
+          "type": "string"
+        },
+        "type": {
+          "example": "alphabet",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "User": {
+      "properties": {
+        "avatar": {
+          "example": "cdn.bible.build/images/users/19951842.png",
+          "type": "string"
+        },
+        "email": {
+          "example": "smitheringz@hotmail.com",
+          "type": "string"
+        },
+        "id": {
+          "example": "58DSGCFUH3rV2Y3",
+          "type": "string"
+        },
+        "name": {
+          "example": "John Smith",
+          "type": "string"
+        },
+        "nickname": {
+          "example": "smitheringz",
+          "type": "string"
+        },
+        "password": {
+          "example": "Xk7wZcQUU2CuHkc",
+          "format": "password",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "password",
+        "email",
+        "nickname"
+      ]
+    }
+  },
+  "tags": [
+    {
+      "description": "Routes regarding Bibles",
+      "name": "Bible"
+    },
+    {
+      "description": "Create and edit user organizations",
+      "name": "Organizations"
+    },
+    {
+      "description": "Create, login, and manage users and their notes",
+      "name": "Users"
+    },
+    {
+      "description": "A series of Routes for Language, Alphabet, Country, and other Geo-socio-political data.",
+      "name": "Wiki"
+    }
+  ],
+  "x-components": {
+    "parameters": {
+      "bible_id_path": {
+        "description": "The ID of the bible.",
+        "in": "path",
+        "maxLength": 12,
+        "minLength": 6,
+        "name": "bible_id",
+        "required": true,
+        "type": "string"
+      },
+      "book_id": {
+        "description": "The corresponding USFM 2.4 ID for the book you wish to query",
+        "in": "query",
+        "maxLength": 3,
+        "minLength": 3,
+        "name": "book_id",
+        "type": "string"
+      },
+      "book_id_path": {
+        "description": "The corresponding USFM 2.4 ID for the book in the path",
+        "in": "path",
+        "maxLength": 3,
+        "minLength": 3,
+        "name": "book_id",
+        "required": true,
+        "type": "string"
+      },
+      "book_ids": {
+        "description": "The corresponding USFM 2.4 IDs for the books you wish to query",
+        "in": "query",
+        "name": "book_ids",
+        "type": "array"
+      },
+      "bucket": {
+        "description": "The name of the bucket from which you wish to query content.",
+        "in": "query",
+        "name": "bucket",
+        "type": "string"
+      },
+      "callback": {
+        "description": "If unused the results are as before. If set to true, the results will be prepended with the array of calling arguments used. This does mean that the results will be one layer deeper as the results will be an array where the first element is the array of input arguments and the second element will be the results as normally returned.",
+        "in": "query",
+        "name": "callback",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "chapter_id": {
+        "description": "The number of the chapter you wish to query",
+        "in": "query",
+        "maximum": 150,
+        "minimum": 1,
+        "name": "chapter_id",
+        "type": "integer"
+      },
+      "chapter_id_path": {
+        "description": "The number of the chapter",
+        "in": "path",
+        "maximum": 150,
+        "minimum": 1,
+        "name": "chapter_id",
+        "required": true,
+        "type": "integer"
+      },
+      "dam_id": {
+        "description": "To get the location directory and asset file basename for a specific volume.",
+        "in": "query",
+        "name": "dam_id",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "driver_id": {
+        "description": "There are currently four different providers that are availalble for use via the API. google, facebook, reddit, & github",
+        "enum": [
+          "google",
+          "facebook",
+          "reddit",
+          "github"
+        ],
+        "in": "path",
+        "name": "driver",
+        "required": true,
+        "type": "string"
+      },
+      "fileset_id": {
+        "description": "The id of the fileset",
+        "in": "query",
+        "name": "fileset_id",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "fileset_id_path": {
+        "description": "The id of the fileset",
+        "in": "path",
+        "name": "fileset_id",
+        "required": true,
+        "type": "string"
+      },
+      "key": {
+        "description": "The API key that's been generated for you.",
+        "in": "query",
+        "name": "key",
+        "required": true,
+        "type": "string"
+      },
+      "lifespan": {
+        "description": "The number of minutes that the link will be good for.",
+        "in": "query",
+        "name": "lifespan",
+        "type": "string"
+      },
+      "pretty": {
+        "description": "A sugar param, simply will format the call for human eyes",
+        "in": "query",
+        "name": "pretty",
+        "required": false,
+        "type": "string"
+      },
+      "reply": {
+        "description": "Specifies the response type requested by the caller. Default is json.",
+        "enum": [
+          "json",
+          "html",
+          "jsonp",
+          "yaml",
+          "xml"
+        ],
+        "in": "query",
+        "name": "reply",
+        "type": "string"
+      },
+      "version": {
+        "description": "The version of the API to query. (For everything in these docs it'd be set to 4)",
+        "in": "query",
+        "name": "version",
+        "required": true,
+        "type": "integer"
+      }
+    }
+  }
+}
