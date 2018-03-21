@@ -74,6 +74,11 @@ class DocsController extends APIController
 		return view('docs.swagger_database',compact('docs','id'));
 	}
 
+	public function sdk()
+	{
+		return view('docs.sdk');
+	}
+
 	public function history()
 	{
 		return view('docs.history');
