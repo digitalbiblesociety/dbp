@@ -55,13 +55,13 @@ class BiblesController extends APIController
 	    $updated = checkParam('updated', null, 'optional');
 	    $organization = checkParam('organization_id', null, 'optional');
 		$sort_by = checkParam('sort_by', null, 'optional');
-	    $all = checkParam('all', null, 'optional') ?? true;
+	    $fileset_filter = checkParam('filter_by_fileset', null, 'optional') ?? true;
 		// hide cache
 		//\Cache::forget($this->v.'_bibles_'.$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by);
 	    //return \Cache::remember($this->v.'_bibles_'.$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by, 2400, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by) {
 			$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
 	        $bibles = Bible::with('currentTranslation','vernacularTranslation','filesets.meta','language')
-		        ->when($all, function($q) use ($iso){
+		        ->when($fileset_filter, function($q) use ($iso){
 			        $q->has('filesets.files');
 		        })
 		        ->when($iso, function($q) use ($iso){
