@@ -168,7 +168,7 @@ class BibleTransformer extends BaseTransformer
 			$bible->language->name ?? "",
 			$bible->date,
 			$bible->id,
-			$bible->language->iso,
+			$bible->language->iso ?? "zxx",
 		];
 	}
 
