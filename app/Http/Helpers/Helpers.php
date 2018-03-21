@@ -14,7 +14,7 @@ function checkUser()
 function checkParam($param, $v4Style = null, $optional = false)
 {
 	$url_param = (isset($_GET[$param])) ? $_GET[$param] : false;
-	$url_header = Request::header($param);
+	$url_header = request()->header($param);
 
 	if($v4Style) return $v4Style;
 	if(!$url_param AND !$url_header) {
