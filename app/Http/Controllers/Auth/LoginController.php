@@ -44,7 +44,7 @@ class LoginController extends APIController
 
 	public function handleProviderCallback($provider)
 	{
-		$user = \Socialite::driver($provider)->user();
+		$user = \Socialite::driver($provider)->stateless()->user();
 		$user = $this->createOrGetUser($user,$provider);
 		\Auth::login($user);
 		if($this->api) return $user;
@@ -64,6 +64,7 @@ class LoginController extends APIController
 					'nickname' => $providerUser->getNickname(),
 					'email'    => $providerUser->getEmail(),
 					'name'     => $providerUser->getName(),
+					'verified' => 1,
 				]);
 			}
 			$account->user()->associate($user);

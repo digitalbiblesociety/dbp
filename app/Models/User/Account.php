@@ -19,6 +19,8 @@ use App\Models\User\User;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Account whereProviderUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Account whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Account whereUserId($value)
+ * @property int $id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Account whereId($value)
  */
 class Account extends Model
 {

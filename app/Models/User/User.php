@@ -33,24 +33,30 @@ use App\Traits\Uuids;
  * @property string|null $remember_token
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereAvatar($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereNickname($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereUpdatedAt($value)
+ * @method static User whereAvatar($value)
+ * @method static User whereCreatedAt($value)
+ * @method static User whereEmail($value)
+ * @method static User whereId($value)
+ * @method static User whereName($value)
+ * @method static User whereNickname($value)
+ * @method static User wherePassword($value)
+ * @method static User whereRememberToken($value)
+ * @method static User whereUpdatedAt($value)
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Note[] $notes
  * @property-read \App\Models\User\Role $admin
  * @property-read \App\Models\User\Role $canCreateUsers
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Key[] $key
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Project[] $projects
+ * @property int $verified
+ * @property string|null $email_token
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Key[] $keys
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereEmailToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereVerified($value)
  */
 class User extends Authenticatable
 {
 	public $incrementing = false;
+	public $table = 'users';
 	public $keyType = 'string';
     use Notifiable;
 
@@ -59,7 +65,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $fillable = ['id','name', 'email', 'password'];
+    protected $fillable = ['id','name', 'nickname', 'avatar', 'verified', 'email', 'password', 'email_token'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -70,9 +76,9 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-	public function key()
+	public function keys()
 	{
-		return $this->HasMany(Key::class);
+		return $this->hasMany(Key::class,'user_id','id');
 	}
 
 	public function accounts()
@@ -132,9 +138,11 @@ class User extends Authenticatable
 		return $this->hasOne(Role::class)->where('role','archivist')->where('organization_id',$id);
 	}
 
-	public function role($role = null)
+	public function role($role = null,$organization = null)
 	{
-		return $this->HasOne(Role::class)->where('role',$role);
+		return $this->HasOne(Role::class)->where('role',$role)->when($organization, function($q) use ($organization) {
+			$q->where('organization_id', '=', $organization);
+		});
 	}
 
 	public function organizations()

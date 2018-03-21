@@ -27,10 +27,12 @@ class CreateUsersTable extends Migration
         });
 
 	    Schema::create('user_accounts', function (Blueprint $table) {
-		    $table->string('user_id', 64)->primary();
+	    	$table->increments('id');
+		    $table->string('user_id', 64);
 		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
 		    $table->string('provider');
 		    $table->string('provider_user_id');
+		    $table->unique(['user_id','provider']);
 		    $table->timestamps();
 	    });
 

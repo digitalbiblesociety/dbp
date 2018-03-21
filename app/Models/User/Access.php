@@ -54,6 +54,9 @@ use App\Models\Bible\Bible;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessType($value)
  * @property int $access_granted
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereAccessGranted($value)
+ * @property string $hash_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereHashId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\User[] $user
  */
 class Access extends Model
 {
@@ -61,8 +64,16 @@ class Access extends Model
 	protected $primaryKey = 'key_id';
 	public $incrementing = false;
 
+	protected $fillable = ['key_id','access_type','access_notes','hash_id'];
+
 	public function bible()
 	{
 		return $this->BelongsTo(Bible::class,'bible_id','id');
 	}
+
+	public function user()
+	{
+		return $this->hasManyThrough(User::class,Key::class,'key','id','key_id','user_id');
+	}
+
 }
