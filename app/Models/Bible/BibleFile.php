@@ -38,6 +38,7 @@ use App\Models\Language\Language;
  * @property string $hash_id
  * @property-read \App\Models\Bible\BibleFileTitle $title
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereHashId($value)
+ * @property-read \App\Models\Bible\BibleFileTitle $currentTitle
  */
 class BibleFile extends Model
 {

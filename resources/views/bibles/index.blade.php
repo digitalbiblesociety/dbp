@@ -3,6 +3,7 @@
 @section('content')
 
     @include('layouts.partials.banner', ['title' => 'Bibles'])
+
     <div class="row">
     <table class="table" cellspacing="0" width="100%" data-route="bibles">
         <thead>

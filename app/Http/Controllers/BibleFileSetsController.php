@@ -72,6 +72,17 @@ class BibleFileSetsController extends APIController
 	    Bucket::download($files,'s3_fcbh', 'dbp_dev', 5, $books);
     }
 
+	public function podcast($id)
+	{
+		$fileset = BibleFileset::with('files.currentTitle','bible')->find($id);
+		if(!$fileset) return $this->replyWithError("No Fileset exists for this ID");
+
+		$rootElementName = 'rss';
+		$rootAttributes  = ['xmlns:itunes' => "http://www.itunes.com/dtds/podcast-1.0.dtd",'xmlns:atom' => "http://www.w3.org/2005/Atom",'xmlns:media' => "http://search.yahoo.com/mrss/",'version' => "2.0"];
+		$podcast = fractal()->item($fileset)->serializeWith($this->serializer)->transformWith(new FileSetTransformer())->ToArray();
+		return $this->reply($podcast, ['rootElementName' => $rootElementName, 'rootAttributes' => $rootAttributes]);
+	}
+
 	/**
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */

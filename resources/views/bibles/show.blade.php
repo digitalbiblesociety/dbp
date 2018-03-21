@@ -31,6 +31,7 @@
         box-shadow: rgba(0,0,0,.75) 2px 1px 3px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
         transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        position: relative;
     }
     .fileset:hover {
         box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
@@ -40,6 +41,14 @@
         width:50px;
         display: block;
     }
+
+    .fileset span {
+        display: block;
+        position: absolute;
+        top:3px;
+        right:3px;
+    }
+
 </style>
 @endsection
 
@@ -63,19 +72,17 @@
         <div class="medium-7 columns">
             <h4>Description</h4>
             {{ $bible->currentTranslation->description }}
-            <h4>Reference Filesets</h4>
+            <h4>Filesets</h4>
             @foreach($bible->filesets as $fileset)
-            <div class="expanded button-group">
-                    @if($fileset->set_type == "Audio")
-                        <a class="button" href="/bibles/filesets/{{ $fileset->id }}">Audio Source</a>
-                    @elseif($fileset->set_type == "Text")
-                        <a class="button" href="/bibles/filesets/{{ $fileset->id }}">Text Source</a>
-                        <a class="button" href="/bibles/{{ $fileset->id }}/epub/{{ $fileset->id }}.epub">ePub</a>
-                        <a class="button" href="/bibles/{{ $fileset->id }}/mobi/{{ $fileset->id }}.mobi">mobi</a>
-                        <a class="button" href="/bibles/{{ $fileset->id }}/inscript/index.html">inScript</a>
-                        <a class="button" href="/bibles/{{ $fileset->id }}/html/index.html">HTML</a>
-                    @endif
-            </div>
+                @if(!$fileset->hidden)
+                    <div class="expanded button-group">
+                        <a class="button fileset" href="/bibles/filesets/{{ $fileset->id }}/permissions">
+                            {{ trans('fields.set_type_code_'.$fileset->set_type_code) }}
+                            {{ trans('fields.set_size_code_'.$fileset->set_size_code) }}
+                            <small>{{ $fileset->id }}</small>
+                        </a>
+                    </div>
+                @endif
             @endforeach
 
             <h4>Links</h4>

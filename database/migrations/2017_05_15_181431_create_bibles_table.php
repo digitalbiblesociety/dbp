@@ -16,11 +16,11 @@ class CreateBiblesTable extends Migration
         Schema::create('bibles', function (Blueprint $table) {
             $table->string('id',12)->unique()->onUpdate('cascade')->onDelete('cascade');
             $table->char('iso', 3)->index();
-            $table->foreign('iso')->references('iso')->on('languages');
+            $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
             $table->string('date');
             $table->char('scope', 4)->nullable();
             $table->char('script', 4)->nullable();
-            $table->foreign('script')->references('script')->on('alphabets');
+            $table->foreign('script')->references('script')->on('alphabets')->onDelete('cascade')->onUpdate('cascade');
             $table->text('derived')->nullable();
             $table->string('copyright')->nullable();
             $table->string('in_progress')->nullable();
@@ -38,6 +38,7 @@ class CreateBiblesTable extends Migration
             $table->string('bible_id',12);
             $table->foreign('bible_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
             $table->boolean('vernacular')->default(false);
+	        $table->boolean('vernacular_trade')->default(false);
             $table->string('name');
 	        $table->string('type')->nullable();
 	        $table->string('features')->nullable();
@@ -104,7 +105,7 @@ class CreateBiblesTable extends Migration
             $table->foreign('book_id')->references('id')->on('books');
             $table->string('name')->nullable();
             $table->string('name_short')->nullable();
-            $table->string('chapters')->nullable();
+            $table->string('chapters',491)->nullable();
 	        $table->timestamps();
         });
 
@@ -138,7 +139,7 @@ class CreateBiblesTable extends Migration
 
 	    Schema::create('bible_size_translations', function (Blueprint $table) {
 		    $table->char('set_size_code', 9)->primary();
-		    $table->foreign('set_size_code')->references('id')->on('bible_fileset_sizes')->onUpdate('cascade')->onDelete('cascade');
+		    $table->foreign('set_size_code')->references('set_size_code')->on('bible_fileset_sizes')->onUpdate('cascade')->onDelete('cascade');
 		    $table->string('name');
 		    $table->string('description');
 		    $table->char('iso', 3)->index();
@@ -163,7 +164,17 @@ class CreateBiblesTable extends Migration
 		    $table->char('set_size_code',3);
 		    $table->foreign('set_size_code')->references('set_size_code')->on('bible_fileset_sizes')->onUpdate('cascade')->onDelete('cascade');
 		    $table->boolean('hidden')->default(0);
-		    $table->unique(['id', 'bucket_id', 'set_type'], 'unique_prefix_for_s3');
+		    $table->unique(['id', 'bucket_id', 'set_type_code'], 'unique_prefix_for_s3');
+		    $table->timestamps();
+	    });
+
+	    Schema::create('bible_fileset_relations', function (Blueprint $table) {
+		    $table->string('id', 16)->primary();
+		    $table->char('parent_hash_id',12)->index();
+		    $table->foreign('parent_hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
+		    $table->char('child_hash_id',12)->index();
+		    $table->foreign('child_hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
+		    $table->string('relationship',64);
 		    $table->timestamps();
 	    });
 
@@ -202,10 +213,20 @@ class CreateBiblesTable extends Migration
 		    $table->timestamps();
 	    });
 
-	    Schema::create('bible_file_timestamps', function (Blueprint $table) {
-	    	$table->increments('id');
+	    Schema::create('bible_file_titles', function (Blueprint $table) {
 		    $table->integer('file_id')->unsigned();
-		    $table->foreign('file_id')->references('id')->on('bible_files');
+		    $table->foreign('file_id')->references('id')->on('bible_files')->onUpdate('cascade')->onDelete('cascade');
+		    $table->char('iso',3);
+		    $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
+		    $table->string('title');
+		    $table->text('description')->nullable();
+		    $table->text('key_words')->nullable();
+		    $table->timestamps();
+	    });
+
+	    Schema::create('bible_file_timestamps', function (Blueprint $table) {
+		    $table->integer('file_id')->unsigned();
+		    $table->foreign('file_id')->references('id')->on('bible_files')->onUpdate('cascade')->onDelete('cascade');
 		    $table->tinyInteger('verse_start')->unsigned()->nullable();
 		    $table->tinyInteger('verse_end')->unsigned()->nullable();
 		    $table->float('timestamp');
@@ -221,8 +242,11 @@ class CreateBiblesTable extends Migration
      */
     public function down()
     {
+	    Schema::dropIfExists('bible_file_titles');
 	    Schema::dropIfExists('bible_file_timestamps');
-        Schema::dropIfExists('bible_files');
+	    Schema::dropIfExists('bible_file_translations');
+	    Schema::dropIfExists('bible_fileset_relations');
+	    Schema::dropIfExists('bible_files');
 	    Schema::dropIfExists('bible_fileset_connections');
 	    Schema::dropIfExists('bible_size_translations');
 	    Schema::dropIfExists('bible_sizes');

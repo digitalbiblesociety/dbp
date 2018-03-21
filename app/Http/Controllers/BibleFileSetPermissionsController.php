@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bible\BibleFileset;
 use App\Models\User\User;
 use App\Models\User\Access;
+use Illuminate\Http\Request;
 
 class BibleFileSetPermissionsController extends APIController
 {
@@ -14,12 +15,12 @@ class BibleFileSetPermissionsController extends APIController
 	 *
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
-	public function index()
+	public function index($fileset_id)
 	{
-		$user = Auth::user();
+		$user = \Auth::user();
 		if(!$user) return $this->setStatusCode(401)->replyWithError("you need to be logged in to see this page");
-		$access = Access::where('user_id',$user->id)->get();
-		return view('bibles.filesets.permissions.index',compact('access'));
+		$fileset = BibleFileset::with('permissions')->where('id',$fileset_id)->first();
+		return view('bibles.filesets.permissions.index',compact('fileset'));
 	}
 
 
@@ -46,10 +47,22 @@ class BibleFileSetPermissionsController extends APIController
 	 *
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */
-	public function store()
+	public function store(string $fileset_id,Request $request)
 	{
-		BibleFileSetPermission::create(request()->all());
-		return redirect()->route('view_bible_filesets.show', ['id' => request()->bible_fileset_id]);
+		$validator = \Validator::make($request->all(), [
+			'hash_id'          => 'required|exists:filesets,hash_id',
+			'key_id'           => 'required|exists:user_keys,key',
+		]);
+		if ($validator->fails()) return ['errors' => $validator->errors() ];
+
+		Access::create([
+			'hash_id'        => $request->hash_id,
+			'key_id'         => $request->key_id,
+			'access_type'    => $request->access_type,
+			'access_notes'   => $request->access_notes,
+			'access_granted' => $request->access_granted ?? 0,
+		]);
+		return redirect()->route('view_bible_filesets_permissions.index', ['id' => $fileset_id]);
 	}
 
 	/**

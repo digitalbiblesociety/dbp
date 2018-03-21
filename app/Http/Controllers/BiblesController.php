@@ -86,10 +86,10 @@ class BiblesController extends APIController
 
 	        // Filter by $language
 			if(isset($language)) {
-				$bibles->load('language.alternativeNames');
+				$bibles->load('language.translations');
 				$bibles = $bibles->filter(function($bible) use ($language,$full_word) {
 					$altNameList = [];
-					if(isset($bible->language->alternativeNames)) $altNameList = $bible->language->alternativeNames->pluck('name')->toArray();
+					if(isset($bible->language->translations)) $altNameList = $bible->language->translations->pluck('name')->toArray();
 					if(isset($full_word)) return ($bible->language->name == $language) || in_array($language, $altNameList);
 					return (stripos($bible->language->name, $language) || ($bible->language->name == $language) || stripos(implode($altNameList), $language));
 				});
@@ -193,94 +193,12 @@ class BiblesController extends APIController
      */
     public function show($id)
     {
-	    $bible = Bible::with('filesets','translations','books')->find($id);
+	    $bible = Bible::with('filesets.organization','translations','books.book')->find($id);
 	    if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
     	if(!$this->api) return view('bibles.show',compact('bible'));
 
 		return $this->reply(fractal()->item($bible)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
     }
-
-	public function podcast($id)
-	{
-		$fileset = BibleFileset::with('files.currentTitle','bible')->find($id);
-		if(!$fileset) return $this->replyWithError("No Fileset exists for this ID");
-		$bible = $fileset->bible->first();
-		if(!$bible) return $this->replyWithError("No Bible has been attached to this fileset");
-
-		$site_url = env('APP_URL_PODCAST') ?? "http://www.faithcomesbyhearing.com";
-		$site_contact = 'alan@fcbhmail.com';
-		$meta = null;
-
-		$rootElementName = 'rss';
-		$rootAttributes = [
-			'xmlns:itunes' => "http://www.itunes.com/dtds/podcast-1.0.dtd",
-			'xmlns:atom'   => "http://www.w3.org/2005/Atom",
-			'xmlns:media'  => "http://search.yahoo.com/mrss/",
-			'version'      => "2.0"
-		];
-		$meta['channel']['title'] = $bible->translations->where('iso',$bible->iso)->first()->name ?? $bible->where('iso',"eng")->first()->name;
-		$meta['channel']['description'] = $bible->translations->where('iso',$bible->iso)->first()->description ?? $bible->where('iso',"eng")->first()->description;
-		$meta['channel']['link'] = $site_url;
-		$meta['channel']['atom:link']['_attributes'] = [
-			'href'  => 'http://www.faithcomesbyhearing.com/feeds/audio-bibles/'.$bible->id.'.xml',
-			'rel'   => 'self',
-			'type'  => 'application/rss+xml'
-		];
-		$meta['channel']['language'] = $bible->language->iso;
-		$meta['channel']['copyright'] = $bible->copyright;
-		//$meta['channel']['lastBuildDate'] = ($bible->last_updated) ? $bible->last_updated->toRfc2822String() : "";
-		//$meta['channel']['pubDate'] = ($bible->date) ? $bible->date->toRfc2822String() : "";
-		$meta['channel']['docs'] = 'http://blogs.law.harvard.edu/tech/rss';
-		$meta['channel']['webMaster'] = $site_contact;
-		$meta['channel']['itunes:keywords'] = 'Bible, Testament, Jesus, Scripture, Holy, God, Heaven, Hell, Gospel, Christian, Bible.is, Church';
-		$meta['channel']['itunes:author'] = 'Faith Comes By Hearing';
-		$meta['channel']['itunes:subtitle'] = 'Online Audio Bible Recorded by Faith Comes By Hearing';
-		$meta['channel']['itunes:explicit'] = 'no';
-
-		$meta['channel']['managingEditor'] = $site_contact;
-		$meta['channel']['image']['url'] = 'http://bible.is/ImageSize300X300.jpg';
-		$meta['channel']['image']['title'] = 'Title or description of your logo';
-		$meta['channel']['image']['link'] = 'http://bible.is';
-		$meta['channel']['itunes:owner']['itunes:name'] = 'Faith Comes By Hearing';
-		$meta['channel']['itunes:owner']['itunes:email'] = 'your@email.com';
-
-		//$meta['channel']['itunes:image href="http://bible.is/ImageSize300X300.jpg" /'] = '';
-		//$meta['channel']['atom:link href="http://bible.is/feed.xml" rel="self" type="application/rss+xml" /'] = '';
-		//$meta['channel']['pubDate'] = 'Sun, 01 Jan 2012 00:00:00 EST';
-
-		$meta['channel']['itunes:summary'] = 'Duplicate of above verbose description.';
-		$meta['channel']['itunes:subtitle'] = 'Short description of the podcast - 255 character max.';
-
-		$items = [];
-		foreach($fileset->files as $file) {
-			$items[] = [
-				'title'       => 'Matthew 1',
-				'link'        => 'http://podcastdownload.faithcomesbyhearing.com/mp3.php/ENGESVC2DA/B01___01_Matthew_____ENGESVC2DA.mp3',
-				'guid'        => 'http://podcastdownload.faithcomesbyhearing.com/mp3.php/ENGESVC2DA/B01___01_Matthew_____ENGESVC2DA.mp3',
-				//'description' => ($file->currentTitle) ? htmlspecialchars($file->currentTitle->title) : "",
-				'enclosure'   => [
-					'name'   => "name",
-					'_attributes' => [
-						'url'    => 'http://podcastdownload.faithcomesbyhearing.com/mp3.php/ENGESVC2DA/'. $file->file_name .'.mp3',
-						'length' => '1703936',
-						'type'   => 'audio/mpeg'
-					],
-				],
-				'pubDate'              => 'Wed, 30 Dec 2009 22:22:16 -0700',
-				'itunes:author'        => 'Faith Comes By Hearing',
-				'itunes:explicit'      => 'no',
-				//'itunes:subtitle'      =>  ($file->currentTitle) ? htmlentities($file->currentTitle->title,ENT_XML1) : "",
-				//'itunes:summary'       =>  ($file->currentTitle) ? htmlentities($file->currentTitle->title,ENT_XML1) : "",
-				'itunes:duration'      => '3:15',
-				'itunes:keywords'      => 'Bible, Testament, Jesus, Scripture, Holy, God, Heaven, Hell, Gospel, Christian, Bible.is, Church'
-			];
-		}
-		$meta['channel']['item'] = $items;
-		return $this->reply($meta, ['rootElementName' => $rootElementName, 'rootAttributes' => $rootAttributes]);
-		//if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
-		//if(!$this->api) return view('bibles.show',compact('bible'));
-		//return $this->reply(fractal()->item($bible)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
-	}
 
 	public function manage($id)
 	{

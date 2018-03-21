@@ -35,6 +35,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereVernacular($value)
+ * @property int $vernacular_trade
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereVernacularTrade($value)
  */
 class BibleTranslation extends Model
 {

@@ -73,6 +73,7 @@ class Bible extends Model
      */
     protected $primaryKey = 'id';
     protected $keyType = 'string';
+    //protected $dates = ['date'];
 
     /**
      * Hides values from json return for api

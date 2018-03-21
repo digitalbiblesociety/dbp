@@ -2,7 +2,9 @@
 
 namespace App\Models\Bible;
 
+use App\Models\Organization\Bucket;
 use App\Models\Organization\Organization;
+use App\Models\User\Access;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -58,6 +60,11 @@ class BibleFileset extends Model
 	protected $hidden = ["created_at","updated_at","response_time","hidden","bible_id","hash_id"];
 	protected $fillable = ['name','set_type','organization_id','variation_id','bible_id'];
 
+	public function permissions()
+	{
+		return $this->HasMany(Access::class,'hash_id','hash_id');
+	}
+
 	public function bible()
 	{
 		return $this->hasManyThrough(Bible::class,BibleFilesetConnection::class, 'hash_id','id','hash_id','bible_id');
@@ -70,7 +77,7 @@ class BibleFileset extends Model
 
 	public function organization()
 	{
-		return $this->belongsTo(Organization::class);
+		return $this->hasManyThrough(Organization::class,Bucket::class,'id','id','bucket_id','organization_id');
 	}
 
 	public function files()

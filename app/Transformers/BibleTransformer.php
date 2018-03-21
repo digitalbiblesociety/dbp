@@ -113,13 +113,15 @@ class BibleTransformer extends BaseTransformer
 		switch($this->route) {
 			case "v4_bible.all": {
 				return [
-					"abbr"         => $bible->id,
-					"name"         => @$bible->currentTranslation->name,
-					"vname"        => @$bible->vernacularTranslation->name ?? "",
-					"language"     => @$bible->language->name ?? null,
-					"iso"          => $bible->iso,
-					"date"         => $bible->date,
-					"filesets"     => $bible->filesets->mapWithKeys(function ($value) {
+					"abbr"              => $bible->id,
+					"name"              => @$bible->currentTranslation->name,
+					"vname"             => @$bible->vernacularTranslation->name ?? "",
+					"language"          => @$bible->language->name ?? null,
+					"language_autonym"  => @$bible->language->autonym ?? null,
+					"language_altNames" => $bible->language->translations->pluck('name') ?? null,
+					"iso"               => $bible->iso,
+					"date"              => $bible->date,
+					"filesets"          => $bible->filesets->mapWithKeys(function ($value) {
 						return [
 							$value->id => [
 								"bucket_id"     => $value->bucket_id,
@@ -134,10 +136,10 @@ class BibleTransformer extends BaseTransformer
 				return [
 					"abbr"         => $bible->id,
 					"mark"         => $bible->copyright,
-					"name"         => $bible->currentTranslation->name,
+					"name"         => @$bible->currentTranslation->name ?? "",
 					"vname"        => @$bible->vernacularTranslation->name ?? "",
 					"organization" => $bible->organization,
-					"language"     => $bible->language->name,
+					"language"     => @$bible->language->name ?? "",
 					"iso"          => $bible->iso,
 					"date"         => $bible->date,
 					"country"      => $bible->language->primaryCountry->name ?? '',
@@ -152,6 +154,7 @@ class BibleTransformer extends BaseTransformer
 					"translations" => $bible->translations
 				];
 			}
+
 			default: return [];
 		}
 	}
