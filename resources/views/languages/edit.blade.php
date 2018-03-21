@@ -1,7 +1,15 @@
 @extends('layouts.app')
 
+@section('head')
+
+@endsection
+
 @section('content')
-    <h1 class="text-center">Language Edit</h1>
+
+    <div role="banner">
+        <h1 itemprop="name" class="text-center">{{ $language->name }}</h1>
+        <h2 itemprop="alternateName" class="text-center">{{ $language->autonym }}</h2>
+    </div>
 
     <form action="language" method="POST">
         {{ csrf_field() }}

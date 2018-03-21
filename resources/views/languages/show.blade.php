@@ -112,12 +112,27 @@
             }
         }
 
+        .edit {
+            position: absolute;
+            right:10px;
+            top:10px;
+            background-color: rgba(255,255,255,.5);
+            padding:5px 20px;
+            border-radius: 20px;
+        }
+
+        .edit:hover {
+            background-color: rgba(255,255,255,.5);
+            color:#222;
+        }
+
     </style>
 @endsection
 
 @section('content')
 <div itemscope itemtype="http://schema.org/Language"  class="status status-{{ strtok($language->status," ") }}">
 <div role="banner">
+    @if(\Auth::user()) @if(\Auth::user()->archivist) <a class="button edit" href="{{ route('view_languages.edit', ['id' => $language->id]) }}">Edit</a> @endif @endif
     <h1 itemprop="name" class="text-center">{{ $language->name }}</h1>
     <h2 itemprop="alternateName" class="text-center">{{ $language->autonym }}</h2>
     <small class="language-angle">
@@ -126,17 +141,17 @@
         @endforeach
     </small>
     <div class="tabs medium-10 columns centered text-center" data-tabs id="language-tabs">
-        <div class="small-6 medium-3 columns tabs-title is-active"><a href="#information-tab" aria-selected="true">Information</a></div>
-        <div class="small-6 medium-3 columns tabs-title"><a data-tabs-target="bibles-tab" href="#bibles-tab">Bibles</a></div>
+        <div><a href="#information" aria-selected="true">Information</a></div>
+        <div><a data-tabs-target="bibles" href="#bibles">Bibles</a></div>
         @if(!empty($language->resources))
-        <div class="small-6 medium-3 columns tabs-title"><a data-tabs-target="resources-tab" href="#resources-tab">Resources</a></div>
+        <div><a data-tabs-target="resources" href="#resources">Resources</a></div>
         @endif
-        <div class="small-6 medium-3 columns tabs-title"><a data-tabs-target="countries-tab" href="#countries-tab">Countries</a></div>
+        <div><a data-tabs-target="countries" href="#countries">Countries</a></div>
     </div>
 </div>
 
     <div class="tabs-content row" data-tabs-content="language-tabs">
-        <div class="tabs-panel is-active" id="information-tab">
+        <div class="tabs-panel is-active" id="information">
                 <div class="medium-3 columns">
                         <p><b>Glottolog Code:</b> <small itemprop="value">{{ $language->glotto_id }}</small></p>
                         <p><b>ISO639-3 Code: </b> <small itemprop="value">{{ $language->iso }}</small></p>
@@ -231,7 +246,7 @@
 
                 </div>
         </div>
-        <div class="tabs-panel" id="bibles-tab">
+        <div class="tabs-panel" id="bibles">
             <table>
                 <thead>
                 <tr>
@@ -253,7 +268,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="tabs-panel" id="resources-tab">
+        <div class="tabs-panel" id="resources">
             <table>
                 <thead>
                 <tr>
@@ -270,7 +285,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="tabs-panel" id="countries-tab">
+        <div class="tabs-panel" id="countries">
             <h3>Notable Countries</h3>
             <table>
                 <thead>
