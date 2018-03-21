@@ -162,7 +162,7 @@ class BibleTransformer extends BaseTransformer
 	public function transformForDataTables($bible)
 	{
 		return [
-			'<a href="/bibles/'.$bible->id.'">'.$bible->currentTranslation->name.'</a>',
+			'<a href="/bibles/'.$bible->id.'">'. @$bible->currentTranslation->name .'</a>',
 			@$bible->vernacularTranslation->name ?? "",
 			$bible->language->primaryCountry->name ?? "",
 			$bible->language->name ?? "",
