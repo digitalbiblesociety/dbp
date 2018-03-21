@@ -7,6 +7,7 @@ use Symfony\Component\Yaml\Yaml;
 use App\Models\Language\LanguageDialect;
 use App\Models\Language\LanguageAltName;
 use App\Models\Language\LanguageClassification;
+use App\Models\Language\LanguageTranslation;
 
 use App\Models\Country\Country;
 use App\Models\Country\CountryLanguage;
@@ -19,7 +20,6 @@ class language_seeder extends Seeder
 	    \DB::table('language_dialects')->delete();
 	    \DB::table('language_codes')->delete();
 	    \DB::table('language_classifications')->delete();
-	    \DB::table('language_altNames')->delete();
     	\DB::table('languages')->delete();
 
 	    $seederHelper = new \database\seeds\SeederHelper();
@@ -48,13 +48,6 @@ class language_seeder extends Seeder
             if(isset($language['typology'])) $langoid->typology = implode(',', $language['typology']);
             if(isset($language['writing'])) $langoid->writing = implode(',', $language['writing']);
             $langoid->save();
-
-
-	        if(isset($language['alternate_names'])) {
-	        	foreach($language['alternate_names'] as $altName) {
-	        		$langoid->alternativeNames()->create(['language_id' => $langoid->id,'name' => $altName]);
-		        }
-	        }
 
 	        if(isset($language['classification-gl'])) {
 		        foreach ($language['classification-gl'] as $order => $classification) {
@@ -88,9 +81,10 @@ class language_seeder extends Seeder
 
         }
 
+
 	    // Double Check with Iso Data
-	    $languages = $seederHelper->tsv_to_collection(storage_path('data/languages/ethnologue/iso-639-3_20170202.tab'));
-	    foreach ($languages as $language) {
+	    $languages_ethno = $seederHelper->tsv_to_collection(storage_path('data/languages/ethnologue/iso-639-3_20170202.tab'));
+	    foreach ($languages_ethno as $language) {
 		    $current_language = Language::where('iso',$language['Id'])->first();
 		    if(!$current_language) $current_language = new Language();
 
@@ -100,6 +94,23 @@ class language_seeder extends Seeder
 		    $current_language->iso2T = ($language['Part2T'] != '') ? $language['Part2T'] : null;
 		    $current_language->iso1 = ($language['Part1'] != '') ? $language['Part1'] : null;
 		    $current_language->save();
+	    }
+
+	    $default_null_language = Language::where('iso','und')->first();
+
+	    foreach ($languages as $id => $language) {
+		    if(isset($language['alternate_names'])) {
+			    foreach($language['alternate_names'] as $altName) {
+			    	$alreadyExists = LanguageTranslation::where(['name' => $language['name'],'language_source' => $langoid->id, 'language_translation' => $default_null_language->id])->first();
+			    	if($alreadyExists) { continue; }
+				    LanguageTranslation::insert([
+					    'name'                  => $language['name'],
+					    'language_source'       => $langoid->id,
+					    'language_translation'  => $default_null_language->id,
+					    'vernacular'            => 0,
+				    ]);
+			    }
+		    }
 	    }
 
 	    $language_dialects = $seederHelper->tsv_to_collection(storage_path('data/languages/ethnologue/iso-639-3-macrolanguages_20170131.tab'));

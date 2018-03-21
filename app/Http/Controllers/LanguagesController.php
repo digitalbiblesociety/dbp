@@ -42,9 +42,9 @@ class LanguagesController extends APIController
 			})->when($code, function ($query) use ($code) {
 				return $query->where('iso', $code);
 			})->when($include_alt_names, function ($query) use ($has_bibles) {
-				return $query->with('alternativeNames');
+				return $query->with('translations');
 			})->when($language_name_portion, function ($query) use ($language_name_portion) {
-				return $query->whereHas('alternativeNames', function ($query) use ($language_name_portion) {
+				return $query->whereHas('translations', function ($query) use ($language_name_portion) {
 					$query->where('name', $language_name_portion);
 			})->orWhere('name', $language_name_portion);
 			})->when($sort_by, function ($query) use ($sort_by) {
@@ -155,6 +155,30 @@ class LanguagesController extends APIController
 	}
 
 	/**
+	 * Handle the Country Lang route for V2
+	 *
+	 * @return View|JSON
+	 */
+	public function CountryLang()
+	{
+		// If it's not an API route send them to the documentation
+		if(!$this->api) return view('docs.v2.country_language');
+
+		// Get and set variables from Params. Both are optional.
+		$sort_by = checkParam('sort_by', null, 'optional');
+		$country_additional = checkParam('country_additional', null, 'optional');
+
+		// Fetch Languages and add conditional sorting / loading depending on params
+		$languages = Language::has('primaryCountry')->with('primaryCountry.regions')->when($sort_by, function ($query) use ($sort_by) {
+			return $query->orderBy($sort_by, 'desc');
+		})->get();
+		if($country_additional) $languages->load('countries');
+
+		// Transform and return JSON
+		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer()));
+	}
+
+	/**
 	 * WEB:
      * Show the form for creating a new resource.
      *
@@ -176,22 +200,8 @@ class LanguagesController extends APIController
      */
     public function store(Request $request)
     {
-    	$latLongRegex = '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$';
-	    $this->validate($request, [
-		    'glotto_id'             => 'alpha_num|unique:languages,glotto_id|max:8|required_if:iso,null|nullable',
-		    'iso'                   => 'alpha|unique:languages,iso|max:3|required_if:glotto_code,null|nullable',
-			'iso2B'                 => 'alpha|max:3|unique:languages,iso2B',
-			'iso2T'                 => 'alpha|max:3|unique:languages,iso2T',
-			'iso1'                  => 'alpha|max:2|unique:languages,iso1',
-			'name'                  => 'required|string|max:191',
-			'autonym'               => 'required|string|max:191',
-			'level'                 => 'string|max:191|nullable',
-			'maps'                  => 'string|max:191|nullable',
-			'population'            => 'integer',
-			'latitude'              =>  "regex:$latLongRegex",
-			'longitude'             =>  "regex:$latLongRegex",
-			'country_id'            =>  'alpha|max:2|exists:countries,id',
-	    ]);
+	    if(!Auth::user()->archivist) return $this->setStatusCode(401)->replyWithError("You are not an Archivist");
+	    $this->validateLanguage($request);
 		Language::create($request->all());
 	    redirect()->route('languages_show',['id' => $request->id]);
     }
@@ -205,7 +215,7 @@ class LanguagesController extends APIController
 	public function show($id)
     {
 	    $language = fetchLanguage($id);
-	    $language->load("translations","codes","alternativeNames","dialects","classifications","countries","bibles");
+	    $language->load("translations","codes","dialects","classifications","countries","bibles");
 	    if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
     	if($this->api) return $this->reply(fractal()->item($language)->transformWith(new LanguageTransformer())->toArray());
         return view('languages.show',compact('language'));
@@ -232,7 +242,12 @@ class LanguagesController extends APIController
      */
     public function update(Request $request, $id)
     {
+    	if(!Auth::user()->archivist) return $this->setStatusCode(401)->replyWithError("You are not an Archivist");
+	    $language = Language::find($id);
+	    $this->validateLanguage($request);
+	    $language->fill($request->all())->save();
 
+	    return redirect()->route('view_languages.show', ['id' => $request->id]);
     }
 
     /**
@@ -241,33 +256,37 @@ class LanguagesController extends APIController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
-        //
+	    if(!Auth::user()->archivist) return $this->setStatusCode(401)->replyWithError("You are not an Archivist");
+	    Language::find($id)->delete();
+	    return redirect()->route('view_languages.index');
     }
 
-	/**
-	 * Handle the Country Lang route for V2
-	 *
-	 * @return View|JSON
-	 */
-	public function CountryLang()
-	{
-		// If it's not an API route send them to the documentation
-		if(!$this->api) return view('docs.v2.country_language');
+    public function validateLanguage(Request $request)
+    {
+	    $latLongRegex = '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$';
+	    $validator = Validator::make($request->all(), [
+		    'glotto_id'             => ($request->method() == "POST") ? 'alpha_num|unique:languages,glotto_id|max:8|required_if:iso,null|nullable' : 'alpha_num|exists:languages,glotto_id|max:8|required_if:iso,null|nullable',
+		    'iso'                   => ($request->method() == "POST") ? 'alpha|unique:languages,iso|max:3|required_if:glotto_code,null|nullable' : 'alpha|exists:languages,iso|max:3|required_if:glotto_code,null|nullable',
+		    'iso2B'                 => ($request->method() == "POST") ? 'alpha|max:3|unique:languages,iso2B' : 'alpha|max:3',
+		    'iso2T'                 => ($request->method() == "POST") ? 'alpha|max:3|unique:languages,iso2T' : 'alpha|max:3',
+		    'iso1'                  => ($request->method() == "POST") ? 'alpha|max:2|unique:languages,iso1' : 'alpha|max:2',
+		    'name'                  => 'required|string|max:191',
+		    'autonym'               => 'required|string|max:191',
+		    'level'                 => 'string|max:191|nullable',
+		    'maps'                  => 'string|max:191|nullable',
+		    'population'            => 'integer',
+		    'latitude'              => 'regex:'.$latLongRegex,
+		    'longitude'             => 'regex:'.$latLongRegex,
+		    'country_id'            => 'alpha|max:2|exists:countries,id',
+	    ]);
 
-		// Get and set variables from Params. Both are optional.
-		$sort_by = checkParam('sort_by', null, 'optional');
-		$country_additional = checkParam('country_additional', null, 'optional');
+	    if ($validator->fails()) {
+		    if($this->api)  return $this->setStatusCode(422)->replyWithError($validator->errors());
+		    if(!$this->api) return redirect('dashboard/alphabets/create')->withErrors($validator)->withInput();
+	    }
 
-		// Fetch Languages and add conditional sorting / loading depending on params
-		$languages = Language::has('primaryCountry')->with('primaryCountry.regions')->when($sort_by, function ($query) use ($sort_by) {
-			return $query->orderBy($sort_by, 'desc');
-		})->get();
-		if($country_additional) $languages->load('countries');
-
-		// Transform and return JSON
-		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer()));
-	}
+    }
 
 }

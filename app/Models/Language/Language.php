@@ -128,8 +128,13 @@ class Language extends Model
      */
     public function translations()
     {
-        return $this->HasMany(LanguageTranslation::class,'language_source');
+        return $this->HasMany(LanguageTranslation::class,'language_source','language_translation');
     }
+
+	public function autonym()
+	{
+		return $this->HasOne(LanguageTranslation::class,'language_source')->where('vernacular', 1);
+	}
 
     public function currentTranslation($iso = null)
     {
@@ -191,11 +196,6 @@ class Language extends Model
     public function classifications()
     {
         return $this->HasMany(LanguageClassification::class);
-    }
-
-    public function alternativeNames()
-    {
-        return $this->HasMany(LanguageAltName::class);
     }
 
     public function dialects()

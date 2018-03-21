@@ -20,12 +20,15 @@ class language_translations extends Seeder
             $languageExists = Language::where('iso',$language['iso_language'])->first();
             $referenceLanguageExists = Language::where('iso',$language['iso_translation'])->first();
             if($languageExists and $referenceLanguageExists) {
-	            LanguageTranslation::insert([
+            	$translationExists = LanguageTranslation::where(['name' => $language['name'],'language_source' => $languageExists->id, 'language_translation' => $referenceLanguageExists->id])->first();
+            	if($translationExists) { continue; }
+	            LanguageTranslation::create([
                     'name'                  => $language['name'],
                     'language_source'       => $languageExists->id,
                     'language_translation'  => $referenceLanguageExists->id,
 		            'vernacular'            => ($languageExists->id == $referenceLanguageExists->id) ? 1 : 0,
                 ]);
+
             } else {
                 $errorOutput[] = $language['iso_language'];
             }

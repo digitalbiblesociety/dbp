@@ -32,7 +32,6 @@ class CreateLanguagesTable extends Migration
 	        $table->char('iso1',2)->nullable()->unique();
             $table->string('name');
 	        $table->string('autonym')->nullable();
-            $table->string('level')->nullable();
             $table->string('maps')->nullable();
             $table->text('development')->nullable();
             $table->text('use')->nullable();
@@ -61,6 +60,7 @@ class CreateLanguagesTable extends Migration
 	        $table->string('name');
 	        $table->text('description')->nullable();
 	        $table->boolean('vernacular')->default(0);
+	        $table->unique(['language_source','language_translation','name'],'unq_language_translations');
 	        $table->timestamps();
         });
 
@@ -77,14 +77,6 @@ class CreateLanguagesTable extends Migration
 	        $table->timestamps();
         });
 
-        Schema::create('language_altNames', function (Blueprint $table) {
-        	$table->increments('id');
-            $table->integer('language_id')->unsigned();
-            $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
-            $table->string('name');
-	        $table->timestamps();
-        });
-
         Schema::create('language_dialects', function (Blueprint $table) {
 	        $table->increments('id');
             $table->integer('language_id')->unsigned();
@@ -93,18 +85,6 @@ class CreateLanguagesTable extends Migration
             $table->text('name');
 	        $table->timestamps();
         });
-
-	    Schema::create('language_relationships', function (Blueprint $table) {
-		    $table->increments('id');
-		    $table->integer('language_id')->unsigned();
-		    $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
-		    $table->integer('relationship_id')->unsigned();
-		    $table->foreign('relationship_id')->references('id')->on('languages')->onUpdate('cascade');
-		    $table->string('relationship_type');
-		    $table->string('name');
-		    $table->text('description');
-		    $table->timestamps();
-	    });
 
         Schema::create('language_classifications', function (Blueprint $table) {
 	        $table->increments('id');
@@ -165,8 +145,8 @@ class CreateLanguagesTable extends Migration
 
         Schema::create('alphabet_language', function (Blueprint $table) {
 	        $table->increments('id');
-            $table->char('script', 4)->index();
-            $table->foreign('script')->references('script')->on('alphabets')->onUpdate('cascade');
+            $table->char('script_id', 4)->index();
+            $table->foreign('script_id')->references('script')->on('alphabets')->onUpdate('cascade');
             $table->integer('language_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
 	        $table->timestamps();
@@ -227,10 +207,8 @@ class CreateLanguagesTable extends Migration
         Schema::dropIfExists('alphabet_fonts');
         Schema::dropIfExists('alphabets');
 	    Schema::dropIfExists('language_classifications');
-	    Schema::dropIfExists('language_relationships');
 	    Schema::dropIfExists('language_translations');
 	    Schema::dropIfExists('language_bibleInfo');
-	    Schema::dropIfExists('language_altNames');
 	    Schema::dropIfExists('language_dialects');
 	    Schema::dropIfExists('language_codes');
         Schema::dropIfExists('country_regions');
