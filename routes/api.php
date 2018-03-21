@@ -125,7 +125,13 @@
 	// Error Handling
 	Route::name('v4_api.logs')->get('sign',                                               'HomeController@signedUrls');
 
+	// VERSION 4 | SEARCH
+	Route::name('v4_text_search')->get('search',                                          'TextController@search');
+
 	// VERSION 4 | CONNECTIONS
 
-	Route::name('v4_connections_jfm.sync')->get('connections/jesus-film/sync',                  'ArclightController@sync');
-	Route::name('v4_connections_jfm.index')->get('connections/jesus-film/{iso}',                'ArclightController@index');
+	Route::name('v4_connections_jfm.sync')->get('connections/jesus-film/sync',           'Connections\ArclightController@sync');
+	Route::name('v4_connections_jfm.index')->get('connections/jesus-film/{iso}',         'Connections\ArclightController@index');
+
+	Route::name('v4_connections_grn.sync')->get('connections/grn/sync',                  'Connections\GRNController@sync');
+	Route::name('v4_connections_grn.index')->get('connections/grn/{iso}',                'Connections\GRNController@index');

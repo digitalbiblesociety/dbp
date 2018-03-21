@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Connections;
 
+use App\Http\Controllers\APIController;
 use Illuminate\Http\Request;
 
 class ArclightController extends APIController
@@ -36,6 +37,7 @@ class ArclightController extends APIController
     public function sync()
     {
 	    if(!file_exists(storage_path('data/jfm/languages'))) mkdir(storage_path('data/jfm/languages'), 0777, true);
+	    if(!file_exists(storage_path('data/jfm/feature-films'))) mkdir(storage_path('data/jfm/feature-films'), 0777, true);
 
     	$this->syncLanguages();
 	    $this->syncTypes();
