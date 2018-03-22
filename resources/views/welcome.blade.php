@@ -41,6 +41,24 @@
             padding: 70px;
             font-size:2rem;
         }
+        #banner .button {
+            background-color: #f1f1f1;
+            color:#222;
+            text-align: center;
+            display: block;
+            width:100%;
+            height:40px;
+            line-height: 40px;
+        }
+
+        #banner .button:hover {
+            background-color: #fff;
+        }
+
+        #stats a {
+            color:#222;
+        }
+
     </style>
 @endsection
 
@@ -49,9 +67,9 @@
     <section id="banner">
         <h1 class="text-center">The Bible in your language on your Site</h1>
         <div class="medium-6 columns centered">
-            <a class="button medium-4 columns" href="{{ route('swagger_v4') }}">v4 Documentation</a>
-            <a class="button secondary medium-4 columns" href="{{ route('register') }}">Get Started</a>
-            <a class="button medium-4 columns" href="{{ route('swagger_v2') }}">v2 Documentation</a>
+            <div class="medium-4 columns"><a class="button" href="{{ route('swagger_v4') }}">v4 Documentation</a></div>
+            <div class="medium-4 columns"><a class="button" href="{{ route('register') }}">Get Started</a></div>
+            <div class="medium-4 columns"><a class="button" href="{{ route('swagger_v2') }}">v2 Documentation</a></div>
         </div>
     </section>
 
