@@ -391,6 +391,54 @@
         }
       }
     },
+    "/search": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/callback"
+          },
+          {
+            "$ref": "#/components/parameters/query"
+          },
+          {
+            "$ref": "#/components/parameters/exclude"
+          },
+          {
+            "$ref": "#/components/parameters/dam_id"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/books"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns Search Results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Search"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/countries": {
       "get": {
         "operationId": "v4_countries.all",
@@ -992,6 +1040,54 @@
           }
         }
       },
+      "Search": {
+        "properties": {
+          "book_id": {
+            "type": "string",
+            "example": "JHN"
+          },
+          "book_name": {
+            "type": "string",
+            "example": "John"
+          },
+          "book_name_alt": {
+            "type": "string",
+            "example": "John"
+          },
+          "chapter": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 150,
+            "example": 11
+          },
+          "chapter_alt": {
+            "type": "string",
+            "example": "Eleven"
+          },
+          "verse_start": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 35
+          },
+          "verse_start_alt": {
+            "type": "string",
+            "example": "Thirty five"
+          },
+          "verse_end": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 35
+          },
+          "verse_end_alt": {
+            "type": "string",
+            "example": "Thirty five"
+          },
+          "verse_text": {
+            "type": "string",
+            "example": "Jesus wept."
+          }
+        }
+      },
       "Countries": {
         "required": [
           "name"
@@ -1122,6 +1218,39 @@
       }
     },
     "parameters": {
+      "books": {
+        "name": "books",
+        "in": "query",
+        "description": "Books to filter the return by",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "in": "query",
+        "description": "Number of records to return",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "query": {
+        "name": "query",
+        "in": "query",
+        "description": "The word or phrase you're searching for",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "exclude": {
+        "name": "exclude",
+        "in": "query",
+        "description": "Any words you don't want returned",
+        "schema": {
+          "type": "string"
+        }
+      },
       "key": {
         "name": "key",
         "in": "query",
@@ -1175,6 +1304,7 @@
       "dam_id": {
         "name": "dam_id",
         "in": "query",
+        "required": true,
         "description": "To get the location directory and asset file basename for a specific volume.",
         "schema": {
           "type": "string"
