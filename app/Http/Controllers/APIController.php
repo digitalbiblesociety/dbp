@@ -39,7 +39,7 @@ class APIController extends Controller
 	    $this->request = $request;
 	    if(substr(array_shift($url),-3,3) == "api") {
 		    $this->api = true;
-		    $this->v = checkParam('v',null,'optional') ?? 2;
+		    $this->v = checkParam('v');
 			$keyExists = Key::find(checkParam('key'));
 			if(!isset($keyExists)) {abort(403,'No Authentication Provided');}
 			$this->key = $keyExists->key;
