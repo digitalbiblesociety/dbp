@@ -113,14 +113,20 @@ class TextController extends APIController
 	    if(!$this->api) return view('docs.v2.text_search');
 
 	    $query = checkParam('query');
-	    $exclude = checkParam('exclude', null, 'optional');
+	    $exclude = checkParam('exclude', null, 'optional') ?? false;
+	    if($exclude) $exclude = ' -'.$exclude;
 	    $bible_id = checkParam('dam_id');
 	    $limit = checkParam('limit', null, 'optional') ?? 15;
+	    $books = checkParam('books', null, 'optional');
+	    
+		$query = DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).$exclude);
+	    $verses = DB::connection('sophia')->table($bible_id.'_vpl')
+		->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN BOOLEAN MODE)"))->limit($limit)
+		->when($books, function($q) use ($books){
+		    $q->whereIn('book', explode(',',$books));
+	    })->get();
 
-		$query = DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).' -'.$exclude);
-	    $verses = DB::connection('sophia')->table($bible_id.'_vpl')->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)->get();
 	    $this->addMetaDataToVerses($verses,$bible_id);
-
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
     }
 
