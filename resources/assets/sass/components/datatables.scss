@@ -62,44 +62,29 @@
 
 .dataTables_header {
   position: relative;
-  height: 30px;
   /* background: #fafafa; */
   /* border: thin solid #ccc; */
   padding: 0px 10px;
   box-sizing: border-box;
-  margin-top: -30px;
   background: rgba(255,255,255,.5);
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+  width: 50%;
+  margin:0 auto;
 
-  .dataTables_length {
-    position: absolute;
+  @media only screen and (max-width:600px) {
+    width:80%;
   }
 
+  .dataTables_length,
   .dataTables_filter {
-    position: absolute;
-    left: 70px;
+    width:50%;
+    float:left;
   }
 
-  .dataTables_links {
-    a {
-      position: absolute;
-      height: 60px;
-      width: 60px;
-      display: block;
-      background-size: 75% 75%;
-      background-repeat: no-repeat;
-      background-position:center center;
-    }
-  }
-
-  .inscript {
-    right:10px;
-    background-image: url("/img/icons/logo_inscript.svg");
-  }
-  .findbible {
-    right:80px;
-    background-image: url("/img/icons/logo_fab.svg");
+  .dataTables_length select {
+    height:44px;
+    text-indent: 10px;
   }
 
 }

@@ -187,14 +187,11 @@ Primary style
   }
 
   @include MQ(L) {
-    position: absolute;
     height: 80px;
-    left: 0;
-    top: 0;
     width: 100%;
     padding: 0;
     text-align: center;
-    background-color: transparent;
+    background-color: #222;
 
     &::before {
       content: 'desktop';
@@ -206,6 +203,7 @@ Primary style
 
     .main-nav {
       display: inline-block;
+      padding-bottom:60px;
     }
 
     .main-nav > ul > li {
