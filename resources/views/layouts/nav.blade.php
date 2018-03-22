@@ -47,8 +47,8 @@
                             <li>
                                 <h2>Koinos</h2>
                                 <ul class="links-list">
-                                    <li><a href="{{ route('swagger_v2') }}">V4 Documentation</a></li>
-                                    <li><a href="{{ route('swagger_v4') }}">V2 Documentation</a></li>
+                                    <li><a href="{{ route('swagger_v4') }}">V4 Documentation</a></li>
+                                    <li><a href="{{ route('swagger_v2') }}">V2 Documentation</a></li>
                                     <li><a href="{{ route('docs.sdk') }}">Examples and SDKs</a></li>
                                     <li><a href="#0">News & Changelog</a></li>
                                     <li><a href="#0">Organizational Membership</a></li>
