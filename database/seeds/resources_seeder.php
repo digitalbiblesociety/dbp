@@ -14,13 +14,82 @@ class resources_seeder extends Seeder
      */
     public function run()
     {
-    	dd($this->seed_jesusFilm());
-	    //\DB::table('resource_links')->delete();
-	    //\DB::table('resource_translations')->delete();
-	    //\DB::table('resources')->delete();
+	    \DB::table('resource_links')->delete();
+	    \DB::table('resource_translations')->delete();
+	    \DB::table('resources')->delete();
 
-    	// Run GRN Seeder
-        //$this->seed_grn();
+	    // Run GRN Seeder
+	    $this->seed_homeForBibleTranslators();
+	    $this->seed_jesusFilm();
+	    $this->seed_grn();
+	    $this->seed_digitalBibleSociety();
+    }
+
+    public function seed_digitalBibleSociety()
+    {
+    	$organization = Organization::where('slug','digital-bible-society')->first();
+
+    	// Handle Libraries as Collections
+		$libraries = json_decode(file_get_contents(storage_path('data/resources/treasure_libraries/libraries.json')));
+		foreach ($libraries as $iso => $library) {
+			$resource = Resource::create([
+				'source_id'        => '',
+				'organization_id'  => $organization->id,
+				'iso'              => $iso,
+				'type'             => "Library",
+				'cover'            => "https://images.bible.cloud/treasures/box/" . $library->url . "-treasures.jpg",
+				'date'             => ""
+			]);
+			$resource->translations()->create(['iso'=>'eng','title' => $library->etitle,'description' => isset($library->description) ? $library->description : "",'tag' => 0,'vernacular' => 0]);
+			$resource->translations()->create(['iso'=>$iso,'title' => $library->vtitle,'description' => '','tag' => 0,'vernacular' => 1]);
+			$resource->links()->create(['url' => "https://dbs.org/libraries/".$library->url."-treasures",'type' => "Library",'title' => "Collection Preview & Download" ]);
+		}
+    }
+
+    public function seed_homeForBibleTranslators()
+    {
+    	$books = json_decode(file_get_contents(storage_path('data/resources/hbft.json')),true);
+    	foreach ($books as $book) {
+
+    		if(strlen($book['title']) > 191) {
+    			if(strpos($book['title'], ':') !== false) {
+    				$split = explode(':',$book['title']);
+    				$book['title'] = $split[0];
+				    $book['description'] = $split[1];
+			    }
+		    }
+
+    		if(!isset($book['iso'])) { dd($book); }
+		    $resource = Resource::create([
+			    'source_id'        => '',
+			    'organization_id'  => "23",
+			    'iso'              => $book['iso'],
+			    'type'             => "Book",
+			    'cover'            => "https://bible.cloud/images/resources/".$book['cover'],
+			    'date'             => $book['date']
+		    ]);
+
+		    $resource->translations()->create([
+		    	'title'       => $book['title'],
+			    'description' => $book['description'],
+			    'iso'         => $book['iso'],
+			    'tag'         => 0,
+			    'vernacular'  => ($book['iso'] == "eng") ? 1 : 0
+		    ],
+			[
+				'title'       => $book['author'],
+				'description' => "Author",
+				'tag'         => 1,
+				'vernacular'  => ($book['iso'] == "eng") ? 1 : 0
+			]);
+
+		    $resource->links()->create([
+			    'url'   => $book['link'],
+			    'type'  => "Print",
+			    'title' => "Store"
+		    ]);
+	    }
+
     }
 
     public function seed_jesusFilm()
@@ -39,9 +108,47 @@ class resources_seeder extends Seeder
 	    } else {
 		    $languages = json_decode(file_get_contents(storage_path('/data/resources/arcLight.json')), true);
 	    }
+	    $languages = json_decode(file_get_contents(storage_path('data/resources/arclight/arclight-languages.json')), true);
+		$media_components = json_decode(file_get_contents(storage_path('data/resources/arclight/JFM-media-components.json')), true);
+		$media_components = collect($media_components['_embedded']['mediaComponents']);
 
-	    dd($languages);
+	    $paths = glob(storage_path('/data/resources/arclight/JFM-media-compon*.json'));
+	    foreach($paths as $path) {
+	    	$collections = json_decode(file_get_contents($path), true);
+	    	foreach ($collections['_embedded'] as $collection) {
+	    		foreach($collection as $film) {
+	    			$current_film = $media_components->where('mediaComponentId',$film['mediaComponentId'])->first();
+				    if(!isset($film['languageId'])) { continue; }
+	    			if(!isset($languages[$film['languageId']])) { continue; }
+	    			$resource = Resource::create([
+	    				'source_id'        => $film['mediaComponentId'],
+					    'organization_id'  => "24",
+					    'iso'              => $languages[$film['languageId']],
+					    'type'             => "Film",
+					    'cover'            => "https://bible.cloud/images/resources/".$film['mediaComponentId'].'.png',
+					    'cover_thumbnail'  => "https://bible.cloud/images/resources/".$film['mediaComponentId'].'_thumbnail.png'
+				    ]);
+					if($current_film) $resource->translations()->create(['title' => $current_film['title'],'description' => $current_film['shortDescription'],'iso' => 'eng','vernacular' => 0,'tag' => 0]);
 
+					if(isset($film['downloadUrls']['low']['url'])) {
+						$resource->links()->create([
+							'url'   => $film['downloadUrls']['low']['url'],
+							'size'  => $this->formatBytes($film['downloadUrls']['low']['sizeInBytes']),
+							'type'  => "Low Quality",
+							'title' => "Low Quality Download"
+						]);
+					}
+				    if(isset($film['downloadUrls']['high']['url'])) {
+					    $resource->links()->create([
+							'url'   => $film['downloadUrls']['high']['url'],
+							'size'  => $this->formatBytes( $film['downloadUrls']['high']['sizeInBytes'] ),
+							'type'  => "High Quality",
+							'title' => "High Quality Download"
+						]);
+				    }
+			    }
+		    }
+	    }
 
 
     }
@@ -106,4 +213,19 @@ class resources_seeder extends Seeder
 	    }
 
     }
+
+	function formatBytes($bytes, $precision = 2) {
+		$units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+		$bytes = max($bytes, 0);
+		$pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+		$pow = min($pow, count($units) - 1);
+
+		// Uncomment one of the following alternatives
+		$bytes /= pow(1024, $pow);
+		// $bytes /= (1 << (10 * $pow));
+
+		return round($bytes, $precision) . ' ' . $units[$pow];
+	}
+
 }

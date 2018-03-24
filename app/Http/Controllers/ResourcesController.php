@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Resource\Resource;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class ResourcesController extends Controller
+use App\Transformers\ResourcesTransformer;
+use Illuminate\Pagination\LengthAwarePaginator;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use League\Fractal\Serializer\DataArraySerializer;
+
+class ResourcesController extends APIController
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +20,25 @@ class ResourcesController extends Controller
      */
     public function index()
     {
-        return view('resources.index');
+        if(!$this->api) return view('resources.index');
+        $iso = checkParam('iso', null, 'optional');
+        $limit = checkParam('limit', null, 'optional') ?? 25;
+        $organization_id = checkParam('organization_id', null, 'optional');
+
+        $pagination = Resource::with('translations','links','organization.translations')
+		->when($iso, function($q) use ($iso) {
+	        $q->where('iso', $iso);
+        })->when($organization_id, function($q) use ($organization_id) {
+		    $q->where('organization_id', $organization_id);
+	    })->paginate($limit);
+	    $resources = $pagination->getCollection();
+
+	    return $this->reply(
+	    	fractal()->collection($resources)
+				->transformWith(new ResourcesTransformer())
+				->serializeWith(new DataArraySerializer())
+				->paginateWith(new IlluminatePaginatorAdapter($pagination))
+	    );
     }
 
     /**
@@ -46,7 +70,9 @@ class ResourcesController extends Controller
      */
     public function show($id)
     {
-        return view('resources.show');
+	    if(!$this->api) return view('resources.show');
+	    $resource = Resource::with('translations','links','organization.translations')->find($id);
+	    return $this->reply($resource);
     }
 
     /**

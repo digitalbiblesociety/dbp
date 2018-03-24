@@ -2,6 +2,7 @@
 
 namespace App\Models\Resource;
 
+use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -30,9 +31,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereSourceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereUpdatedAt($value)
+ * @property-read \App\Models\Organization\Organization $organization
  */
 class Resource extends Model
 {
+
+	protected $hidden = ['created_at','updated_at'];
+
     public function links()
     {
     	return $this->hasMany(ResourceLink::class);
@@ -40,6 +45,12 @@ class Resource extends Model
 
 	public function translations()
 	{
-		return $this->hasMany(ResourceLink::class);
+		return $this->hasMany(ResourceTranslation::class);
 	}
+
+	public function organization()
+	{
+		return $this->BelongsTo(Organization::class);
+	}
+
 }

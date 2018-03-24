@@ -47,6 +47,9 @@
       "get": {
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -81,6 +84,9 @@
         "operationId": "v4_bible.one",
         "summary": "Get extended Metadata for a single Bible",
         "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
           {
             "$ref": "#/components/parameters/key"
           },
@@ -117,6 +123,9 @@
         "summary": "Get books for a Bible",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -151,6 +160,9 @@
         "operationId": "v4_bible.chapter",
         "summary": "Get text for a chapter",
         "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
           {
             "$ref": "#/components/parameters/key"
           },
@@ -187,6 +199,9 @@
         "summary": "Get text for a chapter",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -221,6 +236,9 @@
         "operationId": "v4_bible_filesets.download",
         "summary": "Download either a full zipped audio Bible or a selection",
         "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
           {
             "$ref": "#/components/parameters/key"
           },
@@ -257,6 +275,9 @@
         "summary": "Get generalized data for books of the Bible",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -291,6 +312,9 @@
         "operationId": "v4_timestamps",
         "summary": "Get List of available timestamps",
         "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
           {
             "$ref": "#/components/parameters/key"
           },
@@ -327,6 +351,9 @@
         "summary": "Get List of available timestamps",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -362,6 +389,9 @@
         "summary": "Get List of available timestamps",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -391,60 +421,15 @@
         }
       }
     },
-    "/search": {
-      "get": {
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/key"
-          },
-          {
-            "$ref": "#/components/parameters/version"
-          },
-          {
-            "$ref": "#/components/parameters/reply"
-          },
-          {
-            "$ref": "#/components/parameters/callback"
-          },
-          {
-            "$ref": "#/components/parameters/query"
-          },
-          {
-            "$ref": "#/components/parameters/exclude"
-          },
-          {
-            "$ref": "#/components/parameters/dam_id"
-          },
-          {
-            "$ref": "#/components/parameters/limit"
-          },
-          {
-            "$ref": "#/components/parameters/books"
-          }
-        ],
-        "tags": [
-          "Bible"
-        ],
-        "responses": {
-          "200": {
-            "description": "Returns Search Results",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Search"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/countries": {
       "get": {
         "operationId": "v4_countries.all",
         "summary": "Get List of countries",
         "description": "Returns a list of countries with generalized data",
         "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
           {
             "$ref": "#/components/parameters/key"
           },
@@ -481,6 +466,9 @@
         "summary": "Get a single Country",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -515,6 +503,9 @@
         "operationId": "v4_languages.all",
         "summary": "Get List of Languages",
         "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
           {
             "$ref": "#/components/parameters/key"
           },
@@ -551,6 +542,9 @@
         "summary": "Get a specific Language",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -585,6 +579,9 @@
         "operationId": "v4_alphabets.all",
         "summary": "Get Alphabets",
         "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
           {
             "$ref": "#/components/parameters/key"
           },
@@ -621,6 +618,9 @@
         "summary": "A single Alphabet",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -655,6 +655,9 @@
         "operationId": "v4_organizations.all",
         "summary": "Get Organizations",
         "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
           {
             "$ref": "#/components/parameters/key"
           },
@@ -691,6 +694,9 @@
         "summary": "Get Organizations",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -720,11 +726,231 @@
         }
       }
     },
+    "/resources": {
+      "get": {
+        "operationId": "v4_resources.index",
+        "summary": "Get a series of resources",
+        "description": "This route delivers non-scripture resources: commentaries, books, and other films. It may be filtered by language via the `iso` code and organization by the `organization_id`. The results are paginated by default and the pagination length may be controlled via the `limit` variable.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "iso",
+            "in": "query",
+            "description": "The iso 639-3 code for the language you wish to filter by",
+            "schema": {
+              "type": "string",
+              "example": "eng",
+              "minLength": 3,
+              "maxLength": 3
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "query",
+            "description": "The integer or slug value for an organization",
+            "schema": {
+              "type": "integer",
+              "example": 26
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of results to return with each pagination",
+            "schema": {
+              "type": "integer",
+              "example": 26
+            }
+          }
+        ],
+        "tags": [
+          "Organizations"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resource"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resources/{resource_id}": {
+      "get": {
+        "operationId": "v4_resources.show",
+        "summary": "Get a single resource by it's ID",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Organizations"
+        ],
+        "responses": {
+          "200": {
+            "description": "A success resource index query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resource"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "v4_resources.update",
+        "summary": "Update a single resource by it's ID.",
+        "description": "This route will update a single resource by it's ID but in order to do so you must either belong to the organization that owns the resource or have `archivist` level permissions. Some resources are updated via API. Changes made to this type of resource will be overwritten on the next update. These resources are indentified by a `source_id`",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Organizations"
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful resource update query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resource"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "v4_resources.store",
+        "summary": "Create a single resource",
+        "description": "This route will create a single resource but order to do so you must either belong to an organization or have `archivist` level permissions. Please do not create a resource for which your organization already has a connected API as that will introduce duplicates into the system. To see a list of connected APIs, please see the `connections` route.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Organizations"
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful resource creation query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resource"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "v4_resources.destroy",
+        "summary": "Delete a Single Resource",
+        "description": "This route will delete a single resource but order to do so you must either belong to the owning organization or have `archivist` level permissions.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Organizations"
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful deletion query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resource"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/users": {
       "post": {
         "operationId": "v4_organizations.one",
         "summary": "Create a User",
         "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
           {
             "$ref": "#/components/parameters/key"
           },
@@ -761,6 +987,9 @@
         "summary": "Login a User",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -795,6 +1024,9 @@
         "operationId": "v4_user.oAuth",
         "summary": "Login via oAuth",
         "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
           {
             "$ref": "#/components/parameters/key"
           },
@@ -831,6 +1063,9 @@
         "summary": "Login via oAuth",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -866,6 +1101,9 @@
         "summary": "Get notes for a specific user",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -899,6 +1137,9 @@
         "summary": "Create a new note for a user",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -931,6 +1172,9 @@
         "operationId": "v4_notes.store",
         "summary": "Edit an existing note for a user",
         "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
           {
             "$ref": "#/components/parameters/key"
           },
@@ -967,6 +1211,9 @@
         "summary": "Login via oAuth",
         "parameters": [
           {
+            "$ref": "#/components/parameters/v"
+          },
+          {
             "$ref": "#/components/parameters/key"
           },
           {
@@ -999,6 +1246,85 @@
   },
   "components": {
     "schemas": {
+      "Resource": {
+        "required": [
+          "id",
+          "name",
+          "glotto_id",
+          "iso"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "uniqueItems": true,
+            "description": "An incrementing ID for the resources",
+            "example": 1
+          },
+          "iso": {
+            "type": "string",
+            "description": "An iso 639-3 code to identify the primary language of the resource",
+            "example": "eng"
+          },
+          "cover": {
+            "type": "string",
+            "example": "https://example.com/image.png"
+          },
+          "cover_thumnail": {
+            "type": "string",
+            "example": "https://example.com/image_thumbnail.png"
+          },
+          "translations": {
+            "type": "object",
+            "example": {
+              "eng": {
+                "title": "The Story of the Home for Bible Translators",
+                "description": "The Story of the HfBT"
+              },
+              "spa": {
+                "title": "बाइबल अनुवादकहरूको लागि घर",
+                "description": "The Story of the HfBT"
+              }
+            }
+          },
+          "organization": {
+            "type": "object",
+            "example": {
+              "slug": "the-home-for-bible-translators",
+              "primaryColor": "#293e80",
+              "secondaryColor": "#FFFFFF",
+              "translations": {
+                "nep": "बाइबल अनुवादकहरूको लागि घर",
+                "spa": "El Hogar para Traductores Bíblicos",
+                "eng": "The Home for Bible Translators"
+              }
+            }
+          },
+          "derived": {
+            "type": "string",
+            "example": "ENGKJV"
+          },
+          "copyright": {
+            "type": "string",
+            "example": "Public Domain"
+          },
+          "links": {
+            "type": "object",
+            "example": [
+              {
+                "title": "Store",
+                "size": "246 pages",
+                "type": "Print",
+                "url": "http://www.librarything.com/work/1301652/book/118270355"
+              },
+              {
+                "title": "PDF Download",
+                "size": "25.4 mb",
+                "url": "https://example.com/download.pdf"
+              }
+            ]
+          }
+        }
+      },
       "Bibles": {
         "required": [
           "id",
@@ -1037,54 +1363,6 @@
           "copyright": {
             "type": "string",
             "example": "Public Domain"
-          }
-        }
-      },
-      "Search": {
-        "properties": {
-          "book_id": {
-            "type": "string",
-            "example": "JHN"
-          },
-          "book_name": {
-            "type": "string",
-            "example": "John"
-          },
-          "book_name_alt": {
-            "type": "string",
-            "example": "John"
-          },
-          "chapter": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 150,
-            "example": 11
-          },
-          "chapter_alt": {
-            "type": "string",
-            "example": "Eleven"
-          },
-          "verse_start": {
-            "type": "integer",
-            "minimum": 1,
-            "example": 35
-          },
-          "verse_start_alt": {
-            "type": "string",
-            "example": "Thirty five"
-          },
-          "verse_end": {
-            "type": "integer",
-            "minimum": 1,
-            "example": 35
-          },
-          "verse_end_alt": {
-            "type": "string",
-            "example": "Thirty five"
-          },
-          "verse_text": {
-            "type": "string",
-            "example": "Jesus wept."
           }
         }
       },
@@ -1218,35 +1496,12 @@
       }
     },
     "parameters": {
-      "books": {
-        "name": "books",
+      "v": {
+        "name": "v",
         "in": "query",
-        "description": "Books to filter the return by",
-        "schema": {
-          "type": "string"
-        }
-      },
-      "limit": {
-        "name": "limit",
-        "in": "query",
-        "description": "Number of records to return",
-        "schema": {
-          "type": "integer"
-        }
-      },
-      "query": {
-        "name": "query",
-        "in": "query",
-        "description": "The word or phrase you're searching for",
+        "description": "The Version Number of the API",
         "required": true,
-        "schema": {
-          "type": "string"
-        }
-      },
-      "exclude": {
-        "name": "exclude",
-        "in": "query",
-        "description": "Any words you don't want returned",
+        "example": 4,
         "schema": {
           "type": "string"
         }
@@ -1304,7 +1559,6 @@
       "dam_id": {
         "name": "dam_id",
         "in": "query",
-        "required": true,
         "description": "To get the location directory and asset file basename for a specific volume.",
         "schema": {
           "type": "string"

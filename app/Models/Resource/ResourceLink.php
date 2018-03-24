@@ -25,5 +25,5 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ResourceLink extends Model
 {
-    //
+	protected $hidden = ['created_at','updated_at', 'resource_id'];
 }

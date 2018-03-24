@@ -135,3 +135,12 @@
 
 	Route::name('v4_connections_grn.sync')->get('connections/grn/sync',                  'Connections\GRNController@sync');
 	Route::name('v4_connections_grn.index')->get('connections/grn/{iso}',                'Connections\GRNController@index');
+
+
+	// VERSION 4 | Resources
+
+	Route::name('v4_resources.index')->get('resources',                                      'ResourcesController@index');
+	Route::name('v4_resources.show')->get('resources/{resource_id}',                         'ResourcesController@show');
+	Route::name('v4_resources.update')->put('resources/{resource_id}',                       'ResourcesController@update');
+	Route::name('v4_resources.store')->post('resources',                                     'ResourcesController@store');
+	Route::name('v4_resources.destroy')->delete('resources/{resource_id}',                   'ResourcesController@destroy');
