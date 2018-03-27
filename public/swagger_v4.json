@@ -669,6 +669,15 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "membership",
+            "in": "query",
+            "description": "The slug value for an organization, if provided. The results will be filtered by members of that organization.",
+            "schema": {
+              "type": "string",
+              "example": "forumn-of-bible-agencies"
+            }
           }
         ],
         "tags": [

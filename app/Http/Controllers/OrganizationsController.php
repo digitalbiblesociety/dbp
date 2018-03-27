@@ -24,8 +24,20 @@ class OrganizationsController extends APIController
 			return view('dashboard.organizations.index', compact('user'));
 		}
 
+		$membership = checkParam('membership', null, 'optional');
+		if($membership) {
+			$membership = Organization::where('slug',$membership)->first();
+			if(!$membership) return $this->setStatusCode(404)->replyWithError("No membership connection found.");
+			$membership = $membership->id;
+		}
+
 		// Otherwise Fetch API route
-		$organizations = Organization::with('translations','logoIcon','logo')->has('translations')->get();
+		$organizations = Organization::with('translations','logoIcon','logo')->when($membership, function($q) use ($membership) {
+			$q->with(['relationships' => function($query) use ($membership) {
+				$query->where('organization_relationships.organization_parent_id', $membership);
+				$query->where('organization_relationships.type', 'membership');
+			}]);
+		})->has('translations')->get();
 		if(isset($_GET['count']) or (\Route::currentRouteName() == 'v2_volume_organization_list')) $organizations->load('bibles');
 		return $this->reply(fractal()->collection($organizations)->serializeWith($this->serializer)->transformWith(new OrganizationTransformer())->ToArray());
 	}
