@@ -61,6 +61,7 @@ class BiblesController extends APIController
 	    //return \Cache::remember($this->v.'_bibles_'.$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by, 2400, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by) {
 		$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
 	    $bibles = Bible::with('currentTranslation','vernacularTranslation','language')
+		        ->has('language')
 		        ->when($fileset_filter, function($q) use ($access){
 			        $q->has('filesets.files')->where('open_access', 1)->orWhereIn('id',$access)->with('filesets.meta');
 		        })
