@@ -32,12 +32,14 @@ class OrganizationsController extends APIController
 		}
 
 		// Otherwise Fetch API route
-		$organizations = Organization::with('translations','logoIcon','logo')->when($membership, function($q) use ($membership) {
-			$q->with(['relationships' => function($query) use ($membership) {
-				$query->where('organization_relationships.organization_parent_id', $membership);
-				$query->where('organization_relationships.type', 'membership');
-			}]);
+		$organizations = Organization::with('translations','logoIcon','logo')
+		->when($membership, function($q) use ($membership) {
+			$q->join('organization_relationships', function ($join) use($membership) {
+				$join->on('organizations.id', '=', 'organization_relationships.organization_child_id')
+				     ->where('organization_relationships.organization_parent_id', $membership);
+			});
 		})->has('translations')->get();
+
 		if(isset($_GET['count']) or (\Route::currentRouteName() == 'v2_volume_organization_list')) $organizations->load('bibles');
 		return $this->reply(fractal()->collection($organizations)->serializeWith($this->serializer)->transformWith(new OrganizationTransformer())->ToArray());
 	}

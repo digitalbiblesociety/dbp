@@ -35,8 +35,10 @@ class OrganizationTransformer extends BaseTransformer
 	 */
 	public function transformForDataTables(Organization $organization)
 	{
+		$logo = ($organization->logoIcon) ? $organization->logoIcon->url : @$organization->logo->url;
+		if($logo) $logo = '<img src="'.$logo.'" />';
 		return [
-			'<a href="/organizations/'.$organization->id.'">'.@$organization->currentTranslation->name."</a>"
+			'<a href="/organizations/'.$organization->id.'">'.$logo.@$organization->currentTranslation->name."</a>"
 		];
 	}
 
