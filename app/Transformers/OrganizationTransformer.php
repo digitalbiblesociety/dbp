@@ -36,8 +36,7 @@ class OrganizationTransformer extends BaseTransformer
 	public function transformForDataTables(Organization $organization)
 	{
 		return [
-			($organization->engTranslation) ? $organization->engTranslation->name : "",
-			$organization->id,
+			'<a href="/organizations/'.$organization->id.'">'.@$organization->currentTranslation->name."</a>"
 		];
 	}
 

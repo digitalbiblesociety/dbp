@@ -40,4 +40,10 @@ use Illuminate\Database\Eloquent\Model;
 class JoshuaProject extends Model
 {
     public $table = "country_joshua_project";
+
+	public function Country()
+	{
+		return $this->belongsTo(Country::class);
+	}
+
 }

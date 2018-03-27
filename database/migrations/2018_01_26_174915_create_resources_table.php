@@ -49,6 +49,35 @@ class CreateResourcesTable extends Migration
 		    $table->timestamps();
 	    });
 
+	    Schema::create('connections', function (Blueprint $table) {
+		    $table->increments('id');
+		    $table->integer('organization_id')->unsigned();
+		    $table->foreign('organization_id')->references('id')->on('organizations')->onUpdate('cascade')->onDelete('cascade');
+		    $table->string('site_url');
+		    $table->string('title');
+		    $table->string('cover_thumbnail')->nullable();
+		    $table->string('date')->nullable();
+		    $table->string('type');
+		    $table->timestamps();
+	    });
+
+	    Schema::create('connection_translations', function (Blueprint $table) {
+		    $table->char('iso', 3)->index();
+		    $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
+		    $table->integer('resource_id')->unsigned();
+		    $table->foreign('resource_id')->references('id')->on('resources')->onUpdate('cascade')->onDelete('cascade');
+		    $table->boolean('vernacular');
+		    $table->boolean('tag');
+		    $table->string('title');
+		    $table->text('description')->nullable();
+		    $table->timestamps();
+	    });
+
+	    Schema::create('resource_connections', function (Blueprint $table) {
+
+		    $table->timestamps();
+	    });
+
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Models\Country;
 
+use App\Models\Bible\Bible;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
 
@@ -37,11 +38,18 @@ class Country extends Model
     protected $hidden = ["pivot","created_at","updated_at"];
     public $incrementing = false;
     public $keyType = 'string';
+
     public function translations($iso = null)
     {
     	if(!isset($iso)) return $this->HasMany(CountryTranslation::class);
     	$language = Language::where('iso',$iso)->first();
     	return $this->HasMany(CountryTranslation::class)->where('language_id',$language->id);
+    }
+
+    public function translation()
+    {
+	    $language = Language::where('iso',\i18n::getCurrentLocale())->first();
+	    return $this->HasOne(CountryTranslation::class)->where('language_id',$language->id);
     }
 
     public function languages()

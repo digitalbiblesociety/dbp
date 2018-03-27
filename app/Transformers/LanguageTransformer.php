@@ -25,7 +25,6 @@ class LanguageTransformer extends BaseTransformer
 	public function transformForDataTables(Language $language)
 	{
 		return [
-			$language->translations->implode('name', ' '),
 			'<a href="/languages/'.$language->id.'">'.$language->name.'</a>',
 			$language->iso,
 			$language->bibles_count
@@ -129,6 +128,7 @@ class LanguageTransformer extends BaseTransformer
 				"name"                 => $language->name,
 				'autonym'              => ($language->autonym) ? $language->autonym->name : '',
                 "glotto_id"            => $language->glotto_id,
+				"bibles"               => $language->bibles,
                 "iso"                  => $language->iso,
                 "maps"                 => $language->maps,
                 "area"                 => $language->area,
@@ -138,6 +138,7 @@ class LanguageTransformer extends BaseTransformer
 				'alternativeNames'     => array_flatten($language->translations->pluck('name')->ToArray()) ?? '',
 				'dialects'             => $language->dialects->pluck('name') ?? '',
 				'classifications'      => $language->classifications->pluck('name','classification_id') ?? '',
+				'resources'            => $language->resources
 			];
 		}
 		$return = [

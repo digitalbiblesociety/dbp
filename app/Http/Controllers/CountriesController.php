@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Country\JoshuaProject;
+use App\Models\Language\Language;
 use App\Models\Country\Country;
 use App\Transformers\CountryTransformer;
 use Illuminate\View\View;
@@ -19,13 +21,24 @@ class CountriesController extends APIController
     	if(!$this->api) return view('countries.index');
     	// \Cache::forget('v'.$this->v.$this->api.'_countries');
 	    // $countries = \Cache::remember('v'.$this->v.$this->api.'_countries', 2400, function() {
-			//$countries = Country::with('languagesFiltered','translations')->get();
-			$countries = Country::raw('
-			SELECT countries.name,countries.continent,GROUP_CONCAT(CONCAT(languages.iso,languages.name))
-			AS languages,countries.fips,countries.iso_a3,countries.id FROM languages,countries,country_language)
-			WHERE languages.id=country_language.language_id AND country_language.country_id=countries.id;')->get();
+		$countries = Country::with('languagesFiltered','translations')->get();
+		//	$countries = Country::raw('
+		//	SELECT countries.name,countries.continent, GROUP_CONCAT(CONCAT(languages.iso,languages.name))
+		//	AS languages,countries.fips,countries.iso_a3,countries.id FROM languages,countries,country_language)
+		//	WHERE languages.id=country_language.language_id AND country_language.country_id=countries.id;')->get();
 
 	    return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
+    }
+
+    public function joshuaProjectIndex()
+    {
+	    $iso = (isset($_GET['iso'])) ? $_GET['iso'] : 'eng';
+	    $language = Language::where('iso', $iso)->first();
+	    $countries = JoshuaProject::with(['country.translation' => function ($query) use ($language) {
+		    $query->where('language_id', $language->id);
+	    }])->get();
+
+	    return $this->reply(fractal()->collection($countries)->transformWith(CountryTransformer::class));
     }
 
     /**
@@ -36,7 +49,7 @@ class CountriesController extends APIController
      */
     public function show($id)
     {
-		$country = Country::with('languagesFiltered')->find($id);
+		$country = Country::with('languagesFiltered.bibles.currentTranslation')->find($id);
 	    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
 	    return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->ToArray());
 

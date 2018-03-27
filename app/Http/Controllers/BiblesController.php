@@ -55,19 +55,18 @@ class BiblesController extends APIController
 	    $updated = checkParam('updated', null, 'optional');
 	    $organization = checkParam('organization_id', null, 'optional');
 		$sort_by = checkParam('sort_by', null, 'optional');
-	    $fileset_filter = checkParam('filter_by_fileset', null, 'optional') ?? true;
+	    $fileset_filter = boolval(checkParam('filter_by_fileset', null, 'optional')) ?? true;
 		// hide cache
 		//\Cache::forget($this->v.'_bibles_'.$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by);
 	    //return \Cache::remember($this->v.'_bibles_'.$dam_id.$media.$language.$full_word.$iso.$updated.$organization.$sort_by, 2400, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by) {
-			$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
-	        $bibles = Bible::with('currentTranslation','vernacularTranslation','filesets.meta','language')
-		        ->when($fileset_filter, function($q) use ($iso){
-			        $q->has('filesets.files');
+		$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
+	    $bibles = Bible::with('currentTranslation','vernacularTranslation','language')
+		        ->when($fileset_filter, function($q) use ($access){
+			        $q->has('filesets.files')->where('open_access', 1)->orWhereIn('id',$access)->with('filesets.meta');
 		        })
 		        ->when($iso, function($q) use ($iso){
 			        $q->where('iso', $iso);
 		        })
-				->where('open_access', 1)->orWhereIn('id',$access)
 			    ->when($organization, function($q) use ($organization) {
 				    $q->where('organization_id', '>=', $organization);
 			    })->when($dam_id, function($q) use ($dam_id) {
@@ -195,7 +194,7 @@ class BiblesController extends APIController
      */
     public function show($id)
     {
-	    $bible = Bible::with('filesets.organization','translations','books.book')->find($id);
+	    $bible = Bible::with('filesets.organization','translations','books.book','links','organizations.logo','organizations.logoIcon')->find($id);
 	    if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
     	if(!$this->api) return view('bibles.show',compact('bible'));
 

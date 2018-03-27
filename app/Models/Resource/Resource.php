@@ -48,6 +48,11 @@ class Resource extends Model
 		return $this->hasMany(ResourceTranslation::class);
 	}
 
+	public function currentTranslation()
+	{
+		return $this->hasOne(ResourceTranslation::class)->where('iso',\i18n::getCurrentLocale())->where('tag',0);
+	}
+
 	public function organization()
 	{
 		return $this->BelongsTo(Organization::class);

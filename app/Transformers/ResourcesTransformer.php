@@ -46,8 +46,8 @@ class ResourcesTransformer extends BaseTransformer
 	{
 		$translation = $resource->translations->where('tag',0)->where('iso',\i18n::getCurrentLocale())->first();
 		return [
-			'<a href="/resources/'.$resource->id.'">'. $translation->title .'</a>',
-			$resource->language->name ?? ""
+			'iso' => $resource->language->name ?? $resource->iso,
+			'title' => '<a href="/resources/'.$resource->id.'">'. $translation->title .'</a>'
 		];
 	}
 }

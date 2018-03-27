@@ -7,16 +7,6 @@ use App\Models\Bible\Video;
 use App\Models\Country\CountryRegion;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\Language\LanguageCode;
-use App\Models\Language\LanguageDialect;
-use App\Models\Language\LanguageAltName;
-use App\Models\Language\LanguageTranslation;
-use App\Models\Language\LanguageClassification;
-
-use App\Models\Language\Alphabet;
-use App\Models\Language\AlphabetFont;
-
-
 use App\Models\Country\Country;
 use App\Models\Resource\Resource;
 
@@ -171,6 +161,11 @@ class Language extends Model
     public function bibleCount()
     {
 	    return $this->HasMany(Bible::class);
+    }
+
+    public function resources()
+    {
+    	return $this->hasMany(Resource::class,'iso','iso')->has('links');
     }
 
     public function films()

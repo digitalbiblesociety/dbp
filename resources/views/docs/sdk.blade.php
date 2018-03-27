@@ -33,9 +33,13 @@
     <div class="row sdk-links">
         <h3>Downloads <small>2.1.5</small></h3>
         <a href="/sdk/php.zip" class="medium-3 columns"><svg class="icon"><use xlink:href="/img/icons/icons-programming.svg#php"></use></svg> PHP </a>
-        <a href="/sdk/php.zip" class="medium-3 columns"><svg class="icon"><use xlink:href="/img/icons/icons-programming.svg#java"></use></svg> Java </a>
+        <a href="/sdk/java.zip" class="medium-3 columns"><svg class="icon"><use xlink:href="/img/icons/icons-programming.svg#java"></use></svg> Java </a>
         <a href="/sdk/python.zip" class="medium-3 columns"><svg class="icon"><use xlink:href="/img/icons/icons-programming.svg#python"></use></svg> Python </a>
         <a href="/sdk/ruby.zip" class="medium-3 columns"><svg class="icon"><use xlink:href="/img/icons/icons-programming.svg#ruby"></use></svg> Ruby </a>
+    </div>
+
+    <div class="row example-links">
+
     </div>
 
 @endsection

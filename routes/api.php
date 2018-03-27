@@ -70,6 +70,7 @@
 
 	// VERSION 4 | WIKI
 	Route::name('v4_countries.all')->get('countries',                                     'CountriesController@index');
+	Route::name('v4_countries.jsp')->get('countries/joshua-project/',                     'CountriesController@joshuaProjectIndex');
 	Route::name('v4_countries.one')->get('countries/{id}',                                'CountriesController@show');
 	Route::name('v4_languages.all')->get('languages',                                     'LanguagesController@index');
 	Route::name('v4_languages.one')->get('languages/{id}',                                'LanguagesController@show');

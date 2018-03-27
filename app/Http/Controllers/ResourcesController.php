@@ -11,6 +11,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Serializer\DataArraySerializer;
 
+use Yajra\DataTables\DataTables;
+
 class ResourcesController extends APIController
 {
     /**
@@ -21,24 +23,18 @@ class ResourcesController extends APIController
     public function index()
     {
         if(!$this->api) return view('resources.index');
-        $iso = checkParam('iso', null, 'optional');
+        $iso = checkParam('iso');
         $limit = checkParam('limit', null, 'optional') ?? 25;
         $organization_id = checkParam('organization_id', null, 'optional');
 
-        $pagination = Resource::with('translations','links','organization.translations')
-		->when($iso, function($q) use ($iso) {
-	        $q->where('iso', $iso);
-        })->when($organization_id, function($q) use ($organization_id) {
+        $resources = Resource::with('translations','links','organization.translations')
+	        ->where('iso',$iso)
+	        ->when($organization_id, function($q) use ($organization_id) {
 		    $q->where('organization_id', $organization_id);
-	    })->paginate($limit);
-	    $resources = $pagination->getCollection();
+	    })->get();
 
-	    return $this->reply(
-	    	fractal()->collection($resources)
-				->transformWith(new ResourcesTransformer())
-				->serializeWith(new DataArraySerializer())
-				->paginateWith(new IlluminatePaginatorAdapter($pagination))
-	    );
+	    return $this->reply(fractal()->collection($resources)->transformWith(new ResourcesTransformer())->serializeWith(new DataArraySerializer()));
+
     }
 
     /**

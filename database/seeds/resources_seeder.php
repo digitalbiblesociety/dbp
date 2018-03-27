@@ -65,7 +65,7 @@ class resources_seeder extends Seeder
 			    'organization_id'  => "23",
 			    'iso'              => $book['iso'],
 			    'type'             => "Book",
-			    'cover'            => "https://bible.cloud/images/resources/".$book['cover'],
+			    'cover'            => ($book['cover']) ? "https://bible.cloud/images/resources/".$book['cover'] : '',
 			    'date'             => $book['date']
 		    ]);
 
@@ -164,6 +164,8 @@ class resources_seeder extends Seeder
 		    $iso = $language->iso;
 
     		foreach ($language->recordings as $key => $recording) {
+    			$links = collect($language->programs_info[$key]->links);
+
     			$currentResource = Resource::create([
     				'organization_id' => $organization_id,
     				'iso'             => $iso,
@@ -195,15 +197,6 @@ class resources_seeder extends Seeder
 						    'title'       => 'Uncompressed mp3',
 						    'type'        => 'mp3',
 						    'url'         => $link->resources->mp3[0],
-					    ] );
-				    }
-
-				    if(isset($link->resources->script['0'])) {
-					    ResourceLink::create( [
-						    'resource_id' => $currentResource->id,
-						    'title'       => 'Script',
-						    'type'        => 'website',
-						    'url'         => "http://globalrecordings.net/" . $link->resources->script[0],
 					    ] );
 				    }
 			    }

@@ -25,7 +25,7 @@ class OrganizationsController extends APIController
 		}
 
 		// Otherwise Fetch API route
-		$organizations = Organization::with('translations','logoIcon','logo')->get();
+		$organizations = Organization::with('translations','logoIcon','logo')->has('translations')->get();
 		if(isset($_GET['count']) or (\Route::currentRouteName() == 'v2_volume_organization_list')) $organizations->load('bibles');
 		return $this->reply(fractal()->collection($organizations)->serializeWith($this->serializer)->transformWith(new OrganizationTransformer())->ToArray());
 	}

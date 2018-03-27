@@ -134,16 +134,19 @@ class BibleTransformer extends BaseTransformer
 			}
 			case "v4_bible.one": {
 				return [
-					"abbr"         => $bible->id,
-					"mark"         => $bible->copyright,
-					"name"         => @$bible->currentTranslation->name ?? "",
-					"vname"        => @$bible->vernacularTranslation->name ?? "",
-					"organization" => $bible->organization,
-					"language"     => @$bible->language->name ?? "",
-					"iso"          => $bible->iso,
-					"date"         => $bible->date,
-					"country"      => $bible->language->primaryCountry->name ?? '',
-					"books"        => $bible->books->sortBy('book.book_order')->each(function ($book) {
+					"abbr"          => $bible->id,
+					"mark"          => $bible->copyright,
+					"name"          => @$bible->currentTranslation->name ?? "",
+					"description"   => @$bible->currentTranslation->description ?? "",
+					"vname"         => @$bible->vernacularTranslation->name ?? "",
+					"vdescription"  => @$bible->vernacularTranslation->description ?? "",
+					"publishers"    => $bible->organizations->where('pivot.relationship_type','publisher')->all(),
+					"providers"     => $bible->organizations->where('pivot.relationship_type','provider')->all(),
+					"language"      => @$bible->language->name ?? "",
+					"iso"           => $bible->iso,
+					"date"          => $bible->date,
+					"country"       => $bible->language->primaryCountry->name ?? '',
+					"books"         => $bible->books->sortBy('book.book_order')->each(function ($book) {
 						// convert to integer array
 						$chapters = explode(',',$book->chapters);
 						foreach ($chapters as $key => $chapter) $chapters[$key] = intval($chapter);
@@ -151,7 +154,8 @@ class BibleTransformer extends BaseTransformer
 						unset($book->book);
 						return $book;
 					})->values(),
-					"translations" => $bible->translations
+					"links"        => $bible->links,
+					"filesets"     => $bible->filesets
 				];
 			}
 

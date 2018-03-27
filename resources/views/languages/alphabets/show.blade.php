@@ -84,84 +84,93 @@
 @section('content')
     <div id="alphabet-show">
 
-        <div class="row" role="banner">
-            <h1 class='title'>{{ $alphabet->name }} <small class='subtitle'>{{ $alphabet->subtitle }}</small></h1>
-            <small class="code"></small>
-            <div class="features">
-                <li class="{{ ($alphabet->diacritics) ? "enabled" : "disabled" }}">Diacritics</li>
-                <li class="{{ ($alphabet->contextual_forms) ? "enabled" : "disabled" }}">Contextual Forms</li>
-                <li class="{{ ($alphabet->reordering) ? "enabled" : "disabled" }}">Reordering</li>
-                <li class="{{ ($alphabet->split_graphs) ? "enabled" : "disabled" }}">Graphs</li>
-                <li class="{{ ($alphabet->ligatures) ? "enabled" : "disabled" }}">Ligatures</li>
-            </div>
-            <div class="overlay">{{ $alphabet->sample }}</div>
-        </div>
-        {{ $alphabet->unicode_pdf }}
-        {{ $alphabet->white_space }}
-        {{ $alphabet->complex_positioning }}
-        {{ $alphabet->open_type_tag }}
-        {{ $alphabet->unicode }}
-        {{ $alphabet->case }}
-        {{ $alphabet->status }}
-        {{ $alphabet->baseline }}
-        {{ $alphabet->sample_img }}
+        @include('layouts.partials.banner', [
+            'title'    => $alphabet->name,
+            'subtitle' => $alphabet->subtitle,
+            'tabs'     => [
+                'bibles'    => 'Bibles',
+                'meta'      => 'Meta Data'
+            ]
+        ])
 
-        <div class="row">
-            <div class="small-4 columns">
-                <h3>Meta Data</h3>
-                <ul>
-                    <li><b>Script ID:</b> {{$alphabet->script}}</li>
-                    <li><b>Type:</b> {{$alphabet->type}}</li>
-                    <li><b>Direction:</b> {{$alphabet->direction}} <span class="direction-notes">{{ $alphabet->direction_notes }}</span></li>
-                    <li><b>Family:</b> {{ $alphabet->family }}</li>
-                </ul>
-                <h3>Languages</h3>
-                <ul>
-                    @foreach($alphabet->languages as $language)
-                        <li><a href="/languages/{{ $language->id }}">{{ $language->name }}</a></li>
-                    @endforeach
-                </ul>
-            </div>
-            <div class="small-8 columns">
-                <h3>Fonts</h3>
-                @foreach($alphabet->fonts as $font)
-                    <div class="callout secondary fonts">
-
-                        <div class="title">{{ $font->fontName }}</div>
-                        @if(file_exists(public_path()."/fonts/".$font->fontFileName.".ttf"))
-                            <a href="/fonts/{{ $font->fontFileName }}.ttf">Download</a>
-                        @elseif(file_exists(public_path()."/fonts/".$font->fontFileName.".otf"))
-                            <a href="/fonts/{{ $font->fontFileName }}.otf">Download</a>
-                        @endif
-
-                        <p>{{ $font->fontWeight }}</p>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-        <div class="row">
-            <div class="medium-8 columns"><h3>Description</h3><p class="text-justify">{!! $alphabet->description !!}</p></div>
-            <div class="medium-4 columns">
-                <div class="row">
-                    <h3>Bibles</h3>
-                    <table>
-                        <thead>
+        <section role="tabpanel" aria-hidden="false" id="bibles" class="row">
+            <div class="row">
+                <h3>Bibles</h3>
+                <table class="table" cellspacing="0" width="100%" data-invisiblecolumns="0">
+                    <thead>
+                    <tr>
+                        <td>Bible ID</td>
+                        <td>Bible Name</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($alphabet->bibles as $bible)
                         <tr>
-                            <td>Bible ID</td>
-                            <td>Bible Name</td>
+                            <td>{{ $bible->id }}</td>
+                            <td>{{ $bible->currentTranslation->name ?? '' }}</td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($alphabet->bibles as $bible)
-                            <tr>
-                                <td>{{ $bible->id }}</td>
-                                <td>{{ $bible->currentTranslation->name ?? '' }}</td>
-                            </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section role="tabpanel" aria-hidden="true" id="meta" class="row">
+            <div class="row" role="banner">
+                <div class="features">
+                    <li class="{{ ($alphabet->diacritics) ? "enabled" : "disabled" }}">Diacritics</li>
+                    <li class="{{ ($alphabet->contextual_forms) ? "enabled" : "disabled" }}">Contextual Forms</li>
+                    <li class="{{ ($alphabet->reordering) ? "enabled" : "disabled" }}">Reordering</li>
+                    <li class="{{ ($alphabet->split_graphs) ? "enabled" : "disabled" }}">Graphs</li>
+                    <li class="{{ ($alphabet->ligatures) ? "enabled" : "disabled" }}">Ligatures</li>
+                </div>
+                <div class="overlay">{{ $alphabet->sample }}</div>
+            </div>
+            {{ $alphabet->unicode_pdf }}
+            {{ $alphabet->white_space }}
+            {{ $alphabet->complex_positioning }}
+            {{ $alphabet->open_type_tag }}
+            {{ $alphabet->unicode }}
+            {{ $alphabet->case }}
+            {{ $alphabet->status }}
+            {{ $alphabet->baseline }}
+            {{ $alphabet->sample_img }}
+
+            <div class="row">
+                <div class="small-4 columns">
+                    <h3>Meta Data</h3>
+                    <ul>
+                        <li><b>Script ID:</b> {{$alphabet->script}}</li>
+                        <li><b>Type:</b> {{$alphabet->type}}</li>
+                        <li><b>Direction:</b> {{$alphabet->direction}} <span class="direction-notes">{{ $alphabet->direction_notes }}</span></li>
+                        <li><b>Family:</b> {{ $alphabet->family }}</li>
+                    </ul>
+                    <h3>Languages</h3>
+                    <ul>
+                        @foreach($alphabet->languages as $language)
+                            <li><a href="/languages/{{ $language->id }}">{{ $language->name }}</a></li>
                         @endforeach
-                        </tbody>
-                    </table>
+                    </ul>
+                </div>
+                <div class="small-8 columns">
+                    <h3>Fonts</h3>
+                    @foreach($alphabet->fonts as $font)
+                        <div class="callout secondary fonts">
+
+                            <div class="title">{{ $font->fontName }}</div>
+                            @if(file_exists(public_path()."/fonts/".$font->fontFileName.".ttf"))
+                                <a href="/fonts/{{ $font->fontFileName }}.ttf">Download</a>
+                            @elseif(file_exists(public_path()."/fonts/".$font->fontFileName.".otf"))
+                                <a href="/fonts/{{ $font->fontFileName }}.otf">Download</a>
+                            @endif
+
+                            <p>{{ $font->fontWeight }}</p>
+                        </div>
+                    @endforeach
                 </div>
             </div>
-        </div>
+            <div class="medium-8 columns centered"><h3>Description</h3><p class="text-justify">{!! $alphabet->description !!}</p></div>
+        </section>
     </div>
+
 @endsection

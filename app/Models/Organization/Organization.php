@@ -81,7 +81,7 @@ class Organization extends Model
      *
      * @var array
      */
-    protected $hidden = ['pivot','logo','facebook','twitter','id','code'];
+    protected $hidden = ['logo','facebook','twitter','id','code'];
 
     public function translations($iso = null)
     {
@@ -131,7 +131,7 @@ class Organization extends Model
 
 	public function logo()
 	{
-		return $this->HasOne(OrganizationLogo::class,'organization_id','id')->where('language_iso','eng');
+		return $this->HasOne(OrganizationLogo::class,'organization_id','id');
 	}
 
 	public function logoIcon()

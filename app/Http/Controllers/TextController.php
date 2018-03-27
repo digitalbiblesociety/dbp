@@ -118,13 +118,16 @@ class TextController extends APIController
 	    $bible_id = checkParam('dam_id');
 	    $limit = checkParam('limit', null, 'optional') ?? 15;
 	    $books = checkParam('books', null, 'optional');
-	    
+
+	    // SELECT *, '20' AS spacing FROM `ENGKJV_vpl` WHERE MATCH (verse_text) AGAINST('"+jesus +wept" @20' IN BOOLEAN MODE) ORDER BY spacing;
+
 		$query = DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).$exclude);
 	    $verses = DB::connection('sophia')->table($bible_id.'_vpl')
 		->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN BOOLEAN MODE)"))->limit($limit)
 		->when($books, function($q) use ($books){
 		    $q->whereIn('book', explode(',',$books));
-	    })->get();
+	    })->tosql();
+	    dd($verses);
 
 	    $this->addMetaDataToVerses($verses,$bible_id);
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
@@ -156,7 +159,13 @@ class TextController extends APIController
 
     public function addMetaDataToVerses($verses,$bible_id)
     {
+	    $usfm = false;
 	    $books = Book::whereIn('id_usfx',$verses->pluck('book'))->get();
+	    if($books->isEmpty()) {
+	    	$usfm = true;
+		    $books = Book::whereIn('id',$verses->pluck('book'))->get();
+	    }
+
 	    $vernacular_numbers = null;
 	    
 	    // Fetch Bible for Book Translations
@@ -172,15 +181,18 @@ class TextController extends APIController
 			    $vernacular_numbers = fetchVernacularNumbers($bible->script,$bible->iso,min($vernacular_numbers),max($vernacular_numbers));
 		    }
 	    }
+
 	    // Fetch Vernacular Number
 	    $verses->map(function ($verse) use ($books,$bible_id,$vernacular_numbers) {
 		    $currentBook = $books->where('id_usfx',$verse->book)->first();
+			if(!$currentBook) $currentBook = $books->where('id',$verse->book)->first();
+
 		    $verse->bible_id = $bible_id;
 		    $verse->usfm_id = $currentBook->id;
 		    $verse->osis_id = $currentBook->id_osis;
-		    $verse->book_order = ltrim(substr($verse->canon_order,0,3),"0");
-		    $verse->book_vernacular_name = $currentBook->name;
-		    $verse->book_name = $currentBook->name;
+		    $verse->book_order = @ltrim(substr($verse->canon_order,0,3),"0");
+		    $verse->book_vernacular_name = @$currentBook->name;
+		    $verse->book_name = @$currentBook->name;
 		    $verse->chapter_vernacular =  isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->chapter] : $verse->chapter;
 		    $verse->verse_start_vernacular =  isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->verse_start] : $verse->verse_start;
 		    $verse->verse_end_vernacular =  isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->verse_end] : $verse->verse_end;
