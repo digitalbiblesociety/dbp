@@ -68,7 +68,9 @@ class BiblesController extends APIController
 			        $q->where('iso', $iso);
 		        })
 			    ->when($organization, function($q) use ($organization) {
-				    $q->where('organization_id', '>=', $organization);
+				    $q->whereHas('organizations', function($q) use($organization){
+					    $q->where('organization_id', $organization);
+				    })->get();
 			    })->when($dam_id, function($q) use ($dam_id) {
 				    $q->where('id', $dam_id);
 			    })->when($media, function($q) use ($media) {

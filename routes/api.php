@@ -44,14 +44,7 @@
 	Route::name('v4_bible.books')->get('bibles/{id}/book/{book?}',                        'BiblesController@books');
 	Route::name('v4_bible.chapter')->get('bibles/{id}/{book}/{chapter}',                  'TextController@index');
 	Route::name('v4_bible.podcast')->get('bibles/{id}/podcast',                           'BibleFileSetsController@podcast');
-	Route::name('v4_bible.one')->get('bibles/{id}',                                       'BiblesController@show');
-	Route::name('v4_timestamps')->get('timestamps',                                       'AudioController@availableTimestamps');
-	Route::name('v4_timestamps.tag')->get('timestamps/{id}',                              'AudioController@timestampsByTag');
-	Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',           'AudioController@timestampsByReference');
-
-	// VERSION 4 | BIBLE
-	Route::name('v4_bible_filesets.index')->get('bibles/filesets/{ id }',                 'BibleFileSetsController@show');
-
+	Route::name('v4_bible_filesets.index')->get('bibles/filesets/{id?}',                  'BibleFileSetsController@show');
 	Route::resource('bibles/filesets/{id}/permissions',    'BibleFileSetPermissionsController', ['names' => [
 		'v4_bible_filesets.permissions_index'   => 'v4_bible_filesets_permissions.index',
 		'v4_bible_filesets.permissions_edit'    => 'v4_bible_filesets_permissions.edit',
@@ -67,6 +60,13 @@
 		'v4_bible_filesets.create'  => 'view_bible_filesets.create',
 		'v4_bible_filesets.show'    => 'view_bible_filesets.show',
 	]]);
+	Route::name('v4_bible.one')->get('bibles/{id}',                                       'BiblesController@show');
+	Route::name('v4_timestamps')->get('timestamps',                                       'AudioController@availableTimestamps');
+	Route::name('v4_timestamps.tag')->get('timestamps/{id}',                              'AudioController@timestampsByTag');
+	Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',           'AudioController@timestampsByReference');
+
+
+
 
 	// VERSION 4 | WIKI
 	Route::name('v4_countries.all')->get('countries',                                     'CountriesController@index');

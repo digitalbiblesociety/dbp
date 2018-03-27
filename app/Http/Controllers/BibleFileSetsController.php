@@ -24,7 +24,7 @@ class BibleFileSetsController extends APIController
 	/**
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
-	public function show($id)
+	public function show($id = null)
     {
 	    if(!$this->api) return view('bibles.filesets.index');
 	    $bible_id = CheckParam('dam_id',$id) ?? CheckParam('fileset_id',$id) ;
@@ -32,9 +32,13 @@ class BibleFileSetsController extends APIController
 	    $book_id = CheckParam('book_id',null,'optional');
 	    $driver = CheckParam('bucket',null,'optional') ?? "s3_fcbh";
 	    $lifespan = CheckParam('lifespan',null,'optional') ?? 5;
+	    $type = checkParam('type');
+
 	    if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
 	    if(isset($book)) $book_id = $book->id;
-		$fileset = BibleFileset::with('meta')->find($bible_id);
+		$fileset = BibleFileset::with('meta')->where('id',$bible_id)->where('set_type_code',$type)->first();
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Found for the provided params");
+
 		$bible_id = ($fileset->bible->first()) ? $fileset->bible->first()->id."/" : "";
 		$fileset_type = (strtolower(substr($fileset->set_type_code,0,5)) == "audio") ? 'audio' : 'text';
 	    $fileSetChapters = BibleFile::with('book.currentTranslation')
