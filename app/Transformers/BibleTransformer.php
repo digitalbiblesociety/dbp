@@ -118,7 +118,7 @@ class BibleTransformer extends BaseTransformer
 					"vname"             => @$bible->vernacularTranslation->name ?? "",
 					"language"          => @$bible->language->name ?? null,
 					"language_autonym"  => @$bible->language->autonym ?? null,
-					"language_altNames" => @$bible->language->translations->pluck('name') ?? null,
+					"language_altNames" => ($bible->language) ? $bible->language->translations->pluck('name') : null,
 					"iso"               => $bible->iso,
 					"date"              => $bible->date,
 					"filesets"          => $bible->filesets,
