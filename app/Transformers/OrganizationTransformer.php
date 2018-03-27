@@ -91,6 +91,7 @@ class OrganizationTransformer extends BaseTransformer
 		return [
 			"id"             => $organization->id,
 			"name"           => $organization->name,
+			"description"    => $organization->currentTranslation->description,
             "slug"           => $organization->slug,
 			"logo"           => ($organization->logo) ? $organization->logo->url : "",
 			"icon"           => ($organization->logoIcon) ? $organization->logoIcon->url : "",

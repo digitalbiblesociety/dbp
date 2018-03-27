@@ -56,7 +56,7 @@ class OrganizationsController extends APIController
 		if(!$organization) return $this->setStatusCode(404)->replyWithError("Sorry we don't have any record for $slug");
 
 		// Handle API First
-		if($this->api) return $this->reply($organization);
+		if($this->api) return $this->reply(fractal()->item($organization)->serializeWith($this->serializer)->transformWith(new OrganizationTransformer())->ToArray());
 
 		// Than Try Admin
 		$user = \Auth::user();
