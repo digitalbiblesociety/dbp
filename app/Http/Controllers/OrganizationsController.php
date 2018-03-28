@@ -24,6 +24,7 @@ class OrganizationsController extends APIController
 			return view('dashboard.organizations.index', compact('user'));
 		}
 
+		$iso = checkParam('iso', null, 'optional') ?? "eng";
 		$membership = checkParam('membership', null, 'optional');
 		if($membership) {
 			$membership = Organization::where('slug',$membership)->first();
@@ -32,7 +33,7 @@ class OrganizationsController extends APIController
 		}
 
 		// Otherwise Fetch API route
-		$organizations = Organization::with('translations','logoIcon','logo')
+		$organizations = Organization::with('translations','logos')
 		->when($membership, function($q) use ($membership) {
 			$q->join('organization_relationships', function ($join) use($membership) {
 				$join->on('organizations.id', '=', 'organization_relationships.organization_child_id')

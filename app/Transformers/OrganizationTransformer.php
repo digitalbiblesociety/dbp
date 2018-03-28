@@ -13,17 +13,19 @@ class OrganizationTransformer extends BaseTransformer
      */
     public function transform(Organization $organization)
     {
-    	$organization->name = ($organization->translations("eng")->first()) ? $organization->translations("eng")->first()->name : $organization->slug;
-    	//if($organization->engTranslation) dd($organization->engTranslation->name);
+	    $iso = checkParam('iso', null, 'optional') ?? "eng";
+	    $organization->name = ($organization->translations->where('iso',$iso)->first()) ? $organization->translations->where('iso',$iso)->first()->name : $organization->slug;
+	    $organization->description = ($organization->translations->where('iso',$iso)->first()) ? $organization->translations->where('iso',$iso)->first()->description : '';
+
 	    switch ($this->version) {
-		    case "jQueryDataTable": return $this->transformForDataTables($organization);
+		    case "jQueryDataTable": return $this->transformForDataTables($organization, $iso);
 		    case "2":
 		    case "3": {
 		    	if($this->route == "v2_volume_organization_list") return $this->transformForV2_VolumeOrganizationListing($organization);
 		    	return $this->transformForV2($organization);
 		    }
 		    case "4":
-		    default: return $this->transformForV4($organization);
+		    default: return $this->transformForV4($organization,$iso);
 	    }
     }
 
@@ -33,13 +35,14 @@ class OrganizationTransformer extends BaseTransformer
 	 *
 	 * @return array
 	 */
-	public function transformForDataTables(Organization $organization)
+	public function transformForDataTables(Organization $organization, $iso)
 	{
-		$logo = ($organization->logoIcon) ? $organization->logoIcon->url : @$organization->logo->url;
-		if($logo) $logo = '<img src="'.$logo.'" />';
-		return [
-			'<a href="/organizations/'.$organization->id.'">'.$logo.@$organization->currentTranslation->name."</a>"
-		];
+		$logo = @$organization->logos->where('icon',1)->first();
+		if(!$logo) $logo = @$organization->logos->first();
+		if($logo) $logo = "<img src='".$logo->url."' />";
+
+		$url_iso = ($iso != "eng") ? $iso : '';
+		return [ "<a href='/".$url_iso.'/organizations/'.$organization->id."'>". $logo . $organization->name  ."</a>" ];
 	}
 
 	/**
@@ -91,10 +94,9 @@ class OrganizationTransformer extends BaseTransformer
 		return [
 			"id"             => $organization->id,
 			"name"           => $organization->name,
-			"description"    => $organization->currentTranslation->description,
+			"description"    => $organization->description,
             "slug"           => $organization->slug,
-			"logo"           => ($organization->logo) ? $organization->logo->url : "",
-			"icon"           => ($organization->logoIcon) ? $organization->logoIcon->url : "",
+			"logos"          => $organization->logos,
             "abbreviation"   => $organization->abbreviation,
             "notes"          => $organization->notes,
             "primaryColor"   => $organization->primaryColor,
