@@ -51,7 +51,7 @@ class CountryTransformer extends BaseTransformer
 		if(!$country->hidden) {
 			$name = $country->currentTranslation->name ?? $country->name;
 			return [
-				"<a href='/countries/".$country->id."'>$name</a>",
+				"<a href='/countries/".$country->id."'><svg class='icon'><use xmlns:xlink='http://www.w3.org/1999/xlink' xlink:href='/img/flags.svg#" .$country->id. "'></use></svg> $name</a>",
 				$country->continent,
 				$country->id,
 				$country->iso_a3,
