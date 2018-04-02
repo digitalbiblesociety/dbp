@@ -60,9 +60,20 @@ class UserHighlightsController extends APIController
 			'verse_start'       => 'required|max:177|min:1|integer',
 			'highlight_start'   => 'required|min:0|integer',
 			'highlighted_words' => 'required|min:1|integer',
-			'highlighted_color' => 'max:3|min:3',
+			'highlighted_color' => 'max:7|min:3',
 		]);
 		if ($validator->fails()) return ['errors' => $validator->errors() ];
+
+		if($request->highlighted_color) {
+			switch (strlen($request->highlighted_color)) {
+				case 3:  {$request->highlighted_color = $request->highlighted_color; break;}
+				case 4:  {$request->highlighted_color = substr($request->highlighted_color,1); break;}
+				case 6:  {$request->highlighted_color = $request->highlighted_color[0].$request->highlighted_color[2].$request->highlighted_color[4]; break;}
+				case 7:  {$request->highlighted_color = $request->highlighted_color[1].$request->highlighted_color[3].$request->highlighted_color[5]; break;}
+				default: {$request->highlighted_color = "EE0";}
+			}
+		}
+
 		Highlight::create([
 			'user_id'           => $request->user_id,
 			'bible_id'          => $request->bible_id,
