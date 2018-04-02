@@ -34,12 +34,14 @@ class send_api_logs implements ShouldQueue
      */
     public function handle()
     {
-    	$file = '/srv-dbp-dev/'.date('Y-m-d').'.log';
+    	$file = '/srv-dbp-dev/'.date('Y-m-d.h:i').'.log';
 		$fileExists = Storage::disk('s3_dbs_log')->exists($file);
 		if($fileExists) {
-			Storage::append($file, $this->log_string);
+			Storage::disk('s3_dbs_log')->append($file, "\n".$this->log_string);
+			// Storage::disk('data')->append($file, $this->log_string);
 		} else {
-			Storage::put($file,$this->log_string);
+			Storage::disk('s3_dbs_log')->put($file,$this->log_string);
+			// Storage::disk('data')->put($file, $this->log_string);
 		}
 
     }
