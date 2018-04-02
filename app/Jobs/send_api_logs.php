@@ -38,10 +38,10 @@ class send_api_logs implements ShouldQueue
 		$fileExists = Storage::disk('s3_dbs_log')->exists($file);
 		if($fileExists) {
 			Storage::disk('s3_dbs_log')->append($file, "\n".$this->log_string);
-			// Storage::disk('data')->append($file, $this->log_string);
+			Storage::disk('data')->append($file, $this->log_string);
 		} else {
 			Storage::disk('s3_dbs_log')->put($file,$this->log_string);
-			// Storage::disk('data')->put($file, $this->log_string);
+			Storage::disk('data')->put($file, $this->log_string);
 		}
 
     }
