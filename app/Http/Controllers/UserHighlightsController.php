@@ -21,8 +21,7 @@ class UserHighlightsController extends APIController
 	    $chapter_id = checkParam('chapter', null, 'optional');
 	    $project_id = checkParam('project_id');
 
-	    $highlights = Highlight::select(['id','bible_id', 'book_id', 'chapter', 'verse_start', 'highlight_start', 'highlighted_words'])
-			->where('user_id',$user_id)->where('project_id',$project_id)
+	    $highlights = Highlight::where('user_id',$user_id)->where('project_id',$project_id)
 	        ->when($bible_id, function($q) use ($bible_id) {
 		        $q->where('bible_id', '=', $bible_id);
 	        })->when($book_id, function($q) use ($book_id) {
