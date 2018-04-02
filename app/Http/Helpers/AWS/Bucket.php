@@ -29,7 +29,6 @@ class Bucket {
 
 	public static function download($files, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5, $books = null)
 	{
-		set_time_limit(0);
 		$fileset_id = $files->first()->fileset->id;
 		$bible_id = $files->first()->fileset->bible->id;
 		$stream = new S3StreamZip([
@@ -46,6 +45,14 @@ class Bucket {
 		} catch (S3Exception $e) {
 			echo $e->getMessage();
 		}
+	}
+
+	public static function upload($files, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5, $books = null)
+	{
+		$s3 = Storage::disk($name);
+		$client = $s3->getDriver()->getAdapter()->getClient();
+		$expiry = "+" . $expiry . " minutes";
+
 	}
 
 }

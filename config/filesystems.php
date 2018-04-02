@@ -70,6 +70,14 @@ return [
             'bucket' => env('DBS_AWS_BUCKET'),
         ],
 
+        's3_dbs_log' => [
+	        'driver' => 's3',
+	        'key'    => env('DBS_AWS_KEY'),
+	        'secret' => env('DBS_AWS_SECRET'),
+	        'region' => env('DBS_AWS_REGION'),
+	        'bucket' => env('DBS_AWS_BUCKET_LOG'),
+        ],
+
         's3_fcbh' => [
 	        'driver' => 's3',
 	        'key'    => env('FCBH_AWS_KEY'),
