@@ -135,7 +135,7 @@ class FileSetTransformer extends BaseTransformer
 
 		return [
 			"book_id"       => $fileset->book_id,
-			"book_name"     => $fileset->book->currentTranslation->name ?? $fileset->book->name,
+			"book_name"     => @$fileset->bible->first()->books->where('book_id',$fileset->book_id)->first()->name ?? $fileset->book->name,
 			"chapter_start" => $fileset->chapter_start,
 			"chapter_end"   => $fileset->chapter_end,
 			"verse_start"   => $fileset->verse_start,

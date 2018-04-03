@@ -46,7 +46,7 @@ class BibleFileSetsController extends APIController
 
 
 		$fileset_type = (strtolower(substr($fileset->set_type_code,0,5)) == "audio") ? 'audio' : 'text';
-	    $fileSetChapters = BibleFile::with('book.currentTranslation')
+	    $fileSetChapters = BibleFile::with('book','bible.books')
 		    ->join('books', 'books.id', '=', 'bible_files.book_id')
 			->where('hash_id',$fileset->hash_id)
 			->when($chapter_id, function ($query) use ($chapter_id) {
@@ -54,6 +54,7 @@ class BibleFileSetsController extends APIController
 			})->when($book_id, function ($query) use ($book_id) {
 			    return $query->where('book_id', $book_id);
 		    })->orderBy('books.book_order')->orderBy('chapter_start')->get();
+
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Chapters Found for the provided params");
 
 	    foreach ($fileSetChapters as $key => $fileSet_chapter) {
