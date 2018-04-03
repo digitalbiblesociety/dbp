@@ -34,7 +34,7 @@ class BooksTransformer extends BaseTransformer
 
 			case "v2_library_book": {
 				return [
-					"dam_id"             => $book->bible_id.substr($book->book_testament,0,1),
+					"dam_id"             => $book->bible_id->bible->id,
 					"book_id"            => $book->id_osis,
 					"book_name"          => $book->name,
 					"book_order"         => (string) $book->book_order,
