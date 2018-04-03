@@ -10,15 +10,14 @@ class MobileAppsController extends APIController
 	public function redirectDeepLink(Request $request) {
 		try {
 			$device = $this->isMobileDevice();
-			$id = $request->input('itemId');
-			$app = env('DEEPLINKING_APP') . $id;
+			$app = checkParam('app', null, 'optional') ?? env('DEEPLINKING_APP');
 
 			$data = [];
 			if ($device == 'iPhone') {
 				$data['primaryRedirection'] = $app;
-				$data['secndaryRedirection'] = env('DEEPLINKING_APPSTORE');
+				$data['secndaryRedirection'] = checkParam('app-store', null, 'optional') ?? env('DEEPLINKING_APPSTORE');
 			} else {
-				$redirect = env('DEEPLINKING_WEBSITE');
+				$redirect = checkParam('app-site', null, 'optional') ?? env('DEEPLINKING_WEBSITE');
 				return redirect($redirect);
 			}
 			return view('layouts.partials.deeplink-redirect', $data);
