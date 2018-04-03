@@ -34,7 +34,7 @@ class LanguagesController extends APIController
 	    $has_bibles = checkParam('has_bibles', null, 'optional');
 	    $include_alt_names = checkParam('include_alt_names', null, 'optional');
 
-		$languages = Language::select(['id','glotto_id','iso','name'])->withCount('bibles')
+		$languages = Language::select(['id','iso2B','iso','name'])->withCount('bibles')
 			->when($has_bibles, function ($query) use ($has_bibles) {
 				return $query->has('bibles');
 			})->when($country, function ($query) use ($country) {
