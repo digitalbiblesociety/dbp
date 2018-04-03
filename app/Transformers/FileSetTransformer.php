@@ -132,10 +132,18 @@ class FileSetTransformer extends BaseTransformer
 			}
 
 		}
-
+		if($fileset->bible) {
+			$bible = $fileset->bible->first();
+			if($bible) {
+				$books = $bible->books->where('book_id',$fileset->book_id)->first();
+				if($books) $bookName = $books->name;
+			}
+		} else {
+			$bookName = $fileset->book->name;
+		}
 		return [
 			"book_id"       => $fileset->book_id,
-			"book_name"     => @$fileset->bible->first()->books->where('book_id',$fileset->book_id)->first()->name ?? $fileset->book->name,
+			"book_name"     => $bookName,
 			"chapter_start" => $fileset->chapter_start,
 			"chapter_end"   => $fileset->chapter_end,
 			"verse_start"   => $fileset->verse_start,
