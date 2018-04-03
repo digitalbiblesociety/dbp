@@ -30,8 +30,8 @@ class BibleFileSetsController extends APIController
 	    $bible_id = CheckParam('dam_id',$id) ?? CheckParam('fileset_id',$id) ;
 	    $chapter_id = CheckParam('chapter_id',null,'optional');
 	    $book_id = CheckParam('book_id',null,'optional');
-	    $bucket_id = CheckParam('bucket_id',null,'optional');
-	    if(!$bucket_id) $bucket_id = CheckParam('bucket',null,'optional') ?? "s3_fcbh";
+	    $bucket_id = CheckParam('bucket_id', null, 'optional');
+	    if(!$bucket_id) $bucket_id = CheckParam('bucket', null, 'optional') ?? "s3_fcbh";
 	    $lifespan = CheckParam('lifespan',null,'optional') ?? 5;
 	    $type = checkParam('type');
 
@@ -41,8 +41,9 @@ class BibleFileSetsController extends APIController
 		->where('id',$bible_id)->when($bucket_id, function ($query) use ($bucket_id) {
 			return $query->where('bucket_id', $bucket_id);
 		})->where('set_type_code',$type)->first();
-	    $bible_id = ($fileset->bible_id) ? $fileset->bible_id."/" : "";
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Found for the provided params");
+	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Found in the `".$bucket_id."` Bucket for the provided params");
+		$bible_id = ($fileset->bible_id) ? $fileset->bible_id."/" : "";
+
 
 		$fileset_type = (strtolower(substr($fileset->set_type_code,0,5)) == "audio") ? 'audio' : 'text';
 	    $fileSetChapters = BibleFile::with('book.currentTranslation')

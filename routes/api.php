@@ -65,9 +65,6 @@
 	Route::name('v4_timestamps.tag')->get('timestamps/{id}',                              'AudioController@timestampsByTag');
 	Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',           'AudioController@timestampsByReference');
 
-
-
-
 	// VERSION 4 | WIKI
 	Route::name('v4_countries.all')->get('countries',                                     'CountriesController@index');
 	Route::name('v4_countries.jsp')->get('countries/joshua-project/',                     'CountriesController@joshuaProjectIndex');
