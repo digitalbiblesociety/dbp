@@ -30,16 +30,20 @@ class BibleFileSetsController extends APIController
 	    $bible_id = CheckParam('dam_id',$id) ?? CheckParam('fileset_id',$id) ;
 	    $chapter_id = CheckParam('chapter_id',null,'optional');
 	    $book_id = CheckParam('book_id',null,'optional');
-	    $driver = CheckParam('bucket',null,'optional') ?? "s3_fcbh";
+	    $bucket_id = CheckParam('bucket_id',null,'optional');
+	    if(!$bucket_id) $bucket_id = CheckParam('bucket',null,'optional') ?? "s3_fcbh";
 	    $lifespan = CheckParam('lifespan',null,'optional') ?? 5;
 	    $type = checkParam('type');
 
 	    if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
 	    if(isset($book)) $book_id = $book->id;
-		$fileset = BibleFileset::with('meta')->where('id',$bible_id)->where('set_type_code',$type)->first();
+		$fileset = BibleFileset::with('meta','bible')
+		->where('id',$bible_id)->when($bucket_id, function ($query) use ($bucket_id) {
+			return $query->where('bucket_id', $bucket_id);
+		})->where('set_type_code',$type)->first();
+	    $bible_id = ($fileset->bible->first()) ? $fileset->bible->first()->id."/" : "";
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Found for the provided params");
 
-		$bible_id = ($fileset->bible->first()) ? $fileset->bible->first()->id."/" : "";
 		$fileset_type = (strtolower(substr($fileset->set_type_code,0,5)) == "audio") ? 'audio' : 'text';
 	    $fileSetChapters = BibleFile::with('book.currentTranslation')
 		    ->join('books', 'books.id', '=', 'bible_files.book_id')
@@ -49,9 +53,10 @@ class BibleFileSetsController extends APIController
 			})->when($book_id, function ($query) use ($book_id) {
 			    return $query->where('book_id', $book_id);
 		    })->orderBy('books.book_order')->orderBy('chapter_start')->get();
+	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Chapters Found for the provided params");
 
 	    foreach ($fileSetChapters as $key => $fileSet_chapter) {
-			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type.'/'.$bible_id.$fileset->id.'/'.$fileSet_chapter->file_name, $driver, "dbp_dev", $lifespan);
+			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type.'/'.$bible_id.$fileset->id.'/'.$fileSet_chapter->file_name, $bucket_id, $lifespan);
 	    }
 	    return $this->reply(fractal()->collection($fileSetChapters)->serializeWith($this->serializer)->transformWith(new FileSetTransformer()));
     }

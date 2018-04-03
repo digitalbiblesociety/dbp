@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\Storage;
 use App\Helpers\AWS\S3StreamZip;
 
 class Bucket {
-	public static function signedUrl(string $file, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5)
+	public static function signedUrl(string $file, string $bucket = 'dbp_dev', int $expiry = 5)
 	{
+		$name =  ($bucket == 'dbp_dev') ? 's3_fcbh' : 's3_dbs';
 		$base_url = Storage::disk($name)->getConfig()->get('url');
 		if(!isset($base_url)) return Storage::disk($name)->temporaryUrl($file, now()->addMinutes($expiry));
 
