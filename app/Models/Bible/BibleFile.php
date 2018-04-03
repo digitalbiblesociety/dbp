@@ -39,6 +39,10 @@ use App\Models\Language\Language;
  * @property-read \App\Models\Bible\BibleFileTitle $title
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereHashId($value)
  * @property-read \App\Models\Bible\BibleFileTitle $currentTitle
+ * @property int|null $file_size
+ * @property int|null $duration
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereFileSize($value)
  */
 class BibleFile extends Model
 {
@@ -55,14 +59,19 @@ class BibleFile extends Model
 		return $this->BelongsTo(BibleFileset::class,'set_id');
 	}
 
+	public function connections()
+	{
+		return $this->BelongsTo(BibleFilesetConnection::class);
+	}
+
 	public function bible()
 	{
-		return $this->BelongsTo(Bible::class);
+		return $this->hasManyThrough(Bible::class,BibleFilesetConnection::class, 'hash_id','id','hash_id','bible_id');
 	}
 
 	public function book()
 	{
-		return $this->BelongsTo(Book::class,'book_id','id')->orderBy('book_order');;
+		return $this->BelongsTo(Book::class,'book_id','id')->orderBy('book_order');
 	}
 
 	public function timestamps()

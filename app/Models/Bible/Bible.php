@@ -2,6 +2,7 @@
 
 namespace App\Models\Bible;
 
+use App\Models\Language\Alphabet;
 use App\Models\User\Access;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Organization\Organization;
@@ -24,7 +25,6 @@ use App\Models\Language\Language;
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Language\Alphabet $alphabet
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleBook[] $books
- * @property-read \App\Models\Bible\BibleTranslation $currentTranslation
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleEquivalent[] $dbl
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleEquivalent[] $dbp
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleEquivalent[] $eBible
@@ -40,7 +40,6 @@ use App\Models\Language\Language;
  * @property-read \App\Models\Bible\Printable $printable
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleTranslation[] $translations
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Translator[] $translators
- * @property-read \App\Models\Bible\BibleTranslation $vernacularTranslation
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Video[] $videos
  * @method static Builder|Bible whereCopyright($value)
  * @method static Builder|Bible whereCreatedAt($value)
@@ -100,15 +99,15 @@ class Bible extends Model
      */
     public function translations()
     {
-        return $this->HasMany(BibleTranslation::class);
+        return $this->HasMany(BibleTranslation::class)->where('name','!=','');
     }
     public function currentTranslation()
     {
-        return $this->HasOne(BibleTranslation::class)->where('iso', \i18n::getCurrentLocale())->select('bible_id','name');
+        return $this->HasOne(BibleTranslation::class)->where('iso', \i18n::getCurrentLocale())->select('bible_id','name')->where('name','!=','');
     }
     public function vernacularTranslation()
     {
-        return $this->HasOne(BibleTranslation::class)->where('vernacular', '=', 1);
+        return $this->HasOne(BibleTranslation::class)->where('vernacular', '=', 1)->where('name','!=','');
     }
 
     public function books()
@@ -235,7 +234,7 @@ class Bible extends Model
      */
     public function alphabet()
     {
-        return $this->hasOne('App\Models\Language\Alphabet','script','script');
+        return $this->hasOne(Alphabet::class,'script','script');
     }
 
 

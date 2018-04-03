@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSize whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSize whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $description
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSize whereDescription($value)
  */
 class BibleSize extends Model
 {

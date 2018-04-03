@@ -50,6 +50,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $set_size_code
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSetSizeCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSetTypeCode($value)
+ * @property string|null $set_copyright
+ * @property string|null $ietf_code
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereIetfCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSetCopyright($value)
  */
 class BibleFileset extends Model
 {
@@ -72,7 +76,7 @@ class BibleFileset extends Model
 
 	public function connections()
 	{
-		return $this->hasMany(BibleFilesetConnection::class,'hash_id','hash_id');
+		return $this->HasOne(BibleFilesetConnection::class,'hash_id', 'hash_id');
 	}
 
 	public function organization()
