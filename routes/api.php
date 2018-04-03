@@ -126,6 +126,10 @@
 	// VERSION 4 | SEARCH
 	Route::name('v4_text_search')->get('search',                                          'TextController@search');
 
+	// VERSION 4 | DEEPLINK
+
+	Route::name('v4_deeplinking.index')->get('app/deeplinking',         'MobileAppsController@redirectDeepLink');
+
 	// VERSION 4 | CONNECTIONS
 
 	Route::name('v4_connections_jfm.sync')->get('connections/jesus-film/sync',           'Connections\ArclightController@sync');
