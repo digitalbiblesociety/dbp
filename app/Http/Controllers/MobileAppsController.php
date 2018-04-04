@@ -20,7 +20,7 @@ class MobileAppsController extends APIController
 				$redirect = checkParam('app-site', null, 'optional') ?? env('DEEPLINKING_WEBSITE');
 				return redirect($redirect);
 			}
-			return view('layouts.partials.deeplink-redirect', $data);
+			return view('layouts.partials.deeplink-redirect', compact($data));
 		} catch (Exception $e) {
 			Log::error(__METHOD__ . ' ' . $e->getMessage());
 			abort(500,$e->getMessage());
