@@ -44,8 +44,15 @@ class BibleFileSetsController extends APIController
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Found in the `".$bucket_id."` Bucket for the provided params");
 		$bible_id = ($fileset->bible_id) ? $fileset->bible_id."/" : "";
 
+		switch($fileset->set_type_code) {
+			case "audio_drama":
+			case "audio":        {$fileset_type = "audio"; break; }
+			case "text_plain":
+			case "text_format":  {$fileset_type = "text"; break; }
+			case "video":        {$fileset_type = "video"; break; }
+			case "app":          {$fileset_type = "app"; break; }
+		}
 
-		$fileset_type = (strtolower(substr($fileset->set_type_code,0,5)) == "audio") ? 'audio' : 'text';
 	    $fileSetChapters = BibleFile::with('book','bible.books')
 		    ->join('books', 'books.id', '=', 'bible_files.book_id')
 			->where('hash_id',$fileset->hash_id)
