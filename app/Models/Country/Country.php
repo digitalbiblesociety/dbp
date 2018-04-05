@@ -3,6 +3,7 @@
 namespace App\Models\Country;
 
 use App\Models\Bible\Bible;
+use App\Models\Country\FactBook\CountryGeography;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
 
@@ -30,6 +31,7 @@ use App\Models\Language\Language;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\Language[] $languagesFiltered
  * @property string|null $introduction
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\Country whereIntroduction($value)
+ * @property-read \App\Models\Country\CountryTranslation $translation
  */
 class Country extends Model
 {
@@ -66,5 +68,13 @@ class Country extends Model
     {
     	return $this->HasMany(CountryRegion::class);
     }
+
+    // World Factbook
+
+    public function geography()
+    {
+    	return $this->hasOne(CountryGeography::class);
+    }
+
 
 }

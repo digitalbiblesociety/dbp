@@ -82,6 +82,7 @@ class CountryTransformer extends BaseTransformer
 					'name'           => ($translation) ? $translation->name : $country->name,
 					'introduction'   => $country->introduction,
 					'continent_code' => $country->continent,
+					'geography'      => $country->geography,
 					'languages'      => $country->languagesFiltered->map(function ($language) {
 						return [
 							'name'   => $language->name,
