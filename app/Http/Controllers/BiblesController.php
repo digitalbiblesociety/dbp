@@ -108,7 +108,7 @@ class BiblesController extends APIController
 			}
 
 			if($this->v == 2) $bibles->load('language.parent.parentLanguage','alphabet','organizations');
-			if($this->v == "jQueryDataTable") $bibles->load('language.primaryCountry','alphabet');
+			if($this->v == "jQueryDataTable") $bibles->load('language.primaryCountry','alphabet','organizations');
 
 			return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
     }
