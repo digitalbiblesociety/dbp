@@ -14,8 +14,8 @@ class OrganizationTransformer extends BaseTransformer
     public function transform(Organization $organization)
     {
 	    $iso = checkParam('iso', null, 'optional') ?? "eng";
-	    $organization->name = ($organization->translations->where('iso',$iso)->first()) ? $organization->translations->where('iso',$iso)->first()->name : $organization->slug;
-	    $organization->description = ($organization->translations->where('iso',$iso)->first()) ? $organization->translations->where('iso',$iso)->first()->description : '';
+	    $organization->name = ($organization->translations->where('language_iso',$iso)->first()) ? $organization->translations->where('language_iso',$iso)->first()->name : $organization->slug;
+	    $organization->description = ($organization->translations->where('language_iso',$iso)->first()) ? $organization->translations->where('language_iso',$iso)->first()->description : '';
 
 	    switch ($this->version) {
 		    case "jQueryDataTable": return $this->transformForDataTables($organization, $iso);
