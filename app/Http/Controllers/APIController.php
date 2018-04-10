@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Jobs\send_api_logs;
 use App\Transformers\EmbeddedArraySerializer;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -40,9 +41,7 @@ class APIController extends Controller
 	    if(substr(array_shift($url),-3,3) == "api") {
 		    $this->api = true;
 		    $this->v = checkParam('v');
-			$keyExists = Key::find(checkParam('key'));
-			if(!isset($keyExists)) {abort(403,'No Authentication Provided');}
-			$this->key = $keyExists->key;
+			$this->key = checkParam('key');
 
 		    if(isset($this->v)) {
 		    	switch ($this->v) {
@@ -87,6 +86,26 @@ class APIController extends Controller
     	if(isset($_GET['echo'])) $object = [$_GET,$object];
 		$input = checkParam('callback', null, 'optional') ?? checkParam('jsonp', null, 'optional');
         $format = @$_GET['format'];
+
+	    $keyExists = Key::find($this->key);
+	    if(!isset($keyExists)) abort(403,'No Authentication Provided');
+
+	    // Status Code, Headers, Params, Body, Time
+	    try {
+		    $log_string = $this->getStatusCode().",";
+		    $log_string .= $this->request->path().",";
+		    $log_string .= '"'.$this->request->header('User-Agent').'"'.",";
+		    foreach ($_GET as $header => $value) $log_string .= ($value != '') ? $header."=".$value."|" : $header."|";
+		    $log_string = rtrim($log_string,"|");
+		    $log_string .= ',';
+		    if($this->request->getContent()) foreach (collect($this->request->getContent())->toArray() as $header => $value) $log_string .= $header."=".$value."|";
+		    $log_string .= ',';
+		    $log_string .= time();
+		    send_api_logs::dispatch($log_string);
+	    } catch (Exception $e) {
+		    //echo 'Caught exception: ',  $e->getMessage(), "\n";
+	    }
+
         switch ($format) {
             case 'xml':
                 $formatter = ArrayToXml::convert($object, [

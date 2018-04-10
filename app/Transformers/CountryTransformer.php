@@ -19,6 +19,7 @@ class CountryTransformer extends BaseTransformer
 	 */
 	public function transform($country)
 	{
+		$country->name = @$country->translations->where('language_id',$this->iso)->first()->name ?? $country->name;
 		switch ($this->version) {
 			case "jQueryDataTable": return $this->transformForDataTables($country);
 			case "2":
@@ -49,9 +50,8 @@ class CountryTransformer extends BaseTransformer
 		}
 
 		if(!$country->hidden) {
-			$name = $country->currentTranslation->name ?? $country->name;
 			return [
-				"<a href='/countries/".$country->id."'><svg class='icon'><use xmlns:xlink='http://www.w3.org/1999/xlink' xlink:href='/img/flags.svg#" .$country->id. "'></use></svg> $name</a>",
+				"<a href='/countries/".$country->id."'><svg class='icon'><use xmlns:xlink='http://www.w3.org/1999/xlink' xlink:href='/img/flags.svg#" .$country->id. "'></use></svg> $country->name</a>",
 				$country->continent,
 				$country->id,
 				$country->iso_a3,
@@ -64,9 +64,8 @@ class CountryTransformer extends BaseTransformer
 	{
 		switch($this->route) {
 			case "v4_countries.all": {
-				$translation = $country->translations($this->iso)->first();
 				return [
-					'name'           => ($translation) ? $translation->name : $country->name,
+					'name'           => $country->name,
 					'continent_code' => $country->continent,
 					'languages'      => $country->languagesFiltered->pluck('name','iso'),
 					'codes' => [
@@ -77,9 +76,8 @@ class CountryTransformer extends BaseTransformer
 				];
 			}
 			case "v4_countries.one": {
-				$translation = $country->translations($this->iso)->first();
 				return [
-					'name'           => ($translation) ? $translation->name : $country->name,
+					'name'           => $country->name,
 					'introduction'   => $country->introduction,
 					'continent_code' => $country->continent,
 					'geography'      => $country->geography,

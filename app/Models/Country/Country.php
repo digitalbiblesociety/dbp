@@ -4,6 +4,7 @@ namespace App\Models\Country;
 
 use App\Models\Bible\Bible;
 use App\Models\Country\FactBook\CountryGeography;
+use App\Models\Language\LanguageTranslation;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
 

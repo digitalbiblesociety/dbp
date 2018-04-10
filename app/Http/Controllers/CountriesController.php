@@ -19,13 +19,11 @@ class CountriesController extends APIController
     public function index($id = null)
     {
     	if(!$this->api) return view('countries.index');
-    	// \Cache::forget('v'.$this->v.$this->api.'_countries');
-	    // $countries = \Cache::remember('v'.$this->v.$this->api.'_countries', 2400, function() {
-		$countries = Country::with('languagesFiltered','translations')->get();
-		//	$countries = Country::raw('
-		//	SELECT countries.name,countries.continent, GROUP_CONCAT(CONCAT(languages.iso,languages.name))
-		//	AS languages,countries.fips,countries.iso_a3,countries.id FROM languages,countries,country_language)
-		//	WHERE languages.id=country_language.language_id AND country_language.country_id=countries.id;')->get();
+    	$iso = checkParam('iso', null, 'optional') ?? "eng";
+
+		$countries = Country::with(['languagesFiltered','translations' => function($query) use ($iso) {
+			$query->where('language_id', $iso);
+		}])->get();
 
 	    return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
     }

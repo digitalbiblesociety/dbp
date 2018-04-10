@@ -15,6 +15,10 @@ class BibleTransformer extends BaseTransformer
 	 */
     public function transform(Bible $bible)
     {
+    	$iso = checkParam('iso',null,'optional') ?? "eng";
+	    $bible->currentTranslation = $bible->translations->where('iso',$iso)->first();
+	    $bible->vernacularTranslation = $bible->translations->where('iso',$bible->iso)->first();
+
 	    switch ($this->version) {
 		    case "jQueryDataTable": return $this->transformForDataTables($bible);
 		    case "2": return $this->transformForV2($bible);
@@ -127,6 +131,7 @@ class BibleTransformer extends BaseTransformer
 			case "v4_bible.one": {
 				return [
 					"abbr"          => $bible->id,
+					"alphabet"      => $bible->alphabet,
 					"mark"          => $bible->copyright,
 					"name"          => @$bible->currentTranslation->name ?? "",
 					"description"   => @$bible->currentTranslation->description ?? "",
@@ -157,14 +162,18 @@ class BibleTransformer extends BaseTransformer
 
 	public function transformForDataTables($bible)
 	{
+		$font = ($bible->alphabet->requires_font) ? ' class="requires-font '.$bible->alphabet->script.'" data-font="'.@$bible->alphabet->primaryFont->fontFileName.'"' : '';
 		return [
-			'<a href="/bibles/'.$bible->id.'">'. @$bible->currentTranslation->name .'</a>',
-			@$bible->vernacularTranslation->name ?? "",
+			'<a  href="/bibles/'.$bible->id.'">'. @$bible->currentTranslation->name .'</a>',
+			'<span'.$font.'>'.@$bible->vernacularTranslation->name.'</span>' ?? "",
+			$bible->organizations->pluck('slug')->implode(','),
 			$bible->language->primaryCountry->name ?? "",
+			$bible->language->primaryCountry->continent ?? "",
 			$bible->language->name ?? "",
 			$bible->date,
 			$bible->id,
 			$bible->language->iso ?? "zxx",
+			$bible->filesets->pluck('set_type_code')
 		];
 	}
 

@@ -51,7 +51,7 @@ class BooksController extends APIController
 
 			if($textExists) {
 				$booksChapters = collect(\DB::connection('sophia')->table($bible_id.'_vpl')->select('book','chapter')->distinct()->get());
-				$books = $booksChapters->pluck('book')->toArray();
+				$books = $booksChapters->pluck('book')->unique()->toArray();
 				$chapters = [];
 				foreach ($booksChapters as $books_chapter) $chapters[$books_chapter->book][] = $books_chapter->chapter;
 

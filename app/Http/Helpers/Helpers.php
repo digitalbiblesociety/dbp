@@ -40,8 +40,7 @@ function fetchLanguage($id)
 	switch (strlen($id)) {
 		case 2:  return $language->where('iso1', $id)->first();
 		case 3:  return $language->where('iso', $id)->first();
-		case 8:  return $language->where('glotto_id', $id)->first();
-		default: return false;
+		default: return $language->where('glotto_id', $id)->orWhere('name',$id)->first();
 	}
 }
 

@@ -11,7 +11,7 @@ class LanguagesController extends APIController
 {
     /**
      * Display a listing of the resource.
-     * Fetches the records from the database > passes them through fractal for transforming and
+     * Fetches the records from the database > passes them through fractal for transforming.
      *
      * @param code (optional): Get the entry for a three letter language code.
      * @param name (optional): Get the entry for a part of a language name in either native language or English.
@@ -28,7 +28,7 @@ class LanguagesController extends APIController
 	    ini_set('memory_limit', '464M');
 
 		$country = checkParam('country',null,'optional');
-		$code = checkParam('code', null, 'optional');
+		$code = checkParam('code', null, 'optional') ?? checkParam('iso', null, 'optional');
 	    $language_name_portion = checkParam('full_word', null, 'optional') ?? checkParam('language_name', null, 'optional') ;
 	    $sort_by = checkParam('sort_by', null, 'optional');
 	    $has_bibles = checkParam('has_bibles', null, 'optional');
@@ -215,7 +215,7 @@ class LanguagesController extends APIController
 	public function show($id)
     {
 	    $language = fetchLanguage($id);
-	    $language->load("translations","codes","dialects","classifications","countries","bibles.currentTranslation","resources.translations","resources.links");
+	    $language->load("translations","codes","dialects","classifications","countries","bibles.translations","bibles.filesets","resources.translations","resources.links");
 	    if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
     	if($this->api) return $this->reply(fractal()->item($language)->transformWith(new LanguageTransformer())->toArray());
         return view('languages.show',compact('language'));

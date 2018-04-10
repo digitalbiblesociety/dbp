@@ -2,6 +2,7 @@
 
 namespace App\Models\Country;
 
+use App\Models\Language\LanguageTranslation;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -36,6 +37,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject whereResistantBelt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Country\Country $Country
  */
 class JoshuaProject extends Model
 {
@@ -44,6 +46,18 @@ class JoshuaProject extends Model
 	public function Country()
 	{
 		return $this->belongsTo(Country::class);
+	}
+
+	public function translations($iso = null)
+	{
+		if(!isset($iso)) return $this->HasMany(CountryTranslation::class);
+		$language = Language::where('iso',$iso)->first();
+		return $this->HasMany(CountryTranslation::class)->where('language_id',$language->id);
+	}
+
+	public function languageTranslations()
+	{
+		return $this->HasMany(LanguageTranslation::class,'iso','iso');
 	}
 
 }
