@@ -32,7 +32,7 @@ class CountriesController extends APIController
     {
 	    $iso = (isset($_GET['iso'])) ? $_GET['iso'] : 'eng';
 	    $language = Language::where('iso', $iso)->first();
-	    $countries = JoshuaProject::with(['country.translation' => function ($query) use ($language) {
+	    $countries = JoshuaProject::with(['translations' => function ($query) use ($language) {
 		    $query->where('language_id', $language->id);
 	    }])->get();
 

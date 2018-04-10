@@ -45,14 +45,12 @@ class JoshuaProject extends Model
 
 	public function Country()
 	{
-		return $this->belongsTo(Country::class);
+		return $this->belongsTo(Country::class,'country_id','id');
 	}
 
-	public function translations($iso = null)
+	public function translations()
 	{
-		if(!isset($iso)) return $this->HasMany(CountryTranslation::class);
-		$language = Language::where('iso',$iso)->first();
-		return $this->HasMany(CountryTranslation::class)->where('language_id',$language->id);
+		return $this->HasMany(CountryTranslation::class,'country_id','country_id');
 	}
 
 	public function languageTranslations()
