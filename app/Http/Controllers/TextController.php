@@ -126,8 +126,7 @@ class TextController extends APIController
 		->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN BOOLEAN MODE)"))->limit($limit)
 		->when($books, function($q) use ($books){
 		    $q->whereIn('book', explode(',',$books));
-	    })->tosql();
-	    dd($verses);
+	    })->get();
 
 	    $this->addMetaDataToVerses($verses,$bible_id);
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
