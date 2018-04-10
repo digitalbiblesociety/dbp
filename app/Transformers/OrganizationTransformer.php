@@ -41,8 +41,8 @@ class OrganizationTransformer extends BaseTransformer
 		if(!$logo) $logo = @$organization->logos->first();
 		if($logo) $logo = "<img src='".$logo->url."' />";
 
-		$url_iso = ($iso != "eng") ? $iso : '';
-		return [ "<a href='/".$url_iso.'/organizations/'.$organization->id."'>". $logo . $organization->name  ."</a>" ];
+		$url_iso = ($iso != "eng") ? '/'.$iso : '';
+		return [ "<a href='".$url_iso.'/organizations/'.$organization->id."'>". $logo . $organization->name  ."</a>" ];
 	}
 
 	/**
