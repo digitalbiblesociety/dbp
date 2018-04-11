@@ -164,12 +164,12 @@ class BibleTransformer extends BaseTransformer
 	{
 		$font = ($bible->alphabet->requires_font) ? ' class="requires-font '.$bible->alphabet->script.'" data-font="'.@$bible->alphabet->primaryFont->fontFileName.'"' : '';
 		return [
-			'<a  href="/bibles/'.$bible->id.'">'. @$bible->currentTranslation->name .'</a>',
+			$bible->language->name ?? "",
+			'<a href="/bibles/'.$bible->id.'">'. @$bible->currentTranslation->name .'</a>',
 			'<span'.$font.'>'.@$bible->vernacularTranslation->name.'</span>' ?? "",
 			$bible->organizations->pluck('slug')->implode(','),
-			$bible->language->primaryCountry->name ?? "",
+			($bible->language->primaryCountry) ? '<a href="/languages/'.$bible->language->iso.'/">'.$bible->language->primaryCountry->name.'</a>' : "",
 			$bible->language->primaryCountry->continent ?? "",
-			$bible->language->name ?? "",
 			$bible->date,
 			$bible->id,
 			$bible->language->iso ?? "zxx",
