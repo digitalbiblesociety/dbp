@@ -4,15 +4,8 @@ namespace App\Transformers;
 
 use League\Fractal\TransformerAbstract;
 use App\Models\Language\Alphabet;
-class AlphabetTransformer extends TransformerAbstract
+class AlphabetTransformer extends BaseTransformer
 {
-
-	public function __construct()
-	{
-		$this->version = $_GET['v'] ?? 4;
-		$this->iso = $_GET['iso'] ?? "eng";
-		$this->continent = $_GET['continent'] ?? false;
-	}
 
     /**
      * A Fractal transformer.
@@ -61,13 +54,23 @@ class AlphabetTransformer extends TransformerAbstract
 
 	public function transformForV4(Alphabet $alphabet)
 	{
-		return [
-			'name'      => $alphabet->name,
-			'script'    => $alphabet->script,
-			'family'    => $alphabet->family,
-			'type'      => $alphabet->type,
-			'direction' => $alphabet->direction
-		];
+		switch($this->route) {
+			case "v4_alphabets.all": {
+				return [
+					'name'      => $alphabet->name,
+					'script'    => $alphabet->script,
+					'family'    => $alphabet->family,
+					'type'      => $alphabet->type,
+					'direction' => $alphabet->direction
+				];
+				break;
+			}
+			case "v4_alphabets.one": {
+				return $alphabet->toArray();
+				break;
+			}
+
+		}
 	}
 
 }

@@ -2,19 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Language\Alphabet;
-use App\Transformers\AlphabetTransformer;
 use Auth;
 use Validator;
+use Illuminate\View\View;
 use Illuminate\Http\Request;
+use App\Models\Language\Alphabet;
+use App\Transformers\AlphabetTransformer;
+use App\Models\User\Key;
 
 class AlphabetsController extends APIController
 {
 
+
 	/**
-	 * Lists Alphabets for View or API
+	 * Returns Alphabets
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 * @version 4
+	 * @category v4_alphabets.all
+	 * @link http://bible.build/alphabets - V4 Access
+	 * @link https://api.dbp.dev/alphabets?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_alphabets_all - V4 Test Docs
+	 *
+	 * @return mixed $alphabets string - A JSON string that contains the status code and error messages if applicable.
+	 *
 	 */
 	public function index()
     {
@@ -25,11 +35,16 @@ class AlphabetsController extends APIController
 
 
 	/**
-	 * Single Alphabet Route for API or view
+	 * Returns Single Alphabet
 	 *
-	 * @param $id
+	 * @version 4
+	 * @category v4_alphabets.one
+	 * @link http://bible.build/alphabets - V4 Access
+	 * @link https://api.dbp.dev/alphabets/Latn?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_alphabets_one - V4 Test Docs
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 * @return mixed $alphabets string - A JSON string that contains the status code and error messages if applicable.
+	 *
 	 */
 	public function show($id)
     {
@@ -41,64 +56,114 @@ class AlphabetsController extends APIController
 
 
 	/**
+	 * Create an Alphabet
 	 *
-	 * Create a brand new Alphabet
+	 * @version 4
+	 * @category ui_alphabets.create
+	 * @link http://dbp.dev/alphabets/create - V4 Access
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 * @return View
+	 *
 	 */
 	public function create()
     {
-        $user = Auth::user();
-        if(!$user->role('archivist')) return $this->setStatusCode(403)->replyWithError("You are not an archivist");
+	    $this->validateUser(Auth::user());
         return view('languages.alphabets.create');
     }
 
-
 	/**
-	 * Store an Alphabet
+	 * Stores a Single Alphabet
 	 *
-	 * @return \Illuminate\Http\RedirectResponse
+	 * @version 4
+	 * @category v4_alphabets.store
+	 * @link http://bible.build/alphabets - V4 Access
+	 * @link https://api.dbp.dev/alphabets?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_alphabets_store - V4 Test Docs
+	 *
+	 * @return mixed View|$alphabets
+	 *
 	 */
 	public function store(Request $request)
     {
+	    ($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
 	    $this->validateAlphabet($request);
 
-		Alphabet::create($request->all());
-		return redirect()->route('view_alphabets.show', ['id' => request()->id]);
+	    Alphabet::create($request->all());
+		if(!$this->api) return redirect()->route('view_alphabets.show', ['id' => request()->id]);
+		return $this->reply(["message" => "Alphabet Successfully Created"]);
     }
-
-    public function update(string $script_id, Request $request)
-    {
-    	// Select Alphabet
-		$alphabet = Alphabet::find($script_id);
-		if(!$alphabet) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
-	    $this->validateAlphabet($request);
-
-	    $alphabet->fill($request->all())->save();
-	    return redirect()->route('view_alphabets.show', ['id' => $request->id]);
-    }
-
 
 	/**
+	 * Stores a Single Alphabet
 	 *
-	 * Edit an Existing Alphabet
+	 * @version 4
+	 * @category v4_alphabets.store
+	 * @link http://bible.build/alphabets - V4 Access
+	 * @link https://api.dbp.dev/alphabets/Latn?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_alphabets_store - V4 Test Docs
 	 *
-	 * @param $id
+	 * @param string $script_id - The ID of the alphabet currently being edited
+	 * @param Request $request - The form body
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 * @return mixed View|$alphabet
+	 *
 	 */
-	public function edit($id)
+    public function update(string $script_id, Request $request)
     {
-	    $user = Auth::user();
-        if(!$user->archivist) return $this->setStatusCode(403)->replyWithError("You are not an archivist");
-        $alphabet = Alphabet::find($id);
+	    ($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
+	    $this->validateAlphabet($request);
+
+	    Alphabet::find($script_id)->fill($request->all())->save();
+	    if(!$this->api) return redirect()->route('view_alphabets.show', ['id' => $request->id]);
+	    return $this->reply("Alphabet Successfully Updated");
+    }
+
+	/**
+	 * Edit a Single Alphabet
+	 *
+	 * @version 4
+	 * @category ui_alphabets.edit
+	 * @link http://bible.build/alphabets/Latn/edit - V4 Access
+	 *
+	 * @param $script_id - The ID of the alphabet currently being edited
+	 *
+	 * @return View
+	 */
+	public function edit(string $script_id)
+    {
+	    $this->validateUser(Auth::user());
+
+        $alphabet = Alphabet::find($script_id);
         return view('languages.alphabets.edit',compact('alphabet'));
     }
 
-    public function validateAlphabet(Request $request)
-    {
-	    // Validate Input
+	/**
+	 * Ensure the current User has permissions to alter the alphabets
+	 *
+	 * @param null $user
+	 *
+	 * @return \App\Models\User\User|mixed|null
+	 */
+	private function validateUser($user = null)
+	{
+		if(!$user) {
+			$key = Key::where('key',$this->key)->first();
+			if(!isset($key)) return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
+			$user = $key->user;
+		}
+		if(!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError("You don't have permission to edit the wiki");
+		return $user;
+	}
 
+	/**
+	 * Ensure the current alphabet change is valid
+	 *
+	 * @param Request $request
+	 *
+	 * @return mixed
+	 */
+	private function validateAlphabet(Request $request)
+    {
 	    $validator = Validator::make($request->all(),[
 		    'script'              => ($request->method() == "POST") ? 'required|unique:alphabets,script|max:4|min:4' : 'required|exists:alphabets,script|max:4|min:4',
 		    'name'                => ($request->method() == "POST") ? 'required|unique:alphabets,name|max:191' : 'required|exists:alphabets,name|max:191',
