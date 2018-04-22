@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bible\BibleEquivalent;
-use App\Models\Bible\Text;
 use App\Models\Bible\Book;
+use App\Models\Bible\Text;
+use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BookTranslation;
 use App\Transformers\BooksTransformer;
 
@@ -13,68 +13,69 @@ class BooksController extends APIController
 
 	/**
 	 *
+	 * Returns a static list of Scriptural Books and Accompanying meta data
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 * @version 4
+	 * @category v4_bible.allBooks
+	 * @link http://api.dbp.dev/bibles/books?key=1234&v=4 - V4 Test Access URL
+	 * @link https://dbp.dev/eng/docs/swagger/v4#/Bible/v4_bible_books2 - V4 Test Docs
+	 * @return Book string - A JSON string that contains the status code and error messages if applicable.
 	 */
 	public function index()
 	{
 		if(!$this->api) return view('docs.books');
-		return \Cache::remember('v4_books_index', 2400, function() {
+		return $this->reply(\Cache::remember('v4_books_index', 2400, function() {
 			$books = Book::orderBy('book_order')->get();
-			return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer()));
-		});
+			return fractal()->collection($books)->transformWith(new BooksTransformer());
+		}));
 	}
 
 
 	/**
-	 * This Function handles the "Book Order Listing" Route on V2 and the "books" route on V4
 	 * Gets the book order and code listing for a volume.
-	 * REST URL: http://dbt.io/library/bookorder
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 * @version 2
+	 * @category v2_library_book
+	 * @category v2_library_bookOrder
+	 * @link http://dbt.io/library/bookorder - V2 Access
+	 * @link http://api.dbp.dev/library/bookorder?key=1234&v=2&dam_id=AMKWBT&pretty - V2 Test
+	 * @link https://dbp.dev/eng/docs/swagger/v2#/Library/v2_library_book - V2 Test Docs
+	 *
+	 * @param dam_id - the volume internal bible_id.
+	 *
+	 * @return Book string - A JSON string that contains the status code and error messages if applicable.
 	 */
 	public function show()
     {
-    	if(!$this->api) return view('docs.v2.books.BookOrderListing');
+		$id = checkParam('dam_id');
+	    $bucket_id = checkParam('bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+	    $fileset = BibleFileset::with('bible')->where('id',$id)->where('bucket_id',$bucket_id)->first();
+	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params.");
 
-		$abbreviation = checkParam('dam_id');
-		$bibleEquivalent = BibleEquivalent::where('equivalent_id', $abbreviation)->first();
-	    $testament = false;
+	    $textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
+	    if(!$textExists) return $this->setStatusCode(404)->replyWithError("The data for this Bible is still being updated, please check back later");
 
-		if($bibleEquivalent) {
-			$testament_letter = substr($bibleEquivalent->equivalent_id,-4,1);
-			if($testament_letter == "N") $testament = "NT";
-			if($testament_letter == "O") $testament = "OT";
+		$booksChapters = collect(\DB::connection('sophia')->table($fileset->id.'_vpl')->select('book','chapter')->distinct()->get());
+	    $books = Book::whereIn('id_usfx',$booksChapters->pluck('book')->unique()->toArray())->orderBy('book_order')->get();
 
-			$bible_id = $bibleEquivalent->bible->id;
-			$textExists = \Schema::connection('sophia')->hasTable($bible_id.'_vpl');
+	    $bible_id = $fileset->bible->first()->id;
+	    foreach($books as $key => $value) $books[$key]->bible_id = $bible_id;
 
-			if($textExists) {
-				$booksChapters = collect(\DB::connection('sophia')->table($bible_id.'_vpl')->select('book','chapter')->distinct()->get());
-				$books = $booksChapters->pluck('book')->unique()->toArray();
-				$chapters = [];
-				foreach ($booksChapters as $books_chapter) $chapters[$books_chapter->book][] = $books_chapter->chapter;
-
-				$books = Book::whereIn('id_usfx',$books)->orderBy('book_order')->when($testament, function($q) use ($testament) {
-					$q->where('book_testament', $testament);
-				})->get()->map(function ($book) use ($bibleEquivalent,$chapters) {
-					$book['bible_id'] = $bibleEquivalent;
-					$book['sophia_chapters'] = $chapters[$book->id_usfx];
-					return $book;
-				});
-				return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer));
-			}
-		}
-	    if($this->v == 2) return [];
-		return $this->setStatusCode(422)->replyWithError("DAM ID not found");
+		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer));
     }
 
 	/**
-	 * This function handles the "Book Name Listing" route on Version 2 of the DBP
-	 * This will retrieve the native language book names for a DBP language code.
-	 * OLD REST URL: http://dbt.io/library/bookname
+	 * Gets the book order and code listing for a volume.
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 * @version 2
+	 * @category v2_library_bookName
+	 * @link http://dbt.io/library/bookname - V2 Access
+	 * @link http://api.dbp.dev/library/bookname?key=1234&v=2&language_code=ben - V2 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/v2#/Library/v2_library_bookname - V2 Test Docs
+	 *
+	 * @param language_code - The language code to filter the books by
+	 *
+	 * @return BookTranslation string - A JSON string that contains the status code and error messages if applicable.
 	 */
 	public function bookNames()
     {
@@ -88,40 +89,43 @@ class BooksController extends APIController
     }
 
 	/**
-	 * Supports V2:
-	 *
-	 * This Function handles the "Chapter Listing" route on Version 2 of the DBP
 	 * This lists the chapters for a book or all books in a standard bible volume.
-	 * Story volumes in DBP are defined in the same top down fashion as standard bibles.
-	 * So the first partitioning is into books, which correspond to the segments of audio or video.
-	 * So story volumes have no chapters.
-	 * OLD REST URL: http://dbt.io/library/chapter
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 * @version 2
+	 * @category v2_library_chapter
+	 * @link http://dbt.io/library/chapter - V2 Access
+	 * @link https://api.dbp.dev/library/chapter?key=1234&v=2&dam_id=AMKWBT&book_id=MAT&pretty - V2 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/v2#/Library/v2_library_chapter - V2 Test Docs
+	 *
+	 * @param dam_id - The Fileset ID to filter by
+	 * @param book_id - The USFM 2.4 or OSIS Book ID code
+	 * @param bucket_id - The optional bucket ID of the resource, if not given the API will assume FCBH origin
+	 *
+	 * @return mixed $chapters string - A JSON string that contains the status code and error messages if applicable.
+	 *
 	 */
 	public function chapters()
     {
 	    if(!$this->api) return view('docs.books.chapters');
 
 	    $id = checkParam('dam_id');
+	    $bucket_id = checkParam('bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 	    $book_id = checkParam('book_id', null, 'optional');
-	    if(!$book_id) { return $this->setStatusCode(422)->replyWithError("Missing book_id");}
 
-	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$id)->first();
-		if($bibleEquivalent) $bible = $bibleEquivalent->bible;
-		if(!$bible) $bible = Bible::find($id);
-		if(!$bible) return $this->setStatusCode(422)->replyWithError("Missing dam_id");
-		$bible_id = $bible->id;
+	    $fileset = BibleFileset::with('bible')->where('id',$id)->where('bucket_id',$bucket_id)->first();
+	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the given ID");
 
 	    $book = Book::where('id_osis',$book_id)->orWhere('id',$book_id)->first();
-		$chapters = \DB::connection('sophia')->table($bible_id.'_vpl')->where('book',$book->id_usfx)
+	    if(!$book) return $this->setStatusCode(404)->replyWithError("No book found for the given ID");
+
+		$chapters = \DB::connection('sophia')->table($fileset->id.'_vpl')
+			->when($book, function($q) use ($book) { $q->where('book',$book->id_usfx); })
 			->select(['chapter','book'])->distinct()->orderBy('chapter')->get()
 			->map(function ($chapter) use ($id, $book) {
 				$chapter->book = $book;
 				$chapter->bible_id = $id;
 				return $chapter;
 			});
-
 		return $this->reply(fractal()->collection($chapters)->serializeWith($this->serializer)->transformWith(new BooksTransformer()));
     }
 
