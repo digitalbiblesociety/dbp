@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use App\Models\Bible\Text;
 use App\Models\Bible\BibleFileset;
@@ -39,6 +40,9 @@ class BibleDisplayController extends Controller
 	 */
 	public function chapter($bible_id = "ENGESV", $book_id = null, $chapter = null) {
 		// handle starting routes
+		$tableExists = Schema::connection('sophia')->hasTable($bible_id.'_vpl');
+		if(!$tableExists) return "This Bible is currently being updated, please check back later";
+
 		if(!$book_id) {
 			$selection = \DB::connection('sophia')->table($bible_id.'_vpl')->orderBy('canon_order')->first();
 			$book_id = $selection->book;
@@ -92,6 +96,9 @@ class BibleDisplayController extends Controller
 	 */
 	public function navigation($bible_id)
 	{
+		$tableExists = Schema::connection('sophia')->hasTable($bible_id.'_vpl');
+		if(!$tableExists) return "This Bible is currently being updated, please check back later";
+
 		$bibleNavigation =  \DB::connection('sophia')->table($bible_id.'_vpl')->select('book','chapter')->distinct()->get()->groupBy('book');
 		return view('bibles.reader.bibleNav',compact('bibleNavigation','bible_id'));
 	}
