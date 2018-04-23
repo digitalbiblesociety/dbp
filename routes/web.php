@@ -42,13 +42,13 @@ Route::resource('bibles/audio/uploads',     'AudioProcessingController');
 Route::resource('bibles/ocr',               'PrintProcesses');
 Route::resource('dbl',                      'Connections\DigitalBibleLibraryController');
 
+// This Collection of routes handles the javascript-less reader fallback
 
-
-
-Route::post('/search',                          'BibleDisplayController@search');
-Route::get('/read/',                            'BibleDisplayController@chapter')->name('view_bible_chapter');
-Route::get('/read/{id}',                        'BibleDisplayController@chapter')->name('view_bible_chapter');
-Route::get('/read/{id}/{book}/{chapter}',       'BibleDisplayController@chapter')->name('view_bible_chapter');
+Route::name('ui_bibleDisplay_read.index')->get('/read/',                          'BibleDisplayController@index');
+Route::name('ui_bibleDisplay_read.bible')->get('/read/{id}',                      'BibleDisplayController@navigation');
+Route::name('ui_bibleDisplay_read.results')->get('/read/{id}/search',             'BibleDisplayController@search');
+Route::name('ui_bibleDisplay_read.search')->post('/read/{id}/search',             'BibleDisplayController@search');
+Route::name('ui_bibleDisplay_read.chapter')->get('/read/{id}/{book}/{chapter}',   'BibleDisplayController@chapter');
 
 
 Route::get('/permissions',       'BibleFileSetPermissionsController@user')->name('view_bible_filesets_permissions.user');
