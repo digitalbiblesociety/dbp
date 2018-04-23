@@ -88,7 +88,7 @@ class APIController extends Controller
         $format = @$_GET['format'];
 
 	    $keyExists = Key::find($this->key);
-	    if(!isset($keyExists)) abort(403,'No Authentication Provided');
+	    if(!isset($keyExists)) return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
 
 	    // Status Code, Headers, Params, Body, Time
 	    try {
