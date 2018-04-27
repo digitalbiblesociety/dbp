@@ -60,15 +60,17 @@ class BiblesController extends APIController
 	    $bucket = checkParam('bucket', null, 'optional');
 
 			$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
-	        $bibles = Bible::with('translations','language.translations','filesets.meta')
+	        $bibles = Bible::with(['translations','language.translations', 'filesets' => function ($query) use ($bucket) {
+		                if($bucket) $query->where('bucket_id', $bucket);
+	                }])
 			        ->has('translations')->has('language')
 			        ->when($fileset_filter, function($q) use ($access) {
 				        $q->has('filesets.files')->where('open_access', 1)->orWhereIn('id', $access);
 			        })
 		            ->when($bucket, function($q) use ($bucket) {
-						$q->whereHas('filesets', function ($query) use ($bucket) {
-							$query->where('bucket_id', $bucket);
-						});
+			            $q->whereHas('filesets', function ($query) use ($bucket) {
+					        if($bucket) $query->where('bucket_id', $bucket);
+			            });
 		            })
 		            ->when($country, function($q) use ($country) {
 			            $q->whereHas('language.primaryCountry', function ($query) use ($country) {
