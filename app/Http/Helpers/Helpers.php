@@ -102,7 +102,9 @@ function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
 		if(empty($numbers)) {
 			$number_vernacular = $current_number;
 		} else {
-			foreach(str_split($current_number) as $i) $number_vernacular .= $numbers[$i + 1]['numeral_vernacular'];
+			foreach(str_split($current_number) as $i) {
+				if(isset($numbers[$i]['numeral_vernacular'])) $number_vernacular .= $numbers[$i]['numeral_vernacular'];
+			}
 		}
 		$out_numbers[] = [
 			"numeral"            => intval($current_number),
