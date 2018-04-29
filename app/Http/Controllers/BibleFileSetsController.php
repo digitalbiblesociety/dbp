@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFile;
+use App\Models\Bible\BibleFilesetType;
 use App\Models\Bible\Book;
 use App\Helpers\AWS\Bucket;
 use App\Models\User\Access;
@@ -51,6 +52,7 @@ class BibleFileSetsController extends APIController
 			case "text_format":  {$fileset_type = "text"; break; }
 			case "video":        {$fileset_type = "video"; break; }
 			case "app":          {$fileset_type = "app"; break; }
+			default:             {$fileset_type = "text"; break;}
 		}
 
 	    $fileSetChapters = BibleFile::with('book','bible.books')
@@ -73,9 +75,10 @@ class BibleFileSetsController extends APIController
     public function download($id)
     {
 	    $set_id = CheckParam('fileset_id',$id);
+	    $bucket_id = checkParam('bucket_id', null);
 	    $books = CheckParam('book_ids',null,'optional');
 
-	    $fileset = BibleFileset::where('id',$set_id)->first();
+	    $fileset = BibleFileset::where('id',$set_id)->where('bucket_id',$bucket_id)->first();
 	    if(!$fileset) return $this->replyWithError("Fileset ID not found");
 
 	    // Filter Download By Books
@@ -92,7 +95,8 @@ class BibleFileSetsController extends APIController
 
 	public function podcast($id)
 	{
-		$fileset = BibleFileset::with('files.currentTitle','bible')->find($id);
+		$bucket_id = checkParam('bucket', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$fileset = BibleFileset::with('files.currentTitle','bible')->where('id',$id)->where('bucket_id',$bucket_id)->first();
 		if(!$fileset) return $this->replyWithError("No Fileset exists for this ID");
 
 		$rootElementName = 'rss';
@@ -140,6 +144,15 @@ class BibleFileSetsController extends APIController
 
 	    // ProcessBible::dispatch($request->file('zip'), $fileset->id);
 	    return view('bibles.filesets.thanks', compact('fileset'));
+    }
+
+	/**
+	 * Returns the Available Media Types for Filesets within the API.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Collection|static[]
+	 */
+	public function mediaTypes() {
+	    return $this->reply(BibleFilesetType::all()->pluck('name','set_type_code'));
     }
 
 	/**

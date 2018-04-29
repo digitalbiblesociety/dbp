@@ -2,58 +2,67 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bible\BibleFileset;
-use App\Models\User\User;
+use App\Models\User\Key;
 use App\Models\User\Access;
+use App\Models\Bible\BibleFileset;
+use App\Transformers\BibleFilePermissionsTransformer;
+
 use Illuminate\Http\Request;
 
 class BibleFileSetPermissionsController extends APIController
 {
 
 	/**
-	 * Return an index of file set permissions
+	 * Returns an index of fileset permissions
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 * @version 4
+	 * @category v4_bible_filesets.permissions_index
+	 * @link http://bible.build/bibles/filesets/AMKWBT/permissions - V4 Access
+	 * @link https://api.dbp.dev/bibles/filesets/AMKWBT/permissions?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/v4#/Bible/v4_bible_chapter2 - V4 Test Docs
+	 *
+	 * @param string $fileset_id - The fileset_id for which permissions are being queried
+	 *
+	 * @return mixed $fileset string - A JSON string that contains the status code and error messages if applicable.
+	 *
 	 */
 	public function index($fileset_id)
 	{
-		$user = \Auth::user();
-		if(!$user) return $this->setStatusCode(401)->replyWithError("you need to be logged in to see this page");
-		$fileset = BibleFileset::with('permissions')->where('id',$fileset_id)->first();
-		return view('bibles.filesets.permissions.index',compact('fileset'));
+		if(!$this->api) {
+			$user = \Auth::user();
+			if(!$user) return $this->setStatusCode(401)->replyWithError("you need to be logged in to see this page");
+			return view('bibles.filesets.permissions.index');
+		}
+
+		$filesets = Access::with('fileset.bible.translations')->where('hash_id',$fileset_id)->get();
+		if(!$filesets) return $this->setStatusCode(404)->replyWithError("Fileset Not found for given ID");
+		$fileset = $filesets->where('key_id',$this->key)->first();
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError('The Fileset exists, but no Permissions were found for your current key');
+		return $this->reply(fractal()->item($fileset)->transformWith(BibleFilePermissionsTransformer::class)->serializeWith($this->serializer));
 	}
 
 
 	/**
+	 * Store a new fileset permission.
 	 *
-	 * Show the form for creating a new resource.
+	 * @version 4
+	 * @category v4_bible_filesets_permissions.store
+	 * @link http://bible.build/bibles/filesets/AMKWBT/permissions - V4 Access [POST]
+	 * @link https://dbp.dev/bibles/filesets/AMKWBT/permissions - V4 Test Access [POST]
 	 *
-	 * @param string $id
+	 * @param string $fileset_id
+	 * @param Request $request
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-	 */
-	public function create(string $id)
-	{
-		$users = User::all()->pluck('name','id');
-		$fileset = BibleFileset::find($id);
-		return view('bibles.filesets.permissions.create', compact('fileset','users'));
-	}
-
-
-	/**
+	 * @return mixed $fileset string - A JSON string that contains the status code and error messages if applicable.
 	 *
-	 * Store a newly created resource in storage.
-	 *
-	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */
 	public function store(string $fileset_id,Request $request)
 	{
-		$validator = \Validator::make($request->all(), [
-			'hash_id'          => 'required|exists:filesets,hash_id',
-			'key_id'           => 'required|exists:user_keys,key',
-		]);
-		if ($validator->fails()) return ['errors' => $validator->errors() ];
+		$this->validateUser();
+		$this->validateBibleFilesetPermission($request);
+
+		$fileset = Fileset::with('bucket')->where('hash_id',$request->hash_id)->first();
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset has been found for the provided hash_id");
 
 		Access::create([
 			'hash_id'        => $request->hash_id,
@@ -66,44 +75,31 @@ class BibleFileSetPermissionsController extends APIController
 	}
 
 	/**
-	 * Display the specified resource.
+	 * Update an existing fileset permission.
 	 *
-	 * @param $id
+	 * @version 4
+	 * @category v4_bible_filesets_permissions.store
+	 * @link http://bible.build/bibles/filesets/AMKWBT/permissions - V4 Access [POST]
+	 * @link https://dbp.dev/bibles/filesets/AMKWBT/permissions - V4 Test Access [POST]
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 * @param string $fileset_id
+	 * @param Request $request
+	 *
+	 * @return mixed $permission string - A JSON string that contains the status code and error messages if applicable.
+	 *
 	 */
-	public function show($id)
+	public function update($fileset_id, Request $request)
 	{
-		$permission = BibleFileset::find($id);
-		return view('bibles.filesets.permissions.show', compact('permission'));
-	}
+		$this->validateUser();
+		$this->validateBibleFilesetPermission($request);
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
-	public function edit($id)
-	{
-		$bibleFileSet = BibleFileset::find($id);
-		return view('bibles.filesets.permissions.edit',compact('bibleFileSet'));
-	}
-
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
-	public function update($id)
-	{
-		$fileset = BibleFileset::find($id);
+		$fileset = BibleFileset::find($fileset_id);
 		$this->authorize('update', $fileset);
 		$permission = BibleFileSetPermission::find(request()->permission_id);
 		$permission->access_level = request()->access_level;
 		$permission->save();
-		return redirect()->route('view_bible_filesets.show', $id);
+
+		return $this->reply($permission);
 	}
 
 	/**
@@ -114,10 +110,12 @@ class BibleFileSetPermissionsController extends APIController
 	 */
 	public function destroy($id)
 	{
+		$this->validateUser();
+
 		$fileSet = BibleFileset::find($id);
 		$fileSet->delete();
 
-		return redirect()->route('view_bible_filesets.index');
+		return $this->reply("Permission Successfully Removed");
 	}
 
 	public function user()
@@ -125,6 +123,46 @@ class BibleFileSetPermissionsController extends APIController
 		$user = \Auth::user();
 		if(!$user) return $this->setStatusCode(401)->replyWithError("you need to be logged in to see this page");
 		return view('bibles.filesets.permissions.user',compact('user'));
+	}
+
+	/**
+	 * Ensure the current User has permissions to alter the permissions
+	 *
+	 * @param null $user
+	 *
+	 * @return \App\Models\User\User|mixed
+	 */
+	private function validateUser($user = null)
+	{
+		if(!$this->api) $user = Auth::user();
+		if(!$user) {
+			$key = Key::where('key',$this->key)->first();
+			if(!isset($key)) return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
+			$user = $key->user;
+		}
+		if(!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError("You don't have permission to edit the permissions for this fileset");
+		return $user;
+	}
+
+	/**
+	 * Ensure the current permission change is valid
+	 *
+	 * @param Request $request
+	 *
+	 * @return mixed
+	 */
+	private function validateBibleFilesetPermission(Request $request)
+	{
+		$validator = \Validator::make($request->all(), [
+			'hash_id'          => 'required|exists:filesets,hash_id',
+			'key_id'           => 'required|exists:user_keys,key',
+		]);
+
+		if ($validator->fails()) {
+			if($this->api) return $this->setStatusCode(422)->replyWithError($validator->errors());
+			if(!$this->api) return redirect()->back()->withErrors($validator)->withInput();
+		}
+
 	}
 
 }

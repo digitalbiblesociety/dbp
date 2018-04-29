@@ -24,6 +24,8 @@ class BibleFilesetType extends Model
 {
     public $table = "bible_fileset_types";
 
+    protected $hidden = ['updated_at','id'];
+
     public function fileset()
     {
     	return $this->belongsTo(BibleFileset::class);

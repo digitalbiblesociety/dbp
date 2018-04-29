@@ -39,28 +39,24 @@
 
 	// VERSION 4
 
-	Route::name('v4_bible.all')->get('bibles',                                            'BiblesController@index');
+	// VERSION 4 | BIBLE
+	Route::name('v4_bible_filesets_permissions.index')->get('bibles/filesets/{id}/permissions',   'BibleFileSetPermissionsController@index');
+	Route::name('v4_bible_filesets_permissions.store')->get('bibles/filesets/{id}/permissions',   'BibleFileSetPermissionsController@store');
+	Route::name('v4_bible_filesets_permissions.update')->get('bibles/filesets/{id}/permissions',  'BibleFileSetPermissionsController@update');
+	Route::name('v4_bible_filesets.types')->get('bibles/filesets/media/types',                    'BibleFileSetsController@mediaTypes');
+	Route::name('v4_bible_filesets.podcast')->get('bibles/filesets/{id}/podcast',                 'BibleFileSetsController@podcast');
+	Route::name('v4_bible_filesets.download')->get('bibles/filesets/{id}/download',               'BibleFileSetsController@download');
+	Route::name('v4_bible_filesets.show')->get('bibles/filesets/{id?}',                           'BibleFileSetsController@show');
+	Route::name('v4_bible_filesets.update')->put('bibles/filesets/{id}',                          'BibleFileSetsController@update');
+	Route::name('v4_bible_filesets.store')->post('bibles/filesets/',                              'BibleFileSetsController@store');
+
 	Route::name('v4_bible.allBooks')->get('bibles/books/',                                'BooksController@index');
-	Route::name('v4_bible.books')->get('bibles/{id}/book/{book?}',                        'BiblesController@books');
 	Route::name('v4_bible.chapter')->get('bibles/{id}/{book}/{chapter}',                  'TextController@index');
-	Route::name('v4_bible.podcast')->get('bibles/{id}/podcast',                           'BibleFileSetsController@podcast');
-	Route::name('v4_bible_filesets.index')->get('bibles/filesets/{id?}',                  'BibleFileSetsController@show');
-	Route::resource('bibles/filesets/{id}/permissions',    'BibleFileSetPermissionsController', ['names' => [
-		'v4_bible_filesets.permissions_index'   => 'v4_bible_filesets_permissions.index',
-		'v4_bible_filesets.permissions_edit'    => 'v4_bible_filesets_permissions.edit',
-		'v4_bible_filesets.permissions_create'  => 'v4_bible_filesets_permissions.create',
-		'v4_bible_filesets.permissions_store'   => 'v4_bible_filesets_permissions.store',
-		'v4_bible_filesets.permissions_show'    => 'v4_bible_filesets_permissions.show',
-		'v4_bible_filesets.permissions_update'  => 'v4_bible_filesets_permissions.update'
-	]]);
-	Route::get('bibles/filesets/{id}/download', 'BibleFileSetsController@download')->name('v4_bible_filesets.download');
-	Route::resource('bibles/filesets',           'BibleFileSetsController', ['names' => [
-		'v4_bible_filesets.index'   => 'view_bible_filesets.index',
-		'v4_bible_filesets.edit'    => 'view_bible_filesets.edit',
-		'v4_bible_filesets.create'  => 'view_bible_filesets.create',
-		'v4_bible_filesets.show'    => 'view_bible_filesets.show',
-	]]);
+	Route::name('v4_text_search')->get('search',                                          'TextController@search');
+	Route::name('v4_bible.books')->get('bibles/{id}/book/{book?}',                        'BiblesController@books');
 	Route::name('v4_bible.one')->get('bibles/{id}',                                       'BiblesController@show');
+	Route::name('v4_bible.all')->get('bibles',                                            'BiblesController@index');
+
 	Route::name('v4_timestamps')->get('timestamps',                                       'AudioController@availableTimestamps');
 	Route::name('v4_timestamps.tag')->get('timestamps/{id}',                              'AudioController@timestampsByTag');
 	Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',           'AudioController@timestampsByReference');
@@ -73,6 +69,8 @@
 	Route::name('v4_languages.one')->get('languages/{id}',                                'LanguagesController@show');
 	Route::name('v4_alphabets.all')->get('alphabets',                                     'AlphabetsController@index');
 	Route::name('v4_alphabets.one')->get('alphabets/{id}',                                'AlphabetsController@show');
+	Route::name('v4_alphabets.store')->post('alphabets',                                  'AlphabetsController@store');
+	Route::name('v4_alphabets.update')->put('alphabets/{id}',                             'AlphabetsController@update');
 	Route::name('v4_numbers.range')->get('numbers/range',                                 'NumbersController@customRange');
 	Route::name('v4_numbers.all')->get('numbers/',                                        'NumbersController@index');
 	Route::name('v4_numbers.one')->get('numbers/{id}',                                    'NumbersController@show');
@@ -83,6 +81,7 @@
 	Route::name('v4_user.update')->put('users/{user_id}',                                 'UsersController@update');
 	Route::name('v4_user.destroy')->delete('users/{user_id}',                             'UsersController@destroy');
 	Route::name('v4_user.login')->post('users/login',                                     'UsersController@login');
+	Route::name('v4_user.reset')->post('users/reset',                                     'UsersController@reset');
 	Route::name('v4_user.oAuth')->get('users/login/{driver}',                             'Auth\LoginController@redirectToProvider');
 	Route::name('v4_user.oAuthCallback')->get('users/login/{driver}/callback',            'Auth\LoginController@handleProviderCallback');
 
@@ -120,15 +119,14 @@
 	Route::name('v4_projects.store')->post('projects',                                     'ProjectsController@store');
 	Route::name('v4_projects.destroy')->delete('projects/{project_id}',                    'ProjectsController@destroy');
 
-	// Error Handling
+	// VERSION 4 | UTILITY
+	Route::name('v4_api.buckets')->get('/api/buckets',                                    'HomeController@buckets');
+
+	// VERSION 4 | ERRORS
 	Route::name('v4_api.logs')->get('sign',                                               'HomeController@signedUrls');
 
-	// VERSION 4 | SEARCH
-	Route::name('v4_text_search')->get('search',                                          'TextController@search');
-
 	// VERSION 4 | DEEPLINK
-
-	Route::name('v4_deeplinking.index')->get('app/deeplinking',         'MobileAppsController@redirectDeepLink');
+	Route::name('v4_deeplinking.index')->get('app/deeplinking',                          'MobileAppsController@redirectDeepLink');
 
 	// VERSION 4 | CONNECTIONS
 

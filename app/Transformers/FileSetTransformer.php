@@ -47,7 +47,7 @@ class FileSetTransformer extends BaseTransformer
 
 		switch($this->route) {
 
-			case "v4_bible.podcast": {
+			case "v4_bible_filesets.podcast": {
 				$bible = $fileset->bible->first();
 				if(!$bible) return $this->replyWithError("No Bible has been attached to this fileset");
 
@@ -80,8 +80,7 @@ class FileSetTransformer extends BaseTransformer
 				$meta['channel']['itunes:owner']['itunes:email'] = 'jon@dbs.org';
 				$meta['channel']['itunes:image'] = ['href' => 'http://bible.is/ImageSize300X300.jpg'];
 				$meta['channel']['itunes:category'] = [
-					'_attributes' => ['text' => 'Religion & Spirituality'],
-					['itunes:category' => ['_attributes' => ['text' => 'Christianity']]]
+					'_attributes' => ['text' => 'Religion & Spirituality']
 				];
 
 				$meta['channel']['managingEditor'] = env('APP_SITE_CONTACT') ?? "";
@@ -102,7 +101,6 @@ class FileSetTransformer extends BaseTransformer
 
 				$items = [];
 				$xml_safe_expression = '/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u';
-
 				foreach($fileset->files as $file) {
 					$bookName = ($file->book->translation($bible->iso)->first()) ? $file->book->translation($bible->iso)->first()->name : $file->book->translation("eng")->first()->name;
 					$items[] = [
@@ -134,6 +132,7 @@ class FileSetTransformer extends BaseTransformer
 		}
 		if($fileset->bible) {
 			$bible = $fileset->bible->first();
+			$bookName = "";
 			if($bible) {
 				$books = $bible->books->where('book_id',$fileset->book_id)->first();
 				if($books) $bookName = $books->name;
