@@ -80,7 +80,7 @@ class UserNotesController extends APIController
 			'chapter'      => $request->chapter,
 		    'verse_start'  => $request->verse_start,
 		    'verse_end'    => $request->verse_start,
-		    'bookmark'     => $request->bookmark,
+		    'bookmark'     => ($request->bookmark) ? 1 : 0,
 			'notes'        => isset($request->notes) ? encrypt($request->notes) : null
 	    ]);
 
@@ -117,7 +117,7 @@ class UserNotesController extends APIController
 	    })->toArray();
 
 	    if($request->method() == "POST") $note->tags()->createMany($tags);
-	    if($request->method() == "PUT")  $note->tags()->delete(); $note->tags()->createMany($tags);
+	    if($request->method() == "PUT") {$note->tags()->delete(); $note->tags()->createMany($tags);}
 
     }
 
