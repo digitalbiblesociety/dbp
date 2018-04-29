@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Bible\Book;
 use App\Models\Bible\Text;
+
 use App\Models\Bible\BibleFile;
+use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFileTimestamp;
 use App\Transformers\AudioTransformer;
 
 use App\Helpers\AWS\Bucket;
+
 
 class AudioController extends APIController
 {
@@ -18,10 +21,13 @@ class AudioController extends APIController
 		$bible_id = CheckParam('dam_id',$id);
 		$chapter_id = CheckParam('chapter_id',null,'optional');
 		$book_id = CheckParam('book_id',null,'optional');
+		$bucket_id =  CheckParam('bucket_id',null,'optional') ?? env('FCBH_AWS_BUCKET');
 		if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
 		if(isset($book)) $book_id = $book->id;
+		$fileset = BibleFileset::where('id', $bible_id)->where('bucket_id',$bucket_id)->where('set_type_code', 'like', '%audio%')->first();
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Audio Fileset could be found for the code: ".$bible_id);
 
-		$audioChapters = BibleFile::with('book')->where('set_id',$bible_id)
+		$audioChapters = BibleFile::with('book')->where('hash_id',$fileset->hash_id)
 		                          ->when($chapter_id, function ($query) use ($chapter_id) {
 			                          return $query->where('chapter_start', $chapter_id);
 		                          })->when($book_id, function ($query) use ($book_id) {
@@ -41,7 +47,8 @@ class AudioController extends APIController
 	 */
 	public function availableTimestamps()
 	{
-		return BibleFile::has('timestamps')->select('bible_id')->get()->pluck('bible_id')->unique();
+		$bibleFile = BibleFile::has('timestamps')->select('hash_id')->distinct()->get();
+		return $this->reply($bibleFile);
 	}
 
 	/**
@@ -102,7 +109,16 @@ class AudioController extends APIController
 
 
 	/**
-	 * @return mixed
+	 * Old path route for v2 of the API
+	 *
+	 * @version 2
+	 * @category v2_audio_location
+	 * @link http://api.bible.build/location - V4 Access
+	 * @link https://api.dbp.dev/audio/location?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/v2#/Audio/v2_audio_location - V4 Test Docs
+	 *
+	 * @return array
+	 *
 	 */
 	public function location()
 	{
