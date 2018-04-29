@@ -33,7 +33,7 @@ class UserNotesController extends APIController
 	    $bookmark = explode('.',\Request::route()->getName());
 	    $bookmark = ($bookmark[1] == "v4_bookmark") ? true : false;
 
-		$notes = Note::where('user_id',$user_id)->where('project_id',$project_id)
+		$notes = Note::with('tags')->where('user_id',$user_id)->where('project_id',$project_id)
 		->when($bible_id, function($q) use ($bible_id) {
 			$q->where('bible_id', '=', $bible_id);
 		})->when($book_id, function($q) use ($book_id) {

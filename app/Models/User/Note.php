@@ -52,7 +52,7 @@ class Note extends Model
 
     public function tags()
     {
-    	return $this->hasMany(NoteTag::class);
+    	return $this->hasMany(NoteTag::class,'note_id','id');
     }
 
 }
