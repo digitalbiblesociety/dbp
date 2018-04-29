@@ -62,7 +62,9 @@ return [
 		],
 
 		'errorlog' => [
-			'driver' => 'errorlog',
+			'driver' => 'single',
+			'path' => storage_path('logs/errors.log'),
+			'channels' => ['single'],
 			'level' => 'debug',
 		],
 	],

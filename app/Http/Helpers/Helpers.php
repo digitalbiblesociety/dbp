@@ -18,6 +18,7 @@ function checkParam($param, $v4Style = null, $optional = false)
 
 	if($v4Style) return $v4Style;
 	if(!$url_param AND !$url_header) {
+		\Log::channel('errorlog')->error(["Missing Param '$param", 422]);
 		if($optional != "optional") abort(422, "You need to provide the missing parameter '$param'. Please append it to the url or the request Header.");
 		return null;
 	}

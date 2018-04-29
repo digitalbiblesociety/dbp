@@ -17,6 +17,8 @@ use League\Fractal\Serializer\DataArraySerializer;
 use \Spatie\Fractalistic\ArraySerializer;
 use Spatie\ArrayToXml\ArrayToXml;
 
+use Illuminate\Support\Facades\Log;
+
 class APIController extends Controller
 {
 
@@ -135,7 +137,9 @@ class APIController extends Controller
     public function replyWithError($message)
     {
         $status = $this->getStatusCode();
-	    Log::error($message);
+
+	    \Log::error([$message, $status]);
+
 	    if(!$this->api AND !isset($status)) return view('errors.broken',compact('message'));
 	    if(!$this->api) return view("errors.$status",compact('message','status'));
 	    $faces = ['⤜(ʘ_ʘ)⤏','¯\_ツ_/¯','ᗒ ͟ʖᗕ','ᖗ´• ꔢ •`ᖘ','|▰╭╮▰|'];
