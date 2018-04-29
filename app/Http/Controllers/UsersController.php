@@ -49,10 +49,18 @@ class UsersController extends APIController
     public function login(Request $request)
     {
     	$current_locale = $request->iso ?? \i18n::getCurrentLocale();
-    	$user = User::where('email',$request->email)->first();
-	    if($user) if(Hash::check($request->password, $user->password)) return $this->reply(['user_id' => $user->id]);
+    	$user = User::with('accounts')->where('email',$request->email)->first();
+	    if($user) if(Hash::check($request->password, $user->password)) return $this->reply($user);
     	return $this->replyWithError(trans('auth.failed',[],$current_locale));
     }
+
+	public function reset(Request $request)
+	{
+		$current_locale = $request->iso ?? \i18n::getCurrentLocale();
+		$user = User::where('email',$request->email)->first();
+		if($user) if(Hash::check($request->password, $user->password)) return $this->reply(['user_id' => $user->id]);
+		return $this->replyWithError(trans('auth.failed',[],$current_locale));
+	}
 
     public function store(Request $request)
     {
