@@ -6,13 +6,14 @@
     "type": "project",
     "require": {
         "php": ">=7.0",
-        "anhskohbo/no-captcha": "^2.4",
+        "albertcht/invisible-recaptcha": "^1.8",
         "aws/aws-sdk-php-laravel": "^3.1",
         "barryvdh/laravel-ide-helper": "^2.4",
         "doctrine/dbal": "^2.6",
+        "fideloper/proxy": "^4.0",
         "intouch/laravel-newrelic": "~2.0",
         "jdavidbakr/signed-s3-filesystem": "^1.0",
-        "laravel/framework": "5.5.*",
+        "laravel/framework": "5.6.*",
         "laravel/horizon": "^1.0",
         "laravel/socialite": "^3.0",
         "laravel/tinker": "~1.0",
@@ -21,7 +22,6 @@
         "mcamara/laravel-localization": "^1.2",
         "paquettg/php-html-parser": "^1.7",
         "parsedown/laravel": "^1.0",
-        "php-ffmpeg/php-ffmpeg": "^0.11.1",
         "soapbox/laravel-formatter": "^2.0",
         "socialiteproviders/google": "^3.0",
         "socialiteproviders/reddit": "^3.0",
@@ -30,7 +30,7 @@
         "spatie/laravel-server-side-rendering": "^0.2.2",
         "spatie/pdf-to-image": "^1.4",
         "sunra/php-simple-html-dom-parser": "^1.5",
-        "symfony/yaml": "^3.3",
+        "symfony/yaml": "^4.0",
         "thiagoalessio/tesseract_ocr": "^1.1",
         "webpatser/laravel-uuid": "^3.0",
         "yajra/laravel-datatables-fractal": "^1.0",
@@ -39,7 +39,7 @@
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~6.0",
+        "phpunit/phpunit": "^7.0",
 	  	"itsgoingd/clockwork": "^2.2"
     },
     "autoload": {
@@ -66,16 +66,14 @@
             "php artisan key:generate"
         ],
         "post-install-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postInstall",
-            "php artisan optimize"
+            "Illuminate\\Foundation\\ComposerScripts::postInstall"
         ],
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
             "php artisan clear-compiled",
             "php artisan ide-helper:generate",
             "php artisan ide-helper:models --write",
-            "php artisan ide-helper:meta",
-            "php artisan optimize"
+            "php artisan ide-helper:meta"
         ],
         "post-autoload-dump": [
           "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

@@ -135,6 +135,7 @@ class APIController extends Controller
     public function replyWithError($message)
     {
         $status = $this->getStatusCode();
+	    Log::error($message);
 	    if(!$this->api AND !isset($status)) return view('errors.broken',compact('message'));
 	    if(!$this->api) return view("errors.$status",compact('message','status'));
 	    $faces = ['⤜(ʘ_ʘ)⤏','¯\_ツ_/¯','ᗒ ͟ʖᗕ','ᖗ´• ꔢ •`ᖘ','|▰╭╮▰|'];

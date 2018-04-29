@@ -33,6 +33,7 @@ use App\Models\Language\Language;
  * @property string|null $introduction
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\Country whereIntroduction($value)
  * @property-read \App\Models\Country\CountryTranslation $translation
+ * @property-read \App\Models\Country\FactBook\CountryGeography $geography
  */
 class Country extends Model
 {

@@ -195,7 +195,7 @@ return [
 	     * Site Packages
 	     */
 	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
-	    Anhskohbo\NoCaptcha\NoCaptchaServiceProvider::class,
+	    AlbertCht\InvisibleReCaptcha\InvisibleReCaptchaServiceProvider::class,
 
 
     ],

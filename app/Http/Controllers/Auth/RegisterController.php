@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Mail\EmailVerification;
 use App\Models\User\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
@@ -47,16 +48,14 @@ class RegisterController extends Controller
 	/**
 	 * Get a validator for an incoming registration request.
 	 *
-	 * @param  array  $data
 	 * @return \Illuminate\Contracts\Validation\Validator
 	 */
-	protected function validator(array $data)
+	protected function validator()
 	{
-		return Validator::make($data, [
+		return Validator::make(Input::all(), [
 			'name'                 => 'required|string|max:255',
 			'email'                => 'required|string|email|max:255|unique:users',
-			'password'             => 'required|string|min:6|confirmed',
-			'g-recaptcha-response' => 'required|captcha'
+			'password'             => 'required|string|min:6|confirmed'
 		]);
 	}
 

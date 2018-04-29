@@ -64,6 +64,8 @@ use App\Models\Language\Language;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible whereConnectionDbs($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible whereConnectionFab($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible whereOpenAccess($value)
+ * @property-read \App\Models\Bible\BibleTranslation $currentTranslation
+ * @property-read \App\Models\Bible\BibleTranslation $vernacularTranslation
  */
 class Bible extends Model
 {
