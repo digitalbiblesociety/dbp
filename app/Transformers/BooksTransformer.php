@@ -34,12 +34,12 @@ class BooksTransformer extends BaseTransformer
 
 			case "v2_library_book": {
 				return [
-					"dam_id"             => $book->bible_id->bible->id,
+					"dam_id"             => $book->bible_id,
 					"book_id"            => $book->id_osis,
 					"book_name"          => $book->name,
 					"book_order"         => (string) $book->book_order,
-					"number_of_chapters" => (string) count($book->sophia_chapters),
-					"chapters"           => implode(",",$book->sophia_chapters)
+					"number_of_chapters" => (string) $book->number_chapters,
+					"chapters"           => (string) $book->chapters
 				];
 			}
 

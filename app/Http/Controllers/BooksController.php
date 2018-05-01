@@ -53,13 +53,24 @@ class BooksController extends APIController
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params.");
 
 	    $textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
-	    if(!$textExists) return $this->setStatusCode(404)->replyWithError("The data for this Bible is still being updated, please check back later");
+	    if(!$textExists) {
+	    	$fileset->id = substr($fileset->id,0,-4);
+	    	$textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
+	    }
+	    if(!$textExists) {
+	    	return $this->setStatusCode(404)->replyWithError("The data for this Bible is still being updated, please check back later");
+	    }
 
 		$booksChapters = collect(\DB::connection('sophia')->table($fileset->id.'_vpl')->select('book','chapter')->distinct()->get());
 	    $books = Book::whereIn('id_usfx',$booksChapters->pluck('book')->unique()->toArray())->orderBy('book_order')->get();
 
 	    $bible_id = $fileset->bible->first()->id;
-	    foreach($books as $key => $value) $books[$key]->bible_id = $bible_id;
+	    foreach($books as $key => $book) {
+	    	$chapters = $booksChapters->where('book',$book->id_usfx)->pluck('chapter');
+	    	$books[$key]->bible_id = $bible_id;
+	    	$books[$key]->chapters = $chapters->implode(",");
+		    $books[$key]->number_chapters = $chapters->count();
+	    }
 
 		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer));
     }
