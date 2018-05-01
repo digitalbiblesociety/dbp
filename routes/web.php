@@ -20,7 +20,6 @@ Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRed
 	Route::name('swagger_v4')->get('docs/swagger/v4',                       'DocsController@swagger_v4');
 	Route::name('swagger_database')->get('docs/swagger/database',           'DocsController@swagger_database');
 	Route::name('swagger_database_model')->get('docs/swagger/database/{id}','DocsController@swagger_database_model');
-	Route::name('docs_progress')->get('docs/progress',                      'DocsController@progress');
 	Route::name('docs_team')->get('docs/team',                              'DocsController@team');
 	Route::name('docs_bibles')->get('docs/bibles',                          'DocsController@bibles');
 	Route::name('docs_bible_equivalents')->get('docs/bibles/equivalents',   'DocsController@bibleEquivalents');
@@ -75,6 +74,14 @@ Route::resource('bibles',                   'BiblesController', ['names' => [
 	'update'  => 'view_bibles.update',
 	'store'   => 'view_bibles.store',
 	'show'    => 'view_bibles.show',
+]]);
+Route::resource('articles',                   'ArticlesController', ['names' => [
+	'index'   => 'view_articles.index',
+	'edit'    => 'view_articles.edit',
+	'create'  => 'view_articles.create',
+	'update'  => 'view_articles.update',
+	'store'   => 'view_articles.store',
+	'show'    => 'view_articles.show',
 ]]);
 Route::resource('books',                    'BooksController', ['names' => [
 	'index'   => 'view_books.index',
