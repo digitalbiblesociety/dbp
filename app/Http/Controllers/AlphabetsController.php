@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User\User;
 use Auth;
 use Validator;
 use Illuminate\View\View;
@@ -67,7 +68,8 @@ class AlphabetsController extends APIController
 	 */
 	public function create()
     {
-	    $this->validateUser(Auth::user());
+    	$validatedUser = $this->validateUser();
+	    if(!is_a($validatedUser, User::class)); return $validatedUser;
         return view('languages.alphabets.create');
     }
 
@@ -144,8 +146,9 @@ class AlphabetsController extends APIController
 	 *
 	 * @return \App\Models\User\User|mixed|null
 	 */
-	private function validateUser($user = null)
+	private function validateUser()
 	{
+		$user = Auth::user();
 		if(!$user) {
 			$key = Key::where('key',$this->key)->first();
 			if(!isset($key)) return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
