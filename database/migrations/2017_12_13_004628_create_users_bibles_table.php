@@ -64,7 +64,7 @@ class CreateUsersBiblesTable extends Migration
 		    $table->string('project_id', 24)->nullable();
 		    $table->foreign('project_id')->references('id')->on('projects')->onUpdate('cascade')->onDelete('cascade');
 		    $table->smallInteger('highlight_start')->unsigned();
-		    $table->smallInteger('highlighted_words')->unsigned();
+		    $table->integer('highlighted_words')->unsigned();
 		    $table->char('highlighted_color', 3);
 		    $table->timestamps();
 	    });
