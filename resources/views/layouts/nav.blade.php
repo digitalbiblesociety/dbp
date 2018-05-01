@@ -20,7 +20,7 @@
                     <a href="#0" class="label">About</a>
                     <div class="content">
                         <ul>
-                            <li><a href="#0"><em>Getting Started</em><span>A quick start guide for web developers</span></a></li>
+                            <li><a href="#0"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/img/icons/icons-menu.svg#code-editor"></use></svg><em>Getting Started</em><span>A quick start guide for web developers</span></a></li>
                             <li><a href="#0"><em>What & Why</em><span>A brief description of the Koinos Project</span></a></li>
                             <li><a href="#0"><em>Title here</em><span>A brief description here</span></a></li>
                             <li><a href="#0"><em>Title here</em><span>A brief description here</span></a></li>
@@ -50,7 +50,7 @@
                                     <li><a href="{{ route('swagger_v4') }}">V4 Documentation</a></li>
                                     <li><a href="{{ route('swagger_v2') }}">V2 Documentation</a></li>
                                     <li><a href="{{ route('docs.sdk') }}">Examples and SDKs</a></li>
-                                    <li><a href="#0">News & Changelog</a></li>
+                                    <li><a href="{{ route('view_articles.index') }}">News & Changelog</a></li>
                                     <li><a href="#0">Organizational Membership</a></li>
                                     <li><a href="#0">About The Project</a></li>
                                 </ul>

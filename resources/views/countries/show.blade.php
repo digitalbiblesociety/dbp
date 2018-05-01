@@ -52,14 +52,14 @@
         @foreach($country->languages as $language)
             @foreach($language->bibles as $bible)
                 <tr data-filesets="{{ $bible->filesets->count() }}" data-links="{{ $bible->links->count() }}">
-                    <td>{{ $bible->language->iso }}</td>
-                    <td>{{ $bible->language->name }}</td>
-                    <td><a href="{{ route('view_bibles.show', $bible->id) }}">{{ $bible->currentTranslation->name }}</a></td>
+                    <td>{{ @$bible->language->iso }}</td>
+                    <td>{{ @$bible->language->ame }}</td>
+                    <td><a href="{{ route('view_bibles.show', $bible->id) }}">{{ @$bible->currentTranslation->name }}</a></td>
                     <td>{{ $bible->date }}</td>
                     <td>{{ $bible->scope }}</td>
                     <td>{{ $bible->script }}</td>
-                    <td>{{ $bible->filesets->count() }}</td>
-                    <td>{{ $bible->links->count() }}</td>
+                    <td>{{ @$bible->filesets->count() }}</td>
+                    <td>{{ @$bible->links->count() }}</td>
                 </tr>
             @endforeach
         @endforeach
