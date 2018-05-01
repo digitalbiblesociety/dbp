@@ -32,11 +32,18 @@ class LanguagesController extends APIController
 	    $language_name_portion = checkParam('full_word', null, 'optional') ?? checkParam('language_name', null, 'optional') ;
 	    $sort_by = checkParam('sort_by', null, 'optional');
 	    $has_bibles = checkParam('has_bibles', null, 'optional');
+	    $has_filesets = checkParam('has_filesets', null, 'optional');
+	    $bucket_id = checkParam('bucket_id', null, 'optional');
 	    $include_alt_names = checkParam('include_alt_names', null, 'optional');
 
 		$languages = Language::select(['id','iso2B','iso','name'])->withCount('bibles')
 			->when($has_bibles, function ($query) use ($has_bibles) {
 				return $query->has('bibles');
+			})
+			->when($has_filesets, function($q) use ($bucket_id) {
+				$q->whereHas('bibles.filesets', function ($query) use ($bucket_id) {
+					if($bucket_id) $query->where('bucket_id', $bucket_id);
+				});
 			})->when($country, function ($query) use ($country) {
 				return $query->where('country_id', $country);
 			})->when($code, function ($query) use ($code) {

@@ -22,7 +22,6 @@ class CountriesController extends APIController
 	 * @link https://api.dbp.dev/countries?key=1234&v=4&pretty - V4 Test Access
 	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_countries_all - V4 Test Docs
 	 *
-	 *
 	 * @return mixed $countries string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 */
@@ -30,10 +29,17 @@ class CountriesController extends APIController
     {
     	if(!$this->api) return view('countries.index');
     	$iso = checkParam('iso', null, 'optional') ?? "eng";
+    	$has_filesets = checkParam('has_filesets', null, 'optional');
+		$bucket_id = checkParam('bucket_id', null, 'optional');
 
 		$countries = Country::with(['languagesFiltered','translations' => function($query) use ($iso) {
 			$query->where('language_id', $iso);
-		}])->get();
+		}])
+		->when($has_filesets, function($q) use ($bucket_id) {
+			$q->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
+				if($bucket_id) $query->where('bucket_id', $bucket_id);
+			});
+		})->get();
 
 	    return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
     }
