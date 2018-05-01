@@ -60,6 +60,111 @@
           },
           {
             "$ref": "#/components/parameters/callback"
+          },
+          {
+            "name": "dam_id",
+            "in": "query",
+            "description": "Setting this Param will limit the results to the bible matching the `bible_id` or `dam_id` provided.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "example": "ENGKJV"
+            }
+          },
+          {
+            "name": "media",
+            "in": "query",
+            "description": "Setting this Param will filter the results by the media type provided. The Possible Media Types are available via the `v4_bible_filesets.types` route",
+            "schema": {
+              "type": "string",
+              "example": "audio"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Setting this field equal to an iso639-3 code will filter the resulting filesets to match only those containing that language.",
+            "schema": {
+              "type": "string",
+              "example": "eng",
+              "minLength": 3,
+              "maxLength": 3
+            }
+          },
+          {
+            "name": "full_word",
+            "in": "query",
+            "description": "Setting this param will filter results to match only those Languages where a name exists. Spanish bibles could be found by setting `full_word` to `Spanish` but We recommend using the Iso Code filter `language` instead of this option where possible as it provides a greater level of precision.",
+            "schema": {
+              "type": "string",
+              "example": "English"
+            }
+          },
+          {
+            "name": "language_family_code",
+            "in": "query",
+            "description": "Setting this field equal to an iso639-3 code will filter the resulting filesets to match only those containing that language and it's dialects.",
+            "schema": {
+              "type": "string",
+              "example": "eng",
+              "minLength": 3,
+              "maxLength": 3
+            }
+          },
+          {
+            "name": "updated",
+            "in": "query",
+            "description": "Setting this param will filter results only created after a specific date",
+            "schema": {
+              "type": "string",
+              "example": "2018-04-14"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "query",
+            "description": "Setting this param will filter results to those were created by the organization specified.",
+            "schema": {
+              "type": "integer",
+              "example": "12",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Setting this param will filter results by",
+            "schema": {
+              "type": "string",
+              "example": null
+            }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "description": "Setting this param will roughly filter results by the Country code given. `AL` would return a couple different languages. Albanian Sign Language, Albanian, ect.",
+            "schema": {
+              "type": "string",
+              "example": "AL"
+            }
+          },
+          {
+            "name": "bucket",
+            "in": "query",
+            "description": "Filter by the providing organization's bucket name. Setting this param will filter results to be only those provided through a specific `bucket_id`",
+            "schema": {
+              "type": "string",
+              "example": "dbs-web"
+            }
+          },
+          {
+            "name": "filter_by_fileset",
+            "in": "query",
+            "description": "This when set to false will return records for all Bibles regardless of whether or not it contains a fileset_id",
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
           }
         ],
         "tags": [
@@ -71,7 +176,57 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "type": "object",
+                  "example": {
+                    "data": [
+                      {
+                        "abbr": "AAKWBT",
+                        "name": "Ankave 1990 Edition",
+                        "vname": "Xwɨyɨá́ Gorɨxoyá Sɨŋɨṕɨrɨnɨ Yayɨyá Pɨńé",
+                        "language": "Ankave",
+                        "language_autonym": null,
+                        "language_altNames": [],
+                        "iso": "aak",
+                        "date": 1990,
+                        "filesets": [
+                          {
+                            "id": "AAKWBT",
+                            "bucket_id": "dbs-web",
+                            "set_type_code": "text_plain",
+                            "set_size_code": "P",
+                            "set_copyright": null,
+                            "ietf_code": null,
+                            "meta": []
+                          },
+                          {
+                            "id": "AAKWBT",
+                            "bucket_id": "dbs-web",
+                            "set_type_code": "text_format",
+                            "set_size_code": "NT",
+                            "set_copyright": null,
+                            "ietf_code": "",
+                            "meta": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Your API key didn't work",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": {
+                      "message": "No Authentication Provided or invalid Key",
+                      "status_code": 403
+                    }
+                  }
                 }
               }
             }
@@ -109,7 +264,2516 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "type": "object",
+                  "example": {
+                    "data": {
+                      "abbr": "ENGKJV",
+                      "alphabet": {
+                        "script": "Latn",
+                        "name": "Latin",
+                        "unicode_pdf": null,
+                        "family": "European",
+                        "type": "alphabet",
+                        "white_space": "between words",
+                        "open_type_tag": "latn",
+                        "complex_positioning": true,
+                        "requires_font": false,
+                        "unicode": true,
+                        "diacritics": true,
+                        "contextual_forms": false,
+                        "reordering": false,
+                        "case": null,
+                        "split_graphs": false,
+                        "status": "Current",
+                        "baseline": "bottom",
+                        "ligatures": "optional",
+                        "direction": "ltr",
+                        "direction_notes": null,
+                        "sample": "",
+                        "sample_img": null,
+                        "description": "<p>The Latin script (also called the Roman script) is the most widely used writing system in the world, being the script of the English language, spoken by over 300,000,000 people worldwide. It is also the script used for writing a number of Romance, Germanic, Baltic and non-Indo-European languages, as well as the <a href='http://scriptsource.org/entry/ucgb77fkvh'>International Phonetic Alphabet (IPA)</a>.</p> <p>The script was derived from the Western variant of the Greek alphabet. The earliest extant inscription, an engraved brooch now in the ‘Museo Nazionale Preistorico Etnografico Luigi Pigorini’ in Rome, has been dated to the 7th century BC. The script developed slowly over the next thousand years, and by the 4th century AD many of the modern forms had been developed, and writing had settled into a consistent left to right direction. The Latin script was disseminated throughout western, northern and central Europe and the Baltic countries along with the Christian religion. However it was not until the colonization of the Americas, Australia, and parts of Asia, Africa and the Pacific that the script began to spread outside of Europe, carried by the English, Spanish, Portuguese, French, and Dutch languages.</p> <p>As the script spread around the world, a number of language-specific amendments were made in order to accurately represent the sounds of various languages. These included ligatures, for example the German <span class='Em'>esszett</span> ß, and a number of diacritics. Some languages also adapted the alphabet by the addition of entirely new letters, such as <span class='Em'>eth</span> Ðð used in Faroese and Icelandic or <span class='Em'>epsilon</span> Ɛɛ used in many Niger-Congo orthographies.</p> <p>The Latin script is bicameral; it is written using both upper- and lower-case letters. It is written horizontally from left to right. Each letter sits on the baseline, with some letters having descenders hanging below the baseline, and some having ascenders protruding beyond the x-height. The script also uses a set of punctuation, which is almost entirely consistent across European languages. Exceptions to this include different syles of quotation marks (“ ” and « »), the Greek question mark, which is identical to the semicolon in many other languages (;), and the Spanish inverted question/exclamation marks (¿ and ¡).</p> <p>Digits from 0-9 are used. These can be combined to represent larger numbers.</p> ",
+                        "primary_font": {
+                          "id": 1,
+                          "script_id": "Latn",
+                          "fontName": "NotoRegular",
+                          "fontFileName": "NotoRegular",
+                          "fontWeight": null,
+                          "copyright": null,
+                          "url": null,
+                          "notes": null,
+                          "italic": 0,
+                          "created_at": "2018-02-12 20:34:47",
+                          "updated_at": "2018-02-12 20:34:47"
+                        }
+                      },
+                      "mark": "Public Domain",
+                      "name": "King James Version",
+                      "description": "In 1604, King James I of England authorized that a new translation of the Bible into English be started. It was finished in 1611, just 85 years after the first translation of the New Testament into English appeared (Tyndale, 1526). The Authorized Version, or King James Version, quickly became the standard for English-speaking Protestants. Its flowing language and prose rhythm has had a profound influence on the literature of the past 400 years. The KJV is public domain in the United States.\n\nFrom Wikipedia: (https://en.wikipedia.org/wiki/King_James_Version)\nThe King James Version (KJV), also known as the King James Bible (KJB) or simply the Authorized Version (AV), is an English translation of the Christian Bible for the Church of England begun in 1604 and completed in 1611. The books of the King James Version include the 39 books of the Old Testament, an intertestamental section containing 14 books of the Apocrypha (most of which correspond to books in the Vulgate Deuterocanon adhered to by Roman Catholics), and the 27 books of the New Testament.\n\nIt was first printed by the King's Printer Robert Barker and was the third translation into English approved by the English Church authorities. The first had been the Great Bible, commissioned in the reign of King Henry VIII (1535), and the second had been the Bishops' Bible of 1568. In January 1604, James VI and I convened the Hampton Court Conference, where a new English version was conceived in response to the problems of the earlier translations perceived by the Puritans, a faction of the Church of England. The translation is noted for its \"majesty of style\", and has been described as one of the most important books in English culture and a driving force in the shaping of the English-speaking world.\n\nJames gave the translators instructions intended to ensure that the new version would conform to the ecclesiology and reflect the episcopal structure of the Church of England and its belief in an ordained clergy. The translation was done by 47 scholars, all of whom were members of the Church of England. In common with most other translations of the period, the New Testament was translated from Greek, the Old Testament from Hebrew and Aramaic, and the Apocrypha from Greek and Latin. In the Book of Common Prayer (1662), the text of the Authorized Version replaced the text of the Great Bible for Epistle and Gospel readings (but not for the Psalter, which substantially retained Coverdale's Great Bible version) and as such was authorised by Act of Parliament.\n\nBy the first half of the 18th century, the Authorized Version had become effectively unchallenged as the English translation used in Anglican and English Protestant churches, except for the Psalms and some short passages in the Book of Common Prayer of the Church of England. Over the course of the 18th century, the Authorized Version supplanted the Latin Vulgate as the standard version of scripture for English-speaking scholars. With the development of stereotype printing at the beginning of the 19th century, this version of the Bible became the most widely printed book in history, almost all such printings presenting the standard text of 1769 extensively re-edited by Benjamin Blayney at Oxford, and nearly always omitting the books of the Apocrypha. Today the unqualified title \"King James Version\" usually indicates that this Oxford standard text is meant.\n\nOutside of the United Kingdom, the KJV is in the public domain. Within the United Kingdom, the rights to the KJV are vested in the Crown. ",
+                      "vname": "King James Version",
+                      "vdescription": "In 1604, King James I of England authorized that a new translation of the Bible into English be started. It was finished in 1611, just 85 years after the first translation of the New Testament into English appeared (Tyndale, 1526). The Authorized Version, or King James Version, quickly became the standard for English-speaking Protestants. Its flowing language and prose rhythm has had a profound influence on the literature of the past 400 years. The KJV is public domain in the United States.\n\nFrom Wikipedia: (https://en.wikipedia.org/wiki/King_James_Version)\nThe King James Version (KJV), also known as the King James Bible (KJB) or simply the Authorized Version (AV), is an English translation of the Christian Bible for the Church of England begun in 1604 and completed in 1611. The books of the King James Version include the 39 books of the Old Testament, an intertestamental section containing 14 books of the Apocrypha (most of which correspond to books in the Vulgate Deuterocanon adhered to by Roman Catholics), and the 27 books of the New Testament.\n\nIt was first printed by the King's Printer Robert Barker and was the third translation into English approved by the English Church authorities. The first had been the Great Bible, commissioned in the reign of King Henry VIII (1535), and the second had been the Bishops' Bible of 1568. In January 1604, James VI and I convened the Hampton Court Conference, where a new English version was conceived in response to the problems of the earlier translations perceived by the Puritans, a faction of the Church of England. The translation is noted for its \"majesty of style\", and has been described as one of the most important books in English culture and a driving force in the shaping of the English-speaking world.\n\nJames gave the translators instructions intended to ensure that the new version would conform to the ecclesiology and reflect the episcopal structure of the Church of England and its belief in an ordained clergy. The translation was done by 47 scholars, all of whom were members of the Church of England. In common with most other translations of the period, the New Testament was translated from Greek, the Old Testament from Hebrew and Aramaic, and the Apocrypha from Greek and Latin. In the Book of Common Prayer (1662), the text of the Authorized Version replaced the text of the Great Bible for Epistle and Gospel readings (but not for the Psalter, which substantially retained Coverdale's Great Bible version) and as such was authorised by Act of Parliament.\n\nBy the first half of the 18th century, the Authorized Version had become effectively unchallenged as the English translation used in Anglican and English Protestant churches, except for the Psalms and some short passages in the Book of Common Prayer of the Church of England. Over the course of the 18th century, the Authorized Version supplanted the Latin Vulgate as the standard version of scripture for English-speaking scholars. With the development of stereotype printing at the beginning of the 19th century, this version of the Bible became the most widely printed book in history, almost all such printings presenting the standard text of 1769 extensively re-edited by Benjamin Blayney at Oxford, and nearly always omitting the books of the Apocrypha. Today the unqualified title \"King James Version\" usually indicates that this Oxford standard text is meant.\n\nOutside of the United Kingdom, the KJV is in the public domain. Within the United Kingdom, the rights to the KJV are vested in the Crown. ",
+                      "publishers": [
+                        {
+                          "slug": "historical-text",
+                          "abbreviation": null,
+                          "notes": null,
+                          "primaryColor": null,
+                          "secondaryColor": null,
+                          "inactive": 0,
+                          "url_facebook": null,
+                          "url_website": null,
+                          "url_donate": null,
+                          "url_twitter": null,
+                          "address": null,
+                          "address2": null,
+                          "city": null,
+                          "state": null,
+                          "country": null,
+                          "zip": null,
+                          "phone": null,
+                          "email": null,
+                          "created_at": "2018-02-13 02:37:14",
+                          "updated_at": "2018-02-13 02:37:14",
+                          "pivot": {
+                            "bible_id": "ENGKJV",
+                            "organization_id": 328,
+                            "relationship_type": "publisher"
+                          },
+                          "logo_icon": null
+                        },
+                        {
+                          "slug": "digital-bible-society",
+                          "abbreviation": null,
+                          "notes": null,
+                          "primaryColor": "#2468B9",
+                          "secondaryColor": "#7AA4D6",
+                          "inactive": 0,
+                          "url_facebook": "https://www.facebook.com/digitalbiblesociety",
+                          "url_website": "http://www.dbs.org",
+                          "url_donate": null,
+                          "url_twitter": "https://twitter.com/DBSorg",
+                          "address": "PO Box 2881, Conroe, TX 77304",
+                          "address2": null,
+                          "city": null,
+                          "state": null,
+                          "country": null,
+                          "zip": null,
+                          "phone": "936-494-4442",
+                          "email": "info@dbs.org",
+                          "created_at": "2018-02-13 02:37:14",
+                          "updated_at": "2018-02-13 02:37:14",
+                          "pivot": {
+                            "bible_id": "ENGKJV",
+                            "organization_id": 8,
+                            "relationship_type": "publisher"
+                          },
+                          "logo_icon": {
+                            "language_iso": "eng",
+                            "url": "http://images.bible.cloud/logo_dbs.svg",
+                            "icon": 1,
+                            "created_at": "2018-02-13 02:37:16",
+                            "updated_at": "2018-02-13 02:37:16"
+                          }
+                        }
+                      ],
+                      "providers": [],
+                      "language": "English",
+                      "iso": "eng",
+                      "date": "1611",
+                      "country": "United Kingdom",
+                      "books": [
+                        {
+                          "book_id": "GEN",
+                          "name": "Genesis",
+                          "name_short": "Genesis",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31,
+                            32,
+                            33,
+                            34,
+                            35,
+                            36,
+                            37,
+                            38,
+                            39,
+                            40,
+                            41,
+                            42,
+                            43,
+                            44,
+                            45,
+                            46,
+                            47,
+                            48,
+                            49,
+                            50
+                          ]
+                        },
+                        {
+                          "book_id": "EXO",
+                          "name": "Exodus",
+                          "name_short": "Exodus",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31,
+                            32,
+                            33,
+                            34,
+                            35,
+                            36,
+                            37,
+                            38,
+                            39,
+                            40
+                          ]
+                        },
+                        {
+                          "book_id": "LEV",
+                          "name": "Leviticus",
+                          "name_short": "Leviticus",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27
+                          ]
+                        },
+                        {
+                          "book_id": "NUM",
+                          "name": "Numbers",
+                          "name_short": "Numbers",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31,
+                            32,
+                            33,
+                            34,
+                            35,
+                            36
+                          ]
+                        },
+                        {
+                          "book_id": "DEU",
+                          "name": "Deuteronomy",
+                          "name_short": "Deuteronomy",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31,
+                            32,
+                            33,
+                            34
+                          ]
+                        },
+                        {
+                          "book_id": "JOS",
+                          "name": "Joshua",
+                          "name_short": "Joshua",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24
+                          ]
+                        },
+                        {
+                          "book_id": "JDG",
+                          "name": "Judges",
+                          "name_short": "Judges",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21
+                          ]
+                        },
+                        {
+                          "book_id": "RUT",
+                          "name": "Ruth",
+                          "name_short": "Ruth",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4
+                          ]
+                        },
+                        {
+                          "book_id": "1SA",
+                          "name": "1 Samuel",
+                          "name_short": "1 Samuel",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31
+                          ]
+                        },
+                        {
+                          "book_id": "2SA",
+                          "name": "2 Samuel",
+                          "name_short": "2 Samuel",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24
+                          ]
+                        },
+                        {
+                          "book_id": "1KI",
+                          "name": "1 Kings",
+                          "name_short": "1 Kings",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22
+                          ]
+                        },
+                        {
+                          "book_id": "2KI",
+                          "name": "2 Kings",
+                          "name_short": "2 Kings",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25
+                          ]
+                        },
+                        {
+                          "book_id": "1CH",
+                          "name": "1 Chronicles",
+                          "name_short": "1 Chronicles",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29
+                          ]
+                        },
+                        {
+                          "book_id": "2CH",
+                          "name": "2 Chronicles",
+                          "name_short": "2 Chronicles",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31,
+                            32,
+                            33,
+                            34,
+                            35,
+                            36
+                          ]
+                        },
+                        {
+                          "book_id": "EZR",
+                          "name": "Ezra",
+                          "name_short": "Ezra",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10
+                          ]
+                        },
+                        {
+                          "book_id": "NEH",
+                          "name": "Nehemiah",
+                          "name_short": "Nehemiah",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13
+                          ]
+                        },
+                        {
+                          "book_id": "EST",
+                          "name": "Esther",
+                          "name_short": "Esther",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10
+                          ]
+                        },
+                        {
+                          "book_id": "JOB",
+                          "name": "Job",
+                          "name_short": "Job",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31,
+                            32,
+                            33,
+                            34,
+                            35,
+                            36,
+                            37,
+                            38,
+                            39,
+                            40,
+                            41,
+                            42
+                          ]
+                        },
+                        {
+                          "book_id": "PSA",
+                          "name": "Psalms",
+                          "name_short": "Psalms",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31,
+                            32,
+                            33,
+                            34,
+                            35,
+                            36,
+                            37,
+                            38,
+                            39,
+                            40,
+                            41,
+                            42,
+                            43,
+                            44,
+                            45,
+                            46,
+                            47,
+                            48,
+                            49,
+                            50,
+                            51,
+                            52,
+                            53,
+                            54,
+                            55,
+                            56,
+                            57,
+                            58,
+                            59,
+                            60,
+                            61,
+                            62,
+                            63,
+                            64,
+                            65,
+                            66,
+                            67,
+                            68,
+                            69,
+                            70,
+                            71,
+                            72,
+                            73,
+                            74,
+                            75,
+                            76,
+                            77,
+                            78,
+                            79,
+                            80,
+                            81,
+                            82,
+                            83,
+                            84,
+                            85,
+                            86,
+                            87,
+                            88,
+                            89,
+                            90,
+                            91,
+                            92,
+                            93,
+                            94,
+                            95,
+                            96,
+                            97,
+                            98,
+                            99,
+                            100,
+                            101,
+                            102,
+                            103,
+                            104,
+                            105,
+                            106,
+                            107,
+                            108,
+                            109,
+                            110,
+                            111,
+                            112,
+                            113,
+                            114,
+                            115,
+                            116,
+                            117,
+                            118,
+                            119,
+                            120,
+                            121,
+                            122,
+                            123,
+                            124,
+                            125,
+                            126,
+                            127,
+                            128,
+                            129,
+                            130,
+                            131,
+                            132,
+                            133,
+                            134,
+                            135,
+                            136,
+                            137,
+                            138,
+                            139,
+                            140,
+                            141,
+                            142,
+                            143,
+                            144,
+                            145,
+                            146,
+                            147,
+                            148,
+                            149,
+                            150
+                          ]
+                        },
+                        {
+                          "book_id": "PRO",
+                          "name": "Proverbs",
+                          "name_short": "Proverbs",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31
+                          ]
+                        },
+                        {
+                          "book_id": "ECC",
+                          "name": "Ecclesiastes",
+                          "name_short": "Ecclesiastes",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12
+                          ]
+                        },
+                        {
+                          "book_id": "SNG",
+                          "name": "Song of Solomon",
+                          "name_short": "Song of Solomon",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8
+                          ]
+                        },
+                        {
+                          "book_id": "ISA",
+                          "name": "Isaiah",
+                          "name_short": "Isaiah",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31,
+                            32,
+                            33,
+                            34,
+                            35,
+                            36,
+                            37,
+                            38,
+                            39,
+                            40,
+                            41,
+                            42,
+                            43,
+                            44,
+                            45,
+                            46,
+                            47,
+                            48,
+                            49,
+                            50,
+                            51,
+                            52,
+                            53,
+                            54,
+                            55,
+                            56,
+                            57,
+                            58,
+                            59,
+                            60,
+                            61,
+                            62,
+                            63,
+                            64,
+                            65,
+                            66
+                          ]
+                        },
+                        {
+                          "book_id": "JER",
+                          "name": "Jeremiah",
+                          "name_short": "Jeremiah",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31,
+                            32,
+                            33,
+                            34,
+                            35,
+                            36,
+                            37,
+                            38,
+                            39,
+                            40,
+                            41,
+                            42,
+                            43,
+                            44,
+                            45,
+                            46,
+                            47,
+                            48,
+                            49,
+                            50,
+                            51,
+                            52
+                          ]
+                        },
+                        {
+                          "book_id": "LAM",
+                          "name": "Lamentations",
+                          "name_short": "Lamentations",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                          ]
+                        },
+                        {
+                          "book_id": "EZK",
+                          "name": "Ezekiel",
+                          "name_short": "Ezekiel",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31,
+                            32,
+                            33,
+                            34,
+                            35,
+                            36,
+                            37,
+                            38,
+                            39,
+                            40,
+                            41,
+                            42,
+                            43,
+                            44,
+                            45,
+                            46,
+                            47,
+                            48
+                          ]
+                        },
+                        {
+                          "book_id": "DAN",
+                          "name": "Daniel",
+                          "name_short": "Daniel",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12
+                          ]
+                        },
+                        {
+                          "book_id": "HOS",
+                          "name": "Hosea",
+                          "name_short": "Hosea",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14
+                          ]
+                        },
+                        {
+                          "book_id": "JOL",
+                          "name": "Joel",
+                          "name_short": "Joel",
+                          "chapters": [
+                            1,
+                            2,
+                            3
+                          ]
+                        },
+                        {
+                          "book_id": "AMO",
+                          "name": "Amos",
+                          "name_short": "Amos",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9
+                          ]
+                        },
+                        {
+                          "book_id": "OBA",
+                          "name": "Obadiah",
+                          "name_short": "Obadiah",
+                          "chapters": [
+                            1
+                          ]
+                        },
+                        {
+                          "book_id": "JON",
+                          "name": "Jonah",
+                          "name_short": "Jonah",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4
+                          ]
+                        },
+                        {
+                          "book_id": "MIC",
+                          "name": "Micah",
+                          "name_short": "Micah",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7
+                          ]
+                        },
+                        {
+                          "book_id": "NAM",
+                          "name": "Nahum",
+                          "name_short": "Nahum",
+                          "chapters": [
+                            1,
+                            2,
+                            3
+                          ]
+                        },
+                        {
+                          "book_id": "HAB",
+                          "name": "Habakkuk",
+                          "name_short": "Habakkuk",
+                          "chapters": [
+                            1,
+                            2,
+                            3
+                          ]
+                        },
+                        {
+                          "book_id": "ZEP",
+                          "name": "Zephaniah",
+                          "name_short": "Zephaniah",
+                          "chapters": [
+                            1,
+                            2,
+                            3
+                          ]
+                        },
+                        {
+                          "book_id": "HAG",
+                          "name": "Haggai",
+                          "name_short": "Haggai",
+                          "chapters": [
+                            1,
+                            2
+                          ]
+                        },
+                        {
+                          "book_id": "ZEC",
+                          "name": "Zechariah",
+                          "name_short": "Zechariah",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14
+                          ]
+                        },
+                        {
+                          "book_id": "MAL",
+                          "name": "Malachi",
+                          "name_short": "Malachi",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4
+                          ]
+                        },
+                        {
+                          "book_id": "MAT",
+                          "name": "Matthew",
+                          "name_short": "Matthew",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28
+                          ]
+                        },
+                        {
+                          "book_id": "MRK",
+                          "name": "Mark",
+                          "name_short": "Mark",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16
+                          ]
+                        },
+                        {
+                          "book_id": "LUK",
+                          "name": "Luke",
+                          "name_short": "Luke",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24
+                          ]
+                        },
+                        {
+                          "book_id": "JHN",
+                          "name": "John",
+                          "name_short": "John",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21
+                          ]
+                        },
+                        {
+                          "book_id": "ACT",
+                          "name": "Acts",
+                          "name_short": "Acts",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28
+                          ]
+                        },
+                        {
+                          "book_id": "ROM",
+                          "name": "Romans",
+                          "name_short": "Romans",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16
+                          ]
+                        },
+                        {
+                          "book_id": "1CO",
+                          "name": "1 Corinthians",
+                          "name_short": "1 Corinthians",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16
+                          ]
+                        },
+                        {
+                          "book_id": "2CO",
+                          "name": "2 Corinthians",
+                          "name_short": "2 Corinthians",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13
+                          ]
+                        },
+                        {
+                          "book_id": "GAL",
+                          "name": "Galatians",
+                          "name_short": "Galatians",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                          ]
+                        },
+                        {
+                          "book_id": "EPH",
+                          "name": "Ephesians",
+                          "name_short": "Ephesians",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                          ]
+                        },
+                        {
+                          "book_id": "PHP",
+                          "name": "Philippians",
+                          "name_short": "Philippians",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4
+                          ]
+                        },
+                        {
+                          "book_id": "COL",
+                          "name": "Colossians",
+                          "name_short": "Colossians",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4
+                          ]
+                        },
+                        {
+                          "book_id": "1TH",
+                          "name": "1 Thessalonians",
+                          "name_short": "1 Thessalonians",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                          ]
+                        },
+                        {
+                          "book_id": "2TH",
+                          "name": "2 Thessalonians",
+                          "name_short": "2 Thessalonians",
+                          "chapters": [
+                            1,
+                            2,
+                            3
+                          ]
+                        },
+                        {
+                          "book_id": "1TI",
+                          "name": "1 Timothy",
+                          "name_short": "1 Timothy",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                          ]
+                        },
+                        {
+                          "book_id": "2TI",
+                          "name": "2 Timothy",
+                          "name_short": "2 Timothy",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4
+                          ]
+                        },
+                        {
+                          "book_id": "TIT",
+                          "name": "Titus",
+                          "name_short": "Titus",
+                          "chapters": [
+                            1,
+                            2,
+                            3
+                          ]
+                        },
+                        {
+                          "book_id": "PHM",
+                          "name": "Philemon",
+                          "name_short": "Philemon",
+                          "chapters": [
+                            1
+                          ]
+                        },
+                        {
+                          "book_id": "HEB",
+                          "name": "Hebrews",
+                          "name_short": "Hebrews",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13
+                          ]
+                        },
+                        {
+                          "book_id": "JAS",
+                          "name": "James",
+                          "name_short": "James",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                          ]
+                        },
+                        {
+                          "book_id": "1PE",
+                          "name": "1 Peter",
+                          "name_short": "1 Peter",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                          ]
+                        },
+                        {
+                          "book_id": "2PE",
+                          "name": "2 Peter",
+                          "name_short": "2 Peter",
+                          "chapters": [
+                            1,
+                            2,
+                            3
+                          ]
+                        },
+                        {
+                          "book_id": "1JN",
+                          "name": "1 John",
+                          "name_short": "1 John",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                          ]
+                        },
+                        {
+                          "book_id": "2JN",
+                          "name": "2 John",
+                          "name_short": "2 John",
+                          "chapters": [
+                            1
+                          ]
+                        },
+                        {
+                          "book_id": "3JN",
+                          "name": "3 John",
+                          "name_short": "3 John",
+                          "chapters": [
+                            1
+                          ]
+                        },
+                        {
+                          "book_id": "JUD",
+                          "name": "Jude",
+                          "name_short": "Jude",
+                          "chapters": [
+                            1
+                          ]
+                        },
+                        {
+                          "book_id": "REV",
+                          "name": "Revelation",
+                          "name_short": "Revelation",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22
+                          ]
+                        },
+                        {
+                          "book_id": "TOB",
+                          "name": "Tobit",
+                          "name_short": "Tobit",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14
+                          ]
+                        },
+                        {
+                          "book_id": "JDT",
+                          "name": "Judith",
+                          "name_short": "Judith",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16
+                          ]
+                        },
+                        {
+                          "book_id": "ESG",
+                          "name": "Esther (Greek)",
+                          "name_short": "Esther (Greek)",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7
+                          ]
+                        },
+                        {
+                          "book_id": "WIS",
+                          "name": "Wisdom",
+                          "name_short": "Wisdom",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19
+                          ]
+                        },
+                        {
+                          "book_id": "SIR",
+                          "name": "Ecclesiasticus",
+                          "name_short": "Ecclesiasticus",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            22,
+                            23,
+                            24,
+                            25,
+                            26,
+                            27,
+                            28,
+                            29,
+                            30,
+                            31,
+                            32,
+                            33,
+                            34,
+                            35,
+                            36,
+                            37,
+                            38,
+                            39,
+                            40,
+                            41,
+                            42,
+                            43,
+                            44,
+                            45,
+                            46,
+                            47,
+                            48,
+                            49,
+                            50,
+                            51
+                          ]
+                        },
+                        {
+                          "book_id": "BAR",
+                          "name": "Baruch",
+                          "name_short": "Baruch",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                          ]
+                        },
+                        {
+                          "book_id": "S3Y",
+                          "name": "Song of the Three",
+                          "name_short": "Song of the Three",
+                          "chapters": [
+                            1
+                          ]
+                        },
+                        {
+                          "book_id": "SUS",
+                          "name": "Susanna",
+                          "name_short": "Susanna",
+                          "chapters": [
+                            1
+                          ]
+                        },
+                        {
+                          "book_id": "BEL",
+                          "name": "Bel and the Dragon",
+                          "name_short": "Bel and the Dragon",
+                          "chapters": [
+                            1
+                          ]
+                        },
+                        {
+                          "book_id": "1MA",
+                          "name": "1 Maccabees",
+                          "name_short": "1 Maccabees",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16
+                          ]
+                        },
+                        {
+                          "book_id": "2MA",
+                          "name": "2 Maccabees",
+                          "name_short": "2 Maccabees",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15
+                          ]
+                        },
+                        {
+                          "book_id": "1ES",
+                          "name": "1 Esdras",
+                          "name_short": "1 Esdras",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9
+                          ]
+                        },
+                        {
+                          "book_id": "2ES",
+                          "name": "2 Esdras",
+                          "name_short": "2 Esdras",
+                          "chapters": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16
+                          ]
+                        },
+                        {
+                          "book_id": "MAN",
+                          "name": "Manasseh",
+                          "name_short": "Manasseh",
+                          "chapters": [
+                            1
+                          ]
+                        }
+                      ],
+                      "links": [
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "Print",
+                          "url": "http://amzn.to/1Dhsdnu",
+                          "title": "English-Yoruba Bilingual FB",
+                          "provider": "Amazon Marketplace",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "Print",
+                          "url": "http://amzn.to/1MaLLSB",
+                          "title": "English-Chinese Bilingual FB",
+                          "provider": "Amazon Marketplace",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "WEB",
+                          "url": "http://bibles.org/versions/eng-ENGRV",
+                          "title": "BibleSearch 1885 Version (US)",
+                          "provider": "American Bible Society",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "WEB",
+                          "url": "http://bibles.org/versions/eng-KJVA",
+                          "title": "BibleSearch",
+                          "provider": "American Bible Society",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "WEB",
+                          "url": "http://bibles.org/versions/eng-RV1885",
+                          "title": "BibleSearch 1885 Version (British)",
+                          "provider": "American Bible Society",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "WEB",
+                          "url": "http://m.bibles.co.za/index.php/mobile-bibles/english/king-james-version-4-part/",
+                          "title": "4 Part Java Bible",
+                          "provider": "Bibles.co.za",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "WEB",
+                          "url": "http://m.bibles.co.za/index.php/mobile-bibles/english/king-james-version-complete/",
+                          "title": "Complete Bible Java Bible",
+                          "provider": "Bibles.co.za",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "Print",
+                          "url": "https://bibleleague.ca/shop/king-james-version-paperback-bible/",
+                          "title": "FB",
+                          "provider": "Bible League of Canada",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "Print",
+                          "url": "http://www.bibles.com/languages/atoz/rvr60-kjv-bilingual-bible-50th-anniversary-edition.html",
+                          "title": "Bibles.com KJV / RV60 Bilingual Bible",
+                          "provider": "American Bible Society",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "Print",
+                          "url": "http://www.biblescanada.com/catalog/products/3916.htm",
+                          "title": "English King JAS Version \\\\ Chinese Union Version ",
+                          "provider": "Bible Society of Canada",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "Print",
+                          "url": "http://www.biblescanada.com/catalog/products/4136.htm",
+                          "title": "English King JAS Version \\\\ The Word of God ",
+                          "provider": "Bible Society of Canada",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "WEB",
+                          "url": "http://www.biblica.com/en-us/bible/online-bible/kjv/genesis/1/",
+                          "title": "FB",
+                          "provider": "Biblica",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "CAT",
+                          "url": "http://www.info.bw/~biblesoc/page3.html",
+                          "title": "FB",
+                          "provider": "Bible Society of Botswana",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "Print",
+                          "url": "https://ww2.onthedot.co.za/otdlive/MasterServlet/GetItemDetailsHandler;jsessionid=0000GbWDU80PTdc2Nh8cUkjcowu:-1?iN=9780798216470&qty=1&viewMode=3&loggedIN=0&JavaScript=y",
+                          "title": "FB",
+                          "provider": "Bible Society of South Africa",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "WEB",
+                          "url": "https://www.bible.com/bible/546/jhn.1.kjva",
+                          "title": "FB and APO",
+                          "provider": "YouVersion",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "Print",
+                          "url": "https://www.biblesociety.org.uk/products/9780564000395/",
+                          "title": "English-Hebrew Bilingual Bible",
+                          "provider": "British and Foreign Bible Society",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "Print",
+                          "url": "https://www.biblesociety.org.uk/products/9780564020645/",
+                          "title": "English / Jamaican NT",
+                          "provider": "British and Foreign Bible Society",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "Print",
+                          "url": "https://www.biblesociety.org.uk/products/9780564090648/",
+                          "title": "FB 400th Anniversary Edition",
+                          "provider": "British and Foreign Bible Society",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "Print",
+                          "url": "https://www.biblesociety.org.uk/products/9783438023117/",
+                          "title": "NT German, French and English Trilingual Edition",
+                          "provider": "British and Foreign Bible Society",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "Print",
+                          "url": "http://amzn.to/292iYR2",
+                          "title": "English / Japanese Bilingual New Testament",
+                          "provider": "Amazon Marketplace",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "WEB",
+                          "url": "//bible.cloud/bibles/ENGKJV",
+                          "title": "The Bible Cloud",
+                          "provider": "Digital Bible Society",
+                          "organization_id": null
+                        },
+                        {
+                          "bible_id": "ENGKJV",
+                          "type": "APP",
+                          "url": "https://play.google.com/store/apps/details?id=com.faithcomesbyhearing.gideons.android.bibleis&hl=en",
+                          "title": "FB",
+                          "provider": "Google Play",
+                          "organization_id": null
+                        }
+                      ],
+                      "filesets": [
+                        {
+                          "id": "ENGKJVN1DA",
+                          "bucket_id": "dbp-dev",
+                          "set_type_code": "audio",
+                          "set_size_code": "NT",
+                          "set_copyright": null,
+                          "ietf_code": "",
+                          "organization": [
+                            {
+                              "slug": "faith-comes-by-hearing",
+                              "abbreviation": null,
+                              "notes": null,
+                              "primaryColor": "#c41e46",
+                              "secondaryColor": "#86112b",
+                              "inactive": 0,
+                              "url_facebook": "https://www.facebook.com/FCBHRomans1017/",
+                              "url_website": "http://www.fcbh.org",
+                              "url_donate": "http://www.faithcomesbyhearing.com/donate",
+                              "url_twitter": "https://twitter.com/audiobible",
+                              "address": "2421 Aztec Rd NE Albuquerque, NM 87107",
+                              "address2": null,
+                              "city": null,
+                              "state": null,
+                              "country": null,
+                              "zip": null,
+                              "phone": "800-545-6552",
+                              "email": "info@faithcomesbyhearing.com",
+                              "created_at": "2018-02-13 02:37:14",
+                              "updated_at": "2018-02-13 02:37:16"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "ENGKJVC1DA",
+                          "bucket_id": "dbp-dev",
+                          "set_type_code": "audio",
+                          "set_size_code": "C",
+                          "set_copyright": null,
+                          "ietf_code": "",
+                          "organization": [
+                            {
+                              "slug": "faith-comes-by-hearing",
+                              "abbreviation": null,
+                              "notes": null,
+                              "primaryColor": "#c41e46",
+                              "secondaryColor": "#86112b",
+                              "inactive": 0,
+                              "url_facebook": "https://www.facebook.com/FCBHRomans1017/",
+                              "url_website": "http://www.fcbh.org",
+                              "url_donate": "http://www.faithcomesbyhearing.com/donate",
+                              "url_twitter": "https://twitter.com/audiobible",
+                              "address": "2421 Aztec Rd NE Albuquerque, NM 87107",
+                              "address2": null,
+                              "city": null,
+                              "state": null,
+                              "country": null,
+                              "zip": null,
+                              "phone": "800-545-6552",
+                              "email": "info@faithcomesbyhearing.com",
+                              "created_at": "2018-02-13 02:37:14",
+                              "updated_at": "2018-02-13 02:37:16"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "ENGKJVO1DA",
+                          "bucket_id": "dbp-dev",
+                          "set_type_code": "audio",
+                          "set_size_code": "OT",
+                          "set_copyright": null,
+                          "ietf_code": "",
+                          "organization": [
+                            {
+                              "slug": "faith-comes-by-hearing",
+                              "abbreviation": null,
+                              "notes": null,
+                              "primaryColor": "#c41e46",
+                              "secondaryColor": "#86112b",
+                              "inactive": 0,
+                              "url_facebook": "https://www.facebook.com/FCBHRomans1017/",
+                              "url_website": "http://www.fcbh.org",
+                              "url_donate": "http://www.faithcomesbyhearing.com/donate",
+                              "url_twitter": "https://twitter.com/audiobible",
+                              "address": "2421 Aztec Rd NE Albuquerque, NM 87107",
+                              "address2": null,
+                              "city": null,
+                              "state": null,
+                              "country": null,
+                              "zip": null,
+                              "phone": "800-545-6552",
+                              "email": "info@faithcomesbyhearing.com",
+                              "created_at": "2018-02-13 02:37:14",
+                              "updated_at": "2018-02-13 02:37:16"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "ENGKJVO2DA",
+                          "bucket_id": "dbp-dev",
+                          "set_type_code": "audio_drama",
+                          "set_size_code": "OT",
+                          "set_copyright": null,
+                          "ietf_code": "",
+                          "organization": [
+                            {
+                              "slug": "faith-comes-by-hearing",
+                              "abbreviation": null,
+                              "notes": null,
+                              "primaryColor": "#c41e46",
+                              "secondaryColor": "#86112b",
+                              "inactive": 0,
+                              "url_facebook": "https://www.facebook.com/FCBHRomans1017/",
+                              "url_website": "http://www.fcbh.org",
+                              "url_donate": "http://www.faithcomesbyhearing.com/donate",
+                              "url_twitter": "https://twitter.com/audiobible",
+                              "address": "2421 Aztec Rd NE Albuquerque, NM 87107",
+                              "address2": null,
+                              "city": null,
+                              "state": null,
+                              "country": null,
+                              "zip": null,
+                              "phone": "800-545-6552",
+                              "email": "info@faithcomesbyhearing.com",
+                              "created_at": "2018-02-13 02:37:14",
+                              "updated_at": "2018-02-13 02:37:16"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "ENGKJVN2DA",
+                          "bucket_id": "dbp-dev",
+                          "set_type_code": "app",
+                          "set_size_code": "NT",
+                          "set_copyright": null,
+                          "ietf_code": null,
+                          "organization": [
+                            {
+                              "slug": "faith-comes-by-hearing",
+                              "abbreviation": null,
+                              "notes": null,
+                              "primaryColor": "#c41e46",
+                              "secondaryColor": "#86112b",
+                              "inactive": 0,
+                              "url_facebook": "https://www.facebook.com/FCBHRomans1017/",
+                              "url_website": "http://www.fcbh.org",
+                              "url_donate": "http://www.faithcomesbyhearing.com/donate",
+                              "url_twitter": "https://twitter.com/audiobible",
+                              "address": "2421 Aztec Rd NE Albuquerque, NM 87107",
+                              "address2": null,
+                              "city": null,
+                              "state": null,
+                              "country": null,
+                              "zip": null,
+                              "phone": "800-545-6552",
+                              "email": "info@faithcomesbyhearing.com",
+                              "created_at": "2018-02-13 02:37:14",
+                              "updated_at": "2018-02-13 02:37:16"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "ENGKJVN2DA",
+                          "bucket_id": "dbp-dev",
+                          "set_type_code": "audio_drama",
+                          "set_size_code": "NT",
+                          "set_copyright": null,
+                          "ietf_code": "",
+                          "organization": [
+                            {
+                              "slug": "faith-comes-by-hearing",
+                              "abbreviation": null,
+                              "notes": null,
+                              "primaryColor": "#c41e46",
+                              "secondaryColor": "#86112b",
+                              "inactive": 0,
+                              "url_facebook": "https://www.facebook.com/FCBHRomans1017/",
+                              "url_website": "http://www.fcbh.org",
+                              "url_donate": "http://www.faithcomesbyhearing.com/donate",
+                              "url_twitter": "https://twitter.com/audiobible",
+                              "address": "2421 Aztec Rd NE Albuquerque, NM 87107",
+                              "address2": null,
+                              "city": null,
+                              "state": null,
+                              "country": null,
+                              "zip": null,
+                              "phone": "800-545-6552",
+                              "email": "info@faithcomesbyhearing.com",
+                              "created_at": "2018-02-13 02:37:14",
+                              "updated_at": "2018-02-13 02:37:16"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "ENGKJVC2DA",
+                          "bucket_id": "dbp-dev",
+                          "set_type_code": "audio_drama",
+                          "set_size_code": "C",
+                          "set_copyright": null,
+                          "ietf_code": "",
+                          "organization": [
+                            {
+                              "slug": "faith-comes-by-hearing",
+                              "abbreviation": null,
+                              "notes": null,
+                              "primaryColor": "#c41e46",
+                              "secondaryColor": "#86112b",
+                              "inactive": 0,
+                              "url_facebook": "https://www.facebook.com/FCBHRomans1017/",
+                              "url_website": "http://www.fcbh.org",
+                              "url_donate": "http://www.faithcomesbyhearing.com/donate",
+                              "url_twitter": "https://twitter.com/audiobible",
+                              "address": "2421 Aztec Rd NE Albuquerque, NM 87107",
+                              "address2": null,
+                              "city": null,
+                              "state": null,
+                              "country": null,
+                              "zip": null,
+                              "phone": "800-545-6552",
+                              "email": "info@faithcomesbyhearing.com",
+                              "created_at": "2018-02-13 02:37:14",
+                              "updated_at": "2018-02-13 02:37:16"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "ENGKJV",
+                          "bucket_id": "dbs-web",
+                          "set_type_code": "text_plain",
+                          "set_size_code": "P",
+                          "set_copyright": null,
+                          "ietf_code": null,
+                          "organization": [
+                            {
+                              "slug": "digital-bible-society",
+                              "abbreviation": null,
+                              "notes": null,
+                              "primaryColor": "#2468B9",
+                              "secondaryColor": "#7AA4D6",
+                              "inactive": 0,
+                              "url_facebook": "https://www.facebook.com/digitalbiblesociety",
+                              "url_website": "http://www.dbs.org",
+                              "url_donate": null,
+                              "url_twitter": "https://twitter.com/DBSorg",
+                              "address": "PO Box 2881, Conroe, TX 77304",
+                              "address2": null,
+                              "city": null,
+                              "state": null,
+                              "country": null,
+                              "zip": null,
+                              "phone": "936-494-4442",
+                              "email": "info@dbs.org",
+                              "created_at": "2018-02-13 02:37:14",
+                              "updated_at": "2018-02-13 02:37:14"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "ENGKJV",
+                          "bucket_id": "dbs-web",
+                          "set_type_code": "text_formatt",
+                          "set_size_code": "C",
+                          "set_copyright": null,
+                          "ietf_code": "",
+                          "organization": [
+                            {
+                              "slug": "digital-bible-society",
+                              "abbreviation": null,
+                              "notes": null,
+                              "primaryColor": "#2468B9",
+                              "secondaryColor": "#7AA4D6",
+                              "inactive": 0,
+                              "url_facebook": "https://www.facebook.com/digitalbiblesociety",
+                              "url_website": "http://www.dbs.org",
+                              "url_donate": null,
+                              "url_twitter": "https://twitter.com/DBSorg",
+                              "address": "PO Box 2881, Conroe, TX 77304",
+                              "address2": null,
+                              "city": null,
+                              "state": null,
+                              "country": null,
+                              "zip": null,
+                              "phone": "936-494-4442",
+                              "email": "info@dbs.org",
+                              "created_at": "2018-02-13 02:37:14",
+                              "updated_at": "2018-02-13 02:37:14"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -117,7 +2781,7 @@
         }
       }
     },
-    "/bibles/{id}/book/{book}": {
+    "/bibles/{id}/book/{book_id}": {
       "get": {
         "operationId": "v4_bible.books",
         "summary": "Get books for a Bible",
@@ -136,6 +2800,17 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "book_id",
+            "in": "query",
+            "description": "This when set to a valid USFM Book ID this param will filter records by that book ID. For a complete set of book_ids see the `v4_bible.allBooks` route ",
+            "schema": {
+              "type": "string",
+              "example": "1CH",
+              "minLength": 3,
+              "maxLength": 3
+            }
           }
         ],
         "tags": [
@@ -147,7 +2822,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "type": "object",
+                  "example": [
+                    {
+                      "id": "GEN",
+                      "id_usfx": "GN",
+                      "id_osis": "Gen",
+                      "book_order": 1,
+                      "testament_order": 1,
+                      "book_testament": "OT",
+                      "book_group": "The Law",
+                      "chapters": 50,
+                      "verses": 1533,
+                      "name": "Genesis",
+                      "translations": "Genïs"
+                    }
+                  ]
                 }
               }
             }
@@ -174,6 +2864,67 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "dam_id",
+            "in": "query",
+            "required": true,
+            "description": "This when set to a valid Bible_ID this param will filter records by that Bible ID. For a complete set of bible_ids see the `v4_bible.all` route ",
+            "schema": {
+              "type": "string",
+              "example": ""
+            }
+          },
+          {
+            "name": "book_id",
+            "in": "query",
+            "required": true,
+            "description": "This when set to a valid USFM Book ID this param will filter records by that book ID. For a complete set of book_ids see the `v4_bible.allBooks` route ",
+            "schema": {
+              "type": "string",
+              "example": ""
+            }
+          },
+          {
+            "name": "chapter_id",
+            "in": "query",
+            "description": "When set to a chapter number this param will filter records by that chapter number. This number will between 1 & 150.",
+            "schema": {
+              "type": "integer",
+              "example": 3,
+              "minimum": 1,
+              "maximum": 150
+            }
+          },
+          {
+            "name": "verse_start",
+            "in": "query",
+            "description": "When set to a verse number this param will filter records to those starting at and after that verse_number.",
+            "schema": {
+              "type": "integer",
+              "example": 10,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "verse_end",
+            "in": "query",
+            "description": "When set to a verse number this param will filter records to those starting at or before that verse_number.",
+            "schema": {
+              "type": "integer",
+              "example": 15,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "bucket_id",
+            "in": "query",
+            "required": true,
+            "description": "Specifies the bucket for the resource desired. This field is associated with a particular `fileset_id` in the `v4_bible_filesets.show` & `v4_bible_filesets.index` routes and the complete list of buckets are available via the bucket ",
+            "schema": {
+              "type": "string",
+              "example": "dbp-dev"
+            }
           }
         ],
         "tags": [
@@ -181,11 +2932,51 @@
         ],
         "responses": {
           "200": {
-            "description": "An array of Bibles",
+            "description": "An array of Verse Objects",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "type": "object",
+                  "example": {
+                    "data": [
+                      {
+                        "book_id": "GEN",
+                        "book_name": "Genesis",
+                        "book_name_alt": "Genesis",
+                        "chapter": 1,
+                        "chapter_alt": "۲",
+                        "verse_start": 1,
+                        "verse_start_alt": "۲",
+                        "verse_end": 1,
+                        "verse_end_alt": "۲",
+                        "verse_text": "فِي ٱلْبَدْءِ خَلَقَ ٱللهُ ٱلسَّمَاوَاتِ وَٱلْأَرْضَ. "
+                      },
+                      {
+                        "book_id": "GEN",
+                        "book_name": "Genesis",
+                        "book_name_alt": "Genesis",
+                        "chapter": 1,
+                        "chapter_alt": "۲",
+                        "verse_start": 2,
+                        "verse_start_alt": "۳",
+                        "verse_end": 2,
+                        "verse_end_alt": "۳",
+                        "verse_text": "وَكَانَتِ ٱلْأَرْضُ خَرِبَةً وَخَالِيَةً، وَعَلَى وَجْهِ ٱلْغَمْرِ ظُلْمَةٌ، وَرُوحُ ٱللهِ يَرِفُّ عَلَى وَجْهِ ٱلْمِيَاهِ. "
+                      },
+                      {
+                        "book_id": "GEN",
+                        "book_name": "Genesis",
+                        "book_name_alt": "Genesis",
+                        "chapter": 1,
+                        "chapter_alt": "۲",
+                        "verse_start": 3,
+                        "verse_start_alt": "۴",
+                        "verse_end": 3,
+                        "verse_end_alt": "۴",
+                        "verse_text": "وَقَالَ ٱللهُ: «لِيَكُنْ نُورٌ»، فَكَانَ نُورٌ. "
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -193,10 +2984,10 @@
         }
       }
     },
-    "/bibles/filesets/{id}/permissions": {
+    "/bibles/filesets/media/types": {
       "get": {
-        "operationId": "v4_bible.chapter",
-        "summary": "Get text for a chapter",
+        "operationId": "v4_bible_filesets.types",
+        "summary": "A list of Media types delivered by the API",
         "parameters": [
           {
             "$ref": "#/components/parameters/v"
@@ -219,11 +3010,156 @@
         ],
         "responses": {
           "200": {
-            "description": "An array of Bibles",
+            "description": "An array of media types",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "type": "object",
+                  "example": {
+                    "audio_drama": "Dramatized Audio",
+                    "audio": "Audio",
+                    "text_plain": "Plain Text",
+                    "text_formatt": "Formatted Text",
+                    "video": "Video",
+                    "app": "Application"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bibles/filesets/{id}/permissions": {
+      "get": {
+        "operationId": "v4_bible_filesets.permissions_index",
+        "summary": "Get a list of permissions for all filesets.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "A set of Access details for a specific fileset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "data": {
+                      "hash_id": "006af44d95cc",
+                      "fileset_id": "HUUTBLN1DA",
+                      "whitelist": true,
+                      "access_granted": true,
+                      "granted_at": "2018-04-17 06:06:18",
+                      "updated_at": "2018-04-17 06:06:18"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "v4_bible_filesets.permissions_store",
+        "summary": "To add a new set of permissions to the API.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "You must either be a super_admin or be the owner of the fileset to be authorized for this route.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No fileset has been found for the provided hash_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": {
+                      "message": "No fileset has been found for the provided hash_id",
+                      "status_code": 404
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "v4_bible_filesets.permissions_update",
+        "summary": "To update an existing set of permissions to the API.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "You must either be a admin or be the owner of the fileset to be authorized for this route.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": null
                 }
               }
             }
@@ -250,6 +3186,17 @@
           },
           {
             "$ref": "#/components/parameters/pretty"
+          },
+          {
+            "name": "bucket_id",
+            "in": "query",
+            "required": true,
+            "description": "This param states which bucket the resource should be downloaded from.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "example": "dbs-web"
+            }
           }
         ],
         "tags": [
@@ -259,9 +3206,49 @@
           "200": {
             "description": "An array of Bibles",
             "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary",
+                  "example": "file.zip"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bibles/filesets/{id}/podcast": {
+      "get": {
+        "operationId": "v4_bible.podcast",
+        "summary": "An rss ready format for the audio filesets",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Bible"
+        ],
+        "responses": {
+          "200": {
+            "description": "An podcastable ready format for the audio filesets",
+            "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "type": "object"
                 }
               }
             }
@@ -295,11 +3282,57 @@
         ],
         "responses": {
           "200": {
-            "description": "An array of Bibles",
+            "description": "An array of all the Books in the Bible",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bibles"
+                  "type": "object",
+                  "example": {
+                    "data": [
+                      {
+                        "id": "GEN",
+                        "id_usfx": "GN",
+                        "id_osis": "Gen",
+                        "book_order": 1,
+                        "testament_order": 1,
+                        "book_testament": "OT",
+                        "book_group": "The Law",
+                        "chapters": 50,
+                        "verses": 1533,
+                        "name": "Genesis",
+                        "translations": null,
+                        "bible": null
+                      },
+                      {
+                        "id": "EXO",
+                        "id_usfx": "EX",
+                        "id_osis": "Exod",
+                        "book_order": 2,
+                        "testament_order": 2,
+                        "book_testament": "OT",
+                        "book_group": "The Law",
+                        "chapters": 40,
+                        "verses": 1213,
+                        "name": "Exodus",
+                        "translations": null,
+                        "bible": null
+                      },
+                      {
+                        "id": "LEV",
+                        "id_usfx": "LV",
+                        "id_osis": "Lev",
+                        "book_order": 3,
+                        "testament_order": 3,
+                        "book_testament": "OT",
+                        "book_group": "The Law",
+                        "chapters": 27,
+                        "verses": 859,
+                        "name": "Leviticus",
+                        "translations": null,
+                        "bible": null
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -383,7 +3416,7 @@
         }
       }
     },
-    "/timestamps/{id}/{book}/{chapter}": {
+    "/timestamps/{id}/{book_id}/{chapter}": {
       "get": {
         "operationId": "v4_timestamps.verse",
         "summary": "Get List of available timestamps",
@@ -605,6 +3638,45 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Alphabets"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "v4_alphabets.store",
+        "summary": "Create a new Alphabet",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/v"
+          },
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/version"
+          },
+          {
+            "$ref": "#/components/parameters/reply"
+          },
+          {
+            "$ref": "#/components/parameters/pretty"
+          }
+        ],
+        "tags": [
+          "Wiki"
+        ],
+        "responses": {
+          "200": {
+            "description": "An Success Message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Alphabet Successfully created"
+                  }
                 }
               }
             }
