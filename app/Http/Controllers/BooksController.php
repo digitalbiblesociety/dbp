@@ -52,14 +52,8 @@ class BooksController extends APIController
 	    $fileset = BibleFileset::with('bible')->where('id',$id)->where('bucket_id',$bucket_id)->first();
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params.");
 
-	    $textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
-	    if(!$textExists) {
-	    	$fileset->id = substr($fileset->id,0,-4);
-	    	$textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
-	    }
-	    if(!$textExists) {
-	    	return $this->setStatusCode(404)->replyWithError("The data for this Bible is still being updated, please check back later");
-	    }
+	    $sophiaTable = $this->checkForSophiaTable($fileset);
+	    if(!is_string($sophiaTable)) return $sophiaTable;
 
 		$booksChapters = collect(\DB::connection('sophia')->table($fileset->id.'_vpl')->select('book','chapter')->distinct()->get());
 	    $books = Book::whereIn('id_usfx',$booksChapters->pluck('book')->unique()->toArray())->orderBy('book_order')->get();
@@ -129,6 +123,9 @@ class BooksController extends APIController
 	    $book = Book::where('id_osis',$book_id)->orWhere('id',$book_id)->first();
 	    if(!$book) return $this->setStatusCode(404)->replyWithError("No book found for the given ID");
 
+	    $sophiaTable = $this->checkForSophiaTable($fileset);
+	    if(!is_string($sophiaTable)) return $sophiaTable;
+
 		$chapters = \DB::connection('sophia')->table($fileset->id.'_vpl')
 			->when($book, function($q) use ($book) { $q->where('book',$book->id_usfx); })
 			->select(['chapter','book'])->distinct()->orderBy('chapter')->get()
@@ -138,6 +135,17 @@ class BooksController extends APIController
 				return $chapter;
 			});
 		return $this->reply(fractal()->collection($chapters)->serializeWith($this->serializer)->transformWith(new BooksTransformer()));
+    }
+
+    private function checkForSophiaTable($fileset)
+    {
+	    $textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
+	    if(!$textExists) {
+		    $fileset->id = substr($fileset->id,0,-4);
+		    $textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
+	    }
+	    if(!$textExists) return $this->setStatusCode(404)->replyWithError("The data for this Bible is still being updated, please check back later");
+	    return $fileset->id;
     }
 
 }
