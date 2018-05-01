@@ -115,7 +115,7 @@ Primary style
   .gallery .content a {
     display: block;
 
-    &::before {
+    .icon {
       /* icon on the left */
       content: '';
       display: inline-block;
@@ -147,19 +147,19 @@ Primary style
     }
   }
 
-  .gallery li:nth-of-type(1) a::before {
+  .gallery li:nth-of-type(1) .icon {
     background: #f4e58a no-repeat 0 0;
   }
 
-  .gallery li:nth-of-type(2) a::before {
+  .gallery li:nth-of-type(2) .icon {
     background: #F4AF6D no-repeat -54px 0;
   }
 
-  .gallery li:nth-of-type(3) a::before {
+  .gallery li:nth-of-type(3) .icon {
     background: #DB6356 no-repeat -108px 0;
   }
 
-  .gallery li:nth-of-type(4) a::before {
+  .gallery li:nth-of-type(4) .icon {
     background: #8D4645 no-repeat -162px 0;
   }
 
