@@ -176,7 +176,7 @@ class LanguagesController extends APIController
 		$country_additional = checkParam('country_additional', null, 'optional');
 
 		// Fetch Languages and add conditional sorting / loading depending on params
-		$languages = Language::has('primaryCountry')->with('primaryCountry','countries')->when($sort_by, function ($query) use ($sort_by) {
+		$languages = Language::has('primaryCountry')->has('bibles.filesets')->with('primaryCountry','countries')->when($sort_by, function ($query) use ($sort_by) {
 			return $query->orderBy($sort_by, 'desc');
 		})->get();
 		if($country_additional) $languages->load('countries');
