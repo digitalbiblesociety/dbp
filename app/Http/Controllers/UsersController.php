@@ -80,7 +80,7 @@ class UsersController extends APIController
 		    'name'  => $request->name,
 		    'password' => Hash::make($request->password)
 	    ]);
-	    return $this->reply(["success" => "User created","user_id" => $user->id]);
+	    return $this->reply(["success" => "User created","user" => $user]);
     }
 
     public function update(Request $request, $id)
