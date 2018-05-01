@@ -85,7 +85,7 @@ class BibleTransformer extends BaseTransformer
 					        "collection_name"           => $fileset->name,
 					        "updated_on"                => "".$bible->updated_at->toDateTimeString() ?? "",
 					        "created_on"                => "".$bible->created_at->toDateTimeString() ?? "",
-					        "right_to_left"             => ($bible->alphabet->direction == "rtl") ? "true" : "false",
+					        "right_to_left"             => (isset($bible->alphabet)) ? (($bible->alphabet->direction == "rtl") ? "true" : "false") : "false",
 					        "num_art"                   => "0",
 					        "num_sample_audio"          => "0",
 					        "sku"                       => "",
