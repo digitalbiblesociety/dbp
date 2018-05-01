@@ -70,6 +70,14 @@ return [
             'bucket' => env('DBS_AWS_BUCKET'),
         ],
 
+        'dbp-web' => [
+	        'driver' => 's3',
+	        'key'    => env('FCBH_AWS_KEY'),
+	        'secret' => env('FCBH_AWS_SECRET'),
+	        'region' => env('FCBH_AWS_REGION'),
+	        'bucket' => env('FCBH_AWS_BUCKET'),
+        ],
+
         's3_dbs_log' => [
 	        'driver' => 's3',
 	        'key'    => env('DBS_AWS_KEY'),
@@ -79,6 +87,14 @@ return [
         ],
 
         's3_fcbh' => [
+	        'driver' => 's3',
+	        'key'    => env('FCBH_AWS_KEY'),
+	        'secret' => env('FCBH_AWS_SECRET'),
+	        'region' => env('FCBH_AWS_REGION'),
+	        'bucket' => env('FCBH_AWS_BUCKET'),
+        ],
+
+        'dbp-dev' => [
 	        'driver' => 's3',
 	        'key'    => env('FCBH_AWS_KEY'),
 	        'secret' => env('FCBH_AWS_SECRET'),
