@@ -32,7 +32,7 @@ class TextController extends APIController
 	    $chapter = checkParam('chapter_id', $chapter_url_param);
     	$verse_start = checkParam('verse_start', null, 'optional') ?? 1;
 	    $verse_end = checkParam('verse_end', null, 'optional');
-	    $formatted = checkParam('bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+	    $formatted = checkParam('bucket_id', null, 'optional');
 
 	    // Fetch Bible for Book Translations
 	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$bible_id)->orWhere('equivalent_id',substr($bible_id,0,7))->first();
@@ -51,7 +51,7 @@ class TextController extends APIController
 		    $bibleEquivalent = (isset($bibleEquivalent)) ? $bibleEquivalent : $bible->id;
 		    $path = 'text/'.$bible->id.'/'.$bibleEquivalent.'/'.$book_id.$chapter.'.html';
 		    $exists = Storage::disk($formatted)->exists($path);
-		    if(!$exists) return $this->replyWithError("The path: $path did not result in a valid file");
+		    if(!$exists) return $this->replyWithError("The path: $path did not result in a file");
 	    	return $this->reply(["filepath" => Bucket::signedUrl($path)]);
 	    }
 
