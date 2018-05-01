@@ -60,7 +60,7 @@ class UserHighlightsController extends APIController
 			'verse_start'       => 'required|max:177|min:1|integer',
 			'highlight_start'   => 'required|min:0|integer',
 			'highlighted_words' => 'required|min:1|integer',
-			'highlighted_color' => 'max:7|min:3',
+			'highlighted_color' => 'max:7|min:3|regex:/#?[0-9a-fA-F]+/u',
 		]);
 		if ($validator->fails()) return ['errors' => $validator->errors() ];
 
