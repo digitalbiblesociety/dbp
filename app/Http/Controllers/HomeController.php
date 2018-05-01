@@ -31,6 +31,17 @@ class HomeController extends APIController
     }
 
 	/**
+	 *
+	 * Returns a List of Buckets used by the API
+	 *
+	 * @return mixed
+	 */
+	public function buckets()
+    {
+    	return $this->reply(\App\Models\Organization\Bucket::with('organization')->get());
+    }
+
+	/**
 	 * Show the application dashboard.
 	 *
 	 * @return \Illuminate\Http\Response
