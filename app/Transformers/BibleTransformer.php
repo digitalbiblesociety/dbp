@@ -63,8 +63,8 @@ class BibleTransformer extends BaseTransformer
 					        "dbp_agreement"             => "true", // for the moment these default to True
 					        "expiration"                => "0000-00-00",
 					        "language_code"             => strtoupper($bible->iso) ?? "",
-					        "language_name"             => $bible->language->autonym ?? $bible->language->name,
-					        "language_english"          => $bible->language->name ?? "",
+					        "language_name"             => @$bible->language->autonym ?? @$bible->language->name,
+					        "language_english"          => @$bible->language->name ?? "",
 					        "language_iso"              => $bible->iso ?? "",
 					        "language_iso_2B"           => @$bible->language->iso2B ?? "",
 					        "language_iso_2T"           => @$bible->language->iso2T ?? "",
