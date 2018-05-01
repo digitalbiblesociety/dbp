@@ -32,7 +32,7 @@ class TextController extends APIController
 	    $chapter = checkParam('chapter_id', $chapter_url_param);
     	$verse_start = checkParam('verse_start', null, 'optional') ?? 1;
 	    $verse_end = checkParam('verse_end', null, 'optional');
-	    $formatted = checkParam('bucket_id', null, 'optional');
+	    $formatted = checkParam('bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
 	    // Fetch Bible for Book Translations
 	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$bible_id)->orWhere('equivalent_id',substr($bible_id,0,7))->first();
