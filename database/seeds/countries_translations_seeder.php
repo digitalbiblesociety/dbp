@@ -48,11 +48,11 @@ class countries_translations_seeder extends Seeder
             if(strlen($entry['language_id']) == 2) {
                 $current_language = LanguageCode::where('source','Iso 639-2')->where('code','=', $entry['language_id'])->first();
                 if(!$current_language) { continue; }
-                $current_language = $current_language->language->id;
+                $current_language = $current_language->language->iso;
             } elseif(strlen($entry['language_id']) == 3) {
                 $current_language = Language::where('iso',$entry['language_id'])->first();
                 if(!$current_language) { continue; }
-                $current_language = $current_language->id;
+                $current_language = $current_language->iso;
             } else {
                 dd($entry['language_id']);
             }
