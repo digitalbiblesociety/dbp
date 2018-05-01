@@ -32,6 +32,7 @@ class UserNotesController extends APIController
 	    $project_id = checkParam('project_id', null, 'optional');
 	    $bookmark = explode('.',\Request::route()->getName());
 	    $bookmark = ($bookmark[1] == "v4_bookmark") ? true : false;
+	    $limit = checkParam('limit', null, 'optional') ?? 25;
 
 		$notes = Note::with('tags')->where('user_id',$user_id)->where('project_id',$project_id)
 		->when($bible_id, function($q) use ($bible_id) {
@@ -40,7 +41,7 @@ class UserNotesController extends APIController
 			$q->where('book_id', '=', $book_id);
 		})->when($bookmark, function($q) {
 			$q->where('bookmark', true);
-		})->orderBy('updated_at')->paginate(25);
+		})->orderBy('updated_at')->paginate($limit);
 
     	foreach($notes as $key => $note) $notes[$key]->notes = decrypt($note->notes);
 		if(!$notes) return $this->setStatusCode(404)->replyWithError("No User found for the specified ID");
