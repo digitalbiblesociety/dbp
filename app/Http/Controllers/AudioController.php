@@ -27,7 +27,7 @@ class AudioController extends APIController
 		$fileset = BibleFileset::where('id', $bible_id)->where('bucket_id',$bucket_id)->where('set_type_code', 'like', '%audio%')->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Audio Fileset could be found for the code: ".$bible_id);
 
-		$audioChapters = BibleFile::with('book')->where('hash_id',$fileset->hash_id)
+		$audioChapters = BibleFile::with('book','bible')->where('hash_id',$fileset->hash_id)
 		                          ->when($chapter_id, function ($query) use ($chapter_id) {
 			                          return $query->where('chapter_start', $chapter_id);
 		                          })->when($book_id, function ($query) use ($book_id) {
