@@ -75,6 +75,22 @@ class CountryTransformer extends BaseTransformer
 					]
 				];
 			}
+			case "v4_countries.jsp": {
+				return [
+					"id"                      => $country->country->id,
+					"continent"               => $country->country->continent,
+					"population"              => number_format($country->population),
+					"population_unreached"    => number_format($country->population_unreached),
+					"language_official_name"  => $country->language_official_name,
+					"people_groups"           => $country->people_groups,
+					"people_groups_unreached" => $country->people_groups_unreached,
+					"joshua_project_scale"    => $country->joshua_project_scale,
+					"primary_religion"        => $country->primary_religion,
+					"percent_christian"       => $country->percent_christian,
+					"resistant_belt"          => $country->resistant_belt,
+					"percent_literate"        => $country->percent_literate
+				];
+			}
 			case "v4_countries.one": {
 				return [
 					'name'           => $country->name,
