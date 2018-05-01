@@ -26,6 +26,7 @@ class LanguageTransformer extends BaseTransformer
 	{
 		return [
 			'<a href="/languages/'.$language->id.'">'.$language->name.'</a>',
+			$language->location,
 			$language->iso,
 			$language->bibles_count
 		];
