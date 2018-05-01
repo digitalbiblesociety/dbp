@@ -80,20 +80,17 @@ class LanguageTransformer extends BaseTransformer
 			}
 
 			case "v2_country_lang": {
-				$img_type = checkParam('img_type', null, 'optional') ?? "svg";
-				$img_size = "_".checkParam('img_size', null, 'optional') ?? "";
-				if($img_type == "svg") $img_size = "";
 				return [
 					"id"                   => (string) $language->id,
                     "lang_code"            => $language->iso,
-                    "region"               => $language->primaryCountry->regions->first()->name,
-                    "country_primary"      => $language->primaryCountry->id,
+                    "region"               => $language->primaryCountry->name,
+                    "country_primary"      => $language->country_id,
                     "lang_id"              => $language->iso,
                     "iso_language_code"    => $language->iso,
                     "regional_lang_name"   => $language->autonym ?? $language->name,
                     "family_id"            => $language->iso,
                     "primary_country_name" => $language->primaryCountry->name,
-					"country_image"        => url("/img/flags/".$language->primaryCountry->id.$img_size.'.'.$img_type),
+					"country_image"        => url("https://cdn.bible.build/img/flags/full/80X60/".strtolower($language->country_id).'.png'),
 					"country_additional"   => $language->countries->pluck('id')
 				];
 			}
