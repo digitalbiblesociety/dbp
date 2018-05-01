@@ -124,18 +124,11 @@ class AudioController extends APIController
 	{
 		return $this->reply([
 				[
-					"server"    => "cloud.faithcomesbyhearing.com",
-					"root_path" => "/mp3audiobibles2",
-					"protocol"  => "http",
+					"server"    => "dbp-dev.s3.us-west-2.amazonaws.com/",
+					"root_path" => "/audio",
+					"protocol"  => "https",
 					"CDN"       => "1",
 					"priority"  => "5"
-				],
-				[
-					"server"    => "fcbhabdm.s3.amazonaws.com",
-					"root_path" => "/mp3audiobibles2",
-					"protocol"  => "http",
-					"CDN"       => "0",
-					"priority"  => "6"
 				]
 			]);
 	}
