@@ -43,6 +43,7 @@ use App\Models\Language\Language;
  * @property int|null $duration
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereDuration($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereFileSize($value)
+ * @property-read \App\Models\Bible\BibleFilesetConnection $connections
  */
 class BibleFile extends Model
 {
@@ -76,7 +77,7 @@ class BibleFile extends Model
 
 	public function timestamps()
 	{
-		return $this->hasMany(BibleFileTimestamp::class);
+		return $this->hasMany(BibleFileTimestamp::class,'file_id','id');
 	}
 
 	public function firstReference()

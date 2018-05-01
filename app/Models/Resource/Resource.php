@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereUpdatedAt($value)
  * @property-read \App\Models\Organization\Organization $organization
+ * @property-read \App\Models\Resource\ResourceTranslation $currentTranslation
  */
 class Resource extends Model
 {

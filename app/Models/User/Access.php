@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use App\Models\Bible\BibleFileset;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Bible\Bible;
 
@@ -57,6 +58,7 @@ use App\Models\Bible\Bible;
  * @property string $hash_id
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Access whereHashId($value)
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\User[] $user
+ * @property-read \App\Models\Bible\BibleFileset $fileset
  */
 class Access extends Model
 {
@@ -69,6 +71,11 @@ class Access extends Model
 	public function bible()
 	{
 		return $this->BelongsTo(Bible::class,'bible_id','id');
+	}
+
+	public function fileset()
+	{
+		return $this->BelongsTo(BibleFileset::class,'hash_id','hash_id');
 	}
 
 	public function user()

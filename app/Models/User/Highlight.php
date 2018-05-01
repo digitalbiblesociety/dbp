@@ -32,6 +32,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Highlight whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Highlight whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Highlight whereVerseStart($value)
+ * @property int|null $verse_end
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Highlight whereVerseEnd($value)
  */
 class Highlight extends Model
 {
