@@ -16,6 +16,7 @@
     <div class="morph-dropdown-wrapper">
         <div class="dropdown-list">
             <ul>
+                {{--
                 <li id="about" class="dropdown gallery">
                     <a href="#0" class="label">About</a>
                     <div class="content">
@@ -27,7 +28,7 @@
                         </ul>
                     </div>
                 </li>
-
+                --}}
                 <li id="pricing" class="dropdown links">
                     <a href="#0" class="label">Reference</a>
                     <div class="content">
