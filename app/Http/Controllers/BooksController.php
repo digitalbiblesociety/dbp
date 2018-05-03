@@ -74,7 +74,7 @@ class BooksController extends APIController
 	    $sophiaTable = $this->checkForSophiaTable($fileset);
 	    if(!is_string($sophiaTable)) return $sophiaTable;
 
-		$booksChapters = collect(\DB::connection('sophia')->table($fileset->id.'_vpl')->select('book','chapter')->distinct()->get());
+		$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable.'_vpl')->select('book','chapter')->distinct()->get());
 	    $books = Book::whereIn('id_usfx',$booksChapters->pluck('book')->unique()->toArray())->orderBy('book_order')->get();
 
 	    $bible_id = $fileset->bible->first()->id;
@@ -159,6 +159,7 @@ class BooksController extends APIController
     private function checkForSophiaTable($fileset)
     {
 	    $textExists = \Schema::connection('sophia')->hasTable(substr($fileset->id,0,-4).'_vpl');
+	    if($textExists) return substr($fileset->id,0,-4);
 	    if(!$textExists) $textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
 	    if(!$textExists) return $this->setStatusCode(404)->replyWithError("The data for this Bible is still being updated, please check back later");
 	    return $fileset->id;
