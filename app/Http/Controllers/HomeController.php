@@ -79,7 +79,34 @@ class HomeController extends APIController
 
 	public function libraryAsset()
 	{
-		$libraryAsset = json_decode(file_get_contents(public_path('static/library_asset.json')));
+		$dam_id = checkParam('dam_id', null, 'optional') ?? "";
+
+		$libraryAsset = [
+			[
+				"server" => "cloud.faithcomesbyhearing.com",
+				"root_path" => "/mp3audiobibles2",
+				"protocol" => "http",
+				"CDN" => "1",
+				"priority" => "5",
+				"volume_id" => $dam_id
+			],
+			[
+				"server" => "fcbhabdm.s3.amazonaws.com",
+				"root_path" => "/mp3audiobibles2",
+				"protocol" => "http",
+				"CDN" => "0",
+				"priority" => "6",
+				"volume_id" => $dam_id
+			],
+			[
+				"server" => "cdn.faithcomesbyhearing.com",
+				"root_path" => "/cfx/st",
+				"protocol" => "rtmp-amazon",
+				"CDN" => "0",
+				"priority" => "9",
+				"volume_id" => $dam_id
+			]
+		];
 		return $this->reply($libraryAsset);
 	}
 
