@@ -46,7 +46,7 @@ class BooksTransformer extends BaseTransformer
 			case "v2_library_chapter": {
 				return [
 					"dam_id"           => $book->bible_id,
-                    "book_id"          => $book->book->id_osis,
+                    "book_id"          => $book->book_id,
                     "chapter_id"       => (string) $book->chapter,
                     "chapter_name"     => "Chapter " . $book->chapter,
                     "default"          => ""

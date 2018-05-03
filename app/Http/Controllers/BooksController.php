@@ -136,7 +136,7 @@ class BooksController extends APIController
 	    $bucket_id = checkParam('bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 	    $book_id = checkParam('book_id', null, 'optional');
 
-	    $fileset = BibleFileset::with('bible')->where('id',$id)->where('bucket_id',$bucket_id)->first();
+	    $fileset = BibleFileset::where('id',$id)->where('bucket_id',$bucket_id)->first();
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the given ID");
 
 	    $book = Book::where('id_osis',$book_id)->orWhere('id',$book_id)->first();
@@ -149,7 +149,7 @@ class BooksController extends APIController
 			->when($book, function($q) use ($book) { $q->where('book',$book->id_usfx); })
 			->select(['chapter','book'])->distinct()->orderBy('chapter')->get()
 			->map(function ($chapter) use ($id, $book) {
-				$chapter->book = $book;
+				$chapter->book_id = $book->id_osis;
 				$chapter->bible_id = $id;
 				return $chapter;
 			});
@@ -158,11 +158,8 @@ class BooksController extends APIController
 
     private function checkForSophiaTable($fileset)
     {
-	    $textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
-	    if(!$textExists) {
-		    $fileset->id = substr($fileset->id,0,-4);
-		    $textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
-	    }
+	    $textExists = \Schema::connection('sophia')->hasTable(substr($fileset->id,0,-4).'_vpl');
+	    if(!$textExists) $textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
 	    if(!$textExists) return $this->setStatusCode(404)->replyWithError("The data for this Bible is still being updated, please check back later");
 	    return $fileset->id;
     }
