@@ -170,6 +170,8 @@ class APIController extends Controller
 	    if(!$this->api) return view("errors.$status",compact('message','status'));
 	    $faces = ['⤜(ʘ_ʘ)⤏','¯\_ツ_/¯','ᗒ ͟ʖᗕ','ᖗ´• ꔢ •`ᖘ','|▰╭╮▰|'];
 
+
+	    if($this->v == 2) return [];
         return response()->json(['error' => [
             'message' => $message,
             'status code' => $status,
