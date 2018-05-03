@@ -134,11 +134,9 @@ class BooksController extends APIController
 
 	    $id = checkParam('dam_id');
 	    $bucket_id = checkParam('bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-	    $book_id = checkParam('book_id', null, 'optional');
+	    $book_id = checkParam('book_id');
 
-	    $fileset = BibleFileset::where('id',$id)->where('bucket_id',$bucket_id)->first();
-	    if(!$fileset) $fileset = BibleFileset::where('id',substr($id,0,-4))->where('bucket_id',$bucket_id)->first();
-
+	    $fileset = BibleFileset::where('id',$id)->orWhere('id', substr($id,0,-4))->where('bucket_id',$bucket_id)->first();
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the given ID");
 
 	    $book = Book::where('id_osis',$book_id)->orWhere('id',$book_id)->first();
@@ -147,7 +145,7 @@ class BooksController extends APIController
 	    $sophiaTable = $this->checkForSophiaTable($fileset);
 	    if(!is_string($sophiaTable)) return $sophiaTable;
 
-		$chapters = \DB::connection('sophia')->table($fileset->id.'_vpl')
+		$chapters = \DB::connection('sophia')->table($sophiaTable.'_vpl')
 			->when($book, function($q) use ($book) { $q->where('book',$book->id_usfx); })
 			->select(['chapter','book'])->distinct()->orderBy('chapter')->get()
 			->map(function ($chapter) use ($id, $book) {
@@ -155,6 +153,7 @@ class BooksController extends APIController
 				$chapter->bible_id = $id;
 				return $chapter;
 			});
+
 		return $this->reply(fractal()->collection($chapters)->serializeWith($this->serializer)->transformWith(new BooksTransformer()));
     }
 
