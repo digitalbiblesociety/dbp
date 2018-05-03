@@ -7,39 +7,84 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Bible\BibleFileTimestamp
  *
- * @property int $id
- * @property string $bible_fileset_id
- * @property string $bible_file_id
- * @property string $book_id
- * @property int|null $chapter_start
- * @property int|null $chapter_end
- * @property int|null $verse_start
- * @property int|null $verse_end
- * @property float $timestamp
- * @property string|null $created_at
- * @property string|null $updated_at
  * @property-read \App\Models\Bible\Book $book
  * @mixin \Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereBibleFileId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereBibleFilesetId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereBookId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereChapterEnd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereChapterStart($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereTimestamp($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereVerseEnd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereVerseStart($value)
- * @property string $set_id
- * @property int $file_id
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereFileId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileTimestamp whereSetId($value)
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="The Bible File Timestamp tag model partitions the file into verse by verse sections",
+ *     title="Bible File Timestamp",
+ *     @OAS\Xml(name="BibleFileTimestamp")
+ * )
+ *
  */
+
 class BibleFileTimestamp extends Model
 {
 	protected $table = 'bible_file_timestamps';
 	public $primaryKey = 'bible_file_id';
+
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="file_id",
+	 *   type="integer",
+	 *   description="The incrementing id of the file timestamp",
+	 *   minimum=1
+	 * )
+	 *
+     * @method static BibleFileTimestamp whereFileId($value)
+	 * @property int $id
+	 */
+	protected $id;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="verse_start",
+	 *   type="integer",
+	 *   description="The starting verse for the file timestamp",
+	 *   minimum=1
+	 * )
+	 *
+	 * @method static BibleFileTimestamp whereVerseStart($value)
+	 * @property int|null $verse_start
+	 *
+	 */
+	protected $verse_start;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="verse_end",
+	 *   type="integer",
+	 *   description="The ending verse for the file timestamp",
+	 *   minimum=1
+	 * )
+	 *
+	 * @method static BibleFileTimestamp whereVerseEnd($value)
+	 * @property int|null $verse_end
+	 *
+	 */
+	protected $verse_end;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="timestamp",
+	 *   type="integer",
+	 *   description="The ending verse for the file timestamp",
+	 *   minimum=1
+	 * )
+	 *
+     * @method static BibleFileTimestamp whereTimestamp($value)
+	 * @property float $timestamp
+	 *
+	 */
+	protected $timestamp;
+
+
 
 	public $incrementing = false;
 
