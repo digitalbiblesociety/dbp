@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class BibleFilesetCopyright
  *
- *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="BibleFilesetCopyright",
+ *     title="Bible Fileset Copyright",
+ *     @OAS\Xml(name="BibleFilesetCopyright")
+ * )
  *
  * @package App\Models\Bible
  */
@@ -102,8 +107,6 @@ class BibleFilesetCopyright extends Model
 
 
 	/**
-	 *
-	 *
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
 	 */

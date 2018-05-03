@@ -46,6 +46,14 @@ use App\Models\Language\Language;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible whereOpenAccess($value)
  * @property-read \App\Models\Bible\BibleTranslation $currentTranslation
  * @property-read \App\Models\Bible\BibleTranslation $vernacularTranslation
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="Bible",
+ *     title="Bible",
+ *     @OAS\Xml(name="Bible")
+ * )
+ *
  */
 class Bible extends Model
 {

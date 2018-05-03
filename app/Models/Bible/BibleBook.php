@@ -7,23 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Bible\BibleBook
  *
- * @property string $bible_id
- * @property string $book_id
- * @property string|null $name
- * @property string|null $name_short
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @property-read \App\Models\Bible\Bible $bible
- * @property-read \App\Models\Bible\Book $book
- * @method static BibleBook whereBibleId($value)
- * @method static BibleBook whereBookId($value)
- * @method static BibleBook whereChapters($value)
- * @method static BibleBook whereCreatedAt($value)
- * @method static BibleBook whereName($value)
- * @method static BibleBook whereNameShort($value)
- * @method static BibleBook whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property string|null $chapters
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="The Bible Book Model stores the vernacular book titles and chapters",
+ *     title="BibleBook",
+ *     @OAS\Xml(name="BibleBook")
+ * )
+ *
  */
 class BibleBook extends Model
 {
@@ -31,6 +23,70 @@ class BibleBook extends Model
     public $incrementing = false;
     public $fillable = ['abbr','book_id', 'name', 'name_short', 'chapters'];
     public $hidden = ['created_at','updated_at','bible_id'];
+
+
+	/**
+	 *
+	 * @OAS\Property(ref="#/components/schemas/Bible/properties/id")
+	 * @method static BibleFileset whereBibleId($value)
+	 * @property string $bible_id
+	 *
+	 */
+    protected $bible_id;
+
+	/**
+	 *
+	 * @OAS\Property(ref="#/components/schemas/Book/properties/id")
+	 * @method static BibleFileset whereBookId($value)
+	 * @property string $book_id
+	 *
+	 */
+	protected $book_id;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="name",
+	 *     description="The name of the book in the language of the bible",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static BibleFileset whereName($value)
+	 * @property string $name
+	 *
+	 */
+	protected $name;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="name_short",
+	 *     description="If the vernacular name has an abbreviated form, it will be stored hre",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static BibleFileset whereNameShort($value)
+	 * @property string $name_short
+	 *
+	 */
+	protected $name_short;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="chapters",
+	 *     description="A string of the chapters in the book separated by a comma",
+	 *     format="string",
+	 *     maxLength=491
+	 * )
+	 *
+	 * @method static BibleFileset whereChapters($value)
+	 * @property string $chapters
+	 *
+	 */
+	protected $chapters;
 
     public function bible()
     {

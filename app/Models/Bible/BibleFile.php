@@ -24,31 +24,180 @@ use App\Models\Language\Language;
  * @property-read \App\Models\Language\Language $language
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileTimestamp[] $timestamps
  * @mixin \Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereBookId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereChapterEnd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereChapterStart($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereFileName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereSetId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereVerseEnd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereVerseStart($value)
  * @property-read \App\Models\Bible\BibleFileset $fileset
  * @property string $hash_id
  * @property-read \App\Models\Bible\BibleFileTitle $title
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereHashId($value)
+ * @method static BibleFile whereHashId($value)
  * @property-read \App\Models\Bible\BibleFileTitle $currentTitle
  * @property int|null $file_size
  * @property int|null $duration
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereDuration($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFile whereFileSize($value)
  * @property-read \App\Models\Bible\BibleFilesetConnection $connections
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     required={"filename"},
+ *     description="The Bible File Model communicates information about biblical files stored in S3",
+ *     title="BibleFile",
+ *     @OAS\Xml(name="BibleFile")
+ * )
+ *
  */
 class BibleFile extends Model
 {
 	protected $table = "bible_files";
 	protected $hidden = ["created_at","updated_at"];
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="id",
+	 *   type="integer",
+	 *   description="The id",
+	 *   default="available",
+	 *   minimum=0,
+	 *   example=4
+	 * )
+	 *
+	 * @method static BibleFile whereId($value)
+	 * @property $id
+	 */
+	protected $id;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="hash_id",
+	 *   type="string",
+	 *   description="The hash_id",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static BibleFile whereHashId($value)
+	 * @property $hash_id
+	 */
+	protected $hash_id;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="book_id",
+	 *   type="string",
+	 *   description="The book_id",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static BibleFile whereBookId($value)
+	 * @property $book_id
+	 */
+	protected $book_id;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="chapter_start",
+	 *   type="integer",
+	 *   description="The chapter_start",
+	 *   default="available",
+	 *   minimum=0,
+	 *   maximum=150,
+	 *   example=4
+	 * )
+	 *
+	 * @method static BibleFile whereChapterStart($value)
+	 * @property $chapter_start
+	 */
+	protected $chapter_start;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="chapter_end",
+	 *   type="string",
+	 *   description="If the Bible File spans multiple chapters this field indicates the last chapter of the selection",
+	 *   default="available",
+	 *   nullable=true,
+	 *   minimum=0,
+	 *   maximum=150,
+	 *   example=5
+	 * )
+	 *
+	 * @method static BibleFile whereChapterEnd($value)
+	 * @property $chapter_end
+	 */
+	protected $chapter_end;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="verse_start",
+	 *   type="integer",
+	 *   description="The starting verse at which the BibleFile reference begins",
+	 *   default="available",
+	 *   minimum=1,
+	 *   maximum=176,
+	 *   example=5
+	 * )
+	 *
+	 * @method static BibleFile whereVerseStart($value)
+	 * @property $verse_start
+	 */
+	protected $verse_start;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="verse_end",
+	 *   type="string",
+	 *   description="The verse_end",
+	 *   default="available",
+	 *   nullable=true,
+	 *   minimum=1,
+	 *   maximum=176,
+	 *   example=5
+	 * )
+	 *
+	 * @method static BibleFile whereVerseEnd($value)
+	 * @property $verse_end
+	 */
+	protected $verse_end;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="file_name",
+	 *   type="string",
+	 *   description="The file_name",
+	 *   default="available",
+	 *   maxLength=191
+	 * )
+	 *
+	 * @method static BibleFile whereFileName($value)
+	 * @property $file_name
+	 */
+	protected $file_name;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="file_size",
+	 *   type="integer",
+	 *   description="The file size in kilobytes",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static BibleFile whereFileSize($value)
+	 * @property $file_size
+	 */
+	protected $file_size;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="duration",
+	 *   type="integer",
+	 *   description="If the file has a set length of time, this field indicates that time in milliseconds",
+	 *   default="available",
+	 *   nullable=true,
+	 *   minimum=0
+	 * )
+	 *
+	 * @method static BibleFile whereDuration($value)
+	 * @property $duration
+	 */
+	protected $duration;
 
 	public function language()
 	{

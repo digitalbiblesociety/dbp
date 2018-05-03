@@ -9,51 +9,15 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * App\Models\Bible\BibleFileset
- *
- * @property string $id
- * @property string $bible_id
- * @property string|null $variation_id
- * @property string $name
- * @property string $set_type
- * @property int $hidden
- * @property int $response_time
- * @property int|null $organization_id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @property-read \App\Models\Bible\Bible $bible
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFile[] $files
- * @property-read \App\Models\Organization\Organization|null $organization
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileSetPermission[] $permissions
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileSetPermission[] $users
  * @mixin \Eloquent
- * @property string $size_code
- * @property string $size_name
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereBibleId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereHidden($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereOrganizationId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereResponseTime($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSetType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSizeCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSizeName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereVariationId($value)
- * @property string $bucket_id
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereBucketId($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFilesetTag[] $meta
- * @property string|null $hash_id
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFilesetConnection[] $connections
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereHashId($value)
- * @property string $set_type_code
- * @property string $set_size_code
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSetSizeCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSetTypeCode($value)
- * @property string|null $set_copyright
- * @property string|null $ietf_code
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereIetfCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleFileset whereSetCopyright($value)
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="BibleFileset",
+ *     title="Bible Fileset",
+ *     @OAS\Xml(name="BibleFileset")
+ * )
+ *
  */
 class BibleFileset extends Model
 {
@@ -63,7 +27,95 @@ class BibleFileset extends Model
 	protected $keyType = "string";
 	protected $hidden = ["created_at","updated_at","response_time","hidden","bible_id","hash_id"];
 	protected $fillable = ['name','set_type','organization_id','variation_id','bible_id'];
-	
+
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="id",
+	 *   type="string",
+	 *   description="The fileset id",
+	 *   default="available",
+	 *   minLength=6,
+	 *   maxLength=16
+	 * )
+	 *
+	 * @method static BibleFileset whereId($value)
+	 * @property string $id
+	 */
+	protected $id;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="hash_id",
+	 *   type="string",
+	 *   description="The hash_id generated from the `bucket_id`, `set_type_code`, and `id`",
+	 *   default="available",
+	 *   minLength=12,
+	 *   maxLength=12
+	 * )
+	 *
+	 * @method static BibleFileset whereHashId($value)
+	 * @property hash_id $hash_id
+	 */
+	protected $hash_id;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="bucket_id",
+	 *   type="string",
+	 *   description="The bucket id of the AWS Bucket",
+	 *   default="available",
+	 *   maxLength=64
+	 * )
+	 *
+	 * @method static BibleFileset whereBucketId($value)
+	 * @property string $bucket_id
+	 */
+	protected $bucket_id;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="set_type_code",
+	 *   type="string",
+	 *   description="The set_type_code indicating the type of the fileset",
+	 *   default="available",
+	 *   maxLength=3
+	 * )
+	 *
+	 * @method static BibleFileset whereSetTypeCode($value)
+	 * @property string $set_type_code
+	 */
+	protected $set_type_code;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="set_size_code",
+	 *   type="string",
+	 *   description="The set_size_code indicating the size of the fileset",
+	 *   default="available",
+	 *   maxLength=3
+	 * )
+	 *
+	 * @method static BibleFileset whereSetSizeCode($value)
+	 * @property string $set_size_code
+	 */
+	protected $set_size_code;
+
+
+	/**
+	 *
+	 * @property Carbon $created_at
+	 * @property Carbon $updated_at
+	 *
+	 */
+	protected $created_at;
+	protected $updated_at;
+
 	public function copyright()
 	{
 		return $this->hasOne(BibleFilesetCopyright::class,'hash_id','hash_id');
