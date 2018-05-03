@@ -63,6 +63,21 @@ class CountryTransformer extends BaseTransformer
 	public function transformForV4($country)
 	{
 		switch($this->route) {
+
+			/**
+			 * @OAS\Response(
+			 *   response="v4_countries.all",
+			 *   description="The minimized country return for the all countries route",
+			 *   @OAS\MediaType(
+			 *     mediaType="application/json",
+			 *     @OAS\Schema(
+			 *          @OAS\Property(property="name",              ref="#/components/schemas/Country/properties/name"),
+			 *          @OAS\Property(property="continent_code",    ref="#/components/schemas/Country/properties/continent"),
+			 *          @OAS\Property(property="languages",         @OAS\Schema(type="array", default="available", example={"eng"="English","spa"="Spanish"})),
+			 *     )
+			 *   )
+			 * )
+			 */
 			case "v4_countries.all": {
 				return [
 					'name'           => $country->name,
@@ -91,6 +106,21 @@ class CountryTransformer extends BaseTransformer
 					"percent_literate"        => $country->percent_literate
 				];
 			}
+
+			/**
+			 * @OAS\Response(
+			 *   response="v4_countries.one",
+			 *   description="The minimized country return for the all countries route",
+			 *   @OAS\MediaType(
+			 *     mediaType="application/json",
+			 *     @OAS\Schema(
+			 *          @OAS\Property(property="name",              ref="#/components/schemas/Country/properties/name"),
+			 *          @OAS\Property(property="continent_code",    ref="#/components/schemas/Country/properties/continent"),
+			 *          @OAS\Property(property="languages",         @OAS\Schema(type="array", default="available", example={"eng"="English","spa"="Spanish"})),
+			 *     )
+			 *   )
+			 * )
+			 */
 			case "v4_countries.one": {
 				return [
 					'name'           => $country->name,

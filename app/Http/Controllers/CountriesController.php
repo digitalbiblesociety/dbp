@@ -24,6 +24,23 @@ class CountriesController extends APIController
 	 *
 	 * @return mixed $countries string - A JSON string that contains the status code and error messages if applicable.
 	 *
+	 * @OAS\Get(
+	 *     path="/countries/",
+	 *     tags={"Version 4"},
+	 *     summary="Returns Countries",
+	 *     description="Returns the List of Countries",
+	 *     operationId="v4_countries.all",
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_countries.all")
+	 *         )
+	 *     )
+	 * )
+	 *
+	 *
 	 */
     public function index()
     {
@@ -77,6 +94,29 @@ class CountriesController extends APIController
 	 * @link https://api.dbp.dev/countries/ru?key=1234&v=4&pretty - V4 Test Access
 	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_countries_one - V4 Test Docs
 	 *
+	 * @OAS\Get(
+	 *     path="/countries/{id}",
+	 *     tags={"Version 4"},
+	 *     summary="Returns a single Country",
+	 *     description="Returns a single Country",
+	 *     operationId="v4_countries.one",
+	 *     @OAS\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="The country ID",
+	 *         required=true,
+	 *         @OAS\Schema(ref="#/components/schemas/Country/properties/id")
+	 *     ),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_countries.one")
+	 *         )
+	 *     )
+	 * )
+	 *
 	 * @param  string $id
 	 *
 	 * @return mixed $countries string - A JSON string that contains the status code and error messages if applicable.
@@ -110,6 +150,30 @@ class CountriesController extends APIController
 		return view('countries.create');
 	}
 
+	/**
+	 * Store a new Country
+	 *
+	 * @version 4
+	 *
+	 * @OAS\Post(
+	 *     path="/countries/",
+	 *     tags={"Version 4"},
+	 *     summary="Create a new Country",
+	 *     description="Create a new Country",
+	 *     operationId="v4_countries.store",
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_countries.one")
+	 *         )
+	 *     )
+	 * )
+	 *
+	 * @return mixed $countries string - A JSON string that contains the status code and error messages if applicable.
+	 *
+	 */
 	public function store(Request $request)
 	{
 		$validator = $request->validate([
@@ -138,8 +202,30 @@ class CountriesController extends APIController
 	/**
 	 * Update the Specified Country
 	 *
-	 * @param $id
+	 * @OAS\Put(
+	 *     path="/countries/{id}",
+	 *     tags={"Version 4"},
+	 *     summary="Update a new Country",
+	 *     description="Update a new Country",
+	 *     operationId="v4_countries.update",
+	 *     @OAS\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="The country ID",
+	 *         required=true,
+	 *         @OAS\Schema(ref="#/components/schemas/Country/properties/id")
+	 *     ),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_countries.one")
+	 *         )
+	 *     )
+	 * )
 	 *
+	 * @param $id
 	 * @return View
 	 */
 	public function update($id)

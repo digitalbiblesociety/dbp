@@ -21,8 +21,25 @@ class BibleFileSetPermissionsController extends APIController
 	 * @link https://api.dbp.dev/bibles/filesets/AMKWBT/permissions?key=1234&v=4&pretty - V4 Test Access
 	 * @link https://dbp.dev/eng/docs/swagger/v4#/Bible/v4_bible_chapter2 - V4 Test Docs
 	 *
-	 * @param string $fileset_id - The fileset_id for which permissions are being queried
+	 * @OAS\Get(
+	 *     path="/bibles/filesets/{id}/permissions/",
+	 *     tags={"Version 4"},
+	 *     summary="Returns a list of permissions for a specific Fileset",
+	 *     description="Returns filtered permissions for a fileset dependent upon your authorization level and API key",
+	 *     operationId="v4_bible_filesets_permissions.index",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_bible_filesets_permissions.index")
+	 *         )
+	 *     )
+	 * )
 	 *
+	 * @param string $fileset_id - The fileset_id for which permissions are being queried
 	 * @return mixed $fileset string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 */

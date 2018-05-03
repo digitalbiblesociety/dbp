@@ -10,11 +10,18 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User\Key;
 class ArticlesController extends APIController
 {
-    /**
-     * Display a listing of the Articles.
-     *
-     * @return \Illuminate\Http\Response
-     */
+	/**
+	 * Returns Articles
+	 *
+	 * @version 4
+	 * @category v4_articles.index
+	 * @link http://bible.build/articles - V4 Access
+	 * @link https://api.dbp.dev/articles?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_articles_all - V4 Test Docs
+	 *
+	 * @return mixed $articles string - A JSON string that contains the status code and error messages if applicable.
+	 *
+	 */
     public function index()
     {
 		if(!$this->api) return view('articles.index');
@@ -22,22 +29,36 @@ class ArticlesController extends APIController
 		return $this->reply($articles);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+	/**
+	 * Create an Article UI Form
+	 *
+	 * @version 4
+	 * @category view_alphabets.create
+	 * @link http://bible.build/articles/create - V4 Access
+	 * @link https://api.dbp.dev/articles/create - V4 Test Access
+	 *
+	 * @return View - the Article Creation Form
+	 *
+	 */
     public function create()
     {
         return view('articles.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+	/**
+	 * Store an Article in the database
+	 *
+	 * @version 4
+	 * @category view_alphabets.store
+	 * @link http://bible.build/articles/create - V4 Access
+	 * @link https://api.dbp.dev/articles/create - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_articles_all - V4 Test Docs
+	 *
+	 * @param Request $request - Store
+	 *
+	 * @return mixed $articles string - A JSON string that contains the status code and error messages if applicable.
+	 *
+	 */
     public function store(Request $request)
     {
 	    $user = ($this->api) ? $this->validateUser() : $this->validateUser(\Auth::user());
@@ -57,23 +78,39 @@ class ArticlesController extends APIController
 	    return $this->reply(["message" => "Article Successfully Created"]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+	/**
+	 * Returns a single Article
+	 *
+	 * @version 4
+	 * @category v4_articles.show
+	 * @link http://bible.build/articles - V4 Access
+	 * @link https://api.dbp.dev/articles?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_articles_all - V4 Test Docs
+	 *
+	 * @param string $id
+	 *
+	 * @return mixed $articles string - A JSON string that contains the status code and error messages if applicable.
+	 *
+	 */
     public function show($id)
     {
-	    return view('articles.show');
+	    if(!$this->api) return view('articles.show');
+	    return $this->reply(Article::find($id));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+	/**
+	 * Edit Article UI Form
+	 *
+	 * @version 4
+	 * @category view_alphabets.edit
+	 * @link http://bible.build/articles/create - V4 Access
+	 * @link https://api.dbp.dev/articles/create - V4 Test Access
+	 *
+	 * @param string $id - the Article slug
+	 *
+	 * @return View - the Article Edit Form
+	 *
+	 */
     public function edit($id)
     {
 	    return view('articles.edit');

@@ -9,35 +9,118 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\Resource\Resource
  *
  * @mixin \Eloquent
- * @property int $id
- * @property string $iso
- * @property int $organization_id
- * @property string|null $source_id
- * @property string|null $cover
- * @property string|null $cover_thumbnail
- * @property string|null $date
- * @property string $type
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Resource\ResourceLink[] $links
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Resource\ResourceLink[] $translations
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereCover($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereCoverThumbnail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereIso($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereOrganizationId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereSourceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Resource\Resource whereUpdatedAt($value)
  * @property-read \App\Models\Organization\Organization $organization
  * @property-read \App\Models\Resource\ResourceTranslation $currentTranslation
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="Resource",
+ *     title="Resource",
+ *     @OAS\Xml(name="Resource")
+ * )
+ *
  */
 class Resource extends Model
 {
 
 	protected $hidden = ['created_at','updated_at'];
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="id",
+	 *     description="The Resource's incrementing id",
+	 *     format="int",
+	 *     minimum=0
+	 * )
+	 *
+	 * @method static Resource whereId($value)
+	 * @property int $id
+	 *
+	 */
+	protected $id;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="iso",
+	 *     description="The Resource's iso",
+	 *     format="string",
+	 *     minLength=3
+	 * )
+	 *
+	 * @method static Resource whereIso($value)
+	 * @property string $iso
+	 *
+	 */
+	protected $iso;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="organization_id",
+	 *     description="The Resource's organization_id",
+	 *     format="string"
+	 * )
+	 *
+	 * @method static Resource whereOrganizationId($value)
+	 * @property int $organization_id
+	 *
+	 */
+	protected $organization_id;
+
+	/**
+	 *
+	 * @method static Resource whereSourceId($value)
+	 * @property string|null $source_id
+	 *
+	 */
+	protected $source_id;
+	/**
+	 *
+	 * @method static Resource whereCover($value)
+	 * @property string|null $cover
+	 *
+	 */
+	protected $cover;
+	/**
+	 *
+	 * @method static Resource whereCoverThumbnail($value)
+	 * @property string|null $cover_thumbnail
+	 *
+	 */
+	protected $cover_thumbnail;
+	/**
+	 *
+	 * @method static Resource whereDate($value)
+	 * @property string|null $date
+	 *
+	 */
+	protected $date;
+	/**
+	 *
+	 * @method static Resource whereType($value)
+	 * @property string $type
+	 *
+	 */
+	protected $type;
+	/**
+	 *
+	 * @method static Resource whereCreatedAt($value)
+	 * @property \Carbon\Carbon|null $created_at
+	 *
+	 */
+	protected $created_at;
+	/**
+	 *
+	 * @method static Resource whereUpdatedAt($value)
+	 * @property \Carbon\Carbon|null $updated_at
+	 *
+	 */
+	protected $updated_at;
+
 
     public function links()
     {

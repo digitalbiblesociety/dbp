@@ -23,7 +23,33 @@ class BibleFileSetsController extends APIController
 {
 
 	/**
+	 *
+	 * @OAS\Get(
+	 *     path="/bibles/filesets/{id?}/",
+	 *     tags={"Version 4"},
+	 *     summary="Returns Bibles Filesets",
+	 *     description="Returns a list of bible filesets",
+	 *     operationId="v4_bible_filesets.show",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="The fileset ID",
+	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
+	 *     ),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_bible_filesets.show")
+	 *         )
+	 *     )
+	 * )
+	 *
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 *
 	 */
 	public function show($id = null)
     {
@@ -72,6 +98,33 @@ class BibleFileSetsController extends APIController
 	    return $this->reply(fractal()->collection($fileSetChapters)->serializeWith($this->serializer)->transformWith(new FileSetTransformer()));
     }
 
+	/**
+	 *
+	 * @OAS\Get(
+	 *     path="/bibles/filesets/{id}/download",
+	 *     tags={"Version 4"},
+	 *     summary="Download a Fileset",
+	 *     description="Returns a an entire fileset or a selected portion of a fileset for download",
+	 *     operationId="v4_bible_filesets.download",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="The fileset ID",
+	 *         required=true,
+	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
+	 *     ),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="The requested fileset as a zipped download",
+	 *         @OAS\MediaType(mediaType="application/zip")
+	 *     )
+	 * )
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 *
+	 */
     public function download($id)
     {
 	    $set_id = CheckParam('fileset_id',$id);
@@ -93,6 +146,33 @@ class BibleFileSetsController extends APIController
 	    Bucket::download($files,'s3_fcbh', 'dbp_dev', 5, $books);
     }
 
+	/**
+	 *
+	 * @OAS\Get(
+	 *     path="/bibles/filesets/{id}/podcast",
+	 *     tags={"Version 4"},
+	 *     summary="Audio Filesets as Podcasts",
+	 *     description="An audio Fileset in an RSS format suitable for consumption by iTunes",
+	 *     operationId="v4_bible_filesets.podcast",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="The fileset ID",
+	 *         required=true,
+	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
+	 *     ),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="The requested fileset as a rss compatible xml podcast",
+	 *         @OAS\MediaType(mediaType="application/xml")
+	 *     )
+	 * )
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 *
+	 */
 	public function podcast($id)
 	{
 		$bucket_id = checkParam('bucket', null, 'optional') ?? env('FCBH_AWS_BUCKET');
@@ -106,6 +186,41 @@ class BibleFileSetsController extends APIController
 	}
 
 	/**
+	 *
+	 * Copyright
+	 *
+	 * @OAS\Get(
+	 *     path="/bibles/filesets/{id}/copyright",
+	 *     tags={"Version 4"},
+	 *     summary="Fileset Copyright information",
+	 *     description="A fileset's copyright information and organizational connections",
+	 *     operationId="v4_bible_filesets.copyright",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="The fileset ID",
+	 *         required=true,
+	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
+	 *     ),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="The requested fileset copyright",
+	 *         @OAS\MediaType(mediaType="application/json")
+	 *     )
+	 * )
+	 *
+	 * @param string $id
+	 * @return mixed
+	 */
+	public function copyright($id)
+	{
+		$fileset = BibleFileset::with('copyright.organizations.logos')->find($id);
+		return $this->reply($fileset);
+	}
+
+	/**
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */
 	public function create()
@@ -116,7 +231,26 @@ class BibleFileSetsController extends APIController
 
 	/**
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 * @OAS\POST(
+	 *     path="/bibles/filesets/",
+	 *     tags={"Version 4"},
+	 *     summary="Create a brand new Fileset",
+	 *     description="Create a new Bible Fileset",
+	 *     operationId="v4_bible_filesets.store",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="The completed fileset",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_bible_filesets.show")
+	 *         )
+	 *     )
+	 * )
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 *
 	 */
 	public function store()
     {
@@ -149,7 +283,30 @@ class BibleFileSetsController extends APIController
 	/**
 	 * Returns the Available Media Types for Filesets within the API.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Collection|static[]
+	 * @OAS\GET(
+	 *     path="/bibles/filesets/media/types",
+	 *     tags={"Version 4"},
+	 *     summary="Available fileset types",
+	 *     description="A list of all the file types that exist within the filesets",
+	 *     operationId="v4_bible_filesets.types",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="The fileset types",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(type="object",example={"audio_drama"="Dramatized Audio","audio"="Audio","text_plain"="Plain Text","text_format"="Formatted Text","video"="Video","app"="Application"})
+	 *         ),
+	 *         @OAS\MediaType(
+	 *            mediaType="application/xml",
+	 *            @OAS\Schema(type="object",example={"audio_drama"="Dramatized Audio","audio"="Audio","text_plain"="Plain Text","text_format"="Formatted Text","video"="Video","app"="Application"})
+	 *         )
+	 *     )
+	 * )
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 *
 	 */
 	public function mediaTypes() {
 	    return $this->reply(BibleFilesetType::all()->pluck('name','set_type_code'));
@@ -168,6 +325,33 @@ class BibleFileSetsController extends APIController
 
 	/**
 	 * TODO: Validation and Save
+	 *
+	 *
+	 * @OAS\PUT(
+	 *     path="/bibles/filesets/{id}",
+	 *     tags={"Version 4"},
+	 *     summary="Available fileset",
+	 *     description="A list of all the file types that exist within the filesets",
+	 *     operationId="v4_bible_filesets.update",
+	 *     @OAS\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="The fileset ID",
+	 *         example="ENGESV",
+	 *         required=true,
+	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
+	 *     ),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="The fileset just edited",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_bible_filesets.show")
+	 *         )
+	 *     )
+	 * )
 	 *
 	 * @param $id
 	 *

@@ -8,20 +8,16 @@ use App\Models\Language\Language;
 /**
  * App\Models\Language\LanguageCode
  *
- * @property int $id
- * @property int $language_id
- * @property string $source
- * @property string $code
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Language\Language $language
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\LanguageCode whereCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\LanguageCode whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\LanguageCode whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\LanguageCode whereLanguageId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\LanguageCode whereSource($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\LanguageCode whereUpdatedAt($value)
  * @mixin \Eloquent
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="Information regarding alternative language coding systems",
+ *     title="Language Codes",
+ *     @OAS\Xml(name="LanguageCode")
+ * )
+ *
  */
 class LanguageCode extends Model
 {
@@ -29,6 +25,76 @@ class LanguageCode extends Model
     protected $table = 'language_codes';
     protected $fillable = ['code', 'source', 'glotto_id'];
 	protected $hidden = ['language_id'];
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="id",
+	 *   type="integer",
+	 *   description="The incrementing id of the language Code",
+	 *   default="available",
+	 *   minimum=0
+	 * )
+	 *
+	 * @property int $id
+	 * @method static LanguageCode whereId($value)
+	 *
+	 */
+	protected $id;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="language_id",
+	 *   type="integer",
+	 *   description="The foreign key pointing to the incrementing id of the language",
+	 *   default="available",
+	 *   minimum=0
+	 * )
+	 *
+	 * @property int $language_id
+	 * @method static LanguageCode whereLanguageId($value)
+	 *
+	 */
+	protected $language_id;
+	/**
+	 *
+	 *
+	 * @OAS\Property(
+	 *   title="source",
+	 *   type="integer",
+	 *   description="The source pointing to the incrementing id of the language",
+	 *   default="available",
+	 *   minimum=0
+	 * )
+	 *
+	 * @property string $source
+	 * @method static LanguageCode whereSource($value)
+	 *
+	 */
+	protected $source;
+	/**
+	 *
+	 * @property string $code
+	 * @method static LanguageCode whereCode($value)
+	 *
+	 */
+	protected $code;
+
+	/**
+	 *
+	 * @property Carbon $created_at
+	 * @method static LanguageCode whereCreatedAt($value)
+	 *
+	 */
+	protected $created_at;
+
+	/**
+	 *
+	 * @property Carbon $updated_at
+	 * @method static LanguageCode whereUpdatedAt($value)
+	 *
+	 */
+	protected $updated_at;
 
     public function language()
     {

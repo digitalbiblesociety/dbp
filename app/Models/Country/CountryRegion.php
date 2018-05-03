@@ -7,20 +7,57 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Country\CountryRegion
  *
- * @property string $country_id
- * @property int $language_id
- * @property string $name
- * @property string|null $created_at
- * @property string|null $updated_at
  * @mixin \Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryRegion whereCountryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryRegion whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryRegion whereLanguageId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryRegion whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\CountryRegion whereUpdatedAt($value)
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="Country Region",
+ *     title="Country Region",
+ *     @OAS\Xml(name="CountryRegion")
+ * )
+ *
  */
 class CountryRegion extends Model
 {
 	protected $table = 'country_regions';
 	public $timestamps = false;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="country_id",
+	 *   type="string",
+	 *   description="The ID of the ",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static CountryRegion whereCountryId($value)
+	 * @property string $country_id
+	 */
+	protected $country_id;
+	/**
+	 *
+	 * @method static CountryRegion whereLanguageId($value)
+	 * @property int $language_id
+	 */
+	protected $language_id;
+	/**
+	 *
+	 * @method static CountryRegion whereName($value)
+	 * @property string $name
+	 */
+	protected $name;
+	/**
+	 *
+	 * @method static CountryRegion whereCreatedAt($value)
+	 * @property string|null $created_at
+	 */
+	protected $created_at;
+	/**
+	 *
+	 * @method static CountryRegion whereUpdatedAt($value)
+	 * @property string|null $updated_at
+	 */
+	protected $updated_at;
+
 }

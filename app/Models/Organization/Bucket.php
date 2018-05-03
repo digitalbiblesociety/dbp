@@ -7,24 +7,78 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Organization\Bucket
  *
- * @property string $id
- * @property int $organization_id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @OAS\Schema (
+ *     type="object",
+ *     description="Bucket",
+ *     title="Bucket",
+ *     @OAS\Xml(name="Bucket")
+ * )
+ *
  * @property-read \App\Models\Organization\Organization $organization
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Bucket whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Bucket whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Bucket whereOrganizationId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Bucket whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property int $hidden
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Bucket whereHidden($value)
  */
 class Bucket extends Model
 {
 	public $primaryKey = 'id';
     public $incrementing = false;
     public $keyType = 'string';
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="id",
+	 *   type="string",
+	 *   description="The id of the alphabet",
+	 *   default="available",
+	 *   maxLength=64,
+	 *   minLength=24
+	 * )
+	 *
+	 * @method static Bucket whereId($value)
+	 * @property string $id
+	 *
+	 */
+	protected $id;
+
+	/**
+	 *
+	 * @OAS\Property(ref="#/components/schemas/Organization/properties/id")
+	 *
+	 * @method static Bucket whereOrganizationId($value)
+	 * @property int $organization_id
+	 *
+	 */
+	protected $organization_id;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="created_at",
+	 *   type="string",
+	 *   description="The timestamp at which the bucket was created",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static Bucket whereCreatedAt($value)
+	 * @property Carbon $created_at
+	 *
+	 */
+	protected $created_at;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="created_at",
+	 *   type="string",
+	 *   description="The timestamp at which the bucket was last updated",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static Bucket whereUpdatedAt($value)
+	 * @property Carbon $updated_at
+	 *
+	 */
+	protected $updated_at;
 
     public function organization()
     {

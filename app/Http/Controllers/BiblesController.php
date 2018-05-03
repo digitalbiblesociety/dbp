@@ -20,6 +20,7 @@ class BiblesController extends APIController
 {
 
 
+
 	/**
 	 *
 	 * Display a listing of the bibles.

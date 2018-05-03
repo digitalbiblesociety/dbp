@@ -13,91 +13,32 @@ use App\Models\Resource\Resource;
 /**
  * App\Models\Language\Language
  *
- * @property int $id
- * @property string|null $glotto_id
- * @property string|null $iso
- * @property string|null $iso2B
- * @property string|null $iso2T
- * @property string|null $iso1
- * @property string $name
- * @property string|null $autonym
- * @property string|null $level
- * @property string|null $maps
- * @property string|null $development
- * @property string|null $use
- * @property string|null $location
- * @property string|null $area
- * @property int|null $population
- * @property string|null $population_notes
- * @property string|null $notes
- * @property string|null $typology
- * @property string|null $writing
- * @property string|null $description
- * @property float|null $latitude
- * @property float|null $longitude
- * @property string|null $status
- * @property string|null $country_id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\Alphabet[] $alphabets
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\LanguageAltName[] $alternativeNames
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bibleCount
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bibles
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\LanguageClassification[] $classifications
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\LanguageCode[] $codes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Country\Country[] $countries
- * @property-read \App\Models\Language\LanguageTranslation $currentTranslation
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\LanguageDialect[] $dialects
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Video[] $films
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\AlphabetFont[] $fonts
- * @property-read \App\Models\Language\LanguageCode $iso639_2
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\Language[] $languages
- * @property-read \App\Models\Language\LanguageDialect $parent
- * @property-read \App\Models\Country\Country|null $primaryCountry
- * @property-read \App\Models\Country\CountryRegion $region
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Resource\Resource[] $resources
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\LanguageTranslation[] $translations
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereArea($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereAutonym($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereCountryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereDevelopment($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereGlottoId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereIso($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereIso1($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereIso2B($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereIso2T($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereLatitude($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereLevel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereLocation($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereLongitude($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereMaps($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereNotes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language wherePopulation($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language wherePopulationNotes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereTypology($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereUse($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereWriting($value)
  * @mixin \Eloquent
- * @property int|null $bible_status
- * @property int|null $bible_translation_need
- * @property int|null $bible_year
- * @property int|null $bible_year_newTestament
- * @property int|null $bible_year_portions
- * @property string|null $bible_sample_text
- * @property string|null $bible_sample_img
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleSampleImg($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleSampleText($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleTranslationNeed($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleYear($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleYearNewTestament($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Language whereBibleYearPortions($value)
+ * @property-read Alphabet[] $alphabets
+ * @property-read Bible[] $bibleCount
+ * @property-read Bible[] $bibles
+ * @property-read LanguageClassification[] $classifications
+ * @property-read LanguageCode[] $codes
+ * @property-read Country[] $countries
+ * @property-read LanguageTranslation $currentTranslation
+ * @property-read LanguageDialect[] $dialects
+ * @property-read Video[] $films
+ * @property-read AlphabetFont[] $fonts
+ * @property-read LanguageCode $iso639_2
+ * @property-read Language[] $languages
+ * @property-read LanguageDialect $parent
+ * @property-read Country|null $primaryCountry
+ * @property-read CountryRegion $region
+ * @property-read \App\Models\Resource\Resource[] $resources
+ * @property-read LanguageTranslation[] $translations
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="Language",
+ *     title="Language",
+ *     @OAS\Xml(name="Language")
+ * )
+ *
  */
 class Language extends Model
 {
@@ -107,6 +48,302 @@ class Language extends Model
 
     protected $hidden = ["pivot"];
     protected $fillable = ['glotto_id','iso','name','level','maps','development','use','location','area','population','population_notes','notes','typology','writing','description','family_pk','father_pk','child_dialect_count','child_family_count','child_language_count','latitude','longitude','pk','status','country_id','scope'];
+
+	/**
+	 * ID
+	 *
+	 * @OAS\Property(
+	 *     title="id",
+	 *     description="The incrementing ID for the language",
+	 *     format="integer"
+	 * )
+	 *
+	 * @method static Language whereId($value)
+	 * @property int $id
+	 */
+	protected $id;
+
+	/**
+	 * Glotto ID
+	 *
+	 * @OAS\Property(
+	 *     title="glotto_id",
+	 *     description="The glottolog ID for the language",
+	 *     format="string",
+	 *     @OAS\ExternalDocumentation(
+	 *         description="For more info please refer to the Glottolog",
+	 *         url="http://glottolog.org/"
+	 *     ),
+	 * )
+	 *
+	 * @method static Language whereGlottoId($value)
+	 * @property string|null $glotto_id
+	 *
+	 */
+	protected $glotto_id;
+
+	/**
+	 * Iso
+	 *
+	 * @OAS\Property(
+	 *     title="iso",
+	 *     description="The iso 639-3 for the language",
+	 *     format="string",
+	 *     @OAS\ExternalDocumentation(
+	 *         description="For more info",
+	 *         url="https://en.wikipedia.org/wiki/ISO_639-3"
+	 *     ),
+	 * )
+	 *
+	 * @property string|null $iso
+	 * @method static Language whereIso($value)
+	 *
+	 */
+	protected $iso;
+
+	/**
+	 * iso2B
+	 *
+	 * @OAS\Property(
+	 *     title="iso 2b",
+	 *     description="The iso 639-2, B variant for the language",
+	 *     format="integer"
+	 * )
+	 *
+	 * @property string $iso2B
+	 * @method static whereIso2b($value)
+	 */
+	protected $iso2B;
+
+	/**
+	 * iso2T
+	 *
+	 * @OAS\Property(
+	 *     title="iso 2t",
+	 *     description="The iso 639-2, T variant for the language",
+	 *     format="integer"
+	 * )
+	 *
+	 * @property string $iso2T
+	 * @method static whereIso2t($value)
+	 */
+	protected $iso2T;
+
+	/**
+	 * @OAS\Property(
+	 *     title="iso1",
+	 *     description="The iso 639-1 for the language",
+	 *     format="integer"
+	 * )
+	 *
+	 * @property string $iso2T
+	 * @method static whereIso2t($value)
+	 */
+	protected $iso1;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Name",
+	 *     description="The name of the language",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $name
+	 * @method static whereName($value)
+	 */
+	protected $name;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Name",
+	 *     description="The name of the language in the vernacular of that language",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $autonym
+	 * @method static whereAutonym($value)
+	 */
+	protected $autonym;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Maps",
+	 *     description="The general area where the language can be found",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $maps
+	 * @method static whereMaps($value)
+	 */
+	protected $maps;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Development",
+	 *     description="The development of the growth of the language",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $development
+	 * @method static whereDevelopment($value)
+	 */
+	protected $development;
+
+	/**
+	 * @OAS\Property(
+	 *     title="use",
+	 *     description="The use of the language",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $use
+	 * @method static whereUse($value)
+	 */
+	protected $use;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Location",
+	 *     description="The location of the language",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $location
+	 * @method static whereLocation($value)
+	 */
+	protected $location;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Area",
+	 *     description="The area of the language",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $area
+	 * @method static whereArea($value)
+	 */
+	protected $area;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Population",
+	 *     description="The estimated number of people that speak the language",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $population
+	 * @method static wherePopulation($value)
+	 */
+	protected $population;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Population",
+	 *     description="Any notes regarding the estimated number of people",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $population
+	 * @method static wherePopulation($value)
+	 */
+	protected $population_notes;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Notes",
+	 *     description="Any notes regarding the language",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $notes
+	 * @method static whereNotes($value)
+	 */
+	protected $notes;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Typology",
+	 *     description="The language's Typology",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $typology
+	 * @method static whereTypology($value)
+	 */
+	protected $typology;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Typology",
+	 *     description="The language's script",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $writing
+	 * @method static whereWriting($value)
+	 */
+	protected $writing;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Typology",
+	 *     description="The description of the language",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $description
+	 * @method static whereDescription($value)
+	 */
+	protected $description;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Latitude",
+	 *     description="A generalized latitude for the location of the language",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $latitude
+	 * @method static whereLatitude($value)
+	 */
+	protected $latitude;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Longitude",
+	 *     description="A generalized longitude for the location of the language",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $longitude
+	 * @method static whereLongitude($value)
+	 */
+	protected $longitude;
+
+	/**
+	 * @OAS\Property(
+	 *     title="Status",
+	 *     description="A status of the language",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $status
+	 * @method static whereStatus($value)
+	 */
+	protected $status;
+
+	/**
+	 * @OAS\Property(
+	 *     title="country_id",
+	 *     description="The primary country where the language is spoken",
+	 *     format="string"
+	 * )
+	 *
+	 * @property string $country_id
+	 * @method static whereCountryId($value)
+	 */
+	protected $country_id;
 
     public function alphabets()
     {

@@ -7,26 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Organization\OrganizationTranslation
  *
- * @property string $language_iso
- * @property int $organization_id
- * @property int $vernacular
- * @property int $alt
- * @property string $name
- * @property string|null $description
- * @property string|null $description_short
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Organization\Organization $organization
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationTranslation whereAlt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationTranslation whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationTranslation whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationTranslation whereDescriptionShort($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationTranslation whereLanguageIso($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationTranslation whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationTranslation whereOrganizationId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationTranslation whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationTranslation whereVernacular($value)
  * @mixin \Eloquent
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="The alternative names in different languages for an organization",
+ *     title="Organization Translation",
+ *     @OAS\Xml(name="OrganizationTranslation")
+ * )
+ *
  */
 class OrganizationTranslation extends Model
 {
@@ -35,6 +25,117 @@ class OrganizationTranslation extends Model
     protected $table = 'organization_translations';
     //public $incrementing = "false";
     protected $hidden = ['created_at','updated_at','organization_id','description'];
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="language_iso",
+	 *     description="The iso code for the translation language",
+	 *     format="string",
+	 *     minLength=3
+	 * )
+	 *
+	 * @method static OrganizationTranslation whereLanguageIso($value)
+	 * @property string $language_iso
+	 *
+	 */
+	protected $language_iso;
+
+	 /**
+	  *
+	  * @OAS\Property(
+	  *     title="id",
+	  *     description="The Organization's incrementing id",
+	  *     format="int",
+	  *     minimum=0
+	  * )
+	  *
+	  * @method static OrganizationTranslation whereOrganizationId($value)
+	  * @property int $organization_id
+	  *
+	  */
+	protected $organization_id;
+
+	 /**
+	  *
+	  * @OAS\Property(
+	  *     title="id",
+	  *     description="If the current translation is the primary/vernacular translation",
+	  *     format="boolean"
+	  * )
+	  *
+	  * @method static OrganizationTranslation whereVernacular($value)
+	  * @property int $vernacular
+	  *
+	  */
+	protected $vernacular;
+	 /**
+	  *
+	  * @OAS\Property(
+	  *     title="alt",
+	  *     description="If the current name is a secondary title for the organization",
+	  *     format="boolean"
+	  * )
+	  *
+	  * @method static OrganizationTranslation whereAlt($value)
+	  * @property int $alt
+	  *
+	  */
+	protected $alt;
+	 /**
+	  *
+	  * @OAS\Property(
+	  *     title="name",
+	  *     description="The current translated name for the organization",
+	  *     format="string",
+	  *     maxLength=191
+	  * )
+	  *
+	  * @method static OrganizationTranslation whereName($value)
+	  * @property string $name
+	  *
+	  */
+	protected $name;
+	 /**
+	  *
+	  * @OAS\Property(
+	  *     title="description",
+	  *     description="The current translated description for the organization",
+	  *     format="string"
+	  * )
+	  *
+	  * @method static OrganizationTranslation whereDescription($value)
+	  * @property string|null $description
+	  *
+	  */
+	protected $description;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="description_short",
+	 *     description="The current translated shortened description for the organization",
+	 *     format="string"
+	 * )
+	 *
+	 * @method static OrganizationTranslation whereDescriptionShort($value)
+	 * @property string|null $description_short
+	 *
+	 */
+	protected $description_short;
+	 /**
+	  *
+	  * @method static OrganizationTranslation whereCreatedAt($value)
+	  * @property \Carbon\Carbon|null $created_at
+	  */
+	protected $created_at;
+	 /**
+	  *
+	  * @method static OrganizationTranslation whereUpdatedAt($value)
+	  * @property \Carbon\Carbon|null $updated_at
+	  *
+	  */
+	protected $updated_at;
+
 
     public function organization()
     {

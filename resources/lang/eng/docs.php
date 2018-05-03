@@ -24,4 +24,6 @@ return [
 	the books of the Bible and those of the apocrypha without specifying a specific
 	version identifier. Verse count values are taken from the King James Version of the Bible and there may be some difference in versification schemes.',
 
+	'unicode_PDF' => "A url to a reference PDF for the alphabet"
+
 ];

@@ -8,7 +8,7 @@
         "php": ">=7.0",
         "albertcht/invisible-recaptcha": "^1.8",
         "aws/aws-sdk-php-laravel": "^3.1",
-        "barryvdh/laravel-ide-helper": "^2.4",
+        "darkaonline/l5-swagger": "5.6.*",
         "doctrine/dbal": "^2.6",
         "fideloper/proxy": "^4.0",
         "intouch/laravel-newrelic": "~2.0",
@@ -35,7 +35,8 @@
         "thiagoalessio/tesseract_ocr": "^1.1",
         "webpatser/laravel-uuid": "^3.0",
         "yajra/laravel-datatables-fractal": "^1.0",
-        "yajra/laravel-datatables-oracle": "^8.4"
+        "yajra/laravel-datatables-oracle": "^8.4",
+        "zircote/swagger-php": "3.*@dev"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -71,10 +72,7 @@
         ],
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-            "php artisan clear-compiled",
-            "php artisan ide-helper:generate",
-            "php artisan ide-helper:models --write",
-            "php artisan ide-helper:meta"
+            "php artisan clear-compiled"
         ],
         "post-autoload-dump": [
           "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

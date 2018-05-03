@@ -119,6 +119,16 @@ class LanguageTransformer extends BaseTransformer
 	 * @return array
 	 */
 	public function transformForV4(Language $language) {
+		/**
+		 * @OAS\Response(
+		 *   response="v4_languages.one",
+		 *   description="The Full alphabet return for the single alphabet route",
+		 *   @OAS\MediaType(
+		 *     mediaType="application/json",
+		 *     @OAS\Schema(ref="#/components/schemas/Language")
+		 *   )
+		 * )
+		 */
 		$full = checkParam('full', null, 'optional');
 		if($full) {
 			return [
@@ -139,6 +149,17 @@ class LanguageTransformer extends BaseTransformer
 				'resources'            => $language->resources
 			];
 		}
+
+		/**
+		 * @OAS\Response(
+		 *   response="v4_languages.all",
+		 *   description="The minimized language return for the single language route",
+		 *   @OAS\MediaType(
+		 *     mediaType="application/json",
+		 *     @OAS\Schema(ref="#/components/schemas/Language")
+		 *   )
+		 * )
+		 */
 		$return = [
 			'iso_2b'          => $language->iso2B,
 			'iso'             => $language->iso,

@@ -14,27 +14,6 @@ use App\Traits\Uuids;
 /**
  * App\Models\Organization\Organization
  *
- * @property int $id
- * @property string $slug
- * @property string|null $abbreviation
- * @property string|null $notes
- * @property string|null $primaryColor
- * @property string|null $secondaryColor
- * @property int|null $inactive
- * @property string|null $url_facebook
- * @property string|null $url_website
- * @property string|null $url_donate
- * @property string|null $url_twitter
- * @property string|null $address
- * @property string|null $address2
- * @property string|null $city
- * @property string|null $state
- * @property string|null $country
- * @property int|null $zip
- * @property string|null $phone
- * @property string|null $email
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bibles
  * @property-read \App\Models\Organization\OrganizationTranslation $currentTranslation
  * @property-read \App\Models\Organization\OrganizationRelationship $dbl
@@ -46,36 +25,273 @@ use App\Traits\Uuids;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Resource\Resource[] $resources
  * @property-read \App\Models\Organization\OrganizationTranslation $translations
  * @property-read \App\Models\Organization\OrganizationTranslation $vernacularTranslation
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereAbbreviation($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereAddress2($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereCity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereCountry($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereInactive($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereNotes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization wherePhone($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization wherePrimaryColor($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereSecondaryColor($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereSlug($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereState($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereUrlDonate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereUrlFacebook($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereUrlTwitter($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereUrlWebsite($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\Organization whereZip($value)
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesets
  * @property-read mixed $bibles_count
  * @property-read mixed $filesets_count
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="Organization",
+ *     title="Organization",
+ *     @OAS\Xml(name="Organization")
+ * )
+ *
  */
 class Organization extends Model
 {
     protected $fillable = ['name', 'email', 'password','facebook','twitter','website','address','phone'];
 	public $incrementing = false;
+
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="id",
+	 *     description="The Organization's incrementing id",
+	 *     format="int",
+	 *     minimum=0
+	 * )
+	 *
+	 * @method static Organization whereId($value)
+	 * @property int $id
+	 */
+	protected $id;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="slug",
+	 *     description="The Organization's slug",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization whereSlug($value)
+	 * @property $slug
+	 */
+	protected $slug;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="abbreviation",
+	 *     description="The Organization's abbreviation",
+	 *     format="string",
+	 *     maxLength=6
+	 * )
+	 *
+	 * @method static Organization whereAbbreviation($value)
+	 * @property $abbreviation
+	 */
+	protected $abbreviation;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="notes",
+	 *     description="Archivist notes about the organization being described",
+	 *     format="string"
+	 * )
+	 *
+	 * @method static Organization whereNotes($value)
+	 * @property $notes
+	 */
+	protected $notes;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="primaryColor",
+	 *     description="The Organization's primary color derived from their logo",
+	 *     format="string",
+	 *     maxLength=7,
+	 *     minLength=7
+	 * )
+	 *
+	 * @method static Organization wherePrimarycolor($value)
+	 * @property $primaryColor
+	 */
+	protected $primaryColor;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="secondaryColor",
+	 *     description="The Organization's secondary color derived from their logo",
+	 *     format="string",
+	 *     maxLength=7,
+	 *     minLength=7
+	 * )
+	 *
+	 * @method static Organization whereSecondarycolor($value)
+	 * @property $secondaryColor
+	 */
+	protected $secondaryColor;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="inactive",
+	 *     description="The Organization's inactive",
+	 *     format="boolean"
+	 * )
+	 *
+	 * @method static Organization whereInactive($value)
+	 * @property boolean $inactive
+	 */
+	protected $inactive;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="url_facebook",
+	 *     description="The URL to the organization's facebook page",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization whereUrlFacebook($value)
+	 * @property $url_facebook
+	 */
+	protected $url_facebook;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="url_website",
+	 *     description="The url to the Organization's website",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization whereUrlWebsite($value)
+	 * @property $url_website
+	 */
+	protected $url_website;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="url_donate",
+	 *     description="The url to the organization's donation page",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization whereUrlDonate($value)
+	 * @property $url_donate
+	 */
+	protected $url_donate;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="url_twitter",
+	 *     description="The url to the organization's twitter page",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization whereUrlTwitter($value)
+	 * @property $url_twitter
+	 */
+	protected $url_twitter;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="address",
+	 *     description="The Organization's address",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization whereAddress($value)
+	 * @property $address
+	 */
+	protected $address;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="address2",
+	 *     description="The Organization's second line of the address",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization whereAddress2($value)
+	 * @property $address2
+	 */
+	protected $address2;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="city",
+	 *     description="The organization's city",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization whereCity($value)
+	 * @property $city
+	 */
+	protected $city;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="state",
+	 *     description="The Organization's state",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization whereState($value)
+	 * @property $state
+	 */
+	protected $state;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="country",
+	 *     description="ThThe Organization's country",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization whereCountry($value)
+	 * @property $country
+	 */
+	protected $country;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="zip",
+	 *     description="The Organization's zip",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization whereZip($value)
+	 * @property $zip
+	 */
+	protected $zip;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="phone",
+	 *     description="The Organization's phone number",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization wherePhone($value)
+	 * @property $phone
+	 */
+	protected $phone;
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="email",
+	 *     description="The Organization's email address",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static Organization whereEmail($value)
+	 * @property $email
+	 */
+	protected $email;
+
     /**
      * The attributes excluded from the model's JSON form.
      *

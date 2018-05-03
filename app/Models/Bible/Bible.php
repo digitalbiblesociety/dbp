@@ -13,16 +13,6 @@ use App\Models\Language\Language;
 /**
  * App\Models\Bible\Bible
  *
- * @property string $id
- * @property string $iso
- * @property string $date
- * @property string|null $scope
- * @property string|null $script
- * @property string|null $derived
- * @property string|null $copyright
- * @property string|null $in_progress
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Language\Alphabet $alphabet
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleBook[] $books
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleEquivalent[] $dbl
@@ -41,16 +31,6 @@ use App\Models\Language\Language;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleTranslation[] $translations
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Translator[] $translators
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Video[] $videos
- * @method static Builder|Bible whereCopyright($value)
- * @method static Builder|Bible whereCreatedAt($value)
- * @method static Builder|Bible whereDate($value)
- * @method static Builder|Bible whereDerived($value)
- * @method static Builder|Bible whereId($value)
- * @method static Builder|Bible whereInProgress($value)
- * @method static Builder|Bible whereIso($value)
- * @method static Builder|Bible whereScope($value)
- * @method static Builder|Bible whereScript($value)
- * @method static Builder|Bible whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesetAudio
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesetFilm
@@ -83,6 +63,140 @@ class Bible extends Model
      * @var array
      */
     protected $hidden = ['created_at', 'updated_at', 'pivot'];
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="id",
+	 *   type="string",
+	 *   description="The Archivist created Bible ID string",
+	 *   default="available",
+	 *   minLength=6,
+	 *   maxLength=12,
+	 *   example="ENGESV"
+	 * )
+	 *
+	 * @method static Bible whereId($value)
+	 * @property string $id
+	 */
+	protected $id;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="iso",
+	 *   type="string",
+	 *   description="",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static Bible whereIso($value)
+	 * @property string $iso
+	 */
+	protected $iso;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="date",
+	 *   type="stringan",
+	 *   description="",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static Bible whereDate($value)
+	 * @property string $date
+	 */
+	protected $date;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="scope",
+	 *   type="stringn",
+	 *   description="",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static Bible whereScope($value)
+	 * @property string|null $scope
+	 */
+	protected $scope;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="script",
+	 *   type="string",
+	 *   description="",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static Bible whereScript($value)
+	 * @property string|null $script
+	 */
+	protected $script;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="derived",
+	 *   type="string",
+	 *   description="",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static Bible whereDerived($value)
+	 * @property string|null $derived
+	 */
+	protected $derived;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="copyright",
+	 *   type="string",
+	 *   description="",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static Bible whereCopyright($value)
+	 * @property string|null $copyright
+	 */
+	protected $copyright;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="in_progress",
+	 *   type="string",
+	 *   description="",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static Bible whereInProgress($value)
+	 * @property string|null $in_progress
+	 */
+	protected $in_progress;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="created_at",
+	 *   type="string",
+	 *   description="",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static Bible whereCreatedAt($value)
+	 * @property \Carbon\Carbon|null $created_at
+	 */
+	protected $created_at;
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="updated_at",
+	 *   type="string",
+	 *   description="",
+	 *   default="available"
+	 * )
+	 *
+	 * @method static Bible whereUpdatedAt($value)
+	 * @property \Carbon\Carbon|null $updated_at
+	 */
+	protected $updated_at;
 
     /**
      * @var array

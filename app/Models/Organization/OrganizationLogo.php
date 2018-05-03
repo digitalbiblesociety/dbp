@@ -7,25 +7,95 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Organization\OrganizationLogo
  *
- * @property int $organization_id
- * @property string|null $language_iso
- * @property string|null $url
- * @property int $icon
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Organization\Organization $organization
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationLogo whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationLogo whereIcon($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationLogo whereLanguageIso($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationLogo whereOrganizationId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationLogo whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Organization\OrganizationLogo whereUrl($value)
  * @mixin \Eloquent
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="The Logo for the Organization",
+ *     title="Organization Logo",
+ *     @OAS\Xml(name="OrganizationLogo")
+ * )
+ *
  */
 class OrganizationLogo extends Model
 {
 	protected $hidden = ['organization_id'];
 	protected $primaryKey = 'organization_logos';
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="id",
+	 *     description="The Organization's id",
+	 *     format="int",
+	 *     minimum=0
+	 * )
+	 *
+	 * @method static OrganizationLogo whereOrganizationId($value)
+	 * @property int $organization_id
+	 */
+	protected $organization_id;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="language_iso",
+	 *     description="If the organization's logo contains words, this iso field indicates what language they are.",
+	 *     format="string",
+	 *     minLength=3,
+	 *     maxLength=3,
+	 *     example="eng",
+	 *     nullable=true
+	 * )
+	 *
+	 * @method static OrganizationLogo whereLanguageIso($value)
+	 * @property string|null $language_iso
+	 */
+	protected $language_iso;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="url",
+	 *     description="The url to this organization's logo",
+	 *     format="string",
+	 *     maxLength=191
+	 * )
+	 *
+	 * @method static OrganizationLogo whereUrl($value)
+	 * @property string|null $url
+	 */
+	protected $url;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *     title="url",
+	 *     description="If true the url is pointed at a logo suitable for use as an icon",
+	 *     format="boolean"
+	 * )
+	 *
+	 * @method static OrganizationLogo whereIcon($value)
+	 * @property boolean $icon
+	 */
+	protected $icon;
+
+	/**
+	 *
+	 * @method static OrganizationLogo whereCreatedAt($value)
+	 * @property Carbon $created_at
+	 *
+	 */
+	protected $created_at;
+
+	/**
+	 *
+	 * @method static OrganizationLogo whereUpdatedAt($value)
+	 * @property Carbon $updated_at
+	 *
+	 */
+	protected $updated_at;
 
 	public function organization()
 	{

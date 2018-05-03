@@ -21,6 +21,23 @@ class LanguagesController extends APIController
      * @deprecated possibilities (optional); [true|false] When set to true the returned list is a combination of DBP languages and ISO languages not yet defined in DBP that meet any of the criteria.
      *
      * @return \Illuminate\Http\Response
+     *
+     * @OAS\Get(
+     *     path="/languages/",
+     *     tags={"Version 4"},
+     *     summary="Returns Languages",
+     *     description="Returns the List of Languages",
+     *     operationId="v4_languages.all",
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(
+     *            mediaType="application/json",
+     *            @OAS\Schema(ref="#/components/responses/v4_languages.all")
+     *         )
+     *     )
+     * )
+     *
      */
     public function index()
     {
@@ -75,6 +92,7 @@ class LanguagesController extends APIController
 	 * @param status (optional): [live|disabled|incomplete|waiting_review|in_review|discontinued] Publishing status of volume. The default is 'live'.
 	 * @param resolution (optional): [lo|med|hi] Currently used for video volumes as they can be available in different resolutions, basically conforming to the loose general categories of low, medium, and high resolution. Low resolution is geared towards devices with smaller screens.
 	 * @param organization_id: The id of an organization by which to filter the languages of available volumes.
+	 *
 	 *
 	 *
 	 * @return View|JSON
@@ -202,6 +220,22 @@ class LanguagesController extends APIController
 	/**
      * Store a newly created resource in storage.
      *
+	 * @OAS\Post(
+	 *     path="/languages/",
+	 *     tags={"Version 4"},
+	 *     summary="Create a new Language",
+	 *     description="Create a new Language",
+	 *     operationId="v4_languages.store",
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_languages.one")
+	 *         )
+	 *     )
+	 * )
+	 *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -215,7 +249,29 @@ class LanguagesController extends APIController
 
 	/**
 	 * @param $id
-	 * @param Language $language
+	 *
+	 * @OAS\Get(
+	 *     path="/languages/{id}",
+	 *     tags={"Version 4"},
+	 *     summary="Return a single Languages",
+	 *     description="Returns a single Language",
+	 *     operationId="v4_languages.one",
+	 *     @OAS\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="The languages ID",
+	 *         required=true,
+	 *         @OAS\Schema(ref="#/components/schemas/Language/properties/id")
+	 *     ),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_languages.all")
+	 *         )
+	 *     )
+	 * )
 	 *
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
@@ -245,6 +301,30 @@ class LanguagesController extends APIController
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
+     *
+     * @OAS\Put(
+     *     path="/languages/{id}",
+     *     tags={"Version 4"},
+     *     summary="Return a single Languages",
+     *     description="Returns a single Language",
+     *     operationId="v4_languages.update",
+     *     @OAS\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The languages ID",
+     *         required=true,
+     *         @OAS\Schema(ref="#/components/schemas/Language/properties/id")
+     *     ),
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(
+     *            mediaType="application/json",
+     *            @OAS\Schema(ref="#/components/responses/v4_languages.one")
+     *         )
+     *     )
+     * )
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)

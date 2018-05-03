@@ -75,9 +75,11 @@ class UsersController extends APIController
 
 	    if ($validator->fails()) return $this->replyWithError($validator->errors());
     	$user = User::create([
-    		'id'    => unique_random('users','id',32),
-    		'email' => $request->email,
-		    'name'  => $request->name,
+    		'id'       => unique_random('users','id',32),
+    		'nickname' => $request->nickname,
+		    'avatar'   => $request->avatar,
+    		'email'    => $request->email,
+		    'name'     => $request->name,
 		    'password' => Hash::make($request->password)
 	    ]);
 	    return $this->reply(["success" => "User created","user" => $user]);

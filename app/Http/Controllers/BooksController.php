@@ -19,6 +19,25 @@ class BooksController extends APIController
 	 * @category v4_bible.allBooks
 	 * @link http://api.dbp.dev/bibles/books?key=1234&v=4 - V4 Test Access URL
 	 * @link https://dbp.dev/eng/docs/swagger/v4#/Bible/v4_bible_books2 - V4 Test Docs
+	 *
+	 * @OAS\Get(
+	 *     path="/bibles/books/",
+	 *     tags={"Version 4"},
+	 *     summary="Returns the books of the Bible",
+	 *     description="Returns all of the books of the Bible both canonical and deuterocanonical",
+	 *     operationId="v4_bible.allBooks",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_bible.allBooks")
+	 *         )
+	 *     )
+	 * )
+	 *
 	 * @return Book string - A JSON string that contains the status code and error messages if applicable.
 	 */
 	public function index()

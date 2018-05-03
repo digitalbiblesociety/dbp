@@ -63,6 +63,11 @@ class BibleFileset extends Model
 	protected $keyType = "string";
 	protected $hidden = ["created_at","updated_at","response_time","hidden","bible_id","hash_id"];
 	protected $fillable = ['name','set_type','organization_id','variation_id','bible_id'];
+	
+	public function copyright()
+	{
+		return $this->hasOne(BibleFilesetCopyright::class,'hash_id','hash_id');
+	}
 
 	public function permissions()
 	{

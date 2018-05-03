@@ -109,8 +109,8 @@ class UserNotesController extends APIController
     public function handleTags(Request $request, $note)
     {
 	    $tags = collect(explode(',',$request->tags))->map(function ($tag) {
-		    if(strpos($tag, ':') !== false) {
-			    $tag = explode(':',$tag);
+		    if(strpos($tag, ':::') !== false) {
+			    $tag = explode(':::',$tag);
 			    return ['value' => ltrim($tag[1]), 'type'  => ltrim($tag[0])];
 		    } else {
 			    return ['value' => ltrim($tag), 'type'  => 'general'];

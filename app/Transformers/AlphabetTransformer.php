@@ -55,6 +55,23 @@ class AlphabetTransformer extends BaseTransformer
 	public function transformForV4(Alphabet $alphabet)
 	{
 		switch($this->route) {
+
+			/**
+			 * @OAS\Response(
+			 *   response="v4_alphabets.all",
+			 *   description="The minimized alphabet return for the all alphabets route",
+			 *   @OAS\MediaType(
+			 *     mediaType="application/json",
+			 *     @OAS\Schema(
+			 *          @OAS\Property(property="name",      ref="#/components/schemas/Alphabet/properties/name"),
+			 *          @OAS\Property(property="script",    ref="#/components/schemas/Alphabet/properties/script"),
+			 *          @OAS\Property(property="family",    ref="#/components/schemas/Alphabet/properties/family"),
+			 *          @OAS\Property(property="type",      ref="#/components/schemas/Alphabet/properties/type"),
+			 *          @OAS\Property(property="direction", ref="#/components/schemas/Alphabet/properties/direction"),
+			 *     )
+			 *   )
+			 * )
+			 */
 			case "v4_alphabets.all": {
 				return [
 					'name'      => $alphabet->name,
@@ -65,6 +82,17 @@ class AlphabetTransformer extends BaseTransformer
 				];
 				break;
 			}
+
+			/**
+			 * @OAS\Response(
+			 *   response="v4_alphabets.one",
+			 *   description="The Full alphabet return for the single alphabet route",
+			 *   @OAS\MediaType(
+			 *     mediaType="application/json",
+			 *     @OAS\Schema(ref="#/components/schemas/Alphabet")
+			 *   )
+			 * )
+			 */
 			case "v4_alphabets.one": {
 				return $alphabet->toArray();
 				break;

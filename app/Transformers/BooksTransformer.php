@@ -98,18 +98,39 @@ class BooksTransformer extends BaseTransformer
 	    return [];
     }
 
+	/**
+	 * @OAS\Response(
+	 *   response="v4_bible.allBooks",
+	 *   description="The books of the bible with codes",
+	 *   @OAS\MediaType(
+	 *     mediaType="application/json",
+	 *     @OAS\Schema(
+	 *          @OAS\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
+	 *          @OAS\Property(property="id_usfx",           ref="#/components/schemas/Book/properties/id_usfx"),
+	 *          @OAS\Property(property="id_osis",           ref="#/components/schemas/Book/properties/id_osis"),
+	 *          @OAS\Property(property="book_order",        ref="#/components/schemas/Book/properties/book_order"),
+	 *          @OAS\Property(property="testament_order",   ref="#/components/schemas/Book/properties/testament_order"),
+	 *          @OAS\Property(property="book_testament",    ref="#/components/schemas/Book/properties/book_testament"),
+	 *          @OAS\Property(property="book_group",        ref="#/components/schemas/Book/properties/book_group"),
+	 *          @OAS\Property(property="chapters",          ref="#/components/schemas/Book/properties/chapters"),
+	 *          @OAS\Property(property="verses",            ref="#/components/schemas/Book/properties/verses"),
+	 *          @OAS\Property(property="name",              ref="#/components/schemas/Book/properties/name"),
+	 *     )
+	 *   )
+	 * )
+	 */
 	public function transformForV4($book) {
 		return [
-			"id" => $book->id,
-			"id_usfx" => $book->id_usfx,
-			"id_osis" => $book->id_osis,
-			"book_order" => $book->book_order,
+			"id"              => $book->id,
+			"id_usfx"         => $book->id_usfx,
+			"id_osis"         => $book->id_osis,
+			"book_order"      => $book->book_order,
 			"testament_order" => $book->testament_order,
-			"book_testament" => $book->book_testament,
-			"book_group" => $book->book_group,
-			"chapters" => $book->chapters,
-			"verses" => $book->verses,
-			"name" => $book->name,
+			"book_testament"  => $book->book_testament,
+			"book_group"      => $book->book_group,
+			"chapters"        => $book->chapters,
+			"verses"          => $book->verses,
+			"name"            => $book->name,
 			"translations" => ($book->relationLoaded('translations')) ? $book->translations->mapWithKeys(function ($value) {
 				return [
 					$value->iso => [

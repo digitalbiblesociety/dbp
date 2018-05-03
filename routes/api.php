@@ -43,9 +43,11 @@
 	Route::name('v4_bible_filesets_permissions.index')->get('bibles/filesets/{id}/permissions',   'BibleFileSetPermissionsController@index');
 	Route::name('v4_bible_filesets_permissions.store')->get('bibles/filesets/{id}/permissions',   'BibleFileSetPermissionsController@store');
 	Route::name('v4_bible_filesets_permissions.update')->get('bibles/filesets/{id}/permissions',  'BibleFileSetPermissionsController@update');
+
 	Route::name('v4_bible_filesets.types')->get('bibles/filesets/media/types',                    'BibleFileSetsController@mediaTypes');
 	Route::name('v4_bible_filesets.podcast')->get('bibles/filesets/{id}/podcast',                 'BibleFileSetsController@podcast');
 	Route::name('v4_bible_filesets.download')->get('bibles/filesets/{id}/download',               'BibleFileSetsController@download');
+	Route::name('v4_bible_filesets.copyright')->get('bibles/filesets/{id}/copyright',             'BibleFileSetsController@copyright');
 	Route::name('v4_bible_filesets.show')->get('bibles/filesets/{id?}',                           'BibleFileSetsController@show');
 	Route::name('v4_bible_filesets.update')->put('bibles/filesets/{id}',                          'BibleFileSetsController@update');
 	Route::name('v4_bible_filesets.store')->post('bibles/filesets/',                              'BibleFileSetsController@store');
@@ -136,7 +138,6 @@
 	Route::name('v4_connections_grn.sync')->get('connections/grn/sync',                  'Connections\GRNController@sync');
 	Route::name('v4_connections_grn.index')->get('connections/grn/{iso}',                'Connections\GRNController@index');
 
-
 	// VERSION 4 | Resources
 
 	Route::name('v4_resources.index')->get('resources',                                      'ResourcesController@index');
@@ -144,3 +145,10 @@
 	Route::name('v4_resources.update')->put('resources/{resource_id}',                       'ResourcesController@update');
 	Route::name('v4_resources.store')->post('resources',                                     'ResourcesController@store');
 	Route::name('v4_resources.destroy')->delete('resources/{resource_id}',                   'ResourcesController@destroy');
+
+	// VERSION 4 | ARTICLES
+	Route::name('v4_articles.index')->get('articles',                                      'ArticlesController@index');
+	Route::name('v4_articles.show')->get('articles/{article_id}',                          'ArticlesController@show');
+	Route::name('v4_articles.update')->put('articles/{article_id}',                        'ArticlesController@update');
+	Route::name('v4_articles.store')->post('articles',                                     'ArticlesController@store');
+	Route::name('v4_articles.destroy')->delete('articles/{article_id}',                    'ArticlesController@destroy');

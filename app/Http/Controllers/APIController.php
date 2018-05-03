@@ -22,12 +22,38 @@ use Illuminate\Support\Facades\Log;
 class APIController extends Controller
 {
 
+	// Top Level Swagger Docs
+
+	/**
+	 * @OAS\Info(
+	 *     description="A Bible API",
+	 *     version="4.0.0",
+	 *     title="Koinos: Digital Bible Platform V4",
+	 *     termsOfService="http://bible.build/terms/",
+	 *     @OAS\Contact(email="jon@dbs.org"),
+	 *     @OAS\License(name="Apache 2.0",url="http://www.apache.org/licenses/LICENSE-2.0.html"),
+	 *     @OAS\Server(
+	 *         url="{schema}://api.dbp.dev",
+	 *         description="OpenApi parameters",
+	 *         @OAS\ServerVariable(
+	 *             serverVariable="schema",
+	 *             enum="['https']",
+	 *             default="https"
+	 *         )
+	 *     )
+	 * )
+	 *
+	 * @OAS\Parameter(parameter="version_number",name="v",in="path",description="The Version Number",required=true,@OAS\Schema(type="integer",example=4))
+	 * @OAS\Parameter(parameter="key",name="key",in="path",description="The Key granted to the api user upon sign up",required=true,@OAS\Schema(type="string",example="ar45g3h4ae644"))
+	 *
+	 */
+
     /**
      * The statusCode is a http status code. Every variation of this
      * must also be a http status code. There is a full list here
      * https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
      *
-     * @var int
+     * @var int $statusCode
      */
     protected $statusCode = 200;
     protected $isoPreference = false;
@@ -53,7 +79,7 @@ class APIController extends Controller
 			    }
 		    }
 	    }
-        $this->middleware('auth')->only(['create','edit']);
+        //$this->middleware('auth')->only(['create','edit']);
     }
 
     /**

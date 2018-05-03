@@ -8,37 +8,133 @@ use App\Models\Language\Alphabet;
 /**
  * App\Models\Language\AlphabetFont
  *
- * @property int $id
- * @property string $script_id
- * @property string $fontName
- * @property string $fontFileName
- * @property int|null $fontWeight
- * @property string|null $copyright
- * @property string|null $url
- * @property string|null $notes
- * @property int $italic
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @property-read \App\Models\Language\Alphabet $script
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetFont whereCopyright($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetFont whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetFont whereFontFileName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetFont whereFontName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetFont whereFontWeight($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetFont whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetFont whereItalic($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetFont whereNotes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetFont whereScriptId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetFont whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\AlphabetFont whereUrl($value)
  * @mixin \Eloquent
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="Alphabet Font",
+ *     title="Alphabet Font",
+ *     @OAS\Xml(name="AlphabetFont")
+ * )
+ *
  */
 class AlphabetFont extends Model
 {
     protected $table = 'alphabet_fonts';
     protected $hidden = ['iso'];
 
-    public function script()
+	/*
+	* @property int $id
+	* @method static AlphabetFont whereId($value)
+	*/
+	protected $id;
+
+	/*
+	* @property string $script_id
+	* @method static AlphabetFont whereScriptId($value)
+	*/
+	protected $script_id;
+
+	/**
+	* @property string $fontName
+	* @method static AlphabetFont whereFontName($value)
+	*
+	* @OAS\Property(
+	*     title="Alphabet Font Name",
+	*     description="The Font Name",
+	*     format="string",
+	*     maxLength=191
+	* )
+	*
+	*/
+	protected $fontName;
+
+	/**
+	* @property string $fontName
+	* @method static AlphabetFont whereFontName($value)
+	*
+	* @OAS\Property(
+	*     title="Alphabet Font File Name",
+	*     description="The File name for the font",
+	*     format="string",
+	*     maxLength=191
+	* )
+	*
+	*/
+	protected $fontFileName;
+
+	/**
+	* @property int|null $fontWeight
+	* @method static AlphabetFont whereFontWeight($value)
+	*
+	* @OAS\Property(
+	*     title="Alphabet Font Weight",
+	*     description="The boldness of the font",
+	*     nullable=true,
+	*     format="integer",
+	*     minimum=100
+	* )
+	*
+	*/
+	protected $fontWeight;
+
+	/**
+	* @property string|null $copyright
+	* @method static AlphabetFont whereCopyright($value)
+	*
+	* @OAS\Property(
+	*     title="Alphabet copyright",
+	*     description="The copyright of the font if any",
+	*     format="string",
+	*     nullable=true,
+	*     maxLength=191
+	* )
+	*
+	*/
+	protected $copyright;
+
+	/**
+	* @property string|null $url
+	* @method static AlphabetFont whereUrl($value)
+	*
+	* @OAS\Property(
+	*     title="Alphabet URL",
+	*     description="The url to the font file",
+	*     format="string",
+	*     maxLength=191
+	* )
+	*
+	*/
+	protected $url;
+
+	/**
+	* @property string|null $notes
+	* @method static AlphabetFont whereNotes($value)
+	*
+	* @OAS\Property(
+	*     title="Notes",
+	*     description="Any notes for the font file name",
+	*     format="string"
+	* )
+	*
+	*/
+	protected $notes;
+
+	/**
+	* @property int $italic
+	* @method static AlphabetFont whereItalic($value)
+	*
+	* @OAS\Property(
+	*     title="Italic",
+	*     description="Determines if the font file contains or supports italics",
+	*     format="boolean",
+	*     nullable=true
+	* )
+	*
+	*/
+	protected $italic;
+
+    public function alphabet()
     {
         return $this->belongsTo(Alphabet::class);
     }

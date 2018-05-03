@@ -14,7 +14,6 @@ use App\Models\User\Key;
 class AlphabetsController extends APIController
 {
 
-
 	/**
 	 * Returns Alphabets
 	 *
@@ -26,6 +25,23 @@ class AlphabetsController extends APIController
 	 *
 	 * @return mixed $alphabets string - A JSON string that contains the status code and error messages if applicable.
 	 *
+	 * @OAS\Get(
+	 *     path="/alphabets/",
+	 *     tags={"Version 4"},
+	 *     summary="Returns Alphabets",
+	 *     description="Returns a list of all alphabets",
+	 *     operationId="v4_alphabets.all",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_alphabets.all")
+	 *         )
+	 *     )
+	 * )
 	 */
 	public function index()
     {
@@ -45,6 +61,31 @@ class AlphabetsController extends APIController
 	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_alphabets_one - V4 Test Docs
 	 *
 	 * @return mixed $alphabets string - A JSON string that contains the status code and error messages if applicable.
+	 *
+	 * @OAS\Get(
+	 *     path="/alphabets/{id}",
+	 *     tags={"Version 4"},
+	 *     summary="Returns Alphabets",
+	 *     description="Returns a single alphabet",
+	 *     operationId="v4_alphabets.one",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="The alphabet ID",
+	 *         required=true,
+	 *         @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")
+	 *     ),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_alphabets.one")
+	 *         )
+	 *     )
+	 * )
 	 *
 	 */
 	public function show($id)
@@ -84,7 +125,26 @@ class AlphabetsController extends APIController
 	 *
 	 * @return mixed View|$alphabets
 	 *
+	 * @OAS\Post(
+	 *     path="/alphabets/",
+	 *     tags={"Version 4"},
+	 *     summary="Store a single Alphabet",
+	 *     description="Store a single alphabet",
+	 *     operationId="v4_alphabets.store",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_alphabets.one")
+	 *         )
+	 *     )
+	 * )
+	 *
 	 */
+
 	public function store(Request $request)
     {
 	    ($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
@@ -96,10 +156,10 @@ class AlphabetsController extends APIController
     }
 
 	/**
-	 * Stores a Single Alphabet
+	 * Update a Single Alphabet
 	 *
 	 * @version 4
-	 * @category v4_alphabets.store
+	 * @category v4_alphabets.update
 	 * @link http://bible.build/alphabets - V4 Access
 	 * @link https://api.dbp.dev/alphabets/Latn?key=1234&v=4&pretty - V4 Test Access
 	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_alphabets_store - V4 Test Docs
@@ -108,6 +168,31 @@ class AlphabetsController extends APIController
 	 * @param Request $request - The form body
 	 *
 	 * @return mixed View|$alphabet
+	 *
+	 * @OAS\Put(
+	 *     path="/alphabets/{id}",
+	 *     tags={"Version 4"},
+	 *     summary="Store a single Alphabet",
+	 *     description="Store a single alphabet",
+	 *     operationId="v4_alphabets.update",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="The alphabet ID",
+	 *         required=true,
+	 *         @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")
+	 *     ),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_alphabets.one")
+	 *         )
+	 *     )
+	 * )
 	 *
 	 */
     public function update(string $script_id, Request $request)
@@ -141,8 +226,6 @@ class AlphabetsController extends APIController
 
 	/**
 	 * Ensure the current User has permissions to alter the alphabets
-	 *
-	 * @param null $user
 	 *
 	 * @return \App\Models\User\User|mixed|null
 	 */
