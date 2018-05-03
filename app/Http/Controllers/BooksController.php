@@ -137,7 +137,8 @@ class BooksController extends APIController
 	    $book_id = checkParam('book_id', null, 'optional');
 
 	    $fileset = BibleFileset::where('id',$id)->where('bucket_id',$bucket_id)->first();
-	    if(!$fileset) BibleFileset::where('id',substr($id,0,-4))->where('bucket_id',$bucket_id)->first();
+	    if(!$fileset) $fileset = BibleFileset::where('id',substr($id,0,-4))->where('bucket_id',$bucket_id)->first();
+
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the given ID");
 
 	    $book = Book::where('id_osis',$book_id)->orWhere('id',$book_id)->first();
