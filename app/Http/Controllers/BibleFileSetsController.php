@@ -198,6 +198,14 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(
+	 *         name="iso",
+	 *         in="path",
+	 *         description="The language that the organization's name should be translated in",
+	 *         default=eng,
+	 *         required=true,
+	 *         @OAS\Schema(ref="#/components/schemas/Language/properties/iso")
+	 *     ),
+	 *     @OAS\Parameter(
 	 *         name="id",
 	 *         in="path",
 	 *         description="The fileset ID",
@@ -216,7 +224,8 @@ class BibleFileSetsController extends APIController
 	 */
 	public function copyright($id)
 	{
-		$fileset = BibleFileset::with('copyright.organizations.logos')->find($id);
+		$iso = checkParam('iso',null,'optional') ?? "eng";
+		$fileset = BibleFileset::with(['copyright.organizations.logos','copyright.organizations.translations' => function ($query) use ($iso) {$query->where('language_iso', $iso);}])->find($id);
 		return $this->reply($fileset);
 	}
 
