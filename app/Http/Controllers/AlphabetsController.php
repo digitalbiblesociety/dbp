@@ -29,19 +29,19 @@ class AlphabetsController extends APIController
 	 *     path="/alphabets/",
 	 *     tags={"Version 4"},
 	 *     summary="Returns Alphabets",
-	 *     description="Returns a list of all alphabets",
+	 *     description="Returns a list of the world's known scripts. This route will be useful to you if you'd like to query information about fonts, alphabets, and the world's writing systems. Some `BibleFileset` models may not display correctly without a font delivered by these via the `alphabets/{id}` route.",
 	 *     operationId="v4_alphabets.all",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(
-	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_alphabets.all")
-	 *         )
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_alphabets.all")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_alphabets.all")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_alphabets.all"))
 	 *     )
 	 * )
+     *
 	 */
 	public function index()
     {
@@ -65,8 +65,8 @@ class AlphabetsController extends APIController
 	 * @OAS\Get(
 	 *     path="/alphabets/{id}",
 	 *     tags={"Version 4"},
-	 *     summary="Returns Alphabets",
-	 *     description="Returns a single alphabet",
+	 *     summary="Return a single Alphabets",
+	 *     description="Returns a single alphabet along with whatever bibles are written with it and languages using it ",
 	 *     operationId="v4_alphabets.one",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
@@ -80,10 +80,9 @@ class AlphabetsController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(
-	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_alphabets.one")
-	 *         )
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_alphabets.one"))
 	 *     )
 	 * )
 	 *
@@ -136,10 +135,9 @@ class AlphabetsController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(
-	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_alphabets.one")
-	 *         )
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_alphabets.one"))
 	 *     )
 	 * )
 	 *
@@ -187,10 +185,9 @@ class AlphabetsController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(
-	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_alphabets.one")
-	 *         )
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_alphabets.one"))
 	 *     )
 	 * )
 	 *
