@@ -6,27 +6,103 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User\User;
 /**
  * App\Models\User\Account
- *
- * @property-read \App\Models\User\User $user
  * @mixin \Eloquent
- * @property string $user_id
- * @property string $provider
- * @property string $provider_user_id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Account whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Account whereProvider($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Account whereProviderUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Account whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Account whereUserId($value)
- * @property int $id
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Account whereId($value)
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="The Account Model describes the connections between Users and their social accounts",
+ *     title="Account",
+ *     @OAS\Xml(name="Account")
+ * )
+ *
  */
 class Account extends Model
 {
 	public $incrementing = false;
 	protected $table = 'user_accounts';
 	protected $fillable = ['user_id', 'provider_user_id', 'provider'];
+
+    /**
+     *
+     * @OAS\Property(
+     *   title="id",
+     *   type="integer",
+     *   description="The incrementing ID for the account",
+     *   minimum=0,
+     *   example="4"
+     * )
+     *
+     * @method static Account whereId($value)
+     * @property int $id
+     */
+    protected $id;
+
+    /**
+     *
+     * @OAS\Property(
+     *   title="user_id",
+     *   type="string",
+     *   description="The user id for the user who has the account being described"
+     * )
+     *
+     * @method static Account whereUserId($value)
+     * @property string $user_id
+     */
+    protected $user_id;
+
+    /**
+     *
+     * @OAS\Property(
+     *   title="provider_user_id",
+     *   type="string",
+     *   description="The social account provider that the user has logged in with",
+     *   example="facebook"
+     * )
+     *
+     * @method static Account whereProvider($value)
+     * @property string $provider
+     */
+    protected $provider;
+
+    /**
+     *
+     * @OAS\Property(
+     *   title="provider_user_id",
+     *   type="string",
+     *   description="The key of the provider for the account being described",
+     *   example=""
+     * )
+     *
+     * @method static Account whereProviderUserId($value)
+     * @property string $provider_user_id
+     */
+    protected $provider_user_id;
+
+    /**
+     *
+     * @OAS\Property(
+     *   title="created_at",
+     *   type="string",
+     *   description="The time the social account was originally connected to the user"
+     * )
+     *
+     * @method static Account whereCreatedAt($value)
+     * @property \Carbon\Carbon|null $created_at
+     */
+    protected $created_at;
+
+    /**
+     *
+     * @OAS\Property(
+     *   title="updated_at",
+     *   type="string",
+     *   description="The time the social account was last updated"
+     * )
+     *
+     * @method static Account whereUpdatedAt($value)
+     * @property \Carbon\Carbon|null $updated_at
+     */
+    protected $updated_at;
 
 	public function user()
 	{
