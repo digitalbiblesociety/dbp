@@ -32,6 +32,23 @@ class BooksTransformer extends BaseTransformer
 				];
 			}
 
+			/**
+			 * @OAS\Response(
+			 *   response="v2_library_book",
+			 *   description="The book return",
+			 *   @OAS\MediaType(
+			 *     mediaType="application/json",
+			 *     @OAS\Schema(
+			 *          @OAS\Property(property="dam_id",                ref="#/components/schemas/Bible/properties/id"),
+			 *          @OAS\Property(property="book_id",               ref="#/components/schemas/Book/properties/id"),
+			 *          @OAS\Property(property="book_name",             ref="#/components/schemas/Book/properties/name"),
+			 *          @OAS\Property(property="book_order",            ref="#/components/schemas/Book/properties/book_order"),
+			 *          @OAS\Property(property="number_of_chapters",    ref="#/components/schemas/Book/properties/chapters"),
+			 *          @OAS\Property(property="chapters",              ref="#/components/schemas/Book/properties/chapters"),
+			 *     )
+			 *   )
+			 * )
+			 */
 			case "v2_library_book": {
 				return [
 					"dam_id"             => $book->bible_id,

@@ -60,6 +60,23 @@ class BooksController extends APIController
 	 * @link http://api.dbp.dev/library/bookorder?key=1234&v=2&dam_id=AMKWBT&pretty - V2 Test
 	 * @link https://dbp.dev/eng/docs/swagger/v2#/Library/v2_library_book - V2 Test Docs
 	 *
+	 * @OAS\Get(
+	 *     path="/library/book/",
+	 *     tags={"Version 2"},
+	 *     summary="Returns books order",
+	 *     description="Gets the book order and code listing for a volume.",
+	 *     operationId="v2_library_book",
+	 *     @OAS\Parameter(name="dam_id",in="path",description="The bible ID",required=true, @OAS\Schema(ref="#/components/schemas/Bible/properties/id")),
+	 *     @OAS\Parameter(name="bucket_id",in="path",description="The bible ID", @OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_library_book"))
+	 *     )
+	 * )
+	 *
 	 * @param dam_id - the volume internal bible_id.
 	 *
 	 * @return Book string - A JSON string that contains the status code and error messages if applicable.
@@ -97,9 +114,25 @@ class BooksController extends APIController
 	 * @link http://api.dbp.dev/library/bookname?key=1234&v=2&language_code=ben - V2 Test Access
 	 * @link https://dbp.dev/eng/docs/swagger/v2#/Library/v2_library_bookname - V2 Test Docs
 	 *
-	 * @param language_code - The language code to filter the books by
+	 * @OAS\Get(
+	 *     path="/library/bookname/",
+	 *     tags={"Version 2"},
+	 *     summary="Returns book Names",
+	 *     description="Gets the book order and code listing for a volume.",
+	 *     operationId="v2_library_bookName",
+	 *     @OAS\Parameter(name="language_code",in="path",description="The language_code",required=true, @OAS\Schema(ref="#/components/schemas/Bible/properties/iso")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"}))
+	 *     )
+	 * )
 	 *
+	 * @param language_code - The language code to filter the books by
 	 * @return BookTranslation string - A JSON string that contains the status code and error messages if applicable.
+	 *
 	 */
 	public function bookNames()
     {
@@ -120,6 +153,24 @@ class BooksController extends APIController
 	 * @link http://dbt.io/library/chapter - V2 Access
 	 * @link https://api.dbp.dev/library/chapter?key=1234&v=2&dam_id=AMKWBT&book_id=MAT&pretty - V2 Test Access
 	 * @link https://dbp.dev/eng/docs/swagger/v2#/Library/v2_library_chapter - V2 Test Docs
+	 *
+	 * @OAS\Get(
+	 *     path="/library/chapter/",
+	 *     tags={"Version 2"},
+	 *     summary="Returns chapters for a book",
+	 *     description="Lists the chapters for a book or all books in a standard bible volume.",
+	 *     operationId="v2_library_chapter",
+	 *     @OAS\Parameter(name="dam_id",in="path",description="The bible_id",required=true, @OAS\Schema(ref="#/components/schemas/Bible/properties/id")),
+	 *     @OAS\Parameter(name="bucket_id",in="path",description="The bucket_id", @OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
+	 *     @OAS\Parameter(name="book_id",in="path",description="The book_id",required=true, @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"}))
+	 *     )
+	 * )
 	 *
 	 * @param dam_id - The Fileset ID to filter by
 	 * @param book_id - The USFM 2.4 or OSIS Book ID code

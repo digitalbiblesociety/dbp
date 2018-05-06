@@ -41,7 +41,7 @@ class BibleEquivalent extends Model
 	 *   title="equivalent_id",
 	 *   type="string",
 	 *   description="The equivalent_id",
-	 *   default="available",
+
 	 *   maxLength=191,
 	 *   example="FreGeneve1669"
 	 * )
@@ -66,7 +66,7 @@ class BibleEquivalent extends Model
 	 *   title="type",
 	 *   type="string",
 	 *   description="The type of connection that the equivalent id refers to",
-	 *   default="available",
+
 	 *   maxLength=191,
 	 *   example="desktop-app"
 	 * )
@@ -82,7 +82,7 @@ class BibleEquivalent extends Model
 	 *   title="site",
 	 *   type="string",
 	 *   description="The name of the site/organization/app where the equivalent id is based",
-	 *   default="available",
+
 	 *   maxLength=191,
 	 *   example="eSword"
 	 * )
@@ -98,7 +98,7 @@ class BibleEquivalent extends Model
 	 *   title="site",
 	 *   type="string",
 	 *   description="Additional metadata affecting the type of equivalent connection",
-	 *   default="available",
+
 	 *   maxLength=191,
 	 *   example="Authorized Version with Strong's"
 	 * )

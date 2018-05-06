@@ -59,11 +59,7 @@ class Resource extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
-	 *     title="organization_id",
-	 *     description="The Resource's organization_id",
-	 *     format="string"
-	 * )
+	 * @OAS\Property(ref="#/components/schemas/Organization/properties/id")
 	 *
 	 * @method static Resource whereOrganizationId($value)
 	 * @property int $organization_id
@@ -73,6 +69,14 @@ class Resource extends Model
 
 	/**
 	 *
+	 * @OAS\Property(
+	 *   title="source_id",
+	 *   type="string",
+	 *   description="The owning organization's tracking id for the resource",
+	 *   default=null,
+	 *   nullable=true
+	 * )
+	 *
 	 * @method static Resource whereSourceId($value)
 	 * @property string|null $source_id
 	 *
@@ -80,32 +84,68 @@ class Resource extends Model
 	protected $source_id;
 	/**
 	 *
+	 * @OAS\Property(
+	 *   title="cover",
+	 *   type="string",
+	 *   description="The url to the main cover art for the resource",
+	 *   default=null,
+	 *   nullable=true
+	 * )
+	 *
 	 * @method static Resource whereCover($value)
 	 * @property string|null $cover
 	 *
 	 */
 	protected $cover;
+
 	/**
+	 *
+	 * @OAS\Property(
+	 *   title="cover_thumbnail",
+	 *   type="string",
+	 *   description="The url to the thumbnail cover art for the resource",
+	 *   default=null,
+	 *   nullable=true
+	 * )
 	 *
 	 * @method static Resource whereCoverThumbnail($value)
 	 * @property string|null $cover_thumbnail
 	 *
 	 */
 	protected $cover_thumbnail;
+
 	/**
+	 *
+	 * @OAS\Property(
+	 *   title="date",
+	 *   type="string",
+	 *   description="The date the resource was originally published",
+	 *   default=null,
+	 *   nullable=true
+	 * )
 	 *
 	 * @method static Resource whereDate($value)
 	 * @property string|null $date
 	 *
 	 */
 	protected $date;
+
 	/**
+	 *
+	 * @OAS\Property(
+	 *   title="type",
+	 *   type="string",
+	 *   description="The type of media the resource can be categorized as",
+	 *   default=null,
+	 *   nullable=true
+	 * )
 	 *
 	 * @method static Resource whereType($value)
 	 * @property string $type
 	 *
 	 */
 	protected $type;
+
 	/**
 	 *
 	 * @method static Resource whereCreatedAt($value)
@@ -113,6 +153,7 @@ class Resource extends Model
 	 *
 	 */
 	protected $created_at;
+
 	/**
 	 *
 	 * @method static Resource whereUpdatedAt($value)

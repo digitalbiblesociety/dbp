@@ -140,6 +140,24 @@ class BiblesController extends APIController
 	 * @param name (optional): Get the entry for a part of a version name in either native language or English.
 	 * @param sort_by (optional): [code|name|english] Primary criteria by which to sort. 'name' refers to the native language name. The default is 'english'.
 	 *
+	 * @OAS\Get(
+	 *     path="/library/version",
+	 *     tags={"Version 2"},
+	 *     summary="Returns Audio File path information",
+	 *     description="This call returns the file path information for audio files for a volume. This information can be used with the response of the /audio/location call to create a URI to retrieve the audio files.",
+	 *     operationId="v2_library_version",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(name="code", in="path", description="", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="name", in="path", description="", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+	 *     @OAS\Parameter(name="sort_by", in="path", description="", @OAS\Schema(type="string",title="encoding")),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_library_version"))
+	 *     )
+	 * )
+	 *
 	 * @return json
 	 */
 	public function libraryVersion()
@@ -147,11 +165,25 @@ class BiblesController extends APIController
 		$code = checkParam('code', null, 'optional');
 		$name = checkParam('name', null, 'optional');
 		$sort = checkParam('sort_by', null, 'optional');
-		$versions = collect(json_decode(file_get_contents(public_path('static/version_listing.json'))));
-		if(isset($code)) $versions = $versions->where('version_code',$code)->flatten();
-		if(isset($name)) $versions = $versions->filter(function ($item) use ($name) { return false !== stristr($item->version_name, $name);})->flatten();
-		if(isset($sort)) $versions = $versions->sortBy($sort);
-		return $this->reply($versions);
+		$versions = BibleFileset::with('bible.translations')->has('bible.translations')->where('bucket_id',env('FCBH_AWS_BUCKET'))
+			->when($code, function($q) use ($code) {
+				$q->where('id', $code);
+			})->when($sort, function($q) use ($sort) {
+				$q->orderBy($sort);
+			})->get();
+
+		foreach ($versions as $version) {
+			$currentTranslations = $version->bible->first();
+			$version_name = $currentTranslations->translations->where('iso','!=','eng')->first();
+			$english_name = $currentTranslations->translations->where('iso','=','eng')->first();
+			$output[] = [
+				'version_code' => substr($version->id,3,3),
+				'version_name' => isset($version_name) ? ($version_name->name != $english_name->name) ? $version_name->name : "" : "",
+				'english_name' => $english_name ? $english_name->name : "",
+			];
+		}
+
+		return $this->reply($output);
 	}
 
 	/**

@@ -29,8 +29,8 @@ class Bucket extends Model
 	 * @OAS\Property(
 	 *   title="id",
 	 *   type="string",
-	 *   description="The id of the alphabet",
-	 *   default="available",
+	 *   description="The id of the Bucket",
+	 *   default="dbp-dev",
 	 *   maxLength=64,
 	 *   minLength=24
 	 * )
@@ -68,7 +68,7 @@ class Bucket extends Model
 	/**
 	 *
 	 * @OAS\Property(
-	 *   title="created_at",
+	 *   title="updated_at",
 	 *   type="string",
 	 *   description="The timestamp at which the bucket was last updated",
 	 *   default="available"

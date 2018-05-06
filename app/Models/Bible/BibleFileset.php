@@ -35,7 +35,7 @@ class BibleFileset extends Model
 	 *   title="id",
 	 *   type="string",
 	 *   description="The fileset id",
-	 *   default="available",
+
 	 *   minLength=6,
 	 *   maxLength=16
 	 * )
@@ -51,7 +51,7 @@ class BibleFileset extends Model
 	 *   title="hash_id",
 	 *   type="string",
 	 *   description="The hash_id generated from the `bucket_id`, `set_type_code`, and `id`",
-	 *   default="available",
+
 	 *   minLength=12,
 	 *   maxLength=12
 	 * )
@@ -67,7 +67,7 @@ class BibleFileset extends Model
 	 *   title="bucket_id",
 	 *   type="string",
 	 *   description="The bucket id of the AWS Bucket",
-	 *   default="available",
+
 	 *   maxLength=64
 	 * )
 	 *
@@ -82,7 +82,7 @@ class BibleFileset extends Model
 	 *   title="set_type_code",
 	 *   type="string",
 	 *   description="The set_type_code indicating the type of the fileset",
-	 *   default="available",
+
 	 *   maxLength=3
 	 * )
 	 *
@@ -97,7 +97,7 @@ class BibleFileset extends Model
 	 *   title="set_size_code",
 	 *   type="string",
 	 *   description="The set_size_code indicating the size of the fileset",
-	 *   default="available",
+
 	 *   maxLength=3
 	 * )
 	 *

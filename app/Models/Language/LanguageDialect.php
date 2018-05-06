@@ -34,7 +34,6 @@ class LanguageDialect extends Model
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The incrementing id of the language",
-	 *   default="available",
 	 *   minimum=0
 	 * )
 	 *
@@ -49,7 +48,6 @@ class LanguageDialect extends Model
 	 *   title="language_id",
 	 *   type="integer",
 	 *   description="The foreign key pointing at the language id, indicating the parent language",
-	 *   default="available",
 	 *   minimum=0
 	 * )
 	 *
@@ -64,7 +62,6 @@ class LanguageDialect extends Model
 	 *   title="dialect_id",
 	 *   type="integer",
 	 *   description="The foreign key pointing at the language id, indicating the dialect",
-	 *   default="available",
 	 *   minimum=0
 	 * )
 	 *

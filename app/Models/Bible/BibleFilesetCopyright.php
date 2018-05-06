@@ -32,7 +32,7 @@ class BibleFilesetCopyright extends Model
 	 *   title="hash id",
 	 *   type="string",
 	 *   description="The hash value for the created fileset",
-	 *   default="available",
+
 	 *   minLength=12,
 	 *   maxLength=12,
 	 *   example="ENGESV"
@@ -50,7 +50,7 @@ class BibleFilesetCopyright extends Model
 	 *   title="copyright_date",
 	 *   type="string",
 	 *   description="The copyright date created copyright",
-	 *   default="available",
+
 	 *   example="ENGESV"
 	 * )
 	 *

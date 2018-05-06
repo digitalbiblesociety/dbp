@@ -78,7 +78,6 @@ class Bible extends Model
 	 *   title="id",
 	 *   type="string",
 	 *   description="The Archivist created Bible ID string",
-	 *   default="available",
 	 *   minLength=6,
 	 *   maxLength=12,
 	 *   example="ENGESV"

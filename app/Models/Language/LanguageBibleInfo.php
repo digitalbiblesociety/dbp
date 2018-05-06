@@ -23,90 +23,96 @@ class LanguageBibleInfo extends Model
     public $table = 'language_bibleInfo';
 
     /**
-	 * @property int $language_id
-     * @method static LanguageBibleInfo whereLanguageId($value)
      *
      * @OAS\Property(
-     *     title="Language ID",
-     *     description="The foreign key matching the incrementing language ID",
+     *     title="language_id",
      *     format="integer",
+     *     description="The foreign key matching the incrementing language ID",
      *     minimum=0
      * )
+     *
+     * @property int $language_id
+     * @method static LanguageBibleInfo whereLanguageId($value)
      *
     */
 	protected $language_id;
 
      /**
-     * @property int|null $bible_status
-     * @method static LanguageBibleInfo whereBibleStatus($value)
-     *
-     * @OAS\Property(
-     *     title="Bible Status",
-     *     description="The numeral written out the vernacular translations",
-     *     format="integer",
-     *     minimum=0
-     * )
+      *
+      * @OAS\Property(
+      *     title="bible_status",
+      *     format="integer",
+      *     description="The numeral written out the vernacular translations",
+      *     nullable=true,
+      *     minimum=0
+      * )
+      *
+      * @property int|null $bible_status
+      * @method static LanguageBibleInfo whereBibleStatus($value)
+      *
      */
 	protected $bible_status;
 
     /**
      *
-     * @property int|null $bible_translation_need
-     * @method static LanguageBibleInfo whereBibleTranslationNeed($value)
      *
      * @OAS\Property(
-     *     title="Bible Status",
-     *     description="The numeral written out the vernacular translations",
+     *     title="bible_translation_need",
      *     format="integer",
-     *     minimum=0,
-     *     nullable=true
+     *     description="The numeral written out the vernacular translations",
+     *     nullable=true,
+     *     minimum=0
      * )
+     *
+     * @property int|null $bible_translation_need
+     * @method static LanguageBibleInfo whereBibleTranslationNeed($value)
      *
 	*/
 	protected $bible_translation_need;
 
 	/**
      *
-     * @property int|null $bible_year
-     * @method static LanguageBibleInfo whereBibleYear($value)
 	 *
 	 * @OAS\Property(
-	 *     title="Bible Year",
-	 *     description="The year a full Bible was published",
+	 *     title="bible_year",
 	 *     format="integer",
+	 *     description="The year a full Bible was published",
 	 *     minimum=0,
 	 *     nullable=true
 	 * )
      *
+	 * @property int|null $bible_year
+	 * @method static LanguageBibleInfo whereBibleYear($value)
+	 *
 	*/
 	protected $bible_year;
      /**
       *
-      * @property int|null $bible_year_newTestament
-      * @method static LanguageBibleInfo whereBibleYearNewTestament($value)
-      *
       * @OAS\Property(
-      *     title="Bible Year New Testament",
-      *     description="The year a new testament Bible was published",
+      *     title="bible_year_newTestament",
       *     format="integer",
+      *     description="The year a new testament Bible was published",
       *     minimum=0,
       *     nullable=true
       * )
+      *
+      * @property int|null $bible_year_newTestament
+      * @method static LanguageBibleInfo whereBibleYearNewTestament($value)
       *
 	*/
 	protected $bible_year_newTestament;
      /**
-      * @property int|null $bible_year_portions
-      * @method static LanguageBibleInfo whereBibleYearPortions($value)
       *
       * @OAS\Property(
-      *     title="Bible Year Portions",
-      *     description="The year portions of a Bible were published",
+      *     title="bible_year_portions",
       *     format="integer",
+      *     description="The year portions of a Bible were published",
       *     minimum=0,
       *     nullable=true
       * )
       *
+      * @property int|null $bible_year_portions
+      * @method static LanguageBibleInfo whereBibleYearPortions($value)
       *
     */
 	protected $bible_year_portions;
@@ -114,62 +120,64 @@ class LanguageBibleInfo extends Model
 	/**
 	 *
 	 *
-	 * @property string|null $bible_sample_text
-	 * @method static LanguageBibleInfo whereBibleSampleText($value)
-	 *
 	 * @OAS\Property(
-	 *     title="Bible Sample Text",
-	 *     description="A selection of sample text",
+	 *     title="bible_sample_text",
 	 *     format="string",
+	 *     description="A selection of sample text",
 	 *     maxLength=191,
 	 *     nullable=true
 	 * )
+	 *
+	 * @property string|null $bible_sample_text
+	 * @method static LanguageBibleInfo whereBibleSampleText($value)
 	 *
     */
 	protected $bible_sample_text;
 
      /**
       *
-      * @property string|null $bible_sample_img
-      * @method static LanguageBibleInfo whereBibleSampleImg($value)
       *
       * @OAS\Property(
-      *     title="Bible Sample Image",
-      *     description="A sample image of the bible text for comparison",
+      *     title="bible_sample_img",
       *     format="string",
+      *     description="A sample image of the bible text for comparison",
       *     maxLength=191,
       *     nullable=true
       * )
       *
+      * @property string|null $bible_sample_img
+      * @method static LanguageBibleInfo whereBibleSampleImg($value)
+      *
     */
 	protected $bible_sample_img;
 	/**
-	 * @property \Carbon\Carbon|null $created_at
-	 * @method static LanguageBibleInfo whereCreatedAt($value)
 	 *
 	 * @OAS\Property(
-	 *     title="Bible Info Creation Timestamp",
-	 *     description="The timestamp for the creation of the language bible information model",
+	 *     title="created_at",
 	 *     format="string",
+	 *     description="The timestamp for the creation of the language bible information model",
 	 *     maxLength=191,
 	 *     nullable=true
 	 * )
 	 *
+	 * @property \Carbon\Carbon|null $created_at
+	 * @method static LanguageBibleInfo whereCreatedAt($value)
 	 *
 	*/
 	protected $created_at;
 
      /**
-      * @property \Carbon\Carbon|null $updated_at
-      * @method static LanguageBibleInfo whereUpdatedAt($value)
       *
       * @OAS\Property(
-      *     title="Bible Info Updated Timestamp",
-      *     description="The timestamp of the last update for the language bible information model",
+      *     title="updated_at",
       *     format="string",
+      *     description="The timestamp of the last update for the language bible information model",
       *     maxLength=191,
       *     nullable=true
       * )
+      *
+      * @property \Carbon\Carbon|null $updated_at
+      * @method static LanguageBibleInfo whereUpdatedAt($value)
       *
     */
 	protected $updated_at;

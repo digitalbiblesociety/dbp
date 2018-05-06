@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Bible\BibleFileTitle
  *
- * @property-read \App\Models\Bible\BibleFile $file
  * @mixin \Eloquent
  *
  * @OAS\Schema (
@@ -22,8 +21,7 @@ class BibleFileTitle extends Model
 {
     public $table = "bible_file_titles";
 
-
-	 /*
+	 /**
 	  *
 	  * @OAS\Property(
 	  *   title="file_id",
@@ -36,12 +34,12 @@ class BibleFileTitle extends Model
 	  *
 	  */
 	 protected $file_id;
-	 /*
+	 /**
 	  *
 	  * @OAS\Property(
 	  *   title="iso",
 	  *   type="string",
-	  *   description="The incrementing id of the file timestamp"
+	  *   description="The translation language of the title"
 	  * )
 	  *
 	  * @method static BibleFileTitle whereIso($value)
@@ -49,12 +47,12 @@ class BibleFileTitle extends Model
 	  *
 	  */
 	 protected $iso;
-	 /*
+	 /**
 	  *
 	  * @OAS\Property(
 	  *   title="title",
 	  *   type="string",
-	  *   description="The incrementing id of the file timestamp"
+	  *   description="The title of the file"
 	  * )
 	  *
 	  * @method static BibleFileTitle whereTitle($value)
@@ -62,12 +60,12 @@ class BibleFileTitle extends Model
 	  *
 	  */
 	 protected $title;
-	 /*
+	 /**
 	  *
 	  * @OAS\Property(
 	  *   title="description",
 	  *   type="string",
-	  *   description="The incrementing id of the file timestamp"
+	  *   description="The description of the file title"
 	  * )
 	  *
 	  * @method static BibleFileTitle whereDescription($value)
@@ -75,13 +73,12 @@ class BibleFileTitle extends Model
 	  *
 	  */
 	 protected $description;
-	 /*
+	 /**
 	  *
 	  * @OAS\Property(
 	  *   title="key_words",
-	  *   type="integer",
-	  *   description="The incrementing id of the file timestamp",
-	  *   minimum=1
+	  *   type="string",
+	  *   description="The words"
 	  * )
 	  *
 	  * @method static BibleFileTitle whereKeyWords($value)
@@ -90,6 +87,9 @@ class BibleFileTitle extends Model
 	  */
 	 protected $key_words;
 
+	 /*
+	  * @property-read \App\Models\Bible\BibleFile $file
+	  */
     public function file()
     {
     	return $this->BelongsTo(BibleFile::class);

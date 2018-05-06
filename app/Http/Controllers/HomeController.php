@@ -77,6 +77,51 @@ class HomeController extends APIController
 		return $this->reply($versionReplies[$this->v]);
 	}
 
+
+	/**
+	 *
+	 * Returns an array of signed audio urls
+	 *
+	 * @category v2_library_asset
+	 * @link http://api.bible.build/library/asset - V4 Access
+	 * @link https://api.dbp.dev/library/asset?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v2_library_asset - V4 Test Docs
+	 *
+	 * @OAS\Get(
+	 *     path="/library/asset",
+	 *     tags={"Version 2"},
+	 *     summary="Returns Library File path information",
+	 *     description="This call returns the file path information. This information can be used with the response of the locations calls to create a URI to retrieve files.",
+	 *     operationId="v2_library_asset",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(name="dam_id", in="path", description="The DAM ID for which to retrieve file path info.", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_library_asset")),
+	 *         @OAS\MediaType(mediaType="application/xml", @OAS\Schema(ref="#/components/responses/v2_library_asset"))
+	 *     )
+	 * )
+	 *
+	 * @OAS\Response(
+	 *   response="v2_library_asset",
+	 *   description="The minimized alphabet return for the all alphabets route",
+	 *   @OAS\MediaType(
+	 *     mediaType="application/json",
+	 *     @OAS\Schema(
+	 *        @OAS\Property(property="server",type="string",example="cloud.faithcomesbyhearing.com"),
+	 *        @OAS\Property(property="root_path",type="string",example="/mp3audiobibles2"),
+	 *        @OAS\Property(property="protocol",type="string",example="http"),
+	 *        @OAS\Property(property="CDN",type="string",example="1"),
+	 *        @OAS\Property(property="priority",type="string",example="5"),
+	 *        @OAS\Property(property="volume_id",type="string",example=""),
+	 *     )
+	 *   )
+	 * )
+	 *
+	 * @return mixed
+	 */
 	public function libraryAsset()
 	{
 		$dam_id = checkParam('dam_id', null, 'optional') ?? "";

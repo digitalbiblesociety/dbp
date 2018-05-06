@@ -53,7 +53,7 @@ class BibleFile extends Model
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The id",
-	 *   default="available",
+
 	 *   minimum=0,
 	 *   example=4
 	 * )
@@ -94,7 +94,7 @@ class BibleFile extends Model
 	 *   title="chapter_start",
 	 *   type="integer",
 	 *   description="The chapter_start",
-	 *   default="available",
+	 *   default=1,
 	 *   minimum=0,
 	 *   maximum=150,
 	 *   example=4
@@ -110,7 +110,7 @@ class BibleFile extends Model
 	 *   title="chapter_end",
 	 *   type="string",
 	 *   description="If the Bible File spans multiple chapters this field indicates the last chapter of the selection",
-	 *   default="available",
+	 *   default=null,
 	 *   nullable=true,
 	 *   minimum=0,
 	 *   maximum=150,
@@ -127,7 +127,7 @@ class BibleFile extends Model
 	 *   title="verse_start",
 	 *   type="integer",
 	 *   description="The starting verse at which the BibleFile reference begins",
-	 *   default="available",
+	 *   default=1,
 	 *   minimum=1,
 	 *   maximum=176,
 	 *   example=5
@@ -142,8 +142,8 @@ class BibleFile extends Model
 	 * @OAS\Property(
 	 *   title="verse_end",
 	 *   type="string",
-	 *   description="The verse_end",
-	 *   default="available",
+	 *   description="If the Bible File spans multiple verses this value will indicate the last verse in that reference. This value is inclusive, so for the reference John 1:1-4. The value would be 4 and the reference would contain verse 4.",
+	 *   default=null,
 	 *   nullable=true,
 	 *   minimum=1,
 	 *   maximum=176,
@@ -160,7 +160,6 @@ class BibleFile extends Model
 	 *   title="file_name",
 	 *   type="string",
 	 *   description="The file_name",
-	 *   default="available",
 	 *   maxLength=191
 	 * )
 	 *
@@ -174,8 +173,7 @@ class BibleFile extends Model
 	 * @OAS\Property(
 	 *   title="file_size",
 	 *   type="integer",
-	 *   description="The file size in kilobytes",
-	 *   default="available"
+	 *   description="The file size in kilobytes"
 	 * )
 	 *
 	 * @method static BibleFile whereFileSize($value)
@@ -189,7 +187,6 @@ class BibleFile extends Model
 	 *   title="duration",
 	 *   type="integer",
 	 *   description="If the file has a set length of time, this field indicates that time in milliseconds",
-	 *   default="available",
 	 *   nullable=true,
 	 *   minimum=0
 	 * )

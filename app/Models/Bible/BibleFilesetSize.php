@@ -38,7 +38,7 @@ class BibleFilesetSize extends Model
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The id",
-	 *   default="available",
+
 	 *   minimum=0,
 	 *   example=4
 	 * )
@@ -54,7 +54,7 @@ class BibleFilesetSize extends Model
 	 *   title="id",
 	 *   type="string",
 	 *   description="The id",
-	 *   default="available",
+
 	 *   maxLength=9,
 	 *   example="NTPOTP"
 	 * )
@@ -70,7 +70,7 @@ class BibleFilesetSize extends Model
 	 *   title="name",
 	 *   type="string",
 	 *   description="The name",
-	 *   default="available",
+
 	 *   maxLength=191,
 	 *   example="New Testament & Old Testament Portions"
 	 * )

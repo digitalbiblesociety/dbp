@@ -16,6 +16,42 @@ use App\Helpers\AWS\Bucket;
 class AudioController extends APIController
 {
 
+	/**
+	 *
+	 * Returns an array of signed audio urls
+	 *
+	 * @version 4
+	 * @category v2_audio_path
+	 * @link http://api.bible.build/audio/path - V4 Access
+	 * @link https://api.dbp.dev/audio/path?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v4_alphabets.one - V4 Test Docs
+	 *
+	 * @param null $id
+	 * @return mixed
+	 *
+	 * @OAS\Get(
+	 *     path="/audio/path/{id}",
+	 *     tags={"Version 2"},
+	 *     summary="Returns Audio File path information",
+	 *     description="This call returns the file path information for audio files for a volume. This information can be used with the response of the /audio/location call to create a URI to retrieve the audio files.",
+	 *     operationId="v4_alphabets.one",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(name="dam_id", in="path", description="The DAM ID for which to retrieve file path info.", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="chapter_id", in="path", description="The id for the specified chapter. If chapter is specified only the specified chapter audio information is returned to the caller.", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+	 *     @OAS\Parameter(name="encoding", in="path", description="The audio encoding format desired (No longer in use as Audio Files default to mp3).", @OAS\Schema(type="string",title="encoding")),
+	 *     @OAS\Parameter(name="bucket_id", in="path", description="The bucket desired.", @OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
+	 *     @OAS\Parameter(name="book_id", in="path", description="The USFM 2.4 book ID.", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v4_alphabets.one")
+	 *         )
+	 *     )
+	 * )
+	 */
 	public function index($id = null)
 	{
 		$fileset_id = CheckParam('dam_id',$id);
@@ -25,7 +61,8 @@ class AudioController extends APIController
 		if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
 		if(isset($book)) $book_id = $book->id;
 		$fileset = BibleFileset::where('id', $fileset_id)->where('bucket_id',$bucket_id)->where('set_type_code', 'like', '%audio%')->first();
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Audio Fileset could be found for the code: ".$bible_id);
+		if(!$fileset) $fileset = BibleFileset::where('id', substr($fileset_id,0,-4))->where('bucket_id',$bucket_id)->where('set_type_code', 'like', '%audio%')->first();
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Audio Fileset could be found for the code: ".$fileset_id);
 
 		$audioChapters = BibleFile::with('book','bible')->where('hash_id',$fileset->hash_id)
 		                          ->when($chapter_id, function ($query) use ($chapter_id) {

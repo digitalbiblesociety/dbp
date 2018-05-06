@@ -32,7 +32,6 @@ class LanguageCode extends Model
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The incrementing id of the language Code",
-	 *   default="available",
 	 *   minimum=0
 	 * )
 	 *
@@ -47,7 +46,6 @@ class LanguageCode extends Model
 	 *   title="language_id",
 	 *   type="integer",
 	 *   description="The foreign key pointing to the incrementing id of the language",
-	 *   default="available",
 	 *   minimum=0
 	 * )
 	 *
@@ -58,13 +56,10 @@ class LanguageCode extends Model
 	protected $language_id;
 	/**
 	 *
-	 *
 	 * @OAS\Property(
 	 *   title="source",
-	 *   type="integer",
-	 *   description="The source pointing to the incrementing id of the language",
-	 *   default="available",
-	 *   minimum=0
+	 *   type="string",
+	 *   description="The source pointing to the incrementing id of the language"
 	 * )
 	 *
 	 * @property string $source

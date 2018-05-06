@@ -29,28 +29,62 @@ class ResourceLink extends Model
 	 *
 	 */
 	protected $resource_id;
+
 	/**
+	 *
+	 * @OAS\Property(
+	 *   title="type",
+	 *   type="string",
+	 *   description="The type of media the resource can be categorized as",
+	 *   default=null,
+	 *   nullable=true
+	 * )
 	 *
 	 * @method static ResourceLink whereTitle($value)
 	 * @property string $title
 	 *
 	 */
 	protected $title;
+
 	/**
+	 *
+	 * @OAS\Property(
+	 *   title="size",
+	 *   type="string",
+	 *   description="The size of the resource measured in kilobytes",
+	 *   default=null,
+	 *   nullable=true
+	 * )
 	 *
 	 * @method static ResourceLink whereSize($value)
 	 * @property string|null $size
 	 *
 	 */
 	protected $size;
+
 	/**
+	 *
+	 * @OAS\Property(
+	 *   title="type",
+	 *   type="string",
+	 *   description="The destination type for the url",
+	 *   default=null,
+	 *   nullable=true
+	 * )
 	 *
 	 * @method static ResourceLink whereType($value)
 	 * @property string $type
 	 *
 	 */
 	protected $type;
+
 	/**
+	 *
+	 * @OAS\Property(
+	 *   title="url",
+	 *   type="string",
+	 *   description="The link for the url"
+	 * )
 	 *
 	 * @method static ResourceLink whereUrl($value)
 	 * @property string $url
@@ -59,6 +93,7 @@ class ResourceLink extends Model
 	protected $url;
 
 	/**
+	 *
 	 *
 	 * @method static ResourceLink whereCreatedAt($value)
 	 * @property \Carbon\Carbon|null $created_at

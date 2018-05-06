@@ -7,6 +7,7 @@
 	Route::name('v2_library_bookName')->get('library/bookname',                           'BooksController@bookNames');
 	Route::name('v2_library_bookOrder')->get('library/bookorder',                         'BooksController@show');
 	Route::name('v2_library_chapter')->get('library/chapter',                             'BooksController@chapters');
+
 	Route::name('v2_library_language')->get('library/language',                           'LanguagesController@index');
 	Route::name('v2_library_verseInfo')->get('library/verseinfo',                         'VerseController@info');
 	Route::name('v2_library_numbers')->get('library/numbers',                             'NumbersController@customRange');

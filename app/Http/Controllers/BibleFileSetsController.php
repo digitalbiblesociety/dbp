@@ -201,7 +201,6 @@ class BibleFileSetsController extends APIController
 	 *         name="iso",
 	 *         in="path",
 	 *         description="The language that the organization's name should be translated in",
-	 *         default=eng,
 	 *         required=true,
 	 *         @OAS\Schema(ref="#/components/schemas/Language/properties/iso")
 	 *     ),

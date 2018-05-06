@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\Language\LanguageTranslation
  *
  * @mixin \Eloquent
- * @property int $vernacular
  *
  * @OAS\Schema (
  *     type="object",
@@ -29,7 +28,6 @@ class LanguageTranslation extends Model
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The incrementing id of the language",
-	 *   default="available",
 	 *   minimum=0
 	 * )
 	 *
@@ -43,7 +41,6 @@ class LanguageTranslation extends Model
 	 *   title="language_source",
 	 *   type="integer",
 	 *   description="The incrementing id of the language_source",
-	 *   default="available",
 	 *   minimum=0
 	 * )
 	 *
@@ -57,7 +54,6 @@ class LanguageTranslation extends Model
 	 *   title="language_translation",
 	 *   type="integer",
 	 *   description="The incrementing id of the language_translation",
-	 *   default="available",
 	 *   minimum=0
 	 * )
 	 *
@@ -71,7 +67,6 @@ class LanguageTranslation extends Model
 	 *   title="name",
 	 *   type="integer",
 	 *   description="The incrementing id of the name",
-	 *   default="available",
 	 *   minimum=0
 	 * )
 	 *
@@ -86,7 +81,6 @@ class LanguageTranslation extends Model
 	 *   title="vernacular",
 	 *   type="integer",
 	 *   description="The vernacular",
-	 *   default="available",
 	 *   minimum=0
 	 * )
 	 *

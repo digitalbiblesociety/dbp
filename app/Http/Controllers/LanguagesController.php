@@ -31,10 +31,20 @@ class LanguagesController extends APIController
      *     @OAS\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OAS\MediaType(
-     *            mediaType="application/json",
-     *            @OAS\Schema(ref="#/components/responses/v4_languages.all")
-     *         )
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_languages.all"))
+     *     )
+     * )
+     *
+     * @OAS\Get(
+     *     path="/library/language/",
+     *     tags={"Version 2"},
+     *     summary="Returns the list of languages",
+     *     description="Returns the List of Languages",
+     *     operationId="v2_library_language",
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_library_language"))
      *     )
      * )
      *

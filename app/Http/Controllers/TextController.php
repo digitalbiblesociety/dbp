@@ -119,8 +119,6 @@ class TextController extends APIController
 	    $limit = checkParam('limit', null, 'optional') ?? 15;
 	    $books = checkParam('books', null, 'optional');
 
-	    // SELECT *, '20' AS spacing FROM `ENGKJV_vpl` WHERE MATCH (verse_text) AGAINST('"+jesus +wept" @20' IN BOOLEAN MODE) ORDER BY spacing;
-
 		$query = DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).$exclude);
 	    $verses = DB::connection('sophia')->table($bible_id.'_vpl')
 		->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN BOOLEAN MODE)"))->limit($limit)

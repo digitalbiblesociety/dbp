@@ -89,7 +89,16 @@ class ResourceTranslation extends Model
 	 *
 	 */
     protected $title;
+
 	/**
+	 *
+	 * @OAS\Property(
+	 *     title="description",
+	 *     description="Serves as the description of the current translation",
+	 *     format="string",
+	 *     maxLength=191,
+	 *     example="Understanding Biblical Hebrew Verb Forms"
+	 * )
 	 *
 	 * @method static ResourceTranslation whereDescription($value)
 	 * @property string|null $description
