@@ -72,7 +72,7 @@ class AlphabetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(
 	 *         name="id",
-	 *         in="path",
+	 *         in="query",
 	 *         description="The alphabet ID",
 	 *         required=true,
 	 *         @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")
@@ -177,7 +177,7 @@ class AlphabetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(
 	 *         name="id",
-	 *         in="path",
+	 *         in="query",
 	 *         description="The alphabet ID",
 	 *         required=true,
 	 *         @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")

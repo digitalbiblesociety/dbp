@@ -104,7 +104,7 @@ class Bible extends Model
 	 *
 	 * @OAS\Property(
 	 *   title="date",
-	 *   type="stringan",
+	 *   type="string",
 	 *   description="",
 	 *   default="available"
 	 * )
@@ -117,7 +117,7 @@ class Bible extends Model
 	 *
 	 * @OAS\Property(
 	 *   title="scope",
-	 *   type="stringn",
+	 *   type="string",
 	 *   description="",
 	 *   default="available"
 	 * )

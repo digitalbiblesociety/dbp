@@ -148,9 +148,9 @@ class BiblesController extends APIController
 	 *     operationId="v2_library_version",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(name="code", in="path", description="", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-	 *     @OAS\Parameter(name="name", in="path", description="", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
-	 *     @OAS\Parameter(name="sort_by", in="path", description="", @OAS\Schema(type="string",title="encoding")),
+	 *     @OAS\Parameter(name="code", in="query", description="", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="name", in="query", description="", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+	 *     @OAS\Parameter(name="sort_by", in="query", description="", @OAS\Schema(type="string",title="encoding")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",

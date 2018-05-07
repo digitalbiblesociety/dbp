@@ -34,7 +34,7 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(
 	 *         name="id",
-	 *         in="path",
+	 *         in="query",
 	 *         description="The fileset ID",
 	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
 	 *     ),
@@ -110,7 +110,7 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(
 	 *         name="id",
-	 *         in="path",
+	 *         in="query",
 	 *         description="The fileset ID",
 	 *         required=true,
 	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
@@ -158,7 +158,7 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(
 	 *         name="id",
-	 *         in="path",
+	 *         in="query",
 	 *         description="The fileset ID",
 	 *         required=true,
 	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
@@ -199,14 +199,14 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(
 	 *         name="iso",
-	 *         in="path",
+	 *         in="query",
 	 *         description="The language that the organization's name should be translated in",
 	 *         required=true,
 	 *         @OAS\Schema(ref="#/components/schemas/Language/properties/iso")
 	 *     ),
 	 *     @OAS\Parameter(
 	 *         name="id",
-	 *         in="path",
+	 *         in="query",
 	 *         description="The fileset ID",
 	 *         required=true,
 	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
@@ -343,7 +343,7 @@ class BibleFileSetsController extends APIController
 	 *     operationId="v4_bible_filesets.update",
 	 *     @OAS\Parameter(
 	 *         name="id",
-	 *         in="path",
+	 *         in="query",
 	 *         description="The fileset ID",
 	 *         example="ENGESV",
 	 *         required=true,

@@ -95,7 +95,7 @@ class HomeController extends APIController
 	 *     operationId="v2_library_asset",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(name="dam_id", in="path", description="The DAM ID for which to retrieve file path info.", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="dam_id", in="query", description="The DAM ID for which to retrieve file path info.", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",

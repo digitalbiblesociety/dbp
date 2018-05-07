@@ -66,8 +66,8 @@ class BooksController extends APIController
 	 *     summary="Returns books order",
 	 *     description="Gets the book order and code listing for a volume.",
 	 *     operationId="v2_library_book",
-	 *     @OAS\Parameter(name="dam_id",in="path",description="The bible ID",required=true, @OAS\Schema(ref="#/components/schemas/Bible/properties/id")),
-	 *     @OAS\Parameter(name="bucket_id",in="path",description="The bible ID", @OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
+	 *     @OAS\Parameter(name="dam_id",in="query",description="The bible ID",required=true, @OAS\Schema(ref="#/components/schemas/Bible/properties/id")),
+	 *     @OAS\Parameter(name="bucket_id",in="query",description="The bible ID", @OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Response(
@@ -120,7 +120,7 @@ class BooksController extends APIController
 	 *     summary="Returns book Names",
 	 *     description="Gets the book order and code listing for a volume.",
 	 *     operationId="v2_library_bookName",
-	 *     @OAS\Parameter(name="language_code",in="path",description="The language_code",required=true, @OAS\Schema(ref="#/components/schemas/Bible/properties/iso")),
+	 *     @OAS\Parameter(name="language_code",in="query",description="The language_code",required=true, @OAS\Schema(ref="#/components/schemas/Bible/properties/iso")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Response(
@@ -160,9 +160,9 @@ class BooksController extends APIController
 	 *     summary="Returns chapters for a book",
 	 *     description="Lists the chapters for a book or all books in a standard bible volume.",
 	 *     operationId="v2_library_chapter",
-	 *     @OAS\Parameter(name="dam_id",in="path",description="The bible_id",required=true, @OAS\Schema(ref="#/components/schemas/Bible/properties/id")),
-	 *     @OAS\Parameter(name="bucket_id",in="path",description="The bucket_id", @OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
-	 *     @OAS\Parameter(name="book_id",in="path",description="The book_id",required=true, @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Parameter(name="dam_id",in="query",description="The bible_id",required=true, @OAS\Schema(ref="#/components/schemas/Bible/properties/id")),
+	 *     @OAS\Parameter(name="bucket_id",in="query",description="The bucket_id", @OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
+	 *     @OAS\Parameter(name="book_id",in="query",description="The book_id",required=true, @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Response(

@@ -102,7 +102,7 @@ class CountriesController extends APIController
 	 *     operationId="v4_countries.one",
 	 *     @OAS\Parameter(
 	 *         name="id",
-	 *         in="path",
+	 *         in="query",
 	 *         description="The country ID",
 	 *         required=true,
 	 *         @OAS\Schema(ref="#/components/schemas/Country/properties/id")
@@ -210,7 +210,7 @@ class CountriesController extends APIController
 	 *     operationId="v4_countries.update",
 	 *     @OAS\Parameter(
 	 *         name="id",
-	 *         in="path",
+	 *         in="query",
 	 *         description="The country ID",
 	 *         required=true,
 	 *         @OAS\Schema(ref="#/components/schemas/Country/properties/id")

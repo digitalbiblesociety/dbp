@@ -268,7 +268,7 @@ class LanguagesController extends APIController
 	 *     operationId="v4_languages.one",
 	 *     @OAS\Parameter(
 	 *         name="id",
-	 *         in="path",
+	 *         in="query",
 	 *         description="The languages ID",
 	 *         required=true,
 	 *         @OAS\Schema(ref="#/components/schemas/Language/properties/id")
@@ -320,7 +320,7 @@ class LanguagesController extends APIController
      *     operationId="v4_languages.update",
      *     @OAS\Parameter(
      *         name="id",
-     *         in="path",
+     *         in="query",
      *         description="The languages ID",
      *         required=true,
      *         @OAS\Schema(ref="#/components/schemas/Language/properties/id")
