@@ -100,13 +100,7 @@ class CountriesController extends APIController
 	 *     summary="Returns a single Country",
 	 *     description="Returns a single Country",
 	 *     operationId="v4_countries.one",
-	 *     @OAS\Parameter(
-	 *         name="id",
-	 *         in="query",
-	 *         description="The country ID",
-	 *         required=true,
-	 *         @OAS\Schema(ref="#/components/schemas/Country/properties/id")
-	 *     ),
+	 *     @OAS\Parameter( name="id", in="path", description="The country ID", required=true, @OAS\Schema(ref="#/components/schemas/Country/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -208,13 +202,7 @@ class CountriesController extends APIController
 	 *     summary="Update a new Country",
 	 *     description="Update a new Country",
 	 *     operationId="v4_countries.update",
-	 *     @OAS\Parameter(
-	 *         name="id",
-	 *         in="query",
-	 *         description="The country ID",
-	 *         required=true,
-	 *         @OAS\Schema(ref="#/components/schemas/Country/properties/id")
-	 *     ),
+	 *     @OAS\Parameter( name="id", in="path", description="The country ID", required=true, @OAS\Schema(ref="#/components/schemas/Country/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",

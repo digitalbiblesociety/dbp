@@ -22,7 +22,6 @@ class BiblesController extends APIController
 
 
 	/**
-	 *
 	 * Display a listing of the bibles.
 	 *
 	 * @deprecated status (optional): [live|disabled|incomplete|waiting_review|in_review|discontinued] Publishing status of volume. The default is 'live'.
@@ -159,6 +158,21 @@ class BiblesController extends APIController
 	 * )
 	 *
 	 * @return json
+	 */
+
+	/**
+	 * @OAS\Response(
+	 *   response="v2_library_version",
+	 *   description="The various version ids in the old version 2 style",
+	 *   @OAS\MediaType(
+	 *     mediaType="application/json",
+	 *     @OAS\Schema(
+	 *          @OAS\Property(property="version_code",type="string",description="The abbreviated `BibleFileset` id created from the three letters identifier after the iso code"),
+	 *          @OAS\Property(property="version_name",type="string",description="The name of the version in the language that it's written in"),
+	 *          @OAS\Property(property="english_name",type="string",description="The name of the version in english")
+	 *     )
+	 *   )
+	 * )
 	 */
 	public function libraryVersion()
 	{

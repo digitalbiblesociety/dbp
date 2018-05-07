@@ -26,7 +26,7 @@ class AlphabetsController extends APIController
 	 * @return mixed $alphabets string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 * @OAS\Get(
-	 *     path="/alphabets/",
+	 *     path="/alphabets",
 	 *     tags={"Version 4"},
 	 *     summary="Returns Alphabets",
 	 *     description="Returns a list of the world's known scripts. This route will be useful to you if you'd like to query information about fonts, alphabets, and the world's writing systems. Some `BibleFileset` models may not display correctly without a font delivered by these via the `alphabets/{id}` route.",
@@ -70,13 +70,7 @@ class AlphabetsController extends APIController
 	 *     operationId="v4_alphabets.one",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(
-	 *         name="id",
-	 *         in="query",
-	 *         description="The alphabet ID",
-	 *         required=true,
-	 *         @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")
-	 *     ),
+	 *     @OAS\Parameter(name="id", in="path", description="The alphabet ID", required=true, @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -175,13 +169,7 @@ class AlphabetsController extends APIController
 	 *     operationId="v4_alphabets.update",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(
-	 *         name="id",
-	 *         in="query",
-	 *         description="The alphabet ID",
-	 *         required=true,
-	 *         @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")
-	 *     ),
+	 *     @OAS\Parameter(name="id", in="path", description="The alphabet ID", required=true, @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",

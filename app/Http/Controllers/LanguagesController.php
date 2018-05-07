@@ -266,13 +266,7 @@ class LanguagesController extends APIController
 	 *     summary="Return a single Languages",
 	 *     description="Returns a single Language",
 	 *     operationId="v4_languages.one",
-	 *     @OAS\Parameter(
-	 *         name="id",
-	 *         in="query",
-	 *         description="The languages ID",
-	 *         required=true,
-	 *         @OAS\Schema(ref="#/components/schemas/Language/properties/id")
-	 *     ),
+	 *     @OAS\Parameter( name="id", in="path", description="The languages ID", required=true, @OAS\Schema(ref="#/components/schemas/Language/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -318,13 +312,7 @@ class LanguagesController extends APIController
      *     summary="Return a single Languages",
      *     description="Returns a single Language",
      *     operationId="v4_languages.update",
-     *     @OAS\Parameter(
-     *         name="id",
-     *         in="query",
-     *         description="The languages ID",
-     *         required=true,
-     *         @OAS\Schema(ref="#/components/schemas/Language/properties/id")
-     *     ),
+     *     @OAS\Parameter( name="id", in="path", description="The languages ID", required=true, @OAS\Schema(ref="#/components/schemas/Language/properties/id")),
      *     @OAS\Response(
      *         response=200,
      *         description="successful operation",

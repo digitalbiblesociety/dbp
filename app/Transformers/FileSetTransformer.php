@@ -147,14 +147,14 @@ class FileSetTransformer extends BaseTransformer
 		 *   @OAS\MediaType(
 		 *     mediaType="application/json",
 		 *     @OAS\Schema(
-		 *          @OAS\Property(property="book_id",        ref="#/components/schemas/BibleFileset/properties/book_id"),
+		 *          @OAS\Property(property="book_id",        ref="#/components/schemas/BibleFile/properties/book_id"),
 		 *          @OAS\Property(property="book_name",      ref="#/components/schemas/BookTranslation/properties/name"),
-		 *          @OAS\Property(property="chapter_start",  ref="#/components/schemas/BibleFileset/properties/chapter_start"),
-		 *          @OAS\Property(property="chapter_end",    ref="#/components/schemas/BibleFileset/properties/chapter_end"),
-		 *          @OAS\Property(property="verse_start",    ref="#/components/schemas/BibleFileset/properties/verse_start"),
-		 *          @OAS\Property(property="verse_end",      ref="#/components/schemas/BibleFileset/properties/verse_end"),
-		 *          @OAS\Property(property="timestamp",      ref="#/components/schemas/BibleFileset/properties/timestamp"),
-		 *          @OAS\Property(property="path",           ref="#/components/schemas/BibleFileset/properties/file_name"),
+		 *          @OAS\Property(property="chapter_start",  ref="#/components/schemas/BibleFile/properties/chapter_start"),
+		 *          @OAS\Property(property="chapter_end",    ref="#/components/schemas/BibleFile/properties/chapter_end"),
+		 *          @OAS\Property(property="verse_start",    ref="#/components/schemas/BibleFile/properties/verse_start"),
+		 *          @OAS\Property(property="verse_end",      ref="#/components/schemas/BibleFile/properties/verse_end"),
+		 *          @OAS\Property(property="timestamp",      ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
+		 *          @OAS\Property(property="path",           ref="#/components/schemas/BibleFile/properties/file_name"),
 		 *     )
 		 *   )
 		 * )

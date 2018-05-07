@@ -23,7 +23,7 @@ class BibleFilePermissionsTransformer extends TransformerAbstract
 	     *          @OAS\Property(property="fileset_id",          ref="#/components/schemas/BibleFileset/properties/hash_id"),
 	     *          @OAS\Property(property="access_type",         ref="#/components/schemas/Access/properties/access_granted"),
 	     *          @OAS\Property(property="access_granted",      ref="#/components/schemas/Access/properties/access_granted"),
-	     *          @OAS\Property(property="granted_at",          ref="#/components/schemas/Access/properties/granted_at"),
+	     *          @OAS\Property(property="granted_at",          ref="#/components/schemas/Access/properties/created_at"),
 	     *          @OAS\Property(property="updated_at",          ref="#/components/schemas/Access/properties/updated_at"),
 	     *     )
 	     *   )

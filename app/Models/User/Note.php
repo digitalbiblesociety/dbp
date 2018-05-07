@@ -26,7 +26,7 @@ class Note extends Model
 	 *
 	 * @OAS\Property(
 	 *   title="id",
-	 *   type="int",
+	 *   type="integer",
 	 *   description="The unique incrementing id for each NoteTag",
 	 *   minimum=0
 	 * )
@@ -38,7 +38,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Book/properties/id")
+	 '
 	 * @method static Note whereBookId($value)
 	 * @property string $book_id
 	 */
@@ -72,7 +72,7 @@ class Note extends Model
 	 *
 	 * @OAS\Property(
 	 *   title="bookmark",
-	 *   type="int",
+	 *   type="integer",
 	 *   description="The unique incrementing id for each NoteTag"
 	 * )
 	 *

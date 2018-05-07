@@ -31,16 +31,19 @@ class APIController extends Controller
 	 *     title="Koinos: Digital Bible Platform V4",
 	 *     termsOfService="http://bible.build/terms/",
 	 *     @OAS\Contact(email="jon@dbs.org"),
-	 *     @OAS\License(name="Apache 2.0",url="http://www.apache.org/licenses/LICENSE-2.0.html"),
-	 *     @OAS\Server(
-	 *         url="{schema}://api.dbp.dev",
-	 *         description="OpenApi parameters",
-	 *         @OAS\ServerVariable(
-	 *             serverVariable="schema",
-	 *             enum="['https']",
-	 *             default="https"
-	 *         )
-	 *     )
+	 *     @OAS\License(name="Apache 2.0",url="http://www.apache.org/licenses/LICENSE-2.0.html")
+	 * )
+	 *
+	 * @OAS\Server(
+	 *     url="{schema}://api.bible.build",
+	 *     description="Live Server",
+	 *     @OAS\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
+	 * )
+	 *
+	 * @OAS\Server(
+	 *     url="{schema}://api.dbp.dev",
+	 *     description="Development server",
+	 *     @OAS\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
 	 * )
 	 *
 	 * @OAS\Parameter(parameter="version_number",name="v",in="query",description="The Version Number",required=true,@OAS\Schema(type="integer",example=4))

@@ -27,6 +27,7 @@ class BibleFileSetPermissionsController extends APIController
 	 *     summary="Returns a list of permissions for a specific Fileset",
 	 *     description="Returns filtered permissions for a fileset dependent upon your authorization level and API key",
 	 *     operationId="v4_bible_filesets_permissions.index",
+	 *     @OAS\Parameter(name="id", in="path", required=true, description="The fileset ID", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Response(

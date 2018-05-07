@@ -25,19 +25,14 @@ class BibleFileSetsController extends APIController
 	/**
 	 *
 	 * @OAS\Get(
-	 *     path="/bibles/filesets/{id?}/",
+	 *     path="/bibles/filesets/{id}",
 	 *     tags={"Version 4"},
 	 *     summary="Returns Bibles Filesets",
 	 *     description="Returns a list of bible filesets",
 	 *     operationId="v4_bible_filesets.show",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(
-	 *         name="id",
-	 *         in="query",
-	 *         description="The fileset ID",
-	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
-	 *     ),
+	 *     @OAS\Parameter(name="id", in="path", description="The fileset ID", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -108,13 +103,7 @@ class BibleFileSetsController extends APIController
 	 *     operationId="v4_bible_filesets.download",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(
-	 *         name="id",
-	 *         in="query",
-	 *         description="The fileset ID",
-	 *         required=true,
-	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
-	 *     ),
+	 *     @OAS\Parameter(name="id", in="path", required=true, description="The fileset ID", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="The requested fileset as a zipped download",
@@ -156,13 +145,7 @@ class BibleFileSetsController extends APIController
 	 *     operationId="v4_bible_filesets.podcast",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(
-	 *         name="id",
-	 *         in="query",
-	 *         description="The fileset ID",
-	 *         required=true,
-	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
-	 *     ),
+	 *     @OAS\Parameter(name="id", in="path", required=true, description="The fileset ID", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="The requested fileset as a rss compatible xml podcast",
@@ -197,19 +180,13 @@ class BibleFileSetsController extends APIController
 	 *     operationId="v4_bible_filesets.copyright",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(
-	 *         name="iso",
-	 *         in="query",
-	 *         description="The language that the organization's name should be translated in",
-	 *         required=true,
-	 *         @OAS\Schema(ref="#/components/schemas/Language/properties/iso")
-	 *     ),
+	 *     @OAS\Parameter(name="id", in="path", required=true, description="The fileset ID", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(
 	 *         name="id",
 	 *         in="query",
 	 *         description="The fileset ID",
 	 *         required=true,
-	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
+	 *         @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")
 	 *     ),
 	 *     @OAS\Response(
 	 *         response=200,
@@ -341,14 +318,7 @@ class BibleFileSetsController extends APIController
 	 *     summary="Available fileset",
 	 *     description="A list of all the file types that exist within the filesets",
 	 *     operationId="v4_bible_filesets.update",
-	 *     @OAS\Parameter(
-	 *         name="id",
-	 *         in="query",
-	 *         description="The fileset ID",
-	 *         example="ENGESV",
-	 *         required=true,
-	 *         @OAS\Schema(ref="#/components/schemas/BibleFileSet/properties/id")
-	 *     ),
+	 *     @OAS\Parameter(name="id", in="path", required=true, description="The fileset ID", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Response(
