@@ -12,46 +12,28 @@ use App\Traits\Uuids;
 /**
  * App\Models\User\User
  *
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Account[] $accounts
- * @property-read \App\Models\User\Role $archivist
- * @property-read \App\Models\User\Role $authorizedArchivist
- * @property-read \App\Models\User\Account $bitbucket
- * @property-read \App\Models\User\Account $github
- * @property-read \App\Models\User\Account $google
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Organization\Organization[] $organizations
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileSetPermission[] $permissions
- * @property-read \App\Models\User\Role $role
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Role[] $roles
  * @mixin \Eloquent
- * @property string $id
- * @property string|null $name
- * @property string|null $password
- * @property string|null $nickname
- * @property string|null $avatar
- * @property string|null $email
- * @property string|null $remember_token
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @method static User whereAvatar($value)
- * @method static User whereCreatedAt($value)
- * @method static User whereEmail($value)
- * @method static User whereId($value)
- * @method static User whereName($value)
- * @method static User whereNickname($value)
- * @method static User wherePassword($value)
- * @method static User whereRememberToken($value)
- * @method static User whereUpdatedAt($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Note[] $notes
- * @property-read \App\Models\User\Role $admin
- * @property-read \App\Models\User\Role $canCreateUsers
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Key[] $key
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Project[] $projects
- * @property int $verified
- * @property string|null $email_token
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Key[] $keys
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereEmailToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\User whereVerified($value)
+ *
+ * @property-read Role $archivist
+ * @property-read Role $authorizedArchivist
+ * @property-read \App\Models\Organization\Organization[] $organizations
+ * @property-read \App\Models\Bible\BibleFileSetPermission[] $permissions
+ * @property-read Role $role
+ * @property-read Role[] $roles
+ * @property-read Note[] $notes
+ * @property-read Role $admin
+ * @property-read Role $canCreateUsers
+ * @property-read Key[] $key
+ * @property-read Project[] $projects
+ * @property-read Key[] $keys
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="The User model communicates information about everyone involved with the project",
+ *     title="User",
+ *     @OAS\Xml(name="User")
+ * )
+ *
  */
 class User extends Authenticatable
 {
@@ -60,10 +42,119 @@ class User extends Authenticatable
 	public $keyType = 'string';
     use Notifiable;
 
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="id",
+	 *   type="string",
+	 *   description="The unique id for the user",
+	 *   maxLength=64
+	 * )
+	 *
+	 * @method static User whereId($value)
+	 * @property string $id
+	 */
+	protected $id;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="name",
+	 *   type="string",
+	 *   description="The name of the user",
+	 *   maxLength=191
+	 * )
+	 *
+	 * @method static User whereName($value)
+	 * @property string $name
+	 */
+	protected $name;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="password",
+	 *   type="string",
+	 *   description="The password for the user's account",
+	 *   format="password",
+	 *   maxLength=191
+	 * )
+	 *
+	 * @method static User wherePassword($value)
+	 * @property string $password
+	 */
+	protected $password;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="nickname",
+	 *   type="string",
+	 *   description="The preferred name for the user"
+	 * )
+	 *
+	 * @method static User whereNickname($value)
+	 * @property string $nickname
+	 */
+	protected $nickname;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="avatar",
+	 *   type="string",
+	 *   description="The user's profile picture"
+	 * )
+	 *
+	 * @method static User whereAvatar($value)
+	 * @property string $avatar
+	 */
+	protected $avatar;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="email",
+	 *   type="string",
+	 *   description="The user's email address"
+	 * )
+	 *
+	 * @method static User whereEmail($value)
+	 * @property string $email
+	 */
+	protected $email;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="verified",
+	 *   type="boolean",
+	 *   description="If the user has verified the email address they've provided or if they're connected via a social account",
+	 *   default=false
+	 * )
+	 *
+	 * @method static User whereVerified($value)
+	 * @property boolean $verified
+	 */
+	protected $verified;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="email_token",
+	 *   type="string",
+	 *   description="The token sent to the user to verify that user's email"
+	 * )
+	 *
+	 * @method static User whereEmailToken($value)
+	 * @property string $email_token
+	 */
+	protected $email_token;
+
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array $fillable
      */
     protected $fillable = ['id','name', 'nickname', 'avatar', 'verified', 'email', 'password', 'email_token'];
 
@@ -81,6 +172,17 @@ class User extends Authenticatable
 		return $this->hasMany(Key::class,'user_id','id');
 	}
 
+	/**
+	 *
+	 * Account Relations for the User
+	 *
+	 * @property-read Account $bitbucket
+	 * @property-read Account $github
+	 * @property-read Account $google
+	 * @property-read Account[] $accounts
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
 	public function accounts()
 	{
 		return $this->HasMany(Account::class);
