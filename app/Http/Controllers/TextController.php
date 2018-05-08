@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\AWS\Bucket;
 use App\Models\Bible\Bible;
+use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Book;
 use App\Models\Bible\BibleEquivalent;
 use App\Models\Language\AlphabetFont;
@@ -22,41 +23,55 @@ class TextController extends APIController
 	 * @param string|null $book_url_param
 	 * @param string|null $chapter_url_param
 	 *
+	 * @OAS\Get(
+	 *     path="/bibles/{id}/{book}/{chapter}",
+	 *     tags={"Version 4"},
+	 *     summary="Returns Signed URLs or Text",
+	 *     description="",
+	 *     operationId="v4_bible_filesets.chapter",
+	 *     @OAS\Parameter(name="id", in="path", description="The Bible fileset ID", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="id", in="path", description="The Book ID", required=true, @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Parameter(name="id", in="path", description="The chapter number", required=true, @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_bible_filesets.chapter")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_bible_filesets.chapter")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_bible_filesets.chapter"))
+	 *     )
+	 * )
+	 *
 	 * @return JSON|View
 	 */
     public function index($bible_url_param = null, $book_url_param = null,$chapter_url_param = null)
     {
     	// Fetch and Assign $_GET params
-    	$bible_id = checkParam('dam_id', $bible_url_param);
+    	$fileset_id = checkParam('dam_id', $bible_url_param);
 	    $book_id = checkParam('book_id', $book_url_param);
 	    $chapter = checkParam('chapter_id', $chapter_url_param);
     	$verse_start = checkParam('verse_start', null, 'optional') ?? 1;
 	    $verse_end = checkParam('verse_end', null, 'optional');
 	    $formatted = checkParam('bucket_id', null, 'optional');
 
-	    // Fetch Bible for Book Translations
-	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$bible_id)->orWhere('equivalent_id',substr($bible_id,0,7))->first();
-	    if(!isset($bibleEquivalent)) $bible = Bible::find($bible_id);
-	    if(isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
-	    if(!$bible) {
-	    	if($this->v > 4) return [];
-	    	return $this->setStatusCode(404)->replyWithError("Bible ID not Found");
-	    }
+	    $fileset = BibleFileset::with('bible')->where('id',$fileset_id)->first();
+	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
+		$bible = $fileset->bible->first();
 
 	    $book = Book::where('id',$book_id)->orWhere('id_usfx',$book_id)->orWhere('id_osis',$book_id)->first();
 	    if(!$book) return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
 	    $book->push('name_vernacular', $book->translation($bible->iso)->first());
 
 	    if($formatted) {
-		    $bibleEquivalent = (isset($bibleEquivalent)) ? $bibleEquivalent : $bible->id;
-		    $path = 'text/'.$bible->id.'/'.$bibleEquivalent.'/'.$book_id.$chapter.'.html';
+		    $path = 'text/'.$bible->id.'/'.$fileset->id.'/'.$book_id.$chapter.'.html';
 		    $exists = Storage::disk($formatted)->exists($path);
 		    if(!$exists) return $this->replyWithError("The path: $path did not result in a file");
 	    	return $this->reply(["filepath" => Bucket::signedUrl($path)]);
 	    }
 
 	    // Fetch Verses
-		$verses = DB::connection('sophia')->table($bible->id.'_vpl')
+		$verses = DB::connection('sophia')->table(strtoupper($fileset->id).'_vpl')
 		->where([['book',$book->id_usfx], ['chapter',$chapter]])
 		->when($verse_start, function ($query) use ($verse_start) {
 			return $query->where('verse_end', '>=', $verse_start);
@@ -64,7 +79,7 @@ class TextController extends APIController
 		->when($verse_end, function ($query) use ($verse_end) {
 			return $query->where('verse_end', '<=', $verse_end);
 		})->get();
-	    $this->addMetaDataToVerses($verses,$bible_id);
+	    $this->addMetaDataToVerses($verses,$bible->id);
 
 	    if(count($verses) == 0) return $this->setStatusCode(404)->replyWithError("No Verses Were found with the provided params");
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)->toArray());
@@ -104,6 +119,26 @@ class TextController extends APIController
 
 	/**
 	 *
+	 *
+	 * @OAS\Get(
+	 *     path="/search",
+	 *     tags={"Version 4"},
+	 *     summary="Run a text search on a specific fileset",
+	 *     description="",
+	 *     operationId="v4_text_search",
+	 *     @OAS\Parameter(name="dam_id", in="query", description="The Bible fileset ID", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="limit",  in="query", description="The number of search results to return", @OAS\Schema(type="integer",example=15,default=15)),
+	 *     @OAS\Parameter(name="books",  in="query", description="The Books to search through", @OAS\Schema(type="string",example="GEN,EXO,MAT")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_text_search")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_text_search")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_text_search"))
+	 *     )
+	 * )
 	 *
 	 * @return View|JSON
 	 */

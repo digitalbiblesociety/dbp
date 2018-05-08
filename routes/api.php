@@ -44,17 +44,17 @@
 	Route::name('v4_bible_filesets_permissions.index')->get('bibles/filesets/{id}/permissions',   'BibleFileSetPermissionsController@index');
 	Route::name('v4_bible_filesets_permissions.store')->get('bibles/filesets/{id}/permissions',   'BibleFileSetPermissionsController@store');
 	Route::name('v4_bible_filesets_permissions.update')->get('bibles/filesets/{id}/permissions',  'BibleFileSetPermissionsController@update');
-
 	Route::name('v4_bible_filesets.types')->get('bibles/filesets/media/types',                    'BibleFileSetsController@mediaTypes');
 	Route::name('v4_bible_filesets.podcast')->get('bibles/filesets/{id}/podcast',                 'BibleFileSetsController@podcast');
 	Route::name('v4_bible_filesets.download')->get('bibles/filesets/{id}/download',               'BibleFileSetsController@download');
 	Route::name('v4_bible_filesets.copyright')->get('bibles/filesets/{id}/copyright',             'BibleFileSetsController@copyright');
+	Route::name('v4_bible_filesets.chapter')->get('bibles/filesets/{id}/{book}/{chapter}',        'TextController@index');
 	Route::name('v4_bible_filesets.show')->get('bibles/filesets/{id?}',                           'BibleFileSetsController@show');
 	Route::name('v4_bible_filesets.update')->put('bibles/filesets/{id}',                          'BibleFileSetsController@update');
 	Route::name('v4_bible_filesets.store')->post('bibles/filesets/',                              'BibleFileSetsController@store');
 
 	Route::name('v4_bible.allBooks')->get('bibles/books/',                                'BooksController@index');
-	Route::name('v4_bible.chapter')->get('bibles/{id}/{book}/{chapter}',                  'TextController@index');
+
 	Route::name('v4_text_search')->get('search',                                          'TextController@search');
 	Route::name('v4_bible.books')->get('bibles/{id}/book/{book?}',                        'BiblesController@books');
 	Route::name('v4_bible.one')->get('bibles/{id}',                                       'BiblesController@show');

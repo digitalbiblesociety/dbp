@@ -60,6 +60,28 @@ class TextTransformer extends BaseTransformer
     }
 
 
+	/**
+	 * @OAS\Response(
+	 *   response="v4_bible_filesets.chapter",
+	 *   description="The bible chapter response",
+	 *   @OAS\MediaType(
+	 *     mediaType="application/json",
+	 *     @OAS\Schema(
+	 *              required={"name","script","family","type","direction"},
+	 *              @OAS\Property(property="book_id",           ref="#/components/schemas/Book/properties/id"),
+	 *              @OAS\Property(property="book_name",         ref="#/components/schemas/Book/properties/name"),
+	 *              @OAS\Property(property="book_name_alt",     ref="#/components/schemas/BookTranslation/properties/name"),
+	 *              @OAS\Property(property="chapter",           ref="#/components/schemas/BibleFile/properties/chapter_start"),
+	 *              @OAS\Property(property="chapter_alt",       ref="#/components/schemas/BibleFile/properties/chapter_start"),
+	 *              @OAS\Property(property="verse_start",       ref="#/components/schemas/BibleFile/properties/verse_start"),
+	 *              @OAS\Property(property="verse_start_alt",   ref="#/components/schemas/BibleFile/properties/verse_start"),
+	 *              @OAS\Property(property="verse_end",         ref="#/components/schemas/BibleFile/properties/verse_end"),
+	 *              @OAS\Property(property="verse_end_alt",     ref="#/components/schemas/BibleFile/properties/verse_end"),
+	 *              @OAS\Property(property="verse_text",type="string")
+	 *     )
+	 *   )
+	 * )
+	 */
 	public function transformforV4($text)
 	{
 		return [
