@@ -28,6 +28,14 @@ class LanguagesController extends APIController
      *     summary="Returns Languages",
      *     description="Returns the List of Languages",
      *     operationId="v4_languages.all",
+     *     @OAS\Parameter(name="country",in="query",description="The country",@OAS\Schema(ref="#/components/schemas/Country/properties/id")),
+     *     @OAS\Parameter(name="iso",in="query",description="The iso code to filter languages by",@OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
+     *     @OAS\Parameter(name="language_name",in="query",description="The language_name field will filter results by a specific language name",@OAS\Schema(type="string")),
+     *     @OAS\Parameter(name="sort_by",in="query",description="The sort_by field will order results by a specific field",@OAS\Schema(type="string")),
+     *     @OAS\Parameter(name="has_bibles",in="query",description="When set to true will filter language results depending whether or not they have bibles.",@OAS\Schema(type="boolean")),
+     *     @OAS\Parameter(name="has_filesets",in="query",description="When set to true will filter language results depending whether or not they have filesets. Will add new filesets_count field to the return.",@OAS\Schema(type="boolean",default=null,example=true)),
+     *     @OAS\Parameter(name="bucket_id",in="query",description="The bucket_id",@OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
+     *     @OAS\Parameter(name="include_alt_names",in="query",description="The include_alt_names",@OAS\Schema(ref="#/components/schemas/Language/properties/name")),
      *     @OAS\Response(
      *         response=200,
      *         description="successful operation",
@@ -68,7 +76,9 @@ class LanguagesController extends APIController
 				return $query->has('bibles');
 			})
 			->when($has_filesets, function($q) use ($bucket_id) {
-				$q->whereHas('bibles.filesets', function ($query) use ($bucket_id) {
+				$q->with(['bibles' => function($query){
+					$query->withCount('filesets');
+				}])->whereHas('bibles.filesets', function ($query) use ($bucket_id) {
 					if($bucket_id) $query->where('bucket_id', $bucket_id);
 				});
 			})->when($country, function ($query) use ($country) {
@@ -84,7 +94,6 @@ class LanguagesController extends APIController
 			})->when($sort_by, function ($query) use ($sort_by) {
 				return $query->orderBy($sort_by);
 			})->get();
-
 		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
     }
 
