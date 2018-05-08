@@ -2845,9 +2845,9 @@
         }
       }
     },
-    "/bibles/{id}/{book_id}/{chapter}": {
+    "/bibles/filesets/{id}/{book_id}/{chapter}": {
       "get": {
-        "operationId": "v4_bible.chapter",
+        "operationId": "v4_bible_filesets.chapter",
         "summary": "Get text for a chapter",
         "parameters": [
           {
