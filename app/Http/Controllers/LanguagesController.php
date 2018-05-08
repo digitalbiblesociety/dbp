@@ -71,17 +71,21 @@ class LanguagesController extends APIController
 	    $bucket_id = checkParam('bucket_id', null, 'optional');
 	    $include_alt_names = checkParam('include_alt_names', null, 'optional');
 
-		$languages = Language::select(['id','iso2B','iso','name'])->withCount('bibles')
+		$languages = Language::select(['id','iso2B','iso','name'])
 			->when($has_bibles, function ($query) use ($has_bibles) {
 				return $query->has('bibles');
 			})
 			->when($has_filesets, function($q) use ($bucket_id) {
-				$q->with(['bibles' => function($query){
+				$q->with(['bibles' => function($query) {
 					$query->withCount('filesets');
 				}])->whereHas('bibles.filesets', function ($query) use ($bucket_id) {
 					if($bucket_id) $query->where('bucket_id', $bucket_id);
 				});
-			})->when($country, function ($query) use ($country) {
+			},
+				// if has_filesets is set to false
+				function($q) {
+					$q->withCount('bibles');
+				})->when($country, function ($query) use ($country) {
 				return $query->where('country_id', $country);
 			})->when($code, function ($query) use ($code) {
 				return $query->where('iso', $code);
@@ -94,6 +98,7 @@ class LanguagesController extends APIController
 			})->when($sort_by, function ($query) use ($sort_by) {
 				return $query->orderBy($sort_by);
 			})->get();
+
 		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
     }
 

@@ -187,7 +187,10 @@ class LanguageTransformer extends BaseTransformer
 			'bibles'          => $language->bibles_count
 		];
 		if($language->relationLoaded('translations')) $return['alt_names'] = array_flatten($language->translations->pluck('name')->ToArray());
-		if($language->bibles) $return['filesets'] = $language->bibles->sum('filesets_count');
+		if($language->bibles) {
+			$return['bibles'] = $language->bibles->count();
+			$return['filesets'] = $language->bibles->sum('filesets_count');
+		}
 		return $return;
 	}
 
