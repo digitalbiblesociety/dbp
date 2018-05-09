@@ -31,7 +31,7 @@ class UserNotesController extends APIController
 	    $chapter_id = checkParam('chapter_id', null, 'optional');
 	    $project_id = checkParam('project_id', null, 'optional');
 	    $bookmark = explode('.',\Request::route()->getName());
-	    $bookmark = ($bookmark[1] == "v4_bookmark") ? true : false;
+	    $bookmark = ($bookmark[0] == "v4_bookmarks") ? true : false;
 	    $limit = intval(checkParam('limit', null, 'optional') ?? 25);
 
 		$notes = Note::with('tags')->where('user_id',$user_id)->where('project_id',$project_id)
