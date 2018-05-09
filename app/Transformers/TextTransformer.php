@@ -62,7 +62,7 @@ class TextTransformer extends BaseTransformer
 
 	/**
 	 * @OAS\Response(
-	 *   response="v4_bible_filesets.chapter",
+	 *   response="v4_bible_filesets_chapter",
 	 *   description="The bible chapter response",
 	 *   @OAS\MediaType(
 	 *     mediaType="application/json",
@@ -81,6 +81,7 @@ class TextTransformer extends BaseTransformer
 	 *     )
 	 *   )
 	 * )
+	 *
 	 */
 	public function transformforV4($text)
 	{

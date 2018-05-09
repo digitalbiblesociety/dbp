@@ -30,16 +30,16 @@ class TextController extends APIController
 	 *     description="",
 	 *     operationId="v4_bible_filesets.chapter",
 	 *     @OAS\Parameter(name="id", in="path", description="The Bible fileset ID", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-	 *     @OAS\Parameter(name="id", in="path", description="The Book ID", required=true, @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
-	 *     @OAS\Parameter(name="id", in="path", description="The chapter number", required=true, @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+	 *     @OAS\Parameter(name="book", in="path", description="The Book ID", required=true, @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Parameter(name="chapter", in="path", description="The chapter number", required=true, @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_bible_filesets.chapter")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_bible_filesets.chapter")),
-	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_bible_filesets.chapter"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_bible_filesets_chapter")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_bible_filesets_chapter")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_bible_filesets_chapter"))
 	 *     )
 	 * )
 	 *
@@ -119,7 +119,6 @@ class TextController extends APIController
 
 	/**
 	 *
-	 *
 	 * @OAS\Get(
 	 *     path="/search",
 	 *     tags={"Version 4"},
@@ -134,9 +133,9 @@ class TextController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_text_search")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_text_search")),
-	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_text_search"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_bible_filesets_chapter")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_bible_filesets_chapter")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_bible_filesets_chapter"))
 	 *     )
 	 * )
 	 *

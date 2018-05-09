@@ -35,6 +35,7 @@ class BibleFilesetConnection extends Model
 	 * @property string $hash_id
 	 */
 	protected $hash_id;
+
 	/**
 	 *
 	 * @OAS\Property(ref="#/components/schemas/Bible/properties/id")
@@ -42,12 +43,14 @@ class BibleFilesetConnection extends Model
 	 * @property string $bible_id
 	 */
 	protected $bible_id;
+
 	/**
 	 *
 	 * @method static BibleFilesetConnection whereCreatedAt($value)
 	 * @property Carbon $created_at
 	 */
 	protected $created_at;
+
 	/**
 	 *
 	 * @method static BibleFilesetConnection whereUpdatedAt($value)

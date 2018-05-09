@@ -19,6 +19,14 @@ use Illuminate\Database\Eloquent\Model;
  * @method static BibleLink whereType($value)
  * @method static BibleLink whereUpdatedAt($value)
  * @method static BibleLink whereUrl($value)
+ *
+ * @OAS\Schema (
+ *     type="object",
+ *     description="BibleLink",
+ *     title="BibleLink",
+ *     @OAS\Xml(name="BibleLink")
+ * )
+ *
  */
 class BibleLink extends Model
 {
@@ -38,6 +46,11 @@ class BibleLink extends Model
 
     /**
 	 *
+	 * @OAS\Property(
+	 *   title="id",
+	 *   type="string",
+	 *   description=""
+	 * )
 	 *
 	 * @method static BibleLink whereId($value)
 	 * @property int $id
@@ -46,6 +59,11 @@ class BibleLink extends Model
 
 	/**
 	 *
+	 * @OAS\Property(
+	 *   title="bible_id",
+	 *   type="string",
+	 *   description=""
+	 * )
 	 *
 	 * @method static BibleLink whereBibleId($value)
 	 * @property string|null $bible_id
@@ -54,6 +72,11 @@ class BibleLink extends Model
 
 	/**
 	 *
+	 * @OAS\Property(
+	 *   title="type",
+	 *   type="string",
+	 *   description=""
+	 * )
 	 *
 	 * @method static BibleLink whereType($value)
 	 * @property string $type
@@ -62,6 +85,11 @@ class BibleLink extends Model
 
 	/**
 	 *
+	 * @OAS\Property(
+	 *   title="url",
+	 *   type="string",
+	 *   description=""
+	 * )
 	 *
 	 * @method static BibleLink whereUrl($value)
 	 * @property string $url
@@ -70,6 +98,11 @@ class BibleLink extends Model
 
 	/**
 	 *
+	 * @OAS\Property(
+	 *   title="title",
+	 *   type="string",
+	 *   description=""
+	 * )
 	 *
 	 * @method static BibleLink whereTitle($value)
 	 * @property string $title
@@ -78,6 +111,11 @@ class BibleLink extends Model
 
 	/**
 	 *
+	 * @OAS\Property(
+	 *   title="organization_id",
+	 *   type="string",
+	 *   description=""
+	 * )
 	 *
 	 * @method static BibleLink whereOrganizationId($value)
 	 * @property int|null $organization_id
@@ -86,6 +124,11 @@ class BibleLink extends Model
 
 	/**
 	 *
+	 * @OAS\Property(
+	 *   title="created_at",
+	 *   type="string",
+	 *   description=""
+	 * )
 	 *
 	 * @method static BibleLink whereCreatedAt($value)
 	 * @property \Carbon\Carbon $created_at
@@ -94,6 +137,11 @@ class BibleLink extends Model
 
 	/**
 	 *
+	 * @OAS\Property(
+	 *   title="updated_at",
+	 *   type="string",
+	 *   description=""
+	 * )
 	 *
 	 * @method static BibleLink whereUpdatedAt($value)
 	 * @property \Carbon\Carbon $updated_at
@@ -102,6 +150,11 @@ class BibleLink extends Model
 
 	/**
 	 *
+	 * @OAS\Property(
+	 *   title="provider",
+	 *   type="string",
+	 *   description=""
+	 * )
 	 *
 	 * @method static BibleLink whereProvider($value)
 	 * @property string|null $provider

@@ -63,11 +63,12 @@ class AlphabetTransformer extends BaseTransformer
 			 *   @OAS\MediaType(
 			 *     mediaType="application/json",
 			 *     @OAS\Schema(
-			 *          @OAS\Property(property="name",      ref="#/components/schemas/Alphabet/properties/name"),
-			 *          @OAS\Property(property="script",    ref="#/components/schemas/Alphabet/properties/script"),
-			 *          @OAS\Property(property="family",    ref="#/components/schemas/Alphabet/properties/family"),
-			 *          @OAS\Property(property="type",      ref="#/components/schemas/Alphabet/properties/type"),
-			 *          @OAS\Property(property="direction", ref="#/components/schemas/Alphabet/properties/direction"),
+			 *              required={"name","script","family","type","direction"},
+			 *              @OAS\Property(property="name",      ref="#/components/schemas/Alphabet/properties/name"),
+			 *              @OAS\Property(property="script",    ref="#/components/schemas/Alphabet/properties/script"),
+			 *              @OAS\Property(property="family",    ref="#/components/schemas/Alphabet/properties/family"),
+			 *              @OAS\Property(property="type",      ref="#/components/schemas/Alphabet/properties/type"),
+			 *              @OAS\Property(property="direction", ref="#/components/schemas/Alphabet/properties/direction")
 			 *     )
 			 *   )
 			 * )

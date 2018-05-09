@@ -40,6 +40,34 @@ class BiblesController extends APIController
 	 * @param organization_id (optional): Organization id of volumes to return.
 	 * @param sort_by (optional): [ dam_id | volume_name | language_name | language_english | language_family_code | language_family_name | version_code | version_name | version_english ] Primary criteria by which to sort.  The default is 'dam_id'.
 	 *
+	 * @OAS\Get(
+	 *     path="/bibles",
+	 *     tags={"Version 4"},
+	 *     summary="",
+	 *     description="",
+	 *     operationId="v4_bible.all",
+	 *     @OAS\Parameter(name="id", in="path", required=true, description="The Bible id", @OAS\Schema(ref="#/components/schemas/Bible/properties/id")),
+	 *     @OAS\Parameter(name="dam_id", in="query", description="", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="fcbh_id", in="query", description="", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="media", in="query", description="", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="language", in="query", description="", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="full_word", in="query", description="", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="language_code", in="query", description="", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="language_family_code", in="query", description="", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="updated", in="query", description="", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="organization_id", in="query", description="", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="sort_by", in="query", description="", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_bible.one")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_bible.one")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_bible.one"))
+	 *     )
+	 * )
+	 *
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
 	public function index()
@@ -250,6 +278,24 @@ class BiblesController extends APIController
      * Description:
      * Display the bible meta data for the specified ID.
      *
+     * @OAS\Get(
+     *     path="/bibles/{id}",
+     *     tags={"Version 4"},
+     *     summary="",
+     *     description="",
+     *     operationId="v4_bible.one",
+     *     @OAS\Parameter(name="id", in="path", required=true, description="The Bible id", @OAS\Schema(ref="#/components/schemas/Bible/properties/id")),
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_bible.one")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_bible.one")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_bible.one"))
+     *     )
+     * )
+     *
      * @param  string  $id
      * @return \Illuminate\Http\Response
      */
@@ -272,6 +318,25 @@ class BiblesController extends APIController
 
 	/**
 	 *  Query books with the optional constraints of bible_id, book_id and language translations
+	 *
+	 * @OAS\Get(
+	 *     path="/bibles/{id}/book/",
+	 *     tags={"Version 4"},
+	 *     summary="",
+	 *     description="",
+	 *     operationId="v4_bible.books",
+	 *     @OAS\Parameter(name="id", in="path", required=true, description="The Bible id", @OAS\Schema(ref="#/components/schemas/Bible/properties/id")),
+	 *     @OAS\Parameter(name="book_id", in="query", description="The Books id", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_bible.books")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_bible.books")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_bible.books"))
+	 *     )
+	 * )
 	 *
 	 * @param string $bible_id
 	 * @param string|null $book_id

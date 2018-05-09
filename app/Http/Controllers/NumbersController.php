@@ -11,16 +11,46 @@ use App\Transformers\NumbersTransformer;
 
 class NumbersController extends APIController
 {
+
 	/**
-	 * V2|V4
 	 *
 	 * This route returns the vernacular numbers for a set range. The range for a single call is limited to 2000 numbers.
 	 *
+	 * @OAS\Get(
+	 *     path="/numbers/range",
+	 *     tags={"Version 4"},
+	 *     summary="Return a range of numbers",
+	 *     description="Returns a range of numbers",
+	 *     operationId="v4_numbers.range",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(name="iso", in="path", description="The language to get custom numerals for", required=true, @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_numbers.range")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_numbers.range")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_numbers.range"))
+	 *     )
+	 * )
+	 *
 	 * @return mixed
+	 *
+	 * @OAS\Response(
+	 *   response="v4_numbers.range",
+	 *   description="The numbers range return",
+	 *   @OAS\MediaType(
+	 *     mediaType="application/json",
+	 *     @OAS\Schema(
+	 *              @OAS\Property(property="numeral", type="string"),
+	 *              @OAS\Property(property="numeral_vernacular", type="string")
+	 *     )
+	 *   )
+	 * )
 	 */
 	public function customRange()
     {
-		$iso = checkParam('iso', null, true);
+		$iso = checkParam('iso');
 		$start_number = checkParam('start');
 		$end_number = checkParam('end');
 		if(($end_number - $start_number) > 2000) return $this->replyWithError("The Selection has a max size of 2000");
@@ -48,6 +78,27 @@ class NumbersController extends APIController
 		return $this->reply($out_numbers);
     }
 
+	/**
+	 *
+	 * @OAS\Get(
+	 *     path="/numbers",
+	 *     tags={"Version 4"},
+	 *     summary="Return a all Alphabets that have a custom number sets",
+	 *     description="Returns a range of numbers",
+	 *     operationId="v4_numbers.index",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_alphabets.all")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_alphabets.all")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_alphabets.all"))
+	 *     )
+	 * )
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 */
     public function index()
     {
 	    $alphabets = Alphabet::has('numerals')->get();
@@ -55,6 +106,30 @@ class NumbersController extends APIController
 	    return view('languages.alphabets.numerals.index', compact('alphabets'));
     }
 
+	/**
+	 *
+	 * @OAS\Get(
+	 *     path="/numbers/{id}",
+	 *     tags={"Version 4"},
+	 *     summary="Return a single custom number set",
+	 *     description="Returns a range of numbers",
+	 *     operationId="v4_numbers.index",
+	 *     @OAS\Parameter(name="id", in="path", required=true, description="The Alphabet id", @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_alphabets.one"))
+	 *     )
+	 * )
+	 *
+	 * @param $system
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 */
     public function show($system)
     {
 	    $numerals = AlphabetNumber::where('script_id', $system)->orderBy('numeral')->get();

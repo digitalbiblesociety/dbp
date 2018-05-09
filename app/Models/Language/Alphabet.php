@@ -100,6 +100,7 @@ class Alphabet extends Model
 	 *     title="Alphabet Script",
 	 *     description="The Script ID for the alphabet aligning with the iso 15924 standard",
 	 *     format="string",
+	 *     example="Cans",
 	 *     @OAS\ExternalDocumentation(
 	 *         description="For more info please refer to the Unicode Consortium",
 	 *         url="https://http://www.unicode.org/iso15924/"
@@ -115,7 +116,7 @@ class Alphabet extends Model
 	 *   title="Alphabet Script",
 	 *   type="string",
 	 *   description="The name of the alphabet in English",
-	 *   default="available"
+	 *   example="Unified Canadian Aboriginal"
 	 * )
 	 *
 	 * @var string $name
@@ -126,7 +127,9 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Unicode PDF",
 	 *     description="A url to a reference PDF for the alphabet",
-	 *     format="string"
+	 *     format="string",
+	 *     nullable=true,
+	 *     example="https://unicode.org/charts/PDF/U1400.pdf"
 	 * )
 	 *
 	 * @var string $unicode_pdf
@@ -137,7 +140,8 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Family",
 	 *     description="The linguistic family the alphabet can be categorized within",
-	 *     format="string"
+	 *     format="string",
+	 *     example="American"
 	 * )
 	 *
 	 * @var string $family
@@ -148,7 +152,8 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Type",
 	 *     description="The type of alphabet be described",
-	 *     format="string"
+	 *     format="string",
+	 *     example="abugida"
 	 * )
 	 *
 	 * @var string $type
@@ -159,7 +164,8 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="White Space",
 	 *     description="The usage white space within the alphabet",
-	 *     format="string"
+	 *     format="string",
+	 *     example="between words"
 	 * )
 	 *
 	 * @var string $white_space
@@ -170,7 +176,8 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Open Type Tag",
 	 *     description="The open type tag of the alphabet",
-	 *     format="string"
+	 *     format="string",
+	 *     example="cans"
 	 * )
 	 *
 	 * @var string $open_type_tag
@@ -181,7 +188,8 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Open Type Tag",
 	 *     description="The open type tag of the alphabet",
-	 *     format="string"
+	 *     format="string",
+	 *     example="no"
 	 * )
 	 *
 	 * @var string $complex_positioning
@@ -192,7 +200,8 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Requires Font",
 	 *     description="If the Alphabet generally requires the use of a font to display correctly online",
-	 *     format="boolean"
+	 *     format="boolean",
+	 *     example=false
 	 * )
 	 *
 	 * @var boolean $requires_font
@@ -203,7 +212,8 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Unicode",
 	 *     description="If the Alphabet is fully supported by the unicode spec",
-	 *     format="boolean"
+	 *     format="boolean",
+	 *     example=true
 	 * )
 	 *
 	 * @var boolean $unicode
@@ -214,7 +224,8 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Diacritics",
 	 *     description="If the Alphabet contains diacritics",
-	 *     format="boolean"
+	 *     format="boolean",
+	 *     example=true
 	 * )
 	 *
 	 * @var boolean $diacritics
@@ -225,7 +236,8 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Contextual Forms",
 	 *     description="If the Alphabet contains contextual forms",
-	 *     format="boolean"
+	 *     format="boolean",
+	 *     example=false
 	 * )
 	 *
 	 * @var boolean $contextual_forms
@@ -236,10 +248,12 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Reordering",
 	 *     description="If the Alphabet contains reordering",
-	 *     format="boolean"
+	 *     format="boolean",
+	 *     nullable=true,
+	 *     example=false
 	 * )
 	 *
-	 * @var boolean $reordering
+	 * @var boolean|null $reordering
 	 */
 	protected $reordering;
 
@@ -247,10 +261,12 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Case",
 	 *     description="If the Alphabet utilizes different cases",
-	 *     format="boolean"
+	 *     format="boolean",
+	 *     nullable=true,
+	 *     example=false
 	 * )
 	 *
-	 * @var boolean $case
+	 * @var boolean|null $case
 	 */
 	protected $case;
 
@@ -259,6 +275,7 @@ class Alphabet extends Model
 	 *     title="Split Graphs",
 	 *     description="If the Alphabet contains letters that are written using two separate distinct elements.",
 	 *     format="boolean",
+	 *     example=false,
 	 *     @OAS\ExternalDocumentation(
 	 *         description="For more info please refer to the Script Source Feature Definitions",
 	 *         url="http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#50d6cb6e"
@@ -274,6 +291,7 @@ class Alphabet extends Model
 	 *     title="Status",
 	 *     description="The status of the alphabet",
 	 *     format="string",
+	 *     example="Current",
 	 *     enum={"Current","Historical","Fictional","Unclear"},
 	 *     @OAS\ExternalDocumentation(
 	 *         description="For more info please refer to the Script Source Feature Definitions",
@@ -291,6 +309,7 @@ class Alphabet extends Model
 	 *     description="The alignment of the text within the alphabet",
 	 *     format="string",
 	 *     enum={"Hanging","Centered","Bottom","Vertical"},
+	 *     example="Bottom",
 	 *     @OAS\ExternalDocumentation(
 	 *         description="For more info please refer to the Script Source Feature Definitions",
 	 *         url="http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#a4a32c47"
@@ -306,7 +325,8 @@ class Alphabet extends Model
 	 *     title="Ligatures",
 	 *     description="Indicates on if letters may be or are required to be joined as a single glyph",
 	 *     format="string",
-	 *     enum={"Required","Optional","None"},
+	 *     enum={"required","optional","none"},
+	 *     example="none",
 	 *     @OAS\ExternalDocumentation(
 	 *         description="For more information please refer to the Script Source Feature Definitions",
 	 *         url="http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#3e655409"
@@ -327,6 +347,7 @@ class Alphabet extends Model
 	 *     description="The direction that the alphabet is read",
 	 *     format="string",
 	 *     enum={"rtl","ltr"},
+	 *     example="ltr",
 	 *     @OAS\ExternalDocumentation(
 	 *         description="For more information please refer to the Script Source Feature Definitions",
 	 *         url="http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#02674a4e"

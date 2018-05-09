@@ -135,6 +135,28 @@ class BooksTransformer extends BaseTransformer
 	 *     )
 	 *   )
 	 * )
+	 *
+	 * @OAS\Response(
+	 *   response="v4_bible.books",
+	 *   description="The books of the bible with codes",
+	 *   @OAS\MediaType(
+	 *     mediaType="application/json",
+	 *     @OAS\Schema(
+	 *          @OAS\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
+	 *          @OAS\Property(property="id_usfx",           ref="#/components/schemas/Book/properties/id_usfx"),
+	 *          @OAS\Property(property="id_osis",           ref="#/components/schemas/Book/properties/id_osis"),
+	 *          @OAS\Property(property="book_order",        ref="#/components/schemas/Book/properties/book_order"),
+	 *          @OAS\Property(property="testament_order",   ref="#/components/schemas/Book/properties/testament_order"),
+	 *          @OAS\Property(property="book_testament",    ref="#/components/schemas/Book/properties/book_testament"),
+	 *          @OAS\Property(property="book_group",        ref="#/components/schemas/Book/properties/book_group"),
+	 *          @OAS\Property(property="chapters",          ref="#/components/schemas/Book/properties/chapters"),
+	 *          @OAS\Property(property="verses",            ref="#/components/schemas/Book/properties/verses"),
+	 *          @OAS\Property(property="name",              ref="#/components/schemas/Book/properties/name"),
+	 *     )
+	 *   )
+	 * )
+	 *
+	 *
 	 */
 	public function transformForV4($book) {
 		return [

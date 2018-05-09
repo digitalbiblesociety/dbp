@@ -26,7 +26,7 @@ class BibleFileset extends Model
 	public $incrementing = false;
 	protected $keyType = "string";
 	protected $hidden = ["created_at","updated_at","response_time","hidden","bible_id","hash_id"];
-	protected $fillable = ['name','set_type','organization_id','variation_id','bible_id'];
+	protected $fillable = ['name','set_type','organization_id','variation_id','bible_id','set_copyright'];
 
 
 	/**
@@ -35,7 +35,6 @@ class BibleFileset extends Model
 	 *   title="id",
 	 *   type="string",
 	 *   description="The fileset id",
-
 	 *   minLength=6,
 	 *   maxLength=16
 	 * )
@@ -51,7 +50,6 @@ class BibleFileset extends Model
 	 *   title="hash_id",
 	 *   type="string",
 	 *   description="The hash_id generated from the `bucket_id`, `set_type_code`, and `id`",
-
 	 *   minLength=12,
 	 *   maxLength=12
 	 * )
@@ -67,7 +65,6 @@ class BibleFileset extends Model
 	 *   title="bucket_id",
 	 *   type="string",
 	 *   description="The bucket id of the AWS Bucket",
-
 	 *   maxLength=64
 	 * )
 	 *
@@ -82,7 +79,6 @@ class BibleFileset extends Model
 	 *   title="set_type_code",
 	 *   type="string",
 	 *   description="The set_type_code indicating the type of the fileset",
-
 	 *   maxLength=3
 	 * )
 	 *
@@ -97,7 +93,6 @@ class BibleFileset extends Model
 	 *   title="set_size_code",
 	 *   type="string",
 	 *   description="The set_size_code indicating the size of the fileset",
-
 	 *   maxLength=3
 	 * )
 	 *

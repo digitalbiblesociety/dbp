@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Validator;
+use Auth;
+use Illuminate\Http\Request;
+
+
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFilesetType;
 use App\Models\Bible\Book;
 use App\Helpers\AWS\Bucket;
+use App\Models\User\Key;
 use App\Models\User\Access;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
@@ -17,7 +23,6 @@ use App\Transformers\FileSetTransformer;
 // for download
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-
 
 class BibleFileSetsController extends APIController
 {
@@ -237,29 +242,14 @@ class BibleFileSetsController extends APIController
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 *
 	 */
-	public function store()
+	public function store(Request $request)
     {
-	    ini_set('upload_max_filesize', '1000M');
-	    ini_set('post_max_size', '1000M');
-	    ini_set('max_input_time', 3000);
-	    ini_set('max_execution_time', 3000);
+	    $this->validateUser(Auth::user());
+	    $this->validateBibleFileset();
 
 	    $fileset = BibleFileset::create(request()->all());
 
-	    $bible = request()->file('file');
-	    $zip = new ZipArchive;
-	    $res = $zip->open($bible);
-	    if ($res === TRUE) {
-	    	$path = storage_path("bibles/input/");
-	    	if(!file_exists($path)) mkdir($path);
-		    $zip->extractTo($path);
-		    $zip->close();
-	    }
-
-	    exec("python /Sites/dbp/aletheia/processing/usfm2epub.py $fileset->id /Sites/dbp/storage/bibles/input/ /Sites/dbp/public/scriptures/ /Sites/dbp/aletheia/");
-	    exec("python /Sites/dbp/aletheia/processing/usfm2html.py $fileset->id /Sites/dbp/storage/bibles/input/ /Sites/dbp/public/scriptures/ /Sites/dbp/aletheia/");
-	    exec("python /Sites/dbp/aletheia/processing/usfm2inscript.py $fileset->id /Sites/dbp/storage/bibles/input/ /Sites/dbp/public/scriptures/ /Sites/dbp/aletheia/");
-	    exec("python /Sites/dbp/aletheia/processing/usfm2dbp.py $fileset->id /Sites/dbp/storage/bibles/input/ /Sites/dbp/public/scriptures/ /Sites/dbp/aletheia/");
+	    // $bible = request()->file('file');
 
 	    // ProcessBible::dispatch($request->file('zip'), $fileset->id);
 	    return view('bibles.filesets.thanks', compact('fileset'));
@@ -335,9 +325,15 @@ class BibleFileSetsController extends APIController
 	 *
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */
-	public function update($id)
+	public function update($id, Request $request)
     {
+	    $this->validateUser(Auth::user());
+	    $this->validateBibleFileset($request);
+
 	    $fileset = BibleFileset::find($id);
+	    $fileset->fill($request->all())->save();
+
+	    if($this->api) return $this->setStatusCode(201)->reply($fileset);
 	    return view('bibles.filesets.thanks', compact('fileset'));
     }
 
@@ -350,8 +346,65 @@ class BibleFileSetsController extends APIController
 	 */
 	public function destroy($id)
     {
+	    $this->validateUser(Auth::user());
+
 	    $fileset = BibleFileset::find($id);
+	    $fileset->delete();
+
+	    if($this->api) return $this->setStatusCode(200)->reply($fileset);
 	    return view('bibles.filesets.thanks', compact('fileset'));
     }
+
+	/**
+	 * Ensure the current User has permissions to alter the alphabets
+	 *
+	 * @return \App\Models\User\User|mixed|null
+	 */
+	private function validateUser($fileset = null)
+	{
+		$user = Auth::user();
+		if(!$user) {
+			$key = Key::where('key',$this->key)->first();
+			if(!isset($key)) return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
+			$user = $key->user;
+		}
+		if(!$user->archivist AND !$user->admin) {
+			if($fileset) {
+				$userIsAMember = $user->organizations->where('organization_id',$fileset->organization->id)->first();
+				if($userIsAMember) return $user;
+			}
+			return $this->setStatusCode(401)->replyWithError("You don't have permission to edit this filesets");
+		}
+		return $user;
+	}
+
+	/**
+	 * Ensure the current alphabet change is valid
+	 *
+	 * @param Request $request
+	 *
+	 * @return mixed
+	 */
+	private function validateBibleFileset(Request $request)
+	{
+		$validator = Validator::make($request->all(),[
+			'id'                 => ($request->method() == "POST") ? 'required|unique:bible_filesets,id|max:16|min:6' : 'required|exists:bible_filesets,id|max:16|min:6',
+			'bucket_id'          => 'string|maxLength:64',
+			'set_type_code'      => 'string|maxLength:16',
+			'set_size_code'      => 'string|maxLength:9',
+			'hidden'             => 'boolean',
+		]);
+
+		if ($validator->fails()) {
+			if($this->api)  return $this->setStatusCode(422)->replyWithError($validator->errors());
+			if(!$this->api) return redirect('dashboard/bible-filesets/create')->withErrors($validator)->withInput();
+		}
+
+	}
+
+	private function notifyArchivist()
+	{
+
+	}
 
 }
