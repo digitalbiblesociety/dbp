@@ -30,10 +30,10 @@ class LanguagesController extends APIController
      *     operationId="v4_languages.all",
      *     @OAS\Parameter(name="country",in="query",description="The country",@OAS\Schema(ref="#/components/schemas/Country/properties/id")),
      *     @OAS\Parameter(name="iso",in="query",description="The iso code to filter languages by",@OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
-     *     @OAS\Parameter(name="language_name",in="query",description="The language_name field will filter results by a specific language name",@OAS\Schema(type="string")),
-     *     @OAS\Parameter(name="sort_by",in="query",description="The sort_by field will order results by a specific field",@OAS\Schema(type="string")),
-     *     @OAS\Parameter(name="has_bibles",in="query",description="When set to true will filter language results depending whether or not they have bibles.",@OAS\Schema(type="boolean")),
-     *     @OAS\Parameter(name="has_filesets",in="query",description="When set to true will filter language results depending whether or not they have filesets. Will add new filesets_count field to the return.",@OAS\Schema(type="boolean",default=null,example=true)),
+     *     @OAS\Parameter(name="language_name",in="query",description="The language_name field will filter results by a specific language name",@OAS\Schema(type="object")),
+     *     @OAS\Parameter(name="sort_by",in="query",description="The sort_by field will order results by a specific field",@OAS\Schema(type="object")),
+     *     @OAS\Parameter(name="has_bibles",in="query",description="When set to true will filter language results depending whether or not they have bibles.",@OAS\Schema(type="object")),
+     *     @OAS\Parameter(name="has_filesets",in="query",description="When set to true will filter language results depending whether or not they have filesets. Will add new filesets_count field to the return.",@OAS\Schema(type="object",default=null,example=true)),
      *     @OAS\Parameter(name="bucket_id",in="query",description="The bucket_id",@OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
      *     @OAS\Parameter(name="include_alt_names",in="query",description="The include_alt_names",@OAS\Schema(ref="#/components/schemas/Language/properties/name")),
      *     @OAS\Response(
@@ -124,8 +124,6 @@ class LanguagesController extends APIController
 	 * @param status (optional): [live|disabled|incomplete|waiting_review|in_review|discontinued] Publishing status of volume. The default is 'live'.
 	 * @param resolution (optional): [lo|med|hi] Currently used for video volumes as they can be available in different resolutions, basically conforming to the loose general categories of low, medium, and high resolution. Low resolution is geared towards devices with smaller screens.
 	 * @param organization_id: The id of an organization by which to filter the languages of available volumes.
-	 *
-	 *
 	 *
 	 * @return View|JSON
 	 */

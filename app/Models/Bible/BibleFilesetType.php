@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Bible\BibleFilesetType
  * @mixin \Eloquent
- * 
+ *
  * @property-read \App\Models\Bible\BibleFileset $fileset
  *
  * @OAS\Schema (

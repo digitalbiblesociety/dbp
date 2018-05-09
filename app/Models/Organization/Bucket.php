@@ -30,7 +30,6 @@ class Bucket extends Model
 	 *   title="id",
 	 *   type="string",
 	 *   description="The id of the Bucket",
-	 *   default="dbp-dev",
 	 *   maxLength=64,
 	 *   minLength=24
 	 * )
@@ -57,7 +56,6 @@ class Bucket extends Model
 	 *   title="created_at",
 	 *   type="string",
 	 *   description="The timestamp at which the bucket was created",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static Bucket whereCreatedAt($value)
@@ -71,7 +69,6 @@ class Bucket extends Model
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description="The timestamp at which the bucket was last updated",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static Bucket whereUpdatedAt($value)

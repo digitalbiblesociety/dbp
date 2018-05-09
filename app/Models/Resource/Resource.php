@@ -73,7 +73,6 @@ class Resource extends Model
 	 *   title="source_id",
 	 *   type="string",
 	 *   description="The owning organization's tracking id for the resource",
-	 *   default=null,
 	 *   nullable=true
 	 * )
 	 *
@@ -88,7 +87,6 @@ class Resource extends Model
 	 *   title="cover",
 	 *   type="string",
 	 *   description="The url to the main cover art for the resource",
-	 *   default=null,
 	 *   nullable=true
 	 * )
 	 *
@@ -104,7 +102,6 @@ class Resource extends Model
 	 *   title="cover_thumbnail",
 	 *   type="string",
 	 *   description="The url to the thumbnail cover art for the resource",
-	 *   default=null,
 	 *   nullable=true
 	 * )
 	 *
@@ -120,7 +117,6 @@ class Resource extends Model
 	 *   title="date",
 	 *   type="string",
 	 *   description="The date the resource was originally published",
-	 *   default=null,
 	 *   nullable=true
 	 * )
 	 *
@@ -136,7 +132,6 @@ class Resource extends Model
 	 *   title="type",
 	 *   type="string",
 	 *   description="The type of media the resource can be categorized as",
-	 *   default=null,
 	 *   nullable=true
 	 * )
 	 *

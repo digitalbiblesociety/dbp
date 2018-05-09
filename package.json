@@ -20,8 +20,9 @@
     "swagger-spec-validator": "^1.0.1"
   },
   "dependencies": {
-    "npm": "^5.7.1",
+    "npm": "^5.8.0",
     "react-transmit": "^3.2.0",
+    "speccy": "github:wework/speccy",
     "swagger-ui": "^3.12.1"
   }
 }

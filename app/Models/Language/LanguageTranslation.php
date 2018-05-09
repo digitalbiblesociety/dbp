@@ -96,7 +96,6 @@ class LanguageTranslation extends Model
 	 *   title="description",
 	 *   type="string",
 	 *   description="The description of the language translation",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static LanguageTranslation whereDescription($value)
@@ -110,7 +109,6 @@ class LanguageTranslation extends Model
 	 *   title="created_at",
 	 *   type="string",
 	 *   description="The timestamp at which the translation was created at",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static LanguageTranslation whereCreatedAt($value)
@@ -123,7 +121,6 @@ class LanguageTranslation extends Model
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description="The timestamp at which the translation was last updated at",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static LanguageTranslation whereUpdatedAt($value)

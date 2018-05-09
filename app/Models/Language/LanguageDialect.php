@@ -76,7 +76,6 @@ class LanguageDialect extends Model
 	 *   title="name",
 	 *   type="string",
 	 *   description="The name of the language dialect",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static LanguageDialect whereName($value)
@@ -91,7 +90,6 @@ class LanguageDialect extends Model
 	 *   title="created_at",
 	 *   type="string",
 	 *   description="The timestamp for which the language created at",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static LanguageDialect whereCreatedAt($value)
@@ -106,7 +104,6 @@ class LanguageDialect extends Model
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description="The timestamp for which the language updated at",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static LanguageDialect whereUpdatedAt($value)

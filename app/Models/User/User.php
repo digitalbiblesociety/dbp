@@ -129,8 +129,7 @@ class User extends Authenticatable
 	 * @OAS\Property(
 	 *   title="verified",
 	 *   type="boolean",
-	 *   description="If the user has verified the email address they've provided or if they're connected via a social account",
-	 *   default=false
+	 *   description="If the user has verified the email address they've provided or if they're connected via a social account"
 	 * )
 	 *
 	 * @method static User whereVerified($value)

@@ -46,7 +46,6 @@ class BiblesController extends APIController
 	 *     summary="",
 	 *     description="",
 	 *     operationId="v4_bible.all",
-	 *     @OAS\Parameter(name="id", in="path", required=true, description="The Bible id", @OAS\Schema(ref="#/components/schemas/Bible/properties/id")),
 	 *     @OAS\Parameter(name="dam_id", in="query", description="", @OAS\Schema(type="string")),
 	 *     @OAS\Parameter(name="fcbh_id", in="query", description="", @OAS\Schema(type="string")),
 	 *     @OAS\Parameter(name="media", in="query", description="", @OAS\Schema(type="string")),

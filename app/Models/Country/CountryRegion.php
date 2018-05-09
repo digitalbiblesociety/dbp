@@ -28,7 +28,6 @@ class CountryRegion extends Model
 	 *   title="country_id",
 	 *   type="string",
 	 *   description="The ID of the ",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static CountryRegion whereCountryId($value)

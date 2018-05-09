@@ -49,6 +49,14 @@ class APIController extends Controller
 	 * @OAS\Parameter(parameter="version_number",name="v",in="query",description="The Version Number",required=true,@OAS\Schema(type="integer",example=4))
 	 * @OAS\Parameter(parameter="key",name="key",in="query",description="The Key granted to the api user upon sign up",required=true,@OAS\Schema(type="string",example="ar45g3h4ae644"))
 	 *
+	 * @OAS\Tag(
+	 *   name="Version 2",
+	 *   description="Everything about version 2"
+	 * )
+	 * @OAS\Tag(
+	 *   name="Version 4",
+	 *   description="Everything about version 4"
+	 * )
 	 */
 
     /**

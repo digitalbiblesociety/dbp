@@ -24,20 +24,22 @@ class NumbersController extends APIController
 	 *     operationId="v4_numbers.range",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(name="iso", in="path", description="The language to get custom numerals for", required=true, @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
+	 *     @OAS\Parameter(name="iso", in="query", description="iso", required=true, @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
+	 *     @OAS\Parameter(name="start", in="query", description="start", required=true, @OAS\Schema(type="object")),
+	 *     @OAS\Parameter(name="end", in="query", description="end", required=true, @OAS\Schema(type="object")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_numbers.range")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_numbers.range")),
-	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_numbers.range"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_numbers_range")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_numbers_range")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_numbers_range"))
 	 *     )
 	 * )
 	 *
 	 * @return mixed
 	 *
 	 * @OAS\Response(
-	 *   response="v4_numbers.range",
+	 *   response="v4_numbers_range",
 	 *   description="The numbers range return",
 	 *   @OAS\MediaType(
 	 *     mediaType="application/json",
@@ -113,7 +115,7 @@ class NumbersController extends APIController
 	 *     tags={"Version 4"},
 	 *     summary="Return a single custom number set",
 	 *     description="Returns a range of numbers",
-	 *     operationId="v4_numbers.index",
+	 *     operationId="v4_numbers.show",
 	 *     @OAS\Parameter(name="id", in="path", required=true, description="The Alphabet id", @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),

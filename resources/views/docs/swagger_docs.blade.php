@@ -18,7 +18,7 @@
     </style>
 </head>
 <body>
-<redoc spec-url='/swagger_docs' suppressWarnings></redoc>
+<redoc spec-url='https://dbp.dev/eng/swagger_docs'></redoc>
 <script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0-alpha.17/bundles/redoc.standalone.js"> </script>
 </body>
 </html>

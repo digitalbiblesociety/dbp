@@ -53,7 +53,6 @@ class BibleFile extends Model
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The id",
-
 	 *   minimum=0,
 	 *   example=4
 	 * )
@@ -68,7 +67,6 @@ class BibleFile extends Model
 	 *   title="hash_id",
 	 *   type="string",
 	 *   description="The hash_id",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static BibleFile whereHashId($value)
@@ -81,7 +79,6 @@ class BibleFile extends Model
 	 *   title="book_id",
 	 *   type="string",
 	 *   description="The book_id",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static BibleFile whereBookId($value)
@@ -94,7 +91,6 @@ class BibleFile extends Model
 	 *   title="chapter_start",
 	 *   type="integer",
 	 *   description="The chapter_start",
-	 *   default=1,
 	 *   minimum=0,
 	 *   maximum=150,
 	 *   example=4
@@ -108,9 +104,8 @@ class BibleFile extends Model
 	 *
 	 * @OAS\Property(
 	 *   title="chapter_end",
-	 *   type="string",
+	 *   type="integer",
 	 *   description="If the Bible File spans multiple chapters this field indicates the last chapter of the selection",
-	 *   default=null,
 	 *   nullable=true,
 	 *   minimum=0,
 	 *   maximum=150,
@@ -127,7 +122,6 @@ class BibleFile extends Model
 	 *   title="verse_start",
 	 *   type="integer",
 	 *   description="The starting verse at which the BibleFile reference begins",
-	 *   default=1,
 	 *   minimum=1,
 	 *   maximum=176,
 	 *   example=5
@@ -143,7 +137,6 @@ class BibleFile extends Model
 	 *   title="verse_end",
 	 *   type="string",
 	 *   description="If the Bible File spans multiple verses this value will indicate the last verse in that reference. This value is inclusive, so for the reference John 1:1-4. The value would be 4 and the reference would contain verse 4.",
-	 *   default=null,
 	 *   nullable=true,
 	 *   minimum=1,
 	 *   maximum=176,

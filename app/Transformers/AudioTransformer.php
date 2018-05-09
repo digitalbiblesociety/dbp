@@ -29,6 +29,21 @@ class AudioTransformer extends BaseTransformer
 				];
 			}
 
+			/**
+			 * @OAS\Response(
+			 *   response="v2_audio_path",
+			 *   description="The audio_path",
+			 *   @OAS\MediaType(
+			 *     mediaType="application/json",
+			 *     @OAS\Schema(
+			 *              required={"name","script","family","type","direction"},
+			 *              @OAS\Property(property="book_id",       ref="#/components/schemas/Book/properties/id_osis"),
+			 *              @OAS\Property(property="chapter_id",    ref="#/components/schemas/BibleFile/properties/chapter_start"),
+			 *              @OAS\Property(property="path",          @OAS\Schema(type="string"))
+			 *     )
+			 *   )
+			 * )
+			 */
 			case "v2_audio_path": {
 				return [
 					"book_id"    => ucfirst(strtolower($audio->book->id_osis)),

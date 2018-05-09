@@ -36,7 +36,6 @@ class ResourceLink extends Model
 	 *   title="type",
 	 *   type="string",
 	 *   description="The type of media the resource can be categorized as",
-	 *   default=null,
 	 *   nullable=true
 	 * )
 	 *
@@ -52,7 +51,6 @@ class ResourceLink extends Model
 	 *   title="size",
 	 *   type="string",
 	 *   description="The size of the resource measured in kilobytes",
-	 *   default=null,
 	 *   nullable=true
 	 * )
 	 *
@@ -68,7 +66,6 @@ class ResourceLink extends Model
 	 *   title="type",
 	 *   type="string",
 	 *   description="The destination type for the url",
-	 *   default=null,
 	 *   nullable=true
 	 * )
 	 *

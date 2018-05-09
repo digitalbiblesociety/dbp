@@ -91,7 +91,6 @@ class Bible extends Model
 	 *   title="iso",
 	 *   type="string",
 	 *   description="",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static Bible whereIso($value)
@@ -104,7 +103,6 @@ class Bible extends Model
 	 *   title="date",
 	 *   type="string",
 	 *   description="",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static Bible whereDate($value)
@@ -117,7 +115,6 @@ class Bible extends Model
 	 *   title="scope",
 	 *   type="string",
 	 *   description="",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static Bible whereScope($value)
@@ -130,7 +127,6 @@ class Bible extends Model
 	 *   title="script",
 	 *   type="string",
 	 *   description="",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static Bible whereScript($value)
@@ -143,7 +139,6 @@ class Bible extends Model
 	 *   title="derived",
 	 *   type="string",
 	 *   description="",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static Bible whereDerived($value)
@@ -156,7 +151,6 @@ class Bible extends Model
 	 *   title="copyright",
 	 *   type="string",
 	 *   description="",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static Bible whereCopyright($value)
@@ -169,7 +163,6 @@ class Bible extends Model
 	 *   title="in_progress",
 	 *   type="string",
 	 *   description="",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static Bible whereInProgress($value)
@@ -182,7 +175,6 @@ class Bible extends Model
 	 *   title="created_at",
 	 *   type="string",
 	 *   description="",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static Bible whereCreatedAt($value)
@@ -195,7 +187,6 @@ class Bible extends Model
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description="",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static Bible whereUpdatedAt($value)

@@ -65,8 +65,7 @@ class BibleFilesetCopyright extends Model
 	 * @OAS\Property(
 	 *   title="copyright",
 	 *   type="string",
-	 *   description="The copyright",
-	 *   default="available"
+	 *   description="The copyright"
 	 * )
 	 *
 	 * @method static BibleFilesetCopyright whereCopyright($value)
@@ -81,7 +80,6 @@ class BibleFilesetCopyright extends Model
 	 *   title="copyright_description",
 	 *   type="string",
 	 *   description="The copyright description",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static BibleFilesetCopyright whereCopyrightDescription($value)
@@ -96,7 +94,6 @@ class BibleFilesetCopyright extends Model
 	 *   title="open_access",
 	 *   type="string",
 	 *   description="The open_access description",
-	 *   default="available"
 	 * )
 	 *
 	 * @method static BibleFilesetCopyright whereOpenAccess($value)

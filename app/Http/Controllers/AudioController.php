@@ -34,7 +34,7 @@ class AudioController extends APIController
 	 *     tags={"Version 2"},
 	 *     summary="Returns Audio File path information",
 	 *     description="This call returns the file path information for audio files for a volume. This information can be used with the response of the /audio/location call to create a URI to retrieve the audio files.",
-	 *     operationId="v4_alphabets.one",
+	 *     operationId="v2_audio_path",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(name="id", in="path", description="The DAM ID for which to retrieve file path info.", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
@@ -48,7 +48,7 @@ class AudioController extends APIController
 	 *         description="successful operation",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_alphabets.one")
+	 *            @OAS\Schema(ref="#/components/responses/v2_audio_path")
 	 *         )
 	 *     )
 	 * )
