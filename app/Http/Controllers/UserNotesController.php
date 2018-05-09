@@ -41,6 +41,8 @@ class UserNotesController extends APIController
 			$q->where('book_id', '=', $book_id);
 		})->when($bookmark, function($q) {
 			$q->where('bookmark', true);
+		}, function($q) {
+			$q->where('bookmark', false);
 		})->orderBy('updated_at')->paginate($limit);
 
     	foreach($notes as $key => $note) $notes[$key]->notes = decrypt($note->notes);
