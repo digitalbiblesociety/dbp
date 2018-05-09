@@ -33,7 +33,7 @@ class DocsController extends APIController
 	public function swagger_docs_gen()
 	{
 		$swagger = \Swagger\scan(app_path());
-		return response()->json($swagger, $this->getStatusCode(), array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'text/json');
+		return response()->json($swagger, $this->getStatusCode(), array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'application/json');
 	}
 
 	public function swagger_database()
