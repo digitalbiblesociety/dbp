@@ -95,8 +95,8 @@ class LanguageTransformer extends BaseTransformer
 			 *          @OAS\Property(property="regional_lang_name",    ref="#/components/schemas/Language/properties/iso1"),
 			 *          @OAS\Property(property="family_id",             ref="#/components/schemas/Language/properties/name"),
 			 *          @OAS\Property(property="primary_country_name",  ref="#/components/schemas/Language/properties/iso2T"),
-			 *          @OAS\Property(property="country_image",         @OAS\Schema("type"="string",example="https://cdn.bible.build/img/flags/full/80X60/in.png")),
-			 *          @OAS\Property(property="country_additional",    @OAS\Schema("type"="string",example="BM: CH: CN: MM","description": "The country names are delimited by both a colon and a space"))
+			 *          @OAS\Property(property="country_image",         @OAS\Schema(type="string",example="https://cdn.bible.build/img/flags/full/80X60/in.png")),
+			 *          @OAS\Property(property="country_additional",    @OAS\Schema(type="string",example="BM: CH: CN: MM",description="The country names are delimited by both a colon and a space"))
 			 *     )
 			 *   )
 			 * )
