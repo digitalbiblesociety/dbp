@@ -37,7 +37,37 @@ class FilmsController extends APIController {
 	}
 
 	/**
+	 *
+	 *
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 */
+
+	/**
+	 *
+	 * Returns an array of version return types
+	 *
+	 * @category v2_video_path
+	 * @link http://api.bible.build/api/reply - V4 Access
+	 * @link https://api.dbp.dev/api/reply?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
+	 *
+	 * @OAS\Get(
+	 *     path="/video/path",
+	 *     tags={"Version 2"},
+	 *     summary="",
+	 *     description="",
+	 *     operationId="v2_video_path",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_video_path")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v2_video_path"))
+	 *     )
+	 * )
+	 *
+	 * @return mixed
 	 */
 	public function videopath() {
 		if(!$this->api) return view('docs.v2.video_videoPath');

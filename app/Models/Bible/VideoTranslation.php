@@ -12,12 +12,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @OAS\Schema (
  *     type="object",
  *     description="The Video Translations model communicates information regarding different translation files for the videos",
- *     title="VideoTranslations",
- *     @OAS\Xml(name="VideoTranslations")
+ *     title="VideoTranslation",
+ *     @OAS\Xml(name="VideoTranslation")
  * )
  *
  */
-class VideoTranslations extends Model
+class VideoTranslation extends Model
 {
 
 	protected $table = "video_translations";
@@ -27,7 +27,7 @@ class VideoTranslations extends Model
 	/**
 	 *
 	 * @OAS\Property(ref="#/components/schemas/Language/properties/id")
-	 * @method static VideoTranslations whereLanguageId($value)
+	 * @method static VideoTranslation whereLanguageId($value)
 	 * @property int $language_id
 	*/
     protected $language_id;
@@ -41,7 +41,7 @@ class VideoTranslations extends Model
 	 *   minimum=1
 	 * )
 	 *
-	 * @method static VideoTranslations whereVideoId($value)
+	 * @method static VideoTranslation whereVideoId($value)
 	 * @property int $video_id
 	*/
 	protected $video_id;
@@ -54,7 +54,7 @@ class VideoTranslations extends Model
 	 *   description="The incrementing id of the file timestamp"
 	 * )
 	 *
-	 * @method static VideoTranslations whereTitle($value)
+	 * @method static VideoTranslation whereTitle($value)
 	 * @property string $title
 	*/
 	protected $title;
@@ -67,7 +67,7 @@ class VideoTranslations extends Model
      *   description="The incrementing id of the file timestamp"
      * )
      *
-     * @method static VideoTranslations whereDescription($value)
+     * @method static VideoTranslation whereDescription($value)
      * @property string $description
     */
 	protected $description;

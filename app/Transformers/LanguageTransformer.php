@@ -79,19 +79,41 @@ class LanguageTransformer extends BaseTransformer
 				];
 			}
 
+			/**
+			 * @OAS\Response(
+			 *   response="v2_country_lang",
+			 *   description="The v2_country_lang response",
+			 *   @OAS\MediaType(
+			 *     mediaType="application/json",
+			 *     @OAS\Schema(
+			 *          @OAS\Property(property="id",                    ref="#/components/schemas/Language/properties/id"),
+			 *          @OAS\Property(property="lang_code",             ref="#/components/schemas/Language/properties/iso"),
+			 *          @OAS\Property(property="region",                ref="#/components/schemas/Language/properties/area"),
+			 *          @OAS\Property(property="country_primary",       ref="#/components/schemas/Language/properties/country_id"),
+			 *          @OAS\Property(property="lang_id",               ref="#/components/schemas/Language/properties/iso2B"),
+			 *          @OAS\Property(property="iso_language_code",     ref="#/components/schemas/Language/properties/iso2T"),
+			 *          @OAS\Property(property="regional_lang_name",    ref="#/components/schemas/Language/properties/iso1"),
+			 *          @OAS\Property(property="family_id",             ref="#/components/schemas/Language/properties/name"),
+			 *          @OAS\Property(property="primary_country_name",  ref="#/components/schemas/Language/properties/iso2T"),
+			 *          @OAS\Property(property="country_image",         @OAS\Schema("type"="string",example="https://cdn.bible.build/img/flags/full/80X60/in.png")),
+			 *          @OAS\Property(property="country_additional",    @OAS\Schema("type"="string",example="BM: CH: CN: MM","description": "The country names are delimited by both a colon and a space"))
+			 *     )
+			 *   )
+			 * )
+			 */
 			case "v2_country_lang": {
 				return [
 					"id"                   => (string) $language->id,
                     "lang_code"            => $language->iso,
-                    "region"               => $language->primaryCountry->name,
-                    "country_primary"      => $language->country_id,
-                    "lang_id"              => $language->iso,
-                    "iso_language_code"    => $language->iso,
+                    "region"               => $language->area,
+                    "country_primary"      => strtoupper($language->country_id),
+                    "lang_id"              => strtoupper($language->iso),
+                    "iso_language_code"    => strtoupper($language->iso),
                     "regional_lang_name"   => $language->autonym ?? $language->name,
-                    "family_id"            => $language->iso,
+                    "family_id"            => strtoupper($language->iso),
                     "primary_country_name" => $language->primaryCountry->name,
 					"country_image"        => url("https://cdn.bible.build/img/flags/full/80X60/".strtolower($language->country_id).'.png'),
-					"country_additional"   => $language->countries->pluck('id')
+					"country_additional"   => strtoupper($language->countries->pluck('id')->implode(': '))
 				];
 			}
 

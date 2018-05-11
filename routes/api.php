@@ -26,7 +26,7 @@
 	Route::name('v2_text_search')->get('text/search',                                     'TextController@search');
 	Route::name('v2_text_search_group')->get('text/searchgroup',                          'TextController@searchGroup');
 	Route::name('v2_video_location')->get('video/location',                               'FilmsController@location');
-	Route::name('v2_video_video_path')->get('video/path',                                 'FilmsController@videoPath');
+	Route::name('v2_video_path')->get('video/path',                                       'FilmsController@videoPath');
 	Route::name('v2_country_lang')->get('country/countrylang',                            'LanguagesController@CountryLang');
 	Route::name('v2_api_versionLatest')->get('api/apiversion',                            'HomeController@versionLatest');
 	Route::name('v2_api_apiReply')->get('api/reply',                                      'HomeController@versionReplyTypes');

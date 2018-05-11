@@ -30,6 +30,9 @@ class CountriesController extends APIController
 	 *     summary="Returns Countries",
 	 *     description="Returns the List of Countries",
 	 *     operationId="v4_countries.all",
+	 *     @OAS\Parameter(name="iso", in="query", description="", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
+	 *     @OAS\Parameter(name="has_filesets", in="query", description="Filter the returned countries to only those containing filesets for languages spoken within the country", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="bucket_id", in="query", description="Filter the returned countries to only those containing filesets for a specific bucket", @OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -46,7 +49,7 @@ class CountriesController extends APIController
     {
     	if(!$this->api) return view('countries.index');
     	$iso = checkParam('iso', null, 'optional') ?? "eng";
-    	$has_filesets = checkParam('has_filesets', null, 'optional');
+    	$has_filesets = checkParam('has_filesets', null, 'optional') ?? true;
 		$bucket_id = checkParam('bucket_id', null, 'optional');
 
 		$countries = Country::with(['languagesFiltered','translations' => function($query) use ($iso) {

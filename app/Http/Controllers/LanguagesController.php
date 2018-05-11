@@ -212,6 +212,30 @@ class LanguagesController extends APIController
 	/**
 	 * Handle the Country Lang route for V2
 	 *
+	 * // TODO: Generation code for img_type & img_size
+	 *
+	 * @OAS\Get(
+	 *     path="/country/countrylang/",
+	 *     tags={"Version 2"},
+	 *     summary="Returns Languages and the countries associated with them",
+	 *     description="Filter languages by a specified country code or filter countries by specified language code. Country flags can also be retrieved by requesting one of the permitted image sizes. Languages can be sorted by the country code (default) and the language code.",
+	 *     operationId="v2_country_lang",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(name="lang_code",in="query",description="Get records by ISO language code", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
+	 *     @OAS\Parameter(name="country_code",in="query",description="Get records by ISO country code", @OAS\Schema(ref="#/components/schemas/Country/properties/id")),
+	 *     @OAS\Parameter(name="additional",in="query",description="Get colon separated list of optional countries", @OAS\Schema(type="integer",enum={0,1},default=0)),
+	 *     @OAS\Parameter(name="sort_by",in="query",description="Sort by lang_code or country_code", @OAS\Schema(type="string",enum={"country_code","lang_code"},default="country_code")),
+	 *     @OAS\Parameter(name="img_type",in="query",description="Includes a country flag image of the specified file type", @OAS\Schema(type="string",enum={"png","svg"},default="png")),
+	 *     @OAS\Parameter(name="img_size",in="query",description="Include country flag in entries in requested size. Note: This parameter accepts any resolution in the format (width)x(height), however, selecting a resolution with an aspect ratio other than 1:1 or 4:3 will likely result in distortion. We encourage you to use a standard size (40x30, 80x60, 160X120, 320X240, 640X480, or 1280X960) because they can be generated much more quickly than other sizes. If this parameter is provided and img_type is omitted, img_type is assumed to be png. This parameter is ignored when img_type is svg.",@OAS\Schema(type="string",example="160X120")),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_country_lang"))
+	 *     )
+	 * )
+	 *
+	 *
 	 * @return View|JSON
 	 */
 	public function CountryLang()
@@ -221,11 +245,18 @@ class LanguagesController extends APIController
 
 		// Get and set variables from Params. Both are optional.
 		$sort_by = checkParam('sort_by', null, 'optional');
-		$country_additional = checkParam('country_additional', null, 'optional');
+		$lang_code = checkParam('lang_code', null, 'optional');
+		$country_code = checkParam('country_code', null, 'optional');
+		$country_additional = checkParam('additional', null, 'optional');
 
 		// Fetch Languages and add conditional sorting / loading depending on params
-		$languages = Language::has('primaryCountry')->has('bibles.filesets')->with('primaryCountry','countries')->when($sort_by, function ($query) use ($sort_by) {
-			return $query->orderBy($sort_by, 'desc');
+		$languages = Language::has('primaryCountry')->has('bibles.filesets')->with('primaryCountry','countries')
+		->when($sort_by, function ($q) use ($sort_by) {
+			return $q->orderBy($sort_by, 'desc');
+		})->when($lang_code, function ($q) use ($lang_code) {
+			return $q->where('iso', $lang_code);
+		})->when($country_code, function ($q) use ($country_code) {
+			return $q->where('country_id', $country_code);
 		})->get();
 		if($country_additional) $languages->load('countries');
 

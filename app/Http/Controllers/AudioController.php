@@ -92,6 +92,28 @@ class AudioController extends APIController
 	/**
 	 * Returns a List of timestamps for a given Scripture Reference
 	 *
+	 *
+	 * @OAS\Get(
+	 *     path="/audio/versestart",
+	 *     tags={"Version 2"},
+	 *     summary="Returns Audio timestamps for a specific reference",
+	 *     description="",
+	 *     operationId="v2_audio_timestamps",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(name="fileset_id", in="query", description="The specific fileset to return references for", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/fileset_id")),
+	 *     @OAS\Parameter(name="book", in="query", description="The Book ID for which to return timestamps", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Parameter(name="chapter", in="query", description="The chapter for which to return timestamps", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/responses/v2_audio_timestamps")
+	 *         )
+	 *     )
+	 * )
+	 *
 	 * @param string $id
 	 * @param string $book
 	 * @param int $chapter
@@ -102,8 +124,8 @@ class AudioController extends APIController
 	{
 		// Set Params
 		$id = CheckParam('fileset_id', $id);
-		$chapter = CheckParam('chapter', $chapter);
 		$book = CheckParam('book', $book);
+		$chapter = CheckParam('chapter', $chapter);
 
 		// Fetch timestamps
 		return $this->reply(BibleFileTimestamp::

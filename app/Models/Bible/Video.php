@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Bible\Bible|null $bible
  * @property-read \App\Models\Bible\Book $book
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Video[] $related
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\VideoTranslations[] $translations
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\VideoTranslation[] $translations
  * @mixin \Eloquent
  *
  * @OAS\Schema (
@@ -200,7 +200,7 @@ class Video extends Model
 
 	public function translations()
 	{
-		return $this->hasMany(VideoTranslations::class);
+		return $this->hasMany(VideoTranslation::class);
 	}
 
 }

@@ -62,12 +62,90 @@ class HomeController extends APIController
 		return $this->reply(["versions" => [2,4]]);
 	}
 
+	/**
+	 *
+	 * Returns an array of version return types
+	 *
+	 * @category v2_video_path
+	 * @link http://api.bible.build/api/reply - V4 Access
+	 * @link https://api.dbp.dev/api/reply?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
+	 *
+	 * @OAS\Get(
+	 *     path="/api/apiversion",
+	 *     tags={"Version 2"},
+	 *     summary="Returns version information",
+	 *     description="Gives information about return types of the different versions of the APIs",
+	 *     operationId="v2_api_versionLatest",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_api_apiReply")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v2_api_apiReply"))
+	 *     )
+	 * )
+	 *
+	 * @OAS\Response(
+	 *   response="v2_api_versionLatest",
+	 *   description="The return for the api reply",
+	 *   @OAS\MediaType(
+	 *     mediaType="application/json",
+	 *     @OAS\Schema(
+	 *        @OAS\Property(property="2",type="object",example={"json", "jsonp", "html"}),
+	 *        @OAS\Property(property="4",type="object",example={"json", "jsonp", "xml", "html"}),
+	 *     )
+	 *   )
+	 * )
+	 *
+	 * @return mixed
+	 */
 	public function versionLatest()
 	{
 		$swagger = json_decode(file_get_contents(public_path('swagger.json')));
 		return $this->reply([ "Version" => $swagger->info->version ]);
 	}
 
+	/**
+	 *
+	 * Returns an array of version return types
+	 *
+	 * @category v2_api_apiReply
+	 * @link http://api.bible.build/api/reply - V4 Access
+	 * @link https://api.dbp.dev/api/reply?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
+	 *
+	 * @OAS\Get(
+	 *     path="/api/reply",
+	 *     tags={"Version 2"},
+	 *     summary="Returns version information",
+	 *     description="Gives information about return types of the different versions of the APIs",
+	 *     operationId="v2_api_apiReply",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_api_apiReply")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v2_api_apiReply"))
+	 *     )
+	 * )
+	 *
+	 * @OAS\Response(
+	 *   response="v2_api_apiReply",
+	 *   description="The return for the api reply",
+	 *   @OAS\MediaType(
+	 *     mediaType="application/json",
+	 *     @OAS\Schema(
+	 *        @OAS\Property(property="2",type="object",example={"json", "jsonp", "html"}),
+	 *        @OAS\Property(property="4",type="object",example={"json", "jsonp", "xml", "html"}),
+	 *     )
+	 *   )
+	 * )
+	 *
+	 * @return mixed
+	 */
 	public function versionReplyTypes()
 	{
 		$versionReplies = [

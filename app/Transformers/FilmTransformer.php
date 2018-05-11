@@ -7,6 +7,28 @@ class FilmTransformer extends BaseTransformer
     /**
      * A Fractal transformer.
      *
+     *
+     * @OAS\Response(
+     *   response="v2_video_path",
+     *   description="The v2_video_path",
+     *   @OAS\MediaType(
+     *     mediaType="application/json",
+     *     @OAS\Schema(
+     *        @OAS\Property(property="segment_order",      ref="#/components/schemas/Video/properties/name"),
+     *        @OAS\Property(property="title",              ref="#/components/schemas/VideoTranslation/properties/name"),
+     *        @OAS\Property(property="book_id",            ref="#/components/schemas/Book/properties/id"),
+     *        @OAS\Property(property="path",               ref="#/components/schemas/Video/properties/url"),
+     *        @OAS\Property(property="chapter_start",      ref="#/components/schemas/VideoTag/properties/chapter_start"),
+     *        @OAS\Property(property="verse_start",        ref="#/components/schemas/VideoTag/properties/verse_start"),
+     *        @OAS\Property(property="chapter_end",        ref="#/components/schemas/VideoTag/properties/chapter_end"),
+     *        @OAS\Property(property="verse_end",          ref="#/components/schemas/VideoTag/properties/verse_end"),
+     *        @OAS\Property(property="thumbnail_image",    ref="#/components/schemas/VideoTag/properties/picture"),
+     *        @OAS\Property(property="references",         @OAS\Schema(type="array")),
+     *        @OAS\Property(property="related_videos",     ref="#/components/schemas/Video")
+     *     )
+     *   )
+     * )
+     *
      * @return array
      */
     public function transform($film)
