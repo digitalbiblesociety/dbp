@@ -10,7 +10,7 @@ class TextTransformer extends BaseTransformer
     {
 	    switch ($this->version) {
 		    case "2":
-		    case "3": return $this->transformForV2($text);
+		    case "3": { return $this->transformForV2($text); break; }
 		    case "4":
 		    default: return $this->transformForV4($text);
 	    }
@@ -18,6 +18,7 @@ class TextTransformer extends BaseTransformer
 
     public function transformforV2($text)
     {
+
 	    switch($this->route) {
 		    case "v2_text_search": {
 		    	return [
@@ -32,10 +33,11 @@ class TextTransformer extends BaseTransformer
 		    }
 
 		    case "v2_text_search_group": {
+
 		    	return [
 				    "dam_id"           => $text->bible_id,
 				    "book_name"        => $text->book_name,
-				    "book_id"          => $text->osis_id,
+				    "book_id"          => $text->id_osis,
 				    "chapter_id"       => "$text->chapter",
 				    "verse_id"         => "$text->verse_start",
 				    "verse_text"       => $text->verse_text,

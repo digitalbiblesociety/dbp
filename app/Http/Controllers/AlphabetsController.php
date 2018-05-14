@@ -33,6 +33,8 @@ class AlphabetsController extends APIController
 	 *     operationId="v4_alphabets.all",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -70,6 +72,8 @@ class AlphabetsController extends APIController
 	 *     operationId="v4_alphabets.one",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Parameter(name="id", in="path", description="The alphabet ID", required=true, @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")),
 	 *     @OAS\Response(
 	 *         response=200,
@@ -126,6 +130,8 @@ class AlphabetsController extends APIController
 	 *     operationId="v4_alphabets.store",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -169,6 +175,8 @@ class AlphabetsController extends APIController
 	 *     operationId="v4_alphabets.update",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Parameter(name="id", in="path", description="The alphabet ID", required=true, @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")),
 	 *     @OAS\Response(
 	 *         response=200,

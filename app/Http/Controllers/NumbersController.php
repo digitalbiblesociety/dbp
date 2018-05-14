@@ -24,6 +24,8 @@ class NumbersController extends APIController
 	 *     operationId="v4_numbers.range",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Parameter(name="iso", in="query", description="iso", required=true, @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
 	 *     @OAS\Parameter(name="start", in="query", description="start", required=true, @OAS\Schema(type="object")),
 	 *     @OAS\Parameter(name="end", in="query", description="end", required=true, @OAS\Schema(type="object")),
@@ -90,6 +92,8 @@ class NumbersController extends APIController
 	 *     operationId="v4_numbers.index",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -119,6 +123,8 @@ class NumbersController extends APIController
 	 *     @OAS\Parameter(name="id", in="path", required=true, description="The Alphabet id", @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",

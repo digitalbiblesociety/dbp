@@ -142,7 +142,7 @@
           {
             "name": "country",
             "in": "query",
-            "description": "Setting this param will roughly filter results by the Country code given. `AL` would return a couple different languages. Albanian Sign Language, Albanian, ect.",
+            "description": "Setting this param will filter results by the Country code given. `AL` would return a couple different languages. Albanian Sign Language, Albanian, ect.",
             "schema": {
               "type": "string",
               "example": "AL"

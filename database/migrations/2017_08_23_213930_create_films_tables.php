@@ -22,10 +22,20 @@ class CreateFilmsTables extends Migration
 		    $table->string('series')->nullable();
 		    $table->string('episode')->nullable();
 		    $table->string('section')->nullable();
-		    $table->string('url');
-		    $table->string('url_download')->nullable();
 		    $table->string('picture')->nullable();
 		    $table->integer('duration');
+		    $table->timestamps();
+	    });
+
+	    Schema::create('video_sources', function (Blueprint $table) {
+		    $table->increments('id');
+		    $table->integer('video_id')->unsigned()->nullable();
+		    $table->foreign('video_id')->references('id')->on('videos')->onDelete('cascade')->onUpdate('cascade');
+		    $table->string('url');
+		    $table->string('encoding')->nullable();
+		    $table->string('resolution');
+		    $table->integer('size');
+		    $table->string('url_type');
 		    $table->timestamps();
 	    });
 
@@ -46,7 +56,8 @@ class CreateFilmsTables extends Migration
 		    // Book and Chapter Linkage
 		    $table->char('book_id', 3)->nullable();
 		    $table->foreign('book_id')->references('id')->on('books');
-		    $table->integer('chapter')->unsigned()->nullable();
+		    $table->integer('chapter_start')->unsigned()->nullable();
+		    $table->integer('chapter_end')->unsigned()->nullable();
 		    $table->integer('verse_start')->unsigned()->nullable();
 		    $table->integer('verse_end')->unsigned()->nullable();
 
@@ -79,6 +90,7 @@ class CreateFilmsTables extends Migration
 	    Schema::dropIfExists('video_tags');
 	    Schema::dropIfExists('video_organization');
 	    Schema::dropIfExists('video_translations');
+	    Schema::dropIfExists('video_sources');
 	    Schema::dropIfExists('videos');
     }
 }

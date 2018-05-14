@@ -22,6 +22,20 @@ class AudioTransformer extends BaseTransformer
 
 	public function transformForV2($audio) {
 		switch($this->route) {
+
+			/**
+			 * @OAS\Response(
+			 *   response="v2_audio_timestamps",
+			 *   description="The v2_audio_timestamps response",
+			 *   @OAS\MediaType(
+			 *     mediaType="application/json",
+			 *     @OAS\Schema(
+			 *              @OAS\Property(property="verse_id",             ref="#/components/schemas/BibleFile/properties/verse_start"),
+			 *              @OAS\Property(property="verse_start",          @OAS\Schema(type="string",example="1",description="The duration of the timestamp in seconds"))
+			 *     )
+			 *   )
+			 * )
+			 */
 			case "v2_audio_timestamps": {
 				return [
 					"verse_id"    => (string) $audio->verse_start,
@@ -36,7 +50,6 @@ class AudioTransformer extends BaseTransformer
 			 *   @OAS\MediaType(
 			 *     mediaType="application/json",
 			 *     @OAS\Schema(
-			 *              required={"name","script","family","type","direction"},
 			 *              @OAS\Property(property="book_id",       ref="#/components/schemas/Book/properties/id_osis"),
 			 *              @OAS\Property(property="chapter_id",    ref="#/components/schemas/BibleFile/properties/chapter_start"),
 			 *              @OAS\Property(property="path",          @OAS\Schema(type="string"))

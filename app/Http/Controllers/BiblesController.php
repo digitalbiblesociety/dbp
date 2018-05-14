@@ -58,6 +58,8 @@ class BiblesController extends APIController
 	 *     @OAS\Parameter(name="sort_by",              in="query", description="The direction to sort by the filter", @OAS\Schema(type="string")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -174,6 +176,8 @@ class BiblesController extends APIController
 	 *     operationId="v2_library_version",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Parameter(name="code", in="query", description="The abbreviated `BibleFileset` id created from the three letters identifier after the iso code", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="name", in="query", description="The name of the version in the language that it's written in", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
 	 *     @OAS\Parameter(name="sort_by", in="query", description="The name of the version in english", @OAS\Schema(type="string",title="encoding")),
@@ -295,6 +299,8 @@ class BiblesController extends APIController
      *     )
      * )
      *
+     * \\TODO: Move Links
+     *
      * @param  string  $id
      * @return \Illuminate\Http\Response
      */
@@ -328,6 +334,8 @@ class BiblesController extends APIController
 	 *     @OAS\Parameter(name="book_id", in="query", description="The Books id", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",

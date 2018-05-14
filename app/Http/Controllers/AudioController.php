@@ -37,6 +37,8 @@ class AudioController extends APIController
 	 *     operationId="v2_audio_path",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Parameter(name="id", in="path", description="The DAM ID for which to retrieve file path info.", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="dam_id", in="query", description="The DAM ID for which to retrieve file path info.", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="chapter_id", in="query", description="The id for the specified chapter. If chapter is specified only the specified chapter audio information is returned to the caller.", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
@@ -101,7 +103,9 @@ class AudioController extends APIController
 	 *     operationId="v2_audio_timestamps",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(name="fileset_id", in="query", description="The specific fileset to return references for", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/fileset_id")),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(name="fileset_id", in="query", description="The specific fileset to return references for", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="book", in="query", description="The Book ID for which to return timestamps", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OAS\Parameter(name="chapter", in="query", description="The chapter for which to return timestamps", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
 	 *     @OAS\Response(
@@ -135,7 +139,7 @@ class AudioController extends APIController
 			->where('book_id', $book)->orderBy('chapter_start')->orderBy('verse_start')->get());
 
 		// Return API
-		//return $this->reply(fractal()->collection($audioTimestamps)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
+		return $this->reply(fractal()->collection($audioTimestamps)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
 	}
 
 

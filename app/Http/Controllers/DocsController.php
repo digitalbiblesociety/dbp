@@ -25,7 +25,12 @@ class DocsController extends APIController
 		return view('docs.swagger_v4');
 	}
 
-	public function swagger_docs()
+	public function swagger_docs_reDoc()
+	{
+		return view('docs.swagger_docs_reDoc');
+	}
+
+	public function swagger_docs_ui()
 	{
 		return view('docs.swagger_docs');
 	}

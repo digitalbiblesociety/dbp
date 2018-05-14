@@ -46,8 +46,10 @@ class APIController extends Controller
 	 *     @OAS\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
 	 * )
 	 *
-	 * @OAS\Parameter(parameter="version_number",name="v",in="query",description="The Version Number",required=true,@OAS\Schema(type="integer",example=4))
+	 * @OAS\Parameter(parameter="version_number",name="v",in="query",description="The Version Number",required=true,@OAS\Schema(type="integer",enum={2,4},example=4))
 	 * @OAS\Parameter(parameter="key",name="key",in="query",description="The Key granted to the api user upon sign up",required=true,@OAS\Schema(type="string",example="ar45g3h4ae644"))
+	 * @OAS\Parameter(parameter="pretty",name="pretty",in="query",description="Setting this param to true will add human readable whitespace to the return",@OAS\Schema(type="string",example="true"))
+	 * @OAS\Parameter(parameter="reply",name="reply",in="query",description="Setting this param to true will add format the return as a specific file type.",@OAS\Schema(type="string",enum={"xml","csv","json","yaml"}))
 	 *
 	 * @OAS\Tag(
 	 *   name="Version 2",

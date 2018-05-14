@@ -30,6 +30,8 @@ class BibleFileSetPermissionsController extends APIController
 	 *     @OAS\Parameter(name="id", in="path", required=true, description="The fileset ID", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",

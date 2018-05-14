@@ -79,6 +79,8 @@ class HomeController extends APIController
 	 *     operationId="v2_api_versionLatest",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -124,6 +126,8 @@ class HomeController extends APIController
 	 *     operationId="v2_api_apiReply",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -173,6 +177,8 @@ class HomeController extends APIController
 	 *     operationId="v2_library_asset",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Parameter(name="dam_id", in="query", description="The DAM ID for which to retrieve file path info.", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,

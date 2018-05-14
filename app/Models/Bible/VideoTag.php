@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\Bible\VideoTags
  *
  * @mixin \Eloquent
- * @method static VideoTags whereBookId($value)
+ * @method static VideoTag whereBookId($value)
  *
  * @OAS\Schema (
  *     type="object",
@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * )
  *
  */
-class VideoTags extends Model
+class VideoTag extends Model
 {
 
 	/**
@@ -29,7 +29,7 @@ class VideoTags extends Model
 	 *   description="The incrementing id of the video tag"
 	 * )
 	 *
-	 * @method static VideoTags whereId($value)
+	 * @method static VideoTag whereId($value)
 	 * @property int $id
 	 */
 	protected $id;
@@ -42,7 +42,7 @@ class VideoTags extends Model
 	 *   description="The video id"
 	 * )
 	 *
-	 * @method static VideoTags whereVideoId($value)
+	 * @method static VideoTag whereVideoId($value)
 	 * @property int|null $video_id
 	 */
 	protected $video_id;
@@ -55,7 +55,7 @@ class VideoTags extends Model
 	 *   description="The category"
 	 * )
 	 *
-	 * @method static VideoTags whereCategory($value)
+	 * @method static VideoTag whereCategory($value)
 	 * @property string $category
 	 */
 	protected $category;
@@ -68,7 +68,7 @@ class VideoTags extends Model
 	 *   description="The category"
 	 * )
 	 *
-	 * @method static VideoTags whereTagType($value)
+	 * @method static VideoTag whereTagType($value)
 	 * @property string $tag_type
 	 */
 	protected $tag_type;
@@ -81,7 +81,7 @@ class VideoTags extends Model
 	 *   description="The tag"
 	 * )
 	 *
-	 * @method static VideoTags whereTag($value)
+	 * @method static VideoTag whereTag($value)
 	 * @property string $tag
 	 */
 	protected $tag;
@@ -95,7 +95,7 @@ class VideoTags extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static VideoTags whereLanguageId($value)
+	 * @method static VideoTag whereLanguageId($value)
 	 * @property int|null $language_id
 	 */
 	protected $language_id;
@@ -109,7 +109,7 @@ class VideoTags extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static VideoTags whereOrganizationId($value)
+	 * @method static VideoTag whereOrganizationId($value)
 	 * @property int|null $organization_id
 	 */
 	protected $organization_id;
@@ -123,7 +123,7 @@ class VideoTags extends Model
 	 *   nullable=true
 	 * )
 	 *
-     * @method static VideoTags whereBookId($value)
+     * @method static VideoTag whereBookId($value)
      * @property string|null $book_id
     */
 	protected $book_id;
@@ -131,16 +131,30 @@ class VideoTags extends Model
 	/**
 	 *
 	 * @OAS\Property(
-	 *   title="chapter",
+	 *   title="chapter_start",
 	 *   type="integer",
-	 *   description="The chapter",
+	 *   description="The starting chapter",
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static VideoTags whereChapter($value)
-	 * @property int|null $chapter
+	 * @method static VideoTag whereChapterStart($value)
+	 * @property int|null $chapter_start
 	 */
-	protected $chapter;
+	protected $chapter_start;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="chapter_end",
+	 *   type="integer",
+	 *   description="The ending chapter",
+	 *   nullable=true
+	 * )
+	 *
+	 * @method static VideoTag whereChapterEnd($value)
+	 * @property int|null $chapter_end
+	 */
+	protected $chapter_end;
 
 	/**
 	 *
@@ -151,7 +165,7 @@ class VideoTags extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static VideoTags whereVerseStart($value)
+	 * @method static VideoTag whereVerseStart($value)
 	 * @property int|null $verse_start
 	 */
 	protected $verse_start;
@@ -165,7 +179,7 @@ class VideoTags extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static VideoTags whereVerseEnd($value)
+	 * @method static VideoTag whereVerseEnd($value)
 	 * @property int|null $verse_end
 	 */
 	protected $verse_end;
@@ -179,7 +193,7 @@ class VideoTags extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static VideoTags whereTimeBegin($value)
+	 * @method static VideoTag whereTimeBegin($value)
 	 * @property float|null $time_begin
 	 */
 	protected $time_begin;
@@ -193,7 +207,7 @@ class VideoTags extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static VideoTags whereTimeEnd($value)
+	 * @method static VideoTag whereTimeEnd($value)
 	 * @property float|null $time_end
 	 */
 	protected $time_end;
@@ -207,7 +221,7 @@ class VideoTags extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static VideoTags whereCreatedAt($value)
+	 * @method static VideoTag whereCreatedAt($value)
 	 * @property \Carbon\Carbon|null $created_at
 	 */
 	protected $created_at;
@@ -221,7 +235,7 @@ class VideoTags extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static VideoTags whereUpdatedAt($value)
+	 * @method static VideoTag whereUpdatedAt($value)
 	 * @property \Carbon\Carbon|null $updated_at
 	 */
 	protected $updated_at;

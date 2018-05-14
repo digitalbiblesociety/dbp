@@ -188,6 +188,11 @@ class Video extends Model
 		return $this->belongsTo(Bible::class);
 	}
 
+	public function tags()
+	{
+		return $this->HasMany(VideoTag::class());
+	}
+
 	public function book()
 	{
 		return $this->belongsTo(Book::class);
@@ -196,6 +201,11 @@ class Video extends Model
 	public function related()
 	{
 		return $this->HasMany(Video::class,'episode', 'episode')->select('episode', 'url');
+	}
+
+	public function sources()
+	{
+		return $this->HasMany(VideoSource::class);
 	}
 
 	public function translations()

@@ -266,4 +266,9 @@ class Book extends Model
     	return $this->belongsToMany(Bible::class,'bible_books');
     }
 
+    public function bibleBooks()
+    {
+	    return $this->HasMany(BibleBook::class);
+    }
+
 }

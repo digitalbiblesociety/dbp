@@ -34,6 +34,8 @@ class TextController extends APIController
 	 *     @OAS\Parameter(name="chapter", in="path", description="The chapter number", required=true, @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -130,6 +132,8 @@ class TextController extends APIController
 	 *     @OAS\Parameter(name="books",  in="query", description="The Books to search through", @OAS\Schema(type="string",example="GEN,EXO,MAT")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -167,6 +171,34 @@ class TextController extends APIController
 	/**
 	 * This one actually departs from Version 2 and only returns the book ID and the integer count
 	 *
+	 * @OAS\Get(
+	 *     path="/text/searchgroup",
+	 *     tags={"Version 2"},
+	 *     summary="Run a text search on a specific fileset",
+	 *     description="This method allows the caller to perform a full-text search within the text of a volume, returning the count of results per book. If the volume has a complementary testament, the search will be performed over both testaments with the results ordered in Bible book order.",
+	 *     operationId="v2_text_search_group",
+	 *     @OAS\Parameter(name="query",   in="query", description="The text that the caller wishes to search for in the specified text. Multiple words or phrases can be combined with '+' for AND and '|' for OR. They will be processed simply from left to right. So, "Saul+Paul|Ruth" will evaluate as (Saul AND Paul) OR Ruth.", required=true, @OAS\Schema(type="integer")),
+	 *     @OAS\Parameter(name="dam_id",  in="query", description="The DAM ID the caller wishes to search in.", required=true, @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_bible_filesets_chapter")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_bible_filesets_chapter")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_bible_filesets_chapter"))
+	 *     )
+	 * )
+	 *
+	 * total_results: The total count of results found, regardless of limit.
+	results (array): An array of results found for the specified search, each result has the following fields:
+	book_name: Book name.
+	book_id: Book id.
+	book_order: Order of book in volume.
+	results: Number of results.
+	 *
 	 * @return View|JSON
 	 */
 	public function searchGroup()
@@ -179,13 +211,28 @@ class TextController extends APIController
 	    $bible_id = checkParam('dam_id');
 
 	    if($exclude) $exclude = ' -'.$exclude;
+	    $tableExists = \Schema::connection('sophia')->hasTable($bible_id.'_vpl');
+	    if(!$tableExists) {
+	    	$bible_id = substr($bible_id,0,6);
+	    	$tableExists = \Schema::connection('sophia')->hasTable($bible_id.'_vpl');
+	    }
+	    if(!$tableExists) return $this->setStatusCode(404)->replyWithError("Table does not exist");
+
 	    $query = DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).$exclude);
-	    $verses = DB::connection('sophia')->table($bible_id.'_vpl')->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->select('book_id')->get();
-	    $this->addMetaDataToVerses($verses,$bible_id);
+	    $verses = DB::connection('sophia')->table($bible_id.'_vpl')->select(DB::raw('MIN(verse_text) as verse_text, COUNT(verse_text) as resultsCount, book, chapter, verse_start, canon_order'))
+		                                  ->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->orderBy('canon_order')->groupBy('book')->get();
+	    $books = Book::with(['bibleBooks' => function ($query) use ($bible_id) { $query->where('bible_id', $bible_id); }])->whereIn('id',$verses->pluck('book'))->get();
 
-	    foreach($verses->groupBy('book_id') as $key => $verse) $verseCount[$key] = $verse->count();
+	    $verses->map(function ($item) use($bible_id,$books) {
+	    	$current_book = $books->where('id',$item->book)->first();
+	    	$item->book_name = $current_book->name;
+	    	$item->id_osis = $current_book->id_osis;
+	    	$item->book_order = $current_book->book_order;
+	    	$item->bible_id = $bible_id;
+	    	return $item;
+	    });
 
-	    return $this->reply($verseCount);
+	    return $this->reply([[['total_results' => $verses->sum('resultsCount')]],fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)]);
     }
 
     public function addMetaDataToVerses($verses,$bible_id)

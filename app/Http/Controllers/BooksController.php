@@ -28,6 +28,8 @@ class BooksController extends APIController
 	 *     operationId="v4_bible.allBooks",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -70,6 +72,8 @@ class BooksController extends APIController
 	 *     @OAS\Parameter(name="bucket_id",in="query",description="The bible ID", @OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -123,6 +127,8 @@ class BooksController extends APIController
 	 *     @OAS\Parameter(name="language_code",in="query",description="The language_code",required=true, @OAS\Schema(ref="#/components/schemas/Bible/properties/iso")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -165,6 +171,8 @@ class BooksController extends APIController
 	 *     @OAS\Parameter(name="book_id",in="query",description="The book_id",required=true, @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",

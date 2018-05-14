@@ -222,6 +222,8 @@ class LanguagesController extends APIController
 	 *     operationId="v2_country_lang",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Parameter(name="lang_code",in="query",description="Get records by ISO language code", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
 	 *     @OAS\Parameter(name="country_code",in="query",description="Get records by ISO country code", @OAS\Schema(ref="#/components/schemas/Country/properties/id")),
 	 *     @OAS\Parameter(name="additional",in="query",description="Get colon separated list of optional countries", @OAS\Schema(type="integer",enum={0,1},default=0)),
