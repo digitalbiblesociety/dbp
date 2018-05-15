@@ -76,16 +76,6 @@ class UserHighlightsController extends APIController
 		]);
 		if ($validator->fails()) return ['errors' => $validator->errors() ];
 
-		if($request->highlighted_color) {
-			switch (strlen($request->highlighted_color)) {
-				case 3:  {$request->highlighted_color = $request->highlighted_color; break;}
-				case 4:  {$request->highlighted_color = substr($request->highlighted_color,1); break;}
-				case 6:  {$request->highlighted_color = $request->highlighted_color[0].$request->highlighted_color[2].$request->highlighted_color[4]; break;}
-				case 7:  {$request->highlighted_color = $request->highlighted_color[1].$request->highlighted_color[3].$request->highlighted_color[5]; break;}
-				default: {$request->highlighted_color = "EE0";}
-			}
-		}
-
 		Highlight::create([
 			'user_id'           => $request->user_id,
 			'bible_id'          => $request->bible_id,
@@ -95,7 +85,7 @@ class UserHighlightsController extends APIController
 			'verse_start'       => $request->verse_start,
 			'highlight_start'   => $request->highlight_start,
 			'highlighted_words' => $request->highlighted_words,
-			'highlighted_color' => $request->highlighted_color ?? "EE0",
+			'highlighted_color' => $request->highlighted_color
 		]);
 		return $this->reply(["success" => "Highlight created"]);
 	}
