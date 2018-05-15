@@ -67,7 +67,7 @@ class UserHighlightsController extends APIController
 	    }
 
 	    if(!$highlights) return $this->setStatusCode(404)->replyWithError("No User found for the specified ID");
-	    return $this->reply(fractal()->collection($highlights)->transformWith(UserHighlightsTransformer::class)->paginateWith($resource));
+	    return $this->reply(fractal()->collection($highlights)->transformWith(UserHighlightsTransformer::class));
     }
 
     /**
