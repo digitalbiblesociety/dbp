@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 class Highlight extends Model
 {
     public $table = 'user_highlights';
-    protected $fillable = ['user_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','highlight_start','highlighted_words','highlighted_color'];
+    protected $fillable = ['user_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','highlight_start','highlighted_words','highlighted_color','reference'];
 
      /**
       *
@@ -89,6 +89,15 @@ class Highlight extends Model
       * @property int $verse_start
       */
      protected $verse_start;
+
+	/**
+	 *
+	 * @OAS\Property(type="string")
+	 * @method static Highlight whereReference($value)
+	 * @property int $verse_start
+	 */
+	protected $reference;
+
      /**
       *
       * @OAS\Property(ref="#/components/schemas/Project/properties/id")

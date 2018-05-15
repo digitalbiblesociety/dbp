@@ -15,6 +15,30 @@ class UserHighlightsController extends APIController
     /**
      * Display a listing of the resource.
      *
+     * @OAS\Get(
+     *     path="/users/{user_id}/highlights",
+     *     tags={"Version 4"},
+     *     summary="Get a list of highlights for a user/project combination",
+     *     description="",
+     *     operationId="v4_highlights.index",
+     *     @OAS\Parameter(name="bible_id",   in="query", description="", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+     *     @OAS\Parameter(name="book_id",    in="query", description="", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OAS\Parameter(name="chapter",    in="query", description="", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+     *     @OAS\Parameter(name="paginate",   in="query", description="", @OAS\Schema(type="integer",example=15,default=15)),
+     *     @OAS\Parameter(name="project_id", in="query", description="", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+     *     @OAS\Parameter(ref="#/components/parameters/reply"),
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_highlights_index"))
+     *     )
+     * )
+     *
      * @return \Illuminate\Http\Response
      */
     public function index($user_id)
@@ -43,7 +67,7 @@ class UserHighlightsController extends APIController
 	    }
 
 	    if(!$highlights) return $this->setStatusCode(404)->replyWithError("No User found for the specified ID");
-	    return $this->reply(fractal()->collection($highlights)->transformWith(UserHighlightsTransformer::class));
+	    return $this->reply(fractal()->collection($highlights)->transformWith(UserHighlightsTransformer::class)->paginateWith($resource));
     }
 
     /**
@@ -59,6 +83,30 @@ class UserHighlightsController extends APIController
     /**
      * Store a newly created resource in storage.
      *
+     * @OAS\Post(
+     *     path="/users/{user_id}/highlights",
+     *     tags={"Version 4"},
+     *     summary="Create a user highlight",
+     *     description="",
+     *     operationId="v4_highlights.store",
+     *     @OAS\Parameter(name="bible_id",   in="query", description="", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+     *     @OAS\Parameter(name="book_id",    in="query", description="", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OAS\Parameter(name="chapter",    in="query", description="", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+     *     @OAS\Parameter(name="paginate",   in="query", description="", @OAS\Schema(type="integer",example=15,default=15)),
+     *     @OAS\Parameter(name="project_id", in="query", description="", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+     *     @OAS\Parameter(ref="#/components/parameters/reply"),
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_highlights_index"))
+     *     )
+     * )
+     *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -70,6 +118,7 @@ class UserHighlightsController extends APIController
 			'project_id'        => 'required|exists:projects,id',
 			'chapter'           => 'required|max:150|min:1|integer',
 			'verse_start'       => 'required|max:177|min:1|integer',
+			'reference'         => 'string',
 			'highlight_start'   => 'required|min:0|integer',
 			'highlighted_words' => 'required|min:1|integer',
 			'highlighted_color' => 'max:16|min:3',
@@ -83,6 +132,7 @@ class UserHighlightsController extends APIController
 			'chapter'           => $request->chapter,
 			'project_id'        => $request->project_id,
 			'verse_start'       => $request->verse_start,
+			'reference'         => $request->reference,
 			'highlight_start'   => $request->highlight_start,
 			'highlighted_words' => $request->highlighted_words,
 			'highlighted_color' => $request->highlighted_color
@@ -92,6 +142,26 @@ class UserHighlightsController extends APIController
 
     /**
      * Display the specified resource.
+     *
+     * @OAS\Get(
+     *     path="/users/{user_id}/highlights/{highlight_id}",
+     *     tags={"Version 4"},
+     *     summary="Show a user highlight",
+     *     description="",
+     *     operationId="v4_highlights.show",
+     *     @OAS\Parameter(name="project_id", in="query", description="", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+     *     @OAS\Parameter(ref="#/components/parameters/reply"),
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_highlights_index"))
+     *     )
+     * )
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -118,6 +188,26 @@ class UserHighlightsController extends APIController
     /**
      * Update the specified resource in storage.
      *
+     * @OAS\Put(
+     *     path="/users/{user_id}/highlights/{highlight_id}",
+     *     tags={"Version 4"},
+     *     summary="Show a user highlight",
+     *     description="",
+     *     operationId="v4_highlights.update",
+     *     @OAS\Parameter(name="project_id", in="query", description="", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+     *     @OAS\Parameter(ref="#/components/parameters/reply"),
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_highlights_index"))
+     *     )
+     * )
+     *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -133,6 +223,26 @@ class UserHighlightsController extends APIController
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @OAS\Delete(
+     *     path="/users/{user_id}/highlights/{highlight_id}",
+     *     tags={"Version 4"},
+     *     summary="Show a user highlight",
+     *     description="",
+     *     operationId="v4_highlights.delete",
+     *     @OAS\Parameter(name="project_id", in="query", description="", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+     *     @OAS\Parameter(ref="#/components/parameters/reply"),
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_highlights_index"))
+     *     )
+     * )
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
