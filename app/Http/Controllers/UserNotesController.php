@@ -12,6 +12,35 @@ use Validator;
 class UserNotesController extends APIController
 {
 
+	/**
+	 * Display a listing of the resource.
+	 *
+	 * @OAS\Get(
+	 *     path="/users/{user_id}/notes",
+	 *     tags={"Version 4"},
+	 *     summary="Get a list of Notes for a user/project combination",
+	 *     description="In order to query information about a user's notes you must provide the project_id",
+	 *     operationId="v4_notes.index",
+	 *     @OAS\Parameter(name="bible_id",    in="query", description="If provided the fileset_id will filter results to only those related to the Bible", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="book_id",     in="query", description="If provided the USFM 2.4 book id will filter results to only those related to the book", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Parameter(name="chapter_id",  in="query", description="The starting chapter", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+	 *     @OAS\Parameter(name="project_id",  in="query", required=true, description="The secret id assigned to your project", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
+	 *     @OAS\Parameter(name="limit",       in="query", description="The number of highlights to return", @OAS\Schema(type="integer",example=15)),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_highlights_index"))
+	 *     )
+	 * )
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
     public function index($user_id = null)
     {
     	if(!$this->api) {
@@ -50,7 +79,36 @@ class UserNotesController extends APIController
 		return $this->reply($notes);
     }
 
-    public function show($note_id)
+	/**
+	 * Show a single note.
+	 *
+	 * @OAS\Get(
+	 *     path="/users/{user_id}/notes/{note_id}",
+	 *     tags={"Version 4"},
+	 *     summary="Get a single Note",
+	 *     description="",
+	 *     operationId="v4_notes.show",
+	 *     @OAS\Parameter(name="bible_id",    in="query", description="", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="book_id",     in="query", description="", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Parameter(name="chapter_id",  in="query", description="", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+	 *     @OAS\Parameter(name="project_id",  in="query", description="", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
+	 *     @OAS\Parameter(name="limit",       in="query", description="", @OAS\Schema(type="integer",example=15)),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_highlights_index"))
+	 *     )
+	 * )
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+    public function show($user_id,$note_id)
     {
 	    if(!$this->api) {
 		    if(!Auth::user()->hasRole('admin')) return $this->setStatusCode(401)->replyWithError('You must have admin class access to manage user notes');
@@ -58,11 +116,41 @@ class UserNotesController extends APIController
 	    }
 
 	    $project_id = checkParam('project_id');
-	    $note = Note::where('project_id',$project_id)->find($note_id);
+	    $note = Note::where('project_id',$project_id)->where('user_id',$user_id)->where('id',$note_id)->first();
+	    $note->notes = decrypt($note->notes);
 	    if(!$note) return $this->setStatusCode(404)->replyWithError("No Note found for the specified ID");
 	    return $this->reply($note);
     }
 
+	/**
+	 * Create a single note.
+	 *
+	 * @OAS\Post(
+	 *     path="/users/{user_id}/notes/",
+	 *     tags={"Version 4"},
+	 *     summary="Store a Note",
+	 *     description="",
+	 *     operationId="v4_notes.store",
+	 *     @OAS\Parameter(name="bible_id",    in="query", description="", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="book_id",     in="query", description="", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Parameter(name="chapter_id",  in="query", description="", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+	 *     @OAS\Parameter(name="project_id",  in="query", description="", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
+	 *     @OAS\Parameter(name="limit",       in="query", description="", @OAS\Schema(type="integer",example=15)),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_highlights_index"))
+	 *     )
+	 * )
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
     public function store(Request $request) {
 	    $validator = Validator::make($request->all(), [
 		    'bible_id'     => 'required|exists:bibles,id',
@@ -91,14 +179,70 @@ class UserNotesController extends APIController
     	return $this->reply(["success" => "Note created"]);
     }
 
+	/**
+	 * Update a single note.
+	 *
+	 * @OAS\Put(
+	 *     path="/users/{user_id}/notes/{note_id}",
+	 *     tags={"Version 4"},
+	 *     summary="Update a Note",
+	 *     description="",
+	 *     operationId="v4_notes.update",
+	 *     @OAS\Parameter(name="bible_id",    in="query", description="", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="book_id",     in="query", description="", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Parameter(name="chapter_id",  in="query", description="", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+	 *     @OAS\Parameter(name="project_id",  in="query", description="", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
+	 *     @OAS\Parameter(name="limit",       in="query", description="", @OAS\Schema(type="integer",example=15)),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_highlights_index"))
+	 *     )
+	 * )
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
     public function update(Request $request, $user_id, $note_id) {
     	$note = Note::where('project_id',$request->project_id)->where('user_id',$user_id)->where('id',$note_id)->first();
-	    $note->fill($request->all())->save();
+	    $note->fill($request->all());
+	    if(isset($request->notes)) $note->notes = encrypt($request->notes);
+		$note->save();
 
 	    $this->handleTags($request, $note);
 	    return $this->reply(["success" => "Note Updated"]);
     }
 
+	/**
+	 * Delete a single note.
+	 *
+	 * @OAS\Delete(
+	 *     path="/users/{user_id}/notes/{note_id}",
+	 *     tags={"Version 4"},
+	 *     summary="Delete a Note",
+	 *     description="",
+	 *     operationId="v4_notes.destroy",
+	 *     @OAS\Parameter(name="project_id",  in="query", description="", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_highlights_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_highlights_index"))
+	 *     )
+	 * )
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
     public function destroy($user_id,$note_id)
     {
 	    $project_id = checkParam('project_id');
