@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Transformers\UserHighlightsTransformer;
 
+use League\Fractal\Resource\Collection;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+
 class UserHighlightsController extends APIController
 {
     /**
@@ -19,7 +22,9 @@ class UserHighlightsController extends APIController
 	    $bible_id = checkParam('bible_id', null, 'optional');
 	    $book_id = checkParam('book_id', null, 'optional');
 	    $chapter_id = checkParam('chapter', null, 'optional');
+	    $paginate = checkParam('paginate', null, 'optional');
 	    $project_id = checkParam('project_id');
+
 
 	    $highlights = Highlight::where('user_id',$user_id)->where('project_id',$project_id)
 	        ->when($bible_id, function($q) use ($bible_id) {
@@ -28,7 +33,14 @@ class UserHighlightsController extends APIController
 			    $q->where('book_id', '=', $book_id);
 		    })->when($chapter_id, function($q) use($chapter_id) {
 			    $q->where('chapter', $chapter_id);
-		    })->orderBy('updated_at')->get();
+		    })->orderBy('updated_at');
+
+	    $highlights = ($paginate) ? $highlights->paginate($paginate) : $highlights->get();
+
+	    if($paginate) {
+		    $resource = new Collection($highlights->getCollection(), new UserHighlightsTransformer);
+		    $resource->setPaginator(new IlluminatePaginatorAdapter($highlights));
+	    }
 
 	    if(!$highlights) return $this->setStatusCode(404)->replyWithError("No User found for the specified ID");
 	    return $this->reply(fractal()->collection($highlights)->transformWith(UserHighlightsTransformer::class));
@@ -60,7 +72,7 @@ class UserHighlightsController extends APIController
 			'verse_start'       => 'required|max:177|min:1|integer',
 			'highlight_start'   => 'required|min:0|integer',
 			'highlighted_words' => 'required|min:1|integer',
-			'highlighted_color' => 'max:7|min:3|regex:/#?[0-9a-fA-F]+/u',
+			'highlighted_color' => 'max:16|min:3',
 		]);
 		if ($validator->fails()) return ['errors' => $validator->errors() ];
 
