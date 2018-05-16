@@ -45,7 +45,7 @@ class ProjectTransformer extends BaseTransformer
 	 *        @OAS\Property(property="description",       ref="#/components/schemas/Project/properties/description"),
 	 *        @OAS\Property(property="created_at",        ref="#/components/schemas/Project/properties/created_at"),
 	 *        @OAS\Property(property="updated_at",        ref="#/components/schemas/Project/properties/updated_at"),
-	 *        @OAS\Property(property="members",           ref="#/components/schemas/Project/properties/members")
+	 *        @OAS\Property(property="members",           @OAS/Schema(type="object"))
 	 *     )
 	 *   )
 	 * )
