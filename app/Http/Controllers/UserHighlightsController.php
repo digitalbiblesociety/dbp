@@ -247,7 +247,7 @@ class UserHighlightsController extends APIController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($user_id,$id)
     {
 	    $project_id = checkParam('project_id');
 	    $highlight = Highlight::where('project_id',$project_id)->where('id',$id)->first();
