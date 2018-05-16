@@ -18,7 +18,7 @@
 
             // Build a system
             const ui = SwaggerUIBundle({
-                url: "/swagger_v4.json",
+                url: "/eng/swagger_docs?v=v4",
                 dom_id: '#swagger-ui',
                 deepLinking: true,
                 docExpansion: 'none',

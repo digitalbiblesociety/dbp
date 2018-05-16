@@ -42,7 +42,14 @@ class DocsController extends APIController
 
 	public function swagger_docs_gen()
 	{
+	    $version = checkParam('v', null, 'optional') ?? "v4";
 		$swagger = \Swagger\scan(app_path());
+		foreach($swagger->paths as $key => $path) {
+            if(isset($path->get->operationId)) if(substr($path->get->operationId,0,2) != $version) unset($swagger->paths[$key]);
+            if(isset($path->put->operationId)) if(substr($path->put->operationId,0,2) != $version) unset($swagger->paths[$key]);
+            if(isset($path->post->operationId)) if(substr($path->post->operationId,0,2) != $version) unset($swagger->paths[$key]);
+            if(isset($path->delete->operationId)) if(substr($path->delete->operationId,0,2) != $version) unset($swagger->paths[$key]);
+        }
 		return response()->json($swagger, $this->getStatusCode(), array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'application/json');
 	}
 
