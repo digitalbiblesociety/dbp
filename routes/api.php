@@ -7,7 +7,6 @@
 	Route::name('v2_library_bookName')->get('library/bookname',                           'BooksController@bookNames');
 	Route::name('v2_library_bookOrder')->get('library/bookorder',                         'BooksController@show');
 	Route::name('v2_library_chapter')->get('library/chapter',                             'BooksController@chapters');
-
 	Route::name('v2_library_language')->get('library/language',                           'LanguagesController@index');
 	Route::name('v2_library_verseInfo')->get('library/verseinfo',                         'VerseController@info');
 	Route::name('v2_library_numbers')->get('library/numbers',                             'NumbersController@customRange');
@@ -61,7 +60,7 @@
 	Route::name('v4_bible.all')->get('bibles',                                            'BiblesController@index');
 
 	Route::name('v4_timestamps')->get('timestamps',                                       'AudioController@availableTimestamps');
-	Route::name('v4_timestamps.tag')->get('timestamps/{id}',                              'AudioController@timestampsByTag');
+	Route::name('v4_timestamps.tag')->get('timestamps/{id}/{query}',                      'AudioController@timestampsByTag');
 	Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',           'AudioController@timestampsByReference');
 
 	// VERSION 4 | WIKI
@@ -80,7 +79,7 @@
 
 	// VERSION 4 | USERS
 	Route::name('v4_user.index')->get('users',                                            'UsersController@index');
-	Route::name('v4_user.create')->post('users',                                          'UsersController@store');
+	Route::name('v4_user.store')->post('users',                                           'UsersController@store');
 	Route::name('v4_user.update')->put('users/{user_id}',                                 'UsersController@update');
 	Route::name('v4_user.destroy')->delete('users/{user_id}',                             'UsersController@destroy');
 	Route::name('v4_user.login')->post('users/login',                                     'UsersController@login');

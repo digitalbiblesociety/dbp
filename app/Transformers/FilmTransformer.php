@@ -22,7 +22,7 @@ class FilmTransformer extends BaseTransformer
      *        @OAS\Property(property="chapter_end",        ref="#/components/schemas/VideoTag/properties/chapter_end"),
      *        @OAS\Property(property="verse_end",          ref="#/components/schemas/VideoTag/properties/verse_end"),
      *        @OAS\Property(property="thumbnail_image",    ref="#/components/schemas/Video/properties/picture"),
-     *        @OAS\Property(property="references",         @OAS\Schema(type="array")),
+     *        @OAS\Property(property="references",         @OAS\Schema(type="object")),
      *        @OAS\Property(property="related_videos",     ref="#/components/schemas/Video")
      *     )
      *   )

@@ -23,6 +23,7 @@ Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRed
 	Route::name('swagger_docs_gen')->get('swagger_docs',                    'DocsController@swagger_docs_gen');
 	Route::name('swagger_database')->get('docs/swagger/database',           'DocsController@swagger_database');
 	Route::name('swagger_database_model')->get('docs/swagger/database/{id}','DocsController@swagger_database_model');
+	Route::name('docs_team')->get('docs/getting-started',                   'DocsController@getting_started');
 	Route::name('docs_team')->get('docs/team',                              'DocsController@team');
 	Route::name('docs_bibles')->get('docs/bibles',                          'DocsController@bibles');
 	Route::name('docs_bible_equivalents')->get('docs/bibles/equivalents',   'DocsController@bibleEquivalents');

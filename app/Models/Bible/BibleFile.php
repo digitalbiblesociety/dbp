@@ -8,16 +8,6 @@ use App\Models\Language\Language;
 /**
  * App\Models\Bible\BibleFile
  *
- * @property string $id
- * @property string $set_id
- * @property string $book_id
- * @property int|null $chapter_start
- * @property int|null $chapter_end
- * @property int|null $verse_start
- * @property int|null $verse_end
- * @property string $file_name
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Bible\Bible $bible
  * @property-read \App\Models\Bible\Book $book
  * @property-read \App\Models\Bible\BibleFileTimestamp $firstReference
@@ -131,6 +121,7 @@ class BibleFile extends Model
 	 * @property $verse_start
 	 */
 	protected $verse_start;
+
 	/**
 	 *
 	 * @OAS\Property(
@@ -147,6 +138,21 @@ class BibleFile extends Model
 	 * @property $verse_end
 	 */
 	protected $verse_end;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="verse_text",
+	 *   type="string",
+	 *   description="If the BibleFile model returns text instead of a file_name this field will contain it.",
+	 *   example="And God said unto Abraham, And as for thee, thou shalt keep my covenant, thou, and thy seed after thee throughout their generations."
+	 * )
+	 *
+	 * @method static BibleFile whereVerseText($value)
+	 * @property $verse_text
+	 */
+	protected $verse_text;
+
 	/**
 	 *
 	 * @OAS\Property(

@@ -31,8 +31,39 @@ class HomeController extends APIController
     }
 
 	/**
-	 *
 	 * Returns a List of Buckets used by the API
+	 *
+	 * @OAS\Get(
+	 *     path="/api/buckets",
+	 *     tags={"Version 4"},
+	 *     summary="Returns aws buckets currently being used by the api",
+	 *     description="",
+	 *     operationId="v4_api.buckets",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_api_buckets")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_api_buckets")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_api_buckets"))
+	 *     )
+	 * )
+	 *
+	 * @OAS\Response(
+	 *   response="v4_api_buckets",
+	 *   description="The aws buckets currently being used by the api",
+	 *   @OAS\MediaType(
+	 *     mediaType="application/json",
+	 *     @OAS\Schema(
+	 *              required={"id","organization_id"},
+	 *              @OAS\Property(property="id",              ref="#/components/schemas/Bucket/properties/id"),
+	 *              @OAS\Property(property="organization_id", ref="#/components/schemas/Bucket/properties/organization_id")
+	 *     )
+	 *   )
+	 * )
 	 *
 	 * @return mixed
 	 */
@@ -95,8 +126,8 @@ class HomeController extends APIController
 	 *   @OAS\MediaType(
 	 *     mediaType="application/json",
 	 *     @OAS\Schema(
-	 *        @OAS\Property(property="2",type="object",example={"json", "jsonp", "html"}),
-	 *        @OAS\Property(property="4",type="object",example={"json", "jsonp", "xml", "html"}),
+	 *        @OAS\Property(property="2",type="array", @OAS\Items(type="string",enum={"json", "jsonp", "html"})),
+	 *        @OAS\Property(property="4",type="array", @OAS\Items(type="string",enum={"json", "jsonp", "xml", "html"})),
 	 *     )
 	 *   )
 	 * )

@@ -61,11 +61,12 @@ class CreateUsersBiblesTable extends Migration
 		    $table->foreign('book_id')->references('id')->on('books');
 		    $table->tinyInteger('chapter')->unsigned();
 		    $table->tinyInteger('verse_start')->unsigned();
+		    $table->string('reference');
 		    $table->string('project_id', 24)->nullable();
 		    $table->foreign('project_id')->references('id')->on('projects')->onUpdate('cascade')->onDelete('cascade');
 		    $table->smallInteger('highlight_start')->unsigned();
 		    $table->integer('highlighted_words')->unsigned();
-		    $table->char('highlighted_color', 3);
+		    $table->string('highlighted_color', 24);
 		    $table->timestamps();
 	    });
 
@@ -79,16 +80,10 @@ class CreateUsersBiblesTable extends Migration
 	    });
 
 	    Schema::create('user_access', function (Blueprint $table) {
-		    $table->string('user_id', 64)->primary();
-		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
 		    $table->string('key_id', 64);
 		    $table->foreign('key_id')->references('key')->on('user_keys')->onUpdate('cascade')->onDelete('cascade');
-		    $table->string('bible_id',12)->nullable();
-		    $table->foreign('bible_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
 		    $table->char('hash_id',16);
 		    $table->foreign('hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
-		    $table->unsignedInteger('organization_id')->nullable();
-		    $table->foreign('organization_id')->references('id')->on('organizations');
 		    $table->text('access_notes')->nullable();
 		    $table->string('access_type')->nullable();
 		    $table->boolean('access_granted')->default(1);

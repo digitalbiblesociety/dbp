@@ -18,8 +18,26 @@ class TextTransformer extends BaseTransformer
 
     public function transformforV2($text)
     {
-
 	    switch($this->route) {
+
+		    /**
+		     * @OAS\Response(
+		     *   response="v4_text_search",
+		     *   description="The v4_text_search",
+		     *   @OAS\MediaType(
+		     *     mediaType="application/json",
+		     *     @OAS\Schema(
+		     *              @OAS\Property(property="dam_id",     ref="#/components/schemas/Bible/properties/id"),
+		     *              @OAS\Property(property="book_name",  ref="#/components/schemas/Book/properties/name"),
+		     *              @OAS\Property(property="book_id",    ref="#/components/schemas/Book/properties/id_osis"),
+		     *              @OAS\Property(property="chapter_id", ref="#/components/schemas/BibleFile/properties/chapter_start"),
+		     *              @OAS\Property(property="verse_id",   ref="#/components/schemas/BibleFile/properties/verse_start"),
+		     *              @OAS\Property(property="verse_text", ref="#/components/schemas/BibleFile/properties/verse_text"),
+		     *              @OAS\Property(property="book_order", ref="#/components/schemas/Book/properties/book_order")
+		     *     )
+		     *   )
+		     * )
+		     */
 		    case "v2_text_search": {
 		    	return [
 			        "dam_id"           => $text->bible_id,
@@ -32,8 +50,26 @@ class TextTransformer extends BaseTransformer
 				];
 		    }
 
+		    /**
+		     * @OAS\Response(
+		     *   response="v2_text_search_group",
+		     *   description="The bible Search Group Response",
+		     *   @OAS\MediaType(
+		     *     mediaType="application/json",
+		     *     @OAS\Schema(
+		     *              @OAS\Property(property="dam_id",     ref="#/components/schemas/Bible/properties/id"),
+		     *              @OAS\Property(property="book_name",  ref="#/components/schemas/Book/properties/name"),
+		     *              @OAS\Property(property="book_id",    ref="#/components/schemas/Book/properties/id_osis"),
+		     *              @OAS\Property(property="chapter_id", ref="#/components/schemas/BibleFile/properties/chapter_start"),
+		     *              @OAS\Property(property="verse_id",   ref="#/components/schemas/BibleFile/properties/verse_start"),
+		     *              @OAS\Property(property="verse_text", ref="#/components/schemas/BibleFile/properties/verse_text"),
+		     *              @OAS\Property(property="results",    @OAS\Schema(type="integer",minimum=0,example=45)),
+		     *              @OAS\Property(property="book_order", ref="#/components/schemas/Book/properties/book_order")
+		     *     )
+		     *   )
+		     * )
+		     */
 		    case "v2_text_search_group": {
-
 		    	return [
 				    "dam_id"           => $text->bible_id,
 				    "book_name"        => $text->book_name,
@@ -46,6 +82,24 @@ class TextTransformer extends BaseTransformer
 			    ];
 		    }
 
+		    /**
+		     * @OAS\Response(
+		     *   response="v2_text_verse",
+		     *   description="The bible Search Group Response",
+		     *   @OAS\MediaType(
+		     *     mediaType="application/json",
+		     *     @OAS\Schema(
+		     *              @OAS\Property(property="book_name",         ref="#/components/schemas/Book/properties/name"),
+		     *              @OAS\Property(property="book_id",           ref="#/components/schemas/Book/properties/id_osis"),
+		     *              @OAS\Property(property="chapter_id",        ref="#/components/schemas/BibleFile/properties/chapter_start"),
+		     *              @OAS\Property(property="chapter_title",     @OAS\Schema(type="string",example="Chapter 1")),
+		     *              @OAS\Property(property="verse_id",          ref="#/components/schemas/BibleFile/properties/verse_start"),
+		     *              @OAS\Property(property="verse_text",        ref="#/components/schemas/BibleFile/properties/verse_text"),
+		     *              @OAS\Property(property="paragraph_number",  @OAS\Schema(type="string",example="2"))
+		     *     )
+		     *   )
+		     * )
+		     */
 		    default: {
 			    return [
 				    "book_name"        => $text->book_name,

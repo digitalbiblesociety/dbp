@@ -83,6 +83,29 @@ class AudioController extends APIController
 	/**
 	 * Available Timestamps
 	 *
+	 * @OAS\Get(
+	 *     path="/timestamps",
+	 *     tags={"Version 4"},
+	 *     summary="Returns All Audio timestamps",
+	 *     description="",
+	 *     operationId="v4_timestamps",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_timestamps"))
+	 *     )
+	 * )
+	 *
+	 * @OAS\Response(
+	 *   response="v4_timestamps",
+	 *   description="The v4_timestamps response",
+	 *   @OAS\MediaType(mediaType="application/json", @OAS\Schema(@OAS\Property(property="hash_id", ref="#/components/schemas/BibleFileset/properties/hash_id")))
+	 * )
+	 *
 	 * @return mixed
 	 */
 	public function availableTimestamps()
@@ -93,7 +116,6 @@ class AudioController extends APIController
 
 	/**
 	 * Returns a List of timestamps for a given Scripture Reference
-	 *
 	 *
 	 * @OAS\Get(
 	 *     path="/audio/versestart",
@@ -144,7 +166,26 @@ class AudioController extends APIController
 
 
 	/**
-	 * Returns a List of timestamps for a given tag
+	 * Returns a List of timestamps for a given word
+	 *
+	 * @OAS\Get(
+	 *     path="/timestamps/{id}",
+	 *     tags={"Version 4"},
+	 *     summary="Returns audio timestamps for a specific word",
+	 *     description="This route will search the text for a specific word or phrase and return the timestamps associated with the references where that search term occurs.",
+	 *     operationId="v4_timestamps.tag",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(name="id", in="path", required=true, description="The specific fileset to return references for", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="query", in="query", required=true, description="The tag for which to return timestamps", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_timestamps_tag"))
+	 *     )
+	 * )
 	 *
 	 * @param string $id
 	 * @param string $query

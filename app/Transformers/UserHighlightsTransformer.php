@@ -18,7 +18,7 @@ class UserHighlightsTransformer extends TransformerAbstract
 	 *              @OAS\Property(property="chapter_start", ref="#/components/schemas/BibleFile/properties/chapter_start"),
 	 *              @OAS\Property(property="chapter_end",   ref="#/components/schemas/BibleFile/properties/chapter_end"),
 	 *              @OAS\Property(property="verse_start",   ref="#/components/schemas/BibleFile/properties/verse_start"),
-	 *              @OAS\Property(property="reference",   ref="#/components/schemas/BibleFile/properties/reference"),
+	 *              @OAS\Property(property="reference",     ref="#/components/schemas/Highlight/properties/reference"),
 	 *              @OAS\Property(property="verse_end",     ref="#/components/schemas/BibleFile/properties/verse_end"),
 	 *              @OAS\Property(property="timestamp",     ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
 	 *              @OAS\Property(property="path",          ref="#/components/schemas/BibleFile/properties/file_name")

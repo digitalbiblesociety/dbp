@@ -14,6 +14,25 @@ class ProjectsController extends APIController
     /**
      * Display a listing of the resource.
      *
+     * @OAS\Get(
+     *     path="/projects",
+     *     tags={"Version 4"},
+     *     summary="",
+     *     description="",
+     *     operationId="v4_projects.index",
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+     *     @OAS\Parameter(ref="#/components/parameters/reply"),
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_projects_index")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_projects_index")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_projects_index"))
+     *     )
+     * )
+     *
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -40,8 +59,26 @@ class ProjectsController extends APIController
 
 
 	/**
-	 *
 	 * Store a new Project
+	 *
+	 * @OAS\Post(
+	 *     path="/projects",
+	 *     tags={"Version 4"},
+	 *     summary="Apply for a project_id",
+	 *     description="It is recommended that you create a distinct project_id for each app using the API",
+	 *     operationId="v4_projects.store",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_projects_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_projects_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_projects_index"))
+	 *     )
+	 * )
 	 *
 	 * @param Request $request
 	 *
@@ -81,6 +118,25 @@ class ProjectsController extends APIController
     /**
      * Display the specified resource.
      *
+     * @OAS\Get(
+     *     path="/projects/{project_id}",
+     *     tags={"Version 4"},
+     *     summary="Get the details for a project",
+     *     description="",
+     *     operationId="v4_projects.show",
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+     *     @OAS\Parameter(ref="#/components/parameters/reply"),
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_projects_index")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_projects_index")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_projects_index"))
+     *     )
+     * )
+     *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -113,6 +169,25 @@ class ProjectsController extends APIController
     /**
      * Update the specified resource in storage.
      *
+     * @OAS\Put(
+     *     path="/projects/{project_id}",
+     *     tags={"Version 4"},
+     *     summary="Update the details for a project",
+     *     description="",
+     *     operationId="v4_projects.update",
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+     *     @OAS\Parameter(ref="#/components/parameters/reply"),
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_projects_index")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_projects_index")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_projects_index"))
+     *     )
+     * )
+     *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -136,6 +211,25 @@ class ProjectsController extends APIController
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @OAS\Delete(
+     *     path="/projects/{project_id}",
+     *     tags={"Version 4"},
+     *     summary="Remove a project",
+     *     description="",
+     *     operationId="v4_projects.update",
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+     *     @OAS\Parameter(ref="#/components/parameters/reply"),
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_projects_index")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_projects_index")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_projects_index"))
+     *     )
+     * )
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response

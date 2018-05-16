@@ -23,6 +23,7 @@ class Bucket extends Model
 	public $primaryKey = 'id';
     public $incrementing = false;
     public $keyType = 'string';
+    public $hidden = ['created_at','updated_at'];
 
 	/**
 	 *

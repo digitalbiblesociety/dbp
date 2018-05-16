@@ -7,11 +7,37 @@ use App\Models\User\User;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
 use Validator;
 use Laravel\Socialite\Facades\Socialite;
 class UsersController extends APIController
 {
+
+	/**
+	 * Returns an index of all users within the system
+	 *
+	 * @OAS\Get(
+	 *     path="/users",
+	 *     tags={"Version 4"},
+	 *     summary="",
+	 *     description="",
+	 *     operationId="v4_user.index",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_user_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_user_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_user_index"))
+	 *     )
+	 * )
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 */
 	public function index()
     {
 		$authorized_user = checkUser();
@@ -22,6 +48,32 @@ class UsersController extends APIController
 		return $this->reply(fractal()->transformWith(UserTransformer::class)->collection($users));
     }
 
+	/**
+	 *
+	 * @OAS\Get(
+	 *     path="/users/{id}",
+	 *     tags={"Version 4"},
+	 *     summary="Returns a single user",
+	 *     description="",
+	 *     operationId="v4_user.show",
+	 *     @OAS\Parameter(name="id", in="path", description="The user ID for which to retrieve info.", required=true, @OAS\Schema(ref="#/components/schemas/User/properties/id")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_user_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_user_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_user_index"))
+	 *     )
+	 * )
+	 *
+	 * @param $id
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 */
     public function show($id)
     {
 	    $authorized_user = checkUser();
@@ -46,6 +98,31 @@ class UsersController extends APIController
 		if(!$this->api) return view('dashboard.users.create');
 	}
 
+	/**
+	 *
+	 * @OAS\Post(
+	 *     path="/users/login",
+	 *     tags={"Version 4"},
+	 *     summary="Login a user",
+	 *     description="",
+	 *     operationId="v4_user.login",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_user_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_user_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_user_index"))
+	 *     )
+	 * )
+	 *
+	 * @param Request $request
+	 *
+	 * @return mixed
+	 */
     public function login(Request $request)
     {
     	$current_locale = $request->iso ?? \i18n::getCurrentLocale();
@@ -54,14 +131,72 @@ class UsersController extends APIController
     	return $this->replyWithError(trans('auth.failed',[],$current_locale));
     }
 
+	/**
+	 *
+	 * @OAS\Post(
+	 *     path="/users/reset",
+	 *     tags={"Version 4"},
+	 *     summary="Reset the password for a user",
+	 *     description="",
+	 *     operationId="v4_user.reset",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_user_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_user_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_user_index"))
+	 *     )
+	 * )
+	 *
+	 * @param Request $request
+	 *
+	 * @return \Illuminate\Http\RedirectResponse|mixed
+	 *
+	 */
 	public function reset(Request $request)
 	{
 		$current_locale = $request->iso ?? \i18n::getCurrentLocale();
 		$user = User::where('email',$request->email)->first();
-		if($user) if(Hash::check($request->password, $user->password)) return $this->reply(['user_id' => $user->id]);
-		return $this->replyWithError(trans('auth.failed',[],$current_locale));
+		if(!$user) return $this->replyWithError(trans('auth.failed',[],$current_locale));
+
+		// If password provided, update password
+		if(Hash::check($request->password, $user->password)) return $this->reply(['user_id' => $user->id]);
+
+		$response = Password::broker()->sendResetLink($request->only('email'));
+		if($response == Password::RESET_LINK_SENT) return back()->with('status', trans($response));
+		return $this->replyWithError(trans($response));
 	}
 
+
+	/**
+	 *
+	 * @OAS\Post(
+	 *     path="/users",
+	 *     tags={"Version 4"},
+	 *     summary="Create a new user",
+	 *     description="",
+	 *     operationId="v4_user.store",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_user_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_user_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_user_index"))
+	 *     )
+	 * )
+	 *
+	 * @param Request $request
+	 *
+	 * @return mixed
+	 */
     public function store(Request $request)
     {
 	    $user = checkUser();
@@ -85,6 +220,31 @@ class UsersController extends APIController
 	    return $this->reply(["success" => "User created","user" => $user]);
     }
 
+	/**
+	 *
+	 * @OAS\Put(
+	 *     path="/users/{id}",
+	 *     tags={"Version 4"},
+	 *     summary="Create a new user",
+	 *     description="",
+	 *     operationId="v4_user.store",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_user_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_user_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_user_index"))
+	 *     )
+	 * )
+	 *
+	 * @param Request $request
+	 *
+	 * @return mixed
+	 */
     public function update(Request $request, $id)
     {
 	    $user = checkUser();
@@ -106,6 +266,11 @@ class UsersController extends APIController
 
 	    if($this->api) return $this->reply(["success" => "User updated","user_id" => $user->id]);
 	    return view('dashboard.users.show', $id);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+    	$user = User::where('id',$id)->where('project_id', $request->project_id)->first();
     }
 
 }

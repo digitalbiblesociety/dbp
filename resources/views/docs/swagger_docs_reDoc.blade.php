@@ -18,7 +18,41 @@
     </style>
 </head>
 <body>
-<redoc spec-url='https://dbp.dev/eng/swagger_docs'></redoc>
+
+<div id="redoc-container"></div>
+
+<script src="/js/ref-parser.min.js"></script>
+<script>
+/*
+    var request = new XMLHttpRequest();
+    request.open('GET', 'https://dbp.dev/openapi.json', true);
+
+    request.onload = function() {
+        if (this.status >= 200 && this.status < 400) {
+            // Success!
+            var mySchema = JSON.parse(this.response);
+            $RefParser.dereference(mySchema, function(err, schema) {
+                if (err) {
+                    console.error(err);
+                }
+                else {
+                    // `schema` is just a normal JavaScript object that contains your entire JSON Schema,
+                    // including referenced files, combined into a single object
+
+
+                    //console.log(schema.definitions.person.properties.firstName);
+                }
+            });
+
+        }
+    };
+    request.send();
+    */
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0-alpha.17/bundles/redoc.standalone.js"> </script>
+<script>
+    Redoc.init('https://dbp.dev/openapi.json',['suppressWarnings','noAutoAuth','requiredPropsFirst'],document.getElementById('redoc-container'))
+</script>
 </body>
 </html>
