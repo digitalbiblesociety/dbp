@@ -50,7 +50,8 @@ class APIController extends Controller
 	 * @OAS\Parameter(parameter="key",name="key",in="query",description="The Key granted to the api user upon sign up",required=true,@OAS\Schema(type="string",example="ar45g3h4ae644"))
 	 * @OAS\Parameter(parameter="pretty",name="pretty",in="query",description="Setting this param to true will add human readable whitespace to the return",@OAS\Schema(type="string",example="true"))
 	 * @OAS\Parameter(parameter="reply",name="reply",in="query",description="Setting this param to true will add format the return as a specific file type.",@OAS\Schema(type="string",enum={"xml","csv","json","yaml"}))
-	 *
+	 * @OAS\Parameter(name="sort_by", in="query", description="The field to sort by", @OAS\Schema(type="string"))
+	 * @OAS\Parameter(name="sort_dir", in="query", description="The direction to sort by", @OAS\Schema(type="string",enum={"asc","desc"}))
 	 * @OAS\Tag(
 	 *   name="Version 2",
 	 *   description="Everything about version 2"

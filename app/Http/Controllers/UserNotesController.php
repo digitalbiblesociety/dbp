@@ -30,6 +30,8 @@ class UserNotesController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/sort_by"),
+	 *     @OAS\Parameter(ref="#/components/parameters/sort_dir"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -62,6 +64,8 @@ class UserNotesController extends APIController
 	    $bookmark = explode('.',\Request::route()->getName());
 	    $bookmark = ($bookmark[0] == "v4_bookmarks") ? true : false;
 	    $limit = intval(checkParam('limit', null, 'optional') ?? 25);
+	    $sort_by = checkParam('sort_by', null, 'optional');
+	    $sort_dir = checkParam('sort_dir', null, 'optional') ?? "asc";
 
 		$notes = Note::with('tags')->where('user_id',$user_id)->where('project_id',$project_id)
 		->when($bible_id, function($q) use ($bible_id) {
@@ -72,7 +76,9 @@ class UserNotesController extends APIController
 			$q->where('bookmark', true);
 		}, function($q) {
 			$q->where('bookmark', false);
-		})->orderBy('updated_at')->paginate($limit);
+		})->when($sort_by, function($q) use ($sort_by,$sort_dir) {
+			$q->orderBy($sort_by, $sort_dir);
+		})->paginate($limit);
 
     	foreach($notes as $key => $note) $notes[$key]->notes = decrypt($note->notes);
 		if(!$notes) return $this->setStatusCode(404)->replyWithError("No User found for the specified ID");
