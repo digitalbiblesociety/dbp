@@ -19,7 +19,7 @@ class UsersController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/users",
-	 *     tags={"Version 4"},
+	 *     tags={"Community"},
 	 *     summary="",
 	 *     description="",
 	 *     operationId="v4_user.index",
@@ -52,7 +52,7 @@ class UsersController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/users/{id}",
-	 *     tags={"Version 4"},
+	 *     tags={"Community"},
 	 *     summary="Returns a single user",
 	 *     description="",
 	 *     operationId="v4_user.show",
@@ -102,7 +102,7 @@ class UsersController extends APIController
 	 *
 	 * @OAS\Post(
 	 *     path="/users/login",
-	 *     tags={"Version 4"},
+	 *     tags={"Community"},
 	 *     summary="Login a user",
 	 *     description="",
 	 *     operationId="v4_user.login",
@@ -135,7 +135,7 @@ class UsersController extends APIController
 	 *
 	 * @OAS\Post(
 	 *     path="/users/reset",
-	 *     tags={"Version 4"},
+	 *     tags={"Community"},
 	 *     summary="Reset the password for a user",
 	 *     description="",
 	 *     operationId="v4_user.reset",
@@ -176,7 +176,7 @@ class UsersController extends APIController
 	 *
 	 * @OAS\Post(
 	 *     path="/users",
-	 *     tags={"Version 4"},
+	 *     tags={"Community"},
 	 *     summary="Create a new user",
 	 *     description="",
 	 *     operationId="v4_user.store",
@@ -224,7 +224,7 @@ class UsersController extends APIController
 	 *
 	 * @OAS\Put(
 	 *     path="/users/{id}",
-	 *     tags={"Version 4"},
+	 *     tags={"Community"},
 	 *     summary="Create a new user",
 	 *     description="",
 	 *     operationId="v4_user.store",

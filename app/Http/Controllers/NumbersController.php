@@ -18,7 +18,7 @@ class NumbersController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/numbers/range",
-	 *     tags={"Version 4"},
+	 *     tags={"Wiki"},
 	 *     summary="Return a range of numbers",
 	 *     description="Returns a range of numbers",
 	 *     operationId="v4_numbers.range",
@@ -85,7 +85,7 @@ class NumbersController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/numbers",
-	 *     tags={"Version 4"},
+	 *     tags={"Wiki"},
 	 *     summary="Return a all Alphabets that have a custom number sets",
 	 *     description="Returns a range of numbers",
 	 *     operationId="v4_numbers.index",
@@ -115,7 +115,7 @@ class NumbersController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/numbers/{id}",
-	 *     tags={"Version 4"},
+	 *     tags={"Wiki"},
 	 *     summary="Return a single custom number set",
 	 *     description="Returns a range of numbers",
 	 *     operationId="v4_numbers.show",

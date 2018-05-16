@@ -42,7 +42,7 @@ class BiblesController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/bibles",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="",
 	 *     description="",
 	 *     operationId="v4_bible.all",
@@ -170,7 +170,7 @@ class BiblesController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/library/version",
-	 *     tags={"Version 2"},
+	 *     tags={"Library Catalog"},
 	 *     summary="Returns Audio File path information",
 	 *     description="This call returns the file path information for audio files for a volume. This information can be used with the response of the /audio/location call to create a URI to retrieve the audio files.",
 	 *     operationId="v2_library_version",
@@ -279,7 +279,7 @@ class BiblesController extends APIController
      *
      * @OAS\Get(
      *     path="/bibles/{id}",
-     *     tags={"Version 4"},
+     *     tags={"Bibles"},
      *     summary="",
      *     description="",
      *     operationId="v4_bible.one",
@@ -322,7 +322,7 @@ class BiblesController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/bibles/{id}/book/",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="",
 	 *     description="",
 	 *     operationId="v4_bible.books",

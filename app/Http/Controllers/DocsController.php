@@ -44,6 +44,14 @@ class DocsController extends APIController
 	{
 	    $version = checkParam('v', null, 'optional') ?? "v4";
 		$swagger = \Swagger\scan(app_path());
+
+		foreach($swagger->tags as $key => $tag) {
+			if(substr($swagger->tags[$key]->description,0,2) != $version) {
+				unset($swagger->tags[$key]);
+			} else {
+				$swagger->tags[$key]->description = substr($swagger->tags[$key]->description,2);
+			}
+		}
 		foreach($swagger->paths as $key => $path) {
             if(isset($path->get->operationId)) if(substr($path->get->operationId,0,2) != $version) unset($swagger->paths[$key]);
             if(isset($path->put->operationId)) if(substr($path->put->operationId,0,2) != $version) unset($swagger->paths[$key]);

@@ -17,7 +17,7 @@ class UserNotesController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/users/{user_id}/notes",
-	 *     tags={"Version 4"},
+	 *     tags={"Community"},
 	 *     summary="Get a list of Notes for a user/project combination",
 	 *     description="In order to query information about a user's notes you must provide the project_id",
 	 *     operationId="v4_notes.index",
@@ -90,7 +90,7 @@ class UserNotesController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/users/{user_id}/notes/{note_id}",
-	 *     tags={"Version 4"},
+	 *     tags={"Community"},
 	 *     summary="Get a single Note",
 	 *     description="",
 	 *     operationId="v4_notes.show",
@@ -133,7 +133,7 @@ class UserNotesController extends APIController
 	 *
 	 * @OAS\Post(
 	 *     path="/users/{user_id}/notes/",
-	 *     tags={"Version 4"},
+	 *     tags={"Community"},
 	 *     summary="Store a Note",
 	 *     description="",
 	 *     operationId="v4_notes.store",
@@ -190,7 +190,7 @@ class UserNotesController extends APIController
 	 *
 	 * @OAS\Put(
 	 *     path="/users/{user_id}/notes/{note_id}",
-	 *     tags={"Version 4"},
+	 *     tags={"Community"},
 	 *     summary="Update a Note",
 	 *     description="",
 	 *     operationId="v4_notes.update",
@@ -229,7 +229,7 @@ class UserNotesController extends APIController
 	 *
 	 * @OAS\Delete(
 	 *     path="/users/{user_id}/notes/{note_id}",
-	 *     tags={"Version 4"},
+	 *     tags={"Community"},
 	 *     summary="Delete a Note",
 	 *     description="",
 	 *     operationId="v4_notes.destroy",

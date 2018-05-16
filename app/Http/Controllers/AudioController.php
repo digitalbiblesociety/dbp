@@ -31,7 +31,7 @@ class AudioController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/audio/path/{id}",
-	 *     tags={"Version 2"},
+	 *     tags={"Library Audio"},
 	 *     summary="Returns Audio File path information",
 	 *     description="This call returns the file path information for audio files for a volume. This information can be used with the response of the /audio/location call to create a URI to retrieve the audio files.",
 	 *     operationId="v2_audio_path",
@@ -85,7 +85,7 @@ class AudioController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/timestamps",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Returns All Audio timestamps",
 	 *     description="",
 	 *     operationId="v4_timestamps",
@@ -113,7 +113,7 @@ class AudioController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/audio/versestart",
-	 *     tags={"Version 2"},
+	 *     tags={"Library Audio"},
 	 *     summary="Returns Audio timestamps for a specific reference",
 	 *     description="",
 	 *     operationId="v2_audio_timestamps",
@@ -164,7 +164,7 @@ class AudioController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/timestamps/{id}",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Returns audio timestamps for a specific word",
 	 *     description="This route will search the text for a specific word or phrase and return the timestamps associated with the references where that search term occurs.",
 	 *     operationId="v4_timestamps.tag",
@@ -215,6 +215,29 @@ class AudioController extends APIController
 	 * @link http://api.bible.build/location - V4 Access
 	 * @link https://api.dbp.dev/audio/location?key=1234&v=4&pretty - V4 Test Access
 	 * @link https://dbp.dev/eng/docs/swagger/v2#/Audio/v2_audio_location - V4 Test Docs
+	 *
+	 * @OAS\Get(
+	 *     path="/audio/location",
+	 *     tags={"Library Audio"},
+	 *     summary="Returns Audio Server Information",
+	 *     description="This route allows the caller to retrieve information about the media distribution servers and protocols they support.",
+	 *     operationId="v2_audio_timestamps",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(name="fileset_id", in="query", description="The specific fileset to return references for", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="book", in="query", description="The Book ID for which to return timestamps", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
+	 *     @OAS\Parameter(name="chapter", in="query", description="The chapter for which to return timestamps", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(
+	 *            mediaType="application/json",
+	 *            @OAS\Schema(ref="#/components/schemas/v2_audio_timestamps")
+	 *         )
+	 *     )
+	 * )
 	 *
 	 * @return array
 	 *

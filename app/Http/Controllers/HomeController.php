@@ -35,7 +35,7 @@ class HomeController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/api/buckets",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Returns aws buckets currently being used by the api",
 	 *     description="",
 	 *     operationId="v4_api.buckets",
@@ -102,7 +102,7 @@ class HomeController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/api/apiversion",
-	 *     tags={"Version 2"},
+	 *     tags={"API"},
 	 *     summary="Returns version information",
 	 *     description="Gives information about return types of the different versions of the APIs",
 	 *     operationId="v2_api_versionLatest",
@@ -116,18 +116,6 @@ class HomeController extends APIController
 	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_api_apiReply")),
 	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_api_apiReply"))
 	 *     )
-	 * )
-	 *
-	 * @OAS\Response(
-	 *   response="v2_api_versionLatest",
-	 *   description="The return for the api reply",
-	 *   @OAS\MediaType(
-	 *     mediaType="application/json",
-	 *     @OAS\Schema(
-	 *        @OAS\Property(property="2",type="array", @OAS\Items(type="string",enum={"json", "jsonp", "html"})),
-	 *        @OAS\Property(property="4",type="array", @OAS\Items(type="string",enum={"json", "jsonp", "xml", "html"})),
-	 *     )
-	 *   )
 	 * )
 	 *
 	 * @return mixed
@@ -149,7 +137,7 @@ class HomeController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/api/reply",
-	 *     tags={"Version 2"},
+	 *     tags={"API"},
 	 *     summary="Returns version information",
 	 *     description="Gives information about return types of the different versions of the APIs",
 	 *     operationId="v2_api_apiReply",
@@ -198,7 +186,7 @@ class HomeController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/library/asset",
-	 *     tags={"Version 2"},
+	 *     tags={"Library Catalog"},
 	 *     summary="Returns Library File path information",
 	 *     description="This call returns the file path information. This information can be used with the response of the locations calls to create a URI to retrieve files.",
 	 *     operationId="v2_library_asset",

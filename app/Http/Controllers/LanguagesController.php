@@ -24,7 +24,7 @@ class LanguagesController extends APIController
      *
      * @OAS\Get(
      *     path="/languages/",
-     *     tags={"Version 4"},
+     *     tags={"Wiki"},
      *     summary="Returns Languages",
      *     description="Returns the List of Languages",
      *     operationId="v4_languages.all",
@@ -45,7 +45,7 @@ class LanguagesController extends APIController
      *
      * @OAS\Get(
      *     path="/library/language/",
-     *     tags={"Version 2"},
+     *     tags={"Library Catalog"},
      *     summary="Returns the list of languages",
      *     description="Returns the List of Languages",
      *     operationId="v2_library_language",
@@ -216,7 +216,7 @@ class LanguagesController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/country/countrylang/",
-	 *     tags={"Version 2"},
+	 *     tags={"Country Language"},
 	 *     summary="Returns Languages and the countries associated with them",
 	 *     description="Filter languages by a specified country code or filter countries by specified language code. Country flags can also be retrieved by requesting one of the permitted image sizes. Languages can be sorted by the country code (default) and the language code.",
 	 *     operationId="v2_country_lang",
@@ -285,7 +285,7 @@ class LanguagesController extends APIController
      *
 	 * @OAS\Post(
 	 *     path="/languages/",
-	 *     tags={"Version 4"},
+	 *     tags={"Wiki"},
 	 *     summary="Create a new Language",
 	 *     description="Create a new Language",
 	 *     operationId="v4_languages.store",
@@ -315,7 +315,7 @@ class LanguagesController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/languages/{id}",
-	 *     tags={"Version 4"},
+	 *     tags={"Wiki"},
 	 *     summary="Return a single Languages",
 	 *     description="Returns a single Language",
 	 *     operationId="v4_languages.one",
@@ -361,7 +361,7 @@ class LanguagesController extends APIController
      *
      * @OAS\Put(
      *     path="/languages/{id}",
-     *     tags={"Version 4"},
+     *     tags={"Wiki"},
      *     summary="Return a single Languages",
      *     description="Returns a single Language",
      *     operationId="v4_languages.update",

@@ -26,7 +26,7 @@ class TextController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/bibles/{id}/{book}/{chapter}",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Returns Signed URLs or Text",
 	 *     description="V4's base fileset route",
 	 *     operationId="v4_bible_filesets.chapter",
@@ -48,7 +48,7 @@ class TextController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/text/verse",
-	 *     tags={"Version 2"},
+	 *     tags={"Library Text"},
 	 *     summary="Returns Signed URLs or Text",
 	 *     description="V2's base fileset route",
 	 *     operationId="v2_text_verse",
@@ -123,13 +123,35 @@ class TextController extends APIController
 	/**
 	 * Display a listing of the Fonts
 	 *
+	 * @OAS\Get(
+	 *     path="/text/font",
+	 *     tags={"Library Text"},
+	 *     summary="Returns utilized fonts",
+	 *     description="Some languages used by the Digital Bible Platform utilize character sets that are not supported by `standard` fonts. This call provides a list of custom fonts that have been made available.",
+	 *     operationId="v2_text_font",
+	 *     @OAS\Parameter(name="id", in="query", description="The numeric ID of the font to retrieve", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="name", in="query", description="Search for a specific font by name", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="platform", in="query", description="Only return fonts that have been authorized for the specified platform. Available values are: `android`, `ios`, `web`, or `all`", @OAS\Schema(type="string",enum={"android","ios","web","all"},default="all")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/font_response")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/font_response")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/font_response"))
+	 *     )
+	 * )
+	 *
 	 * @return JSON|View
 	 */
     public function fonts()
     {
-	    $id = checkParam('id', null, 'optional'); //(optional) The numeric ID of the font to retrieve
-		$name = checkParam('name', null, 'optional'); //(optional) Search for a specific font by name
-		$platform = checkParam('platform', null, 'optional') ?? 'all'; //(optional) Only return fonts that have been authorized for the specified platform. Available values are: "android", "ios", "web", or "all"
+	    $id = checkParam('id', null, 'optional');
+		$name = checkParam('name', null, 'optional');
+		$platform = checkParam('platform', null, 'optional') ?? 'all';
 
 	    if($name) {
 	    	$font = AlphabetFont::where('name',$name)->first();
@@ -146,7 +168,7 @@ class TextController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/search",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Run a text search on a specific fileset",
 	 *     description="",
 	 *     operationId="v4_text_search",
@@ -196,7 +218,7 @@ class TextController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/text/searchgroup",
-	 *     tags={"Version 2"},
+	 *     tags={"Library Text"},
 	 *     summary="Run a text search on a specific fileset",
 	 *     description="This method allows the caller to perform a full-text search within the text of a volume, returning the count of results per book. If the volume has a complementary testament, the search will be performed over both testaments with the results ordered in Bible book order.",
 	 *     operationId="v2_text_search_group",

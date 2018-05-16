@@ -13,7 +13,7 @@ class FilmsController extends APIController {
 	 *
 	 * @OAS\Get(
 	 *     path="/video/location",
-	 *     tags={"Version 2"},
+	 *     tags={"Library Video"},
 	 *     summary="Information about the media distribution servers & protocols",
 	 *     description="This method allows the caller to retrieve information about the media distribution servers and protocols they support.",
 	 *     operationId="v2_video_location",
@@ -85,7 +85,7 @@ class FilmsController extends APIController {
 	 *
 	 * @OAS\Get(
 	 *     path="/video/path",
-	 *     tags={"Version 2"},
+	 *     tags={"Library Video"},
 	 *     summary="",
 	 *     description="",
 	 *     operationId="v2_video_path",

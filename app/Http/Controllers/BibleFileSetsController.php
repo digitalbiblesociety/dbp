@@ -31,7 +31,7 @@ class BibleFileSetsController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/bibles/filesets/{id}",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Returns Bibles Filesets",
 	 *     description="Returns a list of bible filesets",
 	 *     operationId="v4_bible_filesets.show",
@@ -104,7 +104,7 @@ class BibleFileSetsController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/bibles/filesets/{id}/download",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Download a Fileset",
 	 *     description="Returns a an entire fileset or a selected portion of a fileset for download",
 	 *     operationId="v4_bible_filesets.download",
@@ -148,7 +148,7 @@ class BibleFileSetsController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/bibles/filesets/{id}/podcast",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Audio Filesets as Podcasts",
 	 *     description="An audio Fileset in an RSS format suitable for consumption by iTunes",
 	 *     operationId="v4_bible_filesets.podcast",
@@ -185,7 +185,7 @@ class BibleFileSetsController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/bibles/filesets/{id}/copyright",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Fileset Copyright information",
 	 *     description="A fileset's copyright information and organizational connections",
 	 *     operationId="v4_bible_filesets.copyright",
@@ -231,7 +231,7 @@ class BibleFileSetsController extends APIController
 	 *
 	 * @OAS\POST(
 	 *     path="/bibles/filesets/",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Create a brand new Fileset",
 	 *     description="Create a new Bible Fileset",
 	 *     operationId="v4_bible_filesets.store",
@@ -270,7 +270,7 @@ class BibleFileSetsController extends APIController
 	 *
 	 * @OAS\GET(
 	 *     path="/bibles/filesets/media/types",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Available fileset types",
 	 *     description="A list of all the file types that exist within the filesets",
 	 *     operationId="v4_bible_filesets.types",
@@ -316,7 +316,7 @@ class BibleFileSetsController extends APIController
 	 *
 	 * @OAS\PUT(
 	 *     path="/bibles/filesets/{id}",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Available fileset",
 	 *     description="A list of all the file types that exist within the filesets",
 	 *     operationId="v4_bible_filesets.update",

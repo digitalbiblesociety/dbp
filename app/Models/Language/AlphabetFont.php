@@ -23,7 +23,15 @@ class AlphabetFont extends Model
     protected $table = 'alphabet_fonts';
     protected $hidden = ['iso'];
 
-	/*
+	/**
+	*
+	* @OAS\Property(
+	*     title="Alphabet Font ID",
+	*     description="The incrementing numeric id for the alphabet fonts",
+	*     format="integer",
+	*     example=7
+	* )
+	*
 	* @property int $id
 	* @method static AlphabetFont whereId($value)
 	*/
@@ -51,8 +59,8 @@ class AlphabetFont extends Model
 	protected $fontName;
 
 	/**
-	* @property string $fontName
-	* @method static AlphabetFont whereFontName($value)
+	* @property string $fontFileName
+	* @method static AlphabetFont whereFontFileName($value)
 	*
 	* @OAS\Property(
 	*     title="Alphabet Font File Name",

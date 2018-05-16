@@ -23,7 +23,7 @@ class BibleFileSetPermissionsController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/bibles/filesets/{id}/permissions/",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Returns a list of permissions for a specific Fileset",
 	 *     description="Returns filtered permissions for a fileset dependent upon your authorization level and API key",
 	 *     operationId="v4_bible_filesets_permissions.index",

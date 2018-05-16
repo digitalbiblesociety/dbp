@@ -16,7 +16,7 @@ class ProjectsController extends APIController
      *
      * @OAS\Get(
      *     path="/projects",
-     *     tags={"Version 4"},
+     *     tags={"Community"},
      *     summary="",
      *     description="",
      *     operationId="v4_projects.index",
@@ -63,7 +63,7 @@ class ProjectsController extends APIController
 	 *
 	 * @OAS\Post(
 	 *     path="/projects",
-	 *     tags={"Version 4"},
+	 *     tags={"Community"},
 	 *     summary="Apply for a project_id",
 	 *     description="It is recommended that you create a distinct project_id for each app using the API",
 	 *     operationId="v4_projects.store",
@@ -120,7 +120,7 @@ class ProjectsController extends APIController
      *
      * @OAS\Get(
      *     path="/projects/{project_id}",
-     *     tags={"Version 4"},
+     *     tags={"Community"},
      *     summary="Get the details for a project",
      *     description="",
      *     operationId="v4_projects.show",
@@ -171,7 +171,7 @@ class ProjectsController extends APIController
      *
      * @OAS\Put(
      *     path="/projects/{project_id}",
-     *     tags={"Version 4"},
+     *     tags={"Community"},
      *     summary="Update the details for a project",
      *     description="",
      *     operationId="v4_projects.update",
@@ -214,7 +214,7 @@ class ProjectsController extends APIController
      *
      * @OAS\Delete(
      *     path="/projects/{project_id}",
-     *     tags={"Version 4"},
+     *     tags={"Community"},
      *     summary="Remove a project",
      *     description="",
      *     operationId="v4_projects.update",

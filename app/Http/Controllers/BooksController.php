@@ -22,7 +22,7 @@ class BooksController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/bibles/books/",
-	 *     tags={"Version 4"},
+	 *     tags={"Bibles"},
 	 *     summary="Returns the books of the Bible",
 	 *     description="Returns all of the books of the Bible both canonical and deuterocanonical",
 	 *     operationId="v4_bible.allBooks",
@@ -64,7 +64,7 @@ class BooksController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/library/book/",
-	 *     tags={"Version 2"},
+	 *     tags={"Library Catalog"},
 	 *     summary="Returns books order",
 	 *     description="Gets the book order and code listing for a volume.",
 	 *     operationId="v2_library_book",
@@ -120,7 +120,7 @@ class BooksController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/library/bookname/",
-	 *     tags={"Version 2"},
+	 *     tags={"Library Catalog"},
 	 *     summary="Returns book Names",
 	 *     description="Gets the book order and code listing for a volume.",
 	 *     operationId="v2_library_bookName",
@@ -162,7 +162,7 @@ class BooksController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/library/chapter/",
-	 *     tags={"Version 2"},
+	 *     tags={"Library Catalog"},
 	 *     summary="Returns chapters for a book",
 	 *     description="Lists the chapters for a book or all books in a standard bible volume.",
 	 *     operationId="v2_library_chapter",

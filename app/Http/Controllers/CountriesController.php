@@ -26,7 +26,7 @@ class CountriesController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/countries/",
-	 *     tags={"Version 4"},
+	 *     tags={"Wiki"},
 	 *     summary="Returns Countries",
 	 *     description="Returns the List of Countries",
 	 *     operationId="v4_countries.all",
@@ -99,7 +99,7 @@ class CountriesController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/countries/{id}",
-	 *     tags={"Version 4"},
+	 *     tags={"Wiki"},
 	 *     summary="Returns a single Country",
 	 *     description="Returns a single Country",
 	 *     operationId="v4_countries.one",
@@ -154,7 +154,7 @@ class CountriesController extends APIController
 	 *
 	 * @OAS\Post(
 	 *     path="/countries/",
-	 *     tags={"Version 4"},
+	 *     tags={"Wiki"},
 	 *     summary="Create a new Country",
 	 *     description="Create a new Country",
 	 *     operationId="v4_countries.store",
@@ -201,7 +201,7 @@ class CountriesController extends APIController
 	 *
 	 * @OAS\Put(
 	 *     path="/countries/{id}",
-	 *     tags={"Version 4"},
+	 *     tags={"Wiki"},
 	 *     summary="Update a new Country",
 	 *     description="Update a new Country",
 	 *     operationId="v4_countries.update",

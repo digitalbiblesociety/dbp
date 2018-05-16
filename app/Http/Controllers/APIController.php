@@ -52,14 +52,22 @@ class APIController extends Controller
 	 * @OAS\Parameter(parameter="reply",name="reply",in="query",description="Setting this param to true will add format the return as a specific file type.",@OAS\Schema(type="string",enum={"xml","csv","json","yaml"}))
 	 * @OAS\Parameter(name="sort_by", in="query", description="The field to sort by", @OAS\Schema(type="string"))
 	 * @OAS\Parameter(name="sort_dir", in="query", description="The direction to sort by", @OAS\Schema(type="string",enum={"asc","desc"}))
-	 * @OAS\Tag(
-	 *   name="Version 2",
-	 *   description="Everything about version 2"
-	 * )
-	 * @OAS\Tag(
-	 *   name="Version 4",
-	 *   description="Everything about version 4"
-	 * )
+	 *
+	 *
+	 */
+
+	/**
+	 * Version 2 Tags
+	 *
+	 *
+	 * @OAS\Tag(name="Library Audio",    description="These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume.")
+	 * @OAS\Tag(name="Library Catalog",  description="These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume.")
+	 * @OAS\Tag(name="Library Text",     description="v2 These methods allow the caller to retrieve Bible text in a variety of configurations.")
+	 * @OAS\Tag(name="Library Video",    description="v2 These calls address the information needed to build and retrieve video information for each volume.")
+	 * @OAS\Tag(name="Country Language", description="v2 These calls provide all information pertaining to country languages.")
+	 * @OAS\Tag(name="Study Programs",   description="These calls provide all information pertaining to Bible study programs.")
+	 * @OAS\Tag(name="API",              description="v2 These calls provide basic information regarding API specifics.")
+	 *
 	 */
 
     /**
