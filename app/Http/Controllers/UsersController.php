@@ -164,7 +164,10 @@ class UsersController extends APIController
 		if(!$user) return $this->replyWithError(trans('auth.failed',[],$current_locale));
 
 		// If password provided, update password
-		if(Hash::check($request->password, $user->password)) return $this->reply(['user_id' => $user->id]);
+		if(Hash::check($request->password, $user->password)) {
+			if(isset($request->new_password)) $user->password = bcrypt($request->new_password); $user->save();
+			return $this->reply($user);
+		}
 
 		$response = Password::broker()->sendResetLink($request->only('email'));
 		if($response == Password::RESET_LINK_SENT) return back()->with('status', trans($response));
