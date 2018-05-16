@@ -57,21 +57,22 @@ class AlphabetTransformer extends BaseTransformer
 		switch($this->route) {
 
 			/**
-			 * @OAS\Response(
-			 *   response="v4_alphabets.all",
-			 *   description="The minimized alphabet return for the all alphabets route",
-			 *   @OAS\MediaType(
-			 *     mediaType="application/json",
-			 *     @OAS\Schema(
-			 *              required={"name","script","family","type","direction"},
-			 *              @OAS\Property(property="name",      ref="#/components/schemas/Alphabet/properties/name"),
-			 *              @OAS\Property(property="script",    ref="#/components/schemas/Alphabet/properties/script"),
-			 *              @OAS\Property(property="family",    ref="#/components/schemas/Alphabet/properties/family"),
-			 *              @OAS\Property(property="type",      ref="#/components/schemas/Alphabet/properties/type"),
-			 *              @OAS\Property(property="direction", ref="#/components/schemas/Alphabet/properties/direction")
+			 *
+			 * @OAS\Schema (
+			 *     type="array",
+			 *     schema="v4_alphabets_all_response",
+			 *     description="The minimized alphabet return for the all alphabets route",
+			 *     title="The all alphabets response",
+			 *     @OAS\Xml(name="v4_alphabets_all_response"),
+			 *     @OAS\Items(
+			 *          @OAS\Property(property="name",      ref="#/components/schemas/Alphabet/properties/name"),
+			 *          @OAS\Property(property="script",    ref="#/components/schemas/Alphabet/properties/script"),
+			 *          @OAS\Property(property="family",    ref="#/components/schemas/Alphabet/properties/family"),
+			 *          @OAS\Property(property="type",      ref="#/components/schemas/Alphabet/properties/type"),
+			 *          @OAS\Property(property="direction", ref="#/components/schemas/Alphabet/properties/direction")
 			 *     )
-			 *   )
 			 * )
+			 *
 			 */
 			case "v4_alphabets.all": {
 				return [
@@ -85,14 +86,23 @@ class AlphabetTransformer extends BaseTransformer
 			}
 
 			/**
-			 * @OAS\Response(
-			 *   response="v4_alphabets.one",
-			 *   description="The Full alphabet return for the single alphabet route",
-			 *   @OAS\MediaType(
-			 *     mediaType="application/json",
-			 *     @OAS\Schema(ref="#/components/schemas/Alphabet")
-			 *   )
+			 *
+			 * @OAS\Schema (
+			 *     type="object",
+			 *     schema="v4_alphabets_one_response",
+			 *     description="The full alphabet return for the single alphabet route",
+			 *     title="The single alphabet response",
+			 *     @OAS\Xml(name="v4_alphabets_one_response"),
+			 *     @OAS\Property(property="name",                   ref="#/components/schemas/Alphabet/properties/name"),
+			 *     @OAS\Property(property="script",                 ref="#/components/schemas/Alphabet/properties/script"),
+			 *     @OAS\Property(property="family",                 ref="#/components/schemas/Alphabet/properties/family"),
+			 *     @OAS\Property(property="type",                   ref="#/components/schemas/Alphabet/properties/type"),
+			 *     @OAS\Property(property="direction",              ref="#/components/schemas/Alphabet/properties/direction"),
+			 *     @OAS\Property(property="fonts",type="array",     @OAS\Items(ref="#/components/schemas/AlphabetFont")),
+			 *     @OAS\Property(property="languages",type="array", @OAS\Items(ref="#/components/schemas/Language")),
+			 *     @OAS\Property(property="bibles",type="array",    @OAS\Items(ref="#/components/schemas/Bibles"))
 			 * )
+			 *
 			 */
 			case "v4_alphabets.one": {
 				return $alphabet->toArray();

@@ -43,7 +43,8 @@ class AlphabetFont extends Model
 	*     title="Alphabet Font Name",
 	*     description="The Font Name",
 	*     format="string",
-	*     maxLength=191
+	*     maxLength=191,
+	*     example="Noto Naskh Arabic"
 	* )
 	*
 	*/
@@ -57,7 +58,8 @@ class AlphabetFont extends Model
 	*     title="Alphabet Font File Name",
 	*     description="The File name for the font",
 	*     format="string",
-	*     maxLength=191
+	*     maxLength=191,
+	*     example="NotoNaskhArabic-Regular"
 	* )
 	*
 	*/
@@ -72,7 +74,8 @@ class AlphabetFont extends Model
 	*     description="The boldness of the font",
 	*     nullable=true,
 	*     format="integer",
-	*     minimum=100
+	*     minimum=100,
+	*     example=400
 	* )
 	*
 	*/
@@ -87,7 +90,8 @@ class AlphabetFont extends Model
 	*     description="The copyright of the font if any",
 	*     format="string",
 	*     nullable=true,
-	*     maxLength=191
+	*     maxLength=191,
+	*     example="Creative Commons"
 	* )
 	*
 	*/
@@ -101,7 +105,7 @@ class AlphabetFont extends Model
 	*     title="Alphabet URL",
 	*     description="The url to the font file",
 	*     format="string",
-	*     maxLength=191
+	*     example="https://cdn.example.com/resources/fonts/NotoNaskhArabic-Regular.ttf"
 	* )
 	*
 	*/
@@ -114,7 +118,8 @@ class AlphabetFont extends Model
 	* @OAS\Property(
 	*     title="Notes",
 	*     description="Any notes for the font file name",
-	*     format="string"
+	*     format="string",
+	*     nullable=true
 	* )
 	*
 	*/
@@ -128,7 +133,8 @@ class AlphabetFont extends Model
 	*     title="Italic",
 	*     description="Determines if the font file contains or supports italics",
 	*     format="boolean",
-	*     nullable=true
+	*     nullable=true,
+	*     example=false
 	* )
 	*
 	*/

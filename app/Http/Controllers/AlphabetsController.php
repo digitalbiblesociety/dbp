@@ -38,9 +38,9 @@ class AlphabetsController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_alphabets.all")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_alphabets.all")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_alphabets.all"))
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_alphabets_all_response")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_alphabets_all_response")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_alphabets_all_response"))
 	 *     )
 	 * )
      *
@@ -78,9 +78,9 @@ class AlphabetsController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_alphabets.one"))
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response"))
 	 *     )
 	 * )
 	 *
@@ -135,9 +135,9 @@ class AlphabetsController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_alphabets.one"))
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response"))
 	 *     )
 	 * )
 	 *
@@ -181,9 +181,9 @@ class AlphabetsController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_alphabets.one")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_alphabets.one"))
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response"))
 	 *     )
 	 * )
 	 *
