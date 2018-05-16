@@ -21,11 +21,11 @@
 
 <div id="redoc-container"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0-alpha.17/bundles/redoc.standalone.js"> </script>
 <script src="/js/ref-parser.min.js"></script>
 <script>
-/*
     var request = new XMLHttpRequest();
-    request.open('GET', 'https://dbp.dev/openapi.json', true);
+    request.open('GET', '/eng/swagger_docs', true);
 
     request.onload = function() {
         if (this.status >= 200 && this.status < 400) {
@@ -39,7 +39,7 @@
                     // `schema` is just a normal JavaScript object that contains your entire JSON Schema,
                     // including referenced files, combined into a single object
 
-
+                    Redoc.init(mySchema,['suppressWarnings','noAutoAuth','requiredPropsFirst'],document.getElementById('redoc-container'))
                     //console.log(schema.definitions.person.properties.firstName);
                 }
             });
@@ -47,12 +47,6 @@
         }
     };
     request.send();
-    */
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0-alpha.17/bundles/redoc.standalone.js"> </script>
-<script>
-    Redoc.init('https://dbp.dev/openapi.json',['suppressWarnings','noAutoAuth','requiredPropsFirst'],document.getElementById('redoc-container'))
 </script>
 </body>
 </html>

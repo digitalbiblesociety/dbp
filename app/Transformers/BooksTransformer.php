@@ -33,13 +33,13 @@ class BooksTransformer extends BaseTransformer
 			}
 
 			/**
-			 * @OAS\Response(
-			 *   response="v2_library_book",
-			 *   description="The book return",
-			 *   @OAS\MediaType(
-			 *     mediaType="application/json",
-			 *     @OAS\Schema(
-			 *          @OAS\Property(property="dam_id",                ref="#/components/schemas/Bible/properties/id"),
+			 * @OAS\Schema (
+			*	type="array",
+			*	schema="v2_library_book",
+			*	description="The book return",
+			*	title="v2_library_book",
+			*	@OAS\Xml(name="v2_library_book"),
+			*	@OAS\Items(          @OAS\Property(property="dam_id",                ref="#/components/schemas/Bible/properties/id"),
 			 *          @OAS\Property(property="book_id",               ref="#/components/schemas/Book/properties/id"),
 			 *          @OAS\Property(property="book_name",             ref="#/components/schemas/Book/properties/name"),
 			 *          @OAS\Property(property="book_order",            ref="#/components/schemas/Book/properties/book_order"),
@@ -116,13 +116,13 @@ class BooksTransformer extends BaseTransformer
     }
 
 	/**
-	 * @OAS\Response(
-	 *   response="v4_bible.allBooks",
-	 *   description="The books of the bible with codes",
-	 *   @OAS\MediaType(
-	 *     mediaType="application/json",
-	 *     @OAS\Schema(
-	 *          @OAS\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
+	 * @OAS\Schema (
+			*	type="array",
+			*	schema="v4_bible.allBooks",
+			*	description="The books of the bible with codes",
+			*	title="v4_bible.allBooks",
+			*	@OAS\Xml(name="v4_bible.allBooks"),
+			*	@OAS\Items(          @OAS\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
 	 *          @OAS\Property(property="id_usfx",           ref="#/components/schemas/Book/properties/id_usfx"),
 	 *          @OAS\Property(property="id_osis",           ref="#/components/schemas/Book/properties/id_osis"),
 	 *          @OAS\Property(property="book_order",        ref="#/components/schemas/Book/properties/book_order"),
@@ -136,13 +136,13 @@ class BooksTransformer extends BaseTransformer
 	 *   )
 	 * )
 	 *
-	 * @OAS\Response(
-	 *   response="v4_bible.books",
-	 *   description="The books of the bible with codes",
-	 *   @OAS\MediaType(
-	 *     mediaType="application/json",
-	 *     @OAS\Schema(
-	 *          @OAS\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
+	 * @OAS\Schema (
+			*	type="array",
+			*	schema="v4_bible.books",
+			*	description="The books of the bible with codes",
+			*	title="v4_bible.books",
+			*	@OAS\Xml(name="v4_bible.books"),
+			*	@OAS\Items(          @OAS\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
 	 *          @OAS\Property(property="id_usfx",           ref="#/components/schemas/Book/properties/id_usfx"),
 	 *          @OAS\Property(property="id_osis",           ref="#/components/schemas/Book/properties/id_osis"),
 	 *          @OAS\Property(property="book_order",        ref="#/components/schemas/Book/properties/book_order"),

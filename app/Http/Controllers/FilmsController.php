@@ -26,25 +26,23 @@ class FilmsController extends APIController {
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_video_location")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v2_video_location"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_video_location")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_video_location"))
 	 *     )
 	 * )
 	 *
-	 * @OAS\Response(
-	 *   response="v2_video_location",
-	 *   description="The v2_video_location",
-	 *   @OAS\MediaType(
-	 *     mediaType="application/json",
-	 *     @OAS\Schema(
-	 *        @OAS\Property(property="server",      @OAS\Schema(type="string",example="dbp-video.s3.amazonaws.com")),
-	 *        @OAS\Property(property="root_path",   @OAS\Schema(type="string")),
-	 *        @OAS\Property(property="protocol",    @OAS\Schema(type="string",example="http",enum={"http","https"})),
-	 *        @OAS\Property(property="CDN",         @OAS\Schema(type="integer",example=0,enum={0,1})),
-	 *        @OAS\Property(property="priority",    @OAS\Schema(type="integer",example=5))
-	 *     )
-	 *   )
-	 * )
+     * @OAS\Schema (
+     *     type="object",
+     *     schema="v2_video_location",
+     *     description="",
+     *     title="The single alphabet response",
+     *     @OAS\Xml(name="v2_video_location"),
+     *     @OAS\Property(property="server",      @OAS\Schema(type="string",example="dbp-video.s3.amazonaws.com")),
+     *     @OAS\Property(property="root_path",   @OAS\Schema(type="string")),
+     *     @OAS\Property(property="protocol",    @OAS\Schema(type="string",example="http",enum={"http","https"})),
+     *     @OAS\Property(property="CDN",         @OAS\Schema(type="integer",example=0,enum={0,1})),
+     *     @OAS\Property(property="priority",    @OAS\Schema(type="integer",example=5))
+     * )
 	 *
 	 * @return mixed
 	 */
@@ -105,8 +103,8 @@ class FilmsController extends APIController {
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_video_path")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v2_video_path"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_video_path")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_video_path"))
 	 *     )
 	 * )
 	 *

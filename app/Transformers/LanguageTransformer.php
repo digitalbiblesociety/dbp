@@ -80,13 +80,13 @@ class LanguageTransformer extends BaseTransformer
 			}
 
 			/**
-			 * @OAS\Response(
-			 *   response="v2_country_lang",
-			 *   description="The v2_country_lang response",
-			 *   @OAS\MediaType(
-			 *     mediaType="application/json",
-			 *     @OAS\Schema(
-			 *          @OAS\Property(property="id",                    ref="#/components/schemas/Language/properties/id"),
+			 * @OAS\Schema (
+			*	type="array",
+			*	schema="v2_country_lang",
+			*	description="The v2_country_lang response",
+			*	title="v2_country_lang",
+			*	@OAS\Xml(name="v2_country_lang"),
+			*	@OAS\Items(          @OAS\Property(property="id",                    ref="#/components/schemas/Language/properties/id"),
 			 *          @OAS\Property(property="lang_code",             ref="#/components/schemas/Language/properties/iso"),
 			 *          @OAS\Property(property="region",                ref="#/components/schemas/Language/properties/area"),
 			 *          @OAS\Property(property="country_primary",       ref="#/components/schemas/Language/properties/country_id"),
@@ -118,13 +118,13 @@ class LanguageTransformer extends BaseTransformer
 			}
 
 			/**
-			 * @OAS\Response(
-			 *   response="v2_library_language",
-			 *   description="The minimized language return for the all languages v2 route",
-			 *   @OAS\MediaType(
-			 *     mediaType="application/json",
-			 *     @OAS\Schema(
-			 *          @OAS\Property(property="language_code",         ref="#/components/schemas/Language/properties/iso"),
+			 * @OAS\Schema (
+			*	type="array",
+			*	schema="v2_library_language",
+			*	description="The minimized language return for the all languages v2 route",
+			*	title="v2_library_language",
+			*	@OAS\Xml(name="v2_library_language"),
+			*	@OAS\Items(          @OAS\Property(property="language_code",         ref="#/components/schemas/Language/properties/iso"),
 			 *          @OAS\Property(property="language_name",         ref="#/components/schemas/Language/properties/name"),
 			 *          @OAS\Property(property="english_name",          ref="#/components/schemas/Language/properties/name"),
 			 *          @OAS\Property(property="language_iso",          ref="#/components/schemas/Language/properties/iso"),

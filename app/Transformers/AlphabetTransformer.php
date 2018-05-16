@@ -100,7 +100,7 @@ class AlphabetTransformer extends BaseTransformer
 			 *     @OAS\Property(property="direction",              ref="#/components/schemas/Alphabet/properties/direction"),
 			 *     @OAS\Property(property="fonts",type="array",     @OAS\Items(ref="#/components/schemas/AlphabetFont")),
 			 *     @OAS\Property(property="languages",type="array", @OAS\Items(ref="#/components/schemas/Language")),
-			 *     @OAS\Property(property="bibles",type="array",    @OAS\Items(ref="#/components/schemas/Bibles"))
+			 *     @OAS\Property(property="bibles",type="array",    @OAS\Items(ref="#/components/schemas/Bible"))
 			 * )
 			 *
 			 */

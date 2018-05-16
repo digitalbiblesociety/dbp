@@ -7,13 +7,13 @@ class FilmTransformer extends BaseTransformer
     /**
      * A Fractal transformer.
      *
-     * @OAS\Response(
-     *   response="v2_video_path",
-     *   description="The v2_video_path",
-     *   @OAS\MediaType(
-     *     mediaType="application/json",
-     *     @OAS\Schema(
-     *        @OAS\Property(property="segment_order",      ref="#/components/schemas/Video/properties/id"),
+     * @OAS\Schema (
+			*	type="array",
+			*	schema="v2_video_path",
+			*	description="The v2_video_path",
+			*	title="v2_video_path",
+			*	@OAS\Xml(name="v2_video_path"),
+			*	@OAS\Items(        @OAS\Property(property="segment_order",      ref="#/components/schemas/Video/properties/id"),
      *        @OAS\Property(property="title",              ref="#/components/schemas/VideoTag/properties/tag"),
      *        @OAS\Property(property="book_id",            ref="#/components/schemas/Book/properties/id"),
      *        @OAS\Property(property="path",               ref="#/components/schemas/Video/properties/url"),

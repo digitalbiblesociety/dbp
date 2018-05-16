@@ -32,25 +32,24 @@ class NumbersController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_numbers_range")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_numbers_range")),
-	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_numbers_range"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_numbers_range")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_numbers_range")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_numbers_range"))
 	 *     )
 	 * )
 	 *
 	 * @return mixed
 	 *
-	 * @OAS\Response(
-	 *   response="v4_numbers_range",
-	 *   description="The numbers range return",
-	 *   @OAS\MediaType(
-	 *     mediaType="application/json",
-	 *     @OAS\Schema(
-	 *              @OAS\Property(property="numeral", type="string"),
-	 *              @OAS\Property(property="numeral_vernacular", type="string")
-	 *     )
-	 *   )
-	 * )
+     * @OAS\Schema (
+     *     type="object",
+     *     schema="v4_numbers_range",
+     *     description="The numbers range return",
+     *     title="The numbers range return",
+     *     @OAS\Xml(name="v4_numbers_range"),
+     *     @OAS\Property(property="numeral", type="string"),
+     *     @OAS\Property(property="numeral_vernacular", type="string")
+     * )
+     *
 	 */
 	public function customRange()
     {

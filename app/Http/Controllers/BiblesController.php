@@ -63,9 +63,9 @@ class BiblesController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_bible.one")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_bible.one")),
-	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_bible.one"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_bible.one"))
 	 *     )
 	 * )
 	 *
@@ -184,26 +184,22 @@ class BiblesController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_library_version"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_library_version"))
 	 *     )
 	 * )
+     *
+     * @OAS\Schema (
+     *     type="object",
+     *     schema="v2_library_version",
+     *     description="The various version ids in the old version 2 style",
+     *     title="v2_library_version",
+     *     @OAS\Xml(name="v2_library_version"),
+     *     @OAS\Property(property="version_code",type="string",description="The abbreviated `BibleFileset` id created from the three letters identifier after the iso code"),
+     *     @OAS\Property(property="version_name",type="string",description="The name of the version in the language that it's written in"),
+     *     @OAS\Property(property="english_name",type="string",description="The name of the version in english")
+     * )
 	 *
 	 * @return json
-	 */
-
-	/**
-	 * @OAS\Response(
-	 *   response="v2_library_version",
-	 *   description="The various version ids in the old version 2 style",
-	 *   @OAS\MediaType(
-	 *     mediaType="application/json",
-	 *     @OAS\Schema(
-	 *          @OAS\Property(property="version_code",type="string",description="The abbreviated `BibleFileset` id created from the three letters identifier after the iso code"),
-	 *          @OAS\Property(property="version_name",type="string",description="The name of the version in the language that it's written in"),
-	 *          @OAS\Property(property="english_name",type="string",description="The name of the version in english")
-	 *     )
-	 *   )
-	 * )
 	 */
 	public function libraryVersion()
 	{
@@ -293,9 +289,9 @@ class BiblesController extends APIController
      *     @OAS\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_bible.one")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_bible.one")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_bible.one"))
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_bible.one"))
      *     )
      * )
      *
@@ -339,9 +335,9 @@ class BiblesController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_bible.books")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_bible.books")),
-	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_bible.books"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_bible.books")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_bible.books")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_bible.books"))
 	 *     )
 	 * )
 	 *

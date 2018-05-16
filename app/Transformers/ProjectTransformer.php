@@ -31,13 +31,13 @@ class ProjectTransformer extends BaseTransformer
 	}
 
 	/**
-	 * @OAS\Response(
-	 *   response="v4_projects_index",
-	 *   description="The minimized alphabet return for the all alphabets route",
-	 *   @OAS\MediaType(
-	 *     mediaType="application/json",
-	 *     @OAS\Schema(
-	 *        @OAS\Property(property="id",                ref="#/components/schemas/Project/properties/id"),
+	 * @OAS\Schema (
+			*	type="array",
+			*	schema="v4_projects_index",
+			*	description="The minimized alphabet return for the all alphabets route",
+			*	title="v4_projects_index",
+			*	@OAS\Xml(name="v4_projects_index"),
+			*	@OAS\Items(        @OAS\Property(property="id",                ref="#/components/schemas/Project/properties/id"),
 	 *        @OAS\Property(property="name",              ref="#/components/schemas/Project/properties/name"),
 	 *        @OAS\Property(property="url_avatar",        ref="#/components/schemas/Project/properties/url_avatar"),
 	 *        @OAS\Property(property="url_avatar_icon",   ref="#/components/schemas/Project/properties/url_avatar_icon"),

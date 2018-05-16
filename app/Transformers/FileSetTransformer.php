@@ -141,13 +141,13 @@ class FileSetTransformer extends BaseTransformer
 			$bookName = $fileset->book->name;
 		}
 		/**
-		 * @OAS\Response(
-		 *   response="v4_bible_filesets.show",
-		 *   description="The minimized alphabet return for the all alphabets route",
-		 *   @OAS\MediaType(
-		 *     mediaType="application/json",
-		 *     @OAS\Schema(
-		 *          @OAS\Property(property="book_id",        ref="#/components/schemas/BibleFile/properties/book_id"),
+		 * @OAS\Schema (
+			*	type="array",
+			*	schema="v4_bible_filesets.show",
+			*	description="The minimized alphabet return for the all alphabets route",
+			*	title="v4_bible_filesets.show",
+			*	@OAS\Xml(name="v4_bible_filesets.show"),
+			*	@OAS\Items(          @OAS\Property(property="book_id",        ref="#/components/schemas/BibleFile/properties/book_id"),
 		 *          @OAS\Property(property="book_name",      ref="#/components/schemas/BookTranslation/properties/name"),
 		 *          @OAS\Property(property="chapter_start",  ref="#/components/schemas/BibleFile/properties/chapter_start"),
 		 *          @OAS\Property(property="chapter_end",    ref="#/components/schemas/BibleFile/properties/chapter_end"),

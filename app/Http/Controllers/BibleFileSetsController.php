@@ -45,7 +45,7 @@ class BibleFileSetsController extends APIController
 	 *         description="successful operation",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_bible_filesets.show")
+	 *            @OAS\Schema(ref="#/components/schemas/v4_bible_filesets.show")
 	 *         )
 	 *     )
 	 * )
@@ -244,7 +244,7 @@ class BibleFileSetsController extends APIController
 	 *         description="The completed fileset",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_bible_filesets.show")
+	 *            @OAS\Schema(ref="#/components/schemas/v4_bible_filesets.show")
 	 *         )
 	 *     )
 	 * )
@@ -330,7 +330,7 @@ class BibleFileSetsController extends APIController
 	 *         description="The fileset just edited",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_bible_filesets.show")
+	 *            @OAS\Schema(ref="#/components/schemas/v4_bible_filesets.show")
 	 *         )
 	 *     )
 	 * )

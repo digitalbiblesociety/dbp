@@ -35,7 +35,7 @@ class BooksController extends APIController
 	 *         description="successful operation",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_bible.allBooks")
+	 *            @OAS\Schema(ref="#/components/schemas/v4_bible.allBooks")
 	 *         )
 	 *     )
 	 * )
@@ -77,7 +77,7 @@ class BooksController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_library_book"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_library_book"))
 	 *     )
 	 * )
 	 *

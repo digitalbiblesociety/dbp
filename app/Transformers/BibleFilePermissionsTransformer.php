@@ -14,13 +14,13 @@ class BibleFilePermissionsTransformer extends TransformerAbstract
     public function transform($access)
     {
 	    /**
-	     * @OAS\Response(
-	     *   response="v4_bible_filesets_permissions.index",
-	     *   description="The permissions for a specific bible fileset",
-	     *   @OAS\MediaType(
-	     *     mediaType="application/json",
-	     *     @OAS\Schema(
-	     *          @OAS\Property(property="fileset_id",          ref="#/components/schemas/BibleFileset/properties/hash_id"),
+	     * @OAS\Schema (
+			*	type="array",
+			*	schema="v4_bible_filesets_permissions.index",
+			*	description="The permissions for a specific bible fileset",
+			*	title="v4_bible_filesets_permissions.index",
+			*	@OAS\Xml(name="v4_bible_filesets_permissions.index"),
+			*	@OAS\Items(          @OAS\Property(property="fileset_id",          ref="#/components/schemas/BibleFileset/properties/hash_id"),
 	     *          @OAS\Property(property="access_type",         ref="#/components/schemas/Access/properties/access_granted"),
 	     *          @OAS\Property(property="access_granted",      ref="#/components/schemas/Access/properties/access_granted"),
 	     *          @OAS\Property(property="granted_at",          ref="#/components/schemas/Access/properties/created_at"),

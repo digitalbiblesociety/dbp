@@ -21,13 +21,13 @@ class TextTransformer extends BaseTransformer
 	    switch($this->route) {
 
 		    /**
-		     * @OAS\Response(
-		     *   response="v4_text_search",
-		     *   description="The v4_text_search",
-		     *   @OAS\MediaType(
-		     *     mediaType="application/json",
-		     *     @OAS\Schema(
-		     *              @OAS\Property(property="dam_id",     ref="#/components/schemas/Bible/properties/id"),
+		     * @OAS\Schema (
+			*	type="array",
+			*	schema="v4_text_search",
+			*	description="The v4_text_search",
+			*	title="v4_text_search",
+			*	@OAS\Xml(name="v4_text_search"),
+			*	@OAS\Items(              @OAS\Property(property="dam_id",     ref="#/components/schemas/Bible/properties/id"),
 		     *              @OAS\Property(property="book_name",  ref="#/components/schemas/Book/properties/name"),
 		     *              @OAS\Property(property="book_id",    ref="#/components/schemas/Book/properties/id_osis"),
 		     *              @OAS\Property(property="chapter_id", ref="#/components/schemas/BibleFile/properties/chapter_start"),
@@ -51,13 +51,13 @@ class TextTransformer extends BaseTransformer
 		    }
 
 		    /**
-		     * @OAS\Response(
-		     *   response="v2_text_search_group",
-		     *   description="The bible Search Group Response",
-		     *   @OAS\MediaType(
-		     *     mediaType="application/json",
-		     *     @OAS\Schema(
-		     *              @OAS\Property(property="dam_id",     ref="#/components/schemas/Bible/properties/id"),
+		     * @OAS\Schema (
+			*	type="array",
+			*	schema="v2_text_search_group",
+			*	description="The bible Search Group Response",
+			*	title="v2_text_search_group",
+			*	@OAS\Xml(name="v2_text_search_group"),
+			*	@OAS\Items(              @OAS\Property(property="dam_id",     ref="#/components/schemas/Bible/properties/id"),
 		     *              @OAS\Property(property="book_name",  ref="#/components/schemas/Book/properties/name"),
 		     *              @OAS\Property(property="book_id",    ref="#/components/schemas/Book/properties/id_osis"),
 		     *              @OAS\Property(property="chapter_id", ref="#/components/schemas/BibleFile/properties/chapter_start"),
@@ -83,13 +83,13 @@ class TextTransformer extends BaseTransformer
 		    }
 
 		    /**
-		     * @OAS\Response(
-		     *   response="v2_text_verse",
-		     *   description="The bible Search Group Response",
-		     *   @OAS\MediaType(
-		     *     mediaType="application/json",
-		     *     @OAS\Schema(
-		     *              @OAS\Property(property="book_name",         ref="#/components/schemas/Book/properties/name"),
+		     * @OAS\Schema (
+			*	type="array",
+			*	schema="v2_text_verse",
+			*	description="The bible Search Group Response",
+			*	title="v2_text_verse",
+			*	@OAS\Xml(name="v2_text_verse"),
+			*	@OAS\Items(              @OAS\Property(property="book_name",         ref="#/components/schemas/Book/properties/name"),
 		     *              @OAS\Property(property="book_id",           ref="#/components/schemas/Book/properties/id_osis"),
 		     *              @OAS\Property(property="chapter_id",        ref="#/components/schemas/BibleFile/properties/chapter_start"),
 		     *              @OAS\Property(property="chapter_title",     @OAS\Schema(type="string",example="Chapter 1")),
@@ -117,13 +117,13 @@ class TextTransformer extends BaseTransformer
 
 
 	/**
-	 * @OAS\Response(
-	 *   response="v4_bible_filesets_chapter",
-	 *   description="The bible chapter response",
-	 *   @OAS\MediaType(
-	 *     mediaType="application/json",
-	 *     @OAS\Schema(
-	 *              required={"name","script","family","type","direction"},
+	 * @OAS\Schema (
+			*	type="array",
+			*	schema="v4_bible_filesets_chapter",
+			*	description="The bible chapter response",
+			*	title="v4_bible_filesets_chapter",
+			*	@OAS\Xml(name="v4_bible_filesets_chapter"),
+			*	@OAS\Items(              required={"name","script","family","type","direction"},
 	 *              @OAS\Property(property="book_id",           ref="#/components/schemas/Book/properties/id"),
 	 *              @OAS\Property(property="book_name",         ref="#/components/schemas/Book/properties/name"),
 	 *              @OAS\Property(property="book_name_alt",     ref="#/components/schemas/BookTranslation/properties/name"),

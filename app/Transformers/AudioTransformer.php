@@ -24,13 +24,13 @@ class AudioTransformer extends BaseTransformer
 		switch($this->route) {
 
 			/**
-			 * @OAS\Response(
-			 *   response="v2_audio_timestamps",
-			 *   description="The v2_audio_timestamps response",
-			 *   @OAS\MediaType(
-			 *     mediaType="application/json",
-			 *     @OAS\Schema(
-			 *              @OAS\Property(property="verse_id",             ref="#/components/schemas/BibleFile/properties/verse_start"),
+			 * @OAS\Schema (
+			*	type="array",
+			*	schema="v2_audio_timestamps",
+			*	description="The v2_audio_timestamps response",
+			*	title="v2_audio_timestamps",
+			*	@OAS\Xml(name="v2_audio_timestamps"),
+			*	@OAS\Items(              @OAS\Property(property="verse_id",             ref="#/components/schemas/BibleFile/properties/verse_start"),
 			 *              @OAS\Property(property="verse_start",          @OAS\Schema(type="string",example="1",description="The duration of the timestamp in seconds"))
 			 *     )
 			 *   )
@@ -44,13 +44,13 @@ class AudioTransformer extends BaseTransformer
 			}
 
 			/**
-			 * @OAS\Response(
-			 *   response="v2_audio_path",
-			 *   description="The audio_path",
-			 *   @OAS\MediaType(
-			 *     mediaType="application/json",
-			 *     @OAS\Schema(
-			 *              @OAS\Property(property="book_id",       ref="#/components/schemas/Book/properties/id_osis"),
+			 * @OAS\Schema (
+			*	type="array",
+			*	schema="v2_audio_path",
+			*	description="The audio_path",
+			*	title="v2_audio_path",
+			*	@OAS\Xml(name="v2_audio_path"),
+			*	@OAS\Items(              @OAS\Property(property="book_id",       ref="#/components/schemas/Book/properties/id_osis"),
 			 *              @OAS\Property(property="chapter_id",    ref="#/components/schemas/BibleFile/properties/chapter_start"),
 			 *              @OAS\Property(property="path",          @OAS\Schema(type="string"))
 			 *     )
@@ -70,13 +70,13 @@ class AudioTransformer extends BaseTransformer
 
 	public function transformForV4($audio) {
 		/**
-		 * @OAS\Response(
-		 *   response="v4_timestamps_tag",
-		 *   description="The v4 timestamps tag",
-		 *   @OAS\MediaType(
-		 *     mediaType="application/json",
-		 *     @OAS\Schema(
-		 *              @OAS\Property(property="book_id",       ref="#/components/schemas/Book/properties/id"),
+		 * @OAS\Schema (
+			*	type="array",
+			*	schema="v4_timestamps_tag",
+			*	description="The v4 timestamps tag",
+			*	title="v4_timestamps_tag",
+			*	@OAS\Xml(name="v4_timestamps_tag"),
+			*	@OAS\Items(              @OAS\Property(property="book_id",       ref="#/components/schemas/Book/properties/id"),
 		 *              @OAS\Property(property="book_name",     ref="#/components/schemas/Book/properties/name"),
 		 *              @OAS\Property(property="chapter_start", ref="#/components/schemas/BibleFile/properties/chapter_start"),
 		 *              @OAS\Property(property="chapter_end",   ref="#/components/schemas/BibleFile/properties/chapter_end"),

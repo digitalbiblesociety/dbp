@@ -39,7 +39,7 @@ class LanguagesController extends APIController
      *     @OAS\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_languages.all"))
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/Language"))
      *     )
      * )
      *
@@ -52,7 +52,7 @@ class LanguagesController extends APIController
      *     @OAS\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_library_language"))
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_library_language"))
      *     )
      * )
      *
@@ -233,7 +233,7 @@ class LanguagesController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_country_lang"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_country_lang"))
 	 *     )
 	 * )
 	 *
@@ -294,7 +294,7 @@ class LanguagesController extends APIController
 	 *         description="successful operation",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_languages.one")
+	 *            @OAS\Schema(ref="#/components/schemas/Language")
 	 *         )
 	 *     )
 	 * )
@@ -319,13 +319,13 @@ class LanguagesController extends APIController
 	 *     summary="Return a single Languages",
 	 *     description="Returns a single Language",
 	 *     operationId="v4_languages.one",
-	 *     @OAS\Parameter( name="id", in="path", description="The languages ID", required=true, @OAS\Schema(ref="#/components/schemas/Language/properties/id")),
+	 *     @OAS\Parameter(name="id", in="path", description="The languages ID", required=true, @OAS\Schema(ref="#/components/schemas/Language/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_languages.all")
+	 *            @OAS\Schema(ref="#/components/schemas/Language")
 	 *         )
 	 *     )
 	 * )
@@ -371,7 +371,7 @@ class LanguagesController extends APIController
      *         description="successful operation",
      *         @OAS\MediaType(
      *            mediaType="application/json",
-     *            @OAS\Schema(ref="#/components/responses/v4_languages.one")
+     *            @OAS\Schema(ref="#/components/schemas/Language")
      *         )
      *     )
      * )

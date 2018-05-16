@@ -65,13 +65,13 @@ class CountryTransformer extends BaseTransformer
 		switch($this->route) {
 
 			/**
-			 * @OAS\Response(
-			 *   response="v4_countries.all",
-			 *   description="The minimized country return for the all countries route",
-			 *   @OAS\MediaType(
-			 *     mediaType="application/json",
-			 *     @OAS\Schema(
-			 *          @OAS\Property(property="name",              ref="#/components/schemas/Country/properties/name"),
+			 * @OAS\Schema (
+			*	type="array",
+			*	schema="v4_countries.all",
+			*	description="The minimized country return for the all countries route",
+			*	title="v4_countries.all",
+			*	@OAS\Xml(name="v4_countries.all"),
+			*	@OAS\Items(          @OAS\Property(property="name",              ref="#/components/schemas/Country/properties/name"),
 			 *          @OAS\Property(property="continent_code",    ref="#/components/schemas/Country/properties/continent"),
 			 *          @OAS\Property(property="languages",         @OAS\Schema(type="array",
 			 *              @OAS\Items(@OAS\Schema(description="A key value pair consisting of an iso code and language name", example={"eng"="English"}))))
@@ -109,13 +109,13 @@ class CountryTransformer extends BaseTransformer
 			}
 
 			/**
-			 * @OAS\Response(
-			 *   response="v4_countries.one",
-			 *   description="The minimized country return for the all countries route",
-			 *   @OAS\MediaType(
-			 *     mediaType="application/json",
-			 *     @OAS\Schema(
-			 *          @OAS\Property(property="name",              ref="#/components/schemas/Country/properties/name"),
+			 * @OAS\Schema (
+			*	type="array",
+			*	schema="v4_countries.one",
+			*	description="The minimized country return for the all countries route",
+			*	title="v4_countries.one",
+			*	@OAS\Xml(name="v4_countries.one"),
+			*	@OAS\Items(          @OAS\Property(property="name",              ref="#/components/schemas/Country/properties/name"),
 			 *          @OAS\Property(property="continent_code",    ref="#/components/schemas/Country/properties/continent"),
 			 *          @OAS\Property(property="languages",         @OAS\Schema(type="array",
 			 *              @OAS\Items(@OAS\Schema(description="A key value pair consisting of an iso code and language name", example={"eng"="English"}))))

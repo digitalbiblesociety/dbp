@@ -117,13 +117,13 @@ class BibleTransformer extends BaseTransformer
 		switch($this->route) {
 
 			/**
-			 * @OAS\Response(
-			 *   response="v4_bible.all",
-			 *   description="The bibles being returned",
-			 *   @OAS\MediaType(
-			 *     mediaType="application/json",
-			 *     @OAS\Schema(
-			 *              @OAS\Property(property="abbr",              ref="#/components/schemas/Bible/properties/id"),
+			 * @OAS\Schema (
+			*	type="array",
+			*	schema="v4_bible.all",
+			*	description="The bibles being returned",
+			*	title="v4_bible.all",
+			*	@OAS\Xml(name="v4_bible.all"),
+			*	@OAS\Items(              @OAS\Property(property="abbr",              ref="#/components/schemas/Bible/properties/id"),
 			 *              @OAS\Property(property="name",              ref="#/components/schemas/BibleTranslation/properties/name"),
 			 *              @OAS\Property(property="vname",             ref="#/components/schemas/BibleTranslation/properties/name"),
 			 *              @OAS\Property(property="language",          ref="#/components/schemas/Language/properties/name"),
@@ -151,13 +151,13 @@ class BibleTransformer extends BaseTransformer
 			}
 
 			/**
-			 * @OAS\Response(
-			 *   response="v4_bible.one",
-			 *   description="The bible being returned",
-			 *   @OAS\MediaType(
-			 *     mediaType="application/json",
-			 *     @OAS\Schema(
-			 *              @OAS\Property(property="abbr",          ref="#/components/schemas/Bible/properties/id"),
+			 * @OAS\Schema (
+			*	type="array",
+			*	schema="v4_bible.one",
+			*	description="The bible being returned",
+			*	title="v4_bible.one",
+			*	@OAS\Xml(name="v4_bible.one"),
+			*	@OAS\Items(              @OAS\Property(property="abbr",          ref="#/components/schemas/Bible/properties/id"),
 			 *              @OAS\Property(property="alphabet",      ref="#/components/schemas/Alphabet/properties/script"),
 			 *              @OAS\Property(property="mark",          ref="#/components/schemas/Bible/properties/copyright"),
 			 *              @OAS\Property(property="name",          ref="#/components/schemas/BibleTranslation/properties/name"),

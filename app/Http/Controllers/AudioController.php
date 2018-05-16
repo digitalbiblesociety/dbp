@@ -50,7 +50,7 @@ class AudioController extends APIController
 	 *         description="successful operation",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v2_audio_path")
+	 *            @OAS\Schema(ref="#/components/schemas/v2_audio_path")
 	 *         )
 	 *     )
 	 * )
@@ -96,14 +96,8 @@ class AudioController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_timestamps"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(@OAS\Property(property="hash_id", ref="#/components/schemas/BibleFileset/properties/hash_id")))
 	 *     )
-	 * )
-	 *
-	 * @OAS\Response(
-	 *   response="v4_timestamps",
-	 *   description="The v4_timestamps response",
-	 *   @OAS\MediaType(mediaType="application/json", @OAS\Schema(@OAS\Property(property="hash_id", ref="#/components/schemas/BibleFileset/properties/hash_id")))
 	 * )
 	 *
 	 * @return mixed
@@ -135,7 +129,7 @@ class AudioController extends APIController
 	 *         description="successful operation",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v2_audio_timestamps")
+	 *            @OAS\Schema(ref="#/components/schemas/v2_audio_timestamps")
 	 *         )
 	 *     )
 	 * )
@@ -183,7 +177,7 @@ class AudioController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_timestamps_tag"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_timestamps_tag"))
 	 *     )
 	 * )
 	 *

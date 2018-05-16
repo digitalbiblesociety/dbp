@@ -37,7 +37,7 @@ class BibleFileSetPermissionsController extends APIController
 	 *         description="successful operation",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_bible_filesets_permissions.index")
+	 *            @OAS\Schema(ref="#/components/schemas/v4_bible_filesets_permissions.index")
 	 *         )
 	 *     )
 	 * )

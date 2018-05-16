@@ -38,7 +38,7 @@ class CountriesController extends APIController
 	 *         description="successful operation",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_countries.all")
+	 *            @OAS\Schema(ref="#/components/schemas/v4_countries.all")
 	 *         )
 	 *     )
 	 * )
@@ -109,7 +109,7 @@ class CountriesController extends APIController
 	 *         description="successful operation",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_countries.one")
+	 *            @OAS\Schema(ref="#/components/schemas/v4_countries.one")
 	 *         )
 	 *     )
 	 * )
@@ -163,7 +163,7 @@ class CountriesController extends APIController
 	 *         description="successful operation",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_countries.one")
+	 *            @OAS\Schema(ref="#/components/schemas/v4_countries.one")
 	 *         )
 	 *     )
 	 * )
@@ -211,7 +211,7 @@ class CountriesController extends APIController
 	 *         description="successful operation",
 	 *         @OAS\MediaType(
 	 *            mediaType="application/json",
-	 *            @OAS\Schema(ref="#/components/responses/v4_countries.one")
+	 *            @OAS\Schema(ref="#/components/schemas/v4_countries.one")
 	 *         )
 	 *     )
 	 * )

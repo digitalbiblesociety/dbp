@@ -46,24 +46,22 @@ class HomeController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v4_api_buckets")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v4_api_buckets")),
-	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/responses/v4_api_buckets"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_api_buckets")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_api_buckets")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_api_buckets"))
 	 *     )
 	 * )
-	 *
-	 * @OAS\Response(
-	 *   response="v4_api_buckets",
-	 *   description="The aws buckets currently being used by the api",
-	 *   @OAS\MediaType(
-	 *     mediaType="application/json",
-	 *     @OAS\Schema(
-	 *              required={"id","organization_id"},
-	 *              @OAS\Property(property="id",              ref="#/components/schemas/Bucket/properties/id"),
-	 *              @OAS\Property(property="organization_id", ref="#/components/schemas/Bucket/properties/organization_id")
-	 *     )
-	 *   )
-	 * )
+     *
+     * @OAS\Schema (
+     *     type="object",
+     *     schema="v4_api_buckets",
+     *     description="The aws buckets currently being used by the api",
+     *     title="The buckets response",
+     *     required={"id","organization_id"},
+     *     @OAS\Xml(name="v4_api_buckets"),
+     *     @OAS\Property(property="id",              ref="#/components/schemas/Bucket/properties/id"),
+     *     @OAS\Property(property="organization_id", ref="#/components/schemas/Bucket/properties/organization_id")
+     * )
 	 *
 	 * @return mixed
 	 */
@@ -115,8 +113,8 @@ class HomeController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_api_apiReply")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v2_api_apiReply"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_api_apiReply")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_api_apiReply"))
 	 *     )
 	 * )
 	 *
@@ -162,22 +160,20 @@ class HomeController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_api_apiReply")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/responses/v2_api_apiReply"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_api_apiReply")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_api_apiReply"))
 	 *     )
 	 * )
 	 *
-	 * @OAS\Response(
-	 *   response="v2_api_apiReply",
-	 *   description="The return for the api reply",
-	 *   @OAS\MediaType(
-	 *     mediaType="application/json",
-	 *     @OAS\Schema(
-	 *        @OAS\Property(property="2",type="object",example={"json", "jsonp", "html"}),
-	 *        @OAS\Property(property="4",type="object",example={"json", "jsonp", "xml", "html"}),
-	 *     )
-	 *   )
-	 * )
+     * @OAS\Schema (
+     *     type="object",
+     *     schema="v2_api_apiReply",
+     *     description="The return for the api reply",
+     *     title="v2_api_apiReply",
+     *     @OAS\Xml(name="v2_api_apiReply"),
+     *     @OAS\Property(property="2",type="object",example={"json", "jsonp", "html"}),
+     *     @OAS\Property(property="4",type="object",example={"json", "jsonp", "xml", "html"}),
+     * )
 	 *
 	 * @return mixed
 	 */
@@ -214,26 +210,24 @@ class HomeController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/responses/v2_library_asset")),
-	 *         @OAS\MediaType(mediaType="application/xml", @OAS\Schema(ref="#/components/responses/v2_library_asset"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_library_asset")),
+	 *         @OAS\MediaType(mediaType="application/xml", @OAS\Schema(ref="#/components/schemas/v2_library_asset"))
 	 *     )
 	 * )
-	 *
-	 * @OAS\Response(
-	 *   response="v2_library_asset",
-	 *   description="The minimized alphabet return for the all alphabets route",
-	 *   @OAS\MediaType(
-	 *     mediaType="application/json",
-	 *     @OAS\Schema(
-	 *        @OAS\Property(property="server",type="string",example="cloud.faithcomesbyhearing.com"),
-	 *        @OAS\Property(property="root_path",type="string",example="/mp3audiobibles2"),
-	 *        @OAS\Property(property="protocol",type="string",example="http"),
-	 *        @OAS\Property(property="CDN",type="string",example="1"),
-	 *        @OAS\Property(property="priority",type="string",example="5"),
-	 *        @OAS\Property(property="volume_id",type="string",example=""),
-	 *     )
-	 *   )
-	 * )
+     *
+     * @OAS\Schema (
+     *     type="object",
+     *     schema="v2_library_asset",
+     *     description="v2_library_asset",
+     *     title="v2_library_asset",
+     *     @OAS\Xml(name="v2_library_asset"),
+     *     @OAS\Property(property="server",type="string",example="cloud.faithcomesbyhearing.com"),
+     *     @OAS\Property(property="root_path",type="string",example="/mp3audiobibles2"),
+     *     @OAS\Property(property="protocol",type="string",example="http"),
+     *     @OAS\Property(property="CDN",type="string",example="1"),
+     *     @OAS\Property(property="priority",type="string",example="5"),
+     *     @OAS\Property(property="volume_id",type="string",example="")
+     * )
 	 *
 	 * @return mixed
 	 */
