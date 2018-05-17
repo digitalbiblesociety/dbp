@@ -83,9 +83,10 @@
 	Route::name('v4_user.update')->put('users/{user_id}',                                 'UsersController@update');
 	Route::name('v4_user.destroy')->delete('users/{user_id}',                             'UsersController@destroy');
 	Route::name('v4_user.login')->post('users/login',                                     'UsersController@login');
-	Route::name('v4_user.reset')->post('users/reset',                                     'UsersController@reset');
+	Route::name('v4_user.password_email')->post('users/reset',                            'Auth\ForgotPasswordController@getResetToken');
 	Route::name('v4_user.oAuth')->get('users/login/{driver}',                             'Auth\LoginController@redirectToProvider');
 	Route::name('v4_user.oAuthCallback')->get('users/login/{driver}/callback',            'Auth\LoginController@handleProviderCallback');
+
 
 	// VERSION 4 | USER NOTES
 	Route::name('v4_notes.index')->get('users/{user_id}/notes',                           'UserNotesController@index');

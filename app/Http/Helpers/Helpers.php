@@ -13,7 +13,16 @@ function checkUser()
 
 function checkParam($param, $v4Style = null, $optional = false)
 {
-	$url_param = (isset($_GET[$param])) ? $_GET[$param] : false;
+	if(strpos($param, '|') !== false) {
+		$url_params = explode('|',$param);
+		foreach($url_params as $param) {
+			$url_param = (isset($_GET[$param])) ? $_GET[$param] : false;
+			if($url_param) {continue;}
+		}
+	} else {
+		$url_param = (isset($_GET[$param])) ? $_GET[$param] : false;
+	}
+
 	$url_header = request()->header($param);
 
 	if($v4Style) return $v4Style;

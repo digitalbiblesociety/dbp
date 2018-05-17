@@ -113,7 +113,7 @@ class FilmsController extends APIController {
 	public function videopath() {
 		if(!$this->api) return view('docs.v2.video_videoPath');
 
-		$bible_id = checkParam('dam_id');
+		$bible_id = checkParam('dam_id|fileset_id');
 		$encoding = checkParam('encoding', null, 'optional');
 		$resolution = checkParam('resolution', null, 'optional');
 		$segment_order = checkParam('segment_order', null, 'optional');

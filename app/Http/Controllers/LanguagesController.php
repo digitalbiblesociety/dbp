@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Language\Language;
+use App\Models\Language\LanguageTranslation;
 use App\Transformers\LanguageTransformer;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

@@ -59,14 +59,22 @@ class APIController extends Controller
 	/**
 	 * Version 2 Tags
 	 *
-	 *
-	 * @OAS\Tag(name="Library Audio",    description="These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume.")
-	 * @OAS\Tag(name="Library Catalog",  description="These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume.")
+	 * @OAS\Tag(name="Library Audio",    description="v2 These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume.")
+	 * @OAS\Tag(name="Library Catalog",  description="v2 These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume.")
 	 * @OAS\Tag(name="Library Text",     description="v2 These methods allow the caller to retrieve Bible text in a variety of configurations.")
 	 * @OAS\Tag(name="Library Video",    description="v2 These calls address the information needed to build and retrieve video information for each volume.")
 	 * @OAS\Tag(name="Country Language", description="v2 These calls provide all information pertaining to country languages.")
-	 * @OAS\Tag(name="Study Programs",   description="These calls provide all information pertaining to Bible study programs.")
+	 * @OAS\Tag(name="Study Programs",   description="v2 These calls provide all information pertaining to Bible study programs.")
 	 * @OAS\Tag(name="API",              description="v2 These calls provide basic information regarding API specifics.")
+	 *
+	 */
+
+	/**
+	 * Version 4 Tags
+	 *
+	 * @OAS\Tag(name="Wiki",            description="v4 ")
+	 * @OAS\Tag(name="Bibles",          description="v4 ")
+	 * @OAS\Tag(name="Community",       description="v4 ")
 	 *
 	 */
 

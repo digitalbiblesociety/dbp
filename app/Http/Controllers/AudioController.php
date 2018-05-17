@@ -189,7 +189,7 @@ class AudioController extends APIController
 	public function timestampsByTag(string $id = "", string $query = "")
 	{
 		// Check Params
-		$id = CheckParam('dam_id', $id);
+		$id = CheckParam('dam_id|fileset_id', $id);
 		$query = CheckParam('query', $query);
 		
 		$query = \DB::connection()->getPdo()->quote('+'.str_replace(' ',' +',$query));

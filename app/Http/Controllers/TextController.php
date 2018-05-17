@@ -52,7 +52,7 @@ class TextController extends APIController
 	 *     summary="Returns Signed URLs or Text",
 	 *     description="V2's base fileset route",
 	 *     operationId="v2_text_verse",
-	 *     @OAS\Parameter(name="id", in="query", description="The Bible fileset ID", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="fileset_id", in="query", description="The Bible fileset ID", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="book", in="query", description="The Book ID", required=true, @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OAS\Parameter(name="chapter", in="query", description="The chapter number", required=true, @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
@@ -73,7 +73,7 @@ class TextController extends APIController
     public function index($bible_url_param = null, $book_url_param = null,$chapter_url_param = null)
     {
     	// Fetch and Assign $_GET params
-    	$fileset_id = checkParam('dam_id', $bible_url_param);
+    	$fileset_id = checkParam('dam_id|fileset_id', $bible_url_param);
 	    $book_id = checkParam('book_id', $book_url_param);
 	    $chapter = checkParam('chapter_id', $chapter_url_param);
     	$verse_start = checkParam('verse_start', null, 'optional') ?? 1;
@@ -112,7 +112,7 @@ class TextController extends APIController
 
     public function formattedResponse()
     {
-	    $bible_id = checkParam('dam_id');
+	    $bible_id = checkParam('dam_id|fileset_id');
 	    $book_id = checkParam('book_id');
 	    $chapter = checkParam('chapter_id');
 
@@ -172,7 +172,7 @@ class TextController extends APIController
 	 *     summary="Run a text search on a specific fileset",
 	 *     description="",
 	 *     operationId="v4_text_search",
-	 *     @OAS\Parameter(name="dam_id", in="query", description="The Bible fileset ID", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="fileset_id", in="query", description="The Bible fileset ID", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="limit",  in="query", description="The number of search results to return", @OAS\Schema(type="integer",example=15,default=15)),
 	 *     @OAS\Parameter(name="books",  in="query", description="The Books to search through", @OAS\Schema(type="string",example="GEN,EXO,MAT")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
@@ -198,7 +198,7 @@ class TextController extends APIController
 	    $query = checkParam('query');
 	    $exclude = checkParam('exclude', null, 'optional') ?? false;
 	    if($exclude) $exclude = ' -'.$exclude;
-	    $bible_id = checkParam('dam_id');
+	    $bible_id = checkParam('dam_id|fileset_id');
 	    $limit = checkParam('limit', null, 'optional') ?? 15;
 	    $books = checkParam('books', null, 'optional');
 
@@ -245,7 +245,7 @@ class TextController extends APIController
 	    if(!$this->api) return view('docs.v2.text_search_group');
 
 	    $query = checkParam('query');
-	    $bible_id = checkParam('dam_id');
+	    $bible_id = checkParam('dam_id|fileset_id');
 
 	    $tableExists = \Schema::connection('sophia')->hasTable($bible_id.'_vpl');
 	    if(!$tableExists) { $bible_id = substr($bible_id,0,6); $tableExists = \Schema::connection('sophia')->hasTable($bible_id.'_vpl'); }

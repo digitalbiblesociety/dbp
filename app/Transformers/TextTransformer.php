@@ -21,23 +21,24 @@ class TextTransformer extends BaseTransformer
 	    switch($this->route) {
 
 		    /**
-		     * @OAS\Schema (
+		    * @OAS\Schema (
 			*	type="array",
-			*	schema="v4_text_search",
-			*	description="The v4_text_search",
-			*	title="v4_text_search",
+			*	schema="v2_text_search",
+			*	description="The v2_text_search",
+			*	title="v2_text_search",
 			*	@OAS\Xml(name="v4_text_search"),
-			*	@OAS\Items(              @OAS\Property(property="dam_id",     ref="#/components/schemas/Bible/properties/id"),
-		     *              @OAS\Property(property="book_name",  ref="#/components/schemas/Book/properties/name"),
-		     *              @OAS\Property(property="book_id",    ref="#/components/schemas/Book/properties/id_osis"),
-		     *              @OAS\Property(property="chapter_id", ref="#/components/schemas/BibleFile/properties/chapter_start"),
-		     *              @OAS\Property(property="verse_id",   ref="#/components/schemas/BibleFile/properties/verse_start"),
-		     *              @OAS\Property(property="verse_text", ref="#/components/schemas/BibleFile/properties/verse_text"),
-		     *              @OAS\Property(property="book_order", ref="#/components/schemas/Book/properties/book_order")
-		     *     )
-		     *   )
-		     * )
-		     */
+			*	@OAS\Items(
+		    *     @OAS\Property(property="dam_id",     ref="#/components/schemas/Bible/properties/id"),
+		    *     @OAS\Property(property="book_name",  ref="#/components/schemas/Book/properties/name"),
+		    *     @OAS\Property(property="book_id",    ref="#/components/schemas/Book/properties/id_osis"),
+		    *     @OAS\Property(property="chapter_id", ref="#/components/schemas/BibleFile/properties/chapter_start"),
+		    *     @OAS\Property(property="verse_id",   ref="#/components/schemas/BibleFile/properties/verse_start"),
+		    *     @OAS\Property(property="verse_text", ref="#/components/schemas/BibleFile/properties/verse_text"),
+		    *     @OAS\Property(property="book_order", ref="#/components/schemas/Book/properties/book_order")
+		    *     )
+		    *   )
+		    * )
+		    */
 		    case "v2_text_search": {
 		    	return [
 			        "dam_id"           => $text->bible_id,

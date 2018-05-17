@@ -8,11 +8,14 @@ use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Foundation\Auth\ResetsPasswords;
 
 use Validator;
 use Laravel\Socialite\Facades\Socialite;
 class UsersController extends APIController
 {
+
+	use ResetsPasswords;
 
 	/**
 	 * Returns an index of all users within the system
@@ -130,50 +133,6 @@ class UsersController extends APIController
 	    if($user) if(Hash::check($request->password, $user->password)) return $this->reply($user);
     	return $this->replyWithError(trans('auth.failed',[],$current_locale));
     }
-
-	/**
-	 *
-	 * @OAS\Post(
-	 *     path="/users/reset",
-	 *     tags={"Community"},
-	 *     summary="Reset the password for a user",
-	 *     description="",
-	 *     operationId="v4_user.reset",
-	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
-	 *     @OAS\Response(
-	 *         response=200,
-	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_user_index")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_user_index")),
-	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_user_index"))
-	 *     )
-	 * )
-	 *
-	 * @param Request $request
-	 *
-	 * @return \Illuminate\Http\RedirectResponse|mixed
-	 *
-	 */
-	public function reset(Request $request)
-	{
-		$current_locale = $request->iso ?? \i18n::getCurrentLocale();
-		$user = User::where('email',$request->email)->first();
-		if(!$user) return $this->replyWithError(trans('auth.failed',[],$current_locale));
-
-		// If password provided, update password
-		if(Hash::check($request->password, $user->password)) {
-			if(isset($request->new_password)) $user->password = bcrypt($request->new_password); $user->save();
-			return $this->reply($user);
-		}
-
-		$response = Password::broker()->sendResetLink($request->only('email'));
-		if($response == Password::RESET_LINK_SENT) return back()->with('status', trans($response));
-		return $this->replyWithError(trans($response));
-	}
-
 
 	/**
 	 *

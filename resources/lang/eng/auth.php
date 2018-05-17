@@ -22,4 +22,9 @@ return [
 	'permissions_granted' => 'Granted',
 	'permissions_denied' => 'Denied',
 
+	'reset_email_heading' => 'Reset Your Password',
+	'reset_email_body'    => ':project_name received a request to reset your password, if you did not trigger this request
+    please ignore this email. Otherwise please follow the button below to reset your password.',
+	'reset_email_action'  => 'Reset Password'
+
 ];

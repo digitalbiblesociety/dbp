@@ -56,7 +56,7 @@ class BibleFileSetsController extends APIController
 	public function show($id = null)
     {
 	    if(!$this->api) return view('bibles.filesets.index');
-	    $bible_id = CheckParam('dam_id',$id) ?? CheckParam('fileset_id',$id) ;
+	    $bible_id = CheckParam('dam_id|fileset_id',$id);
 	    $chapter_id = CheckParam('chapter_id',null,'optional');
 	    $book_id = CheckParam('book_id',null,'optional');
 	    $bucket_id = CheckParam('bucket_id', null, 'optional');

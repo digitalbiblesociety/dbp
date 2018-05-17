@@ -190,11 +190,11 @@ class HomeController extends APIController
 	 *     summary="Returns Library File path information",
 	 *     description="This call returns the file path information. This information can be used with the response of the locations calls to create a URI to retrieve files.",
 	 *     operationId="v2_library_asset",
+	 *     @OAS\Parameter(name="dam_id", in="query", description="The DAM ID for which to retrieve file path info.", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
-	 *     @OAS\Parameter(name="dam_id", in="query", description="The DAM ID for which to retrieve file path info.", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -221,7 +221,7 @@ class HomeController extends APIController
 	 */
 	public function libraryAsset()
 	{
-		$dam_id = checkParam('dam_id', null, 'optional') ?? "";
+		$dam_id = checkParam('dam_id|fileset_id', null, 'optional') ?? "";
 
 		$libraryAsset = [
 			[

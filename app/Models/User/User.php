@@ -43,6 +43,23 @@ class User extends Authenticatable
     use Notifiable;
 
 	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var array $fillable
+	 */
+	protected $fillable = ['id','name', 'nickname', 'avatar', 'verified', 'email', 'password', 'email_token'];
+
+	/**
+	 * The attributes that should be hidden for arrays.
+	 *
+	 * @var array
+	 */
+	protected $hidden = [
+		'password', 'remember_token',
+	];
+
+
+	/**
 	 *
 	 * @OAS\Property(
 	 *   title="id",
@@ -150,22 +167,6 @@ class User extends Authenticatable
 	 */
 	protected $email_token;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array $fillable
-     */
-    protected $fillable = ['id','name', 'nickname', 'avatar', 'verified', 'email', 'password', 'email_token'];
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
-
 	public function keys()
 	{
 		return $this->hasMany(Key::class,'user_id','id');
@@ -214,7 +215,7 @@ class User extends Authenticatable
 
 	public function projects()
 	{
-		return $this->HasMany(Project::class);
+		return $this->BelongsToMany(Project::class, 'project_members');
 	}
 
 	// Roles
