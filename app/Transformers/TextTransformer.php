@@ -26,7 +26,7 @@ class TextTransformer extends BaseTransformer
 			*	schema="v2_text_search",
 			*	description="The v2_text_search",
 			*	title="v2_text_search",
-			*	@OAS\Xml(name="v4_text_search"),
+			*	@OAS\Xml(name="v2_text_search"),
 			*	@OAS\Items(
 		    *     @OAS\Property(property="dam_id",     ref="#/components/schemas/Bible/properties/id"),
 		    *     @OAS\Property(property="book_name",  ref="#/components/schemas/Book/properties/name"),
