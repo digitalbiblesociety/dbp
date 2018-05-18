@@ -25,7 +25,7 @@ class ResourceTranslation extends Model
 	 * @OAS\Property(
 	 *     title="iso",
 	 *     description="The iso code for the resource's translations",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @method static ResourceTranslation whereIso($value)
@@ -38,7 +38,7 @@ class ResourceTranslation extends Model
 	 * @OAS\Property(
 	 *     title="resource_id",
 	 *     description="The id for the resource that the translations describe",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @method static ResourceTranslation whereResourceId($value)
@@ -51,7 +51,7 @@ class ResourceTranslation extends Model
 	 * @OAS\Property(
 	 *     title="vernacular",
 	 *     description="Determines if the current translations being described is in the vernacular of the resource",
-	 *     format="boolean"
+	 *     type="boolean"
 	 * )
 	 *
 	 * @method static ResourceTranslation whereVernacular($value)
@@ -65,7 +65,7 @@ class ResourceTranslation extends Model
 	 * @OAS\Property(
 	 *     title="tag",
 	 *     description="Determines if the current translation being described is an ancillary bit of meta data rather than a title of the resource",
-	 *     format="boolean"
+	 *     type="boolean"
 	 * )
 	 *
 	 * @method static ResourceTranslation whereTag($value)
@@ -79,7 +79,7 @@ class ResourceTranslation extends Model
 	 * @OAS\Property(
 	 *     title="title",
 	 *     description="Serves as the title of the current translation or the name of the tag",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191,
 	 *     example="Understanding Biblical Hebrew Verb Forms"
 	 * )
@@ -95,7 +95,7 @@ class ResourceTranslation extends Model
 	 * @OAS\Property(
 	 *     title="description",
 	 *     description="Serves as the description of the current translation",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191,
 	 *     example="Understanding Biblical Hebrew Verb Forms"
 	 * )

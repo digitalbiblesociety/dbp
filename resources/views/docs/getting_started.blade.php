@@ -105,5 +105,21 @@
 
     </section>
 
+    <section>
+
+        <h3>API Organization</h3>
+        <p>All calls within version 4 of the API are separated into three general categories: Bibles, Wiki, and Community.</p>
+
+        <h4>Bibles</h4>
+        <p>The routes categorized under the Bibles tag are generally focused on querying information about bibles and audio or text content of those Bibles.</p>
+
+        <h4>Wiki</h4>
+        <p></p>
+
+        <h4>Community</h4>
+        <p></p>
+
+    </section>
+
 
 @endsection

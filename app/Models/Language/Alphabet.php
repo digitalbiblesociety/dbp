@@ -99,7 +99,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Alphabet Script",
 	 *     description="The Script ID for the alphabet aligning with the iso 15924 standard",
-	 *     format="string",
+	 *     type="string",
 	 *     example="Cans",
 	 *     @OAS\ExternalDocumentation(
 	 *         description="For more info please refer to the Unicode Consortium",
@@ -127,7 +127,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Unicode PDF",
 	 *     description="A url to a reference PDF for the alphabet",
-	 *     format="string",
+	 *     type="string",
 	 *     nullable=true,
 	 *     example="https://unicode.org/charts/PDF/U1400.pdf"
 	 * )
@@ -140,7 +140,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Family",
 	 *     description="The linguistic family the alphabet can be categorized within",
-	 *     format="string",
+	 *     type="string",
 	 *     example="American"
 	 * )
 	 *
@@ -152,7 +152,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Type",
 	 *     description="The type of alphabet be described",
-	 *     format="string",
+	 *     type="string",
 	 *     example="abugida"
 	 * )
 	 *
@@ -164,7 +164,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="White Space",
 	 *     description="The usage white space within the alphabet",
-	 *     format="string",
+	 *     type="string",
 	 *     example="between words"
 	 * )
 	 *
@@ -176,7 +176,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Open Type Tag",
 	 *     description="The open type tag of the alphabet",
-	 *     format="string",
+	 *     type="string",
 	 *     example="cans"
 	 * )
 	 *
@@ -188,7 +188,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Open Type Tag",
 	 *     description="The open type tag of the alphabet",
-	 *     format="string",
+	 *     type="string",
 	 *     example="no"
 	 * )
 	 *
@@ -200,7 +200,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Requires Font",
 	 *     description="If the Alphabet generally requires the use of a font to display correctly online",
-	 *     format="boolean",
+	 *     type="boolean",
 	 *     example=false
 	 * )
 	 *
@@ -212,7 +212,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Unicode",
 	 *     description="If the Alphabet is fully supported by the unicode spec",
-	 *     format="boolean",
+	 *     type="boolean",
 	 *     example=true
 	 * )
 	 *
@@ -224,7 +224,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Diacritics",
 	 *     description="If the Alphabet contains diacritics",
-	 *     format="boolean",
+	 *     type="boolean",
 	 *     example=true
 	 * )
 	 *
@@ -236,7 +236,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Contextual Forms",
 	 *     description="If the Alphabet contains contextual forms",
-	 *     format="boolean",
+	 *     type="boolean",
 	 *     example=false
 	 * )
 	 *
@@ -248,7 +248,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Reordering",
 	 *     description="If the Alphabet contains reordering",
-	 *     format="boolean",
+	 *     type="boolean",
 	 *     nullable=true,
 	 *     example=false
 	 * )
@@ -261,7 +261,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Case",
 	 *     description="If the Alphabet utilizes different cases",
-	 *     format="boolean",
+	 *     type="boolean",
 	 *     nullable=true,
 	 *     example=false
 	 * )
@@ -274,7 +274,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Split Graphs",
 	 *     description="If the Alphabet contains letters that are written using two separate distinct elements.",
-	 *     format="boolean",
+	 *     type="boolean",
 	 *     example=false,
 	 *     @OAS\ExternalDocumentation(
 	 *         description="For more info please refer to the Script Source Feature Definitions",
@@ -290,7 +290,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Status",
 	 *     description="The status of the alphabet",
-	 *     format="string",
+	 *     type="string",
 	 *     example="Current",
 	 *     enum={"Current","Historical","Fictional","Unclear"},
 	 *     @OAS\ExternalDocumentation(
@@ -307,7 +307,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Baseline",
 	 *     description="The alignment of the text within the alphabet",
-	 *     format="string",
+	 *     type="string",
 	 *     enum={"Hanging","Centered","Bottom","Vertical"},
 	 *     example="Bottom",
 	 *     @OAS\ExternalDocumentation(
@@ -324,7 +324,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Ligatures",
 	 *     description="Indicates on if letters may be or are required to be joined as a single glyph",
-	 *     format="string",
+	 *     type="string",
 	 *     enum={"required","optional","none"},
 	 *     example="none",
 	 *     @OAS\ExternalDocumentation(
@@ -345,7 +345,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Direction",
 	 *     description="The direction that the alphabet is read",
-	 *     format="string",
+	 *     type="string",
 	 *     enum={"rtl","ltr"},
 	 *     example="ltr",
 	 *     @OAS\ExternalDocumentation(
@@ -362,7 +362,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Sample",
 	 *     description="A sample section of text for the alphabet",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @var string $sample
@@ -373,7 +373,7 @@ class Alphabet extends Model
 	 * @OAS\Property(
 	 *     title="Sample",
 	 *     description="A url to an image of the sample section of text for the alphabet",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @var string $sample_img

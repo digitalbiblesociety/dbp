@@ -48,7 +48,7 @@ class BibleBook extends Model
 	 * @OAS\Property(
 	 *     title="name",
 	 *     description="The name of the book in the language of the bible",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -63,7 +63,7 @@ class BibleBook extends Model
 	 * @OAS\Property(
 	 *     title="name_short",
 	 *     description="If the vernacular name has an abbreviated form, it will be stored hre",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -78,7 +78,7 @@ class BibleBook extends Model
 	 * @OAS\Property(
 	 *     title="chapters",
 	 *     description="A string of the chapters in the book separated by a comma",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=491
 	 * )
 	 *

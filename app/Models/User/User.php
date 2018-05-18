@@ -65,7 +65,8 @@ class User extends Authenticatable
 	 *   title="id",
 	 *   type="string",
 	 *   description="The unique id for the user",
-	 *   maxLength=64
+	 *   maxLength=64,
+	 *   example="4E7Fk8AWGvZCCV7"
 	 * )
 	 *
 	 * @method static User whereId($value)
@@ -79,7 +80,8 @@ class User extends Authenticatable
 	 *   title="name",
 	 *   type="string",
 	 *   description="The name of the user",
-	 *   maxLength=191
+	 *   maxLength=191,
+	 *   example="Elu Thingol"
 	 * )
 	 *
 	 * @method static User whereName($value)
@@ -107,7 +109,9 @@ class User extends Authenticatable
 	 * @OAS\Property(
 	 *   title="nickname",
 	 *   type="string",
-	 *   description="The preferred name for the user"
+	 *   description="The preferred name for the user or an informal means of addressing them",
+	 *   nullable="true",
+	 *   example="Elwë"
 	 * )
 	 *
 	 * @method static User whereNickname($value)
@@ -120,7 +124,9 @@ class User extends Authenticatable
 	 * @OAS\Property(
 	 *   title="avatar",
 	 *   type="string",
-	 *   description="The user's profile picture"
+	 *   description="The url to the user's profile picture",
+	 *   nullable="true",
+	 *   example="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
 	 * )
 	 *
 	 * @method static User whereAvatar($value)
@@ -133,7 +139,9 @@ class User extends Authenticatable
 	 * @OAS\Property(
 	 *   title="email",
 	 *   type="string",
-	 *   description="The user's email address"
+	 *   format="email",
+	 *   description="The user's email address",
+	 *   example="thingol@valinor.org"
 	 * )
 	 *
 	 * @method static User whereEmail($value)
@@ -146,7 +154,8 @@ class User extends Authenticatable
 	 * @OAS\Property(
 	 *   title="verified",
 	 *   type="boolean",
-	 *   description="If the user has verified the email address they've provided or if they're connected via a social account"
+	 *   description="If the user has verified the email address they've provided or if they're connected via a social account",
+	 *   example=true
 	 * )
 	 *
 	 * @method static User whereVerified($value)
@@ -159,7 +168,8 @@ class User extends Authenticatable
 	 * @OAS\Property(
 	 *   title="email_token",
 	 *   type="string",
-	 *   description="The token sent to the user to verify that user's email"
+	 *   description="The token sent to the user to verify that user's email",
+	 *   example="B95p56KqHrz8D3w"
 	 * )
 	 *
 	 * @method static User whereEmailToken($value)
@@ -215,7 +225,7 @@ class User extends Authenticatable
 
 	public function projects()
 	{
-		return $this->BelongsToMany(Project::class, 'project_members');
+		return $this->BelongsToMany(Project::class, 'project_members')->withPivot('role','subscribed');
 	}
 
 	// Roles

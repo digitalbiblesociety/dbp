@@ -91,11 +91,26 @@ class LanguageTranslation extends Model
 	protected $vernacular;
 
 	/**
+	 * @OAS\Property(
+	 *     title="Priority",
+	 *     description="The priority of the language translation",
+	 *     type="integer",
+	 *     format="int32",
+	 *     minimum=0,
+	 *     maximum=255
+	 * )
+	 *
+	 * @property string $description
+	 * @method static whereDescription($value)
+	 */
+	protected $priority;
+
+	/**
 	 *
 	 * @OAS\Property(
 	 *   title="description",
 	 *   type="string",
-	 *   description="The description of the language translation",
+	 *   description="The description of the language translation"
 	 * )
 	 *
 	 * @method static LanguageTranslation whereDescription($value)
@@ -108,7 +123,7 @@ class LanguageTranslation extends Model
 	 * @OAS\Property(
 	 *   title="created_at",
 	 *   type="string",
-	 *   description="The timestamp at which the translation was created at",
+	 *   description="The timestamp at which the translation was created at"
 	 * )
 	 *
 	 * @method static LanguageTranslation whereCreatedAt($value)
@@ -120,7 +135,7 @@ class LanguageTranslation extends Model
 	 * @OAS\Property(
 	 *   title="updated_at",
 	 *   type="string",
-	 *   description="The timestamp at which the translation was last updated at",
+	 *   description="The timestamp at which the translation was last updated at"
 	 * )
 	 *
 	 * @method static LanguageTranslation whereUpdatedAt($value)

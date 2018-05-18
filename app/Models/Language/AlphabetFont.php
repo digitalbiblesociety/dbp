@@ -28,7 +28,7 @@ class AlphabetFont extends Model
 	* @OAS\Property(
 	*     title="Alphabet Font ID",
 	*     description="The incrementing numeric id for the alphabet fonts",
-	*     format="integer",
+	*     type="integer",
 	*     example=7
 	* )
 	*
@@ -50,7 +50,7 @@ class AlphabetFont extends Model
 	* @OAS\Property(
 	*     title="Alphabet Font Name",
 	*     description="The Font Name",
-	*     format="string",
+	*     type="string",
 	*     maxLength=191,
 	*     example="Noto Naskh Arabic"
 	* )
@@ -65,7 +65,7 @@ class AlphabetFont extends Model
 	* @OAS\Property(
 	*     title="Alphabet Font File Name",
 	*     description="The File name for the font",
-	*     format="string",
+	*     type="string",
 	*     maxLength=191,
 	*     example="NotoNaskhArabic-Regular"
 	* )
@@ -81,7 +81,7 @@ class AlphabetFont extends Model
 	*     title="Alphabet Font Weight",
 	*     description="The boldness of the font",
 	*     nullable=true,
-	*     format="integer",
+	*     type="integer",
 	*     minimum=100,
 	*     example=400
 	* )
@@ -96,7 +96,7 @@ class AlphabetFont extends Model
 	* @OAS\Property(
 	*     title="Alphabet copyright",
 	*     description="The copyright of the font if any",
-	*     format="string",
+	*     type="string",
 	*     nullable=true,
 	*     maxLength=191,
 	*     example="Creative Commons"
@@ -112,7 +112,7 @@ class AlphabetFont extends Model
 	* @OAS\Property(
 	*     title="Alphabet URL",
 	*     description="The url to the font file",
-	*     format="string",
+	*     type="string",
 	*     example="https://cdn.example.com/resources/fonts/NotoNaskhArabic-Regular.ttf"
 	* )
 	*
@@ -126,7 +126,7 @@ class AlphabetFont extends Model
 	* @OAS\Property(
 	*     title="Notes",
 	*     description="Any notes for the font file name",
-	*     format="string",
+	*     type="string",
 	*     nullable=true
 	* )
 	*
@@ -140,7 +140,7 @@ class AlphabetFont extends Model
 	* @OAS\Property(
 	*     title="Italic",
 	*     description="Determines if the font file contains or supports italics",
-	*     format="boolean",
+	*     type="boolean",
 	*     nullable=true,
 	*     example=false
 	* )

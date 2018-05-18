@@ -38,7 +38,7 @@ class Country extends Model
 	 * @OAS\Property(
 	 *     title="Country Iso 3166-1",
 	 *     description="The Country ID for the country aligning with the ISO 3166-1 standard",
-	 *     format="string",
+	 *     type="string",
 	 *     minLength=2,
 	 *     maxLength=2,
 	 *     example="AD",
@@ -58,7 +58,7 @@ class Country extends Model
 	 * @OAS\Property(
 	 *     title="Country Iso 3166-3",
 	 *     description="The Country iso for the country aligning with the ISO 3166-3 standard",
-	 *     format="string",
+	 *     type="string",
 	 *     minLength=3,
 	 *     maxLength=3,
 	 *     example="AND",
@@ -78,7 +78,7 @@ class Country extends Model
 	 * @OAS\Property(
 	 *     title="FIPS ID",
 	 *     description="The Country id for the country aligning with the FIPS standard of the United Nations",
-	 *     format="string",
+	 *     type="string",
 	 *     minLength=2,
 	 *     maxLength=2,
 	 *     example="AN",
@@ -98,7 +98,7 @@ class Country extends Model
 	 * @OAS\Property(
 	 *     title="continent ID",
 	 *     description="The continent code for the country",
-	 *     format="string",
+	 *     type="string",
 	 *     minLength=2,
 	 *     maxLength=2,
 	 *     example="EU"
@@ -114,7 +114,7 @@ class Country extends Model
 	 * @OAS\Property(
 	 *     title="Country Name",
 	 *     description="The name for the country in English",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191,
 	 *     example="Andorra"
 	 * )
@@ -130,7 +130,7 @@ class Country extends Model
 	 * @OAS\Property(
 	 *     title="Country introduction",
 	 *     description="A brief description of the country in English",
-	 *     format="string",
+	 *     type="string",
 	 *     example="The landlocked Principality of Andorra is one of the smallest states in Europe, nestled high in the Pyrenees..."
 	 * )
 	 *

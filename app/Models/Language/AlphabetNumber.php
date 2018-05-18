@@ -35,7 +35,7 @@ class AlphabetNumber extends Model
 	 * @OAS\Property(
 	 *     title="Incrementing Alphabet Number Id",
 	 *     description="The url to the font file",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -48,7 +48,7 @@ class AlphabetNumber extends Model
 	 * @OAS\Property(
 	 *     title="Alphabet Script Id",
 	 *     description="The url to the font file",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -61,7 +61,7 @@ class AlphabetNumber extends Model
 	 * @OAS\Property(
 	 *     title="Alphabet Script Variant Iso",
 	 *     description="The url to the font file",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=3
 	 * )
 	 *
@@ -74,7 +74,7 @@ class AlphabetNumber extends Model
 	 * @OAS\Property(
 	 *     title="Alphabet Numeral",
 	 *     description="The url to the font file",
-	 *     format="integer"
+	 *     type="integer"
 	 * )
 	 *
 	 */
@@ -86,7 +86,7 @@ class AlphabetNumber extends Model
 	 * @OAS\Property(
 	 *     title="Alphabet Numeral Vernacular",
 	 *     description="The numeral written out the vernacular translations",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=12
 	 * )
 	 *
@@ -99,7 +99,7 @@ class AlphabetNumber extends Model
 	 * @OAS\Property(
 	 *     title="Alphabet Numeral Written",
 	 *     description="The word for the numeral written out within the vernacular of the language",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=24
 	 * )
 	 *

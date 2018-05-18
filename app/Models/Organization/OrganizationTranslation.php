@@ -31,7 +31,7 @@ class OrganizationTranslation extends Model
 	 * @OAS\Property(
 	 *     title="language_iso",
 	 *     description="The iso code for the translation language",
-	 *     format="string",
+	 *     type="string",
 	 *     minLength=3
 	 * )
 	 *
@@ -46,7 +46,7 @@ class OrganizationTranslation extends Model
 	  * @OAS\Property(
 	  *     title="id",
 	  *     description="The Organization's incrementing id",
-	  *     format="int",
+	  *     type="integer",
 	  *     minimum=0
 	  * )
 	  *
@@ -61,7 +61,7 @@ class OrganizationTranslation extends Model
 	  * @OAS\Property(
 	  *     title="id",
 	  *     description="If the current translation is the primary/vernacular translation",
-	  *     format="boolean"
+	  *     type="boolean"
 	  * )
 	  *
 	  * @method static OrganizationTranslation whereVernacular($value)
@@ -74,7 +74,7 @@ class OrganizationTranslation extends Model
 	  * @OAS\Property(
 	  *     title="alt",
 	  *     description="If the current name is a secondary title for the organization",
-	  *     format="boolean"
+	  *     type="boolean"
 	  * )
 	  *
 	  * @method static OrganizationTranslation whereAlt($value)
@@ -87,7 +87,7 @@ class OrganizationTranslation extends Model
 	  * @OAS\Property(
 	  *     title="name",
 	  *     description="The current translated name for the organization",
-	  *     format="string",
+	  *     type="string",
 	  *     maxLength=191
 	  * )
 	  *
@@ -101,7 +101,7 @@ class OrganizationTranslation extends Model
 	  * @OAS\Property(
 	  *     title="description",
 	  *     description="The current translated description for the organization",
-	  *     format="string"
+	  *     type="string"
 	  * )
 	  *
 	  * @method static OrganizationTranslation whereDescription($value)
@@ -114,7 +114,7 @@ class OrganizationTranslation extends Model
 	 * @OAS\Property(
 	 *     title="description_short",
 	 *     description="The current translated shortened description for the organization",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @method static OrganizationTranslation whereDescriptionShort($value)

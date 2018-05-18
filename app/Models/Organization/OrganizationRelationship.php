@@ -30,7 +30,7 @@ class OrganizationRelationship extends Model
 	 * @OAS\Property(
 	 *     title="organization_parent_id",
 	 *     description="The Organization's id",
-	 *     format="int",
+	 *     type="integer",
 	 *     minimum=0
 	 * )
 	 *
@@ -44,7 +44,7 @@ class OrganizationRelationship extends Model
 	 * @OAS\Property(
 	 *     title="organization_child_id",
 	 *     description="The Organization's id",
-	 *     format="int",
+	 *     type="integer",
 	 *     minimum=0
 	 * )
 	 *
@@ -57,7 +57,7 @@ class OrganizationRelationship extends Model
 	 * @OAS\Property(
 	 *     title="type",
 	 *     description="The Organization's type",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -71,7 +71,7 @@ class OrganizationRelationship extends Model
 	 * @OAS\Property(
 	 *     title="relationship_id",
 	 *     description="The Organization's relationship_id",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *

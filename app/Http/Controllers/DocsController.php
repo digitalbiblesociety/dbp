@@ -43,7 +43,12 @@ class DocsController extends APIController
 	public function swagger_docs_gen()
 	{
 	    $version = checkParam('v', null, 'optional') ?? "v4";
+		$otherVersion = ($version == "v4") ? "v2" : "v4";
 		$swagger = \Swagger\scan(app_path());
+
+		foreach($swagger->components->schemas as $key => $component) {
+			if(substr($swagger->components->schemas[$key]->title,0,2) == $otherVersion) unset($swagger->components->schemas[$key]);
+		}
 
 		foreach($swagger->tags as $key => $tag) {
 			if(substr($swagger->tags[$key]->description,0,2) != $version) {

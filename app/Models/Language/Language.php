@@ -55,7 +55,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="id",
 	 *     description="The incrementing ID for the language",
-	 *     format="integer"
+	 *     type="integer"
 	 * )
 	 *
 	 * @method static Language whereId($value)
@@ -69,7 +69,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="glotto_id",
 	 *     description="The glottolog ID for the language",
-	 *     format="string",
+	 *     type="string",
 	 *     @OAS\ExternalDocumentation(
 	 *         description="For more info please refer to the Glottolog",
 	 *         url="http://glottolog.org/"
@@ -88,7 +88,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="iso",
 	 *     description="The iso 639-3 for the language",
-	 *     format="string",
+	 *     type="string",
 	 *     @OAS\ExternalDocumentation(
 	 *         description="For more info",
 	 *         url="https://en.wikipedia.org/wiki/ISO_639-3"
@@ -107,7 +107,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="iso 2b",
 	 *     description="The iso 639-2, B variant for the language",
-	 *     format="integer"
+	 *     type="integer"
 	 * )
 	 *
 	 * @property string $iso2B
@@ -121,7 +121,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="iso 2t",
 	 *     description="The iso 639-2, T variant for the language",
-	 *     format="integer"
+	 *     type="integer"
 	 * )
 	 *
 	 * @property string $iso2T
@@ -133,7 +133,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="iso1",
 	 *     description="The iso 639-1 for the language",
-	 *     format="integer"
+	 *     type="integer"
 	 * )
 	 *
 	 * @property string $iso2T
@@ -145,7 +145,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Name",
 	 *     description="The name of the language",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $name
@@ -157,7 +157,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Name",
 	 *     description="The name of the language in the vernacular of that language",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $autonym
@@ -169,7 +169,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Maps",
 	 *     description="The general area where the language can be found",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $maps
@@ -181,7 +181,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Development",
 	 *     description="The development of the growth of the language",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $development
@@ -193,7 +193,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="use",
 	 *     description="The use of the language",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $use
@@ -205,7 +205,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Location",
 	 *     description="The location of the language",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $location
@@ -217,7 +217,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Area",
 	 *     description="The area of the language",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $area
@@ -229,7 +229,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Population",
 	 *     description="The estimated number of people that speak the language",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $population
@@ -241,7 +241,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Population",
 	 *     description="Any notes regarding the estimated number of people",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $population
@@ -253,7 +253,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Notes",
 	 *     description="Any notes regarding the language",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $notes
@@ -265,7 +265,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Typology",
 	 *     description="The language's Typology",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $typology
@@ -277,7 +277,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Typology",
 	 *     description="The language's script",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $writing
@@ -289,7 +289,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Typology",
 	 *     description="The description of the language",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $description
@@ -301,7 +301,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Latitude",
 	 *     description="A generalized latitude for the location of the language",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $latitude
@@ -313,7 +313,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Longitude",
 	 *     description="A generalized longitude for the location of the language",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $longitude
@@ -325,7 +325,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="Status",
 	 *     description="A status of the language",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $status
@@ -337,7 +337,7 @@ class Language extends Model
 	 * @OAS\Property(
 	 *     title="country_id",
 	 *     description="The primary country where the language is spoken",
-	 *     format="string"
+	 *     type="string"
 	 * )
 	 *
 	 * @property string $country_id
@@ -355,7 +355,7 @@ class Language extends Model
      */
     public function translations()
     {
-        return $this->HasMany(LanguageTranslation::class,'language_source','language_translation');
+        return $this->HasMany(LanguageTranslation::class,'language_source','language_translation')->orderBy('priority', 'desc');
     }
 
 	public function autonym()

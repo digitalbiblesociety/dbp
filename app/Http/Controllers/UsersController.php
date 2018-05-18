@@ -209,24 +209,35 @@ class UsersController extends APIController
 	 */
     public function update(Request $request, $id)
     {
-	    $user = checkUser();
-	    if(!$user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-	    if(!$user->canCreateUsers()) return $this->setStatusCode(401)->replyWithError("You are not authorized to create users");
+	    $developer = checkUser();
+	    if(!$developer) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
+	    if(!$developer->canCreateUsers()) return $this->setStatusCode(401)->replyWithError("You are not authorized to update users");
 
-	    $updated_user = User::find($id);
+	    $user = User::where('id',$id)->whereHas('projects', function ($query) use($request) {
+		    $query->where('id', $request->project_id);
+	    })->with(['projects' => function ($query) use($request) {
+		    $query->where('id', $request->project_id);
+	    }])->first();
+	    if(!$user) return $this->setStatusCode(404)->replyWithError("User not found");
+
 	    $validator = Validator::make($request->all(), [
 	    	'id'    => 'exists:users',
-		    'email' => 'max:255|email',
-		    'avatar'=> 'image'
+		    'email' => 'max:255|email'
 	    ]);
 
 	    if ($validator->fails()) return $this->replyWithError($validator->errors());
-	    // TODO: ENABLE WRITE PERMISSIONS ON S3 BUCKET
-	    // if($request->hasFile('avatar')) return $request->avatar->storeAs('img/users/', $id.".".$request->avatar->extension(), 'local');
-	    if($request->hasFile('avatar')) $request->avatar->storeAs('img', $id.".".$request->avatar->extension(), 'public');
-	    $updated_user->fill($request->input())->save();
 
-	    if($this->api) return $this->reply(["success" => "User updated","user_id" => $user->id]);
+	    // TODO: ENABLE WRITE PERMISSIONS ON S3 BUCKET
+	    // TODO: Check Symphony 4 for bugfix regarding PUT multi-type uploads: https://github.com/symfony/symfony/issues/9226
+	    // if($request->hasFile('avatar')) return $request->avatar->storeAs('img/users/', $id.".".$request->avatar->extension(), 'local');
+
+	    $user->fill($request->all())->save();
+
+	    $user->project_role = $user->projects->first()->pivot->role;
+	    $user->project_subscription = $user->projects->first()->pivot->subscribed;
+	    unset($user->projects);
+
+	    if($this->api) return $this->reply(["success" => "User updated","user" => $user]);
 	    return view('dashboard.users.show', $id);
     }
 

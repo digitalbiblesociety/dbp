@@ -28,7 +28,7 @@ class OrganizationLogo extends Model
 	 * @OAS\Property(
 	 *     title="id",
 	 *     description="The Organization's id",
-	 *     format="int",
+	 *     type="integer",
 	 *     minimum=0
 	 * )
 	 *
@@ -42,7 +42,7 @@ class OrganizationLogo extends Model
 	 * @OAS\Property(
 	 *     title="language_iso",
 	 *     description="If the organization's logo contains words, this iso field indicates what language they are.",
-	 *     format="string",
+	 *     type="string",
 	 *     minLength=3,
 	 *     maxLength=3,
 	 *     example="eng",
@@ -59,7 +59,7 @@ class OrganizationLogo extends Model
 	 * @OAS\Property(
 	 *     title="url",
 	 *     description="The url to this organization's logo",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -73,7 +73,7 @@ class OrganizationLogo extends Model
 	 * @OAS\Property(
 	 *     title="url",
 	 *     description="If true the url is pointed at a logo suitable for use as an icon",
-	 *     format="boolean"
+	 *     type="boolean"
 	 * )
 	 *
 	 * @method static OrganizationLogo whereIcon($value)

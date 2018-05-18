@@ -48,14 +48,24 @@ class BiblesController extends APIController
 	 *     operationId="v4_bible.all",
 	 *     @OAS\Parameter(name="bible_id",             in="query", description="The Bible Id", ref="#/components/schemas/Bible/properties/id"),
 	 *     @OAS\Parameter(name="fcbh_id",              in="query", description="An alternative query name for the bible id", @OAS\Schema(type="string")),
-	 *     @OAS\Parameter(name="media",                in="query", description="If set, will filter results by the type of media for which filesets are available", @OAS\Schema(type="string")),
-	 *     @OAS\Parameter(name="language",             in="query", description="The language to filter results by", @OAS\Schema(type="string")),
-	 *     @OAS\Parameter(name="full_word",            in="query", description="The language to filter results by", @OAS\Schema(type="string")),
-	 *     @OAS\Parameter(name="language_code",        in="query", description="The iso code to filter results by", @OAS\Schema(type="string")),
-	 *     @OAS\Parameter(name="language_family_code", in="query", description="The iso code of the trade language to filter results by", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="media",                in="query", description="If set, will filter results by the type of media for which filesets are available. For a complete list of available media types please see the `/bibles/filesets/media/types` route",
+	 *         @OAS\Schema(type="string",
+	 *              @OAS\ExternalDocumentation(
+	 *                  description="For a complete list of available media types please see the v4_bible_filesets.types route",
+	 *                  url="/docs/swagger/v4#/Bibles/v4_bible_filesets_types"
+	 *              )
+	 *         )
+	 *     ),
+	 *     @OAS\Parameter(name="language",             in="query", description="The language to filter results by", @OAS\Schema(ref="#/components/schemas/Language/properties/name")),
+	 *     @OAS\Parameter(name="language_name",        in="query", description="The language name to filter results by. For a complete list see the `/languages` route", @OAS\Schema(ref="#/components/schemas/Language/properties/name")),
+	 *     @OAS\Parameter(name="language_code",        in="query", description="The iso code to filter results by. This will return results only in the language specified. For a complete list see the `iso` field in the `/languages` route", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
+	 *     @OAS\Parameter(name="language_family_code", in="query", description="The iso code of the trade language to filter results by. This will also return all dialects of a language. For a complete list see the `iso` field in the `/languages` route", @OAS\Schema(type="string")),
 	 *     @OAS\Parameter(name="updated",              in="query", description="The last time updated", @OAS\Schema(type="string")),
-	 *     @OAS\Parameter(name="organization_id",      in="query", description="The owning organization to return bibles for", @OAS\Schema(type="string")),
-	 *     @OAS\Parameter(name="sort_by",              in="query", description="The direction to sort by the filter", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="organization_id",      in="query", description="The owning organization to return bibles for. For a complete list of ids see the `/organizations` route", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="sort_by",              in="query", description="The any field to within the bible model may be selected as the value for this `sort_by` param.", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="sort_dir",             in="query", description="The direction to sort by the field specified in `sort_by`. Either `asc` or `desc`", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="bucket",               in="query", description="The bucket_id to filter results by. At the moment there are two buckets provided `dbp-dev` & `dbs-web`", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="filter_by_fileset",    in="query", description="This field defaults to true but when set to false will return all Bible entries regardless of whether or not the API has content for that biblical text.", @OAS\Schema(type="string")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
@@ -76,14 +86,15 @@ class BiblesController extends APIController
 	    // Return the documentation if it's not an API request
 	    if(!$this->api) return view('bibles.index');
 
-	    $dam_id = checkParam('dam_id', null, 'optional') ?? checkParam('fcbh_id', null,'optional');
+	    $dam_id = checkParam('dam_id|fcbh_id|bible_id', null, 'optional');
 	    $media = checkParam('media', null, 'optional');
 	    $language = checkParam('language', null, 'optional');
-	    $full_word = checkParam('full_word', null, 'optional');
-	    $iso = checkParam('language_family_code', null, 'optional') ?? checkParam('language_code', null, 'optional');
+	    $full_word = checkParam('full_word|language_name', null, 'optional');
+	    $iso = checkParam('language_family_code|language_code', null, 'optional');
 	    $updated = checkParam('updated', null, 'optional');
 	    $organization = checkParam('organization_id', null, 'optional');
 		$sort_by = checkParam('sort_by', null, 'optional');
+	    $sort_dir = checkParam('sort_dir', null, 'optional') ?? 'asc';
 	    $fileset_filter = boolval(checkParam('filter_by_fileset', null, 'optional')) ?? true;
 	    $country = checkParam('country', null, 'optional');
 	    $bucket = checkParam('bucket', null, 'optional');
@@ -123,8 +134,8 @@ class BiblesController extends APIController
 					    }
 				    })->when($updated, function($q) use ($updated) {
 					    $q->where('updated_at', '>', $updated);
-				    })->when($sort_by, function($q) use ($sort_by){
-					    $q->orderBy($sort_by);
+				    })->when($sort_by, function($q) use ($sort_by, $sort_dir){
+					    $q->orderBy($sort_by, $sort_dir);
 				    })
 			        ->orderBy('priority','desc')
 	                ->get();

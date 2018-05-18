@@ -26,7 +26,7 @@ class LanguageBibleInfo extends Model
      *
      * @OAS\Property(
      *     title="language_id",
-     *     format="integer",
+     *     type="integer",
      *     description="The foreign key matching the incrementing language ID",
      *     minimum=0
      * )
@@ -41,7 +41,7 @@ class LanguageBibleInfo extends Model
       *
       * @OAS\Property(
       *     title="bible_status",
-      *     format="integer",
+      *     type="integer",
       *     description="The numeral written out the vernacular translations",
       *     nullable=true,
       *     minimum=0
@@ -58,7 +58,7 @@ class LanguageBibleInfo extends Model
      *
      * @OAS\Property(
      *     title="bible_translation_need",
-     *     format="integer",
+     *     type="integer",
      *     description="The numeral written out the vernacular translations",
      *     nullable=true,
      *     minimum=0
@@ -75,7 +75,7 @@ class LanguageBibleInfo extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="bible_year",
-	 *     format="integer",
+	 *     type="integer",
 	 *     description="The year a full Bible was published",
 	 *     minimum=0,
 	 *     nullable=true
@@ -90,7 +90,7 @@ class LanguageBibleInfo extends Model
       *
       * @OAS\Property(
       *     title="bible_year_newTestament",
-      *     format="integer",
+      *     type="integer",
       *     description="The year a new testament Bible was published",
       *     minimum=0,
       *     nullable=true
@@ -105,7 +105,7 @@ class LanguageBibleInfo extends Model
       *
       * @OAS\Property(
       *     title="bible_year_portions",
-      *     format="integer",
+      *     type="integer",
       *     description="The year portions of a Bible were published",
       *     minimum=0,
       *     nullable=true
@@ -122,7 +122,7 @@ class LanguageBibleInfo extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="bible_sample_text",
-	 *     format="string",
+	 *     type="string",
 	 *     description="A selection of sample text",
 	 *     maxLength=191,
 	 *     nullable=true
@@ -139,7 +139,7 @@ class LanguageBibleInfo extends Model
       *
       * @OAS\Property(
       *     title="bible_sample_img",
-      *     format="string",
+      *     type="string",
       *     description="A sample image of the bible text for comparison",
       *     maxLength=191,
       *     nullable=true
@@ -154,7 +154,7 @@ class LanguageBibleInfo extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="created_at",
-	 *     format="string",
+	 *     type="string",
 	 *     description="The timestamp for the creation of the language bible information model",
 	 *     maxLength=191,
 	 *     nullable=true
@@ -170,7 +170,7 @@ class LanguageBibleInfo extends Model
       *
       * @OAS\Property(
       *     title="updated_at",
-      *     format="string",
+      *     type="string",
       *     description="The timestamp of the last update for the language bible information model",
       *     maxLength=191,
       *     nullable=true

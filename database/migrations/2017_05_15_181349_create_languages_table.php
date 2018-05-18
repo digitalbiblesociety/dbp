@@ -60,6 +60,7 @@ class CreateLanguagesTable extends Migration
 	        $table->string('name');
 	        $table->text('description')->nullable();
 	        $table->boolean('vernacular')->default(0);
+	        $table->tinyInteger('priority')->nullable();
 	        $table->unique(['language_source','language_translation','name'],'unq_language_translations');
 	        $table->timestamps();
         });

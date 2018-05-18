@@ -32,7 +32,7 @@ class Resource extends Model
 	 * @OAS\Property(
 	 *     title="id",
 	 *     description="The Resource's incrementing id",
-	 *     format="int",
+	 *     type="integer",
 	 *     minimum=0
 	 * )
 	 *
@@ -47,7 +47,7 @@ class Resource extends Model
 	 * @OAS\Property(
 	 *     title="iso",
 	 *     description="The Resource's iso",
-	 *     format="string",
+	 *     type="string",
 	 *     minLength=3
 	 * )
 	 *

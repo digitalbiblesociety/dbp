@@ -31,7 +31,7 @@ class LanguageClassification extends Model
 	 * @OAS\Property(
 	 *   title="id",
 	 *   description="Incrementing ID for the Language Classification",
-	 *   format="integer",
+	 *   type="integer",
 	 *   minimum=0
 	 * )
 	 *
@@ -47,7 +47,7 @@ class LanguageClassification extends Model
 	 * @OAS\Property(
 	 *   title="language_id",
 	 *   description="The foreign key matching the incrementing language ID",
-	 *   format="integer",
+	 *   type="integer",
 	 *   minimum=0
 	 * )
 	 *
@@ -63,7 +63,7 @@ class LanguageClassification extends Model
 	 * @OAS\Property(
 	 *   title="classification_id",
 	 *   description="The foreign key matching the incrementing language ID",
-	 *   format="integer",
+	 *   type="integer",
 	 *   minimum=0
 	 * )
 	 *
@@ -79,7 +79,7 @@ class LanguageClassification extends Model
 	 * @OAS\Property(
 	 *   title="order",
 	 *   description="Creates an increasing level of specificity for the classification of the language dialect",
-	 *   format="integer",
+	 *   type="integer",
 	 *   minimum=0
 	 * )
 	 *
@@ -94,7 +94,7 @@ class LanguageClassification extends Model
 	 * @OAS\Property(
 	 *   title="name",
 	 *   description="The name of the classification for the language",
-	 *   format="string",
+	 *   type="string",
 	 *   example="Afro-Asiatic"
 	 * )
 	 *

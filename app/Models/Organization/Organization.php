@@ -49,7 +49,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="id",
 	 *     description="The Organization's incrementing id",
-	 *     format="int",
+	 *     type="integer",
 	 *     minimum=0
 	 * )
 	 *
@@ -62,7 +62,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="slug",
 	 *     description="The Organization's slug",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -75,8 +75,9 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="abbreviation",
 	 *     description="The Organization's abbreviation",
-	 *     format="string",
-	 *     maxLength=6
+	 *     type="string",
+	 *     maxLength=6,
+	 *     nullable=true
 	 * )
 	 *
 	 * @method static Organization whereAbbreviation($value)
@@ -88,7 +89,8 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="notes",
 	 *     description="Archivist notes about the organization being described",
-	 *     format="string"
+	 *     type="string",
+	 *     nullable=true
 	 * )
 	 *
 	 * @method static Organization whereNotes($value)
@@ -100,9 +102,10 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="primaryColor",
 	 *     description="The Organization's primary color derived from their logo",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=7,
-	 *     minLength=7
+	 *     minLength=7,
+	 *     nullable=true
 	 * )
 	 *
 	 * @method static Organization wherePrimarycolor($value)
@@ -114,9 +117,10 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="secondaryColor",
 	 *     description="The Organization's secondary color derived from their logo",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=7,
-	 *     minLength=7
+	 *     minLength=7,
+	 *     nullable=true
 	 * )
 	 *
 	 * @method static Organization whereSecondarycolor($value)
@@ -127,8 +131,9 @@ class Organization extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="inactive",
-	 *     description="The Organization's inactive",
-	 *     format="boolean"
+	 *     description="If the organization has not responded to several attempts to contact this value will be set to true",
+	 *     type="boolean",
+	 *     nullable=true
 	 * )
 	 *
 	 * @method static Organization whereInactive($value)
@@ -140,7 +145,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="url_facebook",
 	 *     description="The URL to the organization's facebook page",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -153,7 +158,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="url_website",
 	 *     description="The url to the Organization's website",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -166,7 +171,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="url_donate",
 	 *     description="The url to the organization's donation page",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -179,7 +184,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="url_twitter",
 	 *     description="The url to the organization's twitter page",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -192,7 +197,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="address",
 	 *     description="The Organization's address",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -205,7 +210,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="address2",
 	 *     description="The Organization's second line of the address",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -218,7 +223,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="city",
 	 *     description="The organization's city",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -231,7 +236,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="state",
 	 *     description="The Organization's state",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -244,7 +249,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="country",
 	 *     description="ThThe Organization's country",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -257,7 +262,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="zip",
 	 *     description="The Organization's zip",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -270,7 +275,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="phone",
 	 *     description="The Organization's phone number",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *
@@ -283,7 +288,7 @@ class Organization extends Model
 	 * @OAS\Property(
 	 *     title="email",
 	 *     description="The Organization's email address",
-	 *     format="string",
+	 *     type="string",
 	 *     maxLength=191
 	 * )
 	 *

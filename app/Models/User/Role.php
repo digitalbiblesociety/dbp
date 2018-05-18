@@ -27,12 +27,7 @@ class Role extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
-	 *   title="user_id",
-	 *   type="string",
-	 *   description="The user's id",
-	 *   maxLength=64
-	 * )
+	 * @OAS\Property(ref="#/components/schemas/User/properties/id"))
 	 *
 	 * @method static Role whereUserId($value)
 	 * @protected $user_id
@@ -53,12 +48,7 @@ class Role extends Model
 	protected $role;
 	/**
 	 *
-	 * @OAS\Property(
-	 *   title="organization_id",
-	 *   type="integer",
-	 *   description="The user's organization_id",
-	 *   minimum=0
-	 * )
+	 * @OAS\Property(ref="#/components/schemas/Organization/properties/id"))
 	 *
 	 * @method static Role whereOrganizationId($value)
 	 * @protected $organization_id

@@ -30,6 +30,7 @@ class CreateUsersBiblesTable extends Migration
 		    $table->string('project_id', 24);
 		    $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
 		    $table->string('role');
+		    $table->boolean('subscribed')->default(false);
 		    $table->timestamps();
 	    });
 

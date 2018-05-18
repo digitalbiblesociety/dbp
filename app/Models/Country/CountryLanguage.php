@@ -29,7 +29,7 @@ class CountryLanguage extends Model
 	 * @OAS\Property(
 	 *     title="continent ID",
 	 *     description="The continent code for the country",
-	 *     format="string",
+	 *     type="string",
 	 *     minLength=2,
 	 *     maxLength=2,
 	 *     example="EU"
@@ -44,7 +44,7 @@ class CountryLanguage extends Model
 	 * @OAS\Property(
 	 *     title="language_id",
 	 *     description="The language_id for the speakers",
-	 *     format="integer"
+	 *     type="integer"
 	 * )
 	 *
 	 * @method static CountryLanguage whereLanguageId($value)
@@ -56,7 +56,7 @@ class CountryLanguage extends Model
 	 * @OAS\Property(
 	 *     title="population",
 	 *     description="The population of the speakers",
-	 *     format="integer",
+	 *     type="integer",
 	 *     example=20699
 	 * )
 	 *

@@ -49,7 +49,7 @@ class APIController extends Controller
 	 * @OAS\Parameter(parameter="version_number",name="v",in="query",description="The Version Number",required=true,@OAS\Schema(type="integer",enum={2,4},example=4))
 	 * @OAS\Parameter(parameter="key",name="key",in="query",description="The Key granted to the api user upon sign up",required=true,@OAS\Schema(type="string",example="ar45g3h4ae644"))
 	 * @OAS\Parameter(parameter="pretty",name="pretty",in="query",description="Setting this param to true will add human readable whitespace to the return",@OAS\Schema(type="string",example="true"))
-	 * @OAS\Parameter(parameter="reply",name="reply",in="query",description="Setting this param to true will add format the return as a specific file type.",@OAS\Schema(type="string",enum={"xml","csv","json","yaml"}))
+	 * @OAS\Parameter(parameter="reply",name="reply",in="query",description="Setting this param to true will add format the return as a specific file type. The currently supported return types are `xml`, `csv`, `json`, and `yaml`",@OAS\Schema(type="string",enum={"xml","csv","json","yaml"}))
 	 * @OAS\Parameter(name="sort_by", in="query", description="The field to sort by", @OAS\Schema(type="string"))
 	 * @OAS\Parameter(name="sort_dir", in="query", description="The direction to sort by", @OAS\Schema(type="string",enum={"asc","desc"}))
 	 *
@@ -156,7 +156,7 @@ class APIController extends Controller
 		    foreach ($_GET as $header => $value) $log_string .= ($value != '') ? $header."=".$value."|" : $header."|";
 		    $log_string = rtrim($log_string,"|");
 		    $log_string .= ',';
-		    if($this->request->getContent()) foreach (collect($this->request->getContent())->toArray() as $header => $value) $log_string .= $header."=".$value."|";
+		    //if($this->request->getContent()) foreach (collect($this->request->getContent())->toArray() as $header => $value) $log_string .= $header."=".$value."|";
 		    $log_string .= ',';
 		    $log_string .= time();
 		    send_api_logs::dispatch($log_string);

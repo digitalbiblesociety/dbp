@@ -58,7 +58,8 @@ class TextTransformer extends BaseTransformer
 			*	description="The bible Search Group Response",
 			*	title="v2_text_search_group",
 			*	@OAS\Xml(name="v2_text_search_group"),
-			*	@OAS\Items(              @OAS\Property(property="dam_id",     ref="#/components/schemas/Bible/properties/id"),
+			*	@OAS\Items(
+		     *              @OAS\Property(property="dam_id",     ref="#/components/schemas/Bible/properties/id"),
 		     *              @OAS\Property(property="book_name",  ref="#/components/schemas/Book/properties/name"),
 		     *              @OAS\Property(property="book_id",    ref="#/components/schemas/Book/properties/id_osis"),
 		     *              @OAS\Property(property="chapter_id", ref="#/components/schemas/BibleFile/properties/chapter_start"),
