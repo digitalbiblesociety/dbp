@@ -88,6 +88,28 @@ class BibleBook extends Model
 	 */
 	protected $chapters;
 
+	/**
+	 * Remove brackets from uncertain book names
+	 *
+	 * @param  string  $value
+	 * @return void
+	 */
+	public function setNameAttribute($value)
+	{
+		$this->attributes['name'] = trim($value,'[]');
+	}
+
+	/**
+	 * Remove brackets from uncertain book names
+	 *
+	 * @param  string  $value
+	 * @return void
+	 */
+	public function setNameShortAttribute($value)
+	{
+		$this->attributes['name_short'] = trim($value,'[]');
+	}
+
     public function bible()
     {
     	return $this->belongsTo(Bible::class);
