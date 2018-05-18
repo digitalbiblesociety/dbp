@@ -355,7 +355,7 @@ class Language extends Model
      */
     public function translations()
     {
-        return $this->HasMany(LanguageTranslation::class,'language_source','language_translation')->orderBy('priority', 'desc');
+        return $this->HasMany(LanguageTranslation::class,'language_source','language_translation')->orderBy('priority', 'desc')->where('priority','!=',null);
     }
 
 	public function autonym()
