@@ -26,16 +26,6 @@ class CreateUsersTable extends Migration
 	        $table->timestamps();
         });
 
-	    Schema::create('user_accounts', function (Blueprint $table) {
-	    	$table->increments('id');
-		    $table->string('user_id', 64);
-		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
-		    $table->string('provider');
-		    $table->string('provider_user_id');
-		    $table->unique(['user_id','provider']);
-		    $table->timestamps();
-	    });
-
 	    Schema::create('user_keys', function (Blueprint $table) {
 		    $table->string('user_id', 64)->primary();
 		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
@@ -61,7 +51,6 @@ class CreateUsersTable extends Migration
     public function down()
     {
 	    Schema::dropIfExists('cache');
-	    Schema::dropIfExists('user_accounts');
 	    Schema::dropIfExists('user_notes');
 	    Schema::dropIfExists('user_keys');
         Schema::dropIfExists('users');

@@ -29,6 +29,7 @@
 	Route::name('v2_country_lang')->get('country/countrylang',                            'LanguagesController@CountryLang');
 	Route::name('v2_api_versionLatest')->get('api/apiversion',                            'HomeController@versionLatest');
 	Route::name('v2_api_apiReply')->get('api/reply',                                      'HomeController@versionReplyTypes');
+	Route::name('v2_api_jesusFilms')->get('library/jesusfilm',                            'ResourcesController@jesusFilmListing');
 
 	// VERSION 3
 	// What can man do against such reckless hate
@@ -121,6 +122,12 @@
 	Route::name('v4_projects.update')->put('projects/{project_id}',                        'ProjectsController@update');
 	Route::name('v4_projects.store')->post('projects',                                     'ProjectsController@store');
 	Route::name('v4_projects.destroy')->delete('projects/{project_id}',                    'ProjectsController@destroy');
+
+	Route::name('v4_projects_oAuthProvider.index')->get('projects/{project_id}/oauth-providers/',          'ProjectOAuthProvidersController@index');
+	Route::name('v4_projects_oAuthProvider.show')->get('projects/{project_id}/oauth-providers/{id}',       'ProjectOAuthProvidersController@show');
+	Route::name('v4_projects_oAuthProvider.update')->put('projects/{project_id}/oauth-providers/{id}',     'ProjectOAuthProvidersController@update');
+	Route::name('v4_projects_oAuthProvider.store')->post('projects/{project_id}/oauth-providers',          'ProjectOAuthProvidersController@store');
+	Route::name('v4_projects_oAuthProvider.destroy')->delete('projects/{project_id}/oauth-providers/{id}', 'ProjectOAuthProvidersController@destroy');
 
 	// VERSION 4 | UTILITY
 	Route::name('v4_api.buckets')->get('/api/buckets',                                    'HomeController@buckets');

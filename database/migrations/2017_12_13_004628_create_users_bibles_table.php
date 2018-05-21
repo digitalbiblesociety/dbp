@@ -24,6 +24,18 @@ class CreateUsersBiblesTable extends Migration
 		    $table->timestamps();
 	    });
 
+	    Schema::create('project_oauth_providers', function (Blueprint $table) {
+		    $table->char('id', 8)->primary();
+		    $table->string('project_id', 24);
+		    $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
+		    $table->string('name');
+		    $table->string('client_id');
+		    $table->text('client_secret');
+		    $table->string('callback_url');
+		    $table->text('description');
+		    $table->timestamps();
+	    });
+
 	    Schema::create('project_members', function (Blueprint $table) {
 		    $table->string('user_id', 64);
 		    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
@@ -31,6 +43,17 @@ class CreateUsersBiblesTable extends Migration
 		    $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
 		    $table->string('role');
 		    $table->boolean('subscribed')->default(false);
+		    $table->timestamps();
+	    });
+
+	    Schema::create('user_accounts', function (Blueprint $table) {
+		    $table->increments('id');
+		    $table->string('user_id', 64);
+		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
+		    $table->string('provider_id', 8);
+		    $table->foreign('provider_id')->references('id')->on('project_oauth_providers')->onDelete('cascade')->onUpdate('cascade');
+		    $table->string('provider_user_id');
+		    $table->unique(['user_id','provider_id']);
 		    $table->timestamps();
 	    });
 
@@ -100,9 +123,11 @@ class CreateUsersBiblesTable extends Migration
     public function down()
     {
 	    Schema::dropIfExists('user_note_tags');
+	    Schema::dropIfExists('user_accounts');
 	    Schema::dropIfExists('user_access');
         Schema::dropIfExists('user_notes');
 	    Schema::dropIfExists('user_highlights');
+	    Schema::dropIfExists('project_oauth_providers');
 	    Schema::dropIfExists('project_members');
 	    Schema::dropIfExists('projects');
     }

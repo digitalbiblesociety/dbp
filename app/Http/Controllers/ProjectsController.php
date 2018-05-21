@@ -17,8 +17,8 @@ class ProjectsController extends APIController
      * @OAS\Get(
      *     path="/projects",
      *     tags={"Community"},
-     *     summary="",
-     *     description="",
+     *     summary="Returns the projects currently using the DBP",
+     *     description="Returns a list of all your projects currently registered as using the DBP",
      *     operationId="v4_projects.index",
      *     @OAS\Parameter(ref="#/components/parameters/version_number"),
      *     @OAS\Parameter(ref="#/components/parameters/key"),

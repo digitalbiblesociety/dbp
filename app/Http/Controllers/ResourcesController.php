@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Organization\Organization;
 use App\Models\Resource\Resource;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -103,5 +104,30 @@ class ResourcesController extends APIController
     public function destroy($id)
     {
         return view('resources.destroy');
+    }
+
+	/**
+	 *
+	 * dam_id: DAM ID for the Jesus Film volume desired.
+	 * encoding: [mp4|m3u8] The video encoding format desired.
+	 * book_id (optional): OSIS book code to filter segments by references to book desired.
+	 * chapter_id (optional): Chapter id to filter segments by references based on book and chapter.
+	 * verse_id (optional): Verse id to filter segments by references based on book, chapter and verse.
+	 *
+	 */
+    public function jesusFilmListing()
+    {
+
+		$id = checkParam('dam_id');
+		$encoding = checkParam('encoding', null, 'optional');
+		$book_id = checkParam('book_id', null, 'optional');
+		$chapter_id = checkParam('chapter_id', null, 'optional');
+		$verse_id = checkParam('verse_id', null, 'optional');
+
+		$organization = Organization::where('slug','the-jesus-film-project')->first();
+		$iso = strtolower(substr($id,0,3));
+
+	    $jesusFilm = Resource::with('translations')->where('iso',$iso)->where('organization_id',$organization->id)->first();
+		return $jesusFilm;
     }
 }

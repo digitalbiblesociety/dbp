@@ -4,10 +4,16 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\Controller;
+use App\Models\User\ProjectOauthProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User\User;
 use App\Models\User\Account;
+use Laravel\Socialite\One\TwitterProvider;
+use Laravel\Socialite\Two\BitbucketProvider;
+use Laravel\Socialite\Two\FacebookProvider;
+use Laravel\Socialite\Two\GithubProvider;
+use Laravel\Socialite\Two\GoogleProvider;
 
 class LoginController extends APIController
 {
@@ -36,8 +42,22 @@ class LoginController extends APIController
 	{
 		if($this->api) {
 			if($provider == "twitter") return $this->setStatusCode(422)->replyWithError('Twitter does not support stateless Authentication');
-			//if($provider == "google") return $this->setStatusCode(422)->replyWithError('Twitter does not support stateless Authentication');
-			return $this->reply(Socialite::driver($provider)->stateless()->redirect()->getTargetUrl());
+
+			$project_id = checkParam('project_id');
+			$provider = checkParam('name', $provider);
+			if($provider == "twitter") return $this->setStatusCode(422)->replyWithError('Twitter does not support stateless Authentication');
+
+			$driverData = ProjectOauthProvider::where('project_id',$project_id)->where('name',$provider)->first();
+
+			switch ($provider) {
+				case "facebook":  {$providerClass = FacebookProvider::class;break;}
+				case "bitbucket": {$providerClass = BitbucketProvider::class;break;}
+				case "github":    {$providerClass = GithubProvider::class;break;}
+				case "twitter":   {$providerClass = TwitterProvider::class;break;}
+				case "google":    {$providerClass = GoogleProvider::class;break;}
+			}
+
+			return $this->reply(Socialite::buildProvider($providerClass,$driver)->stateless()->redirect()->getTargetUrl());
 		}
 		return Socialite::driver($provider)->redirect();
 	}
