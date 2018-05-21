@@ -20,6 +20,8 @@ class ProjectOauthProvider extends Model
 {
     protected $table = "project_oauth_providers";
 	protected $fillable = ['id','project_id','name','client_secret','client_id','callback_url','description'];
+	public $incrementing = false;
+	public $keyType = 'string';
 
 	public function setIdAttribute($id)
 	{
