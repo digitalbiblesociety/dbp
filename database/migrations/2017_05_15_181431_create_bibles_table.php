@@ -86,8 +86,6 @@ class CreateBiblesTable extends Migration
 	        $table->char('id', 3)->primary(); // Code USFM
 	        $table->char('id_usfx',2);
 	        $table->string('id_osis',12);
-            $table->tinyInteger('book_order')->unsigned(); // Genesis 01
-	        $table->tinyInteger('testament_order')->unsigned();
 	        $table->string('book_testament');
 	        $table->string('book_group');
             $table->Integer('chapters')->nullable()->unsigned();
@@ -95,6 +93,18 @@ class CreateBiblesTable extends Migration
             $table->string('name');
             $table->text('notes');
             $table->text('description');
+	        $table->tinyInteger('testament_order')->unsigned()->nullable();
+	        $table->tinyInteger('protestant_order')->unsigned()->nullable();
+	        $table->tinyInteger('luther_order')->unsigned()->nullable();
+	        $table->tinyInteger('synodal_order')->unsigned()->nullable();
+	        $table->tinyInteger('german_order')->unsigned()->nullable();
+	        $table->tinyInteger('kjva_order')->unsigned()->nullable();
+	        $table->tinyInteger('vulgate_order')->unsigned()->nullable();
+	        $table->tinyInteger('lxx_order')->unsigned()->nullable();
+	        $table->tinyInteger('orthodox_order')->unsigned()->nullable();
+	        $table->tinyInteger('nrsva_order')->unsigned()->nullable();
+	        $table->tinyInteger('catholic_order')->unsigned()->nullable();
+	        $table->tinyInteger('finnish_order')->unsigned()->nullable();
 	        $table->timestamps();
         });
 

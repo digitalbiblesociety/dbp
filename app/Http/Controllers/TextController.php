@@ -260,7 +260,7 @@ class TextController extends APIController
 	    	$current_book = $books->where('id',$item->book)->first();
 	    	$item->book_name = $current_book->name;
 	    	$item->id_osis = $current_book->id_osis;
-	    	$item->book_order = $current_book->book_order;
+	    	$item->protestant_order = $current_book->protestant_order;
 	    	$item->bible_id = $bible_id;
 	    	return $item;
 	    });

@@ -82,17 +82,167 @@ class Book extends Model
 	/**
 	 *
 	 * @OAS\Property(
-	 *   title="book_order",
+	 *   title="protestant_order",
 	 *   type="integer",
-	 *   description="The standard book order in ascending order from Genesis to Revelations with deuterocanonical books occurring afterwards",
+	 *   description="The standard book order for the `protestant_order` in ascending order from Genesis onwards",
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereBookOrder($value)
-	 * @property int $book_order
+	 * @method static Book whereProtestantOrder($value)
+	 * @property int $protestant_order
 	 *
 	 */
-	protected $book_order;
+	protected $protestant_order;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="luther_order",
+	 *   type="integer",
+	 *   description="The standard book order for the `luther_order` in ascending order from Genesis onwards",
+	 *   minimum=0
+	 * )
+	 *
+	 * @method static Book whereLutherOrder($value)
+	 * @property int $luther_order
+	 *
+	 */
+	protected $luther_order;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="synodal_order",
+	 *   type="integer",
+	 *   description="The standard book order for the `synodal_order` in ascending order from Genesis onwards",
+	 *   minimum=0
+	 * )
+	 *
+	 * @method static Book whereSynodalOrder($value)
+	 * @property int $synodal_order
+	 *
+	 */
+	protected $synodal_order;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="german_order",
+	 *   type="integer",
+	 *   description="The standard book order for the `german_order` in ascending order from Genesis onwards",
+	 *   minimum=0
+	 * )
+	 *
+	 * @method static Book whereGermanOrder($value)
+	 * @property int $german_order
+	 *
+	 */
+	protected $german_order;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="kjva_order",
+	 *   type="integer",
+	 *   description="The standard book order for the `kjva_order` in ascending order from Genesis onwards",
+	 *   minimum=0
+	 * )
+	 *
+	 * @method static Book whereKjvaOrder($value)
+	 * @property int $kjva_order
+	 *
+	 */
+	protected $kjva_order;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="vulgate_order",
+	 *   type="integer",
+	 *   description="The standard book order for the `vulgate_order` in ascending order from Genesis onwards",
+	 *   minimum=0
+	 * )
+	 *
+	 * @method static Book whereVulgateOrder($value)
+	 * @property int $vulgate_order
+	 *
+	 */
+	protected $vulgate_order;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="lxx_order",
+	 *   type="integer",
+	 *   description="The standard book order for the `lxx_order` in ascending order from Genesis onwards",
+	 *   minimum=0
+	 * )
+	 *
+	 * @method static Book whereLxxOrder($value)
+	 * @property int $lxx_order
+	 *
+	 */
+	protected $lxx_order;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="orthodox_order",
+	 *   type="integer",
+	 *   description="The standard book order for the `orthodox_order` in ascending order from Genesis onwards",
+	 *   minimum=0
+	 * )
+	 *
+	 * @method static Book whereOrthodoxOrder($value)
+	 * @property int $orthodox_order
+	 *
+	 */
+	protected $orthodox_order;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="nrsva_order",
+	 *   type="integer",
+	 *   description="The standard book order for the `nrsva_order` in ascending order from Genesis onwards",
+	 *   minimum=0
+	 * )
+	 *
+	 * @method static Book whereNrsvaOrder($value)
+	 * @property int $nrsva_order
+	 *
+	 */
+	protected $nrsva_order;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="catholic_order",
+	 *   type="integer",
+	 *   description="The standard book order for the `catholic_order` in ascending order from Genesis onwards",
+	 *   minimum=0
+	 * )
+	 *
+	 * @method static Book whereCatholicOrder($value)
+	 * @property int $catholic_order
+	 *
+	 */
+	protected $catholic_order;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="finnish_order",
+	 *   type="integer",
+	 *   description="The standard book order for the `finnish_order` in ascending order from Genesis onwards",
+	 *   minimum=0
+	 * )
+	 *
+	 * @method static Book whereFinnishOrder($value)
+	 * @property int $finnish_order
+	 *
+	 */
+	protected $finnish_order;
 
 	/**
 	 *

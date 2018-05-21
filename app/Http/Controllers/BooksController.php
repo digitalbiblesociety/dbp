@@ -46,7 +46,7 @@ class BooksController extends APIController
 	{
 		if(!$this->api) return view('docs.books');
 		return $this->reply(\Cache::remember('v4_books_index', 2400, function() {
-			$books = Book::orderBy('book_order')->get();
+			$books = Book::all();
 			return fractal()->collection($books)->transformWith(new BooksTransformer());
 		}));
 	}
@@ -96,7 +96,7 @@ class BooksController extends APIController
 	    if(!is_string($sophiaTable)) return $sophiaTable;
 
 		$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable.'_vpl')->select('book','chapter')->distinct()->get());
-	    $books = Book::whereIn('id_usfx',$booksChapters->pluck('book')->unique()->toArray())->orderBy('book_order')->get();
+	    $books = Book::whereIn('id_usfx',$booksChapters->pluck('book')->unique()->toArray())->orderBy('protestant_order')->get();
 
 	    $bible_id = $fileset->bible->first()->id;
 	    foreach($books as $key => $book) {

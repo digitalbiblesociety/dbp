@@ -378,7 +378,7 @@ class BiblesController extends APIController
 			}]);
 		})->when($book_id, function($q) use ($book_id){
 			$q->where('id',$book_id);
-		})->orderBy('book_order')->get();
+		})->orderBy('protestant_order')->get();
 
 		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer)->toArray());
 	}

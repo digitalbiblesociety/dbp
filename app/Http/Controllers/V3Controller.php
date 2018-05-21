@@ -24,7 +24,7 @@ class V3Controller extends APIController
 		    $books = $booksChapters->pluck('book')->toArray();
 		    $chapters = [];
 		    foreach ($booksChapters as $books_chapter) $chapters[$books_chapter->book][] = $books_chapter->chapter;
-		    $books = Book::whereIn('id_usfx',$books)->orderBy('book_order')->get()->map(function ($book) use ($bible_id,$chapters) {
+		    $books = Book::whereIn('id_usfx',$books)->orderBy('protestant_order')->get()->map(function ($book) use ($bible_id,$chapters) {
 			    $book['bible_id'] = $bible_id;
 			    $book['sophia_chapters'] = $chapters[$book->id_usfx];
 			    return $book;
@@ -63,7 +63,7 @@ class V3Controller extends APIController
 		])->get()->groupBy('book_code') : [];
 	    $booksChapters = collect(\DB::connection('sophia')->table($bible->id.'_vpl')->select('book','chapter')->distinct()->get());
 	    $books = $booksChapters->pluck('book')->toArray();
-	    $books = Book::whereIn('id_usfx', $books)->orderBy('book_order')->get()->map(function ($book) use ($bible_id,$files) {
+	    $books = Book::whereIn('id_usfx', $books)->orderBy('protestant_order')->get()->map(function ($book) use ($bible_id,$files) {
 		    $book['bible_id'] = $bible_id;
 		    $book['chapters'] = $files[$book->id] ?? [];
 		    return $book;

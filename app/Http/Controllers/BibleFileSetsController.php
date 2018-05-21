@@ -63,15 +63,18 @@ class BibleFileSetsController extends APIController
 	    if(!$bucket_id) $bucket_id = CheckParam('bucket', null, 'optional') ?? "s3_fcbh";
 	    $lifespan = CheckParam('lifespan',null,'optional') ?? 5;
 	    $type = checkParam('type');
+	    $versification = checkParam('verseification', null, 'optional');
 
 	    if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
 	    if(isset($book)) $book_id = $book->id;
-		$fileset = BibleFileset::join('bible_fileset_connections', 'bible_fileset_connections.hash_id', '=', 'bible_filesets.hash_id')
-		->where('id',$bible_id)->when($bucket_id, function ($query) use ($bucket_id) {
+		$fileset = BibleFileset::with('bible')->when($bucket_id, function ($query) use ($bucket_id) {
 			return $query->where('bucket_id', $bucket_id);
 		})->where('set_type_code',$type)->first();
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Found in the `".$bucket_id."` Bucket for the provided params");
-		$bible_id = ($fileset->bible_id) ? $fileset->bible_id."/" : "";
+		$bible = ($fileset->bible->first()) ? $fileset->bible->first() : false;
+		$bible_path = ($bible->id) ? $bible->id."/" : "";
+		if(!$versification AND $bible) $versification = $bible->versification;
+
 
 		switch($fileset->set_type_code) {
 			case "audio_drama":
@@ -90,12 +93,14 @@ class BibleFileSetsController extends APIController
 			    return $query->where('chapter_start', $chapter_id);
 			})->when($book_id, function ($query) use ($book_id) {
 			    return $query->where('book_id', $book_id);
-		    })->orderBy('books.book_order')->orderBy('chapter_start')->get();
+		    })->when($versification, function ($query) use ($versification) {
+			    return $query->orderBy('books.'.$versification.'_order');
+		    })->orderBy('chapter_start')->get();
 
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Chapters Found for the provided params");
 
 	    foreach ($fileSetChapters as $key => $fileSet_chapter) {
-			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type.'/'.$bible_id.$fileset->id.'/'.$fileSet_chapter->file_name, $bucket_id, $lifespan);
+			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type.'/'.$bible_path.$fileset->id.'/'.$fileSet_chapter->file_name, $bucket_id, $lifespan);
 	    }
 	    return $this->reply(fractal()->collection($fileSetChapters)->serializeWith($this->serializer)->transformWith(new FileSetTransformer()));
     }

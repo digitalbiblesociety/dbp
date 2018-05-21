@@ -34,7 +34,7 @@ class TextTransformer extends BaseTransformer
 		    *     @OAS\Property(property="chapter_id", ref="#/components/schemas/BibleFile/properties/chapter_start"),
 		    *     @OAS\Property(property="verse_id",   ref="#/components/schemas/BibleFile/properties/verse_start"),
 		    *     @OAS\Property(property="verse_text", ref="#/components/schemas/BibleFile/properties/verse_text"),
-		    *     @OAS\Property(property="book_order", ref="#/components/schemas/Book/properties/book_order")
+		    *     @OAS\Property(property="book_order", ref="#/components/schemas/Book/properties/protestant_order")
 		    *     )
 		    *   )
 		    * )
@@ -47,7 +47,7 @@ class TextTransformer extends BaseTransformer
                     "chapter_id"       => "$text->chapter",
                     "verse_id"         => "$text->verse_start",
                     "verse_text"       => "$text->verse_text",
-                    "book_order"       => "$text->book_order"
+                    "book_order"       => "$text->protestant_order"
 				];
 		    }
 
@@ -66,7 +66,7 @@ class TextTransformer extends BaseTransformer
 		     *              @OAS\Property(property="verse_id",   ref="#/components/schemas/BibleFile/properties/verse_start"),
 		     *              @OAS\Property(property="verse_text", ref="#/components/schemas/BibleFile/properties/verse_text"),
 		     *              @OAS\Property(property="results",    @OAS\Schema(type="integer",minimum=0,example=45)),
-		     *              @OAS\Property(property="book_order", ref="#/components/schemas/Book/properties/book_order")
+		     *              @OAS\Property(property="book_order", ref="#/components/schemas/Book/properties/protestant_order")
 		     *     )
 		     *   )
 		     * )
@@ -80,7 +80,7 @@ class TextTransformer extends BaseTransformer
 				    "verse_id"         => "$text->verse_start",
 				    "verse_text"       => $text->verse_text,
 				    "results"		   => "$text->resultsCount",
-				    "book_order"	   => "$text->book_order"
+				    "book_order"	   => "$text->protestant_order"
 			    ];
 		    }
 
@@ -91,7 +91,8 @@ class TextTransformer extends BaseTransformer
 			*	description="The bible Search Group Response",
 			*	title="v2_text_verse",
 			*	@OAS\Xml(name="v2_text_verse"),
-			*	@OAS\Items(              @OAS\Property(property="book_name",         ref="#/components/schemas/Book/properties/name"),
+			*	@OAS\Items(
+		     *              @OAS\Property(property="book_name",         ref="#/components/schemas/Book/properties/name"),
 		     *              @OAS\Property(property="book_id",           ref="#/components/schemas/Book/properties/id_osis"),
 		     *              @OAS\Property(property="chapter_id",        ref="#/components/schemas/BibleFile/properties/chapter_start"),
 		     *              @OAS\Property(property="chapter_title",     @OAS\Schema(type="string",example="Chapter 1")),
@@ -106,7 +107,7 @@ class TextTransformer extends BaseTransformer
 			    return [
 				    "book_name"        => $text->book_name,
 				    "book_id"          => $text->osis_id,
-				    "book_order"       => "$text->book_order",
+				    "book_order"       => "$text->protestant_order",
 				    "chapter_id"       => "$text->chapter",
 				    "chapter_title"    => "Chapter $text->chapter",
 				    "verse_id"         => "$text->verse_start",

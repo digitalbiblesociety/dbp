@@ -25,7 +25,7 @@ class BooksTransformer extends BaseTransformer
 		switch($this->route) {
 			case "v2_library_bookOrder": {
 				return [
-					"book_order"  => (string) $book->book_order,
+					"book_order"  => (string) $book->protestant_order,
 					"book_id"     => $book->id,
 					"book_name"   => $book->name,
 					"dam_id_root" => $book->bible_id
@@ -39,10 +39,11 @@ class BooksTransformer extends BaseTransformer
 			*	description="The book return",
 			*	title="v2_library_book",
 			*	@OAS\Xml(name="v2_library_book"),
-			*	@OAS\Items(          @OAS\Property(property="dam_id",                ref="#/components/schemas/Bible/properties/id"),
+			*	@OAS\Items(
+			 *          @OAS\Property(property="dam_id",                ref="#/components/schemas/Bible/properties/id"),
 			 *          @OAS\Property(property="book_id",               ref="#/components/schemas/Book/properties/id"),
 			 *          @OAS\Property(property="book_name",             ref="#/components/schemas/Book/properties/name"),
-			 *          @OAS\Property(property="book_order",            ref="#/components/schemas/Book/properties/book_order"),
+			 *          @OAS\Property(property="book_order",            ref="#/components/schemas/Book/properties/protestant_order"),
 			 *          @OAS\Property(property="number_of_chapters",    ref="#/components/schemas/Book/properties/chapters"),
 			 *          @OAS\Property(property="chapters",              ref="#/components/schemas/Book/properties/chapters"),
 			 *     )
@@ -54,7 +55,7 @@ class BooksTransformer extends BaseTransformer
 					"dam_id"             => $book->bible_id,
 					"book_id"            => $book->id_osis,
 					"book_name"          => $book->name,
-					"book_order"         => (string) $book->book_order,
+					"book_order"         => (string) $book->protestant_order,
 					"number_of_chapters" => (string) $book->number_chapters,
 					"chapters"           => (string) $book->chapters
 				];
@@ -83,7 +84,7 @@ class BooksTransformer extends BaseTransformer
 				    "book_code"    => $book->id,
 				    "created_at"   => $book->created_at->toDateTimeString(),
 				    "updated_at"   => $book->updated_at->toDateTimeString(),
-				    "sort_order"   => strval($book->book_order),
+				    "sort_order"   => strval($book->protestant_order),
 				    "volume_id"    => "3070",
 				    "enabled"      => "1",
 				    "dam_id"       => $book->bible_id,
@@ -101,7 +102,7 @@ class BooksTransformer extends BaseTransformer
                     "name"         => $book->name,
                     "dam_id"       => $book->bible_id,
                     "book_code"    => $book->id,
-                    "order"        => strval($book->book_order),
+                    "order"        => strval($book->protestant_order),
                     "enabled"      => true,
 				    "chapters"     => $book->chapters,
 				    "chapter_list" => $book->chapters->pluck('number')->implode(','),
@@ -122,10 +123,11 @@ class BooksTransformer extends BaseTransformer
 			*	description="The books of the bible with codes",
 			*	title="v4_bible.allBooks",
 			*	@OAS\Xml(name="v4_bible.allBooks"),
-			*	@OAS\Items(          @OAS\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
+			*	@OAS\Items(
+	 *          @OAS\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
 	 *          @OAS\Property(property="id_usfx",           ref="#/components/schemas/Book/properties/id_usfx"),
 	 *          @OAS\Property(property="id_osis",           ref="#/components/schemas/Book/properties/id_osis"),
-	 *          @OAS\Property(property="book_order",        ref="#/components/schemas/Book/properties/book_order"),
+	 *          @OAS\Property(property="book_order",        ref="#/components/schemas/Book/properties/protestant_order"),
 	 *          @OAS\Property(property="testament_order",   ref="#/components/schemas/Book/properties/testament_order"),
 	 *          @OAS\Property(property="book_testament",    ref="#/components/schemas/Book/properties/book_testament"),
 	 *          @OAS\Property(property="book_group",        ref="#/components/schemas/Book/properties/book_group"),
@@ -142,10 +144,11 @@ class BooksTransformer extends BaseTransformer
 			*	description="The books of the bible with codes",
 			*	title="v4_bible.books",
 			*	@OAS\Xml(name="v4_bible.books"),
-			*	@OAS\Items(          @OAS\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
+			*	@OAS\Items(
+	 *          @OAS\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
 	 *          @OAS\Property(property="id_usfx",           ref="#/components/schemas/Book/properties/id_usfx"),
 	 *          @OAS\Property(property="id_osis",           ref="#/components/schemas/Book/properties/id_osis"),
-	 *          @OAS\Property(property="book_order",        ref="#/components/schemas/Book/properties/book_order"),
+	 *          @OAS\Property(property="book_order",        ref="#/components/schemas/Book/properties/protestant_order"),
 	 *          @OAS\Property(property="testament_order",   ref="#/components/schemas/Book/properties/testament_order"),
 	 *          @OAS\Property(property="book_testament",    ref="#/components/schemas/Book/properties/book_testament"),
 	 *          @OAS\Property(property="book_group",        ref="#/components/schemas/Book/properties/book_group"),
@@ -163,7 +166,7 @@ class BooksTransformer extends BaseTransformer
 			"id"              => $book->id,
 			"id_usfx"         => $book->id_usfx,
 			"id_osis"         => $book->id_osis,
-			"book_order"      => $book->book_order,
+			"book_order"      => $book->protestant_order,
 			"testament_order" => $book->testament_order,
 			"book_testament"  => $book->book_testament,
 			"book_group"      => $book->book_group,

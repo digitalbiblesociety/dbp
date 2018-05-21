@@ -217,7 +217,7 @@ class BibleFile extends Model
 
 	public function book()
 	{
-		return $this->BelongsTo(Book::class,'book_id','id')->orderBy('book_order');
+		return $this->BelongsTo(Book::class,'book_id','id')->orderBy('protestant_order');
 	}
 
 	public function timestamps()
