@@ -205,12 +205,12 @@ class ProjectOAuthProvidersController extends APIController
 	private function validateOAuthProvider(Request $request)
 	{
 		$validator = Validator::make($request->all(),[
-			'project_id'     => 'required|unique:projects,id',
-			'name'           => 'string|max:191|required|in:facebook,twitter,linkedin,google,github,bitbucket',
-			'client_id'      => 'string|required',
-			'client_secret'  => 'string|required',
-			'callback_url'   => 'string|max:191|required',
-			'callback_url_alt' => 'string|max:191'
+			'project_id'       => 'required|unique:projects,id',
+			'name'             => 'string|max:191|required|in:facebook,twitter,linkedin,google,github,bitbucket',
+			'client_id'        => 'string|max:191|required|different:client_secret',
+			'client_secret'    => 'string|required|different:client_id',
+			'callback_url'     => 'string|max:191|required|url|different:callback_url_alt',
+			'callback_url_alt' => 'string|max:191|url|different:callback_url|nullable'
 		]);
 
 		if ($validator->fails()) {
