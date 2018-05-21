@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProjectOauthProvider extends Model
 {
     protected $table = "project_oauth_providers";
-	protected $fillable = ['id','project_id','name','client_secret','client_id','callback_url','description'];
+	protected $fillable = ['id','project_id','name','client_secret','client_id','callback_url','callback_url_alt','description'];
 	public $incrementing = false;
 	public $keyType = 'string';
 
