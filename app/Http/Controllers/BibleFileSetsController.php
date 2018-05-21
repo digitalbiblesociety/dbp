@@ -67,14 +67,13 @@ class BibleFileSetsController extends APIController
 
 	    if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
 	    if(isset($book)) $book_id = $book->id;
-		$fileset = BibleFileset::with('bible')->when($bucket_id, function ($query) use ($bucket_id) {
+		$fileset = BibleFileset::with('bible')->where('id',$bible_id)->when($bucket_id, function ($query) use ($bucket_id) {
 			return $query->where('bucket_id', $bucket_id);
 		})->where('set_type_code',$type)->first();
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Found in the `".$bucket_id."` Bucket for the provided params");
 		$bible = ($fileset->bible->first()) ? $fileset->bible->first() : false;
 		$bible_path = ($bible->id) ? $bible->id."/" : "";
 		if(!$versification AND $bible) $versification = $bible->versification;
-
 
 		switch($fileset->set_type_code) {
 			case "audio_drama":
