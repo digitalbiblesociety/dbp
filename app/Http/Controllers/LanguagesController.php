@@ -66,7 +66,7 @@ class LanguagesController extends APIController
 		$country = checkParam('country',null,'optional');
 		$code = checkParam('code', null, 'optional') ?? checkParam('iso', null, 'optional');
 	    $language_name_portion = checkParam('full_word', null, 'optional') ?? checkParam('language_name', null, 'optional') ;
-	    $sort_by = checkParam('sort_by', null, 'optional');
+	    $sort_by = checkParam('sort_by', null, 'optional') ?? "name";
 	    $has_bibles = checkParam('has_bibles', null, 'optional');
 	    $has_filesets = checkParam('has_filesets', null, 'optional') ?? true;
 	    $bucket_id = checkParam('bucket_id', null, 'optional');
