@@ -48,6 +48,7 @@ class LoginController extends APIController
 	 *     operationId="v4_projects_oAuthProvider.store",
 	 *     @OAS\Parameter(name="driver", in="path", required=true, description="The Provider name, the currently supported providers are: facebook, bitbucket, github, twitter, & google", @OAS\Schema(ref="#/components/schemas/ProjectOauthProvider/properties/name")),
 	 *     @OAS\Parameter(name="project_id", in="query", required=true, description="The Project id", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
+	 *     @OAS\Parameter(name="alt_url", in="query", description="When this parameter is set, the return will use the alternative callback url", @OAS\Schema(ref="#/components/schemas/ProjectOauthProvider/properties/callback_url_alt")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
@@ -73,13 +74,14 @@ class LoginController extends APIController
 
 			$project_id = checkParam('project_id');
 			$provider = checkParam('name', $provider);
+			$alt_url = checkParam('alt_url', null, 'optional');
 			if($provider == "twitter") return $this->setStatusCode(422)->replyWithError('Twitter does not support stateless Authentication');
 
 			$driverData = ProjectOauthProvider::where('project_id',$project_id)->where('name',$provider)->first();
 			$driver = [
 				'client_id'     => $driverData->client_id,
 				'client_secret' => $driverData->client_secret,
-				'redirect'      => $driverData->callback_url,
+				'redirect'      => (!isset($alt_url)) ? $driverData->callback_url : $driverData->callback_url_alt,
 			];
 
 			switch ($provider) {

@@ -82,7 +82,7 @@ class ProjectOauthProvider extends Model
 	 * @OAS\Property(ref="#/components/schemas/Project/properties/id")
 	 *
 	 * @method static Project whereProjectId($value)
-	 * @property string $id
+	 * @property string $project_id
 	 */
 	protected $project_id;
 
@@ -95,8 +95,8 @@ class ProjectOauthProvider extends Model
 	 *   maxLength=191
 	 * )
 	 *
-	 * @method static Project whereId($value)
-	 * @property string $id
+	 * @method static Project whereName($value)
+	 * @property string $name
 	 */
 	protected $name;
 
@@ -109,8 +109,8 @@ class ProjectOauthProvider extends Model
 	 *   maxLength=191
 	 * )
 	 *
-	 * @method static Project whereId($value)
-	 * @property string $id
+	 * @method static Project whereClientId($value)
+	 * @property string $client_id
 	 */
 	protected $client_id;
 
@@ -123,8 +123,8 @@ class ProjectOauthProvider extends Model
 	 *   maxLength=191
 	 * )
 	 *
-	 * @method static Project whereId($value)
-	 * @property string $id
+	 * @method static Project whereClientSecret($value)
+	 * @property string $client_secret
 	 */
 	protected $client_secret;
 
@@ -137,10 +137,24 @@ class ProjectOauthProvider extends Model
 	 *   maxLength=191
 	 * )
 	 *
-	 * @method static Project whereId($value)
-	 * @property string $id
+	 * @method static Project whereCallbackUrl($value)
+	 * @property string $callback_url
 	 */
 	protected $callback_url;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="callback_url_alt",
+	 *   type="string",
+	 *   description="An alternative callback_url for an oauth provider",
+	 *   maxLength=191
+	 * )
+	 *
+	 * @method static Project whereCallbackUrlAlt($value)
+	 * @property string $callback_url_alt
+	 */
+	protected $callback_url_alt;
 
 	/**
 	 *
@@ -151,8 +165,8 @@ class ProjectOauthProvider extends Model
 	 *   maxLength=191
 	 * )
 	 *
-	 * @method static Project whereId($value)
-	 * @property string $id
+	 * @method static Project whereDescription($value)
+	 * @property string $description
 	 */
 	protected $description;
 

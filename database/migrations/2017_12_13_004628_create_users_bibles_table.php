@@ -32,6 +32,7 @@ class CreateUsersBiblesTable extends Migration
 		    $table->string('client_id');
 		    $table->text('client_secret');
 		    $table->string('callback_url');
+		    $table->string('callback_url_alt')->nullable();
 		    $table->text('description');
 		    $table->timestamps();
 	    });
