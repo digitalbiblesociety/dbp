@@ -60,7 +60,7 @@ class ProjectOAuthProvidersController extends APIController
      *              @OAS\Property(property="client_id",ref="#/components/schemas/ProjectOauthProvider/properties/client_id"),
      *              @OAS\Property(property="client_secret",ref="#/components/schemas/ProjectOauthProvider/properties/client_secret"),
      *              @OAS\Property(property="callback_url",ref="#/components/schemas/ProjectOauthProvider/properties/callback_url"),
-     *              @OAS\Property(property="callback_url",ref="#/components/schemas/ProjectOauthProvider/properties/callback_url_alt"),
+     *              @OAS\Property(property="callback_url_alt",ref="#/components/schemas/ProjectOauthProvider/properties/callback_url_alt"),
      *              @OAS\Property(property="description",ref="#/components/schemas/ProjectOauthProvider/properties/description"),
      *          )
      *     )),
@@ -209,7 +209,8 @@ class ProjectOAuthProvidersController extends APIController
 			'name'           => 'string|max:191|required|in:facebook,twitter,linkedin,google,github,bitbucket',
 			'client_id'      => 'string|required',
 			'client_secret'  => 'string|required',
-			'callback_url'   => 'string|max:191|required'
+			'callback_url'   => 'string|max:191|required',
+			'callback_url_alt' => 'string|max:191'
 		]);
 
 		if ($validator->fails()) {
