@@ -60,12 +60,26 @@ class ProjectOauthProvider extends Model
 		return $this->attributes['client_secret'] = decrypt($secret);
 	}
 
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="id",
+	 *   type="string",
+	 *   description="The human readable id for an oauth provider",
+	 *   maxLength=8
+	 * )
+	 *
+	 * @method static Project whereId($value)
+	 * @property string $id
+	 */
+	protected $id;
+
 
 	/**
 	 *
 	 * @OAS\Property(ref="#/components/schemas/Project/properties/id")
 	 *
-	 * @method static Project whereId($value)
+	 * @method static Project whereProjectId($value)
 	 * @property string $id
 	 */
 	protected $project_id;
