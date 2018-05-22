@@ -178,10 +178,12 @@ class UsersController extends APIController
     	if(!$user->canCreateUsers()) return $this->setStatusCode(401)->replyWithError("You are not authorized to create users");
 
 	    $validator = Validator::make($request->all(), [
-		    'email'      => 'required|unique:users,email|max:255|email',
-		    'name'       => 'required|string',
-		    'nickname'   => 'string|different:name',
-		    'project_id' => 'required|exists:projects,id'
+		    'email'                    => 'required|unique:users,email|max:255|email',
+		    'name'                     => 'required|string',
+		    'nickname'                 => 'string|different:name',
+		    'project_id'               => 'required|exists:projects,id',
+		    'social_provider_id'       => 'required_with:social_provider_user_id',
+		    'social_provider_user_id'  => 'required_with:social_provider_id',
 	    ]);
 
 	    if ($validator->fails()) return $this->replyWithError($validator->errors());
@@ -198,6 +200,12 @@ class UsersController extends APIController
 			    'project_id'    => $request->project_id,
 			    'role'          => ($request->user_role) ? $request->user_role : 'user',
 			    'subscribed'    => $request->subscribed ?? 0
+		    ]);
+	    }
+	    if($request->social_provider_id) {
+		    $user->accounts()->create([
+			    'provider_id'      => $request->social_provider_id,
+			    'provider_user_id' => $request->social_provider_user_id
 		    ]);
 	    }
 
