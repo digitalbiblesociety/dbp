@@ -51,8 +51,7 @@ class CreateUsersBiblesTable extends Migration
 		    $table->increments('id');
 		    $table->string('user_id', 64);
 		    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
-		    $table->string('provider_id', 8);
-		    $table->foreign('provider_id')->references('id')->on('project_oauth_providers')->onDelete('cascade')->onUpdate('cascade');
+		    $table->string('provider_id');
 		    $table->string('provider_user_id');
 		    $table->unique(['user_id','provider_id']);
 		    $table->timestamps();

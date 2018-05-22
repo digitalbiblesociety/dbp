@@ -154,7 +154,7 @@ class UsersController extends APIController
 	 *              @OAS\Property(property="name",       ref="#/components/schemas/User/properties/name"),
 	 *              @OAS\Property(property="password",   ref="#/components/schemas/User/properties/password"),
 	 *              @OAS\Property(property="project_id", ref="#/components/schemas/ProjectMember/properties/project_id"),
-	 *              @OAS\Property(property="user_role",  ref="#/components/schemas/ProjectMember/properties/user_role"),
+	 *              @OAS\Property(property="user_role",  ref="#/components/schemas/ProjectMember/properties/role"),
 	 *              @OAS\Property(property="subscribed", ref="#/components/schemas/ProjectMember/properties/subscribed"),
 	 *          )
 	 *     )),

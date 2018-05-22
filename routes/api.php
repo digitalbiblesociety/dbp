@@ -88,6 +88,13 @@
 	Route::name('v4_user.oAuth')->get('users/login/{driver}',                             'Auth\LoginController@redirectToProvider');
 	Route::name('v4_user.oAuthCallback')->get('users/login/{driver}/callback',            'Auth\LoginController@handleProviderCallback');
 
+	// VERSION 4 | USER ACCOUNTS
+	Route::name('v4_user_accounts.index')->get('/accounts',                      'UserAccountsController@index');
+	Route::name('v4_user_accounts.show')->get('/accounts/{account_id}',          'UserAccountsController@show');
+	Route::name('v4_user_accounts.store')->post('/accounts',                     'UserAccountsController@store');
+	Route::name('v4_user_accounts.update')->put('/accounts/{account_id}',        'UserAccountsController@update');
+	Route::name('v4_user_accounts.destroy')->delete('/accounts/{account_id}',    'UserAccountsController@destroy');
+
 	// VERSION 4 | USER NOTES
 	Route::name('v4_notes.index')->get('users/{user_id}/notes',                           'UserNotesController@index');
 	Route::name('v4_notes.show')->get('users/{user_id}/notes/{note_id}',                  'UserNotesController@show');
