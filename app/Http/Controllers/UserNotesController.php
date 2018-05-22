@@ -26,6 +26,7 @@ class UserNotesController extends APIController
 	 *     @OAS\Parameter(name="chapter_id",  in="query", description="The starting chapter", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
 	 *     @OAS\Parameter(name="project_id",  in="query", required=true, description="The secret id assigned to your project", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
 	 *     @OAS\Parameter(name="limit",       in="query", description="The number of highlights to return", @OAS\Schema(type="integer",example=15)),
+	 *     @OAS\Parameter(name="paginate",    in="query", description="When set to false will disable pagination", @OAS\Schema(type="boolean",example=false)),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
@@ -64,6 +65,7 @@ class UserNotesController extends APIController
 	    $bookmark = explode('.',\Request::route()->getName());
 	    $bookmark = ($bookmark[0] == "v4_bookmarks") ? true : false;
 	    $limit = intval(checkParam('limit', null, 'optional') ?? 25);
+	    $paginate = checkParam('paginate', null, 'optional');
 	    $sort_by = checkParam('sort_by', null, 'optional');
 	    $sort_dir = checkParam('sort_dir', null, 'optional') ?? "asc";
 
@@ -78,7 +80,9 @@ class UserNotesController extends APIController
 			$q->where('bookmark', false);
 		})->when($sort_by, function($q) use ($sort_by,$sort_dir) {
 			$q->orderBy($sort_by, $sort_dir);
-		})->paginate($limit);
+		});
+
+		$notes = ($paginate == false) ? $notes->paginate($limit) : $notes->get();
 
     	foreach($notes as $key => $note) $notes[$key]->notes = decrypt($note->notes);
 		if(!$notes) return $this->setStatusCode(404)->replyWithError("No User found for the specified ID");

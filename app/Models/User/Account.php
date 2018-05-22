@@ -53,16 +53,16 @@ class Account extends Model
     /**
      *
      * @OAS\Property(
-     *   title="provider_user_id",
+     *   title="provider_id",
      *   type="string",
      *   description="The social account provider that the user has logged in with",
      *   example="facebook"
      * )
      *
-     * @method static Account whereProvider($value)
+     * @method static Account whereProviderId\($value)
      * @property string $provider
      */
-    protected $provider;
+    protected $provider_id;
 
     /**
      *
