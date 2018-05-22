@@ -146,6 +146,18 @@ class UsersController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\RequestBody(required=true, description="Information supplied for user creation", @OAS\MediaType(mediaType="application/json",
+	 *          @OAS\Schema(
+	 *              @OAS\Property(property="nickname",   ref="#/components/schemas/User/properties/nickname"),
+	 *              @OAS\Property(property="avatar",     ref="#/components/schemas/User/properties/avatar"),
+	 *              @OAS\Property(property="email",      ref="#/components/schemas/User/properties/email"),
+	 *              @OAS\Property(property="name",       ref="#/components/schemas/User/properties/name"),
+	 *              @OAS\Property(property="password",   ref="#/components/schemas/User/properties/password"),
+	 *              @OAS\Property(property="project_id", ref="#/components/schemas/ProjectMember/properties/project_id"),
+	 *              @OAS\Property(property="user_role",  ref="#/components/schemas/ProjectMember/properties/user_role"),
+	 *              @OAS\Property(property="subscribed", ref="#/components/schemas/ProjectMember/properties/subscribed"),
+	 *          )
+	 *     )),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -166,8 +178,10 @@ class UsersController extends APIController
     	if(!$user->canCreateUsers()) return $this->setStatusCode(401)->replyWithError("You are not authorized to create users");
 
 	    $validator = Validator::make($request->all(), [
-		    'email' => 'required|unique:users,email|max:255',
-		    'name'  => 'required'
+		    'email'      => 'required|unique:users,email|max:255|email',
+		    'name'       => 'required|string',
+		    'nickname'   => 'string|different:name',
+		    'project_id' => 'required|exists:projects,id'
 	    ]);
 
 	    if ($validator->fails()) return $this->replyWithError($validator->errors());
@@ -179,6 +193,14 @@ class UsersController extends APIController
 		    'name'     => $request->name,
 		    'password' => Hash::make($request->password)
 	    ]);
+    	if($request->project_id) {
+		    $user->projectMembers()->create([
+			    'project_id'    => $request->project_id,
+			    'role'          => ($request->user_role) ? $request->user_role : 'user',
+			    'subscribed'    => $request->subscribed ?? 0
+		    ]);
+	    }
+
 	    return $this->reply(["success" => "User created","user" => $user]);
     }
 

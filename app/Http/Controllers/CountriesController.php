@@ -230,6 +230,26 @@ class CountriesController extends APIController
 		return view('countries.show',compact('country'));
 	}
 
+	private function loadWorldFacts()
+	{
+		// World Factbook
+		$communications = checkParam('communications', null, 'optional');
+		$economy = checkParam('economy', null, 'optional');
+		$energy = checkParam('energy', null, 'optional');
+		$geography = checkParam('geography', null, 'optional');
+		$government = checkParam('government', null, 'optional');
+		$government = checkParam('government', null, 'optional');
+		$issues = checkParam('issues', null, 'optional');
+		$language = checkParam('language', null, 'optional');
+		$people = checkParam('people', null, 'optional');
+		$ethnicities = checkParam('ethnicities', null, 'optional');
+		$regions = checkParam('regions', null, 'optional');
+		$religions = checkParam('religions', null, 'optional');
+		$translations = checkParam('translations', null, 'optional');
+		$transportation = checkParam('transportation', null, 'optional');
+
+	}
+
 
 	/**
 	 * Ensure the current User has permissions to alter the countries

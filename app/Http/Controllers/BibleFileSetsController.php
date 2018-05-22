@@ -40,6 +40,7 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Parameter(name="id", in="path", description="The fileset ID", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="versification", in="path", description="The versification system", @OAS\Schema(ref="#/components/schemas/Bible/properties/versification")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -63,7 +64,7 @@ class BibleFileSetsController extends APIController
 	    if(!$bucket_id) $bucket_id = CheckParam('bucket', null, 'optional') ?? "s3_fcbh";
 	    $lifespan = CheckParam('lifespan',null,'optional') ?? 5;
 	    $type = checkParam('type');
-	    $versification = checkParam('verseification', null, 'optional');
+	    $versification = checkParam('versification', null, 'optional');
 
 	    if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
 	    if(isset($book)) $book_id = $book->id;
@@ -73,7 +74,7 @@ class BibleFileSetsController extends APIController
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Found in the `".$bucket_id."` Bucket for the provided params");
 		$bible = ($fileset->bible->first()) ? $fileset->bible->first() : false;
 		$bible_path = ($bible->id) ? $bible->id."/" : "";
-		if(!$versification AND $bible) $versification = $bible->versification;
+	    $versification = (!$versification) ? $bible->versification : "protestant";
 
 		switch($fileset->set_type_code) {
 			case "audio_drama":
@@ -92,9 +93,7 @@ class BibleFileSetsController extends APIController
 			    return $query->where('chapter_start', $chapter_id);
 			})->when($book_id, function ($query) use ($book_id) {
 			    return $query->where('book_id', $book_id);
-		    })->when($versification, function ($query) use ($versification) {
-			    return $query->orderBy('books.'.$versification.'_order');
-		    })->orderBy('chapter_start')->get();
+		    })->orderBy('books.'.$versification.'_order')->where($versification.'_order','!=',null)->orderBy('chapter_start')->get();
 
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Chapters Found for the provided params");
 

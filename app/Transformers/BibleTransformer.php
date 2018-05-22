@@ -211,14 +211,14 @@ class BibleTransformer extends BaseTransformer
 
 	public function transformForDataTables($bible)
 	{
-		$font = ($bible->alphabet->requires_font) ? ' class="requires-font '.$bible->alphabet->script.'" data-font="'.@$bible->alphabet->primaryFont->fontFileName.'"' : '';
+		$font = isset($bible->alphabet) ? (($bible->alphabet->requires_font) ? ' class="requires-font '.$bible->alphabet->script.'" data-font="'.@$bible->alphabet->primaryFont->fontFileName.'"' : '') : '';
 		return [
 			$bible->language->name ?? "",
 			'<a href="/bibles/'.$bible->id.'">'. @$bible->currentTranslation->name .'</a>',
 			'<span'.$font.'>'.@$bible->vernacularTranslation->name.'</span>' ?? "",
 			$bible->organizations->pluck('slug')->implode(','),
-			($bible->language->primaryCountry) ? '<a href="/languages/'.$bible->language->iso.'/">'.$bible->language->primaryCountry->name.'</a>' : "",
-			$bible->language->primaryCountry->continent ?? "",
+			isset($bible->language) ? ((($bible->language->primaryCountry) ? '<a href="/languages/'.$bible->language->iso.'/">'.$bible->language->primaryCountry->name.'</a>' : "")) : "",
+			isset($bible->language) ? @$bible->language->primaryCountry->continent : "",
 			$bible->date,
 			$bible->id,
 			$bible->language->iso ?? "zxx",

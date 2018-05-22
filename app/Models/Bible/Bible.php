@@ -169,6 +169,21 @@ class Bible extends Model
 	 * @property string|null $in_progress
 	 */
 	protected $in_progress;
+
+	/**
+	 *
+	 * @OAS\Property(
+	 *   title="versification",
+	 *   type="string",
+	 *   description="The versification system for ordering books and chapters",
+	 *   enum={"protestant","luther","synodal","german","kjva","vulgate","lxx","orthodox","nrsva","catholic","finnish"}
+	 * )
+	 *
+	 * @method static Bible whereVersification($value)
+	 * @property string|null $versification
+	 */
+	protected $versification;
+
 	/**
 	 *
 	 * @OAS\Property(

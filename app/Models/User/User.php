@@ -228,6 +228,11 @@ class User extends Authenticatable
 		return $this->BelongsToMany(Project::class, 'project_members')->withPivot('role','subscribed');
 	}
 
+	public function projectMembers()
+	{
+		return $this->HasMany(ProjectMember::class);
+	}
+
 	// Roles
 
 	public function admin()

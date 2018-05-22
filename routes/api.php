@@ -88,7 +88,6 @@
 	Route::name('v4_user.oAuth')->get('users/login/{driver}',                             'Auth\LoginController@redirectToProvider');
 	Route::name('v4_user.oAuthCallback')->get('users/login/{driver}/callback',            'Auth\LoginController@handleProviderCallback');
 
-
 	// VERSION 4 | USER NOTES
 	Route::name('v4_notes.index')->get('users/{user_id}/notes',                           'UserNotesController@index');
 	Route::name('v4_notes.show')->get('users/{user_id}/notes/{note_id}',                  'UserNotesController@show');
