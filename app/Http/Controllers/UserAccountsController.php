@@ -50,15 +50,21 @@ class UserAccountsController extends APIController
      * @OAS\Post(
      *     path="/accounts",
      *     tags={"Community"},
-     *     summary="Create a new Accounts",
+     *     summary="Create a new Account",
      *     description="Associate a social media account with a different user.",
-     *     operationId="vv4_user_accounts.store",
+     *     operationId="v4_user_accounts.store",
      *     @OAS\Parameter(name="project_id", in="query", description="The Project ID", required=true, @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
      *     @OAS\Parameter(name="user_id", in="query", description="The User ID", required=true, @OAS\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OAS\Parameter(ref="#/components/parameters/version_number"),
      *     @OAS\Parameter(ref="#/components/parameters/key"),
      *     @OAS\Parameter(ref="#/components/parameters/pretty"),
      *     @OAS\Parameter(ref="#/components/parameters/reply"),
+     *     @OAS\RequestBody(required=true, description="Information supplied for user account creation", @OAS\MediaType(mediaType="application/json",
+     *          @OAS\Schema(
+     *              @OAS\Property(property="provider_id", type="string"),
+     *              @OAS\Property(property="provider_user_id",type="string")
+     *          )
+     *     )),
      *     @OAS\Response(
      *         response=200,
      *         description="successful operation",
