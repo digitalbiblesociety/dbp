@@ -73,7 +73,6 @@ class LanguagesController extends APIController
 	    $include_alt_names = checkParam('include_alt_names', null, 'optional');
 
 		$languages = Language::select(['id','iso2B','iso','name'])
-
 			->when($has_bibles, function ($query) use ($has_bibles) {
 				return $query->has('bibles');
 			})

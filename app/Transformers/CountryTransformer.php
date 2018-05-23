@@ -2,11 +2,46 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\Country\Country;
 use App\Models\Country\JoshuaProject;
+
+
+use App\Models\Country\FactBook\CountryEthnicities;
+use App\Models\Country\FactBook\CountryRegions;
+use App\Models\Country\FactBook\CountryTranslations;
+
+use App\Transformers\Factbook\CommunicationsTransformer;
+use App\Transformers\Factbook\EconomyTransformer;
+use App\Transformers\Factbook\EnergyTransformer;
+use App\Transformers\Factbook\GeographyTransformer;
+use App\Transformers\Factbook\GovernmentTransformer;
+use App\Transformers\Factbook\IssuesTransformer;
+use App\Transformers\Factbook\LanguageTransformer;
+use App\Transformers\Factbook\PeopleTransformer;
+use App\Transformers\Factbook\EthnicitiesTransformer;
+use App\Transformers\Factbook\RegionsTransformer;
+use App\Transformers\Factbook\ReligionsTransformer;
+use App\Transformers\Factbook\TransportationTransformer;
+
 class CountryTransformer extends BaseTransformer
 {
+
+	protected $availableIncludes = [
+		'communications',
+		'economy',
+		'energy',
+		'geography',
+		'government',
+		'government',
+		'issues',
+		'language',
+		'people',
+		'ethnicities',
+		'regions',
+		'religions',
+		'translations',
+		'transportation'
+	];
 
 	/**
 	 * A Fractal transformer for the Country Collection.
@@ -115,10 +150,11 @@ class CountryTransformer extends BaseTransformer
 			*	description="The minimized country return for the all countries route",
 			*	title="v4_countries.one",
 			*	@OAS\Xml(name="v4_countries.one"),
-			*	@OAS\Items(          @OAS\Property(property="name",              ref="#/components/schemas/Country/properties/name"),
+			*	@OAS\Items(
+			 *          @OAS\Property(property="name",              ref="#/components/schemas/Country/properties/name"),
 			 *          @OAS\Property(property="continent_code",    ref="#/components/schemas/Country/properties/continent"),
 			 *          @OAS\Property(property="languages",         @OAS\Schema(type="array",
-			 *              @OAS\Items(@OAS\Schema(description="A key value pair consisting of an iso code and language name", example={"eng"="English"}))))
+			 *          @OAS\Items(@OAS\Schema(description="A key value pair consisting of an iso code and language name", example={"eng"="English"}))))
 			 *     )
 			 *   )
 			 * )
@@ -149,6 +185,66 @@ class CountryTransformer extends BaseTransformer
 	public function transformForV2($country)
 	{
 		return $country->toArray();
+	}
+
+	public function includeCommunications(Country $country)
+	{
+		return $this->item($country->communications->toArray(), new CommunicationsTransformer());
+	}
+
+	public function includeEconomy(Country $country)
+	{
+		return $this->item($country->economy->toArray(), new EconomyTransformer());
+	}
+
+	public function includeEnergy(Country $country)
+	{
+		return $this->item($country->energy->toArray(), new EnergyTransformer());
+	}
+
+	public function includeGeography(Country $country)
+	{
+		return $this->item($country->geography->toArray(), new GeographyTransformer());
+	}
+
+	public function includeGovernment(Country $country)
+	{
+		return $this->item($country->government->toArray(), new GovernmentTransformer());
+	}
+
+	public function includeIssues(Country $country)
+	{
+		return $this->item($country->issues->toArray(), new IssuesTransformer());
+	}
+
+	public function includeLanguage(Country $country)
+	{
+		return $this->item($country->language->toArray(), new LanguageTransformer());
+	}
+
+	public function includePeople(Country $country)
+	{
+		return $this->item($country->people->toArray(), new PeopleTransformer());
+	}
+
+	public function includeEthnicities(Country $country)
+	{
+		return $this->item($country->ethnicities->toArray(), new EthnicitiesTransformer());
+	}
+
+	public function includeRegions(Country $country)
+	{
+		return $this->item($country->ethnicities->toArray(), new RegionsTransformer());
+	}
+
+	public function includeReligions(Country $country)
+	{
+		return $this->item($country->religions->toArray(), new ReligionsTransformer());
+	}
+
+	public function includeTransportation(Country $country)
+	{
+		return $this->item($country->transportation->toArray(), new TransportationTransformer());
 	}
 
 }

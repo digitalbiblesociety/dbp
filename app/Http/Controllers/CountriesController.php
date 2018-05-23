@@ -9,6 +9,7 @@ use App\Transformers\CountryTransformer;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\View\View;
+use Spatie\Fractalistic\ArraySerializer;
 
 class CountriesController extends APIController
 {
@@ -59,7 +60,7 @@ class CountriesController extends APIController
 			$q->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
 				if($bucket_id) $query->where('bucket_id', $bucket_id);
 			});
-		})->get();
+		})->where('id','!=','AQ')->get();
 
 	    return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
     }
@@ -122,9 +123,9 @@ class CountriesController extends APIController
     public function show($id)
     {
 		$country = Country::with('languagesFiltered.bibles.currentTranslation','geography')->find($id);
+		$includes = $this->loadWorldFacts($country);
 	    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
-	    if($this->api) return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->ToArray());
-
+	    if($this->api) return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
     	return view('countries.show',compact('country'));
     }
 
@@ -230,24 +231,29 @@ class CountriesController extends APIController
 		return view('countries.show',compact('country'));
 	}
 
-	private function loadWorldFacts()
+	private function loadWorldFacts(Country $country)
 	{
+		$loadedProfiles = array();
 		// World Factbook
-		$communications = checkParam('communications', null, 'optional');
-		$economy = checkParam('economy', null, 'optional');
-		$energy = checkParam('energy', null, 'optional');
-		$geography = checkParam('geography', null, 'optional');
-		$government = checkParam('government', null, 'optional');
-		$government = checkParam('government', null, 'optional');
-		$issues = checkParam('issues', null, 'optional');
-		$language = checkParam('language', null, 'optional');
-		$people = checkParam('people', null, 'optional');
-		$ethnicities = checkParam('ethnicities', null, 'optional');
-		$regions = checkParam('regions', null, 'optional');
-		$religions = checkParam('religions', null, 'optional');
-		$translations = checkParam('translations', null, 'optional');
-		$transportation = checkParam('transportation', null, 'optional');
-
+		$profiles['communications'] = checkParam('communications', null, 'optional');
+		$profiles['economy'] = checkParam('economy', null, 'optional');
+		$profiles['energy'] = checkParam('energy', null, 'optional');
+		$profiles['geography'] = checkParam('geography', null, 'optional');
+		$profiles['government'] = checkParam('government', null, 'optional');
+		$profiles['government'] = checkParam('government', null, 'optional');
+		$profiles['issues'] = checkParam('issues', null, 'optional');
+		$profiles['people'] = checkParam('people', null, 'optional');
+		$profiles['ethnicities'] = checkParam('ethnicity', null, 'optional');
+		$profiles['regions'] = checkParam('regions', null, 'optional');
+		$profiles['religions'] = checkParam('religions', null, 'optional');
+		$profiles['transportation'] = checkParam('transportation', null, 'optional');
+		foreach($profiles as $key => $profile) {
+			if($profile != null)  {
+				$country->load($key);
+				$loadedProfiles[] = $key;
+			}
+		}
+		return $loadedProfiles;
 	}
 
 

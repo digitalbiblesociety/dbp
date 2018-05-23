@@ -3,10 +3,24 @@
 namespace App\Models\Country;
 
 use App\Models\Bible\Bible;
-use App\Models\Country\FactBook\CountryGeography;
+use App\Models\Country\FactBook\CountryEthnicity;
 use App\Models\Language\LanguageTranslation;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
+
+use App\Models\Country\FactBook\CountryCommunications;
+use App\Models\Country\FactBook\CountryEconomy;
+use App\Models\Country\FactBook\CountryEnergy;
+use App\Models\Country\FactBook\CountryGeography;
+use App\Models\Country\FactBook\CountryGovernment;
+use App\Models\Country\FactBook\CountryIssues;
+use App\Models\Country\FactBook\CountryLanguage;
+use App\Models\Country\FactBook\CountryPeople;
+use App\Models\Country\FactBook\CountryEthnicities;
+use App\Models\Country\FactBook\CountryRegions;
+use App\Models\Country\FactBook\CountryReligions;
+use App\Models\Country\FactBook\CountryTranslations;
+use App\Models\Country\FactBook\CountryTransportation;
 
 /**
  * App\Models\Country\Country
@@ -180,10 +194,50 @@ class Country extends Model
 
     // World Factbook
 
-    public function geography()
-    {
-    	return $this->hasOne(CountryGeography::class);
-    }
+	public function communications()
+	{
+		return $this->hasOne(CountryCommunications::class);
+	}
+	public function economy()
+	{
+		return $this->hasOne(CountryEconomy::class);
+	}
+	public function energy()
+	{
+		return $this->hasOne(CountryEnergy::class);
+	}
+	public function geography()
+	{
+		return $this->hasOne(CountryGeography::class);
+	}
+	public function government()
+	{
+		return $this->hasOne(CountryGovernment::class);
+	}
+	public function issues()
+	{
+		return $this->hasOne(CountryIssues::class);
+	}
+	public function language()
+	{
+		return $this->hasOne(CountryLanguage::class);
+	}
+	public function people()
+	{
+		return $this->hasOne(CountryPeople::class);
+	}
+	public function ethnicities()
+	{
+		return $this->hasOne(CountryEthnicity::class);
+	}
+	public function religions()
+	{
+		return $this->hasOne(CountryReligions::class);
+	}
+	public function transportation()
+	{
+		return $this->hasOne(CountryTransportation::class);
+	}
 
 
 }

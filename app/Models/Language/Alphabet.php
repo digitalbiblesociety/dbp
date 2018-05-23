@@ -80,6 +80,7 @@ class Alphabet extends Model
     protected $table = "alphabets";
     protected $primaryKey = 'script';
     public $incrementing = false;
+    protected $keyType = 'string';
 
 	protected $casts = [
 		'complex_positioning' => 'boolean',
