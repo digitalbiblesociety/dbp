@@ -2,12 +2,19 @@
 
 namespace App\Models\User;
 
-use App\Models\Organization\Organization;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Auth\Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+
 use App\Models\User\Role;
 use App\Models\User\Account;
 use App\Traits\Uuids;
+use App\Models\Organization\Organization;
 
 /**
  * App\Models\User\User
@@ -35,13 +42,11 @@ use App\Traits\Uuids;
  * )
  *
  */
-class User extends Authenticatable
-{
+class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract {
 	public $incrementing = false;
 	public $table = 'users';
 	public $keyType = 'string';
-    use Notifiable;
-
+	use Notifiable, Authenticatable, Authorizable, CanResetPassword;
 	/**
 	 * The attributes that are mass assignable.
 	 *
@@ -176,6 +181,21 @@ class User extends Authenticatable
 	 * @property string $email_token
 	 */
 	protected $email_token;
+
+	/**
+	 * Get the e-mail address where password reminders are sent.
+	 *
+	 * @return string
+	 */
+	public function getReminderEmail()
+	{
+		return $this->email;
+	}
+
+	public function getEmailForPasswordReset()
+	{
+		return $this->email;
+	}
 
 	public function keys()
 	{

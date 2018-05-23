@@ -7,15 +7,11 @@ use App\Models\User\User;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Foundation\Auth\ResetsPasswords;
 
 use Validator;
 use Laravel\Socialite\Facades\Socialite;
 class UsersController extends APIController
 {
-
-	use ResetsPasswords;
 
 	/**
 	 * Returns an index of all users within the system

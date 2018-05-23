@@ -84,7 +84,13 @@
 	Route::name('v4_user.update')->put('users/{user_id}',                                 'UsersController@update');
 	Route::name('v4_user.destroy')->delete('users/{user_id}',                             'UsersController@destroy');
 	Route::name('v4_user.login')->post('users/login',                                     'UsersController@login');
-	Route::name('v4_user.password_email')->post('users/reset',                            'Auth\ForgotPasswordController@getResetToken');
+
+	// VERSION 4 | USER PASSWORDS
+	Route::name('v4_user.password_reset')->post('users/password/reset',                   'UserPasswordsController@validatePasswordReset');
+	Route::name('v4_user.password_email')->post('users/password/email',                   'UserPasswordsController@triggerPasswordResetEmail');
+
+	// VERSION 4 | USER ACCOUNTS LOGIN
+
 	Route::name('v4_user.oAuth')->get('users/login/{driver}',                             'Auth\LoginController@redirectToProvider');
 	Route::name('v4_user.oAuthCallback')->get('users/login/{driver}/callback',            'Auth\LoginController@handleProviderCallback');
 
