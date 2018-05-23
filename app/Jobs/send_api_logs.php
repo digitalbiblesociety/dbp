@@ -37,10 +37,11 @@ class send_api_logs implements ShouldQueue
     {
     	$this->addGeoData();
 	    $current_time = Carbon::now();
+	    $current_time_name = str_replace(' ','_',$current_time->toDateTimeString());
 	    $files = Storage::disk('data')->files('srv-dbp-dev');
 
 	    if(count($files) == 0) {
-		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time->toDateTimeString().'.log', 'status_code:::path:::user_agent:::params:::timestamp:::lat:::lon:::country:::city:::state_name:::postal_code');
+		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time_name.'.log', 'status_code:::path:::user_agent:::params:::timestamp:::lat:::lon:::country:::city:::state_name:::postal_code');
 		    $current_file_time = $current_time;
 		    $files = Storage::disk('data')->files('srv-dbp-dev');
 		    $current_file = end($files);
@@ -54,7 +55,7 @@ class send_api_logs implements ShouldQueue
 	    	$log_contents = Storage::disk('data')->get($current_file);
 		    Storage::disk('s3_dbs_log')->put($current_file, $log_contents);
 		    Storage::disk('data')->delete($current_file);
-		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time->toDateTimeString().'.log');
+		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time_name.'.log');
 	    } else {
 		    Storage::disk('data')->append($current_file, $this->log_string);
 	    }
