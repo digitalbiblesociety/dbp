@@ -40,7 +40,7 @@ class send_api_logs implements ShouldQueue
 	    $files = Storage::disk('data')->files('srv-dbp-dev');
 
 	    if(count($files) == 0) {
-		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time->toDateTimeString().'.log', 'status_code,path,user_agent,params,timestamp,lat,lon,country,city,state_name,postal_code');
+		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time->toDateTimeString().'.log', 'status_code:::path:::user_agent:::params:::timestamp:::lat:::lon:::country:::city:::state_name:::postal_code');
 		    $current_file_time = $current_time;
 		    $files = Storage::disk('data')->files('srv-dbp-dev');
 		    $current_file = end($files);
@@ -66,7 +66,7 @@ class send_api_logs implements ShouldQueue
 	    $ip_address = $log_array[4];
 	    $geo_ip = geoip($ip_address);
 	    $geo_array = [$geo_ip->lat,$geo_ip->lon,$geo_ip->country,$geo_ip->city,$geo_ip->state_name,$geo_ip->postal_code];
-	    $this->log_string = implode(',',array_merge($log_array,$geo_array));
+	    $this->log_string = implode(':::',array_merge($log_array,$geo_array));
     }
 
 }
