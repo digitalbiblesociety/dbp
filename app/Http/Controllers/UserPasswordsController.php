@@ -36,8 +36,7 @@ class UserPasswordsController extends APIController
 	 *                @OAS\Property(property="project_id",   ref="#/components/schemas/Project/properties/id"),
 	 *                @OAS\Property(property="iso",          ref="#/components/schemas/Language/properties/iso"),
 	 *                @OAS\Property(property="password",     ref="#/components/schemas/User/properties/password"),
-	 *                @OAS\Property(property="new_password", ref="#/components/schemas/User/properties/password"),
-	 *                @OAS\Property(property="password",     ref="#/components/schemas/User/properties/password")
+	 *                @OAS\Property(property="new_password", ref="#/components/schemas/User/properties/password")
 	 *             ))
 	 *     ),
 	 *     @OAS\Response(
