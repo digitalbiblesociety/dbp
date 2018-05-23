@@ -100,6 +100,8 @@ class APIController extends Controller
 		    $this->api = true;
 		    $this->v = checkParam('v');
 			$this->key = checkParam('key');
+		    $keyExists = Key::find($this->key);
+		    if(!isset($keyExists)) abort(403, "You need to provide a valid API key");
 
 		    if(isset($this->v)) {
 		    	switch ($this->v) {
@@ -144,9 +146,6 @@ class APIController extends Controller
     	if(isset($_GET['echo'])) $object = [$_GET,$object];
 		$input = checkParam('callback', null, 'optional') ?? checkParam('jsonp', null, 'optional');
         $format = @$_GET['format'];
-
-	    $keyExists = Key::find($this->key);
-	    if(!isset($keyExists)) return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
 
 	    // Status Code, Headers, Params, Body, Time
 	    try {

@@ -44,6 +44,9 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+	    $url = explode(".",url()->current());
+	    $this->request = $request;
+	    if(substr(array_shift($url),-3,3) == "api") return response()->json($exception->getMessage(), @$exception->getTrace()[0]['args'][0]);
         return parent::render($request, $exception);
     }
 
