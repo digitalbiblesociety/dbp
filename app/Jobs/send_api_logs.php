@@ -41,7 +41,7 @@ class send_api_logs implements ShouldQueue
 		$files = Storage::disk('data')->files('srv-dbp-dev');
 
 	    if(count($files) == 0) {
-		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time_name.'.log', 'status_code:::path:::user_agent:::params:::ip_address:::timestamp:::lat:::lon:::country:::city:::state_name:::postal_code');
+		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time_name.'.log', 'timestamp:::status_code:::path:::user_agent:::params:::ip_address:::lat:::lon:::country:::city:::state_name:::postal_code');
 		    $current_file_time = $current_time;
 		    $files = Storage::disk('data')->files('srv-dbp-dev');
 		    $current_file = end($files);
