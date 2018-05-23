@@ -37,7 +37,7 @@ class send_api_logs implements ShouldQueue
     {
     	$this->addGeoData();
 	    $current_time = Carbon::now();
-	    $current_time_name = str_replace(' ','_',$current_time->toDateTimeString());
+	    $current_time_name = $current_time->format('Y-m-d-H-i-s');
 	    $files = Storage::disk('data')->files('srv-dbp-dev');
 
 	    if(count($files) == 0) {
