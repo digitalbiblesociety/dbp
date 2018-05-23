@@ -48,7 +48,7 @@ class send_api_logs implements ShouldQueue
 		    $current_file = end($files);
 	    } else {
 		    $current_file = end($files);
-		    $current_file_time = Carbon::createFromTimeString(substr($current_file, 12, -4));
+		    $current_file_time = Carbon::createFromTimestamp($current_time_name);
 	    }
 
 	    // Push to S3 every five minutes, delete the latest file and create a new one
