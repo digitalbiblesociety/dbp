@@ -155,7 +155,7 @@ class APIController extends Controller
 		    $log_string .= '"'.$this->request->header('User-Agent').'"'.":::";
 		    foreach ($_GET as $header => $value) $log_string .= ($value != '') ? $header."=".$value."|" : $header."|";
 		    $log_string = rtrim($log_string,"|");
-		    $log_string .= ','.$this->request->getClientIps()[0].':::';
+		    $log_string .= ':::'.$this->request->getClientIps()[0].':::';
 		    //if($this->request->getContent()) foreach (collect($this->request->getContent())->toArray() as $header => $value) $log_string .= $header."=".$value."|";
 		    $log_string .= time();
 
