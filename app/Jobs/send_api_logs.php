@@ -51,7 +51,8 @@ class send_api_logs implements ShouldQueue
 
 	    // Push to S3 every five minutes, delete the latest file and create a new one
 	    if($current_time->diffInMinutes($current_file_time) > 5) {
-		    Storage::disk('s3_dbs_log')->put($current_file,$this->log_string);
+	    	$log_contents = Storage::disk('data')->get($current_file);
+		    Storage::disk('s3_dbs_log')->put($current_file, $log_contents);
 		    Storage::disk('data')->delete($current_file);
 		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time->toDateTimeString().'.log');
 	    } else {
