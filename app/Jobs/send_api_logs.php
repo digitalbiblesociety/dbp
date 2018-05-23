@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -34,15 +35,37 @@ class send_api_logs implements ShouldQueue
      */
     public function handle()
     {
-    	$file = '/srv-dbp-dev/'.date('Y-m-d.h:i').'.log';
-		$fileExists = Storage::disk('s3_dbs_log')->exists($file);
-		if($fileExists) {
-			Storage::disk('s3_dbs_log')->append($file, "\n".$this->log_string);
-			Storage::disk('data')->append($file, $this->log_string);
-		} else {
-			Storage::disk('s3_dbs_log')->put($file,$this->log_string);
-			Storage::disk('data')->put($file, $this->log_string);
-		}
+    	$this->addGeoData();
+	    $current_time = Carbon::now();
+	    $files = Storage::disk('data')->files('srv-dbp-dev');
 
+	    if(count($files) == 0) {
+		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time->toDateTimeString().'.log', 'status_code,path,user_agent,params,timestamp,lat,lon,country,city,state_name,postal_code');
+		    $current_file_time = $current_time;
+		    $files = Storage::disk('data')->files('srv-dbp-dev');
+		    $current_file = end($files);
+	    } else {
+		    $current_file = end($files);
+		    $current_file_time = Carbon::createFromTimeString(substr($current_file, 12, -4));
+	    }
+
+	    // Push to S3 every five minutes, delete the latest file and create a new one
+	    if($current_time->diffInMinutes($current_file_time) > 5) {
+		    Storage::disk('s3_dbs_log')->put($current_file,$this->log_string);
+		    Storage::disk('data')->delete($current_file);
+		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time->toDateTimeString().'.log');
+	    } else {
+		    Storage::disk('data')->append($current_file, $this->log_string);
+	    }
     }
+
+    private function addGeoData()
+    {
+	    $log_array = explode(',',$this->log_string);
+	    $ip_address = $log_array[4];
+	    $geo_ip = geoip($ip_address);
+	    $geo_array = [$geo_ip->lat,$geo_ip->lon,$geo_ip->country,$geo_ip->city,$geo_ip->state_name,$geo_ip->postal_code];
+	    $this->log_string = implode(',',array_merge($log_array,$geo_array));
+    }
+
 }

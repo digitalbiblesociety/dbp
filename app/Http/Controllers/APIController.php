@@ -155,10 +155,10 @@ class APIController extends Controller
 		    $log_string .= '"'.$this->request->header('User-Agent').'"'.",";
 		    foreach ($_GET as $header => $value) $log_string .= ($value != '') ? $header."=".$value."|" : $header."|";
 		    $log_string = rtrim($log_string,"|");
-		    $log_string .= ',';
+		    $log_string .= ','.$this->request->getClientIps()[0].',';
 		    //if($this->request->getContent()) foreach (collect($this->request->getContent())->toArray() as $header => $value) $log_string .= $header."=".$value."|";
-		    $log_string .= ',';
 		    $log_string .= time();
+
 		    send_api_logs::dispatch($log_string);
 	    } catch (Exception $e) {
 		    //echo 'Caught exception: ',  $e->getMessage(), "\n";
