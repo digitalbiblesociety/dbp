@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\User\User;
 use App\Models\User\PasswordReset;
+use App\Mail\EmailPasswordReset;
 
 class UserPasswordsController extends APIController
 {
@@ -16,11 +17,8 @@ class UserPasswordsController extends APIController
 	 * @OAS\Post(
 	 *     path="/users/reset/email",
 	 *     tags={"Community"},
-	 *     summary="Reset the password for a user",
-	 *     description="This route handles resetting the password for a user that is a member of the project id provided.
-	If the password is known to the user you can reset their password without sending a verification email by
-	setting the optional fields `password` and `new_password` fields within the request. If the both optional
-	fields `password` and `new_password` are unset. This route will send the user a verification reset email.",
+	 *     summary="Trigger a reset email",
+	 *     description="",
 	 *     operationId="v4_user.reset",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
@@ -61,12 +59,6 @@ class UserPasswordsController extends APIController
 		$project = $user->projects->where('id',$request->project_id)->first();
 		if(!$project) return $this->setStatusCode(404)->replyWithError("The user given is not a user of the project_id provided.");
 
-		// If password provided, update password
-		if(\Hash::check($request->password, $user->password)) {
-			if(isset($request->new_password)) $user->password = bcrypt($request->new_password); $user->save();
-			return $this->reply($user);
-		}
-
 		$generatedToken = PasswordReset::create(['email'=>$request->email,'token'=>str_random(64),'reset_path'=>$request->reset_path]);
 
 		$user->token = $generatedToken->token;
@@ -82,7 +74,9 @@ class UserPasswordsController extends APIController
 	 *     path="/users/reset/password",
 	 *     tags={"Community"},
 	 *     summary="Reset the password for a user",
-	 *     description="",
+	 *     description="This route handles resetting the password for a user that is a member of the project id provided.
+	If the password is known to the your users you can reset their passwords without sending them a verification email by
+	setting the optional fields `password` and `new_password` fields within the request.",
 	 *     operationId="v4_user.reset",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
@@ -93,10 +87,11 @@ class UserPasswordsController extends APIController
 	 *         description="Information supplied for password reset",
 	 *         @OAS\MediaType(mediaType="application/json",
 	 *             @OAS\Schema (
-	 *                required={"email","project_id"},
+	 *                required={"email","project_id","token_id","new_password","new_password_confirmed"},
 	 *                @OAS\Property(property="email",                  ref="#/components/schemas/User/properties/email"),
 	 *                @OAS\Property(property="project_id",             ref="#/components/schemas/Project/properties/id"),
-	 *                @OAS\Property(property="token_id",type="string",description="The token sent to the user's email"),
+	 *                @OAS\Property(property="token_id",               type="string",description="The token sent to the user's email"),
+	 *                @OAS\Property(property="old_password",           ref="#/components/schemas/User/properties/password"),
 	 *                @OAS\Property(property="new_password",           ref="#/components/schemas/User/properties/password"),
 	 *                @OAS\Property(property="new_password_confirmed", ref="#/components/schemas/User/properties/password")
 	 *             ))
@@ -122,6 +117,12 @@ class UserPasswordsController extends APIController
 
 		$project = $user->projects->where('id',$request->project_id)->first();
 		if(!$project) return $this->setStatusCode(404)->replyWithError("The user given is not a user of the project_id provided.");
+
+		// If password provided, update password
+		if(\Hash::check($request->old_password, $user->password)) {
+			if(isset($request->new_password)) $user->password = bcrypt($request->new_password); $user->save();
+			return $this->reply($user);
+		}
 
 		$generatedToken = PasswordReset::where('email',$request->email)->where('token',$request->token)->first();
 		if(!$generatedToken) return $this->setStatusCode(404)->replyWithError("The provided token could not be found.");
