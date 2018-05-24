@@ -1,5 +1,6 @@
 <?php
 
+Route::domain(env('API_URL'))->group(function () {
 	// VERSION 2
 	Route::name('v2_library_asset')->get('library/asset',                                 'HomeController@libraryAsset');
 	Route::name('v2_library_version')->get('library/version',                             'BiblesController@libraryVersion');
@@ -169,3 +170,4 @@
 	Route::name('v4_articles.update')->put('articles/{article_id}',                        'ArticlesController@update');
 	Route::name('v4_articles.store')->post('articles',                                     'ArticlesController@store');
 	Route::name('v4_articles.destroy')->delete('articles/{article_id}',                    'ArticlesController@destroy');
+});
