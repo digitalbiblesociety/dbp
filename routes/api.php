@@ -52,17 +52,14 @@
 	Route::name('v4_bible_filesets.show')->get('bibles/filesets/{id?}',                           'BibleFileSetsController@show');
 	Route::name('v4_bible_filesets.update')->put('bibles/filesets/{id}',                          'BibleFileSetsController@update');
 	Route::name('v4_bible_filesets.store')->post('bibles/filesets/',                              'BibleFileSetsController@store');
-
-	Route::name('v4_bible.allBooks')->get('bibles/books/',                                'BooksController@index');
-
-	Route::name('v4_text_search')->get('search',                                          'TextController@search');
-	Route::name('v4_bible.books')->get('bibles/{id}/book/{book?}',                        'BiblesController@books');
-	Route::name('v4_bible.one')->get('bibles/{id}',                                       'BiblesController@show');
-	Route::name('v4_bible.all')->get('bibles',                                            'BiblesController@index');
-
-	Route::name('v4_timestamps')->get('timestamps',                                       'AudioController@availableTimestamps');
-	Route::name('v4_timestamps.tag')->get('timestamps/{id}/{query}',                      'AudioController@timestampsByTag');
-	Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',           'AudioController@timestampsByReference');
+	Route::name('v4_bible.allBooks')->get('bibles/books/',                                        'BooksController@index');
+	Route::name('v4_text_search')->get('search',                                                  'TextController@search');
+	Route::name('v4_bible.books')->get('bibles/{id}/book/{book?}',                                'BiblesController@books');
+	Route::name('v4_bible.one')->get('bibles/{id}',                                               'BiblesController@show');
+	Route::name('v4_bible.all')->get('bibles',                                                    'BiblesController@index');
+	Route::name('v4_timestamps')->get('timestamps',                                               'AudioController@availableTimestamps');
+	Route::name('v4_timestamps.tag')->get('timestamps/{id}/{query}',                              'AudioController@timestampsByTag');
+	Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',                   'AudioController@timestampsByReference');
 
 	// VERSION 4 | WIKI
 	Route::name('v4_countries.all')->get('countries',                                     'CountriesController@index');
