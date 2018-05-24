@@ -62,7 +62,7 @@ class UserPasswordsController extends APIController
 		$generatedToken = PasswordReset::create(['email'=>$request->email,'token'=>str_random(64),'reset_path'=>$request->reset_path]);
 
 		$user->token = $generatedToken->token;
-		$project->reset_path = $generatedToken->reset_path;
+		$project->reset_path = $request->reset_path;
 		$project->iso = $request->iso ?? "eng";
 		\Mail::to($user)->send(new EmailPasswordReset($user, $project));
 		return $this->reply("Email sent successfully");
