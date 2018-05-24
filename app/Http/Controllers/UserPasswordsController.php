@@ -124,7 +124,7 @@ class UserPasswordsController extends APIController
 			return $this->reply($user);
 		}
 
-		$generatedToken = PasswordReset::where('email',$request->email)->where('token',$request->token_id)->first();
+		$generatedToken = PasswordReset::where('token',$request->token_id)->first();
 		if(!$generatedToken) return $this->setStatusCode(404)->replyWithError("The provided token could not be found.");
 
 		$user->password = bcrypt($request->new_password);
