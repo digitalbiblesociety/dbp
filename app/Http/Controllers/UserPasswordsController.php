@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User\Project;
 use Illuminate\Http\Request;
 
 use App\Models\User\User;
@@ -112,20 +113,22 @@ class UserPasswordsController extends APIController
 	 */
 	public function validatePasswordReset(Request $request)
 	{
-		$user = User::where('email', $request->email)->first();
-		if (!$user) return $this->setStatusCode(404)->replyWithError("The user could not be found");
-
-		$project = $user->projects->where('id',$request->project_id)->first();
+		$project = Project::where('id',$request->project_id)->first();
 		if(!$project) return $this->setStatusCode(404)->replyWithError("The user given is not a user of the project_id provided.");
 
-		// If password provided, update password
-		if(\Hash::check($request->old_password, $user->password)) {
-			if(isset($request->new_password)) $user->password = bcrypt($request->new_password); $user->save();
-			return $this->reply($user);
+		if($request->email AND $request->old_password AND $request->new_password AND $request->new_password_confirmed) {
+			$user = User::where('email',$request->email)->first();
+			// If password provided, update password
+			if(\Hash::check($request->old_password, $user->password)) {
+				$user->password = bcrypt($request->new_password);
+				$user->save();
+				return $this->reply($user);
+			}
 		}
 
 		$generatedToken = PasswordReset::where('token',$request->token_id)->first();
 		if(!$generatedToken) return $this->setStatusCode(404)->replyWithError("The provided token could not be found.");
+		$user = $generatedToken->user;
 		$generatedToken->delete();
 
 		$user->password = bcrypt($request->new_password);

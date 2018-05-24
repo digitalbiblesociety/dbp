@@ -67,7 +67,7 @@ class PasswordReset extends Model
 
 	public function user()
 	{
-		return $this->belongsTo(User::class,'email','email');
+		return $this->BelongsTo(User::class,'email','email');
 	}
 
 }
