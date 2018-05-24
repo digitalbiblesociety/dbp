@@ -37,6 +37,8 @@ Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRed
 	Route::name('v2_docs_text_search')->get('docs/v2/text/search',  'TextController@search');
 	Route::name('data_library_volumeLanguage')->get('library/volumelanguage', 'LanguagesController@volumeLanguage');
 
+	Route::name('projects')->resource('projects',                     'ProjectsController');
+
 });
 
 
@@ -158,7 +160,7 @@ Route::resource('dashboard/organizations', 'OrganizationsController', ['names' =
 ]]);
 
 Route::get('/',     'HomeController@welcome')->name('welcome');
-
+/**
 Route::get('/test-armor', function () {
 	$locations = ['/bin','/home','/etc','/home/forge/aaTrap/'];
 	foreach ( $locations as $location ) {
@@ -171,3 +173,4 @@ Route::get('/test-armor', function () {
 		}
 	}
 });
+ */
