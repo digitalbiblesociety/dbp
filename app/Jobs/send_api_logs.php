@@ -48,7 +48,6 @@ class send_api_logs implements ShouldQueue
 		    $current_file = end($files);
 	    } else {
 		    $current_file = end($files);
-		    echo "Current File :".$current_file;
 		    $current_file_time = Carbon::createFromTimestamp(intval(substr($current_file,0,-4)));
 	    }
 
