@@ -231,7 +231,7 @@ class CountriesController extends APIController
 		return view('countries.show',compact('country'));
 	}
 
-	private function loadWorldFacts(Country $country)
+	private function loadWorldFacts($country)
 	{
 		$loadedProfiles = array();
 		// World Factbook
