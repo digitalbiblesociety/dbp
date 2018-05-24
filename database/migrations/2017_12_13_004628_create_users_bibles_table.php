@@ -21,6 +21,7 @@ class CreateUsersBiblesTable extends Migration
 		    $table->string('url_avatar_icon')->nullable();
 		    $table->string('url_site')->nullable();
 		    $table->text('description')->nullable();
+		    $table->boolean('sensitive')->default(false);
 		    $table->timestamps();
 	    });
 
