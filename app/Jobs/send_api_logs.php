@@ -56,7 +56,7 @@ class send_api_logs implements ShouldQueue
 			$log_contents = Storage::disk('data')->get($current_file);
 			Storage::disk('s3_dbs_log')->put($current_file, $log_contents);
 		    Storage::disk('data')->delete($current_file);
-		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time_name.'.log');
+		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time_name.'.log', $log_contents);
 	    } else {
 		    Storage::disk('data')->append($current_file, $this->log_string);
 	    }
