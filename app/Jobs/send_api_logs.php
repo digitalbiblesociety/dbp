@@ -67,7 +67,7 @@ class send_api_logs implements ShouldQueue
     private function addGeoData()
     {
 	    $log_array = explode(':::',$this->log_string);
-	    $ip_address = isset($log_array[4]) ? $log_array[4] : null;
+	    $ip_address = isset($log_array[5]) ? $log_array[5] : null;
 	    if($ip_address) {
 		    $geo_ip = geoip($ip_address);
 		    $geo_array = [$geo_ip->lat,$geo_ip->lon,$geo_ip->country,$geo_ip->city,$geo_ip->state_name,$geo_ip->postal_code];
