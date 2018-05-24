@@ -37,18 +37,20 @@ class send_api_logs implements ShouldQueue
     {
 		$this->addGeoData();
 		$current_time = Carbon::now();
-		$current_time_name = $current_time->getTimestamp();
 		$files = Storage::disk('data')->files('srv-dbp-dev');
+
+		// remove any none log files from processing
 		foreach($files as $key => $file) if(substr($file,-4) != ".log") unset($files[$key]);
 
+		// If no files exist
 	    if(count($files) == 0) {
-		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time_name.'.log', 'timestamp:::status_code:::path:::user_agent:::params:::ip_address:::lat:::lon:::country:::city:::state_name:::postal_code');
+		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time->getTimestamp().'.log', 'timestamp:::status_code:::path:::user_agent:::params:::ip_address:::lat:::lon:::country:::city:::state_name:::postal_code');
 		    $current_file_time = Carbon::now();
 		    $files = Storage::disk('data')->files('srv-dbp-dev');
 		    $current_file = end($files);
 	    } else {
 		    $current_file = end($files);
-		    $current_file_time = Carbon::createFromTimestamp(intval(substr($current_file,0,-4)));
+		    $current_file_time = Carbon::createFromTimestamp(intval(substr($current_file,12,-4)));
 	    }
 
 	    // Push to S3 every five minutes, delete the latest file and create a new one
@@ -56,7 +58,7 @@ class send_api_logs implements ShouldQueue
 			$log_contents = Storage::disk('data')->get($current_file);
 			Storage::disk('s3_dbs_log')->put($current_file, $log_contents);
 		    Storage::disk('data')->delete($current_file);
-		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time_name.'.log', $log_contents);
+		    Storage::disk('data')->put($current_file, $log_contents);
 	    } else {
 		    Storage::disk('data')->append($current_file, $this->log_string);
 	    }
