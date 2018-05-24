@@ -87,7 +87,7 @@ class AlphabetsController extends APIController
 	 */
 	public function show($id)
     {
-	    $alphabet = Alphabet::with('fonts','languages','bibles.currentTranslation')->find($id);
+	    $alphabet = Alphabet::with('fonts','languages','bibles.currentTranslation')->where('script',$id)->first();
 	    if(!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
     	if(!$this->api) return view('languages.alphabets.show', compact('alphabet'));
         return $this->reply(fractal()->item($alphabet)->transformWith(AlphabetTransformer::class)->serializeWith($this->serializer));
