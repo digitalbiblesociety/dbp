@@ -17,7 +17,7 @@ function checkParam($param, $v4Style = null, $optional = false)
 		$url_params = explode('|',$param);
 		foreach($url_params as $param) {
 			$url_param = (isset($_GET[$param])) ? $_GET[$param] : false;
-			if($url_param) {continue;}
+			if($url_param) {break;}
 		}
 	} else {
 		$url_param = (isset($_GET[$param])) ? $_GET[$param] : false;
