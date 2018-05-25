@@ -148,19 +148,11 @@ class APIController extends Controller
         $format = @$_GET['format'];
 
 	    // Status Code, Headers, Params, Body, Time
+
 	    try {
-		    $log_string = time().':::'.$this->getStatusCode().":::";
-		    $log_string .= $this->request->path().":::";
-		    $log_string .= '"'.$this->request->header('User-Agent').'"'.":::";
-		    foreach ($_GET as $header => $value) $log_string .= ($value != '') ? $header."=".$value."|" : $header."|";
-		    $log_string = rtrim($log_string,"|");
-		    $log_string .= ':::'.$this->request->getClientIps()[0];
-		    //if($this->request->getContent()) foreach (collect($this->request->getContent())->toArray() as $header => $value) $log_string .= $header."=".$value."|";
-
-
-		    send_api_logs::dispatch($log_string);
+		    sendLogsToS3($this->request, $this->getStatusCode());
 	    } catch (Exception $e) {
-		    //echo 'Caught exception: ',  $e->getMessage(), "\n";
+		//    //echo 'Caught exception: ',  $e->getMessage(), "\n";
 	    }
 
         switch ($format) {
@@ -193,7 +185,8 @@ class APIController extends Controller
     {
         $status = $this->getStatusCode();
 
-	    \Log::error([$message, $status]);
+	    //\Log::error([$message, $status]);
+	    sendLogsToS3($this->request,$status);
 
 	    if(!$this->api AND !isset($status)) return view('errors.broken',compact('message'));
 	    if(!$this->api) return view("errors.$status",compact('message','status'));

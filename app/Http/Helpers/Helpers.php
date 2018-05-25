@@ -127,6 +127,17 @@ function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
 	return collect($out_numbers)->pluck('numeral_vernacular','numeral');
 }
 
+function sendLogsToS3($request, $status_code)
+{
+	$log_string = time().':::'.$status_code.":::".$request->path().":::";
+	$log_string .= '"'.$request->header('User-Agent').'"'.":::";
+	foreach ($_GET as $header => $value) $log_string .= ($value != '') ? $header."=".$value."|" : $header."|";
+	$log_string = rtrim($log_string,"|");
+	$log_string .= ':::'.$request->getClientIps()[0];
+	//if($request->getContent()) foreach (collect($request->getContent())->toArray() as $header => $value) $log_string .= $header."=".$value."|";
+	App\Jobs\send_api_logs::dispatch($log_string);
+}
+
 
 if( ! function_exists('unique_random') ){
 	/**
