@@ -34,7 +34,6 @@ class CreateCountriesTables extends Migration
 	    });
 
 	    Schema::create('country_people', function (Blueprint $table) {
-		    //$table->string('major_infectious_diseases');                            //
 		    $table->char('country_id', 2);
 		    $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
 		    $table->text('languages');                                                          // Languages moved to country_language
@@ -273,8 +272,8 @@ class CreateCountriesTables extends Migration
 		    $table->integer('aircraft_passengers')->nullable()->unsigned();     // "annual passenger traffic on registered air carriers"
 		    $table->integer('aircraft_freight')->nullable()->unsigned();        // "annual freight traffic on registered air carriers"
 		    $table->string('aircraft_code_prefix')->nullable();                 // "Civil aircraft registration country code prefix"
-		    $table->string('airports')->nullable();                // "Airports"
-		    $table->string('airports_paved')->nullable();          // "Airports - with paved runways" | "total"
+		    $table->string('airports')->nullable();                             // "Airports"
+		    $table->string('airports_paved')->nullable();                       // "Airports - with paved runways" | "total"
 		    $table->tinyInteger('airports_info_date')->nullable()->unsigned();  // "Airports" | sub_field
 		    $table->string('major_seaports')->nullable();                       // "Ports and terminals"
 		    $table->string('oil_terminals')->nullable();                        // "oil terminal(s)"

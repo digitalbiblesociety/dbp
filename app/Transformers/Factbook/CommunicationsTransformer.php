@@ -2,7 +2,7 @@
 
 namespace App\Transformers\Factbook;
 
-use App\Models\Country\FactBook\CountryCommunications;
+use App\Models\Country\FactBook\CountryCommunication;
 use App\Transformers\BaseTransformer;
 
 class CommunicationsTransformer extends BaseTransformer

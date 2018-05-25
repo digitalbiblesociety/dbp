@@ -5,7 +5,7 @@ use App\Models\Country\FactBook\CountryPeople;
 use App\Models\Country\FactBook\CountryEnergy;
 use App\Models\Country\FactBook\CountryGeography;
 use App\Models\Country\FactBook\CountryTransportation;
-use App\Models\Country\FactBook\CountryCommunications;
+use App\Models\Country\FactBook\CountryCommunication;
 use App\Models\Country\FactBook\CountryIssues;
 use App\Models\Country\FactBook\CountryEconomy;
 use App\Models\Country\FactBook\CountryGovernment;
@@ -87,7 +87,7 @@ class countries_factbook_seeder extends Seeder
 		    foreach ($religions as $religion) {
 			    preg_match("/(.*) (\d+.*?)\%/", $religion, $religiousGroup);
 
-				\App\Models\Country\FactBook\CountryReligions::create([
+				\App\Models\Country\FactBook\CountryReligion::create([
 				    'country_id'                    => $country['code'],
 				    'name'                          => $religiousGroup[1] ?? $religion,
 				    'population_percentage'         => (isset($religiousGroup[2])) ? intval($religiousGroup[2]) : null,
@@ -494,7 +494,7 @@ class countries_factbook_seeder extends Seeder
 		$communications = $country['Communications'];
 		$populationPercentage = isset($communications["Internet users"]["percent of population"]) ? str_replace('%','',substr($communications["Internet users"]["percent of population"]["text"],0,3)) : 0.00;
 
-		CountryCommunications::create([
+		CountryCommunication::create([
 			'country_id'                      => $country['code'],
 			'fixed_phones_total'              => isset($communications["Telephones - fixed lines"]["total subscriptions"]) ? $communications["Telephones - fixed lines"]["total subscriptions"]["text"] : "",
 			'fixed_phones_subs_per_100'       => isset($communications["Telephones - fixed lines"]["subscriptions per 100 inhabitants"]) ? $communications["Telephones - fixed lines"]["subscriptions per 100 inhabitants"]["text"] : "",

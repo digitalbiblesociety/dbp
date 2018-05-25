@@ -8,7 +8,7 @@ use App\Models\Language\LanguageTranslation;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
 
-use App\Models\Country\FactBook\CountryCommunications;
+use App\Models\Country\FactBook\CountryCommunication;
 use App\Models\Country\FactBook\CountryEconomy;
 use App\Models\Country\FactBook\CountryEnergy;
 use App\Models\Country\FactBook\CountryGeography;
@@ -18,7 +18,7 @@ use App\Models\Country\FactBook\CountryLanguage;
 use App\Models\Country\FactBook\CountryPeople;
 use App\Models\Country\FactBook\CountryEthnicities;
 use App\Models\Country\FactBook\CountryRegions;
-use App\Models\Country\FactBook\CountryReligions;
+use App\Models\Country\FactBook\CountryReligion;
 use App\Models\Country\FactBook\CountryTranslations;
 use App\Models\Country\FactBook\CountryTransportation;
 
@@ -196,7 +196,7 @@ class Country extends Model
 
 	public function communications()
 	{
-		return $this->hasOne(CountryCommunications::class);
+		return $this->hasOne(CountryCommunication::class);
 	}
 	public function economy()
 	{
@@ -232,7 +232,7 @@ class Country extends Model
 	}
 	public function religions()
 	{
-		return $this->hasOne(CountryReligions::class);
+		return $this->hasOne(CountryReligion::class);
 	}
 	public function transportation()
 	{
