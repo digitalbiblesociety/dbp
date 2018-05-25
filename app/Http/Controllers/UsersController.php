@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User\Account;
 use App\Models\User\Key;
 use App\Models\User\User;
 use App\Transformers\UserTransformer;
@@ -109,6 +110,14 @@ class UsersController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\RequestBody(required=true, description="Either the `email` & `password` or the `social_provider_user_id` & `social_provider_id` are required for user Login", @OAS\MediaType(mediaType="application/json",
+	 *          @OAS\Schema(
+	 *              @OAS\Property(property="email",                     ref="#/components/schemas/User/properties/email"),
+	 *              @OAS\Property(property="password",                  ref="#/components/schemas/User/properties/password"),
+	 *              @OAS\Property(property="social_provider_user_id",   ref="#/components/schemas/Account/properties/provider_user_id"),
+	 *              @OAS\Property(property="social_provider_id",        ref="#/components/schemas/Account/properties/provider_id"),
+	 *          )
+	 *     )),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -125,6 +134,10 @@ class UsersController extends APIController
     public function login(Request $request)
     {
     	$current_locale = $request->iso ?? \i18n::getCurrentLocale();
+    	if(isset($request->social_provider_id)) {
+    		$account = Account::where('provider_user_id',$request->social_provider_user_id)->where('provider_id',$request->social_provider_id)->first();
+		    if($account) return $this->reply($account->user);
+	    }
     	$user = User::with('accounts')->where('email',$request->email)->first();
 	    if($user) if(Hash::check($request->password, $user->password)) return $this->reply($user);
     	return $this->replyWithError(trans('auth.failed',[],$current_locale));
