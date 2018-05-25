@@ -37,7 +37,6 @@ class CountryTransformer extends BaseTransformer
 		'language',
 		'people',
 		'ethnicities',
-		'regions',
 		'religions',
 		'translations',
 		'transportation'
