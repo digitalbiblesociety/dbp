@@ -132,6 +132,9 @@ class AlphabetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\RequestBody(required=true, description="Fields for Alphabet Creation", @OAS\MediaType(mediaType="application/json",
+	 *          @OAS\Schema(ref="#/components/schemas/Alphabet")
+	 *     )),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -178,6 +181,9 @@ class AlphabetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
 	 *     @OAS\Parameter(name="id", in="path", description="The alphabet ID", required=true, @OAS\Schema(ref="#/components/schemas/Alphabet/properties/script")),
+	 *     @OAS\RequestBody(required=true, description="Fields for Alphabet Update", @OAS\MediaType(mediaType="application/json",
+	 *          @OAS\Schema(ref="#/components/schemas/Alphabet")
+	 *     )),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",

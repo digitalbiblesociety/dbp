@@ -98,6 +98,20 @@ class UserHighlightsController extends APIController
      *     @OAS\Parameter(ref="#/components/parameters/key"),
      *     @OAS\Parameter(ref="#/components/parameters/pretty"),
      *     @OAS\Parameter(ref="#/components/parameters/reply"),
+     *     @OAS\RequestBody(required=true, description="Fields for User Highlight Creation", @OAS\MediaType(mediaType="application/json",
+     *          @OAS\Schema(
+     *              @OAS\Property(property="bible_id",                  ref="#/components/schemas/UserHighlights/properties/bible_id"),
+     *              @OAS\Property(property="user_id",                   ref="#/components/schemas/UserHighlights/properties/user_id"),
+     *              @OAS\Property(property="book_id",                   ref="#/components/schemas/UserHighlights/properties/book_id"),
+     *              @OAS\Property(property="project_id",                ref="#/components/schemas/UserHighlights/properties/project_id"),
+     *              @OAS\Property(property="chapter",                   ref="#/components/schemas/UserHighlights/properties/chapter"),
+     *              @OAS\Property(property="verse_start",               ref="#/components/schemas/UserHighlights/properties/verse_start"),
+     *              @OAS\Property(property="reference",                 ref="#/components/schemas/UserHighlights/properties/reference"),
+     *              @OAS\Property(property="highlight_start",           ref="#/components/schemas/UserHighlights/properties/highlight_start"),
+     *              @OAS\Property(property="highlighted_words",         ref="#/components/schemas/UserHighlights/properties/highlighted_words"),
+     *              @OAS\Property(property="highlighted_color",         ref="#/components/schemas/UserHighlights/properties/highlighted_color"),
+     *          )
+     *     )),
      *     @OAS\Response(
      *         response=200,
      *         description="successful operation",

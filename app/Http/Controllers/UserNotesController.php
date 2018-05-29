@@ -146,6 +146,18 @@ class UserNotesController extends APIController
 	 *     @OAS\Parameter(name="chapter_id",  in="query", description="", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
 	 *     @OAS\Parameter(name="project_id",  in="query", description="", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
 	 *     @OAS\Parameter(name="limit",       in="query", description="", @OAS\Schema(type="integer",example=15)),
+	 *     @OAS\RequestBody(required=true, description="Fields for Note Creation", @OAS\MediaType(mediaType="application/json",
+	 *          @OAS\Schema(
+	 *              @OAS\Property(property="bible_id",                  ref="#/components/schemas/UserNote/properties/bible_id"),
+	 *              @OAS\Property(property="user_id",                   ref="#/components/schemas/UserNote/properties/user_id"),
+	 *              @OAS\Property(property="book_id",                   ref="#/components/schemas/UserNote/properties/book_id"),
+	 *              @OAS\Property(property="project_id",                ref="#/components/schemas/UserNote/properties/project_id"),
+	 *              @OAS\Property(property="chapter",                   ref="#/components/schemas/UserNote/properties/chapter"),
+	 *              @OAS\Property(property="verse_start",               ref="#/components/schemas/UserNote/properties/verse_start"),
+	 *              @OAS\Property(property="notes",                     ref="#/components/schemas/UserNote/properties/notes"),
+	 *              @OAS\Property(property="bookmark",                  ref="#/components/schemas/UserNote/properties/bookmark"),
+	 *          )
+	 *     )),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),

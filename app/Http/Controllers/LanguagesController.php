@@ -50,6 +50,12 @@ class LanguagesController extends APIController
      *     summary="Returns the list of languages",
      *     description="Returns the List of Languages",
      *     operationId="v2_library_language",
+     *     @OAS\Parameter(name="code",in="query",description="Get the entry for a three letter language code",@OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
+     *     @OAS\Parameter(name="name",in="query",description="Get the entry for a part of a language name in either native language or English",@OAS\Schema(type="object")),
+     *     @OAS\Parameter(name="full_word",in="query",description="Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string 'new' is anywhere in the language name, like in `Newari` and `Awa for Papua New Guinea`. When true, it will only return volumes where the language name contains the full word 'new', like in `Awa for Papua New Guinea`. Default is false",@OAS\Schema(type="object")),
+     *     @OAS\Parameter(name="family_only",in="query",description="When set to true the returned list is of only legal language families. The default is false",@OAS\Schema(type="object")),
+     *     @OAS\Parameter(name="possibilities",in="query",description="When set to true the returned list is a combination of DBP languages and ISO languages not yet defined in DBP that meet any of the criteria",@OAS\Schema(type="object",default=null,example=true)),
+     *     @OAS\Parameter(name="sort_by",in="query",description="Primary criteria by which to sort. 'name' refers to the native language name. The default is 'english'",@OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
      *     @OAS\Response(
      *         response=200,
      *         description="successful operation",
@@ -61,11 +67,14 @@ class LanguagesController extends APIController
     public function index()
     {
 	    if(!$this->api) return view('languages.index');
-	    ini_set('memory_limit', '464M');
 
 		$country = checkParam('country',null,'optional');
-		$code = checkParam('code', null, 'optional') ?? checkParam('iso', null, 'optional');
-	    $language_name_portion = checkParam('full_word', null, 'optional') ?? checkParam('language_name', null, 'optional') ;
+		$code = checkParam('code|iso', null, 'optional');
+	    $translation_iso = checkParam('translation_iso', null, 'optional');
+	    $language_name_portion = checkParam('name|language_name', null, 'optional');
+	    $full_word = checkParam('full_word', null, 'optional');
+	    $family_only = checkParam('family_only', null, 'optional');
+	    $possibilities = checkParam('possibilities', null, 'optional');
 	    $sort_by = checkParam('sort_by', null, 'optional') ?? "name";
 	    $has_bibles = checkParam('has_bibles', null, 'optional');
 	    $has_filesets = checkParam('has_filesets', null, 'optional') ?? true;
@@ -289,6 +298,13 @@ class LanguagesController extends APIController
 	 *     summary="Create a new Language",
 	 *     description="Create a new Language",
 	 *     operationId="v4_languages.store",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\RequestBody(required=true, description="Fields for User Highlight Creation", @OAS\MediaType(mediaType="application/json",
+	 *          @OAS\Schema(ref="#/components/schemas/Language")
+	 *     )),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",

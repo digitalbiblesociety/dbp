@@ -232,7 +232,7 @@ class BibleFileSetsController extends APIController
 
 	/**
 	 *
-	 * @OAS\POST(
+	 * @OAS\Post(
 	 *     path="/bibles/filesets/",
 	 *     tags={"Bibles"},
 	 *     summary="Create a brand new Fileset",
@@ -242,6 +242,10 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\RequestBody(required=true, description="Fields for Bible Fileset Creation",
+	 *          @OAS\MediaType(mediaType="application/json",                  @OAS\Schema(ref="#/components/schemas/BibleFileset")),
+	 *          @OAS\MediaType(mediaType="application/x-www-form-urlencoded", @OAS\Schema(ref="#/components/schemas/BibleFileset"))
+	 *     ),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="The completed fileset",
