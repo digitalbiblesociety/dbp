@@ -50,6 +50,8 @@ class DocsController extends APIController
 			if(substr($swagger->components->schemas[$key]->title,0,2) == $otherVersion) unset($swagger->components->schemas[$key]);
 		}
 
+		foreach ($swagger->components->responses as $key => $response) unset($swagger->components->responses[$key]);
+
 		foreach($swagger->tags as $key => $tag) {
 			if(substr($swagger->tags[$key]->description,0,2) != $version) {
 				unset($swagger->tags[$key]);
