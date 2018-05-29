@@ -44,7 +44,7 @@ class send_api_logs implements ShouldQueue
 
 		// If no files exist
 	    if(count($files) == 0) {
-		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time->getTimestamp().'.log', 'timestamp:::status_code:::path:::user_agent:::params:::ip_address:::lat:::lon:::country:::city:::state_name:::postal_code');
+		    Storage::disk('data')->put('srv-dbp-dev/'.$current_time->getTimestamp().'.log', 'timestamp:::status_code:::path:::user_agent:::params:::ip_address:::lat:::lon:::country:::city:::state_name:::postal_code:::server_name');
 		    $current_file_time = Carbon::now();
 		    $files = Storage::disk('data')->files('srv-dbp-dev');
 		    $current_file = end($files);
