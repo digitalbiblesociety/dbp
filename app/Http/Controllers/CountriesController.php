@@ -31,9 +31,10 @@ class CountriesController extends APIController
 	 *     summary="Returns Countries",
 	 *     description="Returns the List of Countries",
 	 *     operationId="v4_countries.all",
-	 *     @OAS\Parameter(name="iso", in="query", description="", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
+	 *     @OAS\Parameter(name="iso", in="query", description="When set, the returning language and country names will be in the language matching the iso given. (If an applicable translation exists).", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
 	 *     @OAS\Parameter(name="has_filesets", in="query", description="Filter the returned countries to only those containing filesets for languages spoken within the country", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="bucket_id", in="query", description="Filter the returned countries to only those containing filesets for a specific bucket", @OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
+	 *     @OAS\Parameter(name="include_languages", in="query", description="When set to true, the return will include the major languages used in each country", @OAS\Schema(type="boolean")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -53,20 +54,24 @@ class CountriesController extends APIController
     	$has_filesets = checkParam('has_filesets', null, 'optional') ?? true;
 		$bucket_id = checkParam('bucket_id', null, 'optional');
 		if($iso) {
+			$include_languages = checkParam('include_languages', null, 'optional');
 			$language = Language::where('iso',$iso)->first();
 			if(!$language) return $this->setStatusCode(404)->replyWithError("No language for the provided iso: `$iso` could be found.");
 		}
 
-		$countries = Country::with([
-			'translations' => function($query) use ($iso) { $query->where('language_id', $iso); },
-			'languagesFiltered' => function ($query) use($language) {
-				$query->with(['translation' => function ($query) use($language) { $query->where('language_translation', $language->id); }]);
-			}])
-			->when($has_filesets, function($query) use ($bucket_id) {
+		$countries = Country::exclude('introduction')->
+			when($has_filesets, function($query) use ($bucket_id) {
 				$query->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
 				if($bucket_id) $query->where('bucket_id', $bucket_id);
 			});
-		})->exclude('introduction')->get();
+		})->get();
+
+		if($iso != "eng") $countries->load(['translation' => function($query) use ($language) {$query->where('language_id', $language->id);}]);
+		if(isset($include_languages)) {
+			$countries->load(['languagesFiltered' => function ($query) use($language) {
+				$query->with(['translation' => function ($query) use($language) { $query->where('language_translation', $language->id); }]);
+			}]);
+		}
 
 	    return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
     }

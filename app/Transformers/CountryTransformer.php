@@ -53,7 +53,6 @@ class CountryTransformer extends BaseTransformer
 	 */
 	public function transform($country)
 	{
-		$country->name = @$country->translations->where('language_id',$this->iso)->first()->name ?? $country->name;
 		switch ($this->version) {
 			case "jQueryDataTable": return $this->transformForDataTables($country);
 			case "2":
@@ -114,20 +113,23 @@ class CountryTransformer extends BaseTransformer
 			 * )
 			 */
 			case "v4_countries.all": {
-				return [
-					'name'           => $country->name,
-					'continent_code' => $country->continent,
-					'languages'      => $country->languagesFiltered->mapWithKeys(function ($item) {
-						return [
-							$item['iso'] => $item['translation']['name'] ?? $item['name']
-						];
-					}),
-					'codes' => [
-						'fips'       => $country->fips,
-						'iso_a3'     => $country->iso_a3,
-						'iso_a2'     => $country->id
-					]
+				if($country->relationLoaded('translation')) {
+					$output['name'] = (isset($country->translation->name)) ? $country->translation->name : $country->name;
+				} else {
+					$output['name'] = $country->name;
+				}
+				$output['continent_code'] = $country->continent;
+				$output['codes'] = [
+					'fips'       => $country->fips,
+					'iso_a3'     => $country->iso_a3,
+					'iso_a2'     => $country->id
 				];
+				if($country->relationLoaded('languagesFiltered')) {
+					$output['languages'] = $country->languagesFiltered->mapWithKeys(function ($item) {
+						return [ $item['iso'] => $item['translation']['name'] ?? $item['name'] ];
+					});
+				}
+				return $output;
 			}
 			case "v4_countries.jsp": {
 				return [

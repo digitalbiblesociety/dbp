@@ -25,6 +25,9 @@ class CountryTranslation extends Model
     protected $table = 'country_translations';
     protected $hidden = ["country_id","vernacular"];
     public $timestamps = false;
+    public $incrementing = false;
+    public $keyType = "string";
+    public $primaryKey = "country_id";
 
     public function language()
     {

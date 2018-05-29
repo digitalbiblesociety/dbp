@@ -48,7 +48,7 @@ class Country extends Model
     public $incrementing = false;
     public $keyType = 'string';
 
-	protected $columns = ['id', 'iso_a3', 'continent', 'name', 'introduction']; // add all columns from you table
+	protected $columns = ['id', 'iso_a3', 'continent', 'name', 'introduction','fips']; // add all columns from you table
 
 	public function scopeExclude($query,$value = array())
 	{
@@ -180,8 +180,7 @@ class Country extends Model
 
     public function translation()
     {
-	    $language = Language::where('iso',\i18n::getCurrentLocale())->first();
-	    return $this->HasOne(CountryTranslation::class)->where('language_id',$language->id);
+	    return $this->HasOne(CountryTranslation::class,'country_id','id');
     }
 
     public function languages()
