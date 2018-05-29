@@ -117,7 +117,11 @@ class CountryTransformer extends BaseTransformer
 				return [
 					'name'           => $country->name,
 					'continent_code' => $country->continent,
-					'languages'      => $country->languagesFiltered->pluck('name','iso'),
+					'languages'      => $country->languagesFiltered->mapWithKeys(function ($item) {
+						return [
+							$item['iso'] => $item['translation']['name'] ?? $item['name']
+						];
+					}),
 					'codes' => [
 						'fips'       => $country->fips,
 						'iso_a3'     => $country->iso_a3,

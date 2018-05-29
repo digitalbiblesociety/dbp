@@ -48,6 +48,13 @@ class Country extends Model
     public $incrementing = false;
     public $keyType = 'string';
 
+	protected $columns = ['id', 'iso_a3', 'continent', 'name', 'introduction']; // add all columns from you table
+
+	public function scopeExclude($query,$value = array())
+	{
+		return $query->select( array_diff( $this->columns,(array) $value) );
+	}
+
 	/**
 	 * @OAS\Property(
 	 *     title="Country Iso 3166-1",
@@ -184,7 +191,7 @@ class Country extends Model
 
 	public function languagesFiltered()
 	{
-		return $this->BelongsToMany(Language::class)->distinct()->select(['iso','name']);
+		return $this->BelongsToMany(Language::class)->distinct()->select(['id','iso','name']);
 	}
 
     public function regions()

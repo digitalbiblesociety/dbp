@@ -52,15 +52,21 @@ class CountriesController extends APIController
     	$iso = checkParam('iso', null, 'optional') ?? "eng";
     	$has_filesets = checkParam('has_filesets', null, 'optional') ?? true;
 		$bucket_id = checkParam('bucket_id', null, 'optional');
+		if($iso) {
+			$language = Language::where('iso',$iso)->first();
+			if(!$language) return $this->setStatusCode(404)->replyWithError("No language for the provided iso: `$iso` could be found.");
+		}
 
-		$countries = Country::with(['languagesFiltered','translations' => function($query) use ($iso) {
-			$query->where('language_id', $iso);
-		}])
-		->when($has_filesets, function($q) use ($bucket_id) {
-			$q->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
+		$countries = Country::with([
+			'translations' => function($query) use ($iso) { $query->where('language_id', $iso); },
+			'languagesFiltered' => function ($query) use($language) {
+				$query->with(['translation' => function ($query) use($language) { $query->where('language_translation', $language->id); }]);
+			}])
+			->when($has_filesets, function($query) use ($bucket_id) {
+				$query->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
 				if($bucket_id) $query->where('bucket_id', $bucket_id);
 			});
-		})->where('id','!=','AQ')->get();
+		})->exclude('introduction')->get();
 
 	    return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
     }
@@ -175,6 +181,13 @@ class CountriesController extends APIController
 	 *     summary="Create a new Country",
 	 *     description="Create a new Country",
 	 *     operationId="v4_countries.store",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\RequestBody(required=true, description="Information supplied for Country creation", @OAS\MediaType(mediaType="application/json",
+	 *          @OAS\Schema(ref="#/components/schemas/Country")
+	 *     )),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -187,7 +200,10 @@ class CountriesController extends APIController
 	 *
 	 * @return mixed $countries string - A JSON string that contains the status code and error messages if applicable.
 	 *
+	 *
+	 *
 	 */
+	// TODO: Add create country route (Low priority)
 	public function store(Request $request)
 	{
 		$validator = $request->validate([

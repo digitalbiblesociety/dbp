@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class LanguageTranslation extends Model
 {
-    protected $hidden = ["iso_language"];
+    protected $hidden = ["language_source","created_at","updated_at","priority","description","id"];
     protected $table = 'language_translations';
 
 	/**
