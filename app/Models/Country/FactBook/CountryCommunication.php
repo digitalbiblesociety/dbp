@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @OAS\Schema (
  *     type="object",
- *     description="CountryCommunication",
- *     title="CountryCommunication",
+ *     description="The Country Communication Model stores information about the communication infrastructure of a country as reported by the CIA's World Factbook",
+ *     title="Country Communication",
  *     @OAS\Xml(name="CountryCommunication")
  * )
  *
@@ -33,11 +33,9 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="fixed_phones_total",
-	 *     description="The fixed_phones_total for the Communications Model",
+	 *     description="The `fixed_phones_total` field indicates the approximate number of phones utilizing landlines within a country",
 	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
+	 *     example="9.08 million"
 	 * )
 	 *
 	 * @method static CountryCommunication whereFixedPhonesTotal($value)
@@ -49,11 +47,9 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="fixed_phones_subs_per_100",
-	 *     description="The fixed_phones_subs_per_100 for the Communications Model",
+	 *     description="The `fixed_phones_subs_per_100` field describes the approximate number of landline phone subscriptions per 100 people. This gives a sense of the prevalence of landline phone use within a population.",
 	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
+	 *     example="40 (July 2015 est.)"
 	 * )
 	 *
 	 * @method static CountryCommunication whereFixedPhonesSubsPer10($value)
@@ -65,11 +61,9 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="mobile_phones_total",
-	 *     description="The mobile_phones_total for the Communications Model",
+	 *     description="The `mobile_phones_total` field describes the total approximate number of cellphones within a country",
 	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
+	 *     example="31.77 million"
 	 * )
 	 *
 	 * @method static CountryCommunication whereMobilePhonesTotal($value)
@@ -81,11 +75,9 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="mobile_phones_subs_per_100",
-	 *     description="The mobile_phones_subs_per_100 for the Communications Model",
+	 *     description="The `mobile_phones_subs_per_100` field describes the total approximate number of cellphone subscriptions within the country per 100 people. This gives a sense of the prevalence of cellphone use within a population.",
 	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
+	 *     example="310 (July 2015 est.)"
 	 * )
 	 *
 	 * @method static CountryCommunication whereMobilePhonesSubsPer1($value)
@@ -97,11 +89,9 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="phone_system_general_assessment",
-	 *     description="The phone_system_general_assessment for the Communications Model",
+	 *     description="The `phone_system_general_assessment` field describes the general state of the telephone system within the country.",
 	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
+	 *     example="Sparse system of open-wire, radiotelephone communications, and low-capacity microwave radio relays"
 	 * )
 	 *
 	 * @method static CountryCommunication wherePhoneSystemGeneralAss($value)
@@ -113,11 +103,10 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="phone_system_international",
-	 *     description="The phone_system_international for the Communications Model",
+	 *     description="The `phone_system_international` field indicates the international phone code and satellite position for a country.",
 	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
+	 *     example="country code - 257; satellite earth station - 1 Intelsat (Indian Ocean) (2015)",
+	 *     @OAS\ExternalDocumentation(description="For a full list of country phone codes please refer to Wikipedia",url="https://en.wikipedia.org/wiki/List_of_country_calling_codes")
 	 * )
 	 *
 	 * @method static CountryCommunication wherePhoneSystemInternational($value)
@@ -129,11 +118,9 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="phone_system_domestic",
-	 *     description="The phone_system_domestic for the Communications Model",
+	 *     description="This field gives a general assessment of the status of the domestic phone system.",
 	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
+	 *     example="Fixed-line teledensity of only about 6 per 100 persons; mobile-cellular teledensity approaching 50 per 100 persons"
 	 * )
 	 *
 	 * @method static CountryCommunication wherePhoneSystemDomestic($value)
@@ -145,11 +132,9 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="broadcast_media",
-	 *     description="The broadcast_media for the Communications Model",
+	 *     description="This field indicates the independence and connections between the different companies that operate within the country",
 	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
+	 *     example="4 state-controlled national TV channels; Polish and Russian TV broadcasts are available in some areas..."
 	 * )
 	 *
 	 * @method static CountryCommunication whereBroadcastMedia($value)
@@ -161,11 +146,13 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="internet_country_code",
-	 *     description="The internet_country_code for the Communications Model",
+	 *     description="The TLD extension, Top Level Domain, for the country",
 	 *     type="string",
+	 *     format="alpha",
 	 *     minLength=2,
 	 *     maxLength=2,
-	 *     example="EU"
+	 *     example="af",
+	 *     @OAS\ExternalDocumentation(description="For a full list of top level domains",url="https://en.wikipedia.org/wiki/List_of_Internet_top-level_domains")
 	 * )
 	 *
 	 * @method static CountryCommunication whereInternetCountryCode($value)
@@ -177,11 +164,9 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="internet_total_users",
-	 *     description="The internet_total_users for the Communications Model",
+	 *     description="The number of people who have access to the internet.",
 	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
+	 *     example="1.259 million"
 	 * )
 	 *
 	 * @method static CountryCommunication whereInternetTotalUsers($value)
@@ -193,11 +178,10 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="internet_population_percent",
-	 *     description="The internet_population_percent for the Communications Model",
-	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
+	 *     description="The percent of the populace who have access to the internet",
+	 *     type="number",
+	 *     format="float",
+	 *     example="93.0"
 	 * )
 	 *
 	 * @method static CountryCommunication whereInternetPopulationPercentage($value)
@@ -209,11 +193,10 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="created_at",
-	 *     description="The created_at for the Communications Model",
+	 *     description="The created_at timestamp for the Communications Model",
 	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
+	 *     format="date-time",
+	 *     example="2018-02-12 19:35:57"
 	 * )
 	 *
 	 * @method static CountryCommunication whereCreatedAt($value)
@@ -225,11 +208,10 @@ class CountryCommunication extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="updated_at",
-	 *     description="The updated_at for the Communications Model",
+	 *     description="The updated_at timestamp for the Communications Model",
 	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
+	 *     format="date-time",
+	 *     example="2018-02-12 19:35:57"
 	 * )
 	 *
 	 * @method static CountryCommunication whereUpdatedAt($value)
