@@ -37,12 +37,15 @@ class ProjectsController extends APIController
      */
     public function index()
     {
-	    $user = \Auth::user() ?? Key::find($this->key)->user;
+
 	    if(!$this->api) {
-	        if(!$user) return $this->setStatusCode(401)->replyWithError("you're not logged in");
+		    $user = \Auth::user();
+	        if(!$user) return view('projects.index');
         	return view('dashboard.projects.index',compact('user'));
         }
 
+	    $key = Key::find($this->key);
+	    $user = $key->user;
 	    $projects = ($user->admin) ? Project::all() : $user->projects;
 	    return $this->reply(fractal()->transformWith(ProjectTransformer::class)->collection($projects));
     }
@@ -71,6 +74,15 @@ class ProjectsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\RequestBody(required=true, description="Information supplied for user creation", @OAS\MediaType(mediaType="application/json",
+	 *          @OAS\Schema(
+	 *              @OAS\Property(property="name",                    ref="#/components/schemas/Project/properties/name"),
+	 *              @OAS\Property(property="url_avatar",              ref="#/components/schemas/Project/properties/url_avatar"),
+	 *              @OAS\Property(property="url_avatar_icon",         ref="#/components/schemas/Project/properties/url_avatar_icon"),
+	 *              @OAS\Property(property="url_site",                ref="#/components/schemas/Project/properties/url_site"),
+	 *              @OAS\Property(property="description",             ref="#/components/schemas/Project/properties/description")
+	 *          )
+	 *     )),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -100,7 +112,6 @@ class ProjectsController extends APIController
 	    }
 	    $project = \DB::transaction(function () use($request,$user) {
 	        $project = Project::create([
-				'id'              => $request->id,
 				'name'            => $request->name,
 				'url_avatar'      => $request->url_avatar,
 				'url_avatar_icon' => $request->url_avatar_icon,

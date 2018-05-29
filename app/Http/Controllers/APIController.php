@@ -52,7 +52,7 @@ class APIController extends Controller
 	 * @OAS\Parameter(parameter="reply",name="reply",in="query",description="Setting this param to true will add format the return as a specific file type. The currently supported return types are `xml`, `csv`, `json`, and `yaml`",@OAS\Schema(type="string",enum={"xml","csv","json","yaml"}))
 	 * @OAS\Parameter(name="sort_by", in="query", description="The field to sort by", @OAS\Schema(type="string"))
 	 * @OAS\Parameter(name="sort_dir", in="query", description="The direction to sort by", @OAS\Schema(type="string",enum={"asc","desc"}))
-	 *
+	 * @OAS\Parameter(name="l10n", in="query", description="When set to a valid three letter language iso, the returning results will be localized in the language matching that iso. (If an applicable translation exists).", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
 	 *
 	 */
 

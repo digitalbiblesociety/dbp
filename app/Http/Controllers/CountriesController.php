@@ -31,7 +31,7 @@ class CountriesController extends APIController
 	 *     summary="Returns Countries",
 	 *     description="Returns the List of Countries",
 	 *     operationId="v4_countries.all",
-	 *     @OAS\Parameter(name="iso", in="query", description="When set, the returning language and country names will be in the language matching the iso given. (If an applicable translation exists).", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
+	 *     @OAS\Parameter(name="l10n", in="query", description="When set to a valid three letter language iso, the returning results will be localized in the language matching that iso. (If an applicable translation exists).", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
 	 *     @OAS\Parameter(name="has_filesets", in="query", description="Filter the returned countries to only those containing filesets for languages spoken within the country", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="bucket_id", in="query", description="Filter the returned countries to only those containing filesets for a specific bucket", @OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
 	 *     @OAS\Parameter(name="include_languages", in="query", description="When set to true, the return will include the major languages used in each country", @OAS\Schema(type="boolean",default=false)),

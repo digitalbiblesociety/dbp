@@ -70,12 +70,6 @@ class FilmsController extends APIController {
 
 	/**
 	 *
-	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
-	 */
-
-	/**
-	 *
 	 * Returns an array of version return types
 	 *
 	 * @category v2_video_path
