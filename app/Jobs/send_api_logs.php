@@ -71,7 +71,9 @@ class send_api_logs implements ShouldQueue
 		    $geo_ip = geoip($ip_address);
 		    $geo_array = [$geo_ip->lat,$geo_ip->lon,$geo_ip->country,$geo_ip->city,$geo_ip->state_name,$geo_ip->postal_code];
 		    $this->log_string = implode(':::',array_merge($log_array,$geo_array));
+		    $this->log_string .= ':::'.env('APP_SERVER_NAME');
 	    }
+
     }
 
 }

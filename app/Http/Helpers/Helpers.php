@@ -134,7 +134,6 @@ function sendLogsToS3($request, $status_code)
 	foreach ($_GET as $header => $value) $log_string .= ($value != '') ? $header."=".$value."|" : $header."|";
 	$log_string = rtrim($log_string,"|");
 	$log_string .= ':::'.$request->getClientIps()[0];
-	$log_string .= ':::'.env('APP_SERVER_NAME');
 	//if($request->getContent()) foreach (collect($request->getContent())->toArray() as $header => $value) $log_string .= $header."=".$value."|";
 	App\Jobs\send_api_logs::dispatch($log_string);
 }
