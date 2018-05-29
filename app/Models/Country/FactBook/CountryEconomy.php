@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @OAS\Schema (
  *     type="object",
- *     description="CountryEconomy",
- *     title="CountryEconomy",
+ *     description="The Country Economy Model stores information about the economic status of a country as reported by the CIA's World Factbook",
+ *     title="Country Economy",
  *     @OAS\Xml(name="CountryEconomy")
  * )
  *
@@ -32,9 +32,10 @@ class CountryEconomy extends Model
 	/**
 	 *
 	 * @OAS\Property(
-     *     title="overview",
-     *     description="Economy - overview",
-     *     type="string"
+     *     title="Overview",
+	 *     type="string",
+	 *     description="A general overview of the countries economic status.",
+     *     example="Afghanistan's economy is recovering from decades of conflict. The economy has improved significantly since the fall of the Taliban regime in 2001 largely because of the infusion of international assistance, the recovery of the agricultural sector, and service sector growth..."
      * )
 	 *
 	 * @method static CountryEconomy whereOverview($value)
@@ -44,9 +45,11 @@ class CountryEconomy extends Model
 	/**
 	 *
 	 * @OAS\Property(
-     *     title="gdp_power_parity",
-     *     description="GDP (purchasing power parity)",
-     *     type="string"
+     *     title="GDP (purchasing power parity)",
+     *     description="The GDP (PPP) of the country",
+     *     type="string",
+	 *     example="$64.08 billion (2016 est.) ++ $62.82 billion (2015 est.) ++ $62.35 billion (2014 est.)",
+	 *     @OAS\ExternalDocumentation(description="For a detailed list of countries and their PPP GDP see:",url="https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(PPP)_per_capita")
      * )
 	 *
 	 * @method static CountryEconomy whereGdpPowerParity($value)
@@ -56,9 +59,10 @@ class CountryEconomy extends Model
 	/**
 	 *
 	 * @OAS\Property(
-     *     title="gdp_real_growth",
-     *     description="GDP - real growth rate",
-     *     type="string"
+     *     title="GDP real growth rate",
+     *     description="The GDP (RGR) of the country",
+     *     type="string",
+	 *     @OAS\ExternalDocumentation(description="For a detailed list of countries and their RGR GDP see:",url="https://en.wikipedia.org/wiki/List_of_countries_by_real_GDP_growth_rate")
      * )
 	 *
 	 * @method static CountryEconomy whereGdpRealGrowth($value)
@@ -68,8 +72,8 @@ class CountryEconomy extends Model
 	/**
 	 *
 	 * @OAS\Property(
-     *     title="gdp_per_capita",
-     *     description="GDP - per capita (PPP)",
+     *     title="GDP - per capita (PPP)",
+     *     description="The GDP (PPP) of the country",
      *     type="string"
      * )
 	 *
@@ -80,8 +84,8 @@ class CountryEconomy extends Model
 	/**
 	 *
 	 * @OAS\Property(
-     *     title="gdp_household_consumption",
-     *     description="GDP - composition, by end use; household consumption",
+     *     title="GDP - composition, by end use; household consumption",
+     *     description="",
      *     type="string"
      * )
 	 *
