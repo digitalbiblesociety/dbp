@@ -129,7 +129,7 @@ function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
 
 function sendLogsToS3($request, $status_code)
 {
-	$log_string = time().':::'.$status_code.":::".$request->path().":::";
+	$log_string = time().':::'.env('APP_SERVER_NAME').':::'.$status_code.":::".$request->path().":::";
 	$log_string .= '"'.$request->header('User-Agent').'"'.":::";
 	foreach ($_GET as $header => $value) $log_string .= ($value != '') ? $header."=".$value."|" : $header."|";
 	$log_string = rtrim($log_string,"|");
