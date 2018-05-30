@@ -67,7 +67,7 @@ class UserHighlightsController extends APIController
 	    }
 
 	    if(!$highlights) return $this->setStatusCode(404)->replyWithError("No User found for the specified ID");
-	    return $this->reply(fractal()->collection($highlights)->transformWith(UserHighlightsTransformer::class));
+	    return $this->reply($highlights);
     }
 
     /**
@@ -185,7 +185,7 @@ class UserHighlightsController extends APIController
 	    $project_id = checkParam('project_id');
         $highlight = Highlight::where('project_id',$project_id)->where('id',$id)->first();
 	    if(!$highlight) return $this->setStatusCode(404)->replyWithError("No Note found for the specified ID");
-        return $highlight;
+        return $this->reply($highlight);
     }
 
     /**
