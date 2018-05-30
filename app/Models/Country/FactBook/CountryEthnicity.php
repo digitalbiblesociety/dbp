@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @OAS\Schema (
  *     type="object",
- *     description="CountryEthnicity",
- *     title="CountryEthnicity",
+ *     description="",
+ *     title="Country Ethnicity",
  *     @OAS\Xml(name="CountryEthnicity")
  * )
  *
@@ -34,7 +34,7 @@ class CountryEthnicity extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="name",
-	 *     description="",
+	 *     description="The name of the people group within the country",
 	 *     type="string"
 	 * )
 	 * @method static CountryGeography whereName($value)
@@ -46,8 +46,10 @@ class CountryEthnicity extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="population_percentage",
-	 *     description="",
-	 *     type="string"
+	 *     description="The percentage of the people group compared to the total population of the country",
+	 *     type="number",
+	 *     format="float",
+	 *     example="19.10"
 	 * )
 	 * @method static CountryGeography wherePopulationPercentage($value)
 	 * @property float $population_percentage
@@ -58,8 +60,9 @@ class CountryEthnicity extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="date",
-	 *     description="",
-	 *     type="string"
+	 *     description="The date the data was archived",
+	 *     type="integer",
+	 *     nullable=true
 	 * )
 	 * @method static CountryGeography whereDate($value)
 	 * @property int|null $date
