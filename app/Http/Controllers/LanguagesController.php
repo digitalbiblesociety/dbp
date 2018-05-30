@@ -37,6 +37,11 @@ class LanguagesController extends APIController
      *     @OAS\Parameter(name="has_filesets",in="query",description="When set to true will filter language results depending whether or not they have filesets. Will add new filesets_count field to the return.",@OAS\Schema(type="object",default=null,example=true)),
      *     @OAS\Parameter(name="bucket_id",in="query",description="The bucket_id",@OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
      *     @OAS\Parameter(name="include_alt_names",in="query",description="The include_alt_names",@OAS\Schema(ref="#/components/schemas/Language/properties/name")),
+     *     @OAS\Parameter(ref="#/components/parameters/l10n"),
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+     *     @OAS\Parameter(ref="#/components/parameters/reply"),
      *     @OAS\Response(
      *         response=200,
      *         description="successful operation",
@@ -56,6 +61,11 @@ class LanguagesController extends APIController
      *     @OAS\Parameter(name="family_only",in="query",description="When set to true the returned list is of only legal language families. The default is false",@OAS\Schema(type="object")),
      *     @OAS\Parameter(name="possibilities",in="query",description="When set to true the returned list is a combination of DBP languages and ISO languages not yet defined in DBP that meet any of the criteria",@OAS\Schema(type="object",default=null,example=true)),
      *     @OAS\Parameter(name="sort_by",in="query",description="Primary criteria by which to sort. 'name' refers to the native language name. The default is 'english'",@OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
+     *     @OAS\Parameter(ref="#/components/parameters/l10n"),
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+     *     @OAS\Parameter(ref="#/components/parameters/reply"),
      *     @OAS\Response(
      *         response=200,
      *         description="successful operation",
@@ -70,7 +80,9 @@ class LanguagesController extends APIController
 
 		$country = checkParam('country',null,'optional');
 		$code = checkParam('code|iso', null, 'optional');
-	    $translation_iso = checkParam('translation_iso', null, 'optional');
+	    $l10n = checkParam('l10n', null, 'optional') ?? "eng";
+	    $l10n_language = Language::where('iso',$l10n)->first();
+
 	    $language_name_portion = checkParam('name|language_name', null, 'optional');
 	    $full_word = checkParam('full_word', null, 'optional');
 	    $family_only = checkParam('family_only', null, 'optional');
@@ -107,6 +119,13 @@ class LanguagesController extends APIController
 				return $query->orderBy($sort_by);
 			})->get();
 
+		if($l10n) {
+			if(!$include_alt_names) {
+				$languages->load(['translation' => function ($query) use($l10n_language) {
+					$query->where('language_translation', $l10n_language->id);
+				}]);
+			}
+		}
 
 		if($has_filesets) {
 			foreach ($languages as $key => $language) {

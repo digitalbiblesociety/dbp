@@ -203,7 +203,7 @@ class LanguageTransformer extends BaseTransformer
 		$return = [
 			'iso_2b'          => $language->iso2B,
 			'iso'             => $language->iso,
-			'name'            => $language->name,
+			'name'            => $language->translation->name ?? $language->name,
 			'bibles'          => $language->bibles_count ?? $language->bibles->count()
 		];
 		if($language->relationLoaded('translations')) $return['alt_names'] = array_flatten($language->translations->pluck('name')->ToArray());
