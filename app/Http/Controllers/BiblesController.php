@@ -83,6 +83,8 @@ class BiblesController extends APIController
 	 */
 	public function index()
     {
+
+	    if(env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 	    // Return the documentation if it's not an API request
 	    if(!$this->api) return view('bibles.index');
 
@@ -99,6 +101,9 @@ class BiblesController extends APIController
 	    $country = checkParam('country', null, 'optional');
 	    $bucket = checkParam('bucket', null, 'optional');
 
+	    $cache_string = 'bibles'.$dam_id.'_'.$media.'_'.$language.'_'.$full_word.'_'.$iso.'_'.$updated.'_'.$organization.'_'.$sort_by.'_'.$sort_dir.'_'.$fileset_filter.'_'.$country.'_'.$bucket;
+
+	    $bibles = \Cache::remember($cache_string, 1600, function () use($dam_id,$media,$language,$full_word,$iso,$updated,$organization,$sort_by,$sort_dir,$fileset_filter,$country,$bucket) {
 			$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
 	        $bibles = Bible::with(['translations','language.translations', 'filesets' => function ($query) use ($bucket) {
 		                if($bucket) $query->where('bucket_id', $bucket);
@@ -151,7 +156,8 @@ class BiblesController extends APIController
 
 			if($this->v == 2) $bibles->load('language.parent.parentLanguage','alphabet','organizations');
 			if($this->v == "jQueryDataTable") $bibles->load('language.primaryCountry','alphabet','organizations');
-
+			return $bibles;
+        });
 			return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
     }
 
