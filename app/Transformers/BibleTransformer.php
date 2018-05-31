@@ -15,10 +15,6 @@ class BibleTransformer extends BaseTransformer
 	 */
     public function transform(Bible $bible)
     {
-    	$iso = checkParam('iso',null,'optional') ?? "eng";
-	    $bible->currentTranslation = $bible->translations->where('iso',$iso)->first();
-	    $bible->vernacularTranslation = $bible->translations->where('iso',$bible->iso)->first();
-
 	    switch ($this->version) {
 		    case "2": return $this->transformForV2($bible);
 		    case "3": return $this->transformForV2($bible);
@@ -136,17 +132,23 @@ class BibleTransformer extends BaseTransformer
 			 * )
 			 */
 			case "v4_bible.all": {
-				return [
+				$name = $bible->translatedTitles->where('iso','eng')->first();
+				$vname = ($bible->iso != 'eng') ? $bible->translatedTitles->where('iso',$bible->iso)->first() : false;
+
+				$output = [
 					"abbr"              => $bible->id,
-					"name"              => @$bible->currentTranslation->name,
-					"vname"             => @$bible->vernacularTranslation->name ?? "",
+					"name"              => ($name) ? $name->name : null,
+					"vname"             => ($vname) ? $vname->name : null,
 					"language"          => @$bible->language->name ?? null,
-					"language_autonym"  => @$bible->language->autonym ?? null,
-					"language_altNames" => ($bible->language) ? $bible->language->translations->pluck('name') : null,
+					"autonym"           => @$bible->language->autonym ?? null,
 					"iso"               => $bible->iso,
 					"date"              => $bible->date,
-					"filesets"          => $bible->filesets,
+					"filesets"          => $bible->filesets->mapToGroups(function ($item, $key) {
+						return [$item['bucket_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
+					})
 				];
+				if($bible->langauge) if($bible->langauge->relationLoaded('translations')) $output['language_altNames'] = $bible->language->translations->pluck('name');
+				return $output;
 			}
 
 			/**
@@ -200,7 +202,9 @@ class BibleTransformer extends BaseTransformer
 						return $book;
 					})->values(),
 					"links"        => $bible->links,
-					"filesets"     => $bible->filesets
+					"filesets"     => $bible->filesets->mapToGroups(function ($item, $key) {
+						return [$item['bucket_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
+					})
 				];
 			}
 

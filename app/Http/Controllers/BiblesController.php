@@ -98,14 +98,15 @@ class BiblesController extends APIController
 		$sort_by = checkParam('sort_by', null, 'optional');
 	    $sort_dir = checkParam('sort_dir', null, 'optional') ?? 'asc';
 	    $fileset_filter = boolval(checkParam('filter_by_fileset', null, 'optional')) ?? true;
+	    $include_alt_names = checkParam('include_alt_names', null, 'optional');
 	    $country = checkParam('country', null, 'optional');
 	    $bucket = checkParam('bucket', null, 'optional');
 
 	    $cache_string = 'bibles'.$dam_id.'_'.$media.'_'.$language.'_'.$full_word.'_'.$iso.'_'.$updated.'_'.$organization.'_'.$sort_by.'_'.$sort_dir.'_'.$fileset_filter.'_'.$country.'_'.$bucket;
-
-	    $bibles = \Cache::remember($cache_string, 1600, function () use($dam_id,$media,$language,$full_word,$iso,$updated,$organization,$sort_by,$sort_dir,$fileset_filter,$country,$bucket) {
+		//\Cache::forget($cache_string);
+	    return \Cache::remember($cache_string, 1600, function () use($dam_id,$media,$language,$full_word,$iso,$updated,$organization,$sort_by,$sort_dir,$fileset_filter,$country,$bucket,$include_alt_names) {
 			$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
-	        $bibles = Bible::with(['translations','language.translations', 'filesets' => function ($query) use ($bucket) {
+	        $bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($bucket) {
 		                if($bucket) $query->where('bucket_id', $bucket);
 	                }])
 			        ->has('translations')->has('language')
@@ -145,7 +146,9 @@ class BiblesController extends APIController
 			        ->orderBy('priority','desc')
 	                ->get();
 
-			if(isset($language)) {
+	        if($include_alt_names) $bibles->load('language.translations');
+
+			if($language) {
 				$bibles = $bibles->filter(function($bible) use ($language,$full_word) {
 					$altNameList = [];
 					if(isset($bible->language->translations)) $altNameList = $bible->language->translations->pluck('name')->toArray();
@@ -156,9 +159,8 @@ class BiblesController extends APIController
 
 			if($this->v == 2) $bibles->load('language.parent.parentLanguage','alphabet','organizations');
 			if($this->v == "jQueryDataTable") $bibles->load('language.primaryCountry','alphabet','organizations');
-			return $bibles;
+		    return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
         });
-			return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
     }
 
 

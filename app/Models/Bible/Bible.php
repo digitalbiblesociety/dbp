@@ -228,6 +228,10 @@ class Bible extends Model
     {
         return $this->HasMany(BibleTranslation::class)->where('name','!=','');
     }
+	public function translatedTitles()
+	{
+		return $this->HasMany(BibleTranslation::class)->where('name','!=','')->select(['iso','name','id','bible_id']);
+	}
     public function currentTranslation()
     {
         return $this->HasOne(BibleTranslation::class)->where('iso', \i18n::getCurrentLocale())->select('bible_id','name')->where('name','!=','');
