@@ -50,27 +50,31 @@ class CountriesController extends APIController
     public function index()
     {
     	if(!$this->api) return view('wiki.countries.index');
+
 	    $l10n = checkParam('l10n', null, 'optional') ?? "eng";
     	$has_filesets = checkParam('has_filesets', null, 'optional') ?? true;
 		$bucket_id = checkParam('bucket_id', null, 'optional');
 	    $include_languages = checkParam('include_languages', null, 'optional');
-	    if($l10n) {
-		    $language = Language::where('iso',$l10n)->first();
-		    if(!$language) return $this->setStatusCode(404)->replyWithError("No language for the provided iso: `$l10n` could be found.");
-	    }
-	    $countries = Country::exclude('introduction')->
-	    when($has_filesets, function($query) use ($bucket_id) {
-		    $query->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
-			    if($bucket_id) $query->where('bucket_id', $bucket_id);
-		    });
-	    })->get();
-	    if($l10n != "eng") $countries->load(['translation' => function($query) use ($language) {$query->where('language_id', $language->id);}]);
-	    if(isset($include_languages)) {
-		    $countries->load(['languagesFiltered' => function ($query) use($language) {
-			    $query->with(['translation' => function ($query) use($language) { $query->where('language_translation', $language->id); }]);
-		    }]);
-	    }
-	    return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
+
+	    return \Cache::remember("countries".$l10n.$has_filesets.$bucket_id.$include_languages, 1600, function () use($l10n,$has_filesets,$bucket_id,$include_languages) {
+	        if($l10n) {
+			    $language = Language::where('iso',$l10n)->first();
+			    if(!$language) return $this->setStatusCode(404)->replyWithError("No language for the provided iso: `$l10n` could be found.");
+	        }
+	        $countries = Country::exclude('introduction')->
+	        when($has_filesets, function($query) use ($bucket_id) {
+			    $query->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
+				    if($bucket_id) $query->where('bucket_id', $bucket_id);
+			    });
+	        })->get();
+	        if($l10n != "eng") $countries->load(['translation' => function($query) use ($language) {$query->where('language_id', $language->id);}]);
+	        if(isset($include_languages)) {
+			    $countries->load(['languagesFiltered' => function ($query) use($language) {
+				    $query->with(['translation' => function ($query) use($language) { $query->where('language_translation', $language->id); }]);
+			    }]);
+	        }
+	        return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
+	    });
     }
 
 	/**
@@ -88,13 +92,16 @@ class CountriesController extends APIController
 	 */
     public function joshuaProjectIndex()
     {
-	    $iso = (isset($_GET['iso'])) ? $_GET['iso'] : 'eng';
-	    $language = Language::where('iso', $iso)->first();
-	    $countries = JoshuaProject::with(['translations' => function ($query) use ($language) {
-		    $query->where('language_id', $language->id);
-	    }])->get();
 
-	    return $this->reply(fractal()->collection($countries)->transformWith(CountryTransformer::class));
+	    $l10n = (isset($_GET['iso'])) ? $_GET['iso'] : 'eng';
+	    return \Cache::remember("countries_jp_".$l10n, 1600, function () use($l10n) {
+		    $language = Language::where('iso', $l10n)->first();
+	        $countries = JoshuaProject::with(['translations' => function ($query) use ($language) {
+			    $query->where('language_id', $language->id);
+	        }])->get();
+		    return $this->reply(fractal()->collection($countries)->transformWith(CountryTransformer::class));
+	    });
+
     }
 
 	/**

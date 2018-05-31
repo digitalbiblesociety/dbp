@@ -157,15 +157,15 @@ class LanguagesController extends APIController
 	 */
 	public function volumeLanguage()
     {
-	    ini_set('memory_limit', '464M');
+	    if(env('APP_ENV') == 'local') ini_set('memory_limit', '464M');
 	    // $delivery =  checkParam('delivery', null, 'optional');
 	    $iso = checkParam('language_code', null, 'optional');
 	    $root = checkParam('root', null, 'optional');
 	    $media =  checkParam('media', null, 'optional');
 	    $organization_id =  checkParam('organization_id', null, 'optional');
 
-	    //$languages = \Cache::remember('volumeLanguage'.$root.$iso.$media.$organization_id, 2400, function () use($root,$iso,$media,$organization_id) {
-		    $languages = Language::select( [ 'id', 'iso', 'iso2B', 'iso2T', 'iso1', 'name', 'autonym' ] )->with( 'parent' )
+	    $languages = \Cache::remember('volumeLanguage'.$root.$iso.$media.$organization_id, 2400, function () use($root,$iso,$media,$organization_id) {
+		    return Language::select( [ 'id', 'iso', 'iso2B', 'iso2T', 'iso1', 'name', 'autonym' ] )->with( 'parent' )
 		                   ->when( $iso, function ( $query ) use ( $iso ) {
 			                   return $query->where( 'iso', $iso );
 		                   } )->when( $root, function ( $query ) use ( $root ) {
@@ -190,7 +190,7 @@ class LanguagesController extends APIController
 					    }
 				    }
 			    } )->get();
-	    //});
+	    });
 		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
     }
 
@@ -240,6 +240,7 @@ class LanguagesController extends APIController
 	/**
 	 * Handle the Country Lang route for V2
 	 *
+	 * // TODO: backwards compatibility - low priority
 	 * // TODO: Generation code for img_type & img_size
 	 *
 	 * @OAS\Get(
@@ -273,25 +274,34 @@ class LanguagesController extends APIController
 		// If it's not an API route send them to the documentation
 		if(!$this->api) return view('docs.v2.country_language');
 
+		if(env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
+
 		// Get and set variables from Params. Both are optional.
 		$sort_by = checkParam('sort_by', null, 'optional');
 		$lang_code = checkParam('lang_code', null, 'optional');
 		$country_code = checkParam('country_code', null, 'optional');
 		$country_additional = checkParam('additional', null, 'optional');
+		$cache_string = "v2_country_lang_".$sort_by.$lang_code.$country_code.$country_additional;
 
-		// Fetch Languages and add conditional sorting / loading depending on params
-		$languages = Language::has('primaryCountry')->has('bibles.filesets')->with('primaryCountry','countries')
-		->when($sort_by, function ($q) use ($sort_by) {
-			return $q->orderBy($sort_by, 'desc');
-		})->when($lang_code, function ($q) use ($lang_code) {
-			return $q->where('iso', $lang_code);
-		})->when($country_code, function ($q) use ($country_code) {
-			return $q->where('country_id', $country_code);
-		})->get();
-		if($country_additional) $languages->load('countries');
+		$countryLang = \Cache::remember($cache_string, 1600, function () use($sort_by,$lang_code,$country_code,$country_additional) {
 
+			// Fetch Languages and add conditional sorting / loading depending on params
+			$languages = Language::has( 'primaryCountry' )->has( 'bibles.filesets' )->with( 'primaryCountry', 'countries' )
+			                     ->when( $sort_by, function ( $q ) use ( $sort_by ) {
+				                     return $q->orderBy( $sort_by, 'desc' );
+			                     } )->when( $lang_code, function ( $q ) use ( $lang_code ) {
+					return $q->where( 'iso', $lang_code );
+				} )->when( $country_code, function ( $q ) use ( $country_code ) {
+					return $q->where( 'country_id', $country_code );
+				} )->get();
+			if ( $country_additional ) {
+				$languages->load( 'countries' );
+			}
+
+			return fractal()->collection( $languages )->serializeWith( $this->serializer )->transformWith( new LanguageTransformer() );
+		});
 		// Transform and return JSON
-		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer()));
+		return $this->reply($countryLang);
 	}
 
 	/**
