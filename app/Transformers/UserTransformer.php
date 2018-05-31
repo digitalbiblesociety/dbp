@@ -10,7 +10,6 @@ class UserTransformer extends BaseTransformer
 	public function transform(User $user)
 	{
 		switch ($this->version) {
-			case "jQueryDataTable": return $this->transformForDataTables($user);
 			case "2":
 			case "3": return $this->transformForV2($user);
 			case "4":

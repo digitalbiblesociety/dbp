@@ -15,7 +15,6 @@ class NumbersTransformer extends BaseTransformer
     public function transform(AlphabetNumber $alphabet_number)
     {
 		switch ($this->version) {
-		    case "jQueryDataTable": return $this->transformForDataTables($alphabet_number);
 			case "2":
 			case "3": return $this->transformForV2($alphabet_number);
 		    case "4":

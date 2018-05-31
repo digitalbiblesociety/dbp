@@ -21,7 +21,7 @@
 
 <div id="redoc-container"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0-alpha.17/bundles/redoc.standalone.js"> </script>
+<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
 <script src="/js/ref-parser.min.js"></script>
 <script>
     var request = new XMLHttpRequest();

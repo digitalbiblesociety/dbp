@@ -28,6 +28,13 @@ class AlphabetNumber extends Model
 	    "numeral_written"
     ];
 
+	protected $columns = ['id','script_id','script_variant_iso','numeral','numeral_vernacular','numeral_written']; // add all columns from you table
+
+	public function scopeExclude($query,$value = array())
+	{
+		return $query->select( array_diff( $this->columns,(array) $value) );
+	}
+
 	/**
 	 * @property string id
 	 * @method static AlphabetNumber whereId($value)

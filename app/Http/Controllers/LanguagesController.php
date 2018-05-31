@@ -76,7 +76,7 @@ class LanguagesController extends APIController
      */
     public function index()
     {
-	    if(!$this->api) return view('languages.index');
+	    if(!$this->api) return view('wiki.languages.index');
 
 		$country = checkParam('country',null,'optional');
 		$code = checkParam('code|iso', null, 'optional');
@@ -372,8 +372,9 @@ class LanguagesController extends APIController
 	    $language = fetchLanguage($id);
 	    $language->load("translations","codes","dialects","classifications","countries","bibles.translations","bibles.filesets","resources.translations","resources.links");
 	    if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
-    	if($this->api) return $this->reply(fractal()->item($language)->transformWith(new LanguageTransformer())->toArray());
-        return view('languages.show',compact('language'));
+    	if($this->api) return $this->reply(fractal()->item($language)->transformWith(new LanguageTransformer()));
+
+        return view('wiki.languages.show', compact('language'));
     }
 
     /**

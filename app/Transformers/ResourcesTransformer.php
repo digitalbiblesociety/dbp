@@ -14,7 +14,6 @@ class ResourcesTransformer extends BaseTransformer
 	public function transform(Resource $resource)
 	{
 		switch ($this->version) {
-			case "jQueryDataTable": return $this->transformForDataTables($resource);
 			case "4": return $this->transformForV4($resource);
 			default:  return $this->transformForV4($resource);
 		}

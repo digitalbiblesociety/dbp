@@ -53,11 +53,9 @@
             <table class="table" cellspacing="0" width="100%" data-route="organizations">
                 <thead>
                 <tr>
-                    <th>{{ trans('fields.alternativeNames') }}</th>
-                    <th>{{ trans('fields.name') }}</th>
-                    <th>{{ trans('fields.id') }}</th>
-                    <th>{{ trans('fields.iso') }}</th>
-                    <th>{{ trans('fields.bibles_count') }}</th>
+                    <th data-column-name="name" data-link="slug">{{ trans('fields.alternativeNames') }}</th>
+                    <th data-column-name="name">{{ trans('fields.name') }}</th>
+                    <th data-column-name="logos[0].url" data-image="true">{{ trans('fields.id') }}</th>
                 </tr>
                 </thead>
                 <tbody>

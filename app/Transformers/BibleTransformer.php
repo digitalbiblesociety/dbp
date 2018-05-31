@@ -20,7 +20,6 @@ class BibleTransformer extends BaseTransformer
 	    $bible->vernacularTranslation = $bible->translations->where('iso',$bible->iso)->first();
 
 	    switch ($this->version) {
-		    case "jQueryDataTable": return $this->transformForDataTables($bible);
 		    case "2": return $this->transformForV2($bible);
 		    case "3": return $this->transformForV2($bible);
 		    case "4": return $this->transformForV4($bible);

@@ -24,7 +24,7 @@ class ArticlesController extends APIController
 	 */
     public function index()
     {
-		if(!$this->api) return view('articles.index');
+		if(!$this->api) return view('community.articles.index');
 		$articles = Article::with('translations')->get();
 		return $this->reply($articles);
     }
@@ -42,7 +42,7 @@ class ArticlesController extends APIController
 	 */
     public function create()
     {
-        return view('articles.create');
+        return view('community.articles.create');
     }
 
 	/**
@@ -94,7 +94,7 @@ class ArticlesController extends APIController
 	 */
     public function show($id)
     {
-	    if(!$this->api) return view('articles.show');
+	    if(!$this->api) return view('community.articles.show');
 	    return $this->reply(Article::find($id));
     }
 
@@ -113,7 +113,7 @@ class ArticlesController extends APIController
 	 */
     public function edit($id)
     {
-	    return view('articles.edit');
+	    return view('community.articles.edit');
     }
 
     /**
@@ -125,7 +125,7 @@ class ArticlesController extends APIController
      */
     public function update(Request $request, $id)
     {
-	    return view('articles.show');
+	    return view('community.articles.show');
     }
 
     /**
@@ -136,7 +136,7 @@ class ArticlesController extends APIController
      */
     public function destroy($id)
     {
-	    return view('articles.index');
+	    return view('community.articles.index');
     }
 
 	/**

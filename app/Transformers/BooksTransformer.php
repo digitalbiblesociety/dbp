@@ -12,7 +12,6 @@ class BooksTransformer extends BaseTransformer
     public function transform($book)
     {
 	    switch ($this->version) {
-		    case "jQueryDataTable": return $this->transformForDataTables($book);
 		    case "2": return $this->transformForV2($book);
 		    case "3": return $this->transformForV3($book);
 		    case "4":

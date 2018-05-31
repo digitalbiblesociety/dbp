@@ -70,7 +70,7 @@ class OrganizationsController extends APIController
 		}
 
 		// Finally send them to the public view
-		return view('organizations.show', compact('organization'));
+		return view('community.organizations.show', compact('organization'));
 	}
 
 	public function bibles(string $slug)
@@ -88,7 +88,7 @@ class OrganizationsController extends APIController
 	{
 		$user = \Auth::user();
 		if(!$user->archivist) return $this->replyWithError('Not an Archivist');
-		return view('organizations.create');
+		return view('community.organizations.create');
 	}
 
 	public function apply()

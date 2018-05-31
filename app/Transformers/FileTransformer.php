@@ -14,7 +14,6 @@ class FileTransformer extends BaseTransformer
 	public function transform(BibleFile $file)
 	{
 		switch ($this->version) {
-			case "jQueryDataTable": return $this->transformForDataTables($file);
 			case "2": return $this->transformForV2($file);
 			case "3": return $this->transformForV3($file);
 			case "4":

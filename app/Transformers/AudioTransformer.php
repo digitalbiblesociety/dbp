@@ -12,7 +12,6 @@ class AudioTransformer extends BaseTransformer
 	public function transform($audio)
 	{
 		switch ($this->version) {
-			case "jQueryDataTable": return $this->transformForDataTables($audio);
 			case "2":
 			case "3": return $this->transformForV2($audio);
 			case "4":

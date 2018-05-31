@@ -47,9 +47,12 @@ class AlphabetsController extends APIController
 	 */
 	public function index()
     {
-	    $alphabets = Alphabet::all();
-    	if(!$this->api) return view('languages.alphabets.index', compact('alphabets'));
-		return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer));
+	    if(!$this->api) return view('wiki.languages.alphabets.index');
+	    \Cache::forget('alphabets');
+	    return \Cache::remember('alphabets', 1600, function () {
+		    $alphabets = Alphabet::select(['name','script','family','direction','type'])->get();
+		    return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer));
+	    });
     }
 
 
@@ -89,7 +92,7 @@ class AlphabetsController extends APIController
     {
 	    $alphabet = Alphabet::with('fonts','languages','bibles.currentTranslation')->where('script',$id)->first();
 	    if(!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
-    	if(!$this->api) return view('languages.alphabets.show', compact('alphabet'));
+    	if(!$this->api) return view('wiki.languages.alphabets.show', compact('alphabet'));
         return $this->reply(fractal()->item($alphabet)->transformWith(AlphabetTransformer::class)->serializeWith($this->serializer));
     }
 
@@ -108,7 +111,7 @@ class AlphabetsController extends APIController
     {
     	$validatedUser = $this->validateUser();
 	    if(!is_a($validatedUser, User::class)); return $validatedUser;
-        return view('languages.alphabets.create');
+        return view('wiki.languages.alphabets.create');
     }
 
 	/**
@@ -220,7 +223,7 @@ class AlphabetsController extends APIController
 	    $this->validateUser(Auth::user());
 
         $alphabet = Alphabet::find($script_id);
-        return view('languages.alphabets.edit',compact('alphabet'));
+        return view('wiki.languages.alphabets.edit',compact('alphabet'));
     }
 
 	/**

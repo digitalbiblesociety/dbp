@@ -49,30 +49,27 @@ class CountriesController extends APIController
 	 */
     public function index()
     {
-    	if(!$this->api) return view('countries.index');
-    	$iso = checkParam('iso', null, 'optional') ?? "eng";
+    	if(!$this->api) return view('wiki.countries.index');
+	    $l10n = checkParam('l10n', null, 'optional') ?? "eng";
     	$has_filesets = checkParam('has_filesets', null, 'optional') ?? true;
 		$bucket_id = checkParam('bucket_id', null, 'optional');
-		if($iso) {
-			$include_languages = checkParam('include_languages', null, 'optional');
-			$language = Language::where('iso',$iso)->first();
-			if(!$language) return $this->setStatusCode(404)->replyWithError("No language for the provided iso: `$iso` could be found.");
-		}
-
-		$countries = Country::exclude('introduction')->
-			when($has_filesets, function($query) use ($bucket_id) {
-				$query->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
-				if($bucket_id) $query->where('bucket_id', $bucket_id);
-			});
-		})->get();
-
-		if($iso != "eng") $countries->load(['translation' => function($query) use ($language) {$query->where('language_id', $language->id);}]);
-		if(isset($include_languages)) {
-			$countries->load(['languagesFiltered' => function ($query) use($language) {
-				$query->with(['translation' => function ($query) use($language) { $query->where('language_translation', $language->id); }]);
-			}]);
-		}
-
+	    $include_languages = checkParam('include_languages', null, 'optional');
+	    if($l10n) {
+		    $language = Language::where('iso',$l10n)->first();
+		    if(!$language) return $this->setStatusCode(404)->replyWithError("No language for the provided iso: `$l10n` could be found.");
+	    }
+	    $countries = Country::exclude('introduction')->
+	    when($has_filesets, function($query) use ($bucket_id) {
+		    $query->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
+			    if($bucket_id) $query->where('bucket_id', $bucket_id);
+		    });
+	    })->get();
+	    if($l10n != "eng") $countries->load(['translation' => function($query) use ($language) {$query->where('language_id', $language->id);}]);
+	    if(isset($include_languages)) {
+		    $countries->load(['languagesFiltered' => function ($query) use($language) {
+			    $query->with(['translation' => function ($query) use($language) { $query->where('language_translation', $language->id); }]);
+		    }]);
+	    }
 	    return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
     }
 
@@ -153,7 +150,7 @@ class CountriesController extends APIController
 		$includes = $this->loadWorldFacts($country);
 	    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
 	    if($this->api) return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
-    	return view('countries.show',compact('country'));
+    	return view('wiki.countries.show',compact('country'));
     }
 
 	/**
@@ -172,7 +169,7 @@ class CountriesController extends APIController
 	public function create()
 	{
 		$this->validateUser();
-		return view('countries.create');
+		return view('wiki.countries.create');
 	}
 
 	/**
@@ -230,7 +227,7 @@ class CountriesController extends APIController
 	public function edit($id)
 	{
 		$country = Country::find($id);
-		return view('countries.edit',compact('country'));
+		return view('wiki.countries.edit',compact('country'));
 	}
 
 
@@ -265,7 +262,7 @@ class CountriesController extends APIController
 		$country = Country::find($id);
 
 		if($this->api) return $this->reply("Country Succesfully updated");
-		return view('countries.show',compact('country'));
+		return view('wiki.countries.show',compact('country'));
 	}
 
 	private function loadWorldFacts($country)

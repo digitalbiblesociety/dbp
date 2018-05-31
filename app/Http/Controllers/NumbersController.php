@@ -106,9 +106,10 @@ class NumbersController extends APIController
 	 */
     public function index()
     {
-	    $alphabets = Alphabet::has('numerals')->get();
-	    if($this->api) return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer));
-	    return view('languages.alphabets.numerals.index', compact('alphabets'));
+    	if(!$this->api) return view('wiki.languages.alphabets.numerals.index');
+
+    	$alphabets = Alphabet::with('numerals')->has('numerals')->get();
+	    return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer));
     }
 
 	/**
@@ -143,14 +144,14 @@ class NumbersController extends APIController
 	    if($this->api) return $this->reply(fractal()->collection($numerals)->transformWith(new NumbersTransformer())->serializeWith($this->serializer));
 
     	$alphabet = Alphabet::with('languages.bibles.translations')->find($system);
-		return view('languages.alphabets.numerals.show',compact('numerals','alphabet'));
+		return view('wiki.languages.alphabets.numerals.show',compact('numerals','alphabet'));
     }
 
     public function create()
     {
     	$alphabets = Alphabet::select('script')->get();
     	$languages = Language::select(['iso','name'])->get();
-		return view('languages.alphabets.numerals.create', compact('alphabets','languages'));
+		return view('wiki.languages.alphabets.numerals.create', compact('alphabets','languages'));
     }
 
 	public function store()
@@ -179,7 +180,7 @@ class NumbersController extends APIController
 	    $languages = Language::select(['iso','name'])->get();
 	    $numbers = AlphabetNumber::where('script_id', $system)->get();
 		if($this->api) return $numbers;
-		return view('languages.alphabets.numerals.edit',compact('alphabets','languages','numbers','system'));
+		return view('wiki.languages.alphabets.numerals.edit',compact('alphabets','languages','numbers','system'));
     }
 
     public function update()

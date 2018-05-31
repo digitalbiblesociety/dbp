@@ -8,11 +8,10 @@
         <table class="table" cellspacing="0" width="100%" data-route="alphabets">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Code</th>
-                    <th>Family</th>
-                    <th>Type</th>
-                    <th>Direction</th>
+                    <th data-column-name="name" data-link="script">Name</th>
+                    <th data-column-name="family">Family</th>
+                    <th data-column-name="type">Type</th>
+                    <th data-column-name="direction">Direction</th>
                 </tr>
             </thead>
             <tbody></tbody>

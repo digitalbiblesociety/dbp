@@ -54,7 +54,6 @@ class CountryTransformer extends BaseTransformer
 	public function transform($country)
 	{
 		switch ($this->version) {
-			case "jQueryDataTable": return $this->transformForDataTables($country);
 			case "2":
 			case "3": return $this->transformForV2($country);
 			case "4":

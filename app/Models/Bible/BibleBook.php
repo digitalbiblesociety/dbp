@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @OAS\Schema (
  *     type="object",
  *     description="The Bible Book Model stores the vernacular book titles and chapters",
- *     title="BibleBook",
+ *     title="Bible Book",
  *     @OAS\Xml(name="BibleBook")
  * )
  *

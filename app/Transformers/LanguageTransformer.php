@@ -9,26 +9,12 @@ class LanguageTransformer extends BaseTransformer
     public function transform(Language $language)
     {
     	switch ($this->version) {
-		    case "jQueryDataTable": return $this->transformForDataTables($language);
 		    case "2":
 		    case "3": return $this->transformForV2($language);
 		    case "4":
 		    default: return $this->transformForV4($language);
 	    }
     }
-
-	/**
-	 * @param Language $language
-	 *
-	 * @return array
-	 */
-	public function transformForDataTables(Language $language)
-	{
-		return [
-			'<a href="/languages/'.$language->id.'">'.$language->name.'</a>',
-			$language->iso
-		];
-	}
 
 	/**
 	 * @param Language $language

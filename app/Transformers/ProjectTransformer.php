@@ -15,20 +15,10 @@ class ProjectTransformer extends BaseTransformer
 	public function transform(Project $project)
     {
 	    switch ($this->version) {
-		    case "jQueryDataTable": return $this->transformForDataTables($project);
 		    case "4":
 		    default: return $this->transformForV4($project);
 	    }
     }
-
-	public function transformForDataTables($project)
-	{
-		return [
-			"<a href='/dashboard/projects/$project->id'>$project->name</a>",
-			$project->url_avatar_icon,
-			$project->url_site
-		];
-	}
 
 	/**
 	 * @OAS\Schema (

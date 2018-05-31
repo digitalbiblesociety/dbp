@@ -10464,6 +10464,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_dataTables_net__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_dataTables_net___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_dataTables_net__);
 
+
+Object.byString = function (o, s) {
+    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+    s = s.replace(/^\./, ''); // strip a leading dot
+    var a = s.split('.');
+    for (var i = 0, n = a.length; i < n; ++i) {
+        var k = a[i];
+        if (k in o) {
+            o = o[k];
+        } else {
+            return;
+        }
+    }
+    return o;
+};
+
 $(document).ready(function () {
     var tables = $(".table");
 
@@ -10477,14 +10493,44 @@ $(document).ready(function () {
                 var order = 0;
             }
 
+            var columns = [];
+            $.each(table.find("thead tr th"), function (index, column) {
+                column = $(column);
+
+                if (column.data("link")) {
+                    columns[index] = {
+                        data: column.data("column-name"),
+                        render: function render(data, type, row, meta) {
+                            data = '<a href="/' + table.data("route") + '/' + Object.byString(row, column.data("link")) + '">' + data + '</a>';
+                            return data;
+                        }
+                    };
+                    // apparently returning true is how to use continue in js
+                    return true;
+                }
+
+                if (column.data("image")) {
+                    columns[index] = {
+                        data: column.data("column-name"),
+                        render: function render(data, type, row, meta) {
+                            return '<img src="' + data + '" />';
+                        }
+                    };
+                    return true;
+                }
+
+                columns[index] = { data: column.data("column-name") };
+            });
+            console.log(columns);
             table.DataTable({
-                ajax: "https://api." + window.location.hostname + "/" + table.data("route") + "?key=1234&v=jQueryDataTable&params=" + table.data("params"),
+                ajax: "https://api." + window.location.hostname + "/" + table.data("route") + "?key=1234&v=4",
                 dom: '<<"dataTables_header"lf><t>ip>',
                 fixedHeader: true,
                 order: [order, "asc"],
                 lengthMenu: [[50, 250, 250, -1], [50, 100, 250, "All"]],
                 stateSave: true,
                 deferRender: true,
+                columns: columns,
                 language: {
                     search: '',
                     lengthMenu: '_MENU_',

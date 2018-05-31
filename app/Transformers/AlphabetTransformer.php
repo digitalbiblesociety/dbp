@@ -15,30 +15,11 @@ class AlphabetTransformer extends BaseTransformer
 	public function transform(Alphabet $alphabet)
 	{
 		switch ($this->version) {
-			case "jQueryDataTable": return $this->transformForDataTables($alphabet);
 			case "2":
 			case "3": return $this->transformForV2($alphabet);
 			case "4":
 			default: return $this->transformForV4($alphabet);
 		}
-	}
-
-	/**
-	 * Transforms the Response for the data table jquery plugin
-	 * Single quotes are preferred for a cleaner escape free json response
-	 * @param Alphabet $alphabet
-	 *
-	 * @return array
-	 */
-	public function transformForDataTables(Alphabet $alphabet)
-	{
-			return [
-				"<a href='".env('APP_URL')."/alphabets/$alphabet->script'>$alphabet->name</a>",
-				$alphabet->script,
-				$alphabet->family,
-				$alphabet->type,
-				$alphabet->direction
-			];
 	}
 
 	public function transformForV2(Alphabet $alphabet)
@@ -82,7 +63,6 @@ class AlphabetTransformer extends BaseTransformer
 					'type'      => $alphabet->type,
 					'direction' => $alphabet->direction
 				];
-				break;
 			}
 
 			/**
@@ -107,6 +87,10 @@ class AlphabetTransformer extends BaseTransformer
 			case "v4_alphabets.one": {
 				return $alphabet->toArray();
 				break;
+			}
+
+			case "v4_numbers.all": {
+				return $alphabet->toArray();
 			}
 
 		}

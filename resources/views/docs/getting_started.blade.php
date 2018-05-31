@@ -117,7 +117,30 @@
         <p></p>
 
         <h4>Community</h4>
-        <p></p>
+        <p>
+            The community section of the API allows not only API users to create and manage their users.
+            But also allows for notes, cross-references, and highlights to be used across different apps that utilize the Koinos API.
+        </p>
+
+        <p>Common User Authorization Actions</p>
+
+        <ul>
+            <li></li>
+            <li></li>
+            <li></li>
+            <p>
+                Most user password changes require a verification email to be sent to the user. The only exception to this rule is if the `old_password`
+                field is supplied to the <a href="/docs/swagger/v4#/Community/v4_user_reset2">/users/reset/password</a> route.
+                You can trigger a password reset email by sending the <a href="/docs/swagger/v4#/Community/v4_user_reset1">/users/reset/password</a> user's email.
+            </p>
+        </ul>
+
+        <p>Common User Notes Actions</p>
+        <ul>
+            <li>Creating a note</li>
+            <li>Updating a note</li>
+            <li>Displaying a new note</li>
+        </ul>
 
     </section>
 

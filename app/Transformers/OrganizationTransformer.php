@@ -18,7 +18,6 @@ class OrganizationTransformer extends BaseTransformer
 	    $organization->description = ($organization->translations->where('language_iso',$iso)->first()) ? $organization->translations->where('language_iso',$iso)->first()->description : '';
 
 	    switch ($this->version) {
-		    case "jQueryDataTable": return $this->transformForDataTables($organization, $iso);
 		    case "2":
 		    case "3": {
 		    	if($this->route == "v2_volume_organization_list") return $this->transformForV2_VolumeOrganizationListing($organization);
@@ -28,22 +27,6 @@ class OrganizationTransformer extends BaseTransformer
 		    default: return $this->transformForV4($organization,$iso);
 	    }
     }
-
-
-	/**
-	 * @param Organization $organization
-	 *
-	 * @return array
-	 */
-	public function transformForDataTables(Organization $organization, $iso)
-	{
-		$logo = @$organization->logos->where('icon',1)->first();
-		if(!$logo) $logo = @$organization->logos->first();
-		if($logo) $logo = "<img src='".$logo->url."' />";
-
-		$url_iso = ($iso != "eng") ? '/'.$iso : '';
-		return [ "<a href='".$url_iso.'/organizations/'.$organization->id."'>". $logo . $organization->name  ."</a>" ];
-	}
 
 	/**
 	 * @param Organization $organization
