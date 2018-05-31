@@ -48,10 +48,11 @@ class AlphabetsController extends APIController
 	public function index()
     {
 	    if(!$this->api) return view('wiki.languages.alphabets.index');
-	    return \Cache::remember('alphabets', 1600, function () {
+	    $alphabets = \Cache::remember('alphabets', 1600, function () {
 		    $alphabets = Alphabet::select(['name','script','family','direction','type'])->get();
-		    return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer));
+		    return fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer);
 	    });
+	    return $this->reply($alphabets);
     }
 
 
