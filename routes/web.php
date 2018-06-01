@@ -56,7 +56,7 @@ Route::name('ui_bibleDisplay_read.search')->post('/read/{id}/search',           
 Route::name('ui_bibleDisplay_read.chapter')->get('/read/{id}/{book}/{chapter}',   'BibleDisplayController@chapter');
 
 
-Route::get('/permissions',       'BibleFileSetPermissionsController@user')->name('view_bible_filesets_permissions.user');
+Route::get('/permissions',                                'BibleFileSetPermissionsController@user')->name('view_bible_filesets_permissions.user');
 Route::resource('bibles/filesets/{id}/permissions',       'BibleFileSetPermissionsController', ['names' => [
 	'index'   => 'view_bible_filesets_permissions.index',
 	'edit'    => 'view_bible_filesets_permissions.edit',

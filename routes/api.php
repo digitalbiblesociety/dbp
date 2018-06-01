@@ -2,6 +2,7 @@
 
 Route::domain(env('API_URL'))->group(function () {
 	// VERSION 2
+
 	Route::name('v2_library_asset')->get('library/asset',                                 'HomeController@libraryAsset');
 	Route::name('v2_library_version')->get('library/version',                             'BiblesController@libraryVersion');
 	Route::name('v2_library_book')->get('library/book',                                   'BooksController@show');
@@ -16,6 +17,8 @@ Route::domain(env('API_URL'))->group(function () {
 	Route::name('v2_library_volumeLanguage')->get('library/volumelanguage',               'LanguagesController@volumeLanguage');
 	Route::name('v2_library_volumeLanguageFamily')->get('library/volumelanguagefamily',   'LanguagesController@volumeLanguageFamily');
 	Route::name('v2_volume_organization_list')->get('library/volumeorganization',         'OrganizationsController@index');
+
+	// TODO: Cache below Routes
 	Route::name('v2_volume_history')->get('library/volumehistory',                        'BiblesController@history');
 	Route::name('v2_library_organization')->get('library/organization',                   'OrganizationsController@index');
 	Route::name('v2_audio_location')->get('audio/location',                               'AudioController@location');

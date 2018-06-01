@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "76eeb12dd6d528e72a5937a2031befc4",
+    "content-hash": "3c01bc6af8029c09b536258ace5495e7",
     "packages": [
         {
             "name": "albertcht/invisible-recaptcha",
@@ -67,16 +67,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.58.0",
+            "version": "3.59.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "ab1cf3e90aa5ad04946e9de3978a339d64528bb1"
+                "reference": "91149ea885f951eac91563a56263cfa4a8f48f6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ab1cf3e90aa5ad04946e9de3978a339d64528bb1",
-                "reference": "ab1cf3e90aa5ad04946e9de3978a339d64528bb1",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/91149ea885f951eac91563a56263cfa4a8f48f6c",
+                "reference": "91149ea885f951eac91563a56263cfa4a8f48f6c",
                 "shasum": ""
             },
             "require": {
@@ -143,7 +143,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2018-05-29T19:59:40+00:00"
+            "time": "2018-05-31T01:08:17+00:00"
         },
         {
             "name": "aws/aws-sdk-php-laravel",
@@ -3757,56 +3757,6 @@
                 "tail"
             ],
             "time": "2018-04-12T12:07:07+00:00"
-        },
-        {
-            "name": "spatie/pdf-to-image",
-            "version": "1.8.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/spatie/pdf-to-image.git",
-                "reference": "a5f70c9d5d11677ba1fc3d7a0705d6dca4cc29db"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/spatie/pdf-to-image/zipball/a5f70c9d5d11677ba1fc3d7a0705d6dca4cc29db",
-                "reference": "a5f70c9d5d11677ba1fc3d7a0705d6dca4cc29db",
-                "shasum": ""
-            },
-            "require": {
-                "ext-imagick": "*",
-                "php": "^7.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^6.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Spatie\\PdfToImage\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Freek Van der Herten",
-                    "email": "freek@spatie.be",
-                    "homepage": "https://spatie.be",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Convert a pdf to an image",
-            "homepage": "https://github.com/spatie/pdf-to-image",
-            "keywords": [
-                "convert",
-                "image",
-                "pdf",
-                "pdf-to-image",
-                "spatie"
-            ],
-            "time": "2018-04-03T11:51:11+00:00"
         },
         {
             "name": "spatie/server-side-rendering",
