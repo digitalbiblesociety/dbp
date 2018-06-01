@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class OrganizationLogo extends Model
 {
-	protected $hidden = ['organization_id'];
+	protected $hidden = ['organization_id','created_at','updated_at'];
 	protected $primaryKey = 'organization_logos';
 
 	/**
