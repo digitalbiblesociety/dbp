@@ -302,7 +302,7 @@ class Organization extends Model
      *
      * @var array
      */
-    protected $hidden = ['logo','facebook','twitter','id','code'];
+    protected $hidden = ['logo','facebook','twitter','id','code','created_at','updated_at'];
 
     public function translations($iso = null)
     {
