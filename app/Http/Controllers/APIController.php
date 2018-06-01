@@ -161,7 +161,7 @@ class APIController extends Controller
 	                	'rootElementName' => (isset($meta['rootElementName'])) ? $meta['rootElementName'] : 'root',
                         '_attributes' => (isset($meta['rootAttributes'])) ? $meta['rootAttributes'] : []
 	                ],true,"utf-8");
-                return response()->make($formatter, $this->getStatusCode())->header('Content-Type', 'text/xml; charset=utf-8');
+                return response()->make($formatter, $this->getStatusCode())->header('Content-Type', 'application/xml; charset=utf-8');
             case 'yaml':
                 $formatter = Formatter::make($object, Formatter::ARR);
                 return response()->make($formatter->toYaml(), $this->getStatusCode())->header('Content-Type', 'text/yaml; charset=utf-8');
