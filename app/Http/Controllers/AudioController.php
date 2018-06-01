@@ -60,7 +60,7 @@ class AudioController extends APIController
 		$fileset_id = CheckParam('dam_id',$id);
 		$chapter_id = CheckParam('chapter_id',null,'optional');
 		$book_id = CheckParam('book_id',null,'optional');
-		$bucket_id =  CheckParam('bucket_id',null,'optional') ?? env('FCBH_AWS_BUCKET');
+		$bucket_id =  CheckParam('bucket|bucket_id',null,'optional') ?? env('FCBH_AWS_BUCKET');
 		if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
 		if(isset($book)) $book_id = $book->id;
 		$fileset = BibleFileset::where('id', $fileset_id)->where('bucket_id',$bucket_id)->where('set_type_code', 'like', '%audio%')->first();

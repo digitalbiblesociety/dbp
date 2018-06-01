@@ -88,7 +88,7 @@ class BooksController extends APIController
 	public function show()
     {
 		$id = checkParam('dam_id');
-	    $bucket_id = checkParam('bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+	    $bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 	    $fileset = BibleFileset::with('bible')->where('id',$id)->where('bucket_id',$bucket_id)->first();
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params.");
 
@@ -196,7 +196,7 @@ class BooksController extends APIController
 	    if(!$this->api) return view('docs.books.chapters');
 
 	    $id = checkParam('dam_id');
-	    $bucket_id = checkParam('bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+	    $bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 	    $book_id = checkParam('book_id');
 
 	    $chapters = \Cache::remember('v2_library_chapter_'.$id.$bucket_id.$book_id, 1600, function () use($id, $bucket_id, $book_id) {

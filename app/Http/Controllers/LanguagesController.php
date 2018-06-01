@@ -91,7 +91,7 @@ class LanguagesController extends APIController
 	    $sort_by = checkParam('sort_by', null, 'optional') ?? "name";
 	    $has_bibles = checkParam('has_bibles', null, 'optional');
 	    $has_filesets = checkParam('has_filesets', null, 'optional') ?? true;
-	    $bucket_id = checkParam('bucket_id', null, 'optional');
+	    $bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 	    $include_alt_names = checkParam('include_alt_names', null, 'optional');
 
 	    $cache_string = 'v'.$this->v.'_languages_'.$country.$code.$l10n.$l10n_language.$language_name_portion.$full_word.$family_only.$possibilities.$sort_by.$has_bibles.$has_filesets.$bucket_id.$include_alt_names;

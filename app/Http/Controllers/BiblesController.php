@@ -100,7 +100,7 @@ class BiblesController extends APIController
 	    $fileset_filter = boolval(checkParam('filter_by_fileset', null, 'optional')) ?? true;
 	    $include_alt_names = checkParam('include_alt_names', null, 'optional');
 	    $country = checkParam('country', null, 'optional');
-	    $bucket = checkParam('bucket|bucket_id', null, 'optional');
+	    $bucket = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
 	    $cache_string = 'bibles'.$dam_id.'_'.$media.'_'.$language.'_'.$full_word.'_'.$iso.'_'.$updated.'_'.$organization.'_'.$sort_by.'_'.$sort_dir.'_'.$fileset_filter.'_'.$country.'_'.$bucket;
 

@@ -54,7 +54,7 @@ class CountriesController extends APIController
 
 	    $l10n = checkParam('l10n', null, 'optional') ?? "eng";
     	$has_filesets = checkParam('has_filesets', null, 'optional') ?? true;
-		$bucket_id = checkParam('bucket_id', null, 'optional');
+	    $bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 	    $include_languages = checkParam('include_languages', null, 'optional');
 
 	    return \Cache::remember("countries".$l10n.$has_filesets.$bucket_id.$include_languages, 1600, function () use($l10n,$has_filesets,$bucket_id,$include_languages) {

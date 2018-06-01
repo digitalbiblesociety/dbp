@@ -60,8 +60,7 @@ class BibleFileSetsController extends APIController
 	    $bible_id = CheckParam('dam_id|fileset_id',$id);
 	    $chapter_id = CheckParam('chapter_id',null,'optional');
 	    $book_id = CheckParam('book_id',null,'optional');
-	    $bucket_id = CheckParam('bucket_id', null, 'optional');
-	    if(!$bucket_id) $bucket_id = CheckParam('bucket', null, 'optional') ?? "s3_fcbh";
+	    $bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 	    $lifespan = CheckParam('lifespan',null,'optional') ?? 5;
 	    $type = checkParam('type');
 	    $versification = checkParam('versification', null, 'optional');
@@ -129,7 +128,7 @@ class BibleFileSetsController extends APIController
     public function download($id)
     {
 	    $set_id = CheckParam('fileset_id',$id);
-	    $bucket_id = checkParam('bucket_id', null);
+	    $bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 	    $books = CheckParam('book_ids',null,'optional');
 
 	    $fileset = BibleFileset::where('id',$set_id)->where('bucket_id',$bucket_id)->first();
@@ -172,7 +171,7 @@ class BibleFileSetsController extends APIController
 	 */
 	public function podcast($id)
 	{
-		$bucket_id = checkParam('bucket', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$fileset = BibleFileset::with('files.currentTitle','bible')->where('id',$id)->where('bucket_id',$bucket_id)->first();
 		if(!$fileset) return $this->replyWithError("No Fileset exists for this ID");
 
