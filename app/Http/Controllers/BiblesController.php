@@ -64,7 +64,7 @@ class BiblesController extends APIController
 	 *     @OAS\Parameter(name="organization_id",      in="query", description="The owning organization to return bibles for. For a complete list of ids see the `/organizations` route", @OAS\Schema(type="string")),
 	 *     @OAS\Parameter(name="sort_by",              in="query", description="The any field to within the bible model may be selected as the value for this `sort_by` param.", @OAS\Schema(type="string")),
 	 *     @OAS\Parameter(name="sort_dir",             in="query", description="The direction to sort by the field specified in `sort_by`. Either `asc` or `desc`", @OAS\Schema(type="string")),
-	 *     @OAS\Parameter(name="bucket",               in="query", description="The bucket_id to filter results by. At the moment there are two buckets provided `dbp-dev` & `dbs-web`", @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="bucket_id",            in="query", description="The bucket_id to filter results by. At the moment there are two buckets provided `dbp-dev` & `dbs-web`", @OAS\Schema(type="string")),
 	 *     @OAS\Parameter(name="filter_by_fileset",    in="query", description="This field defaults to true but when set to false will return all Bible entries regardless of whether or not the API has content for that biblical text.", @OAS\Schema(type="string")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
@@ -100,7 +100,7 @@ class BiblesController extends APIController
 	    $fileset_filter = boolval(checkParam('filter_by_fileset', null, 'optional')) ?? true;
 	    $include_alt_names = checkParam('include_alt_names', null, 'optional');
 	    $country = checkParam('country', null, 'optional');
-	    $bucket = checkParam('bucket', null, 'optional');
+	    $bucket = checkParam('bucket|bucket_id', null, 'optional');
 
 	    $cache_string = 'bibles'.$dam_id.'_'.$media.'_'.$language.'_'.$full_word.'_'.$iso.'_'.$updated.'_'.$organization.'_'.$sort_by.'_'.$sort_dir.'_'.$fileset_filter.'_'.$country.'_'.$bucket;
 
