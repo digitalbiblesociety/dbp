@@ -13,7 +13,7 @@ class BibleTransformer extends BaseTransformer
 	 *
 	 * @return array
 	 */
-    public function transform(Bible $bible)
+    public function transform($bible)
     {
 	    switch ($this->version) {
 		    case "2": return $this->transformForV2($bible);
@@ -28,15 +28,32 @@ class BibleTransformer extends BaseTransformer
     	    switch($this->route) {
 
 		        case "v2_library_metadata": {
-			        return [
+		        	$output = [
 				        "dam_id"         => $bible->id,
-				        "mark"           => $bible->copyright,
-				        "volume_summary" => null,
+				        "mark"           => $bible->copyright->copyright,
+				        "volume_summary" => $bible->copyright->copyright_description,
 				        "font_copyright" => null,
-				        "font_url"       => (isset($bible->alphabet->primaryFont)) ? $bible->alphabet->primaryFont->fontFileName : null,
-				        "organization"   => $bible->organizations
+				        "font_url"       => null
 			        ];
-			        break;
+			        $organization = @$bible->copyright->organizations->first();
+		        	if($organization) {
+				        $output["organization"] = [
+					        'organization_id'       => $organization->id,
+					        'organization'          => $organization->name,
+					        'organization_english'  => $organization->name,
+					        'organization_role'     => $bible->copyright->role->roleTitle->name,
+					        'organization_url'      => $organization->url_website,
+					        'organization_donation' => $organization->url_donate,
+					        'organization_address'  => $organization->address,
+					        'organization_address2' => $organization->address2,
+					        'organization_city'     => $organization->city,
+					        'organization_state'    => $organization->state,
+					        'organization_country'  => $organization->country,
+					        'organization_zip'      => $organization->zip,
+					        'organization_phone'    => $organization->phone,
+				        ];
+			        }
+			        return $output;
 		        }
 
 		        case "v2_volume_history": {

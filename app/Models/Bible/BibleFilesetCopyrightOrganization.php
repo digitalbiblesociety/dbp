@@ -17,4 +17,9 @@ class BibleFilesetCopyrightOrganization extends Model
 		return $this->belongsTo(BibleFilesetCopyright::class, 'hash_id','hash_id');
 	}
 
+	public function roleTitle()
+	{
+		return $this->belongsTo(BibleFilesetCopyrightRole::class, 'organization_role', 'id');
+	}
+
 }

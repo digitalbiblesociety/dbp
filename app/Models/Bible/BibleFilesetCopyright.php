@@ -102,7 +102,6 @@ class BibleFilesetCopyright extends Model
 	 */
 	protected $open_access;
 
-
 	/**
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
@@ -110,6 +109,11 @@ class BibleFilesetCopyright extends Model
 	public function organizations()
 	{
 		return $this->HasManyThrough(Organization::class, BibleFilesetCopyrightOrganization::class, 'hash_id', 'id', 'hash_id', 'organization_id');
+	}
+
+	public function role()
+	{
+		return $this->hasOne(BibleFilesetCopyrightOrganization::class,'hash_id','hash_id');
 	}
 
 	public function fileset()
