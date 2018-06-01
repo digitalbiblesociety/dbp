@@ -213,12 +213,38 @@ class LanguagesController extends APIController
 	 *
 	 * @param language_code (optional): the three letter language code.
 	 * @param root (optional): the native language or English language language name root. Can be used to restrict the response to only languages that start with 'Quechua' for example
-	 * @deprecated full_word (optional): [true|false] Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string 'new' is anywhere in the language name, like in "Newari" and "Awa for Papua New Guinea". When true, it will only return volumes where the language name contains the full word 'new', like in "Awa for Papua New Guinea". Default is false.
 	 * @param media (optional): [text|audio|video] - the format of languages the caller is interested in. This specifies if you want languages available in text or languages available in audio.
 	 * @param delivery (optional): [streaming|web_streaming|download|download_text|mobile|sign_language|local_bundled|podcast|mp3_cd|digital_download|bible_stick|subsplash|any|none] a criteria for approved delivery method. It is possible to OR these methods together using '|', such as "delivery=streaming|mobile". 'any' means any of the supported methods (this list may change over time). 'none' means assets that are not approved for any of the supported methods. All returned by default.
+	 * @deprecated full_word (optional): [true|false] Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string 'new' is anywhere in the language name, like in "Newari" and "Awa for Papua New Guinea". When true, it will only return volumes where the language name contains the full word 'new', like in "Awa for Papua New Guinea". Default is false.
 	 * @deprecated status (optional): [live|disabled|incomplete|waiting_review|in_review|discontinued] Publishing status of volume. The default is 'live'.
 	 * @deprecated resolution (optional): [lo|med|hi] Currently used for video volumes as they can be available in different resolutions, basically conforming to the loose general categories of low, medium, and high resolution. Low resolution is geared towards devices with smaller screens.
 	 * @param organization_id: The id of an organization by which to filter the languages of available volumes.
+	 *
+	 *
+	 * @OAS\Get(
+	 *     path="/library/volumelanguagefamily/",
+	 *     tags={"Library Catalog"},
+	 *     summary="Returns the list of languages",
+	 *     description="This method retrieves the list of language families for available volumes and the related volume data in the system according to the filter specified.",
+	 *     operationId="v2_library_volumeLanguageFamily",
+	 *     @OAS\Parameter(name="language_code",in="query"),
+	 *     @OAS\Parameter(name="root",in="query"),
+	 *     @OAS\Parameter(name="media",in="query"),
+	 *     @OAS\Parameter(name="delivery",in="query"),
+	 *     @OAS\Parameter(name="full_word",in="query"),
+	 *     @OAS\Parameter(name="status",in="query"),
+	 *     @OAS\Parameter(name="resolution",in="query"),
+	 *     @OAS\Parameter(ref="#/components/parameters/l10n"),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_library_language"))
+	 *     )
+	 * )
 	 *
 	 * @return mixed
 	 */
@@ -236,17 +262,20 @@ class LanguagesController extends APIController
 		$delivery =  checkParam('delivery', null, 'optional');
 		$organization_id =  checkParam('organization_id', null, 'optional');
 
-		$languages = Language::with('bibles')->with('dialects')
-			->with(['dialects.childLanguage' => function($query) {$query->select(['id','iso']);}])
-			->when($iso, function ($query) use ($iso) {
-				return $query->where('iso', $iso);
-			})->when($root, function ($query) use ($root) {
-				return $query->where('name', 'LIKE', '%'.$root.'%');
-			})->when($root, function ($query) use ($root) {
-				return $query->where('name', 'LIKE', '%'.$root.'%');
-			})
+		$languages = \Cache::remember('volumeLanguageFamily'.$root.$iso.$media.$delivery.$organization_id, 2400, function () use($root,$iso,$media,$delivery,$organization_id) {
+			$languages = Language::with( 'bibles' )->with( 'dialects' )
+			    ->with(['dialects.childLanguage' => function ( $query ) { $query->select( ['id', 'iso'] ); }])
+			    ->when( $iso, function ( $query ) use ( $iso ) {
+				    return $query->where( 'iso', $iso );
+			    } )->when( $root, function ( $query ) use ( $root ) {
+					return $query->where( 'name', 'LIKE', '%' . $root . '%' );
+				} )->when( $root, function ( $query ) use ( $root ) {
+					return $query->where( 'name', 'LIKE', '%' . $root . '%' );
+				} )
 			->get();
-		return $this->reply(fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray());
+			return fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer());
+		});
+		return $this->reply($languages);
 	}
 
 	/**

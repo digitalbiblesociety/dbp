@@ -166,6 +166,29 @@ class BiblesController extends APIController
 
 
 	/**
+	 * v2_volume_history
+	 *
+	 * @link https://api.dbp.dev/library/volumehistory?key=1234&v=2
+	 *
+	 * @OAS\Get(
+	 *     path="/library/volumehistory",
+	 *     tags={"Library Catalog"},
+	 *     summary="",
+	 *     description="",
+	 *     operationId="v2_volume_history",
+	 *     @OAS\Parameter(name="limit",  in="query", description="The Number of records to return"),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_bible.one"))
+	 *     )
+	 * )
 	 *
 	 * A Route to Review The Last 500 Recent Changes to The Bible Resources
 	 *
