@@ -45,10 +45,10 @@ class BooksController extends APIController
 	public function index()
 	{
 		if(!$this->api) return view('docs.books');
-		return $this->reply(\Cache::remember('v4_books_index', 2400, function() {
-			$books = Book::all();
-			return fractal()->collection($books)->transformWith(new BooksTransformer());
-		}));
+		$books = \Cache::remember('v4_books_index', 2400, function() {
+			return fractal()->collection(Book::all())->transformWith(new BooksTransformer());
+		});
+		return $this->reply($books);
 	}
 
 
@@ -95,18 +95,20 @@ class BooksController extends APIController
 	    $sophiaTable = $this->checkForSophiaTable($fileset);
 	    if(!is_string($sophiaTable)) return $sophiaTable;
 
-		$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable.'_vpl')->select('book','chapter')->distinct()->get());
-	    $books = Book::whereIn('id_usfx',$booksChapters->pluck('book')->unique()->toArray())->orderBy('protestant_order')->get();
+	    $libraryBook = \Cache::remember('v2_library_book_'.$id.$bucket_id.$fileset, 1600, function () use($id, $bucket_id, $fileset, $sophiaTable) {
+		    $booksChapters = collect( \DB::connection( 'sophia' )->table( $sophiaTable . '_vpl' )->select( 'book', 'chapter' )->distinct()->get() );
+		    $books         = Book::whereIn( 'id_usfx', $booksChapters->pluck( 'book' )->unique()->toArray() )->orderBy( 'protestant_order' )->get();
+		    $bible_id = $fileset->bible->first()->id;
+		    foreach ( $books as $key => $book ) {
+			    $chapters                       = $booksChapters->where( 'book', $book->id_usfx )->pluck( 'chapter' );
+			    $books[ $key ]->bible_id        = $bible_id;
+			    $books[ $key ]->chapters        = $chapters->implode( "," );
+			    $books[ $key ]->number_chapters = $chapters->count();
+		    }
+		    return fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer);
+	    });
 
-	    $bible_id = $fileset->bible->first()->id;
-	    foreach($books as $key => $book) {
-	    	$chapters = $booksChapters->where('book',$book->id_usfx)->pluck('chapter');
-	    	$books[$key]->bible_id = $bible_id;
-	    	$books[$key]->chapters = $chapters->implode(",");
-		    $books[$key]->number_chapters = $chapters->count();
-	    }
-
-		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer));
+		return $this->reply($libraryBook);
     }
 
 	/**
@@ -143,12 +145,14 @@ class BooksController extends APIController
 	public function bookNames()
     {
     	if(!$this->api) return view('docs.books.bookNames');
+		$iso = checkParam('language_code');
 
-		$languageCode = checkParam('language_code');
-		$language = fetchLanguage($languageCode);
+	    $libraryBookName = \Cache::remember('v2_library_bookName_'.$iso, 1600, function () use($iso) {
+		    $language = fetchLanguage( $iso );
+		    return BookTranslation::where( 'iso', $iso )->with( 'book' )->select( 'name', 'book_id' )->get()->pluck( 'name', 'book.id_osis' );
+	    });
 
-		// Fetch Bible Book Names By Bible Iso and Order by Book Order
-		return $this->reply(BookTranslation::where('iso',$languageCode)->with('book')->select('name','book_id')->get()->pluck('name','book.id_osis'));
+		return $this->reply($libraryBookName);
     }
 
 	/**
@@ -195,25 +199,25 @@ class BooksController extends APIController
 	    $bucket_id = checkParam('bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 	    $book_id = checkParam('book_id');
 
-	    $fileset = BibleFileset::where('id',$id)->orWhere('id', substr($id,0,-4))->where('bucket_id',$bucket_id)->first();
-	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the given ID");
+	    $chapters = \Cache::remember('v2_library_chapter_'.$id.$bucket_id.$book_id, 1600, function () use($id, $bucket_id, $book_id) {
+	        $fileset = BibleFileset::where('id',$id)->orWhere('id', substr($id,0,-4))->where('bucket_id',$bucket_id)->first();
+	        if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the given ID");
+	        $book = Book::where('id_osis',$book_id)->orWhere('id',$book_id)->first();
+	        if(!$book) return $this->setStatusCode(404)->replyWithError("No book found for the given ID");
+	        $sophiaTable = $this->checkForSophiaTable($fileset);
+	        if(!is_string($sophiaTable)) return $sophiaTable;
+			$chapters = \DB::connection('sophia')->table($sophiaTable.'_vpl')
+				->when($book, function($q) use ($book) { $q->where('book',$book->id_usfx); })
+				->select(['chapter','book'])->distinct()->orderBy('chapter')->get()
+				->map(function ($chapter) use ($id, $book) {
+					$chapter->book_id = $book->id_osis;
+					$chapter->bible_id = $id;
+					return $chapter;
+				});
+			return fractal()->collection($chapters)->serializeWith($this->serializer)->transformWith(new BooksTransformer());
+	    });
 
-	    $book = Book::where('id_osis',$book_id)->orWhere('id',$book_id)->first();
-	    if(!$book) return $this->setStatusCode(404)->replyWithError("No book found for the given ID");
-
-	    $sophiaTable = $this->checkForSophiaTable($fileset);
-	    if(!is_string($sophiaTable)) return $sophiaTable;
-
-		$chapters = \DB::connection('sophia')->table($sophiaTable.'_vpl')
-			->when($book, function($q) use ($book) { $q->where('book',$book->id_usfx); })
-			->select(['chapter','book'])->distinct()->orderBy('chapter')->get()
-			->map(function ($chapter) use ($id, $book) {
-				$chapter->book_id = $book->id_osis;
-				$chapter->bible_id = $id;
-				return $chapter;
-			});
-
-		return $this->reply(fractal()->collection($chapters)->serializeWith($this->serializer)->transformWith(new BooksTransformer()));
+		return $this->reply($chapters);
     }
 
     private function checkForSophiaTable($fileset)
