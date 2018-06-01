@@ -252,20 +252,75 @@ class BiblesController extends APIController
 	}
 
 	/**
+	 *
+	 * @link https://api.dbp.dev/library/metadata?key=1234&pretty&v=2
+	 *
+	 * @OAS\Get(
+	 *     path="/library/metadata",
+	 *     tags={"Library Catalog"},
+	 *     summary="This returns copyright and associated organizations info.",
+	 *     description="",
+	 *     operationId="v2_library_metadata",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_library_metadata")),
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_library_metadata")),
+	 *         @OAS\MediaType(mediaType="text/yaml",        @OAS\Schema(ref="#/components/schemas/v2_library_metadata")),
+	 *         @OAS\MediaType(mediaType="text/csv",         @OAS\Schema(ref="#/components/schemas/v2_library_metadata"))
+	 *     )
+	 * )
+	 *
+	 * @OAS\Schema (
+	 *     type="object",
+	 *     schema="v2_library_metadata",
+	 *     description="The various version ids in the old version 2 style",
+	 *     title="v2_library_version",
+	 *     @OAS\Xml(name="v2_library_version"),
+	 *     @OAS\Property(property="dam_id",         ref="#/components/schemas/BibleFileset/id"),
+	 *     @OAS\Property(property="mark",           ref="#/components/schemas/BibleFilesetCopyright/copyright"),
+	 *     @OAS\Property(property="volume_summary", ref="#/components/schemas/BibleFilesetCopyright/copyright_description"),
+	 *     @OAS\Property(property="organization", type="object",
+	 *     @OAS\AdditionalProperties(
+	 *         type="object",
+	 *         @OAS\Property(property="organization_id",       ref="#/components/schemas/Organization/id"),
+	 *         @OAS\Property(property="organization",          ref="#/components/schemas/Organization/name"),
+	 *         @OAS\Property(property="organization_english",  ref="#/components/schemas/Organization/name"),
+	 *         @OAS\Property(property="organization_role",     ref="#/components/schemas/Organization/role"),
+	 *         @OAS\Property(property="organization_url",      ref="#/components/schemas/Organization/url"),
+	 *         @OAS\Property(property="organization_donation", ref="#/components/schemas/Organization/donation"),
+	 *         @OAS\Property(property="organization_address",  ref="#/components/schemas/Organization/address"),
+	 *         @OAS\Property(property="organization_address2", ref="#/components/schemas/Organization/address2"),
+	 *         @OAS\Property(property="organization_city",     ref="#/components/schemas/Organization/city"),
+	 *         @OAS\Property(property="organization_state",    ref="#/components/schemas/Organization/state"),
+	 *         @OAS\Property(property="organization_country",  ref="#/components/schemas/Organization/country"),
+	 *         @OAS\Property(property="organization_zip",      ref="#/components/schemas/Organization/zip"),
+	 *         @OAS\Property(property="organization_phone",    ref="#/components/schemas/Organization/phone")
+	 *     )),
+	 * )
+	 *
 	 * @return mixed
 	 */
 	public function libraryMetadata()
 	{
+		if(env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 		$dam_id = checkParam('dam_id', null, 'optional');
 
-		if($dam_id == null) {
-			$bibles = Bible::with('organizations')->get();
-			return $this->reply(fractal()->collection($bibles)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
-		}
+		\Cache::forget('v2_library_metadata'.$dam_id);
+		$metadata = \Cache::remember('v2_library_metadata'.$dam_id, 1600, function () use ($dam_id) {
 
-		$bible = Bible::with('organizations')->find($dam_id);
-		return $this->reply(fractal()->item($bible)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
+			$metadata = BibleFileset::has('copyright')->with('copyright.organizations','copyright.role.roleTitle')->when($dam_id, function($q) use ($dam_id) {
+				$q->where('id',$dam_id)->first();
+			})->get();
 
+			if($dam_id) return fractal()->item($metadata)->serializeWith($this->serializer)->transformWith(new BibleTransformer());
+			return fractal()->collection($metadata)->serializeWith($this->serializer)->transformWith(new BibleTransformer());
+		});
+		return $this->reply($metadata);
 	}
 
     /**
