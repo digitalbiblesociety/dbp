@@ -108,8 +108,11 @@ class NumbersController extends APIController
     {
     	if(!$this->api) return view('wiki.languages.alphabets.numerals.index');
 
-    	$alphabets = Alphabet::with('numerals')->has('numerals')->get();
-	    return $this->reply(fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer));
+	    $alphabets = \Cache::remember('v4_numbers.index', 1600, function () {
+		    $alphabets = Alphabet::with( 'numerals' )->has( 'numerals' )->get();
+		    return fractal()->collection( $alphabets )->transformWith( new AlphabetTransformer() )->serializeWith( $this->serializer );
+	    });
+	    return $this->reply($alphabets);
     }
 
 	/**
@@ -140,11 +143,14 @@ class NumbersController extends APIController
 	 */
     public function show($system)
     {
-	    $numerals = AlphabetNumber::where('script_id', $system)->orderBy('numeral')->get();
-	    if($this->api) return $this->reply(fractal()->collection($numerals)->transformWith(new NumbersTransformer())->serializeWith($this->serializer));
+	    if(!$this->api) return view('wiki.languages.alphabets.numerals.show');
 
-    	$alphabet = Alphabet::with('languages.bibles.translations')->find($system);
-		return view('wiki.languages.alphabets.numerals.show',compact('numerals','alphabet'));
+    	$alphabet = Alphabet::find($system);
+    	if(!$alphabet) return $this->setStatusCode(404)->replyWithError("Alphabet System could not be found");
+	    \Cache::remember('v4_numbers_show_'.$system, 1600, function () use ($system) {
+	        $numerals = AlphabetNumber::where('script_id', $system)->orderBy('numeral')->get();
+	        if($this->api) return $this->reply(fractal()->collection($numerals)->transformWith(new NumbersTransformer())->serializeWith($this->serializer));
+	    });
     }
 
     public function create()
