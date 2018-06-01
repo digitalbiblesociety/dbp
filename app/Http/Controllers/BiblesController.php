@@ -103,7 +103,7 @@ class BiblesController extends APIController
 	    $bucket = checkParam('bucket', null, 'optional');
 
 	    $cache_string = 'bibles'.$dam_id.'_'.$media.'_'.$language.'_'.$full_word.'_'.$iso.'_'.$updated.'_'.$organization.'_'.$sort_by.'_'.$sort_dir.'_'.$fileset_filter.'_'.$country.'_'.$bucket;
-	    
+
 	    $bibles = \Cache::remember($cache_string, 1600, function () use($dam_id,$media,$language,$full_word,$iso,$updated,$organization,$sort_by,$sort_dir,$fileset_filter,$country,$bucket,$include_alt_names) {
 			$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
 	        $bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($bucket) {
@@ -184,6 +184,8 @@ class BiblesController extends APIController
 	 *
 	 * Get the list of versions defined in the system
 	 *
+	 * @link https://api.dbp.dev/library/version?key=1234&v=2
+	 *
 	 * @param code (optional): Get the entry for a three letter version code.
 	 * @param name (optional): Get the entry for a part of a version name in either native language or English.
 	 * @param sort_by (optional): [code|name|english] Primary criteria by which to sort. 'name' refers to the native language name. The default is 'english'.
@@ -226,25 +228,27 @@ class BiblesController extends APIController
 		$code = checkParam('code', null, 'optional');
 		$name = checkParam('name', null, 'optional');
 		$sort = checkParam('sort_by', null, 'optional');
-		$versions = BibleFileset::with('bible.translations')->has('bible.translations')->where('bucket_id',env('FCBH_AWS_BUCKET'))
-			->when($code, function($q) use ($code) {
-				$q->where('id', $code);
-			})->when($sort, function($q) use ($sort) {
-				$q->orderBy($sort);
-			})->get();
 
-		foreach ($versions as $version) {
-			$currentTranslations = $version->bible->first();
-			$version_name = $currentTranslations->translations->where('iso','!=','eng')->first();
-			$english_name = $currentTranslations->translations->where('iso','=','eng')->first();
-			$output[] = [
-				'version_code' => substr($version->id,3,3),
-				'version_name' => isset($version_name) ? ($version_name->name != $english_name->name) ? $version_name->name : "" : "",
-				'english_name' => $english_name ? $english_name->name : "",
-			];
-		}
-
-		return $this->reply($output);
+		$versions = \Cache::remember('v2_library_version_'.$code.$name.$sort, 1600, function () use($code,$name,$sort) {
+			$versions = BibleFileset::with('bible.translations')->has('bible.translations')->where('bucket_id',env('FCBH_AWS_BUCKET'))
+				->when($code, function($q) use ($code) {
+					$q->where('id', $code);
+				})->when($sort, function($q) use ($sort) {
+					$q->orderBy($sort);
+				})->get();
+			foreach ($versions as $version) {
+				$currentTranslations = $version->bible->first();
+				$version_name = $currentTranslations->translations->where('iso','!=','eng')->first();
+				$english_name = $currentTranslations->translations->where('iso','=','eng')->first();
+				$output[] = [
+					'version_code' => substr($version->id,3,3),
+					'version_name' => isset($version_name) ? ($version_name->name != $english_name->name) ? $version_name->name : "" : "",
+					'english_name' => $english_name ? $english_name->name : "",
+				];
+			}
+			return $output;
+		});
+		return $this->reply($versions);
 	}
 
 	/**
