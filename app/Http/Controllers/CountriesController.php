@@ -34,7 +34,7 @@ class CountriesController extends APIController
 	 *     @OAS\Parameter(name="l10n", in="query", description="When set to a valid three letter language iso, the returning results will be localized in the language matching that iso. (If an applicable translation exists).", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
 	 *     @OAS\Parameter(name="has_filesets", in="query", description="Filter the returned countries to only those containing filesets for languages spoken within the country", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="bucket_id", in="query", description="Filter the returned countries to only those containing filesets for a specific bucket", @OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
-	 *     @OAS\Parameter(name="include_languages", in="query", description="When set to true, the return will include the major languages used in each country", @OAS\Schema(type="boolean",default=false)),
+	 *     @OAS\Parameter(name="include_languages", in="query", description="When set to true, the return will include the major languages used in each country. You may optionally also include the names for those languages by setting it to `with_names`", @OAS\Schema(type="string")),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -50,6 +50,7 @@ class CountriesController extends APIController
     public function index()
     {
     	if(!$this->api) return view('wiki.countries.index');
+	    if(env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 
 	    $l10n = checkParam('l10n', null, 'optional') ?? "eng";
     	$has_filesets = checkParam('has_filesets', null, 'optional') ?? true;
@@ -69,8 +70,8 @@ class CountriesController extends APIController
 	        })->get();
 	        if($l10n != "eng") $countries->load(['translation' => function($query) use ($language) {$query->where('language_id', $language->id);}]);
 	        if(isset($include_languages)) {
-			    $countries->load(['languagesFiltered' => function ($query) use($language) {
-				    $query->with(['translation' => function ($query) use($language) { $query->where('language_translation', $language->id); }]);
+			    $countries->load(['languagesFiltered' => function ($query) use($language,$include_languages) {
+				    if($include_languages == "with_titles") $query->with(['translation' => function ($query) use($language) { $query->where('language_translation', $language->id); }]);
 			    }]);
 	        }
 	        return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));

@@ -124,9 +124,13 @@ class CountryTransformer extends BaseTransformer
 					'iso_a2'     => $country->id
 				];
 				if($country->relationLoaded('languagesFiltered')) {
-					$output['languages'] = $country->languagesFiltered->mapWithKeys(function ($item) {
-						return [ $item['iso'] => $item['translation']['name'] ?? $item['name'] ];
-					});
+					if(isset($country->languagesFiltered->translation)) {
+						$output['languages'] = $country->languagesFiltered->mapWithKeys(function ($item) {
+							return [ $item['iso'] => $item['translation']['name'] ?? $item['name'] ];
+						});
+					} else {
+						$output['languages'] = $country->languagesFiltered->pluck('iso');
+					}
 				}
 				return $output;
 			}
