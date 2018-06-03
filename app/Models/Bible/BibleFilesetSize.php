@@ -51,10 +51,9 @@ class BibleFilesetSize extends Model
 	/**
 	 *
 	 * @OAS\Property(
-	 *   title="id",
+	 *   title="set_size_code",
 	 *   type="string",
 	 *   description="The id",
-
 	 *   maxLength=9,
 	 *   example="NTPOTP"
 	 * )
@@ -70,7 +69,6 @@ class BibleFilesetSize extends Model
 	 *   title="name",
 	 *   type="string",
 	 *   description="The name",
-
 	 *   maxLength=191,
 	 *   example="New Testament & Old Testament Portions"
 	 * )

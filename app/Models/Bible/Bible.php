@@ -75,7 +75,7 @@ class Bible extends Model
 	 * @OAS\Property(
 	 *   title="id",
 	 *   type="string",
-	 *   description="The Archivist created Bible ID string",
+	 *   description="The Archivist created Bible ID string. This will be between six and twelve letters usually starting with the iso639-3 code and ending with the acronym for the Bible",
 	 *   minLength=6,
 	 *   maxLength=12,
 	 *   example="ENGESV"
@@ -85,84 +85,82 @@ class Bible extends Model
 	 * @property string $id
 	 */
 	protected $id;
+
 	/**
 	 *
-	 * @OAS\Property(
-	 *   title="iso",
-	 *   type="string",
-	 *   description="",
-	 * )
+	 * @OAS\Property(ref="#/components/schemas/Language/properties/iso")
 	 *
 	 * @method static Bible whereIso($value)
 	 * @property string $iso
 	 */
 	protected $iso;
+
 	/**
 	 *
 	 * @OAS\Property(
 	 *   title="date",
-	 *   type="string",
-	 *   description="",
+	 *   type="integer",
+	 *   description="The year the Bible was originally published",
+     *   minimum=1,
+     *   maximum=2030
 	 * )
 	 *
 	 * @method static Bible whereDate($value)
-	 * @property string $date
+	 * @property integer $date
 	 */
 	protected $date;
 	/**
 	 *
-	 * @OAS\Property(
-	 *   title="scope",
-	 *   type="string",
-	 *   description="",
-	 * )
+	 * @OAS\Property(ref="#/components/schemas/BibleFilesetSize/properties/set_size_code")
 	 *
 	 * @method static Bible whereScope($value)
 	 * @property string|null $scope
 	 */
 	protected $scope;
+
 	/**
 	 *
-	 * @OAS\Property(
-	 *   title="script",
-	 *   type="string",
-	 *   description="",
-	 * )
+     * @OAS\Property(ref="#/components/schemas/Alphabet/properties/script")
 	 *
 	 * @method static Bible whereScript($value)
 	 * @property string|null $script
 	 */
 	protected $script;
+
 	/**
 	 *
 	 * @OAS\Property(
 	 *   title="derived",
 	 *   type="string",
-	 *   description="",
+     *   nullable=true,
+	 *   description="This field indicates the `bible_id` of the Scriptures that the current Scriptures being described are derived. For example, because the NIrV (New International Reader's Version) was created from / inspired by the NIV (New International Version). If this model was describing ENGNIRV the derived field would be ENGNIV.",
 	 * )
 	 *
 	 * @method static Bible whereDerived($value)
 	 * @property string|null $derived
 	 */
 	protected $derived;
+
 	/**
 	 *
 	 * @OAS\Property(
 	 *   title="copyright",
 	 *   type="string",
-	 *   description="",
+	 *   description="A short copyright description for the bible text.",
+     *   maxLength=191
 	 * )
 	 *
 	 * @method static Bible whereCopyright($value)
 	 * @property string|null $copyright
 	 */
 	protected $copyright;
+
 	/**
 	 *
 	 * @OAS\Property(
 	 *   title="in_progress",
 	 *   type="string",
-	 *   description="",
+	 *   description="If the Bible being described is currently in progress.",
 	 * )
 	 *
 	 * @method static Bible whereInProgress($value)
@@ -189,7 +187,7 @@ class Bible extends Model
 	 * @OAS\Property(
 	 *   title="created_at",
 	 *   type="string",
-	 *   description="",
+	 *   description="The timestamp at which the bible was originally created"
 	 * )
 	 *
 	 * @method static Bible whereCreatedAt($value)
@@ -201,7 +199,7 @@ class Bible extends Model
 	 * @OAS\Property(
 	 *   title="updated_at",
 	 *   type="string",
-	 *   description="",
+     *   description="The timestamp at which the bible was last updated"
 	 * )
 	 *
 	 * @method static Bible whereUpdatedAt($value)

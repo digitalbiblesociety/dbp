@@ -101,6 +101,8 @@ class Alphabet extends Model
 	 *     title="Alphabet Script",
 	 *     description="The Script ID for the alphabet aligning with the iso 15924 standard",
 	 *     type="string",
+     *     minLength=4,
+     *     maxLength=4,
 	 *     example="Cans",
 	 *     @OAS\ExternalDocumentation(
 	 *         description="For more info please refer to the Unicode Consortium",
@@ -114,8 +116,9 @@ class Alphabet extends Model
 
 	/**
 	 * @OAS\Property(
-	 *   title="Alphabet Script",
+	 *   title="Alphabet Name",
 	 *   type="string",
+     *   maxLength=191,
 	 *   description="The name of the alphabet in English",
 	 *   example="Unified Canadian Aboriginal"
 	 * )
@@ -129,6 +132,7 @@ class Alphabet extends Model
 	 *     title="Unicode PDF",
 	 *     description="A url to a reference PDF for the alphabet",
 	 *     type="string",
+     *     maxLength=191,
 	 *     nullable=true,
 	 *     example="https://unicode.org/charts/PDF/U1400.pdf"
 	 * )
@@ -361,7 +365,7 @@ class Alphabet extends Model
 
 	/**
 	 * @OAS\Property(
-	 *     title="Sample",
+	 *     title="Sample Image",
 	 *     description="A sample section of text for the alphabet",
 	 *     type="string"
 	 * )
@@ -372,7 +376,7 @@ class Alphabet extends Model
 
 	/**
 	 * @OAS\Property(
-	 *     title="Sample",
+	 *     title="Sample Image",
 	 *     description="A url to an image of the sample section of text for the alphabet",
 	 *     type="string"
 	 * )
