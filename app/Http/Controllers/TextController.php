@@ -78,7 +78,7 @@ class TextController extends APIController
 	    $chapter = checkParam('chapter_id', $chapter_url_param);
     	$verse_start = checkParam('verse_start', null, 'optional') ?? 1;
 	    $verse_end = checkParam('verse_end', null, 'optional');
-	    $formatted = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+	    $formatted = checkParam('bucket|bucket_id', null, 'optional');
 
 	    $fileset = BibleFileset::with('bible')->where('id',$fileset_id)->first();
 	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
