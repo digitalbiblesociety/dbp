@@ -5,7 +5,7 @@ The Koinos API is a open source end to end Bible delivery API built for Faith Co
 
 ### Getting Started
 
-- See [S3 API docs]('INSTALLING.md')
+- See [INSTALLING.md](INSTALLING.md)
 
 #### Dependencies
 
