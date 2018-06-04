@@ -1,8 +1,12 @@
 # Installing
 
+### Running on OSX
+Setting up the API takes approximately 30 minutes. If you don't already have [git]('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git') or [homebrew]('https://brew.sh/') installed. You will want install those now.
+
 ##### Install and/or update Homebrew to the latest version using brew update
-`/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-brew update`
+`/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
+
+`brew update`
 
 ##### Install PHP 7.2 using Homebrew via brew install homebrew/core/php
 `brew install homebrew/core/php`
@@ -35,3 +39,10 @@ brew update`
 `mv "env-sample.txt" ".env"`
 
 ##### import a copy of the live database using your preferred method: phpMyAdmin, Sequel pro, ect.
+
+
+### Running on Windows
+##### (Coming soon)
+
+### Running on Linux
+##### (Coming soon)
