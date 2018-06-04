@@ -21,7 +21,7 @@ use App\Models\Language\Alphabet;
 class AlphabetFont extends Model
 {
     protected $table = 'alphabet_fonts';
-    protected $hidden = ['iso'];
+    protected $hidden = ['iso','created_at','updated_at'];
 
 	/**
 	*

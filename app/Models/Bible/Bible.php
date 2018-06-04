@@ -363,7 +363,7 @@ class Bible extends Model
      */
     public function alphabet()
     {
-        return $this->hasOne(Alphabet::class,'script','script');
+        return $this->hasOne(Alphabet::class,'script','script')->select(['script','name','direction','unicode','requires_font']);
     }
 
 
