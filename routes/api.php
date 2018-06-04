@@ -85,6 +85,7 @@ Route::domain(env('API_URL'))->group(function () {
 	Route::name('v4_user.update')->put('users/{user_id}',                                 'UsersController@update');
 	Route::name('v4_user.destroy')->delete('users/{user_id}',                             'UsersController@destroy');
 	Route::name('v4_user.login')->post('users/login',                                     'UsersController@login');
+	Route::name('v4_user.geolocate')->get('users/geolocate',                              'UsersController@geoLocate');
 
 	// VERSION 4 | USER PASSWORDS
 	Route::name('v4_user.password_reset')->post('users/password/reset',                   'UserPasswordsController@validatePasswordReset');
@@ -117,6 +118,7 @@ Route::domain(env('API_URL'))->group(function () {
 	Route::name('v4_bookmarks.destroy')->delete('users/{user_id}/bookmarks/{bookmark_id}',  'UserNotesController@destroy');
 
 	// VERSION 4 | USER HIGHLIGHTS
+
 	Route::name('v4_highlights.index')->get('users/{user_id}/highlights',                      'UserHighlightsController@index');
 	Route::name('v4_highlights.store')->post('users/{user_id}/highlights',                     'UserHighlightsController@store');
 	Route::name('v4_highlights.update')->put('users/{user_id}/highlights/{highlight_id}',      'UserHighlightsController@update');

@@ -332,13 +332,12 @@ class BiblesController extends APIController
 	{
 		if(env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 		$dam_id = checkParam('dam_id', null, 'optional');
+		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
-		\Cache::forget('v2_library_metadata'.$dam_id);
-		$metadata = \Cache::remember('v2_library_metadata'.$dam_id, 1600, function () use ($dam_id) {
-
-			$metadata = BibleFileset::has('copyright')->with('copyright.organizations','copyright.role.roleTitle')->when($dam_id, function($q) use ($dam_id) {
+		$metadata = \Cache::remember('v2_library_metadata'.$dam_id, 1600, function () use ($dam_id,$bucket_id) {
+			$metadata = BibleFileset::has('copyright')->with('copyright.organizations','copyright.role.roleTitle','bible')->when($dam_id, function($q) use ($dam_id) {
 				$q->where('id',$dam_id)->first();
-			})->get();
+			})->where('bucket_id',$bucket_id)->where('set_type_code','!=','text_format')->get();
 
 			if($dam_id) return fractal()->item($metadata)->serializeWith($this->serializer)->transformWith(new BibleTransformer());
 			return fractal()->collection($metadata)->serializeWith($this->serializer)->transformWith(new BibleTransformer());

@@ -301,4 +301,49 @@ class UsersController extends APIController
     	$user = User::where('id',$id)->where('project_id', $request->project_id)->first();
     }
 
+
+	/**
+	 *
+	 * @OAS\Get(
+	 *     path="/users/geolocate",
+	 *     tags={"Community"},
+	 *     summary="Geolocate a user by their Ip address",
+	 *     description="",
+	 *     operationId="v4_user.geolocate",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(type="object")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(type="object")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(type="object"))
+	 *     )
+	 * )
+	 *
+	 * @param Request $request
+	 *
+	 * @return mixed
+	 */
+    public function geoLocate()
+    {
+    	$ip_address = checkParam('ip_address');
+	    $geolocation = geoip($ip_address);
+	    return $this->reply([
+		    "ip"          => $geolocation->getAttribute("ip"),
+	        "iso_code"    => $geolocation->getAttribute("iso_code"),
+	        "country"     => $geolocation->getAttribute("country"),
+	        "city"        => $geolocation->getAttribute("city"),
+	        "state"       => $geolocation->getAttribute("state"),
+	        "state_name"  => $geolocation->getAttribute("state_name"),
+	        "postal_code" => $geolocation->getAttribute("postal_code"),
+	        "lat"         => $geolocation->getAttribute("lat"),
+	        "lon"         => $geolocation->getAttribute("lon"),
+	        "timezone"    => $geolocation->getAttribute("timezone"),
+	        "continent"   => $geolocation->getAttribute("continent")
+	    ]);
+    }
+
 }
