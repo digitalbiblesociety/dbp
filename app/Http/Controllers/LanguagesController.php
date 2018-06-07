@@ -27,7 +27,7 @@ class LanguagesController extends APIController
      *
      * @OAS\Get(
      *     path="/languages/",
-     *     tags={"Wiki"},
+     *     tags={"Languages"},
      *     summary="Returns Languages",
      *     description="Returns the List of Languages",
      *     operationId="v4_languages.all",
@@ -84,6 +84,9 @@ class LanguagesController extends APIController
 		$code = checkParam('code|iso', null, 'optional');
 	    $l10n = checkParam('l10n', null, 'optional') ?? "eng";
 	    $l10n_language = Language::where('iso',$l10n)->first();
+
+	    $autonym = checkParam('autonym', null, 'optional');
+
 	    $language_name_portion = checkParam('name|language_name', null, 'optional');
 	    $full_word = checkParam('full_word', null, 'optional');
 	    $family_only = checkParam('family_only', null, 'optional');
@@ -95,7 +98,7 @@ class LanguagesController extends APIController
 	    $include_alt_names = checkParam('include_alt_names', null, 'optional');
 
 	    $cache_string = 'v'.$this->v.'_languages_'.$country.$code.$l10n.$l10n_language.$language_name_portion.$full_word.$family_only.$possibilities.$sort_by.$has_bibles.$has_filesets.$bucket_id.$include_alt_names;
-
+		\Cache::forget($cache_string);
 	    $languages = \Cache::remember($cache_string, 1600, function () use($country,$code,$l10n,$l10n_language,$language_name_portion,$full_word,$family_only,$possibilities,$sort_by,$has_bibles,$has_filesets,$bucket_id,$include_alt_names) {
 		    $languages = Language::select( [ 'id', 'iso2B', 'iso', 'name' ] )
 		        ->when( $has_bibles, function ( $query ) use ( $has_bibles ) {
@@ -364,7 +367,7 @@ class LanguagesController extends APIController
      *
 	 * @OAS\Post(
 	 *     path="/languages/",
-	 *     tags={"Wiki"},
+	 *     tags={"Languages"},
 	 *     summary="Create a new Language",
 	 *     description="Create a new Language",
 	 *     operationId="v4_languages.store",
@@ -401,7 +404,7 @@ class LanguagesController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/languages/{id}",
-	 *     tags={"Wiki"},
+	 *     tags={"Languages"},
 	 *     summary="Return a single Languages",
 	 *     description="Returns a single Language",
 	 *     operationId="v4_languages.one",
@@ -448,7 +451,7 @@ class LanguagesController extends APIController
      *
      * @OAS\Put(
      *     path="/languages/{id}",
-     *     tags={"Wiki"},
+     *     tags={"Languages"},
      *     summary="Return a single Languages",
      *     description="Returns a single Language",
      *     operationId="v4_languages.update",

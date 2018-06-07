@@ -16,7 +16,7 @@ class ProjectsController extends APIController
      *
      * @OAS\Get(
      *     path="/projects",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Returns the projects currently using the DBP",
      *     description="Returns a list of all your projects currently registered as using the DBP",
      *     operationId="v4_projects.index",
@@ -37,16 +37,17 @@ class ProjectsController extends APIController
      */
     public function index()
     {
+	    if(!$this->api) return view('community.projects.index');
+	    $all_open_projects = checkParam('all_projects', null, 'optional');
 
-	    if(!$this->api) {
-		    $user = \Auth::user();
-	        if(!$user) return view('projects.index');
-        	return view('dashboard.projects.index',compact('user'));
-        }
+	    if(!isset($all_open_projects)) {
+		    $key = Key::find($this->key);
+		    $user = $key->user;
+		    $projects = ($user->admin) ? Project::all() : $user->projects;
+	    } else {
+	    	$projects = Project::where('sensitive',0)->get();
+	    }
 
-	    $key = Key::find($this->key);
-	    $user = $key->user;
-	    $projects = ($user->admin) ? Project::all() : $user->projects;
 	    return $this->reply(fractal()->transformWith(ProjectTransformer::class)->collection($projects));
     }
 
@@ -66,7 +67,7 @@ class ProjectsController extends APIController
 	 *
 	 * @OAS\Post(
 	 *     path="/projects",
-	 *     tags={"Community"},
+	 *     tags={"Users"},
 	 *     summary="Apply for a project_id",
 	 *     description="It is recommended that you create a distinct project_id for each app using the API",
 	 *     operationId="v4_projects.store",
@@ -99,7 +100,7 @@ class ProjectsController extends APIController
 	public function store(Request $request)
     {
 	    $user = \Auth::user() ?? Key::find($this->key)->user;
-	    if(!$user) return $this->setStatusCode(401)->replyWithError("you're not logged in");
+	    if(!$user) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied',[], $this->preferred_language));
 
 	    $validator = Validator::make($request->all(), [
 		    'id'   => 'required|unique:projects,id|max:24',
@@ -131,7 +132,7 @@ class ProjectsController extends APIController
      *
      * @OAS\Get(
      *     path="/projects/{project_id}",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Get the details for a project",
      *     description="",
      *     operationId="v4_projects.show",
@@ -153,16 +154,16 @@ class ProjectsController extends APIController
      */
     public function show($id)
     {
-	    $user = \Auth::user() ?? Key::find($this->key)->user;
-	    if(!$user) return $this->setStatusCode(401)->replyWithError("you're not logged in");
+	    $access_allowed = true;
+	    $user = \Auth::user() ?? @Key::find($this->key)->user;
 
 	    $project = Project::find($id);
 	    if(!$project) return $this->setStatusCode(404)->replyWithError("Project Not found");
 
-	    $access_allowed = ($project->members->contains($user) OR $user->admin) ? true : false;
+	    if($project->sensitive) $access_allowed = isset($user) ? ($project->members->contains($user) OR $user->admin) : false;
 	    if(!$access_allowed) return $this->setStatusCode(404)->replyWithError("Access Not allowed");
 
-	    if(!$this->api) return view('dashboard.projects.show',compact('user','project'));
+	    if(!$this->api) return view('community.projects.show', compact('project'));
 	    return $this->reply(fractal()->transformWith(ProjectTransformer::class)->item($project));
     }
 
@@ -182,7 +183,7 @@ class ProjectsController extends APIController
      *
      * @OAS\Put(
      *     path="/projects/{project_id}",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Update the details for a project",
      *     description="",
      *     operationId="v4_projects.update",
@@ -217,7 +218,7 @@ class ProjectsController extends APIController
 	    $project->update($request->all());
 	    $project->save();
 
-	    return $this->reply("successful");
+	    return $this->reply(trans('api.'));
     }
 
     /**
@@ -225,7 +226,7 @@ class ProjectsController extends APIController
      *
      * @OAS\Delete(
      *     path="/projects/{project_id}",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Remove a project",
      *     description="",
      *     operationId="v4_projects.update",

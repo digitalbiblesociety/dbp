@@ -31,8 +31,8 @@ class CountryGeography extends Model
 	/**
 	 *
 	 * @OAS\Property(
-	 *     title="location_description",
-	 *     description="location_description",
+	 *     title="Location Description",
+	 *     description="A description of where the country is located on a geo-political map of the world.",
 	 *     type="string"
 	 * )
 	 *
@@ -44,8 +44,9 @@ class CountryGeography extends Model
 	 *
 	 * @OAS\Property(
 	 *     title="latitude",
-	 *     description="latitude",
-	 *     type="string"
+	 *     description="A point of latitude that falls within the borders of the country being described",
+	 *     type="number",
+	 *     example="17.0608160"
 	 * )
 	 *
 	 * @method static CountryGeography whereLatitude($value)
@@ -57,7 +58,9 @@ class CountryGeography extends Model
 	 * @OAS\Property(
 	 *     title="longitude",
 	 *     description="longitude",
-	 *     type="string"
+	 *     description="A point of longitude that falls within the borders of the country being described",
+	 *     type="number",
+	 *     example="-61.7964280"
 	 * )
 	 *
 	 * @method static CountryGeography whereLongitude($value)
@@ -67,21 +70,21 @@ class CountryGeography extends Model
 	/**
 	 *
 	 * @OAS\Property(
-	 *     title="mapReferences",
-	 *     description="mapReferences",
+	 *     title="Map References",
+	 *     description="The name of the general continent or region where the country is located.",
 	 *     type="string"
 	 * )
 	 *
-	 * @method static CountryGeography whereMapreferences($value)
+	 * @method static CountryGeography whereMapReferences($value)
 	 * @property string $mapReferences
 	 */
 	protected $mapReferences;
 	/**
 	 *
 	 * @OAS\Property(
-	 *     title="area_sqkm_total",
+	 *     title="Total Area in square kilometers",
 	 *     description="area_sqkm_total",
-	 *     type="string"
+	 *     type="integer"
 	 * )
 	 *
 	 * @method static CountryGeography whereAreaSqkmTotal($value)
@@ -93,7 +96,7 @@ class CountryGeography extends Model
 	 * @OAS\Property(
 	 *     title="area_sqkm_land",
 	 *     description="area_sqkm_land",
-	 *     type="string"
+	 *     type="integer"
 	 * )
 	 *
 	 * @method static CountryGeography whereAreaSqkmLand($value)
@@ -105,7 +108,7 @@ class CountryGeography extends Model
 	 * @OAS\Property(
 	 *     title="area_sqkm_water",
 	 *     description="area_sqkm_water",
-	 *     type="string"
+	 *     type="integer"
 	 * )
 	 *
 	 * @method static CountryGeography whereAreaSqkmWater($value)
@@ -115,9 +118,9 @@ class CountryGeography extends Model
 	/**
 	 *
 	 * @OAS\Property(
-	 *     title="area_km_coastline",
-	 *     description="area_km_coastline",
-	 *     type="string"
+	 *     title="The country's coastline length",
+	 *     description="The length of the country's coastline in Kilometers",
+	 *     type="integer"
 	 * )
 	 *
 	 * @method static CountryGeography whereAreaKmCoastline($value)

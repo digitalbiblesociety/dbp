@@ -29,7 +29,7 @@ class OrganizationsController extends APIController {
 		$organizations = \Cache::remember($this->v . 'organizations' . $iso . $membership . $bibles, 2400, function() use ($iso, $membership, $bibles) {
 			if($membership) {
 				$membership = Organization::where('slug', $membership)->first();
-				if(!$membership) return $this->setStatusCode(404)->replyWithError("No membership connection found.");
+				if(!$membership) return $this->setStatusCode(404)->replyWithError(trans('api.organizations_relationship_members_404'));
 				$membership = $membership->id;
 			}
 
@@ -44,9 +44,10 @@ class OrganizationsController extends APIController {
 					$q->has('bibles');
 				})->has('translations')->get();
 			if(isset($_GET['count']) or (\Route::currentRouteName() == 'v2_volume_organization_list')) $organizations->load('bibles');
+			return fractal()->collection($organizations)->serializeWith($this->serializer)->transformWith(new OrganizationTransformer())->ToArray();
 		});
 
-		return $this->reply(fractal()->collection($organizations)->serializeWith($this->serializer)->transformWith(new OrganizationTransformer())->ToArray());
+		return $this->reply($organizations);
 	}
 
 	/**
@@ -58,7 +59,7 @@ class OrganizationsController extends APIController {
 	 */
 	public function show($slug) {
 		$organization = Organization::with("bibles.translations", "bibles.language", "translations", "logos", "currentTranslation")->where('id', $slug)->orWhere('slug', $slug)->first();
-		if(!$organization) return $this->setStatusCode(404)->replyWithError("Sorry we don't have any record for $slug");
+		if(!$organization) return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id'=>$slug], $this->preferred_language));
 
 		// Handle API First
 		if($this->api) return $this->reply(fractal()->item($organization)->serializeWith($this->serializer)->transformWith(new OrganizationTransformer()));
@@ -87,13 +88,13 @@ class OrganizationsController extends APIController {
 	 */
 	public function create() {
 		$user = \Auth::user();
-		if(!$user->archivist) return $this->replyWithError('Not an Archivist');
+		if(!$user->archivist) return $this->setStatusCode(401)->replyWithError(trans('api.wiki_authorization_failed',[],$this->preferred_language));
 		return view('community.organizations.create');
 	}
 
 	public function apply() {
 		$user = \Auth::user();
-		if(!$user) return $this->replyWithError("You must be logged in");
+		if(!$user) return $this->setStatusCode(401)->replyWithError(trans('api.'));
 		$organizations = Organization::with('translations')->get();
 
 		return view('dashboard.organizations.roles.create', compact('user', 'organizations'));
