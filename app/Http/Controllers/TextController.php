@@ -204,7 +204,7 @@ class TextController extends APIController
 
 		$query = DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).$exclude);
 	    $verses = DB::connection('sophia')->table(strtoupper($bible_id).'_vpl')
-		->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN BOOLEAN MODE)"))->limit($limit)
+		->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)
 		->when($books, function($q) use ($books){
 		    $q->whereIn('book', explode(',',$books));
 	    })->get();

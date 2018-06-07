@@ -14,7 +14,7 @@ class UserAccountsController extends APIController
      *
      * @OAS\Get(
      *     path="/accounts",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="List the Accounts",
      *     description="",
      *     operationId="v4_user_accounts.index",
@@ -49,7 +49,7 @@ class UserAccountsController extends APIController
      *
      * @OAS\Post(
      *     path="/accounts",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Create a new Account",
      *     description="Associate a social media account with a different user.",
      *     operationId="v4_user_accounts.store",
@@ -88,7 +88,7 @@ class UserAccountsController extends APIController
      *
      * @OAS\Get(
      *     path="/accounts/{account_id}",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="List the Accounts",
      *     description="",
      *     operationId="v4_user_accounts.show",
@@ -122,7 +122,7 @@ class UserAccountsController extends APIController
      *
      * @OAS\Put(
      *     path="/accounts/{account_id}",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Update a specific Account",
      *     description="",
      *     operationId="v4_user_accounts.update",
@@ -157,7 +157,7 @@ class UserAccountsController extends APIController
      *
      * @OAS\Delete(
      *     path="/accounts/{account_id}",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Delete an account",
      *     description="",
      *     operationId="v4_user_accounts.delete",
@@ -196,7 +196,7 @@ class UserAccountsController extends APIController
 	    $user_id = checkParam('user_id');
 
 	    $project_member = ProjectMember::where('project_id',$project_id)->where('user_id',$user_id)->first();
-	    if(!$project_member) return $this->setStatusCode(404)->replyWithError("User/Project connection not found");
+	    if(!$project_member) return $this->setStatusCode(404)->replyWithError(trans('api.project_users_404',[],$this->preferred_language));
 	    return $project_member->user;
     }
 }

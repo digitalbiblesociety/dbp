@@ -29,7 +29,7 @@ class ArclightController extends APIController
 		// Fetch Language Id equivalent
     	$languages = $this->fetchLocal('languages.json');
 		$language_id = $languages[$iso];
-	    if(!$language_id) return $this->setStatusCode(404)->replyWithError("Unable to locate language");
+	    if(!$language_id) return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404',[],$this->preferred_language));
 
 	    return $this->fetchMediaForLanguage($iso);
     }
@@ -61,7 +61,7 @@ class ArclightController extends APIController
 	    // Fetch Language Id equivalent
 	    $languages = $this->fetchLocal('languages.json');
 	    $language_id = $languages[$iso];
-	    if(!$language_id) return $this->setStatusCode(404)->replyWithError("Unable to locate language");
+	    if(!$language_id) return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404',[],$this->preferred_language));
 
     	// Check to see if we have a File Cache
     	if(!file_exists(storage_path("/data/jfm/languages/$iso.json"))) {

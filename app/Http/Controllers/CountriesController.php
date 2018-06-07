@@ -27,7 +27,7 @@ class CountriesController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/countries/",
-	 *     tags={"Wiki"},
+	 *     tags={"Countries"},
 	 *     summary="Returns Countries",
 	 *     description="Returns the List of Countries",
 	 *     operationId="v4_countries.all",
@@ -57,10 +57,11 @@ class CountriesController extends APIController
 	    $bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 	    $include_languages = checkParam('include_languages', null, 'optional');
 
-	    return \Cache::remember("countries".$l10n.$has_filesets.$bucket_id.$include_languages, 1600, function () use($l10n,$has_filesets,$bucket_id,$include_languages) {
+	    \Cache::forget("countries".$l10n.$has_filesets.$bucket_id.$include_languages.$this->preferred_language);
+	    return \Cache::remember("countries".$l10n.$has_filesets.$bucket_id.$include_languages.$this->preferred_language, 1600, function () use($l10n,$has_filesets,$bucket_id,$include_languages) {
 	        if($l10n) {
 			    $language = Language::where('iso',$l10n)->first();
-			    if(!$language) return $this->setStatusCode(404)->replyWithError("No language for the provided iso: `$l10n` could be found.");
+			    if(!$language) return $this->setStatusCode(404)->replyWithError(trans('api.language_errors_404',[],$this->preferred_language));
 	        }
 	        $countries = Country::exclude('introduction')->
 	        when($has_filesets, function($query) use ($bucket_id) {
@@ -116,7 +117,7 @@ class CountriesController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/countries/{id}",
-	 *     tags={"Wiki"},
+	 *     tags={"Countries"},
 	 *     summary="Returns a single Country",
 	 *     description="Returns a single Country",
 	 *     operationId="v4_countries.one",
@@ -156,7 +157,7 @@ class CountriesController extends APIController
     {
 		$country = Country::with('languagesFiltered.bibles.currentTranslation','geography')->find($id);
 		$includes = $this->loadWorldFacts($country);
-	    if(!$country) return $this->setStatusCode(404)->replyWithError("Country not found for ID: $id");
+	    if(!$country) return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404',['l10n'=>$id],$this->preferred_language));
 	    if($this->api) return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
     	return view('wiki.countries.show',compact('country'));
     }
@@ -187,7 +188,7 @@ class CountriesController extends APIController
 	 *
 	 * @OAS\Post(
 	 *     path="/countries/",
-	 *     tags={"Wiki"},
+	 *     tags={"Countries"},
 	 *     summary="Create a new Country",
 	 *     description="Create a new Country",
 	 *     operationId="v4_countries.store",
@@ -244,7 +245,7 @@ class CountriesController extends APIController
 	 *
 	 * @OAS\Put(
 	 *     path="/countries/{id}",
-	 *     tags={"Wiki"},
+	 *     tags={"Countries"},
 	 *     summary="Update a new Country",
 	 *     description="Update a new Country",
 	 *     operationId="v4_countries.update",
@@ -269,7 +270,7 @@ class CountriesController extends APIController
 
 		$country = Country::find($id);
 
-		if($this->api) return $this->reply("Country Succesfully updated");
+		if($this->api) return $this->reply(trans('api.countries_update_200',[],$this->preferred_language));
 		return view('wiki.countries.show',compact('country'));
 	}
 
@@ -311,10 +312,10 @@ class CountriesController extends APIController
 		if(!$this->api) $user = Auth::user();
 		if(!$user) {
 			$key = Key::where('key',$this->key)->first();
-			if(!isset($key)) return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
+			if(!isset($key)) return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed',[],$this->preferred_language));
 			$user = $key->user;
 		}
-		if(!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError("You don't have permission to edit the wiki");
+		if(!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError(trans('api.auth_wiki_validation_failed',[],$this->preferred_language));
 		return $user;
 	}
 

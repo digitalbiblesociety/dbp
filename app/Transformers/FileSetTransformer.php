@@ -48,7 +48,7 @@ class FileSetTransformer extends BaseTransformer
 
 			case "v4_bible_filesets.podcast": {
 				$bible = $fileset->bible->first();
-				if(!$bible) return $this->replyWithError("No Bible has been attached to this fileset");
+				if(!$bible) return $this->replyWithError(trans('api.filesets_errors_404',['l10n'=>$id],$this->preferred_language));
 
 				if(!isset($fileset->ietf_code)) {
 					$ietf_code = (isset($bible->language->iso1)) ? $bible->language->iso1 : $bible->language->iso;
@@ -57,7 +57,6 @@ class FileSetTransformer extends BaseTransformer
 				} else {
 					$ietf_code = $fileset->ietf_code;
 				}
-
 
 				$meta['channel']['title'] = $bible->translations->where('iso',$bible->iso)->first()->name.' - '.$bible->language->name ?? $bible->where('iso',"eng")->first()->name.' - '.$bible->language->name;
 				$meta['channel']['link'] = env('APP_URL_PODCAST') ?? "https://bible.is/";

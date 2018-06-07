@@ -138,7 +138,6 @@ function sendLogsToS3($request, $status_code)
 	App\Jobs\send_api_logs::dispatch($log_string);
 }
 
-
 if( ! function_exists('unique_random') ){
 	/**
 	 *

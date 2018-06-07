@@ -109,7 +109,7 @@ class Country extends Model
 	 *     ),
 	 * )
 	 *
-	 * @property string $continent
+	 * @property string $fips
 	 * @method static Country whereFips($value)
 	 *
 	 */

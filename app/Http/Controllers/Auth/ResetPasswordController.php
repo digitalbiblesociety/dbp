@@ -76,7 +76,7 @@ class ResetPasswordController extends APIController
 		// If the password was successfully reset, we will redirect the user back to
 		// the application's home authenticated view. If there is an error we can
 		// redirect them back to where they came from with their error message.
-		return $response == Password::PASSWORD_RESET ? $this->reply("password Successfully reset") : $this->replyWithError($response);
+		return $response == Password::PASSWORD_RESET ? $this->reply(trans('api.auth_password_reset_success',[],$this->preferred_language)) : $this->replyWithError($response);
 	}
 
 

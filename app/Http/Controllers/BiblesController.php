@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
-use App\Models\Bible\BibleEquivalent;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Book;
 use App\Models\Language\Alphabet;
@@ -14,11 +13,12 @@ use App\Models\User\Access;
 use App\Transformers\BibleTransformer;
 use App\Transformers\BooksTransformer;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\URL;
+use App\Traits\AccessControlAPI;
 
 class BiblesController extends APIController
 {
 
+	use AccessControlAPI;
 
 
 	/**
@@ -101,23 +101,26 @@ class BiblesController extends APIController
 	    $include_alt_names = checkParam('include_alt_names', null, 'optional');
 	    $country = checkParam('country', null, 'optional');
 	    $bucket = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+	    $hide_restricted = checkParam('hide_restricted', null,'optional') ?? true;
 
-	    $cache_string = 'bibles'.$dam_id.'_'.$media.'_'.$language.'_'.$full_word.'_'.$iso.'_'.$updated.'_'.$organization.'_'.$sort_by.'_'.$sort_dir.'_'.$fileset_filter.'_'.$country.'_'.$bucket;
+	    $access_control = $this->accessControl($this->key,"api");
 
-	    $bibles = \Cache::remember($cache_string, 1600, function () use($dam_id,$media,$language,$full_word,$iso,$updated,$organization,$sort_by,$sort_dir,$fileset_filter,$country,$bucket,$include_alt_names) {
-			$access = Access::where('key_id',$this->key)->where('access_type','access_api')->where('access_granted',true)->get()->pluck('bible_id');
-	        $bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($bucket) {
+	    $cache_string = 'bibles'.$dam_id.'_'.$media.'_'.$language.'_'.$full_word.'_'.$iso.'_'.$updated.'_'.$organization.'_'.$sort_by.'_'.$sort_dir.'_'.$fileset_filter.'_'.$country.'_'.$bucket.$access_control->string;
+		Cache::forget($cache_string);
+	    $bibles = Cache::remember($cache_string, 1600, function () use($dam_id,$hide_restricted,$media,$language,$full_word,$iso,$updated,$organization,$sort_by,$sort_dir,$fileset_filter,$country,$bucket,$include_alt_names,$access_control) {
+	        $bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($bucket,$access_control) {
 		                if($bucket) $query->where('bucket_id', $bucket);
+		                $query->whereIn('bible_filesets.hash_id',$access_control->keys);
 	                }])
-			        ->has('translations')->has('language')
-			        ->when($fileset_filter, function($q) use ($access) {
-				        $q->has('filesets.files')->where('open_access', 1)->orWhereIn('id', $access);
-			        })
-		            ->when($bucket, function($q) use ($bucket) {
-			            $q->whereHas('filesets', function ($query) use ($bucket) {
-					        if($bucket) $query->where('bucket_id', $bucket);
+		            ->when($hide_restricted, function($q) use($hide_restricted,$access_control) {
+			            $q->whereHas('filesets', function ($query) use ($hide_restricted,$access_control) {
+					        $query->whereIn('bible_filesets.hash_id',$access_control->keys);
 			            });
 		            })
+			        ->has('translations')->has('language')
+			        ->when($fileset_filter, function($q) {
+				        $q->has('filesets.files');
+			        })
 		            ->when($country, function($q) use ($country) {
 			            $q->whereHas('language.primaryCountry', function ($query) use ($country) {
 					        $query->where('country_id', $country);
@@ -252,7 +255,7 @@ class BiblesController extends APIController
 		$name = checkParam('name', null, 'optional');
 		$sort = checkParam('sort_by', null, 'optional');
 
-		$versions = \Cache::remember('v2_library_version_'.$code.$name.$sort, 1600, function () use($code,$name,$sort) {
+		$versions = Cache::remember('v2_library_version_'.$code.$name.$sort, 1600, function () use($code,$name,$sort) {
 			$versions = BibleFileset::with('bible.translations')->has('bible.translations')->where('bucket_id',env('FCBH_AWS_BUCKET'))
 				->when($code, function($q) use ($code) {
 					$q->where('id', $code);
@@ -334,7 +337,7 @@ class BiblesController extends APIController
 		$dam_id = checkParam('dam_id', null, 'optional');
 		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
-		$metadata = \Cache::remember('v2_library_metadata'.$dam_id, 1600, function () use ($dam_id,$bucket_id) {
+		$metadata = Cache::remember('v2_library_metadata'.$dam_id, 1600, function () use ($dam_id,$bucket_id) {
 			$metadata = BibleFileset::has('copyright')->with('copyright.organizations','copyright.role.roleTitle','bible')->when($dam_id, function($q) use ($dam_id) {
 				$q->where('id',$dam_id)->first();
 			})->where('bucket_id',$bucket_id)->where('set_type_code','!=','text_format')->get();
@@ -404,7 +407,7 @@ class BiblesController extends APIController
     public function show($id)
     {
 	    $bible = Bible::with('filesets.organization','translations','books.book','links','organizations.logo','organizations.logoIcon','alphabet.primaryFont')->find($id);
-	    if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
+	    if(!$bible) return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id], $this->preferred_language));
     	if(!$this->api) return view('bibles.show',compact('bible'));
 
 		return $this->reply(fractal()->item($bible)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
@@ -413,7 +416,7 @@ class BiblesController extends APIController
 	public function manage($id)
 	{
 		$bible = Bible::with('filesets')->find($id);
-		if(!$bible) return $this->setStatusCode(404)->replyWithError("Bible not found for ID: $id");
+		if(!$bible) return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404',['bible_id' => $id], $this->preferred_language));
 
 		return view('bibles.manage',compact('bible'));
 	}

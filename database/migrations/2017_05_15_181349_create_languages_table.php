@@ -31,7 +31,6 @@ class CreateLanguagesTable extends Migration
 	        $table->char('iso2T',3)->nullable()->unique();
 	        $table->char('iso1',2)->nullable()->unique();
             $table->string('name');
-	        $table->string('autonym')->nullable();
             $table->string('maps')->nullable();
             $table->text('development')->nullable();
             $table->text('use')->nullable();
@@ -60,6 +59,7 @@ class CreateLanguagesTable extends Migration
 	        $table->string('name');
 	        $table->text('description')->nullable();
 	        $table->boolean('vernacular')->default(0);
+	        $table->boolean('autonym')->default(0);
 	        $table->tinyInteger('priority')->nullable();
 	        $table->unique(['language_source','language_translation','name'],'unq_language_translations');
 	        $table->timestamps();

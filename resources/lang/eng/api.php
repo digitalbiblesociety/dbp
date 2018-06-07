@@ -1,0 +1,42 @@
+<?php
+
+return [
+
+	// Utility Routes
+	'auth_permission_denied'                 => 'you need to be logged in to see this page',
+	'auth_password_reset_success'            => 'Password successfully reset',
+	'auth_password_reset_token_failed'       => 'The provided password reset token could not be found.',
+	'auth_errors_twitter_stateless'          => 'Twitter does not support stateless Authentication',
+	'auth_key_validation_failed'             => 'No Authentication Provided or invalid Key',
+	'auth_wiki_validation_failed'            => 'You do not have permission to edit the wiki',
+	'email_send_successful'                  => 'Email sent successfully',
+
+	// Bibles Routes
+	'bibles_errors_404'                      => 'The specified bible_id `:bible_id` could not be found',
+	'bible_fileset_errors_404'               => 'The specified fileset id `:id` could not be found.',
+	'bible_fileset_errors_401'               => 'The Fileset exists, but no Permissions were found for your current key',
+	'bible_filesets_errors_checkback'        => 'The data for this Fileset is still being updated, please check back later',
+	'bible_filesets_delete_200'              => 'The fileset `:id` has been successfully deleted',
+	'bible_books_errors_404'                 => 'No book found for the given ID',
+
+	// Wiki Routes
+	'wiki_authorization_failed'              => 'Your account does not have Archivist level permissions',
+	'languages_errors_404'                   => 'Unable to locate language',
+	'countries_errors_404'                   => 'No language for the provided iso: :l10n could be found.',
+	'alphabet_numerals_errors_404'           => 'Alphabet Numbering System for the provided script `:script` could not be found',
+	'alphabet_numerals_range_error_maxsize'  => 'Your given range of :number is outside the max size of 2000',
+
+	// Community Routes
+	'users_errors_404_email'                 => 'No user with the email `:email` could be found',
+	'users_errors_401_project'               => 'The user given is not a user of the project_id provided.',
+
+	'user_creation_permission_failed'        => 'You do not have permission to create users',
+	'user_notes_store_200'                   => 'Note successfully created',
+
+	'project_users_404'                      => 'The specified user is not a member of the project_id provided.',
+	'projects_destroy_200'                   => 'Projects',
+
+	'organizations_relationship_members_404' => 'No membership connection found.',
+	'organizations_errors_404'               => 'No record for the organization id found',
+
+];

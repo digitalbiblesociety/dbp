@@ -24,9 +24,6 @@ class CreateBiblesTable extends Migration
             $table->text('derived')->nullable();
             $table->string('copyright')->nullable();
             $table->string('in_progress')->nullable();
-            $table->boolean('open_access')->default(1);
-	        $table->boolean('connection_fab')->default(1);
-	        $table->boolean('connection_dbs')->default(1);
 	        $table->tinyInteger('priority')->default(0)->unsigned();
 	        $table->timestamps();
         });

@@ -17,7 +17,7 @@ class UserHighlightsController extends APIController
      *
      * @OAS\Get(
      *     path="/users/{user_id}/highlights",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Get a list of highlights for a user/project combination",
      *     description="",
      *     operationId="v4_highlights.index",
@@ -85,7 +85,7 @@ class UserHighlightsController extends APIController
      *
      * @OAS\Post(
      *     path="/users/{user_id}/highlights",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Create a user highlight",
      *     description="",
      *     operationId="v4_highlights.store",
@@ -159,7 +159,7 @@ class UserHighlightsController extends APIController
      *
      * @OAS\Get(
      *     path="/users/{user_id}/highlights/{highlight_id}",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Show a user highlight",
      *     description="",
      *     operationId="v4_highlights.show",
@@ -204,7 +204,7 @@ class UserHighlightsController extends APIController
      *
      * @OAS\Put(
      *     path="/users/{user_id}/highlights/{highlight_id}",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Show a user highlight",
      *     description="",
      *     operationId="v4_highlights.update",
@@ -240,7 +240,7 @@ class UserHighlightsController extends APIController
      *
      * @OAS\Delete(
      *     path="/users/{user_id}/highlights/{highlight_id}",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Show a user highlight",
      *     description="",
      *     operationId="v4_highlights.delete",

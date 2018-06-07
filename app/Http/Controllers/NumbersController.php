@@ -18,7 +18,7 @@ class NumbersController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/numbers/range",
-	 *     tags={"Wiki"},
+	 *     tags={"Languages"},
 	 *     summary="Return a range of numbers",
 	 *     description="Returns a range of numbers",
 	 *     operationId="v4_numbers.range",
@@ -56,7 +56,7 @@ class NumbersController extends APIController
 		$iso = checkParam('iso');
 		$start_number = checkParam('start');
 		$end_number = checkParam('end');
-		if(($end_number - $start_number) > 2000) return $this->replyWithError("The Selection has a max size of 2000");
+		if(($end_number - $start_number) > 2000) return $this->replyWithError(trans('api.alphabet_numerals_range_error_maxsize', ['end_number' => $end_number], $this->preferred_language));
 	    $out_numbers = [];
 
 		// Fetch Numbers By Iso Or Script Code
@@ -85,7 +85,7 @@ class NumbersController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/numbers",
-	 *     tags={"Wiki"},
+	 *     tags={"Languages"},
 	 *     summary="Return a all Alphabets that have a custom number sets",
 	 *     description="Returns a range of numbers",
 	 *     operationId="v4_numbers.index",
@@ -119,7 +119,7 @@ class NumbersController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/numbers/{id}",
-	 *     tags={"Wiki"},
+	 *     tags={"Languages"},
 	 *     summary="Return a single custom number set",
 	 *     description="Returns a range of numbers",
 	 *     operationId="v4_numbers.show",
@@ -146,7 +146,7 @@ class NumbersController extends APIController
 	    if(!$this->api) return view('wiki.languages.alphabets.numerals.show');
 
     	$alphabet = Alphabet::find($system);
-    	if(!$alphabet) return $this->setStatusCode(404)->replyWithError("Alphabet System could not be found");
+    	if(!$alphabet) return $this->setStatusCode(404)->replyWithError(trans('api.alphabet_numerals_errors_404',['script' => $system],$this->preferred_language));
 	    \Cache::remember('v4_numbers_show_'.$system, 1600, function () use ($system) {
 	        $numerals = AlphabetNumber::where('script_id', $system)->orderBy('numeral')->get();
 	        if($this->api) return $this->reply(fractal()->collection($numerals)->transformWith(new NumbersTransformer())->serializeWith($this->serializer));

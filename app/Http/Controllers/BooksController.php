@@ -90,7 +90,7 @@ class BooksController extends APIController
 		$id = checkParam('dam_id');
 	    $bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 	    $fileset = BibleFileset::with('bible')->where('id',$id)->where('bucket_id',$bucket_id)->first();
-	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params.");
+	    if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404',['id' => $id], $this->preferred_language));
 
 	    $sophiaTable = $this->checkForSophiaTable($fileset);
 	    if(!is_string($sophiaTable)) return $sophiaTable;
@@ -201,9 +201,9 @@ class BooksController extends APIController
 
 	    $chapters = \Cache::remember('v2_library_chapter_'.$id.$bucket_id.$book_id, 1600, function () use($id, $bucket_id, $book_id) {
 	        $fileset = BibleFileset::where('id',$id)->orWhere('id', substr($id,0,-4))->where('bucket_id',$bucket_id)->first();
-	        if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the given ID");
+		    if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404',['id' => $id], $this->preferred_language));
 	        $book = Book::where('id_osis',$book_id)->orWhere('id',$book_id)->first();
-	        if(!$book) return $this->setStatusCode(404)->replyWithError("No book found for the given ID");
+	        if(!$book) return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404',['id' => $id], $this->preferred_language));
 	        $sophiaTable = $this->checkForSophiaTable($fileset);
 	        if(!is_string($sophiaTable)) return $sophiaTable;
 			$chapters = \DB::connection('sophia')->table($sophiaTable.'_vpl')
@@ -225,7 +225,7 @@ class BooksController extends APIController
 	    $textExists = \Schema::connection('sophia')->hasTable(substr($fileset->id,0,-4).'_vpl');
 	    if($textExists) return substr($fileset->id,0,-4);
 	    if(!$textExists) $textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
-	    if(!$textExists) return $this->setStatusCode(404)->replyWithError("The data for this Bible is still being updated, please check back later");
+	    if(!$textExists) return $this->setStatusCode(404)->replyWithError(trans('api.bible_filesets_errors_checkback', ['id' => $fileset->id], $this->preferred_language));
 	    return $fileset->id;
     }
 

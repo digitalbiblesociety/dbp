@@ -104,14 +104,57 @@ class CreateUsersBiblesTable extends Migration
 		    $table->timestamps();
 	    });
 
-	    Schema::create('user_access', function (Blueprint $table) {
+	    Schema::create('access_groups', function (Blueprint $table) {
+		    $table->increments('id');
+		    $table->string('name', 64);
+		    $table->text('description');
+		    $table->timestamps();
+	    });
+
+	    Schema::create('access_types', function (Blueprint $table) {
+		    $table->increments('id');
+		    $table->string('name', 24);
+		    $table->char('country_id', 2)->nullable();
+		    $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
+		    $table->char('continent_id', 2)->nullable();
+		    //$table->foreign('continent_id')->references('continent')->on('countries')->onUpdate('cascade');
+		    $table->boolean('allowed');
+		    $table->timestamps();
+	    });
+
+	    Schema::create('access_type_translations', function (Blueprint $table) {
+		    $table->primary(['access_type_id', 'iso'],'uq_access_type_translations');
+		    $table->integer('access_type_id')->unsigned();
+		    $table->foreign('access_type_id')->references('id')->on('access_types')->onUpdate('cascade')->onDelete('cascade');
+		    $table->char('iso', 3);
+		    $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
+		    $table->string('name', 64);
+		    $table->string('description');
+		    $table->timestamps();
+	    });
+
+	    Schema::create('access_group_types', function (Blueprint $table) {
+		    $table->increments('id');
+		    $table->integer('access_group_id')->unsigned();
+		    $table->foreign('access_group_id')->references('id')->on('access_groups')->onUpdate('cascade')->onDelete('cascade');
+		    $table->integer('access_type_id')->unsigned();
+		    $table->foreign('access_type_id')->references('id')->on('access_types')->onUpdate('cascade')->onDelete('cascade');
+		    $table->timestamps();
+	    });
+
+	    Schema::create('access_group_filesets', function (Blueprint $table) {
+		    $table->integer('access_group_id')->unsigned();
+		    $table->foreign('access_group_id')->references('id')->on('access_groups')->onUpdate('cascade')->onDelete('cascade');
+		    $table->char('hash_id',12)->index();
+		    $table->foreign('hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
+		    $table->timestamps();
+	    });
+
+	    Schema::create('access_group_keys', function (Blueprint $table) {
+		    $table->integer('access_group_id')->unsigned();
+		    $table->foreign('access_group_id')->references('id')->on('access_groups')->onUpdate('cascade')->onDelete('cascade');
 		    $table->string('key_id', 64);
 		    $table->foreign('key_id')->references('key')->on('user_keys')->onUpdate('cascade')->onDelete('cascade');
-		    $table->char('hash_id',16);
-		    $table->foreign('hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
-		    $table->text('access_notes')->nullable();
-		    $table->string('access_type')->nullable();
-		    $table->boolean('access_granted')->default(1);
 		    $table->timestamps();
 	    });
     }
@@ -125,11 +168,16 @@ class CreateUsersBiblesTable extends Migration
     {
 	    Schema::dropIfExists('user_note_tags');
 	    Schema::dropIfExists('user_accounts');
-	    Schema::dropIfExists('user_access');
         Schema::dropIfExists('user_notes');
 	    Schema::dropIfExists('user_highlights');
 	    Schema::dropIfExists('project_oauth_providers');
 	    Schema::dropIfExists('project_members');
 	    Schema::dropIfExists('projects');
+	    Schema::dropIfExists('access_group_types');
+	    Schema::dropIfExists('access_group_filesets');
+	    Schema::dropIfExists('access_group_keys');
+	    Schema::dropIfExists('access_type_translations');
+	    Schema::dropIfExists('access_types');
+	    Schema::dropIfExists('access_groups');
     }
 }

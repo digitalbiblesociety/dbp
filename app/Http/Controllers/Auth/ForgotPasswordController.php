@@ -46,10 +46,10 @@ class ForgotPasswordController extends APIController
 	public function getResetToken(Request $request)
 	{
 		$user = User::where('email', $request->email)->first();
-		if (!$user) return $this->setStatusCode(404)->replyWithError("The user could not be found");
+		if (!$user) return $this->setStatusCode(404)->replyWithError(trans('users_errors_404_email', ['email' => $request->email], $this->preferred_language));
 
 		$project = $user->projects->where('id',$request->project_id)->first();
-		if(!$project) return $this->setStatusCode(404)->replyWithError("The user given is not a user of the project_id provided.");
+		if(!$project) return $this->setStatusCode(404)->replyWithError(trans('users_errors_401_project', ['email' => $request->email], $this->preferred_language));
 
 		// If password provided, update password
 		if(\Hash::check($request->password, $user->password)) {
@@ -67,7 +67,7 @@ class ForgotPasswordController extends APIController
 		$project->reset_path = $generatedToken->reset_path;
 		$project->iso = $request->iso ?? "eng";
 		\Mail::to($user)->send(new EmailPasswordReset($user, $project));
-		return $this->reply("Email sent successfully");
+		return $this->reply(trans('api.email_send_successful',[],$this->preferred_language));
 	}
 
 }

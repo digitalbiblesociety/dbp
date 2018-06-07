@@ -72,9 +72,10 @@ class APIController extends Controller
 	/**
 	 * Version 4 Tags
 	 *
-	 * @OAS\Tag(name="Wiki",            description="v4 ")
+	 * @OAS\Tag(name="Languages",       description="v4 ")
+	 * @OAS\Tag(name="Countries",       description="v4 ")
 	 * @OAS\Tag(name="Bibles",          description="v4 ")
-	 * @OAS\Tag(name="Community",       description="v4 ")
+	 * @OAS\Tag(name="Users",           description="v4 ")
 	 *
 	 */
 
@@ -86,11 +87,11 @@ class APIController extends Controller
      * @var int $statusCode
      */
     protected $statusCode = 200;
-    protected $isoPreference = false;
     protected $api;
     protected $serializer;
     protected $v;
     protected $key;
+	protected $preferred_language;
 
     public function __construct(Request $request)
     {
@@ -102,6 +103,7 @@ class APIController extends Controller
 			$this->key = checkParam('key');
 		    $keyExists = Key::find($this->key);
 		    if(!isset($keyExists)) abort(403, "You need to provide a valid API key");
+		    $this->preferred_language = $keyExists->preferred_language ?? \i18n::getCurrentLocale();
 
 		    if(isset($this->v)) {
 		    	switch ($this->v) {

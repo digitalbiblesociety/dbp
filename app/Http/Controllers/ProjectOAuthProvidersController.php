@@ -13,7 +13,7 @@ class ProjectOAuthProvidersController extends APIController
      *
      * @OAS\Get(
      *     path="/projects/{project_id}/oauth-providers/",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Returns the oAuth providers being used by a project",
      *     description="",
      *     operationId="v4_projects_oAuthProvider.index",
@@ -44,7 +44,7 @@ class ProjectOAuthProvidersController extends APIController
      *
      * @OAS\Post(
      *     path="/projects/{project_id}/oauth-providers/",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Add a new oAuth provider to a project",
      *     description="",
      *     operationId="v4_projects_oAuthProvider.store",
@@ -89,7 +89,7 @@ class ProjectOAuthProvidersController extends APIController
      *
      * @OAS\Get(
      *     path="/projects/{project_id}/oauth-providers/{provider_id}",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Return a specific oAuth provider",
      *     description="",
      *     operationId="v4_projects_oAuthProvider.show",
@@ -125,7 +125,7 @@ class ProjectOAuthProvidersController extends APIController
      *
      * @OAS\Put(
      *     path="/projects/{project_id}/oauth-providers/{provider_id}",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Update a specific oAuth provider",
      *     description="",
      *     operationId="v4_projects_oAuthProvider.update",
@@ -162,7 +162,7 @@ class ProjectOAuthProvidersController extends APIController
      *
      * @OAS\Delete(
      *     path="/projects/{project_id}/oauth-providers/{provider_id}",
-     *     tags={"Community"},
+     *     tags={"Users"},
      *     summary="Delete a specific oAuth provider",
      *     description="",
      *     operationId="v4_projects_oAuthProvider.destroy",
@@ -190,7 +190,7 @@ class ProjectOAuthProvidersController extends APIController
 	    $provider = ProjectOauthProvider::where('project_id', $project_id)->where('id',$id)->first();
 	    $provider->delete();
 
-	    return $this->reply("Successfully deleted");
+	    return $this->reply(trans('api.projects_destroy_200',[],$this->preferred_language));
     }
 
 	/**

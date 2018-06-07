@@ -75,7 +75,7 @@ class ArticlesController extends APIController
 	    // $article->translations()->createMany(["name" => $request->name,"description" => $request->description]);
 
 	    if(!$this->api) return redirect()->route('view_articles.show', ['id' => request()->id]);
-	    return $this->reply(["message" => "Article Successfully Created"]);
+	    return $this->reply(trans('api.article_store_200', [], $this->preferred_language));
     }
 
 	/**

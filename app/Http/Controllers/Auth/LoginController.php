@@ -42,7 +42,7 @@ class LoginController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/users/login/{driver}",
-	 *     tags={"Community"},
+	 *     tags={"Users"},
 	 *     summary="Add a new oAuth provider to a project",
 	 *     description="",
 	 *     operationId="v4_projects_oAuthProvider.store",
@@ -70,12 +70,12 @@ class LoginController extends APIController
 	public function redirectToProvider($provider)
 	{
 		if($this->api) {
-			if($provider == "twitter") return $this->setStatusCode(422)->replyWithError('Twitter does not support stateless Authentication');
+			if($provider == "twitter") return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
 
 			$project_id = checkParam('project_id');
 			$provider = checkParam('name', $provider);
 			$alt_url = checkParam('alt_url', null, 'optional');
-			if($provider == "twitter") return $this->setStatusCode(422)->replyWithError('Twitter does not support stateless Authentication');
+			if($provider == "twitter") return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
 
 			$driverData = ProjectOauthProvider::where('project_id',$project_id)->where('name',$provider)->first();
 			$driver = [

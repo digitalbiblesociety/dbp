@@ -15,16 +15,13 @@ class BibleFilePermissionsTransformer extends TransformerAbstract
     {
 	    /**
 	     * @OAS\Schema (
-			*	type="array",
-			*	schema="v4_bible_filesets_permissions.index",
-			*	description="The permissions for a specific bible fileset",
-			*	title="v4_bible_filesets_permissions.index",
-			*	@OAS\Xml(name="v4_bible_filesets_permissions.index"),
-			*	@OAS\Items(          @OAS\Property(property="fileset_id",          ref="#/components/schemas/BibleFileset/properties/hash_id"),
-	     *          @OAS\Property(property="access_type",         ref="#/components/schemas/Access/properties/access_granted"),
-	     *          @OAS\Property(property="access_granted",      ref="#/components/schemas/Access/properties/access_granted"),
-	     *          @OAS\Property(property="granted_at",          ref="#/components/schemas/Access/properties/created_at"),
-	     *          @OAS\Property(property="updated_at",          ref="#/components/schemas/Access/properties/updated_at"),
+		 *	    type="array",
+		 *	    schema="v4_bible_filesets_permissions.index",
+		 *	    description="The permissions for a specific bible fileset",
+		 *	    title="v4_bible_filesets_permissions.index",
+		 *	    @OAS\Xml(name="v4_bible_filesets_permissions.index"),
+		 *	    @OAS\Items(
+	     *          @OAS\Property(property="fileset_id",          ref="#/components/schemas/BibleFileset/properties/hash_id"),
 	     *     )
 	     *   )
 	     * )

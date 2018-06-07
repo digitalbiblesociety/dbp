@@ -27,7 +27,7 @@ class AlphabetsController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/alphabets",
-	 *     tags={"Wiki"},
+	 *     tags={"Languages"},
 	 *     summary="Returns Alphabets",
 	 *     description="Returns a list of the world's known scripts. This route will be useful to you if you'd like to query information about fonts, alphabets, and the world's writing systems. Some `BibleFileset` models may not display correctly without a font delivered by these via the `alphabets/{id}` route.",
 	 *     operationId="v4_alphabets.all",
@@ -69,7 +69,7 @@ class AlphabetsController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/alphabets/{id}",
-	 *     tags={"Wiki"},
+	 *     tags={"Languages"},
 	 *     summary="Return a single Alphabets",
 	 *     description="Returns a single alphabet along with whatever bibles are written with it and languages using it ",
 	 *     operationId="v4_alphabets.one",
@@ -129,7 +129,7 @@ class AlphabetsController extends APIController
 	 *
 	 * @OAS\Post(
 	 *     path="/alphabets/",
-	 *     tags={"Wiki"},
+	 *     tags={"Languages"},
 	 *     summary="Store a single Alphabet",
 	 *     description="Store a single alphabet",
 	 *     operationId="v4_alphabets.store",
@@ -177,7 +177,7 @@ class AlphabetsController extends APIController
 	 *
 	 * @OAS\Put(
 	 *     path="/alphabets/{id}",
-	 *     tags={"Wiki"},
+	 *     tags={"Languages"},
 	 *     summary="Store a single Alphabet",
 	 *     description="Store a single alphabet",
 	 *     operationId="v4_alphabets.update",

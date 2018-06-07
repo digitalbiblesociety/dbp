@@ -2,11 +2,11 @@
 
 return [
 	
-	'name'             => 'Name',
-	'id'               => 'id',
-	'iso'              => 'iso',
-	'bibles_count'     => 'Bibles Count',
-	'requesting-access'=> 'Access Pending',
+	'name'                                  => 'Name',
+	'id'                                    => 'id',
+	'iso'                                   => 'iso',
+	'bibles_count'                          => 'Bibles Count',
+	'requesting-access'                     => 'Access Pending',
 
 	'alphabets'                             => 'Alphabets',
 

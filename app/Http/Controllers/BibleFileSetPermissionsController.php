@@ -50,14 +50,14 @@ class BibleFileSetPermissionsController extends APIController
 	{
 		if(!$this->api) {
 			$user = \Auth::user();
-			if(!$user) return $this->setStatusCode(401)->replyWithError("you need to be logged in to see this page");
+			if(!$user) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied',[],$this->preferred_language));
 			return view('bibles.filesets.permissions.index');
 		}
 
 		$filesets = Access::with('fileset.bible.translations')->where('hash_id',$fileset_id)->get();
-		if(!$filesets) return $this->setStatusCode(404)->replyWithError("Fileset Not found for given ID");
+		if(!$filesets) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $fileset_id],$this->preferred_language));
 		$fileset = $filesets->where('key_id',$this->key)->first();
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError('The Fileset exists, but no Permissions were found for your current key');
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_401', [], $this->preferred_language));
 		return $this->reply(fractal()->item($fileset)->transformWith(BibleFilePermissionsTransformer::class)->serializeWith($this->serializer));
 	}
 
@@ -82,7 +82,7 @@ class BibleFileSetPermissionsController extends APIController
 		$this->validateBibleFilesetPermission($request);
 
 		$fileset = Fileset::with('bucket')->where('hash_id',$request->hash_id)->first();
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset has been found for the provided hash_id");
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404',['id' => $fileset_id],$this->preferred_language));
 
 		Access::create([
 			'hash_id'        => $request->hash_id,
@@ -135,13 +135,13 @@ class BibleFileSetPermissionsController extends APIController
 		$fileSet = BibleFileset::find($id);
 		$fileSet->delete();
 
-		return $this->reply("Permission Successfully Removed");
+		return $this->reply(trans('api.filesets_delete_200',['id' => $id],$this->preferred_language));
 	}
 
 	public function user()
 	{
 		$user = \Auth::user();
-		if(!$user) return $this->setStatusCode(401)->replyWithError("you need to be logged in to see this page");
+		if(!$user) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied',[],$this->preferred_language));
 		return view('bibles.filesets.permissions.user',compact('user'));
 	}
 
@@ -157,10 +157,10 @@ class BibleFileSetPermissionsController extends APIController
 		if(!$this->api) $user = Auth::user();
 		if(!$user) {
 			$key = Key::where('key',$this->key)->first();
-			if(!isset($key)) return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
+			if(!isset($key)) return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed',[],$this->preferred_language));
 			$user = $key->user;
 		}
-		if(!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError("You don't have permission to edit the permissions for this fileset");
+		if(!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError(trans('api.bible_fileset_errors_401',[],$this->preferred_language));
 		return $user;
 	}
 

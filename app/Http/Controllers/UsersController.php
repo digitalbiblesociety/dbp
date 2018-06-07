@@ -19,7 +19,7 @@ class UsersController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/users",
-	 *     tags={"Community"},
+	 *     tags={"Users"},
 	 *     summary="",
 	 *     description="",
 	 *     operationId="v4_user.index",
@@ -52,7 +52,7 @@ class UsersController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/users/{id}",
-	 *     tags={"Community"},
+	 *     tags={"Users"},
 	 *     summary="Returns a single user",
 	 *     description="",
 	 *     operationId="v4_user.show",
@@ -102,7 +102,7 @@ class UsersController extends APIController
 	 *
 	 * @OAS\Post(
 	 *     path="/users/login",
-	 *     tags={"Community"},
+	 *     tags={"Users"},
 	 *     summary="Login a user",
 	 *     description="",
 	 *     operationId="v4_user.login",
@@ -147,7 +147,7 @@ class UsersController extends APIController
 	 *
 	 * @OAS\Post(
 	 *     path="/users",
-	 *     tags={"Community"},
+	 *     tags={"Users"},
 	 *     summary="Create a new user",
 	 *     description="",
 	 *     operationId="v4_user.store",
@@ -186,7 +186,7 @@ class UsersController extends APIController
     {
 	    $user = checkUser();
 	    if(!$user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-    	if(!$user->canCreateUsers()) return $this->setStatusCode(401)->replyWithError("You are not authorized to create users");
+    	if(!$user->canCreateUsers()) return $this->setStatusCode(401)->replyWithError(trans('api.user_creation_permission_failed', [], $this->preferred_language));
 
 	    $validator = Validator::make($request->all(), [
 		    'email'                    => 'required|unique:users,email|max:255|email',
@@ -227,7 +227,7 @@ class UsersController extends APIController
 	 *
 	 * @OAS\Put(
 	 *     path="/users/{id}",
-	 *     tags={"Community"},
+	 *     tags={"Users"},
 	 *     summary="Create a new user",
 	 *     description="",
 	 *     operationId="v4_user.store",
@@ -306,7 +306,7 @@ class UsersController extends APIController
 	 *
 	 * @OAS\Get(
 	 *     path="/users/geolocate",
-	 *     tags={"Community"},
+	 *     tags={"Users"},
 	 *     summary="Geolocate a user by their Ip address",
 	 *     description="",
 	 *     operationId="v4_user.geolocate",

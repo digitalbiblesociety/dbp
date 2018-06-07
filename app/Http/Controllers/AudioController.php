@@ -86,7 +86,7 @@ class AudioController extends APIController
 	 * @OAS\Get(
 	 *     path="/timestamps",
 	 *     tags={"Bibles"},
-	 *     summary="Returns All Audio timestamps",
+	 *     summary="Returns Bible Filesets which have Audio timestamps",
 	 *     description="",
 	 *     operationId="v4_timestamps",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
@@ -96,7 +96,7 @@ class AudioController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(@OAS\Property(property="hash_id", ref="#/components/schemas/BibleFileset/properties/hash_id")))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/hash_id"))
 	 *     )
 	 * )
 	 *
@@ -104,8 +104,8 @@ class AudioController extends APIController
 	 */
 	public function availableTimestamps()
 	{
-		$bibleFile = BibleFile::has('timestamps')->select('hash_id')->distinct()->get();
-		return $this->reply($bibleFile);
+		$hash_id = BibleFile::has('timestamps')->select('hash_id')->distinct()->get();
+		return $this->reply($hash_id);
 	}
 
 	/**
