@@ -19,6 +19,8 @@ trait AccessControlAPI {
 
 		$user_location = checkParam('ip_address', null, 'optional');
 		$user_location = geoip($user_location);
+		if(!isset($user_location->iso_code)) $user_location->iso_code = "unset";
+		if(!isset($user_location->continent)) $user_location->continent = "unset";
 
 		$access = [];
 		$accessGroups = AccessGroup::with('filesets')
