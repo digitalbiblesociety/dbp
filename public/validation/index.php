@@ -1,10 +1,10 @@
 <?php
 
-$servername = env('DB_HOST');
-$username = env('DB_USERNAME');
-$password = env('DB_PASSWORD');
-$port = env('DB_PORT');
-$database=env('DB_DATABASE');
+$servername = $_ENV['DB_HOST'];
+$username = $_ENV['DB_USERNAME'];
+$password = $_ENV['DB_PASSWORD'];
+$port = $_ENV['DB_PORT'];
+$database=$_ENV['DB_DATABASE'];
 
 // Create connection
 try {
