@@ -23,8 +23,8 @@ return [
 	'wiki_authorization_failed'              => 'Your account does not have Archivist level permissions',
 	'languages_errors_404'                   => 'Unable to locate language',
 	'countries_errors_404'                   => 'No language for the provided iso: :l10n could be found.',
-	'alphabet_numerals_errors_404'           => 'Alphabet Numbering System for the provided script `:script` could not be found',
-	'alphabet_numerals_range_error_maxsize'  => 'Your given range of :number is outside the max size of 2000',
+	'numerals_errors_404'                    => 'Alphabet Numbering System for the provided script `:script` could not be found',
+	'numerals_range_error_maxsize'           => 'Your given range of :num is outside the max size of 2000',
 
 	// Community Routes
 	'users_errors_404_email'                 => 'No user with the email `:email` could be found',
@@ -38,5 +38,32 @@ return [
 
 	'organizations_relationship_members_404' => 'No membership connection found.',
 	'organizations_errors_404'               => 'No record for the organization id found',
+
+	'articles_show_404'                      => 'The specified article id `:id` could not be found.',
+	'articles_edit_permission_failed'        => 'You do not have permission to edit the articles',
+
+    // API_DOCS
+    'docs' => [
+
+        'paths' => [
+            'v2_text_search_group' => [
+                'summary'          => 'Run a text search on a specific fileset',
+                'description'      => 'This method allows the caller to perform a full-text search within the text of a volume, returning the count of results per book. If the volume has a complementary testament, the search will be performed over both testaments with the results ordered in Bible book order.',
+                'param_query'      => 'The text that the caller wishes to search for in the specified text. Multiple words or phrases can be combined with \'+\' for AND and \'|\' for OR. They will be processed simply from left to right. So, `Saul+Paul|Ruth` will evaluate as (Saul AND Paul) OR Ruth.',
+                'param_dam_id'     => 'The DAM ID the caller wishes to search in.'
+            ],
+
+            'v4_alphabets' => [
+                'all' => [
+                    'summary' => 'La list de countires'
+                ]
+            ],
+        ],
+
+        'params' => [
+
+        ]
+
+    ],
 
 ];
