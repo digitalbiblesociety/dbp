@@ -34,19 +34,24 @@
                     <div class="content">
                         <ul>
                             <li>
-                                <h2>Data-Sets</h2>
+                                <b>Wiki</b>
                                 <ul class="links-list">
                                     <li><a href="{{ route('view_bibles.index') }}">Bibles</a></li>
                                     <li><a href="{{ route('view_languages.index') }}">Languages</a></li>
                                     <li><a href="{{ route('view_alphabets.index') }}">Alphabets</a></li>
                                     <li><a href="{{ route('view_countries.index') }}">Countries</a></li>
                                     <li><a href="{{ route('view_numbers.index') }}">Numeral Sets</a></li>
+                                </ul>
+
+                                <b>Community</b>
+                                <ul class="links-list">
                                     <li><a href="{{ route('view_organizations.index') }}">Organizations</a></li>
+                                    <li><a href="{{ route('projects.index') }}">Projects</a></li>
                                 </ul>
                             </li>
 
                             <li>
-                                <h2>Koinos</h2>
+                                <b>Koinos</b>
                                 <ul class="links-list">
                                     <li><a href="{{ route('swagger_docs_ui') }}">Swagger UI</a></li>
                                     <li><a href="{{ route('swagger_beta') }}">Development Documentation</a></li>

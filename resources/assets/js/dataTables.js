@@ -56,9 +56,9 @@ $(document).ready(function () {
 
                 columns[index] = { data : column.data("column-name") };
             });
-            console.log(columns);
+
             table.DataTable({
-                ajax: "https://api." + window.location.hostname + "/" + table.data("route") + "?key=1234&v=4",
+                ajax: "https://api." + window.location.hostname + "/" + table.data("route") + "?key=1234&v=4" + table.data("params"),
                 dom: '<<"dataTables_header"lf><t>ip>',
                 fixedHeader: true,
                 order: [order, "asc"],

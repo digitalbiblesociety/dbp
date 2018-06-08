@@ -112,7 +112,7 @@
 
 @section('content')
 
-@if(isset($user))
+@if(isset($user) or \Auth::user())
     @if($user->admin)
         @include('layouts.partials.banner', ['title' => "Admin" ])
         @include('dashboard.admin')

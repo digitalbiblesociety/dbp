@@ -30,6 +30,25 @@
         .requesting-access {
             opacity: .5;
         }
+
+        .table thead {
+            display: none;
+        }
+
+        .table tr {
+            display: block;
+            width:120px;
+            height:120px;
+            background-color:#FFF;
+            padding:5px;
+            float:left;
+            overflow: hidden;
+        }
+
+        .table tr a {
+            color:#222;
+        }
+
     </style>
 @endsection
 
@@ -37,6 +56,9 @@
 
     <div class="row">
         <h1 class="text-center">Organizations</h1>
+        <a href="https://dbp.dev/docs/swagger/v4#/Community">Version 4</a>
+        <p>The Digital Bible Platform is a beneficiary of the hard work done to catalogue Biblical organizations by the find a bible project in collaboration with the forum of Bible Agencies and Digital Bible Society.
+           The API now makes that data available as a public service. Organizations within this route may not be affiliated or endorsed with the DBP project. To view the organizations which currently utilize the API please see the projects section.</p>
         @isset($user)
             @foreach($user->role as $role)
                     <div class="medium-4 columns {{ $role->role }}">
@@ -53,9 +75,8 @@
             <table class="table" cellspacing="0" width="100%" data-route="organizations">
                 <thead>
                 <tr>
-                    <th data-column-name="name" data-link="slug">{{ trans('fields.alternativeNames') }}</th>
-                    <th data-column-name="name">{{ trans('fields.name') }}</th>
                     <th data-column-name="logos[0].url" data-image="true">{{ trans('fields.id') }}</th>
+                    <th data-column-name="name" data-link="slug">{{ trans('fields.name') }}</th>
                 </tr>
                 </thead>
                 <tbody>
