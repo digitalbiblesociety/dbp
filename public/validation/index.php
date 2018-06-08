@@ -1,6 +1,6 @@
 <?php
 
-$servername = $_ENV['DB_HOST'];
+$servername = $_ENV['host'];
 $username = $_ENV['DB_USERNAME'];
 $password = $_ENV['DB_PASSWORD'];
 $port = $_ENV['DB_PORT'];
