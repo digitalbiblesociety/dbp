@@ -30,8 +30,8 @@ class AccessGroupController extends APIController
 	public function store(Request $request)
 	{
 		($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
-		$validated = $this->validateAccessGroup($request);
-		dd($validated);
+		$invalid = $this->validateAccessGroup($request);
+		if($invalid) return $this->setStatusCode(400)->reply($invalid);
 
 		$access_group = AccessGroup::create($request->all());
 		if (!$this->api) return redirect()->route('access.groups.show', ['group_id' => $access_group->id]);
@@ -54,6 +54,26 @@ class AccessGroupController extends APIController
 	/**
 	 * Update the specified resource in storage.
 	 *
+	 * @OAS\Put(
+	 *     path="/access/groups/{group_id}",
+	 *     tags={"Community"},
+	 *     summary="Update the specified Access group",
+	 *     description="",
+	 *     operationId="v4_access_groups.update",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(name="access_group_id", in="path", required=true, @OAS\Schema(ref="#/components/schemas/AccessGroup/properties/id")),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/AccessGroup")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/AccessGroup")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/AccessGroup"))
+	 *     )
+	 * )
+	 *
 	 * @param  \Illuminate\Http\Request $request
 	 * @param  int $id
 	 *
@@ -62,7 +82,7 @@ class AccessGroupController extends APIController
 	public function update(Request $request, $id)
 	{
 		$invalid = $this->validateAccessGroup($request);
-		if($invalid) return $this->reply($invalid);
+		if($invalid) return $this->setStatusCode(400)->reply($invalid);
 
 		$access_group = AccessGroup::find($id);
 		$access_group->fill($request->all())->save();
