@@ -40,6 +40,7 @@
         "zircote/swagger-php": "3.*@dev"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^2.4",
         "fzaninotto/faker": "~1.4",
         "itsgoingd/clockwork": "^2.2",
         "krlove/eloquent-model-generator": "^1.2",
