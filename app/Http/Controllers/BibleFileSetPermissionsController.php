@@ -43,21 +43,31 @@ class BibleFileSetPermissionsController extends APIController
 	 * )
 	 *
 	 * @param string $fileset_id - The fileset_id for which permissions are being queried
+	 *
 	 * @return mixed $fileset string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 */
 	public function index($fileset_id)
 	{
-		if(!$this->api) {
+		if (!$this->api) {
 			$user = \Auth::user();
-			if(!$user) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied',[],$this->preferred_language));
+			if (!$user) {
+				return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
+			}
+
 			return view('bibles.filesets.permissions.index');
 		}
 
-		$filesets = Access::with('fileset.bible.translations')->where('hash_id',$fileset_id)->get();
-		if(!$filesets) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $fileset_id],$this->preferred_language));
-		$fileset = $filesets->where('key_id',$this->key)->first();
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_401', [], $this->preferred_language));
+		$filesets = Access::with('fileset.bible.translations')->where('hash_id', $fileset_id)->get();
+		if (!$filesets) {
+			return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404',
+				['id' => $fileset_id]));
+		}
+		$fileset = $filesets->where('key_id', $this->key)->first();
+		if (!$fileset) {
+			return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_401'));
+		}
+
 		return $this->reply(fractal()->item($fileset)->transformWith(BibleFilePermissionsTransformer::class)->serializeWith($this->serializer));
 	}
 
@@ -76,13 +86,16 @@ class BibleFileSetPermissionsController extends APIController
 	 * @return mixed $fileset string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 */
-	public function store(string $fileset_id,Request $request)
+	public function store(string $fileset_id, Request $request)
 	{
 		$this->validateUser();
 		$this->validateBibleFilesetPermission($request);
 
-		$fileset = Fileset::with('bucket')->where('hash_id',$request->hash_id)->first();
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404',['id' => $fileset_id],$this->preferred_language));
+		$fileset = Fileset::with('bucket')->where('hash_id', $request->hash_id)->first();
+		if (!$fileset) {
+			return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404',
+				['id' => $fileset_id]));
+		}
 
 		Access::create([
 			'hash_id'        => $request->hash_id,
@@ -91,6 +104,7 @@ class BibleFileSetPermissionsController extends APIController
 			'access_notes'   => $request->access_notes,
 			'access_granted' => $request->access_granted ?? 0,
 		]);
+
 		return redirect()->route('view_bible_filesets_permissions.index', ['id' => $fileset_id]);
 	}
 
@@ -115,7 +129,7 @@ class BibleFileSetPermissionsController extends APIController
 
 		$fileset = BibleFileset::find($fileset_id);
 		$this->authorize('update', $fileset);
-		$permission = BibleFileSetPermission::find(request()->permission_id);
+		$permission               = BibleFileSetPermission::find(request()->permission_id);
 		$permission->access_level = request()->access_level;
 		$permission->save();
 
@@ -125,7 +139,8 @@ class BibleFileSetPermissionsController extends APIController
 	/**
 	 * Remove the specified resource from storage.
 	 *
-	 * @param  int  $id
+	 * @param  int $id
+	 *
 	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy($id)
@@ -135,14 +150,17 @@ class BibleFileSetPermissionsController extends APIController
 		$fileSet = BibleFileset::find($id);
 		$fileSet->delete();
 
-		return $this->reply(trans('api.filesets_delete_200',['id' => $id],$this->preferred_language));
+		return $this->reply(trans('api.filesets_delete_200', ['id' => $id]));
 	}
 
 	public function user()
 	{
 		$user = \Auth::user();
-		if(!$user) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied',[],$this->preferred_language));
-		return view('bibles.filesets.permissions.user',compact('user'));
+		if (!$user) {
+			return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
+		}
+
+		return view('bibles.filesets.permissions.user', compact('user'));
 	}
 
 	/**
@@ -154,13 +172,20 @@ class BibleFileSetPermissionsController extends APIController
 	 */
 	private function validateUser($user = null)
 	{
-		if(!$this->api) $user = Auth::user();
-		if(!$user) {
-			$key = Key::where('key',$this->key)->first();
-			if(!isset($key)) return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed',[],$this->preferred_language));
+		if (!$this->api) {
+			$user = Auth::user();
+		}
+		if (!$user) {
+			$key = Key::where('key', $this->key)->first();
+			if (!isset($key)) {
+				return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed'));
+			}
 			$user = $key->user;
 		}
-		if(!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError(trans('api.bible_fileset_errors_401',[],$this->preferred_language));
+		if (!$user->archivist AND !$user->admin) {
+			return $this->setStatusCode(401)->replyWithError(trans('api.bible_fileset_errors_401'));
+		}
+
 		return $user;
 	}
 
@@ -174,13 +199,17 @@ class BibleFileSetPermissionsController extends APIController
 	private function validateBibleFilesetPermission(Request $request)
 	{
 		$validator = \Validator::make($request->all(), [
-			'hash_id'          => 'required|exists:filesets,hash_id',
-			'key_id'           => 'required|exists:user_keys,key',
+			'hash_id' => 'required|exists:filesets,hash_id',
+			'key_id'  => 'required|exists:user_keys,key',
 		]);
 
 		if ($validator->fails()) {
-			if($this->api) return $this->setStatusCode(422)->replyWithError($validator->errors());
-			if(!$this->api) return redirect()->back()->withErrors($validator)->withInput();
+			if ($this->api) {
+				return $this->setStatusCode(422)->replyWithError($validator->errors());
+			}
+			if (!$this->api) {
+				return redirect()->back()->withErrors($validator)->withInput();
+			}
 		}
 
 	}

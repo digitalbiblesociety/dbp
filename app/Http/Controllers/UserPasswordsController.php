@@ -55,18 +55,28 @@ class UserPasswordsController extends APIController
 	public function triggerPasswordResetEmail(Request $request)
 	{
 		$user = User::where('email', $request->email)->first();
-		if (!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email',['email' => $request->email],$this->preferred_language));
+		if (!$user) {
+			return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email',
+				['email' => $request->email]));
+		}
 
-		$project = $user->projects->where('id',$request->project_id)->first();
-		if(!$project) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project',['user' => $user->id, 'project' => $request->project_id],$this->preferred_language));
+		$project = $user->projects->where('id', $request->project_id)->first();
+		if (!$project) {
+			return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project',
+				['user' => $user->id, 'project' => $request->project_id]));
+		}
 
-		$generatedToken = PasswordReset::create(['email' => $request->email,'token' => str_random(64),'reset_path' => $request->reset_path]);
+		$generatedToken = PasswordReset::create(['email'      => $request->email,
+		                                         'token'      => str_random(64),
+		                                         'reset_path' => $request->reset_path,
+		]);
 
-		$user->token = $generatedToken->token;
+		$user->token         = $generatedToken->token;
 		$project->reset_path = $request->reset_path;
-		$project->iso = $request->iso ?? "eng";
+		$project->iso        = $request->iso ?? "eng";
 		\Mail::to($user)->send(new EmailPasswordReset($user, $project));
-		return $this->reply(trans('api.email_send_successful',[],$this->preferred_language));
+
+		return $this->reply(trans('api.email_send_successful', []));
 	}
 
 	/**
@@ -113,21 +123,26 @@ class UserPasswordsController extends APIController
 	 */
 	public function validatePasswordReset(Request $request)
 	{
-		$project = Project::where('id',$request->project_id)->first();
-		if(!$project) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project',[],$this->preferred_language));
+		$project = Project::where('id', $request->project_id)->first();
+		if (!$project) {
+			return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project'));
+		}
 
-		if($request->email AND $request->old_password AND $request->new_password AND $request->new_password_confirmed) {
-			$user = User::where('email',$request->email)->first();
+		if ($request->email AND $request->old_password AND $request->new_password AND $request->new_password_confirmed) {
+			$user = User::where('email', $request->email)->first();
 			// If password provided, update password
-			if(\Hash::check($request->old_password, $user->password)) {
+			if (\Hash::check($request->old_password, $user->password)) {
 				$user->password = bcrypt($request->new_password);
 				$user->save();
+
 				return $this->reply($user);
 			}
 		}
 
-		$generatedToken = PasswordReset::where('token',$request->token_id)->first();
-		if(!$generatedToken) return $this->setStatusCode(404)->replyWithError(trans('api.auth_password_reset_token_failed',[],$this->preferred_language));
+		$generatedToken = PasswordReset::where('token', $request->token_id)->first();
+		if (!$generatedToken) {
+			return $this->setStatusCode(404)->replyWithError(trans('api.auth_password_reset_token_failed'));
+		}
 		$user = $generatedToken->user;
 		$generatedToken->delete();
 

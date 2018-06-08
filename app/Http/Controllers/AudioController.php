@@ -27,6 +27,7 @@ class AudioController extends APIController
 	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v4_alphabets.one - V4 Test Docs
 	 *
 	 * @param null $id
+	 *
 	 * @return mixed
 	 *
 	 * @OAS\Get(
@@ -57,17 +58,27 @@ class AudioController extends APIController
 	 */
 	public function index($id = null)
 	{
-		$fileset_id = CheckParam('dam_id',$id);
-		$chapter_id = CheckParam('chapter_id',null,'optional');
-		$book_id = CheckParam('book_id',null,'optional');
-		$bucket_id =  CheckParam('bucket|bucket_id',null,'optional') ?? env('FCBH_AWS_BUCKET');
-		if($book_id) $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->orWhere('id_usfx',$book_id)->first();
-		if(isset($book)) $book_id = $book->id;
-		$fileset = BibleFileset::where('id', $fileset_id)->where('bucket_id',$bucket_id)->where('set_type_code', 'like', '%audio%')->first();
-		if(!$fileset) $fileset = BibleFileset::where('id', substr($fileset_id,0,-4))->where('bucket_id',$bucket_id)->where('set_type_code', 'like', '%audio%')->first();
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError("No Audio Fileset could be found for the code: ".$fileset_id);
+		$fileset_id = CheckParam('dam_id', $id);
+		$chapter_id = CheckParam('chapter_id', null, 'optional');
+		$book_id    = CheckParam('book_id', null, 'optional');
+		$bucket_id  = CheckParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		if ($book_id) {
+			$book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
+		}
+		if (isset($book)) {
+			$book_id = $book->id;
+		}
+		$fileset = BibleFileset::where('id', $fileset_id)->where('bucket_id', $bucket_id)->where('set_type_code',
+			'like', '%audio%')->first();
+		if (!$fileset) {
+			$fileset = BibleFileset::where('id', substr($fileset_id, 0, -4))->where('bucket_id',
+				$bucket_id)->where('set_type_code', 'like', '%audio%')->first();
+		}
+		if (!$fileset) {
+			return $this->setStatusCode(404)->replyWithError("No Audio Fileset could be found for the code: " . $fileset_id);
+		}
 
-		$audioChapters = BibleFile::with('book','bible')->where('hash_id',$fileset->hash_id)
+		$audioChapters = BibleFile::with('book', 'bible')->where('hash_id', $fileset->hash_id)
 		                          ->when($chapter_id, function ($query) use ($chapter_id) {
 			                          return $query->where('chapter_start', $chapter_id);
 		                          })->when($book_id, function ($query) use ($book_id) {
@@ -75,8 +86,9 @@ class AudioController extends APIController
 			})->orderBy('file_name')->get();
 
 		foreach ($audioChapters as $key => $audio_chapter) {
-			$audioChapters[$key]->file_name = Bucket::signedUrl('audio/'.$audio_chapter->bible->first()->id.'/'.$fileset_id.'/'.$audio_chapter->file_name);
+			$audioChapters[$key]->file_name = Bucket::signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name);
 		}
+
 		return $this->reply(fractal()->collection($audioChapters)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
 	}
 
@@ -105,6 +117,7 @@ class AudioController extends APIController
 	public function availableTimestamps()
 	{
 		$hash_id = BibleFile::has('timestamps')->select('hash_id')->distinct()->get();
+
 		return $this->reply($hash_id);
 	}
 
@@ -143,16 +156,17 @@ class AudioController extends APIController
 	public function timestampsByReference(string $id = null, string $book = null, int $chapter = null)
 	{
 		// Set Params
-		$id = CheckParam('fileset_id', $id);
-		$book = CheckParam('book', $book);
+		$id      = CheckParam('fileset_id', $id);
+		$book    = CheckParam('book', $book);
 		$chapter = CheckParam('chapter', $chapter);
 
 		// Fetch timestamps
 		return $this->reply(BibleFileTimestamp::
-			select(['bible_file_id as verse_id','verse_start','timestamp'])
-			->where('bible_fileset_id', $id)
-			->where('chapter_start', $chapter)
-			->where('book_id', $book)->orderBy('chapter_start')->orderBy('verse_start')->get());
+		select(['bible_file_id as verse_id', 'verse_start', 'timestamp'])
+		                                      ->where('bible_fileset_id', $id)
+		                                      ->where('chapter_start', $chapter)
+		                                      ->where('book_id',
+			                                      $book)->orderBy('chapter_start')->orderBy('verse_start')->get());
 
 		// Return API
 		return $this->reply(fractal()->collection($audioTimestamps)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
@@ -189,18 +203,20 @@ class AudioController extends APIController
 	public function timestampsByTag(string $id = "", string $query = "")
 	{
 		// Check Params
-		$id = CheckParam('dam_id|fileset_id', $id);
+		$id    = CheckParam('dam_id|fileset_id', $id);
 		$query = CheckParam('query', $query);
-		
-		$query = \DB::connection()->getPdo()->quote('+'.str_replace(' ',' +',$query));
+
+		$query  = \DB::connection()->getPdo()->quote('+' . str_replace(' ', ' +', $query));
 		$verses = \DB::connection('sophia')->table($id)
-			->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))
-			->select(['book','chapter'])
-			->get();
+		             ->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))
+		             ->select(['book', 'chapter'])
+		             ->get();
 
 		// Build the timestamp query
 		$timestamps = BibleFileTimestamp::query();
-		foreach ($verses as $verse) $timestamps->orWhere([['book_id', '=', $verse->book_id],['chapter_start', '=', $verse->chapter_number]]);
+		foreach ($verses as $verse) {
+			$timestamps->orWhere([['book_id', '=', $verse->book_id], ['chapter_start', '=', $verse->chapter_number]]);
+		}
 		$timestamps = $timestamps->limit(500)->get();
 
 		return $this->reply(fractal()->collection($timestamps)->transformWith(new AudioTransformer()));
@@ -245,14 +261,14 @@ class AudioController extends APIController
 	public function location()
 	{
 		return $this->reply([
-				[
-					"server"    => "dbp-dev.s3.us-west-2.amazonaws.com",
-					"root_path" => "/audio",
-					"protocol"  => "https",
-					"CDN"       => "1",
-					"priority"  => "5"
-				]
-			]);
+			[
+				"server"    => "dbp-dev.s3.us-west-2.amazonaws.com",
+				"root_path" => "/audio",
+				"protocol"  => "https",
+				"CDN"       => "1",
+				"priority"  => "5",
+			],
+		]);
 	}
 
 }

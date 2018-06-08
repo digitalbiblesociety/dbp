@@ -38,22 +38,24 @@ class AlphabetsController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_alphabets_all_response")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_alphabets_all_response")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_alphabets_all_response"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_alphabets_all_response")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_alphabets_all_response")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_alphabets_all_response"))
 	 *     )
 	 * )
-     *
+	 *
 	 */
 	public function index()
-    {
-	    if(!$this->api) return view('wiki.languages.alphabets.index');
-	    $alphabets = \Cache::remember('alphabets', 1600, function () {
-		    $alphabets = Alphabet::select(['name','script','family','direction','type'])->get();
-		    return fractal()->collection($alphabets)->transformWith(new AlphabetTransformer())->serializeWith($this->serializer);
-	    });
-	    return $this->reply($alphabets);
-    }
+	{
+		if (!$this->api) return view('wiki.languages.alphabets.index');
+
+		$alphabets = \Cache::remember('alphabets', 1600, function () {
+			$alphabets = Alphabet::select(['name', 'script', 'family', 'direction', 'type'])->get();
+			return fractal($alphabets, new AlphabetTransformer())->serializeWith($this->serializer);
+		});
+
+		return $this->reply($alphabets);
+	}
 
 
 	/**
@@ -81,22 +83,23 @@ class AlphabetsController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response"))
 	 *     )
 	 * )
 	 *
 	 */
 	public function show($id)
-    {
-	    $alphabet = \Cache::remember('alphabet_'.$id, 1600, function () use($id) {
-	        return Alphabet::with('fonts','languages','bibles.currentTranslation')->where('script',$id)->first();
-	    });
-	    if(!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
-    	if(!$this->api) return view('wiki.languages.alphabets.show', compact('alphabet'));
-        return $this->reply(fractal()->item($alphabet)->transformWith(AlphabetTransformer::class)->serializeWith($this->serializer));
-    }
+	{
+		$alphabet = \Cache::remember('alphabet_' . $id, 1600, function () use ($id) {
+			return Alphabet::with('fonts', 'languages', 'bibles.currentTranslation')->where('script', $id)->first();
+		});
+		if (!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
+		if (!$this->api) return view('wiki.languages.alphabets.show', compact('alphabet'));
+
+		return $this->reply(fractal()->item($alphabet)->transformWith(AlphabetTransformer::class)->serializeWith($this->serializer));
+	}
 
 
 	/**
@@ -110,11 +113,15 @@ class AlphabetsController extends APIController
 	 *
 	 */
 	public function create()
-    {
-    	$validatedUser = $this->validateUser();
-	    if(!is_a($validatedUser, User::class)); return $validatedUser;
-        return view('wiki.languages.alphabets.create');
-    }
+	{
+		$validatedUser = $this->validateUser();
+		if (!is_a($validatedUser, User::class)) {
+		}
+
+		return $validatedUser;
+
+		return view('wiki.languages.alphabets.create');
+	}
 
 	/**
 	 * Stores a Single Alphabet
@@ -143,23 +150,24 @@ class AlphabetsController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response"))
 	 *     )
 	 * )
 	 *
 	 */
 
 	public function store(Request $request)
-    {
-	    ($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
-	    $this->validateAlphabet($request);
+	{
+		($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
+		$this->validateAlphabet($request);
 
-	    Alphabet::create($request->all());
-		if(!$this->api) return redirect()->route('view_alphabets.show', ['id' => request()->id]);
+		Alphabet::create($request->all());
+		if (!$this->api) return redirect()->route('view_alphabets.show', ['id' => request()->id]);
+
 		return $this->reply(["message" => "Alphabet Successfully Created"]);
-    }
+	}
 
 	/**
 	 * Update a Single Alphabet
@@ -192,22 +200,23 @@ class AlphabetsController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_alphabets_one_response"))
 	 *     )
 	 * )
 	 *
 	 */
-    public function update(string $script_id, Request $request)
-    {
-	    ($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
-	    $this->validateAlphabet($request);
+	public function update(string $script_id, Request $request)
+	{
+		($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
+		$this->validateAlphabet($request);
 
-	    Alphabet::find($script_id)->fill($request->all())->save();
-	    if(!$this->api) return redirect()->route('view_alphabets.show', ['id' => $request->id]);
-	    return $this->reply("Alphabet Successfully Updated");
-    }
+		Alphabet::find($script_id)->fill($request->all())->save();
+		if (!$this->api) return redirect()->route('view_alphabets.show', ['id' => $request->id]);
+
+		return $this->reply("Alphabet Successfully Updated");
+	}
 
 	/**
 	 * Edit a Single Alphabet
@@ -221,12 +230,13 @@ class AlphabetsController extends APIController
 	 * @return View
 	 */
 	public function edit(string $script_id)
-    {
-	    $this->validateUser(Auth::user());
+	{
+		$this->validateUser(Auth::user());
 
-        $alphabet = Alphabet::find($script_id);
-        return view('wiki.languages.alphabets.edit',compact('alphabet'));
-    }
+		$alphabet = Alphabet::find($script_id);
+
+		return view('wiki.languages.alphabets.edit', compact('alphabet'));
+	}
 
 	/**
 	 * Ensure the current User has permissions to alter the alphabets
@@ -236,12 +246,13 @@ class AlphabetsController extends APIController
 	private function validateUser()
 	{
 		$user = Auth::user();
-		if(!$user) {
-			$key = Key::where('key',$this->key)->first();
-			if(!isset($key)) return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
+		if (!$user) {
+			$key = Key::where('key', $this->key)->first();
+			if (!isset($key)) return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
 			$user = $key->user;
 		}
-		if(!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError("You don't have permission to edit the wiki");
+		if (!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError("You don't have permission to edit the wiki");
+
 		return $user;
 	}
 
@@ -253,37 +264,37 @@ class AlphabetsController extends APIController
 	 * @return mixed
 	 */
 	private function validateAlphabet(Request $request)
-    {
-	    $validator = Validator::make($request->all(),[
-		    'script'              => ($request->method() == "POST") ? 'required|unique:alphabets,script|max:4|min:4' : 'required|exists:alphabets,script|max:4|min:4',
-		    'name'                => ($request->method() == "POST") ? 'required|unique:alphabets,name|max:191' : 'required|exists:alphabets,name|max:191',
-		    'unicode_pdf'         => 'url|nullable',
-		    'family'              => 'string|max:191|nullable',
-		    'type'                => 'string|max:191|nullable',
-		    'white_space'         => 'string|max:191|nullable',
-		    'open_type_tag'       => 'string|max:191|nullable',
-		    'status'              => 'string|max:191|nullable',
-		    'baseline'            => 'string|max:191|nullable',
-		    'ligatures'           => 'string|max:191|nullable',
-		    'complex_positioning' => 'boolean',
-		    'requires_font'       => 'boolean',
-		    'unicode'             => 'boolean',
-		    'diacritics'          => 'boolean',
-		    'contextual_forms'    => 'boolean',
-		    'reordering'          => 'boolean',
-		    'case'                => 'boolean',
-		    'split_graphs'        => 'boolean',
-		    'direction'           => 'alpha|min:3|max:3',
-		    'sample'              => 'max:2024',
-		    'sample_img'          => 'image|nullable'
-	    ]);
+	{
+		$validator = Validator::make($request->all(), [
+			'script'              => ($request->method() == "POST") ? 'required|unique:alphabets,script|max:4|min:4' : 'required|exists:alphabets,script|max:4|min:4',
+			'name'                => ($request->method() == "POST") ? 'required|unique:alphabets,name|max:191' : 'required|exists:alphabets,name|max:191',
+			'unicode_pdf'         => 'url|nullable',
+			'family'              => 'string|max:191|nullable',
+			'type'                => 'string|max:191|nullable',
+			'white_space'         => 'string|max:191|nullable',
+			'open_type_tag'       => 'string|max:191|nullable',
+			'status'              => 'string|max:191|nullable',
+			'baseline'            => 'string|max:191|nullable',
+			'ligatures'           => 'string|max:191|nullable',
+			'complex_positioning' => 'boolean',
+			'requires_font'       => 'boolean',
+			'unicode'             => 'boolean',
+			'diacritics'          => 'boolean',
+			'contextual_forms'    => 'boolean',
+			'reordering'          => 'boolean',
+			'case'                => 'boolean',
+			'split_graphs'        => 'boolean',
+			'direction'           => 'alpha|min:3|max:3',
+			'sample'              => 'max:2024',
+			'sample_img'          => 'image|nullable',
+		]);
 
-	    if ($validator->fails()) {
-		    if($this->api)  return $this->setStatusCode(422)->replyWithError($validator->errors());
-		    if(!$this->api) return redirect('dashboard/alphabets/create')->withErrors($validator)->withInput();
-	    }
+		if ($validator->fails()) {
+			if (!$this->api) return redirect('dashboard/alphabets/create')->withErrors($validator)->withInput();
+			return $this->setStatusCode(422)->replyWithError($validator->errors());
+		}
 
-    }
+	}
 
 
 }

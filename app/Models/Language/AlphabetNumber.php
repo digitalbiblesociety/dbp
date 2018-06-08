@@ -3,6 +3,7 @@
 namespace App\Models\Language;
 
 use Illuminate\Database\Eloquent\Model;
+use \Illuminate\Database\Eloquent\Builder;
 
 /**
  * App\Models\Language\AlphabetNumber
@@ -37,7 +38,7 @@ class AlphabetNumber extends Model
 
 	/**
 	 * @property string id
-	 * @method static AlphabetNumber whereId($value)
+	 * @method static Builder|AlphabetNumber whereId($value)
 	 *
 	 * @OAS\Property(
 	 *     title="Incrementing Alphabet Number Id",
@@ -50,7 +51,7 @@ class AlphabetNumber extends Model
     protected $id;
 	/**
 	 * @property string script_id
-	 * @method static AlphabetNumber whereScriptId($value)
+	 * @method static  AlphabetNumber whereScriptId($value)
 	 *
 	 * @OAS\Property(
 	 *     title="Alphabet Script Id",
@@ -63,7 +64,7 @@ class AlphabetNumber extends Model
     protected $script_id;
 	/**
 	 * @property string script_variant_iso
-	 * @method static AlphabetNumber whereScriptVariantIso($value)
+	 * @method static Builder|AlphabetNumber whereScriptVariantIso($value)
 	 *
 	 * @OAS\Property(
 	 *     title="Alphabet Script Variant Iso",
@@ -76,7 +77,7 @@ class AlphabetNumber extends Model
     protected $script_variant_iso;
 	/**
 	 * @property string numeral
-	 * @method static AlphabetNumber whereNumeral($value)
+	 * @method static Builder|AlphabetNumber whereNumeral($value)
 	 *
 	 * @OAS\Property(
 	 *     title="Alphabet Numeral",
@@ -88,7 +89,7 @@ class AlphabetNumber extends Model
     protected $numeral;
 	/**
 	 * @property string numeral_vernacular
-	 * @method static AlphabetNumber whereNumeralVernacular($value)
+	 * @method static Builder|AlphabetNumber whereNumeralVernacular($value)
 	 *
 	 * @OAS\Property(
 	 *     title="Alphabet Numeral Vernacular",
@@ -101,7 +102,7 @@ class AlphabetNumber extends Model
     protected $numeral_vernacular;
 	/**
 	 * @property string numeral_written
-	 * @method static AlphabetNumber whereNumeralWritten($value)
+	 * @method static Builder|AlphabetNumber whereNumeralWritten($value)
 	 *
 	 * @OAS\Property(
 	 *     title="Alphabet Numeral Written",

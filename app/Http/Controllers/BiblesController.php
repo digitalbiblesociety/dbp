@@ -29,6 +29,7 @@ class BiblesController extends APIController
 	 * @deprecated expired (optional): [true|false] Whether the volume as passed its expiration or not.
 	 * @deprecated resolution (optional): [lo|med|hi] Currently used for video volumes as they can be available in different resolutions, basically conforming to the loose general categories of low, medium, and high resolution. Low resolution is geared towards devices with smaller screens.
 	 * @deprecated delivery (optional): [web|web_streaming|download|download_text|mobile|sign_language|streaming_url|local_bundled|podcast|mp3_cd|digital_download| bible_stick|subsplash|any|none] a criteria for approved delivery method. It is possible to OR these methods together using '|', such as "delivery=streaming_url|mobile".  'any' means any of the supported methods (this list may change over time) i.e. approved for something. 'none' means volumes that are not approved for any of the supported methods. All volumes are returned by default.
+	 *
 	 * @param dam_id (optional): the volume internal DAM ID. Can be used to restrict the response to only DAM IDs that contain with 'N2' for example
 	 * @param fcbh_id (optional): the volume FCBH DAM ID. Can be used to restrict the response to only FCBH DAM IDs that contain with 'N2' for example
 	 * @param media (optional): [text|audio|video] the format of assets the caller is interested in. This specifies if you only want volumes available in text or volumes available in audio.
@@ -82,90 +83,136 @@ class BiblesController extends APIController
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
 	public function index()
-    {
+	{
 
-	    if(env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
-	    // Return the documentation if it's not an API request
-	    if(!$this->api) return view('bibles.index');
+		if (env('APP_ENV') == 'local') {
+			ini_set('memory_limit', '864M');
+		}
+		// Return the documentation if it's not an API request
+		if (!$this->api) {
+			return view('bibles.index');
+		}
 
-	    $dam_id = checkParam('dam_id|fcbh_id|bible_id', null, 'optional');
-	    $media = checkParam('media', null, 'optional');
-	    $language = checkParam('language', null, 'optional');
-	    $full_word = checkParam('full_word|language_name', null, 'optional');
-	    $iso = checkParam('language_family_code|language_code', null, 'optional');
-	    $updated = checkParam('updated', null, 'optional');
-	    $organization = checkParam('organization_id', null, 'optional');
-		$sort_by = checkParam('sort_by', null, 'optional');
-	    $sort_dir = checkParam('sort_dir', null, 'optional') ?? 'asc';
-	    $fileset_filter = boolval(checkParam('filter_by_fileset', null, 'optional')) ?? true;
-	    $include_alt_names = checkParam('include_alt_names', null, 'optional');
-	    $country = checkParam('country', null, 'optional');
-	    $bucket = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-	    $hide_restricted = checkParam('hide_restricted', null,'optional') ?? true;
+		$dam_id            = checkParam('dam_id|fcbh_id|bible_id', null, 'optional');
+		$media             = checkParam('media', null, 'optional');
+		$language          = checkParam('language', null, 'optional');
+		$full_word         = checkParam('full_word|language_name', null, 'optional');
+		$iso               = checkParam('language_family_code|language_code', null, 'optional');
+		$updated           = checkParam('updated', null, 'optional');
+		$organization      = checkParam('organization_id', null, 'optional');
+		$sort_by           = checkParam('sort_by', null, 'optional');
+		$sort_dir          = checkParam('sort_dir', null, 'optional') ?? 'asc';
+		$fileset_filter    = boolval(checkParam('filter_by_fileset', null, 'optional')) ?? true;
+		$include_alt_names = checkParam('include_alt_names', null, 'optional');
+		$country           = checkParam('country', null, 'optional');
+		$bucket            = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$hide_restricted   = checkParam('hide_restricted', null, 'optional') ?? true;
 
-	    $access_control = $this->accessControl($this->key,"api");
+		$access_control = $this->accessControl($this->key, "api");
 
-	    $cache_string = 'bibles'.$dam_id.'_'.$media.'_'.$language.'_'.$full_word.'_'.$iso.'_'.$updated.'_'.$organization.'_'.$sort_by.'_'.$sort_dir.'_'.$fileset_filter.'_'.$country.'_'.$bucket.$access_control->string;
+		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $full_word . '_' . $iso . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $bucket . $access_control->string;
 		Cache::forget($cache_string);
-	    $bibles = Cache::remember($cache_string, 1600, function () use($dam_id,$hide_restricted,$media,$language,$full_word,$iso,$updated,$organization,$sort_by,$sort_dir,$fileset_filter,$country,$bucket,$include_alt_names,$access_control) {
-	        $bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($bucket,$access_control) {
-		                if($bucket) $query->where('bucket_id', $bucket);
-		                $query->whereIn('bible_filesets.hash_id',$access_control->keys);
-	                }])
-		            ->when($hide_restricted, function($q) use($hide_restricted,$access_control) {
-			            $q->whereHas('filesets', function ($query) use ($hide_restricted,$access_control) {
-					        $query->whereIn('bible_filesets.hash_id',$access_control->keys);
-			            });
-		            })
-			        ->has('translations')->has('language')
-			        ->when($fileset_filter, function($q) {
-				        $q->has('filesets.files');
-			        })
-		            ->when($country, function($q) use ($country) {
-			            $q->whereHas('language.primaryCountry', function ($query) use ($country) {
-					        $query->where('country_id', $country);
-			            });
-		            })
-			        ->when($iso, function($q) use ($iso){
-				        $q->where('iso', $iso);
-			        })
-				    ->when($organization, function($q) use ($organization) {
-					    $q->whereHas('organizations', function($q) use($organization){
-						    $q->where('organization_id', $organization);
-					    })->get();
-				    })->when($dam_id, function($q) use ($dam_id) {
-					    $q->where('id', $dam_id);
-				    })->when($media, function($q) use ($media) {
-					    switch ($media) {
-						    case "video": {$q->has('filesetFilm'); break;}
-						    case "audio": {$q->has('filesetAudio');break;}
-						    case "text":  {$q->has('filesetText'); break;}
-					    }
-				    })->when($updated, function($q) use ($updated) {
-					    $q->where('updated_at', '>', $updated);
-				    })->when($sort_by, function($q) use ($sort_by, $sort_dir){
-					    $q->orderBy($sort_by, $sort_dir);
-				    })
-			        ->orderBy('priority','desc')
-	                ->get();
+		$bibles = Cache::remember($cache_string, 1600, function () use (
+			$dam_id,
+			$hide_restricted,
+			$media,
+			$language,
+			$full_word,
+			$iso,
+			$updated,
+			$organization,
+			$sort_by,
+			$sort_dir,
+			$fileset_filter,
+			$country,
+			$bucket,
+			$include_alt_names,
+			$access_control
+		) {
+			$bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use (
+				$bucket,
+				$access_control
+			) {
+				if ($bucket) {
+					$query->where('bucket_id', $bucket);
+				}
+				$query->whereIn('bible_filesets.hash_id', $access_control->keys);
+			}])
+			               ->when($hide_restricted, function ($q) use ($hide_restricted, $access_control) {
+				               $q->whereHas('filesets', function ($query) use ($hide_restricted, $access_control) {
+					               $query->whereIn('bible_filesets.hash_id', $access_control->keys);
+				               });
+			               })
+			               ->has('translations')->has('language')
+			               ->when($fileset_filter, function ($q) {
+				               $q->has('filesets.files');
+			               })
+			               ->when($country, function ($q) use ($country) {
+				               $q->whereHas('language.primaryCountry', function ($query) use ($country) {
+					               $query->where('country_id', $country);
+				               });
+			               })
+			               ->when($iso, function ($q) use ($iso) {
+				               $q->where('iso', $iso);
+			               })
+			               ->when($organization, function ($q) use ($organization) {
+				               $q->whereHas('organizations', function ($q) use ($organization) {
+					               $q->where('organization_id', $organization);
+				               })->get();
+			               })->when($dam_id, function ($q) use ($dam_id) {
+					$q->where('id', $dam_id);
+				})->when($media, function ($q) use ($media) {
+					switch ($media) {
+						case "video": {
+							$q->has('filesetFilm');
+							break;
+						}
+						case "audio": {
+							$q->has('filesetAudio');
+							break;
+						}
+						case "text": {
+							$q->has('filesetText');
+							break;
+						}
+					}
+				})->when($updated, function ($q) use ($updated) {
+					$q->where('updated_at', '>', $updated);
+				})->when($sort_by, function ($q) use ($sort_by, $sort_dir) {
+					$q->orderBy($sort_by, $sort_dir);
+				})
+			               ->orderBy('priority', 'desc')
+			               ->get();
 
-	        if($include_alt_names) $bibles->load('language.translations');
+			if ($include_alt_names) {
+				$bibles->load('language.translations');
+			}
 
-			if($language) {
-				$bibles = $bibles->filter(function($bible) use ($language,$full_word) {
+			if ($language) {
+				$bibles = $bibles->filter(function ($bible) use ($language, $full_word) {
 					$altNameList = [];
-					if(isset($bible->language->translations)) $altNameList = $bible->language->translations->pluck('name')->toArray();
-					if(isset($full_word)) return ($bible->language->name == $language) || in_array($language, $altNameList);
-					return (stripos($bible->language->name, $language) || ($bible->language->name == $language) || stripos(implode($altNameList), $language));
+					if (isset($bible->language->translations)) {
+						$altNameList = $bible->language->translations->pluck('name')->toArray();
+					}
+					if (isset($full_word)) {
+						return ($bible->language->name == $language) || in_array($language, $altNameList);
+					}
+					return (stripos($bible->language->name,
+							$language) || ($bible->language->name == $language) || stripos(implode($altNameList),
+							$language));
 				});
 			}
 
-			if($this->v == 2) $bibles->load('language.parent.parentLanguage','alphabet','organizations');
-			if($this->v == "jQueryDataTable") $bibles->load('language.primaryCountry','alphabet','organizations');
+			if ($this->v == 2) {
+				$bibles->load('language.parent.parentLanguage', 'alphabet', 'organizations');
+			}
+			if ($this->v == "jQueryDataTable") {
+				$bibles->load('language.primaryCountry', 'alphabet', 'organizations');
+			}
 			return fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer);
-        });
-	    return $this->reply($bibles);
-    }
+		});
+		return $this->reply($bibles);
+	}
 
 
 	/**
@@ -198,13 +245,15 @@ class BiblesController extends APIController
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
 	public function history()
-    {
-    	if(!$this->api) return view('bibles.history');
+	{
+		if (!$this->api) {
+			return view('bibles.history');
+		}
 
-		$limit = checkParam('limit', null, 'optional') ?? 500;
-		$bibles = Bible::select(['id','updated_at'])->take($limit)->get();
+		$limit  = checkParam('limit', null, 'optional') ?? 500;
+		$bibles = Bible::select(['id', 'updated_at'])->take($limit)->get();
 		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
-    }
+	}
 
 	/**
 	 *
@@ -235,17 +284,17 @@ class BiblesController extends APIController
 	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_library_version"))
 	 *     )
 	 * )
-     *
-     * @OAS\Schema (
-     *     type="object",
-     *     schema="v2_library_version",
-     *     description="The various version ids in the old version 2 style",
-     *     title="v2_library_version",
-     *     @OAS\Xml(name="v2_library_version"),
-     *     @OAS\Property(property="version_code",type="string",description="The abbreviated `BibleFileset` id created from the three letters identifier after the iso code"),
-     *     @OAS\Property(property="version_name",type="string",description="The name of the version in the language that it's written in"),
-     *     @OAS\Property(property="english_name",type="string",description="The name of the version in english")
-     * )
+	 *
+	 * @OAS\Schema (
+	 *     type="object",
+	 *     schema="v2_library_version",
+	 *     description="The various version ids in the old version 2 style",
+	 *     title="v2_library_version",
+	 *     @OAS\Xml(name="v2_library_version"),
+	 *     @OAS\Property(property="version_code",type="string",description="The abbreviated `BibleFileset` id created from the three letters identifier after the iso code"),
+	 *     @OAS\Property(property="version_name",type="string",description="The name of the version in the language that it's written in"),
+	 *     @OAS\Property(property="english_name",type="string",description="The name of the version in english")
+	 * )
 	 *
 	 * @return json
 	 */
@@ -255,25 +304,27 @@ class BiblesController extends APIController
 		$name = checkParam('name', null, 'optional');
 		$sort = checkParam('sort_by', null, 'optional');
 
-		$versions = Cache::remember('v2_library_version_'.$code.$name.$sort, 1600, function () use($code,$name,$sort) {
-			$versions = BibleFileset::with('bible.translations')->has('bible.translations')->where('bucket_id',env('FCBH_AWS_BUCKET'))
-				->when($code, function($q) use ($code) {
-					$q->where('id', $code);
-				})->when($sort, function($q) use ($sort) {
-					$q->orderBy($sort);
-				})->get();
-			foreach ($versions as $version) {
-				$currentTranslations = $version->bible->first();
-				$version_name = $currentTranslations->translations->where('iso','!=','eng')->first();
-				$english_name = $currentTranslations->translations->where('iso','=','eng')->first();
-				$output[] = [
-					'version_code' => substr($version->id,3,3),
-					'version_name' => isset($version_name) ? ($version_name->name != $english_name->name) ? $version_name->name : "" : "",
-					'english_name' => $english_name ? $english_name->name : "",
-				];
-			}
-			return $output;
-		});
+		$versions = Cache::remember('v2_library_version_' . $code . $name . $sort, 1600,
+			function () use ($code, $name, $sort) {
+				$versions = BibleFileset::with('bible.translations')->has('bible.translations')->where('bucket_id',
+					env('FCBH_AWS_BUCKET'))
+				                        ->when($code, function ($q) use ($code) {
+					                        $q->where('id', $code);
+				                        })->when($sort, function ($q) use ($sort) {
+						$q->orderBy($sort);
+					})->get();
+				foreach ($versions as $version) {
+					$currentTranslations = $version->bible->first();
+					$version_name        = $currentTranslations->translations->where('iso', '!=', 'eng')->first();
+					$english_name        = $currentTranslations->translations->where('iso', '=', 'eng')->first();
+					$output[]            = [
+						'version_code' => substr($version->id, 3, 3),
+						'version_name' => isset($version_name) ? ($version_name->name != $english_name->name) ? $version_name->name : "" : "",
+						'english_name' => $english_name ? $english_name->name : "",
+					];
+				}
+				return $output;
+			});
 		return $this->reply($versions);
 	}
 
@@ -333,92 +384,108 @@ class BiblesController extends APIController
 	 */
 	public function libraryMetadata()
 	{
-		if(env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
-		$dam_id = checkParam('dam_id', null, 'optional');
-		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		if (env('APP_ENV') == 'local') {
+			ini_set('memory_limit', '864M');
+		}
+		$fileset_id = checkParam('dam_id', null, 'optional');
+		$bucket_id  = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
-		$metadata = Cache::remember('v2_library_metadata'.$dam_id, 1600, function () use ($dam_id,$bucket_id) {
-			$metadata = BibleFileset::has('copyright')->with('copyright.organizations','copyright.role.roleTitle','bible')->when($dam_id, function($q) use ($dam_id) {
-				$q->where('id',$dam_id)->first();
-			})->where('bucket_id',$bucket_id)->where('set_type_code','!=','text_format')->get();
+		\Cache::forget('v2_library_metadata' . $fileset_id);
+		$metadata = Cache::remember('v2_library_metadata' . $fileset_id, 1600,
+			function () use ($fileset_id, $bucket_id) {
+				$metadata = BibleFileset::has('copyright')->with('copyright.organizations', 'copyright.role.roleTitle',
+					'bible')->when($fileset_id, function ($q) use ($fileset_id) {
+					$q->where('id', $fileset_id)->first();
+				})->where('bucket_id', $bucket_id)->where('set_type_code', '!=', 'text_format');
 
-			if($dam_id) return fractal()->item($metadata)->serializeWith($this->serializer)->transformWith(new BibleTransformer());
-			return fractal()->collection($metadata)->serializeWith($this->serializer)->transformWith(new BibleTransformer());
-		});
+				if ($fileset_id) {
+					return fractal()->item($metadata->first())->serializeWith($this->serializer)->transformWith(new BibleTransformer());
+				}
+				return fractal()->collection($metadata->get())->serializeWith($this->serializer)->transformWith(new BibleTransformer());
+			});
+
 		return $this->reply($metadata);
 	}
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function store()
-    {
+	/**
+	 * Store a newly created resource in storage.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function store()
+	{
 
-	    request()->validate([
-		    'id'                      => 'required|unique:bibles,id|max:24',
-		    'iso'                     => 'required|exists:languages,iso',
-		    'translations.*.name'     => 'required',
-		    'translations.*.iso'      => 'required|exists:languages,iso',
-		    'date'                    => 'integer',
-	    ]);
+		request()->validate([
+			'id'                  => 'required|unique:bibles,id|max:24',
+			'iso'                 => 'required|exists:languages,iso',
+			'translations.*.name' => 'required',
+			'translations.*.iso'  => 'required|exists:languages,iso',
+			'date'                => 'integer',
+		]);
 
-	    $bible = \DB::transaction(function () {
-		    $bible = new Bible();
-		    $bible = $bible->create(request()->only(['id','date','script','portions','copyright','derived','in_progress','notes','iso']));
-		    $bible->translations()->createMany(request()->translations);
-		    $bible->organizations()->attach(request()->organizations);
-		    $bible->equivalents()->createMany(request()->equivalents);
-		    $bible->links()->createMany(request()->links);
-		    return $bible;
-	    });
+		$bible = \DB::transaction(function () {
+			$bible = new Bible();
+			$bible = $bible->create(request()->only(['id', 'date', 'script', 'portions', 'copyright', 'derived', 'in_progress', 'notes', 'iso']));
+			$bible->translations()->createMany(request()->translations);
+			$bible->organizations()->attach(request()->organizations);
+			$bible->equivalents()->createMany(request()->equivalents);
+			$bible->links()->createMany(request()->links);
+			return $bible;
+		});
 
-	    return redirect()->route('view_bibles.show', ['id' => $bible->id]);
-    }
+		return redirect()->route('view_bibles.show', ['id' => $bible->id]);
+	}
 
-    /**
-     * Description:
-     * Display the bible meta data for the specified ID.
-     *
-     * @OAS\Get(
-     *     path="/bibles/{id}",
-     *     tags={"Bibles"},
-     *     summary="",
-     *     description="",
-     *     operationId="v4_bible.one",
-     *     @OAS\Parameter(name="id", in="path", required=true, description="The Bible id", @OAS\Schema(ref="#/components/schemas/Bible/properties/id")),
-     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-     *     @OAS\Parameter(ref="#/components/parameters/key"),
-     *     @OAS\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_bible.one"))
-     *     )
-     * )
-     *
-     * \\TODO: Move Links
-     *
-     * @param  string  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-	    $bible = Bible::with('filesets.organization','translations','books.book','links','organizations.logo','organizations.logoIcon','alphabet.primaryFont')->find($id);
-	    if(!$bible) return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id], $this->preferred_language));
-    	if(!$this->api) return view('bibles.show',compact('bible'));
+	/**
+	 * Description:
+	 * Display the bible meta data for the specified ID.
+	 *
+	 * @OAS\Get(
+	 *     path="/bibles/{id}",
+	 *     tags={"Bibles"},
+	 *     summary="",
+	 *     description="",
+	 *     operationId="v4_bible.one",
+	 *     @OAS\Parameter(name="id", in="path", required=true, description="The Bible id", @OAS\Schema(ref="#/components/schemas/Bible/properties/id")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_bible.one"))
+	 *     )
+	 * )
+	 *
+	 * \\TODO: Move Links
+	 *
+	 * @param  string $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function show($id)
+	{
+		$bible = Bible::with('filesets.organization', 'translations', 'books.book', 'links', 'organizations.logo',
+			'organizations.logoIcon', 'alphabet.primaryFont')->find($id);
+		if (!$bible) {
+			return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id]));
+		}
+		if (!$this->api) {
+			return view('bibles.show', compact('bible'));
+		}
 
 		return $this->reply(fractal()->item($bible)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
-    }
+	}
 
 	public function manage($id)
 	{
 		$bible = Bible::with('filesets')->find($id);
-		if(!$bible) return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404',['bible_id' => $id], $this->preferred_language));
+		if (!$bible) {
+			return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id]));
+		}
 
-		return view('bibles.manage',compact('bible'));
+		return view('bibles.manage', compact('bible'));
 	}
 
 	/**
@@ -452,25 +519,33 @@ class BiblesController extends APIController
 	 */
 	public function books($bible_id, $book_id = null)
 	{
-		if(!$this->api) return view('bibles.books.index');
+		if (!$this->api) {
+			return view('bibles.books.index');
+		}
 
-		$book_id = checkParam('book_id',$book_id,'optional');
+		$book_id = checkParam('book_id', $book_id, 'optional');
 
-		$translation_languages = checkParam('language_codes',null,'optional');
-		if($translation_languages) $translation_languages = explode('|',$translation_languages);
+		$translation_languages = checkParam('language_codes', null, 'optional');
+		if ($translation_languages) {
+			$translation_languages = explode('|', $translation_languages);
+		}
 
-		$bible_books = BibleBook::where('bible_id',$bible_id)->first();
-		$books = Book::when($translation_languages, function($q) use ($translation_languages){
-			$q->with(['translations' => function ($query) use($translation_languages) {
+		$bible_books = BibleBook::where('bible_id', $bible_id)->first();
+		$books       = Book::when($translation_languages, function ($q) use ($translation_languages) {
+			$q->with(['translations' => function ($query) use ($translation_languages) {
 				$query->whereIn('iso', $translation_languages);
 			}]);
-		})->when($bible_id, function($q) use ($bible_id,$bible_books){
-			if(isset($bible_books)) $q->whereHas('bible', function ($query) use($bible_id) { $query->where('bible_id', $bible_id); });
-			$q->with(['bible' => function ($query) use($bible_id) {
+		})->when($bible_id, function ($q) use ($bible_id, $bible_books) {
+			if (isset($bible_books)) {
+				$q->whereHas('bible', function ($query) use ($bible_id) {
+					$query->where('bible_id', $bible_id);
+				});
+			}
+			$q->with(['bible' => function ($query) use ($bible_id) {
 				$query->where('bible_id', $bible_id)->select('id');
 			}]);
-		})->when($book_id, function($q) use ($book_id){
-			$q->where('id',$book_id);
+		})->when($book_id, function ($q) use ($book_id) {
+			$q->where('id', $book_id);
 		})->orderBy('protestant_order')->get();
 
 		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer)->toArray());
@@ -479,11 +554,12 @@ class BiblesController extends APIController
 	public function edit($id)
 	{
 		$bible = Bible::with('translations.language')->find($id);
-		if(!$this->api) {
-			$languages = Language::select(['iso','name'])->orderBy('iso')->get();
-			$organizations = OrganizationTranslation::select(['name','organization_id'])->where('language_iso','eng')->get();
-			$alphabets = Alphabet::select('script')->get();
-			return view('bibles.edit',compact('languages', 'organizations', 'alphabets','bible'));
+		if (!$this->api) {
+			$languages     = Language::select(['iso', 'name'])->orderBy('iso')->get();
+			$organizations = OrganizationTranslation::select(['name', 'organization_id'])->where('language_iso',
+				'eng')->get();
+			$alphabets     = Alphabet::select('script')->get();
+			return view('bibles.edit', compact('languages', 'organizations', 'alphabets', 'bible'));
 		}
 
 		return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
@@ -496,65 +572,88 @@ class BiblesController extends APIController
 	 */
 	public function create()
 	{
-		$languages = Language::select(['iso','name'])->get();
-		$organizations = OrganizationTranslation::select(['name','organization_id'])->where('language_iso','eng')->get();
-		$alphabets = Alphabet::select('script')->get();
-		return view('bibles.create',compact('languages', 'organizations', 'alphabets'));
+		$languages     = Language::select(['iso', 'name'])->get();
+		$organizations = OrganizationTranslation::select(['name', 'organization_id'])->where('language_iso',
+			'eng')->get();
+		$alphabets     = Alphabet::select('script')->get();
+		return view('bibles.create', compact('languages', 'organizations', 'alphabets'));
 	}
 
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update($id)
-    {
+	/**
+	 * Update the specified resource in storage.
+	 *
+	 * @param  int $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function update($id)
+	{
 
-	    request()->validate([
-		    'id'                      => 'required|max:24',
-		    'iso'                     => 'required|exists:languages,iso',
-		    'translations.*.name'     => 'required',
-		    'translations.*.iso'      => 'required|exists:languages,iso',
-		    'date'                    => 'integer',
-	    ]);
+		request()->validate([
+			'id'                  => 'required|max:24',
+			'iso'                 => 'required|exists:languages,iso',
+			'translations.*.name' => 'required',
+			'translations.*.iso'  => 'required|exists:languages,iso',
+			'date'                => 'integer',
+		]);
 
-	    $bible = \DB::transaction(function () use($id) {
-		    $bible = Bible::with('translations','organizations','equivalents','links')->find($id);
-		    $bible->update(request()->only(['id','date','script','portions','copyright','derived','in_progress','notes','iso']));
+		$bible = \DB::transaction(function () use ($id) {
+			$bible = Bible::with('translations', 'organizations', 'equivalents', 'links')->find($id);
+			$bible->update(request()->only(['id', 'date', 'script', 'portions', 'copyright', 'derived', 'in_progress', 'notes', 'iso']));
 
-			if(request()->translations) {
-				foreach ($bible->translations as $translation) $translation->delete();
-				foreach (request()->translations as $translation) if($translation['name']) $bible->translations()->create($translation);
+			if (request()->translations) {
+				foreach ($bible->translations as $translation) {
+					$translation->delete();
+				}
+				foreach (request()->translations as $translation) {
+					if ($translation['name']) {
+						$bible->translations()->create($translation);
+					}
+				}
 			}
 
-		    if(request()->organizations) $bible->organizations()->sync(request()->organizations);
+			if (request()->organizations) {
+				$bible->organizations()->sync(request()->organizations);
+			}
 
-		    if(request()->equivalents) {
-			    foreach ($bible->equivalents as $equivalent) $equivalent->delete();
-			    foreach (request()->equivalents as $equivalent) if($equivalent['equivalent_id']) $bible->equivalents()->create($equivalent);
-		    }
+			if (request()->equivalents) {
+				foreach ($bible->equivalents as $equivalent) {
+					$equivalent->delete();
+				}
+				foreach (request()->equivalents as $equivalent) {
+					if ($equivalent['equivalent_id']) {
+						$bible->equivalents()->create($equivalent);
+					}
+				}
+			}
 
-		    if(request()->links) {
-			    foreach ($bible->links as $link) $link->delete();
-			    foreach (request()->links as $link) if($link['url']) $bible->links()->create($link);
-		    }
+			if (request()->links) {
+				foreach ($bible->links as $link) {
+					$link->delete();
+				}
+				foreach (request()->links as $link) {
+					if ($link['url']) {
+						$bible->links()->create($link);
+					}
+				}
+			}
 
-		    return $bible;
-	    });
+			return $bible;
+		});
 
-	    return redirect()->route('view_bibles.show', ['id' => $bible->id]);
-    }
+		return redirect()->route('view_bibles.show', ['id' => $bible->id]);
+	}
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        // TODO: Generate Delete Model for Bible
-    }
+	/**
+	 * Remove the specified resource from storage.
+	 *
+	 * @param  int $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function destroy($id)
+	{
+		// TODO: Generate Delete Model for Bible
+	}
 }

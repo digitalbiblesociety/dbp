@@ -44,10 +44,13 @@ class BooksController extends APIController
 	 */
 	public function index()
 	{
-		if(!$this->api) return view('docs.books');
-		$books = \Cache::remember('v4_books_index', 2400, function() {
+		if (!$this->api) {
+			return view('docs.books');
+		}
+		$books = \Cache::remember('v4_books_index', 2400, function () {
 			return fractal()->collection(Book::all())->transformWith(new BooksTransformer());
 		});
+
 		return $this->reply($books);
 	}
 
@@ -86,30 +89,38 @@ class BooksController extends APIController
 	 * @return Book string - A JSON string that contains the status code and error messages if applicable.
 	 */
 	public function show()
-    {
-		$id = checkParam('dam_id');
-	    $bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-	    $fileset = BibleFileset::with('bible')->where('id',$id)->where('bucket_id',$bucket_id)->first();
-	    if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404',['id' => $id], $this->preferred_language));
+	{
+		$id        = checkParam('dam_id');
+		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$fileset   = BibleFileset::with('bible')->where('id', $id)->where('bucket_id', $bucket_id)->first();
+		if (!$fileset) {
+			return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
+		}
 
-	    $sophiaTable = $this->checkForSophiaTable($fileset);
-	    if(!is_string($sophiaTable)) return $sophiaTable;
+		$sophiaTable = $this->checkForSophiaTable($fileset);
+		if (!is_string($sophiaTable)) {
+			return $sophiaTable;
+		}
 
-	    $libraryBook = \Cache::remember('v2_library_book_'.$id.$bucket_id.$fileset, 1600, function () use($id, $bucket_id, $fileset, $sophiaTable) {
-		    $booksChapters = collect( \DB::connection( 'sophia' )->table( $sophiaTable . '_vpl' )->select( 'book', 'chapter' )->distinct()->get() );
-		    $books         = Book::whereIn( 'id_usfx', $booksChapters->pluck( 'book' )->unique()->toArray() )->orderBy( 'protestant_order' )->get();
-		    $bible_id = $fileset->bible->first()->id;
-		    foreach ( $books as $key => $book ) {
-			    $chapters                       = $booksChapters->where( 'book', $book->id_usfx )->pluck( 'chapter' );
-			    $books[ $key ]->bible_id        = $bible_id;
-			    $books[ $key ]->chapters        = $chapters->implode( "," );
-			    $books[ $key ]->number_chapters = $chapters->count();
-		    }
-		    return fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer);
-	    });
+		$libraryBook = \Cache::remember('v2_library_book_' . $id . $bucket_id . $fileset, 1600,
+			function () use ($id, $bucket_id, $fileset, $sophiaTable) {
+				$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book',
+					'chapter')->distinct()->get());
+				$books         = Book::whereIn('id_usfx',
+					$booksChapters->pluck('book')->unique()->toArray())->orderBy('protestant_order')->get();
+				$bible_id      = $fileset->bible->first()->id;
+				foreach ($books as $key => $book) {
+					$chapters                     = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
+					$books[$key]->bible_id        = $bible_id;
+					$books[$key]->chapters        = $chapters->implode(",");
+					$books[$key]->number_chapters = $chapters->count();
+				}
+
+				return fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer);
+			});
 
 		return $this->reply($libraryBook);
-    }
+	}
 
 	/**
 	 * Gets the book order and code listing for a volume.
@@ -139,21 +150,26 @@ class BooksController extends APIController
 	 * )
 	 *
 	 * @param language_code - The language code to filter the books by
+	 *
 	 * @return BookTranslation string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 */
 	public function bookNames()
-    {
-    	if(!$this->api) return view('docs.books.bookNames');
+	{
+		if (!$this->api) {
+			return view('docs.books.bookNames');
+		}
 		$iso = checkParam('language_code');
 
-	    $libraryBookName = \Cache::remember('v2_library_bookName_'.$iso, 1600, function () use($iso) {
-		    $language = fetchLanguage( $iso );
-		    return BookTranslation::where( 'iso', $iso )->with( 'book' )->select( 'name', 'book_id' )->get()->pluck( 'name', 'book.id_osis' );
-	    });
+		$libraryBookName = \Cache::remember('v2_library_bookName_' . $iso, 1600, function () use ($iso) {
+			$language = fetchLanguage($iso);
+
+			return BookTranslation::where('iso', $iso)->with('book')->select('name', 'book_id')->get()->pluck('name',
+				'book.id_osis');
+		});
 
 		return $this->reply($libraryBookName);
-    }
+	}
 
 	/**
 	 * This lists the chapters for a book or all books in a standard bible volume.
@@ -192,41 +208,65 @@ class BooksController extends APIController
 	 *
 	 */
 	public function chapters()
-    {
-	    if(!$this->api) return view('docs.books.chapters');
+	{
+		if (!$this->api) {
+			return view('docs.books.chapters');
+		}
 
-	    $id = checkParam('dam_id');
-	    $bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-	    $book_id = checkParam('book_id');
+		$id        = checkParam('dam_id');
+		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$book_id   = checkParam('book_id');
 
-	    $chapters = \Cache::remember('v2_library_chapter_'.$id.$bucket_id.$book_id, 1600, function () use($id, $bucket_id, $book_id) {
-	        $fileset = BibleFileset::where('id',$id)->orWhere('id', substr($id,0,-4))->where('bucket_id',$bucket_id)->first();
-		    if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404',['id' => $id], $this->preferred_language));
-	        $book = Book::where('id_osis',$book_id)->orWhere('id',$book_id)->first();
-	        if(!$book) return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404',['id' => $id], $this->preferred_language));
-	        $sophiaTable = $this->checkForSophiaTable($fileset);
-	        if(!is_string($sophiaTable)) return $sophiaTable;
-			$chapters = \DB::connection('sophia')->table($sophiaTable.'_vpl')
-				->when($book, function($q) use ($book) { $q->where('book',$book->id_usfx); })
-				->select(['chapter','book'])->distinct()->orderBy('chapter')->get()
-				->map(function ($chapter) use ($id, $book) {
-					$chapter->book_id = $book->id_osis;
-					$chapter->bible_id = $id;
-					return $chapter;
-				});
-			return fractal()->collection($chapters)->serializeWith($this->serializer)->transformWith(new BooksTransformer());
-	    });
+		$chapters = \Cache::remember('v2_library_chapter_' . $id . $bucket_id . $book_id, 1600,
+			function () use ($id, $bucket_id, $book_id) {
+				$fileset = BibleFileset::where('id', $id)->orWhere('id', substr($id, 0, -4))->where('bucket_id',
+					$bucket_id)->first();
+				if (!$fileset) {
+					return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404',
+						['id' => $id]));
+				}
+				$book = Book::where('id_osis', $book_id)->orWhere('id', $book_id)->first();
+				if (!$book) {
+					return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404',
+						['id' => $id]));
+				}
+				$sophiaTable = $this->checkForSophiaTable($fileset);
+				if (!is_string($sophiaTable)) {
+					return $sophiaTable;
+				}
+				$chapters = \DB::connection('sophia')->table($sophiaTable . '_vpl')
+				               ->when($book, function ($q) use ($book) {
+					               $q->where('book', $book->id_usfx);
+				               })
+				               ->select(['chapter', 'book'])->distinct()->orderBy('chapter')->get()
+				               ->map(function ($chapter) use ($id, $book) {
+					               $chapter->book_id  = $book->id_osis;
+					               $chapter->bible_id = $id;
+
+					               return $chapter;
+				               });
+
+				return fractal()->collection($chapters)->serializeWith($this->serializer)->transformWith(new BooksTransformer());
+			});
 
 		return $this->reply($chapters);
-    }
+	}
 
-    private function checkForSophiaTable($fileset)
-    {
-	    $textExists = \Schema::connection('sophia')->hasTable(substr($fileset->id,0,-4).'_vpl');
-	    if($textExists) return substr($fileset->id,0,-4);
-	    if(!$textExists) $textExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
-	    if(!$textExists) return $this->setStatusCode(404)->replyWithError(trans('api.bible_filesets_errors_checkback', ['id' => $fileset->id], $this->preferred_language));
-	    return $fileset->id;
-    }
+	private function checkForSophiaTable($fileset)
+	{
+		$textExists = \Schema::connection('sophia')->hasTable(substr($fileset->id, 0, -4) . '_vpl');
+		if ($textExists) {
+			return substr($fileset->id, 0, -4);
+		}
+		if (!$textExists) {
+			$textExists = \Schema::connection('sophia')->hasTable($fileset->id . '_vpl');
+		}
+		if (!$textExists) {
+			return $this->setStatusCode(404)->replyWithError(trans('api.bible_filesets_errors_checkback',
+				['id' => $fileset->id]));
+		}
+
+		return $fileset->id;
+	}
 
 }

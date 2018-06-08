@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User\User;
+
 class DocsController extends APIController
 {
 	/**
@@ -42,43 +43,96 @@ class DocsController extends APIController
 
 	public function swagger_docs_gen()
 	{
-	    $version = checkParam('v', null, 'optional') ?? "v4";
+		$version      = checkParam('v', null, 'optional') ?? "v4";
 		$otherVersion = ($version == "v4") ? "v2" : "v4";
-		$swagger = \Swagger\scan(app_path());
+		$swagger      = \Swagger\scan(app_path());
 
-		foreach($swagger->components->schemas as $key => $component) {
-			if(substr($swagger->components->schemas[$key]->title,0,2) == $otherVersion) unset($swagger->components->schemas[$key]);
-		}
 
-		foreach ($swagger->components->responses as $key => $response) unset($swagger->components->responses[$key]);
-
-		foreach($swagger->tags as $key => $tag) {
-			if(substr($swagger->tags[$key]->description,0,2) != $version) {
-				unset($swagger->tags[$key]);
-			} else {
-				$swagger->tags[$key]->description = substr($swagger->tags[$key]->description,2);
+		foreach ($swagger->components->schemas as $key => $component) {
+			if (substr($swagger->components->schemas[$key]->title, 0, 2) == $otherVersion) {
+				unset($swagger->components->schemas[$key]);
 			}
 		}
-		foreach($swagger->paths as $key => $path) {
-            if(isset($path->get->operationId)) if(substr($path->get->operationId,0,2) != $version) unset($swagger->paths[$key]);
-            if(isset($path->put->operationId)) if(substr($path->put->operationId,0,2) != $version) unset($swagger->paths[$key]);
-            if(isset($path->post->operationId)) if(substr($path->post->operationId,0,2) != $version) unset($swagger->paths[$key]);
-            if(isset($path->delete->operationId)) if(substr($path->delete->operationId,0,2) != $version) unset($swagger->paths[$key]);
-        }
-		return response()->json($swagger, $this->getStatusCode(), array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'application/json');
+
+		foreach ($swagger->components->responses as $key => $response) {
+			unset($swagger->components->responses[$key]);
+		}
+
+		foreach ($swagger->tags as $key => $tag) {
+			if (substr($swagger->tags[$key]->description, 0, 2) != $version) {
+				unset($swagger->tags[$key]);
+			} else {
+				$swagger->tags[$key]->description = substr($swagger->tags[$key]->description, 2);
+			}
+		}
+		foreach ($swagger->paths as $key => $path) {
+
+
+			if (isset($path->get->operationId)) {
+				/*
+								$path->get->summary = trans("api.docs.paths.".$path->get->operationId.'.summary');
+								$path->get->description = trans("api.docs.paths.".$path->get->operationId.'.description');
+								foreach($path->get->parameters as $key => $parameter) {
+
+									if(isset($parameter->ref)) {
+										$path = $parameter->ref;
+										$path = str_replace('#/components/','',$path);
+										$path = str_replace('/','.',$path);
+									}
+									$ref = basename($parameter->ref);
+									$path->get->parameters[$key]->name =  trans("api.".$path->get->operationId.'.'.$ref.'.description');
+									$path->get->parameters[$key]->description =  trans("api.".$path->get->operationId.'.'.$ref.'.description');
+								}
+
+								$this->fetchTranslations($path->get->operationId);
+								*/
+				if (substr($path->get->operationId, 0, 2) != $version) {
+					unset($swagger->paths[$key]);
+				}
+			}
+			if (isset($path->put->operationId)) {
+				if (substr($path->put->operationId, 0, 2) != $version) {
+					unset($swagger->paths[$key]);
+				}
+			}
+			if (isset($path->post->operationId)) {
+				if (substr($path->post->operationId, 0, 2) != $version) {
+					unset($swagger->paths[$key]);
+				}
+			}
+			if (isset($path->delete->operationId)) {
+				if (substr($path->delete->operationId, 0, 2) != $version) {
+					unset($swagger->paths[$key]);
+				}
+			}
+		}
+
+		return response()->json($swagger, $this->getStatusCode(), [],
+			JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type',
+			'application/json');
+	}
+
+	public function fetchTranslations($operation_id)
+	{
+		$translation = trans("api." . $operation_id . '.summary');
+
 	}
 
 	public function swagger_database()
 	{
-		$docs = json_decode(file_get_contents(public_path('/swagger_database.json')),true);
-		return view('docs.swagger_database',compact('docs'));
+		$docs = json_decode(file_get_contents(public_path('/swagger_database.json')), true);
+
+		return view('docs.swagger_database', compact('docs'));
 	}
 
 	public function swagger_database_model($id)
 	{
-		$docs = json_decode(file_get_contents(public_path('/swagger_database.json')),true);
-		if(!isset($docs['components']['schemas'][$id]['properties'])) return $this->setStatusCode(404)->replyWithError("Missing Model");
-		return view('docs.swagger_database',compact('docs','id'));
+		$docs = json_decode(file_get_contents(public_path('/swagger_database.json')), true);
+		if (!isset($docs['components']['schemas'][$id]['properties'])) {
+			return $this->setStatusCode(404)->replyWithError("Missing Model");
+		}
+
+		return view('docs.swagger_database', compact('docs', 'id'));
 	}
 
 	public function sdk()
@@ -138,8 +192,11 @@ class DocsController extends APIController
 
 	public function team()
 	{
-		$teammates = User::whereHas('role.organization', function($q) {$q->where('role', 'teammember');})->get();
-		return view('docs.team',compact('teammates'));
+		$teammates = User::whereHas('role.organization', function ($q) {
+			$q->where('role', 'teammember');
+		})->get();
+
+		return view('docs.team', compact('teammates'));
 	}
 
 	public function bookOrderListing()

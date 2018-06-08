@@ -6,8 +6,9 @@ use App\Models\User\Article;
 use Illuminate\Http\Request;
 
 use Validator;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User\Key;
+use View;
+
 class ArticlesController extends APIController
 {
 	/**
@@ -22,12 +23,13 @@ class ArticlesController extends APIController
 	 * @return mixed $articles string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 */
-    public function index()
-    {
-		if(!$this->api) return view('community.articles.index');
+	public function index()
+	{
+		if (!$this->api) return view('community.articles.index');
 		$articles = Article::with('translations')->get();
+
 		return $this->reply($articles);
-    }
+	}
 
 	/**
 	 * Create an Article UI Form
@@ -40,10 +42,10 @@ class ArticlesController extends APIController
 	 * @return View - the Article Creation Form
 	 *
 	 */
-    public function create()
-    {
-        return view('community.articles.create');
-    }
+	public function create()
+	{
+		return view('community.articles.create');
+	}
 
 	/**
 	 * Store an Article in the database
@@ -59,24 +61,28 @@ class ArticlesController extends APIController
 	 * @return mixed $articles string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 */
-    public function store(Request $request)
-    {
-	    $user = ($this->api) ? $this->validateUser() : $this->validateUser(\Auth::user());
-	    $this->validateArticle($request);
+	public function store(Request $request)
+	{
+		$user = ($this->api) ? $this->validateUser() : $this->validateUser(\Auth::user());
+		if(!$user) return false;
+		$this->validateArticle($request);
 
-	    $article = new Article();
-	    $article->cover = $request->cover;
-	    $article->iso = $request->iso ?? "eng";
-	    $article->cover_thumbnail = $request->cover_thumbnail;
-	    $article->user_id = $user->id ?? "fnrS1pTKktHxwsXJ";
-	    $article->organization_id = $request->organization_id ?? 1;
-	    $article->save();
+		$article                  = new Article();
+		$article->cover           = $request->cover;
+		$article->iso             = $request->iso ?? "eng";
+		$article->cover_thumbnail = $request->cover_thumbnail;
+		$article->user_id         = $user->id ?? "fnrS1pTKktHxwsXJ";
+		$article->organization_id = $request->organization_id ?? 1;
+		$article->save();
 
-	    // $article->translations()->createMany(["name" => $request->name,"description" => $request->description]);
+		// $article->translations()->createMany(["name" => $request->name,"description" => $request->description]);
 
-	    if(!$this->api) return redirect()->route('view_articles.show', ['id' => request()->id]);
-	    return $this->reply(trans('api.article_store_200', [], $this->preferred_language));
-    }
+		if (!$this->api) {
+			return redirect()->route('view_articles.show', ['id' => request()->id]);
+		}
+
+		return $this->reply(trans('api.article_store_200', []));
+	}
 
 	/**
 	 * Returns a single Article
@@ -92,11 +98,14 @@ class ArticlesController extends APIController
 	 * @return mixed $articles string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 */
-    public function show($id)
-    {
-	    if(!$this->api) return view('community.articles.show');
-	    return $this->reply(Article::find($id));
-    }
+	public function show($id)
+	{
+		if (!$this->api) {
+			return view('community.articles.show');
+		}
+
+		return $this->reply(Article::find($id));
+	}
 
 	/**
 	 * Edit Article UI Form
@@ -111,33 +120,39 @@ class ArticlesController extends APIController
 	 * @return View - the Article Edit Form
 	 *
 	 */
-    public function edit($id)
-    {
-	    return view('community.articles.edit');
-    }
+	public function edit($id)
+	{
+		return view('community.articles.edit', compact('id'));
+	}
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-	    return view('community.articles.show');
-    }
+	/**
+	 * Update the specified resource in storage.
+	 *
+	 * @param  \Illuminate\Http\Request $request
+	 * @param  int $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function update(Request $request, $id)
+	{
+		return view('community.articles.show',compact('request','id'));
+	}
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-	    return view('community.articles.index');
-    }
+	/**
+	 * Remove the specified resource from storage.
+	 *
+	 * @param  int $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function destroy($id)
+	{
+		$this->validateUser();
+		$article = Article::find($id);
+		if(!$article) return $this->setStatusCode(404)->replyWithError(trans('api.articles_show_404', ['id' => $id]));
+		$article->delete();
+		return view('community.articles.index');
+	}
 
 	/**
 	 * Ensure the current alphabet change is valid
@@ -148,37 +163,36 @@ class ArticlesController extends APIController
 	 */
 	private function validateArticle(Request $request)
 	{
-		$validator = Validator::make($request->all(),[
+		$validator = Validator::make($request->all(), [
 			'iso'             => 'required|exists:languages,iso',
 			'organization_id' => 'required|exists:organizations,id',
 			'user_id'         => 'required|exists:users,id',
 			'cover'           => 'required',
-			'cover_thumbnail' => 'required'
+			'cover_thumbnail' => 'required',
 		]);
 
 		if ($validator->fails()) {
-			if($this->api)  return $this->setStatusCode(422)->replyWithError($validator->errors());
-			if(!$this->api) return redirect('articles/create')->withErrors($validator)->withInput();
+			if ($this->api) return $this->setStatusCode(422)->replyWithError($validator->errors());
+			if (!$this->api) return redirect('articles/create')->withErrors($validator)->withInput();
 		}
-
+		return true;
 	}
 
 	/**
 	 * Ensure the current User has permissions to alter the alphabets
 	 *
-	 * @param null $user
 	 *
 	 * @return \App\Models\User\User|mixed|null
 	 */
 	private function validateUser()
 	{
-		$user = Auth::user();
-		if(!$user) {
-			$key = Key::where('key',$this->key)->first();
-			if(!isset($key)) return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
+		$user = \Auth::user();
+		if (!$user) {
+			$key = Key::where('key', $this->key)->first();
+			if (!isset($key)) return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed'));
 			$user = $key->user;
 		}
-		if(!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError("You don't have permission to edit the articles");
+		if (!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError(trans('api.articles_edit_permission_failed'));
 		return $user;
 	}
 

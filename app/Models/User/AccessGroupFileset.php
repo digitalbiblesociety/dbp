@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
 class AccessGroupFileset extends Model
 {
 	public $table = 'access_group_filesets';
+	public $hidden = ['access_group_id'];
+	public $fillable = ['hash_id'];
 
 
 	/**

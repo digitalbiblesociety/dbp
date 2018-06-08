@@ -47,37 +47,62 @@ class CountriesController extends APIController
 	 *
 	 *
 	 */
-    public function index()
-    {
-    	if(!$this->api) return view('wiki.countries.index');
-	    if(env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
+	public function index()
+	{
+		if (!$this->api) {
+			return view('wiki.countries.index');
+		}
+		if (env('APP_ENV') == 'local') {
+			ini_set('memory_limit', '864M');
+		}
 
-	    $l10n = checkParam('l10n', null, 'optional') ?? "eng";
-    	$has_filesets = checkParam('has_filesets', null, 'optional') ?? true;
-	    $bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-	    $include_languages = checkParam('include_languages', null, 'optional');
+		$l10n              = checkParam('l10n', null, 'optional') ?? "eng";
+		$has_filesets      = checkParam('has_filesets', null, 'optional') ?? true;
+		$bucket_id         = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$include_languages = checkParam('include_languages', null, 'optional');
 
-	    \Cache::forget("countries".$l10n.$has_filesets.$bucket_id.$include_languages.$this->preferred_language);
-	    return \Cache::remember("countries".$l10n.$has_filesets.$bucket_id.$include_languages.$this->preferred_language, 1600, function () use($l10n,$has_filesets,$bucket_id,$include_languages) {
-	        if($l10n) {
-			    $language = Language::where('iso',$l10n)->first();
-			    if(!$language) return $this->setStatusCode(404)->replyWithError(trans('api.language_errors_404',[],$this->preferred_language));
-	        }
-	        $countries = Country::exclude('introduction')->
-	        when($has_filesets, function($query) use ($bucket_id) {
-			    $query->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
-				    if($bucket_id) $query->where('bucket_id', $bucket_id);
-			    });
-	        })->get();
-	        if($l10n != "eng") $countries->load(['translation' => function($query) use ($language) {$query->where('language_id', $language->id);}]);
-	        if(isset($include_languages)) {
-			    $countries->load(['languagesFiltered' => function ($query) use($language,$include_languages) {
-				    if($include_languages == "with_titles") $query->with(['translation' => function ($query) use($language) { $query->where('language_translation', $language->id); }]);
-			    }]);
-	        }
-	        return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
-	    });
-    }
+		\Cache::forget("countries" . $l10n . $has_filesets . $bucket_id . $include_languages . \i18n::getCurrentLocale());
+
+		return \Cache::remember("countries" . $l10n . $has_filesets . $bucket_id . $include_languages . \i18n::getCurrentLocale(),
+			1600, function () use ($l10n, $has_filesets, $bucket_id, $include_languages) {
+				if ($l10n) {
+					$language = Language::where('iso', $l10n)->first();
+					if (!$language) {
+						return $this->setStatusCode(404)->replyWithError(trans('api.language_errors_404'));
+					}
+				}
+				$countries = Country::exclude('introduction')->
+				when($has_filesets, function ($query) use ($bucket_id) {
+					$query->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
+						if ($bucket_id) {
+							$query->where('bucket_id', $bucket_id);
+						}
+					});
+				})->get();
+				if ($l10n != "eng") {
+					$countries->load([
+						'translation' => function ($query) use ($language) {
+							$query->where('language_id', $language->id);
+						},
+					]);
+				}
+				if (isset($include_languages)) {
+					$countries->load([
+						'languagesFiltered' => function ($query) use ($language, $include_languages) {
+							if ($include_languages == "with_titles") {
+								$query->with([
+									'translation' => function ($query) use ($language) {
+										$query->where('language_translation', $language->id);
+									},
+								]);
+							}
+						},
+					]);
+				}
+
+				return $this->reply(fractal()->collection($countries)->transformWith(new CountryTransformer()));
+			});
+	}
 
 	/**
 	 * Returns Joshua Project Country Information
@@ -92,19 +117,23 @@ class CountriesController extends APIController
 	 * @return mixed $countries string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 */
-    public function joshuaProjectIndex()
-    {
+	public function joshuaProjectIndex()
+	{
 
-	    $l10n = (isset($_GET['iso'])) ? $_GET['iso'] : 'eng';
-	    return \Cache::remember("countries_jp_".$l10n, 1600, function () use($l10n) {
-		    $language = Language::where('iso', $l10n)->first();
-	        $countries = JoshuaProject::with(['translations' => function ($query) use ($language) {
-			    $query->where('language_id', $language->id);
-	        }])->get();
-		    return $this->reply(fractal()->collection($countries)->transformWith(CountryTransformer::class));
-	    });
+		$l10n = (isset($_GET['iso'])) ? $_GET['iso'] : 'eng';
 
-    }
+		return \Cache::remember("countries_jp_" . $l10n, 1600, function () use ($l10n) {
+			$language  = Language::where('iso', $l10n)->first();
+			$countries = JoshuaProject::with([
+				'translations' => function ($query) use ($language) {
+					$query->where('language_id', $language->id);
+				},
+			])->get();
+
+			return $this->reply(fractal()->collection($countries)->transformWith(CountryTransformer::class));
+		});
+
+	}
 
 	/**
 	 * Returns the Specified Country
@@ -153,14 +182,19 @@ class CountriesController extends APIController
 	 * @return mixed $countries string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 */
-    public function show($id)
-    {
-		$country = Country::with('languagesFiltered.bibles.currentTranslation','geography')->find($id);
+	public function show($id)
+	{
+		$country  = Country::with('languagesFiltered.bibles.currentTranslation', 'geography')->find($id);
 		$includes = $this->loadWorldFacts($country);
-	    if(!$country) return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404',['l10n'=>$id],$this->preferred_language));
-	    if($this->api) return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
-    	return view('wiki.countries.show',compact('country'));
-    }
+		if (!$country) {
+			return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['l10n' => $id]));
+		}
+		if ($this->api) {
+			return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
+		}
+
+		return view('wiki.countries.show', compact('country'));
+	}
 
 	/**
 	 * Create a new Country
@@ -178,6 +212,7 @@ class CountriesController extends APIController
 	public function create()
 	{
 		$this->validateUser();
+
 		return view('wiki.countries.create');
 	}
 
@@ -218,12 +253,12 @@ class CountriesController extends APIController
 	public function store(Request $request)
 	{
 		$validator = $request->validate([
-			'id'                  => 'string|max:2|min:2|required',
-			'iso_a3'              => 'string|max:3|min:3|required',
-			'fips'                => 'string|max:2|min:2|required',
-			'continent'           => 'string|max:2|min:2|required',
-			'name'                => 'string|max:191|required',
-			'introduction'        => 'string|min:6|nullable',
+			'id'           => 'string|max:2|min:2|required',
+			'iso_a3'       => 'string|max:3|min:3|required',
+			'fips'         => 'string|max:2|min:2|required',
+			'continent'    => 'string|max:2|min:2|required',
+			'name'         => 'string|max:191|required',
+			'introduction' => 'string|min:6|nullable',
 		]);
 	}
 
@@ -231,12 +266,14 @@ class CountriesController extends APIController
 	 * Edit the Specified Country
 	 *
 	 * @param $id
+	 *
 	 * @return View
 	 */
 	public function edit($id)
 	{
 		$country = Country::find($id);
-		return view('wiki.countries.edit',compact('country'));
+
+		return view('wiki.countries.edit', compact('country'));
 	}
 
 
@@ -261,6 +298,7 @@ class CountriesController extends APIController
 	 * )
 	 *
 	 * @param $id
+	 *
 	 * @return View
 	 */
 	public function update($id)
@@ -270,32 +308,36 @@ class CountriesController extends APIController
 
 		$country = Country::find($id);
 
-		if($this->api) return $this->reply(trans('api.countries_update_200',[],$this->preferred_language));
-		return view('wiki.countries.show',compact('country'));
+		if ($this->api) {
+			return $this->reply(trans('api.countries_update_200', []));
+		}
+
+		return view('wiki.countries.show', compact('country'));
 	}
 
 	private function loadWorldFacts($country)
 	{
-		$loadedProfiles = array();
+		$loadedProfiles = [];
 		// World Factbook
 		$profiles['communications'] = checkParam('communications', null, 'optional');
-		$profiles['economy'] = checkParam('economy', null, 'optional');
-		$profiles['energy'] = checkParam('energy', null, 'optional');
-		$profiles['geography'] = checkParam('geography', null, 'optional');
-		$profiles['government'] = checkParam('government', null, 'optional');
-		$profiles['government'] = checkParam('government', null, 'optional');
-		$profiles['issues'] = checkParam('issues', null, 'optional');
-		$profiles['people'] = checkParam('people', null, 'optional');
-		$profiles['ethnicities'] = checkParam('ethnicity', null, 'optional');
-		$profiles['regions'] = checkParam('regions', null, 'optional');
-		$profiles['religions'] = checkParam('religions', null, 'optional');
+		$profiles['economy']        = checkParam('economy', null, 'optional');
+		$profiles['energy']         = checkParam('energy', null, 'optional');
+		$profiles['geography']      = checkParam('geography', null, 'optional');
+		$profiles['government']     = checkParam('government', null, 'optional');
+		$profiles['government']     = checkParam('government', null, 'optional');
+		$profiles['issues']         = checkParam('issues', null, 'optional');
+		$profiles['people']         = checkParam('people', null, 'optional');
+		$profiles['ethnicities']    = checkParam('ethnicity', null, 'optional');
+		$profiles['regions']        = checkParam('regions', null, 'optional');
+		$profiles['religions']      = checkParam('religions', null, 'optional');
 		$profiles['transportation'] = checkParam('transportation', null, 'optional');
-		foreach($profiles as $key => $profile) {
-			if($profile != null)  {
+		foreach ($profiles as $key => $profile) {
+			if ($profile != null) {
 				$country->load($key);
 				$loadedProfiles[] = $key;
 			}
 		}
+
 		return $loadedProfiles;
 	}
 
@@ -309,13 +351,20 @@ class CountriesController extends APIController
 	 */
 	private function validateUser($user = null)
 	{
-		if(!$this->api) $user = Auth::user();
-		if(!$user) {
-			$key = Key::where('key',$this->key)->first();
-			if(!isset($key)) return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed',[],$this->preferred_language));
+		if (!$this->api) {
+			$user = Auth::user();
+		}
+		if (!$user) {
+			$key = Key::where('key', $this->key)->first();
+			if (!isset($key)) {
+				return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed'));
+			}
 			$user = $key->user;
 		}
-		if(!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError(trans('api.auth_wiki_validation_failed',[],$this->preferred_language));
+		if (!$user->archivist AND !$user->admin) {
+			return $this->setStatusCode(401)->replyWithError(trans('api.auth_wiki_validation_failed'));
+		}
+
 		return $user;
 	}
 
@@ -328,17 +377,21 @@ class CountriesController extends APIController
 	 */
 	private function validateCountry(Request $request)
 	{
-		$validator = Validator::make($request->all(),[
-			'id'              => ($request->method() == "POST") ? 'required|unique:countries,id|max:2|min:2|alpha' : 'required|exists:countries,id|max:2|min:2|alpha',
-			'iso_a3'          => ($request->method() == "POST") ? 'required|unique:countries,iso_a3|max:3|min:3|alpha' : 'required|exists:countries,iso_a3|max:3|min:3|alpha',
-			'fips'            => ($request->method() == "POST") ? 'required|unique:countries,fips|max:2|min:2|alpha' : 'required|exists:countries,fips|max:2|min:2|alpha',
-			'continent'       => 'required|max:2|min:2|alpha',
-			'name'            => 'required|max:191',
+		$validator = Validator::make($request->all(), [
+			'id'        => ($request->method() == "POST") ? 'required|unique:countries,id|max:2|min:2|alpha' : 'required|exists:countries,id|max:2|min:2|alpha',
+			'iso_a3'    => ($request->method() == "POST") ? 'required|unique:countries,iso_a3|max:3|min:3|alpha' : 'required|exists:countries,iso_a3|max:3|min:3|alpha',
+			'fips'      => ($request->method() == "POST") ? 'required|unique:countries,fips|max:2|min:2|alpha' : 'required|exists:countries,fips|max:2|min:2|alpha',
+			'continent' => 'required|max:2|min:2|alpha',
+			'name'      => 'required|max:191',
 		]);
 
 		if ($validator->fails()) {
-			if($this->api)  return $this->setStatusCode(422)->replyWithError($validator->errors());
-			if(!$this->api) return redirect('dashboard/countries/create')->withErrors($validator)->withInput();
+			if ($this->api) {
+				return $this->setStatusCode(422)->replyWithError($validator->errors());
+			}
+			if (!$this->api) {
+				return redirect('dashboard/countries/create')->withErrors($validator)->withInput();
+			}
 		}
 
 	}

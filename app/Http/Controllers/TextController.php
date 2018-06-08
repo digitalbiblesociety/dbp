@@ -70,55 +70,63 @@ class TextController extends APIController
 	 *
 	 * @return JSON|View
 	 */
-    public function index($bible_url_param = null, $book_url_param = null,$chapter_url_param = null)
-    {
-    	// Fetch and Assign $_GET params
-    	$fileset_id = checkParam('dam_id|fileset_id', $bible_url_param);
-	    $book_id = checkParam('book_id', $book_url_param);
-	    $chapter = checkParam('chapter_id', $chapter_url_param);
-    	$verse_start = checkParam('verse_start', null, 'optional') ?? 1;
-	    $verse_end = checkParam('verse_end', null, 'optional');
-	    $formatted = checkParam('bucket|bucket_id', null, 'optional');
+	public function index($bible_url_param = null, $book_url_param = null, $chapter_url_param = null)
+	{
+		// Fetch and Assign $_GET params
+		$fileset_id  = checkParam('dam_id|fileset_id', $bible_url_param);
+		$book_id     = checkParam('book_id', $book_url_param);
+		$chapter     = checkParam('chapter_id', $chapter_url_param);
+		$verse_start = checkParam('verse_start', null, 'optional') ?? 1;
+		$verse_end   = checkParam('verse_end', null, 'optional');
+		$formatted   = checkParam('bucket|bucket_id', null, 'optional');
 
-	    $fileset = BibleFileset::with('bible')->where('id',$fileset_id)->first();
-	    if(!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
+		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->first();
+		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
 		$bible = $fileset->bible->first();
 
-	    $book = Book::where('id',$book_id)->orWhere('id_usfx',$book_id)->orWhere('id_osis',$book_id)->first();
-	    if(!$book) return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
-	    $book->push('name_vernacular', $book->translation($bible->iso)->first());
+		$book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
+		if (!$book) {
+			return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
+		}
+		$book->push('name_vernacular', $book->translation($bible->iso)->first());
 
-	    if($formatted) {
-		    $path = 'text/'.$bible->id.'/'.$fileset->id.'/'.$book_id.$chapter.'.html';
-		    $exists = Storage::disk($formatted)->exists($path);
-		    if(!$exists) return $this->replyWithError("The path: $path did not result in a file");
-	    	return $this->reply(["filepath" => Bucket::signedUrl($path)]);
-	    }
+		if ($formatted) {
+			$path   = 'text/' . $bible->id . '/' . $fileset->id . '/' . $book_id . $chapter . '.html';
+			$exists = Storage::disk($formatted)->exists($path);
+			if (!$exists) {
+				return $this->replyWithError("The path: $path did not result in a file");
+			}
 
-	    // Fetch Verses
-		$verses = DB::connection('sophia')->table(strtoupper($fileset->id).'_vpl')
-		->where([['book',$book->id_usfx], ['chapter',$chapter]])
-		->when($verse_start, function ($query) use ($verse_start) {
-			return $query->where('verse_end', '>=', $verse_start);
-		})
-		->when($verse_end, function ($query) use ($verse_end) {
-			return $query->where('verse_end', '<=', $verse_end);
-		})->get();
-	    $this->addMetaDataToVerses($verses,$bible->id);
+			return $this->reply(["filepath" => Bucket::signedUrl($path)]);
+		}
 
-	    if(count($verses) == 0) return $this->setStatusCode(404)->replyWithError("No Verses Were found with the provided params");
+		// Fetch Verses
+		$verses = DB::connection('sophia')->table(strtoupper($fileset->id) . '_vpl')
+		            ->where([['book', $book->id_usfx], ['chapter', $chapter]])
+		            ->when($verse_start, function ($query) use ($verse_start) {
+			            return $query->where('verse_end', '>=', $verse_start);
+		            })
+		            ->when($verse_end, function ($query) use ($verse_end) {
+			            return $query->where('verse_end', '<=', $verse_end);
+		            })->get();
+		$this->addMetaDataToVerses($verses, $bible->id);
+
+		if (count($verses) == 0) {
+			return $this->setStatusCode(404)->replyWithError("No Verses Were found with the provided params");
+		}
+
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)->toArray());
-    }
+	}
 
-    public function formattedResponse()
-    {
-	    $bible_id = checkParam('dam_id|fileset_id');
-	    $book_id = checkParam('book_id');
-	    $chapter = checkParam('chapter_id');
+	public function formattedResponse()
+	{
+		$bible_id = checkParam('dam_id|fileset_id');
+		$book_id  = checkParam('book_id');
+		$chapter  = checkParam('chapter_id');
 
-	    $url = "https://s3-us-west-2.amazonaws.com/dbp-dev/text/".$bible_id."/".$bible_id."/".$book_id.$chapter.".html";
-	    $chapter = Bucket::get($url);
-    }
+		$url     = "https://s3-us-west-2.amazonaws.com/dbp-dev/text/" . $bible_id . "/" . $bible_id . "/" . $book_id . $chapter . ".html";
+		$chapter = Bucket::get($url);
+	}
 
 	/**
 	 * Display a listing of the Fonts
@@ -129,9 +137,12 @@ class TextController extends APIController
 	 *     summary="Returns utilized fonts",
 	 *     description="Some languages used by the Digital Bible Platform utilize character sets that are not supported by `standard` fonts. This call provides a list of custom fonts that have been made available.",
 	 *     operationId="v2_text_font",
-	 *     @OAS\Parameter(name="id", in="query", description="The numeric ID of the font to retrieve", @OAS\Schema(type="string")),
-	 *     @OAS\Parameter(name="name", in="query", description="Search for a specific font by name", @OAS\Schema(type="string")),
-	 *     @OAS\Parameter(name="platform", in="query", description="Only return fonts that have been authorized for the specified platform. Available values are: `android`, `ios`, `web`, or `all`", @OAS\Schema(type="string",enum={"android","ios","web","all"},default="all")),
+	 *     @OAS\Parameter(name="id", in="query", description="The numeric ID of the font to retrieve",
+	 *          @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="name", in="query", description="Search for a specific font by name",
+	 *          @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="platform", in="query", description="Only return fonts that have been authorized for the specified platform. Available values are: `android`, `ios`, `web`, or `all`",
+	 *          @OAS\Schema(type="string",enum={"android","ios","web","all"},default="all")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
@@ -147,22 +158,25 @@ class TextController extends APIController
 	 *
 	 * @return JSON|View
 	 */
-    public function fonts()
-    {
-	    $id = checkParam('id', null, 'optional');
-		$name = checkParam('name', null, 'optional');
+	public function fonts()
+	{
+		$id       = checkParam('id', null, 'optional');
+		$name     = checkParam('name', null, 'optional');
 		$platform = checkParam('platform', null, 'optional') ?? 'all';
 
-	    if($name) {
-	    	$font = AlphabetFont::where('name',$name)->first();
-	    } else {
-		    $font = ($id) ? AlphabetFont::find($id) : false;
-	    }
-	    if($font) return $this->reply(fractal()->item($font)->transformWith(new FontsTransformer())->serializeWith($this->serializer)->toArray());
+		if ($name) {
+			$font = AlphabetFont::where('name', $name)->first();
+		} else {
+			$font = ($id) ? AlphabetFont::find($id) : false;
+		}
+		if ($font) {
+			return $this->reply(fractal()->item($font)->transformWith(new FontsTransformer())->serializeWith($this->serializer)->toArray());
+		}
 
 		$fonts = AlphabetFont::all();
+
 		return $this->reply(fractal()->collection($fonts)->transformWith(new FontsTransformer())->serializeWith($this->serializer)->toArray());
-    }
+	}
 
 	/**
 	 *
@@ -172,9 +186,12 @@ class TextController extends APIController
 	 *     summary="Run a text search on a specific fileset",
 	 *     description="",
 	 *     operationId="v4_text_search",
-	 *     @OAS\Parameter(name="fileset_id", in="query", description="The Bible fileset ID", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-	 *     @OAS\Parameter(name="limit",  in="query", description="The number of search results to return", @OAS\Schema(type="integer",example=15,default=15)),
-	 *     @OAS\Parameter(name="books",  in="query", description="The Books to search through", @OAS\Schema(type="string",example="GEN,EXO,MAT")),
+	 *     @OAS\Parameter(name="fileset_id", in="query", description="The Bible fileset ID", required=true,
+	 *          @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="limit",  in="query", description="The number of search results to return",
+	 *          @OAS\Schema(type="integer",example=15,default=15)),
+	 *     @OAS\Parameter(name="books",  in="query", description="The Books to search through",
+	 *          @OAS\Schema(type="string",example="GEN,EXO,MAT")),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
@@ -191,27 +208,32 @@ class TextController extends APIController
 	 * @return View|JSON
 	 */
 	public function search()
-    {
-	    // If it's not an API route send them to the documentation
-	    if(!$this->api) return view('docs.v2.text_search');
+	{
+		// If it's not an API route send them to the documentation
+		if (!$this->api) {
+			return view('docs.v2.text_search');
+		}
 
-	    $query = checkParam('query');
-	    $exclude = checkParam('exclude', null, 'optional') ?? false;
-	    if($exclude) $exclude = ' -'.$exclude;
-	    $bible_id = checkParam('dam_id|fileset_id');
-	    $limit = checkParam('limit', null, 'optional') ?? 15;
-	    $books = checkParam('books', null, 'optional');
+		$query   = checkParam('query');
+		$exclude = checkParam('exclude', null, 'optional') ?? false;
+		if ($exclude) {
+			$exclude = ' -' . $exclude;
+		}
+		$bible_id = checkParam('dam_id|fileset_id');
+		$limit    = checkParam('limit', null, 'optional') ?? 15;
+		$books    = checkParam('books', null, 'optional');
 
-		$query = DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query).$exclude);
-	    $verses = DB::connection('sophia')->table(strtoupper($bible_id).'_vpl')
-		->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)
-		->when($books, function($q) use ($books){
-		    $q->whereIn('book', explode(',',$books));
-	    })->get();
+		$query  = DB::connection('sophia')->getPdo()->quote('+' . str_replace(' ', ' +', $query) . $exclude);
+		$verses = DB::connection('sophia')->table(strtoupper($bible_id) . '_vpl')
+		            ->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)
+		            ->when($books, function ($q) use ($books) {
+			            $q->whereIn('book', explode(',', $books));
+		            })->get();
 
-	    $this->addMetaDataToVerses($verses,$bible_id);
+		$this->addMetaDataToVerses($verses, $bible_id);
+
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
-    }
+	}
 
 	/**
 	 * This one actually departs from Version 2 and only returns the book ID and the integer count
@@ -219,11 +241,22 @@ class TextController extends APIController
 	 * @OAS\Get(
 	 *     path="/text/searchgroup",
 	 *     tags={"Library Text"},
-	 *     summary="Run a text search on a specific fileset",
-	 *     description="This method allows the caller to perform a full-text search within the text of a volume, returning the count of results per book. If the volume has a complementary testament, the search will be performed over both testaments with the results ordered in Bible book order.",
+	 *     summary="trans_v2_text_search_group.summary",
+	 *     description="trans_v2_text_search_group.description",
 	 *     operationId="v2_text_search_group",
-	 *     @OAS\Parameter(name="query",   in="query", description="The text that the caller wishes to search for in the specified text. Multiple words or phrases can be combined with '+' for AND and '|' for OR. They will be processed simply from left to right. So, `Saul+Paul|Ruth` will evaluate as (Saul AND Paul) OR Ruth.", required=true, @OAS\Schema(type="integer")),
-	 *     @OAS\Parameter(name="dam_id",  in="query", description="The DAM ID the caller wishes to search in.", required=true, @OAS\Schema(type="string")),
+	 *     @OAS\Parameter(name="query",
+	 *          in="query",
+	 *          description="trans_v2_text_search_group.param_query",
+	 *          required=true,
+	 *          @OAS\Schema(type="integer")
+	 *     ),
+	 *     @OAS\Parameter(
+	 *          name="dam_id",
+	 *          in="query",
+	 *          description="trans_v2_text_search_group.param_dam_id",
+	 *          required=true,
+	 *          @OAS\Schema(type="string")
+	 *     ),
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
@@ -240,77 +273,102 @@ class TextController extends APIController
 	 * @return View|JSON
 	 */
 	public function searchGroup()
-    {
-	    // If it's not an API route send them to the documentation
-	    if(!$this->api) return view('docs.v2.text_search_group');
+	{
+		// If it's not an API route send them to the documentation
+		if (!$this->api) {
+			return view('docs.v2.text_search_group');
+		}
 
-	    $query = checkParam('query');
-	    $bible_id = checkParam('dam_id|fileset_id');
+		$query    = checkParam('query');
+		$bible_id = checkParam('dam_id|fileset_id');
 
-	    $tableExists = \Schema::connection('sophia')->hasTable($bible_id.'_vpl');
-	    if(!$tableExists) { $bible_id = substr($bible_id,0,6); $tableExists = \Schema::connection('sophia')->hasTable($bible_id.'_vpl'); }
-	    if(!$tableExists) return $this->setStatusCode(404)->replyWithError("Table does not exist");
+		$tableExists = \Schema::connection('sophia')->hasTable($bible_id . '_vpl');
+		if (!$tableExists) {
+			$bible_id    = substr($bible_id, 0, 6);
+			$tableExists = \Schema::connection('sophia')->hasTable($bible_id . '_vpl');
+		}
+		if (!$tableExists) {
+			return $this->setStatusCode(404)->replyWithError("Table does not exist");
+		}
 
-	    $query = DB::connection('sophia')->getPdo()->quote('+'.str_replace(' ',' +',$query));
-	    $verses = DB::connection('sophia')->table($bible_id.'_vpl')->select(DB::raw('MIN(verse_text) as verse_text, COUNT(verse_text) as resultsCount, book, chapter, verse_start, canon_order'))
-		                                  ->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->orderBy('canon_order')->groupBy('book')->get();
-	    $books = Book::with(['bibleBooks' => function ($query) use ($bible_id) { $query->where('bible_id', $bible_id); }])->whereIn('id',$verses->pluck('book'))->get();
+		$query  = DB::connection('sophia')->getPdo()->quote('+' . str_replace(' ', ' +', $query));
+		$verses = DB::connection('sophia')->table($bible_id . '_vpl')->select(DB::raw('MIN(verse_text) as verse_text, COUNT(verse_text) as resultsCount, book, chapter, verse_start, canon_order'))
+		            ->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->orderBy('canon_order')->groupBy('book')->get();
+		$books  = Book::with([
+			'bibleBooks' => function ($query) use ($bible_id) {
+				$query->where('bible_id', $bible_id);
+			},
+		])->whereIn('id', $verses->pluck('book'))->get();
 
-	    $verses->map(function ($item) use($bible_id,$books) {
-	    	$current_book = $books->where('id',$item->book)->first();
-	    	$item->book_name = $current_book->name;
-	    	$item->id_osis = $current_book->id_osis;
-	    	$item->protestant_order = $current_book->protestant_order;
-	    	$item->bible_id = $bible_id;
-	    	return $item;
-	    });
+		$verses->map(function ($item) use ($bible_id, $books) {
+			$current_book           = $books->where('id', $item->book)->first();
+			$item->book_name        = $current_book->name;
+			$item->id_osis          = $current_book->id_osis;
+			$item->protestant_order = $current_book->protestant_order;
+			$item->bible_id         = $bible_id;
 
-	    return $this->reply([[['total_results' => $verses->sum('resultsCount')]],fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)]);
-    }
+			return $item;
+		});
 
-    public function addMetaDataToVerses($verses,$bible_id)
-    {
-	    $usfm = false;
-	    $books = Book::whereIn('id_usfx',$verses->pluck('book'))->get();
-	    if($books->isEmpty()) {
-	    	$usfm = true;
-		    $books = Book::whereIn('id',$verses->pluck('book'))->get();
-	    }
+		return $this->reply([
+			[['total_results' => $verses->sum('resultsCount')]],
+			fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer),
+		]);
+	}
 
-	    $vernacular_numbers = null;
-	    
-	    // Fetch Bible for Book Translations
-	    $bibleEquivalent = BibleEquivalent::where('equivalent_id',$bible_id)->orWhere('equivalent_id',substr($bible_id,0,7))->first();
-	    if(!isset($bibleEquivalent)) $bible = Bible::find($bible_id);
-	    if(isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
-	    if($bible) {
-		    if($bible->script != "Latn") {
-			    $vernacular_numbers[] = $verses->pluck('verse_start')->ToArray();
-			    $vernacular_numbers[] = $verses->pluck('verse_end')->ToArray();
-			    $vernacular_numbers[] = $verses->first()->chapter;
-			    $vernacular_numbers = array_unique(array_flatten($vernacular_numbers));
-			    $vernacular_numbers = fetchVernacularNumbers($bible->script,$bible->iso,min($vernacular_numbers),max($vernacular_numbers));
-		    }
-	    }
+	public function addMetaDataToVerses($verses, $bible_id)
+	{
+		$usfm  = false;
+		$books = Book::whereIn('id_usfx', $verses->pluck('book'))->get();
+		if ($books->isEmpty()) {
+			$usfm  = true;
+			$books = Book::whereIn('id', $verses->pluck('book'))->get();
+		}
 
-	    // Fetch Vernacular Number
-	    $verses->map(function ($verse) use ($books,$bible_id,$vernacular_numbers) {
-		    $currentBook = $books->where('id_usfx',$verse->book)->first();
-			if(!$currentBook) $currentBook = $books->where('id',$verse->book)->first();
+		$vernacular_numbers = null;
 
-		    $verse->bible_id = $bible_id;
-		    $verse->usfm_id = $currentBook->id;
-		    $verse->osis_id = $currentBook->id_osis;
-		    $verse->book_order = @ltrim(substr($verse->canon_order,0,3),"0");
-		    $verse->book_vernacular_name = @$currentBook->name;
-		    $verse->book_name = @$currentBook->name;
-		    $verse->chapter_vernacular =  isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->chapter] : $verse->chapter;
-		    $verse->verse_start_vernacular =  isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->verse_start] : $verse->verse_start;
-		    $verse->verse_end_vernacular =  isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->verse_end] : $verse->verse_end;
-		    return $verse;
-	    });
-	    return $verses;
-    }
+		// Fetch Bible for Book Translations
+		$bibleEquivalent = BibleEquivalent::where('equivalent_id', $bible_id)->orWhere('equivalent_id',
+			substr($bible_id, 0, 7))->first();
+		if (!isset($bibleEquivalent)) {
+			$bible = Bible::find($bible_id);
+		}
+		if (isset($bibleEquivalent) AND !isset($bible)) {
+			$bible = $bibleEquivalent->bible;
+		}
+		if ($bible) {
+			if ($bible->script != "Latn") {
+				$vernacular_numbers[] = $verses->pluck('verse_start')->ToArray();
+				$vernacular_numbers[] = $verses->pluck('verse_end')->ToArray();
+				$vernacular_numbers[] = $verses->first()->chapter;
+				$vernacular_numbers   = array_unique(array_flatten($vernacular_numbers));
+				$vernacular_numbers   = fetchVernacularNumbers($bible->script, $bible->iso, min($vernacular_numbers),
+					max($vernacular_numbers));
+			}
+		}
+
+		// Fetch Vernacular Number
+		$verses->map(function ($verse) use ($books, $bible_id, $vernacular_numbers) {
+			$currentBook = $books->where('id_usfx', $verse->book)->first();
+			if (!$currentBook) {
+				$currentBook = $books->where('id', $verse->book)->first();
+			}
+
+			$verse->bible_id               = $bible_id;
+			$verse->usfm_id                = $currentBook->id;
+			$verse->osis_id                = $currentBook->id_osis;
+			$verse->book_order             = @ltrim(substr($verse->canon_order, 0, 3), "0");
+			$verse->book_vernacular_name   = @$currentBook->name;
+			$verse->book_name              = @$currentBook->name;
+			$verse->chapter_vernacular     = isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->chapter] : $verse->chapter;
+			$verse->verse_start_vernacular = isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->verse_start] : $verse->verse_start;
+			$verse->verse_end_vernacular   = isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->verse_end] : $verse->verse_end;
+
+			return $verse;
+		});
+
+		return $verses;
+	}
 
 
 }

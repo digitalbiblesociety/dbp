@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 use Validator;
 use Laravel\Socialite\Facades\Socialite;
+
 class UsersController extends APIController
 {
 
@@ -39,14 +40,19 @@ class UsersController extends APIController
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
 	public function index()
-    {
+	{
 		$authorized_user = checkUser();
-	    if(!$authorized_user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-		if(!$this->api) return view('dashboard.users.index');
+		if (!$authorized_user) {
+			return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
+		}
+		if (!$this->api) {
+			return view('dashboard.users.index');
+		}
 
 		$users = User::with('organizations.currentTranslation')->get();
+
 		return $this->reply(fractal()->transformWith(UserTransformer::class)->collection($users));
-    }
+	}
 
 	/**
 	 *
@@ -74,28 +80,40 @@ class UsersController extends APIController
 	 *
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
-    public function show($id)
-    {
-	    $authorized_user = checkUser();
-	    if(!$authorized_user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-	    $user = User::with('organizations.currentTranslation')->where('id',$id)->first();
-	    if(!$this->api) return view('dashboard.users.show', compact('user'));
-	    return $this->reply(fractal()->transformWith(UserTransformer::class)->collection($user));
-    }
+	public function show($id)
+	{
+		$authorized_user = checkUser();
+		if (!$authorized_user) {
+			return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
+		}
+		$user = User::with('organizations.currentTranslation')->where('id', $id)->first();
+		if (!$this->api) {
+			return view('dashboard.users.show', compact('user'));
+		}
+
+		return $this->reply(fractal()->transformWith(UserTransformer::class)->collection($user));
+	}
 
 	public function edit($id)
 	{
 		$authorized_user = checkUser();
-		if(!$authorized_user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-		$user = User::with('organizations.currentTranslation')->where('id',$id)->first();
+		if (!$authorized_user) {
+			return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
+		}
+		$user = User::with('organizations.currentTranslation')->where('id', $id)->first();
+
 		return view('dashboard.users.edit', compact('user'));
 	}
 
 	public function create()
 	{
 		$authorized_user = checkUser();
-		if(!$authorized_user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-		if(!$this->api) return view('dashboard.users.create');
+		if (!$authorized_user) {
+			return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
+		}
+		if (!$this->api) {
+			return view('dashboard.users.create');
+		}
 	}
 
 	/**
@@ -131,17 +149,25 @@ class UsersController extends APIController
 	 *
 	 * @return mixed
 	 */
-    public function login(Request $request)
-    {
-    	$current_locale = $request->iso ?? \i18n::getCurrentLocale();
-    	if(isset($request->social_provider_id)) {
-    		$account = Account::where('provider_user_id',$request->social_provider_user_id)->where('provider_id',$request->social_provider_id)->first();
-		    if($account) return $this->reply($account->user);
-	    }
-    	$user = User::with('accounts')->where('email',$request->email)->first();
-	    if($user) if(Hash::check($request->password, $user->password)) return $this->reply($user);
-    	return $this->replyWithError(trans('auth.failed',[],$current_locale));
-    }
+	public function login(Request $request)
+	{
+		$current_locale = $request->iso ?? \i18n::getCurrentLocale();
+		if (isset($request->social_provider_id)) {
+			$account = Account::where('provider_user_id', $request->social_provider_user_id)->where('provider_id',
+				$request->social_provider_id)->first();
+			if ($account) {
+				return $this->reply($account->user);
+			}
+		}
+		$user = User::with('accounts')->where('email', $request->email)->first();
+		if ($user) {
+			if (Hash::check($request->password, $user->password)) {
+				return $this->reply($user);
+			}
+		}
+
+		return $this->replyWithError(trans('auth.failed', [], $current_locale));
+	}
 
 	/**
 	 *
@@ -182,46 +208,52 @@ class UsersController extends APIController
 	 *
 	 * @return mixed
 	 */
-    public function store(Request $request)
-    {
-	    $user = checkUser();
-	    if(!$user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-    	if(!$user->canCreateUsers()) return $this->setStatusCode(401)->replyWithError(trans('api.user_creation_permission_failed', [], $this->preferred_language));
+	public function store(Request $request)
+	{
+		$user = checkUser();
+		if (!$user) {
+			return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
+		}
+		if (!$user->canCreateUsers()) {
+			return $this->setStatusCode(401)->replyWithError(trans('api.user_creation_permission_failed'));
+		}
 
-	    $validator = Validator::make($request->all(), [
-		    'email'                    => 'required|unique:users,email|max:255|email',
-		    'name'                     => 'required|string',
-		    'nickname'                 => 'string|different:name',
-		    'project_id'               => 'required|exists:projects,id',
-		    'social_provider_id'       => 'required_with:social_provider_user_id',
-		    'social_provider_user_id'  => 'required_with:social_provider_id',
-	    ]);
+		$validator = Validator::make($request->all(), [
+			'email'                   => 'required|unique:users,email|max:255|email',
+			'name'                    => 'required|string',
+			'nickname'                => 'string|different:name',
+			'project_id'              => 'required|exists:projects,id',
+			'social_provider_id'      => 'required_with:social_provider_user_id',
+			'social_provider_user_id' => 'required_with:social_provider_id',
+		]);
 
-	    if ($validator->fails()) return $this->replyWithError($validator->errors());
-    	$user = User::create([
-    		'id'       => unique_random('users','id',32),
-    		'nickname' => $request->nickname,
-		    'avatar'   => $request->avatar,
-    		'email'    => $request->email,
-		    'name'     => $request->name,
-		    'password' => Hash::make($request->password)
-	    ]);
-    	if($request->project_id) {
-		    $user->projectMembers()->create([
-			    'project_id'    => $request->project_id,
-			    'role'          => ($request->user_role) ? $request->user_role : 'user',
-			    'subscribed'    => $request->subscribed ?? 0
-		    ]);
-	    }
-	    if($request->social_provider_id) {
-		    $user->accounts()->create([
-			    'provider_id'      => $request->social_provider_id,
-			    'provider_user_id' => $request->social_provider_user_id
-		    ]);
-	    }
+		if ($validator->fails()) {
+			return $this->replyWithError($validator->errors());
+		}
+		$user = User::create([
+			'id'       => unique_random('users', 'id', 32),
+			'nickname' => $request->nickname,
+			'avatar'   => $request->avatar,
+			'email'    => $request->email,
+			'name'     => $request->name,
+			'password' => Hash::make($request->password),
+		]);
+		if ($request->project_id) {
+			$user->projectMembers()->create([
+				'project_id' => $request->project_id,
+				'role'       => ($request->user_role) ? $request->user_role : 'user',
+				'subscribed' => $request->subscribed ?? 0,
+			]);
+		}
+		if ($request->social_provider_id) {
+			$user->accounts()->create([
+				'provider_id'      => $request->social_provider_id,
+				'provider_user_id' => $request->social_provider_user_id,
+			]);
+		}
 
-	    return $this->reply(["success" => "User created","user" => $user]);
-    }
+		return $this->reply(["success" => "User created", "user" => $user]);
+	}
 
 	/**
 	 *
@@ -262,44 +294,57 @@ class UsersController extends APIController
 	 *
 	 * @return mixed
 	 */
-    public function update(Request $request, $id)
-    {
-	    $developer = checkUser();
-	    if(!$developer) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-	    if(!$developer->canCreateUsers()) return $this->setStatusCode(401)->replyWithError("You are not authorized to update users");
+	public function update(Request $request, $id)
+	{
+		$developer = checkUser();
+		if (!$developer) {
+			return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
+		}
+		if (!$developer->canCreateUsers()) {
+			return $this->setStatusCode(401)->replyWithError("You are not authorized to update users");
+		}
 
-	    $user = User::where('id',$id)->whereHas('projects', function ($query) use($request) {
-		    $query->where('id', $request->project_id);
-	    })->with(['projects' => function ($query) use($request) {
-		    $query->where('id', $request->project_id);
-	    }])->first();
-	    if(!$user) return $this->setStatusCode(404)->replyWithError("User not found");
+		$user = User::where('id', $id)->whereHas('projects', function ($query) use ($request) {
+			$query->where('id', $request->project_id);
+		})->with([
+			'projects' => function ($query) use ($request) {
+				$query->where('id', $request->project_id);
+			},
+		])->first();
+		if (!$user) {
+			return $this->setStatusCode(404)->replyWithError("User not found");
+		}
 
-	    $validator = Validator::make($request->all(), [
-	    	'id'    => 'exists:users',
-		    'email' => 'max:255|email'
-	    ]);
+		$validator = Validator::make($request->all(), [
+			'id'    => 'exists:users',
+			'email' => 'max:255|email',
+		]);
 
-	    if ($validator->fails()) return $this->replyWithError($validator->errors());
+		if ($validator->fails()) {
+			return $this->replyWithError($validator->errors());
+		}
 
-	    // TODO: ENABLE WRITE PERMISSIONS ON S3 BUCKET
-	    // TODO: Check Symphony 4 for bugfix regarding PUT multi-type uploads: https://github.com/symfony/symfony/issues/9226
-	    // if($request->hasFile('avatar')) return $request->avatar->storeAs('img/users/', $id.".".$request->avatar->extension(), 'local');
+		// TODO: ENABLE WRITE PERMISSIONS ON S3 BUCKET
+		// TODO: Check Symphony 4 for bugfix regarding PUT multi-type uploads: https://github.com/symfony/symfony/issues/9226
+		// if($request->hasFile('avatar')) return $request->avatar->storeAs('img/users/', $id.".".$request->avatar->extension(), 'local');
 
-	    $user->fill($request->all())->save();
+		$user->fill($request->all())->save();
 
-	    $user->project_role = $user->projects->first()->pivot->role;
-	    $user->project_subscription = $user->projects->first()->pivot->subscribed;
-	    unset($user->projects);
+		$user->project_role         = $user->projects->first()->pivot->role;
+		$user->project_subscription = $user->projects->first()->pivot->subscribed;
+		unset($user->projects);
 
-	    if($this->api) return $this->reply(["success" => "User updated","user" => $user]);
-	    return view('dashboard.users.show', $id);
-    }
+		if ($this->api) {
+			return $this->reply(["success" => "User updated", "user" => $user]);
+		}
 
-    public function destroy(Request $request, $id)
-    {
-    	$user = User::where('id',$id)->where('project_id', $request->project_id)->first();
-    }
+		return view('dashboard.users.show', $id);
+	}
+
+	public function destroy(Request $request, $id)
+	{
+		$user = User::where('id', $id)->where('project_id', $request->project_id)->first();
+	}
 
 
 	/**
@@ -327,23 +372,24 @@ class UsersController extends APIController
 	 *
 	 * @return mixed
 	 */
-    public function geoLocate()
-    {
-    	$ip_address = checkParam('ip_address');
-	    $geolocation = geoip($ip_address);
-	    return $this->reply([
-		    "ip"          => $geolocation->getAttribute("ip"),
-	        "iso_code"    => $geolocation->getAttribute("iso_code"),
-	        "country"     => $geolocation->getAttribute("country"),
-	        "city"        => $geolocation->getAttribute("city"),
-	        "state"       => $geolocation->getAttribute("state"),
-	        "state_name"  => $geolocation->getAttribute("state_name"),
-	        "postal_code" => $geolocation->getAttribute("postal_code"),
-	        "lat"         => $geolocation->getAttribute("lat"),
-	        "lon"         => $geolocation->getAttribute("lon"),
-	        "timezone"    => $geolocation->getAttribute("timezone"),
-	        "continent"   => $geolocation->getAttribute("continent")
-	    ]);
-    }
+	public function geoLocate()
+	{
+		$ip_address  = checkParam('ip_address');
+		$geolocation = geoip($ip_address);
+
+		return $this->reply([
+			"ip"          => $geolocation->getAttribute("ip"),
+			"iso_code"    => $geolocation->getAttribute("iso_code"),
+			"country"     => $geolocation->getAttribute("country"),
+			"city"        => $geolocation->getAttribute("city"),
+			"state"       => $geolocation->getAttribute("state"),
+			"state_name"  => $geolocation->getAttribute("state_name"),
+			"postal_code" => $geolocation->getAttribute("postal_code"),
+			"lat"         => $geolocation->getAttribute("lat"),
+			"lon"         => $geolocation->getAttribute("lon"),
+			"timezone"    => $geolocation->getAttribute("timezone"),
+			"continent"   => $geolocation->getAttribute("continent"),
+		]);
+	}
 
 }

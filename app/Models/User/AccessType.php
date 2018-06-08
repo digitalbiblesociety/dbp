@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 class AccessType extends Model
 {
     public $table = 'access_types';
+	public $fillable = ['hash_id'];
 
 	/**
 	 *

@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Bible\Video;
 use App\Transformers\FilmTransformer;
 
-class FilmsController extends APIController {
+class FilmsController extends APIController
+{
 
 
 	/**
@@ -31,41 +32,42 @@ class FilmsController extends APIController {
 	 *     )
 	 * )
 	 *
-     * @OAS\Schema (
-     *     type="object",
-     *     schema="v2_video_location",
-     *     description="",
-     *     title="The single alphabet response",
-     *     @OAS\Xml(name="v2_video_location"),
-     *     @OAS\Property(property="server",      @OAS\Schema(type="string",example="dbp-video.s3.amazonaws.com")),
-     *     @OAS\Property(property="root_path",   @OAS\Schema(type="string")),
-     *     @OAS\Property(property="protocol",    @OAS\Schema(type="string",example="http",enum={"http","https"})),
-     *     @OAS\Property(property="CDN",         @OAS\Schema(type="integer",example=0,enum={0,1})),
-     *     @OAS\Property(property="priority",    @OAS\Schema(type="integer",example=5))
-     * )
+	 * @OAS\Schema (
+	 *     type="object",
+	 *     schema="v2_video_location",
+	 *     description="",
+	 *     title="The single alphabet response",
+	 *     @OAS\Xml(name="v2_video_location"),
+	 *     @OAS\Property(property="server",      @OAS\Schema(type="string",example="dbp-video.s3.amazonaws.com")),
+	 *     @OAS\Property(property="root_path",   @OAS\Schema(type="string")),
+	 *     @OAS\Property(property="protocol",    @OAS\Schema(type="string",example="http",enum={"http","https"})),
+	 *     @OAS\Property(property="CDN",         @OAS\Schema(type="integer",example=0,enum={0,1})),
+	 *     @OAS\Property(property="priority",    @OAS\Schema(type="integer",example=5))
+	 * )
 	 *
 	 * @return mixed
 	 */
-	public function location() {
-		$videoServer      = env( 'video_server_bucket' ) ?? "dbp-video.s3.amazonaws.com";
-		$videoServerAlias = env( 'video_server_alias' ) ?? "video.dbt.io";
+	public function location()
+	{
+		$videoServer      = env('video_server_bucket') ?? "dbp-video.s3.amazonaws.com";
+		$videoServerAlias = env('video_server_alias') ?? "video.dbt.io";
 
-		return $this->reply( [
+		return $this->reply([
 			[
 				"server"    => $videoServer,
 				"root_path" => "",
 				"protocol"  => "http",
 				"CDN"       => 0,
-				"priority"  => 5
+				"priority"  => 5,
 			],
 			[
 				"server"    => $videoServerAlias,
 				"root_path" => "",
 				"protocol"  => "http",
 				"CDN"       => 1,
-				"priority"  => 3
-			]
-		] );
+				"priority"  => 3,
+			],
+		]);
 	}
 
 	/**
@@ -104,22 +106,30 @@ class FilmsController extends APIController {
 	 *
 	 * @return mixed
 	 */
-	public function videopath() {
-		if(!$this->api) return view('docs.v2.video_videoPath');
+	public function videopath()
+	{
+		if (!$this->api) {
+			return view('docs.v2.video_videoPath');
+		}
 
-		$bible_id = checkParam('dam_id|fileset_id');
-		$encoding = checkParam('encoding', null, 'optional');
-		$resolution = checkParam('resolution', null, 'optional');
+		$bible_id      = checkParam('dam_id|fileset_id');
+		$encoding      = checkParam('encoding', null, 'optional');
+		$resolution    = checkParam('resolution', null, 'optional');
 		$segment_order = checkParam('segment_order', null, 'optional');
-		$book_id = checkParam('book_id', null, 'optional');
-		$chapter_id = checkParam('chapter_id', null, 'optional');
-		$verse_id = checkParam('verse_id', null, 'optional');
+		$book_id       = checkParam('book_id', null, 'optional');
+		$chapter_id    = checkParam('chapter_id', null, 'optional');
+		$verse_id      = checkParam('verse_id', null, 'optional');
 
-		$films = Video::with(['book','bible.translations','translations','related' => function ($query) use($bible_id) {
-			$query->where('bible_id', $bible_id);
-		}])->where('bible_id', $bible_id)->where('section','main')->get();
+		$films = Video::with([
+			'book',
+			'bible.translations',
+			'translations',
+			'related' => function ($query) use ($bible_id) {
+				$query->where('bible_id', $bible_id);
+			},
+		])->where('bible_id', $bible_id)->where('section', 'main')->get();
 
-		return $this->reply(fractal()->collection( $films )->transformWith(new FilmTransformer())->serializeWith( $this->serializer )->toArray());
+		return $this->reply(fractal()->collection($films)->transformWith(new FilmTransformer())->serializeWith($this->serializer)->toArray());
 	}
 
 

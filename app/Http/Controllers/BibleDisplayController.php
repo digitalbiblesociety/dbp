@@ -23,8 +23,10 @@ class BibleDisplayController extends Controller
 	 */
 	public function index()
 	{
-		$filesets = BibleFileset::with('bible.translations')->where('bucket_id', env('FCBH_AWS_BUCKET'))->where('set_type_code','text_plain')->get();
-		return view('bibles.reader.index',compact('filesets'));
+		$filesets = BibleFileset::with('bible.translations')->where('bucket_id',
+			env('FCBH_AWS_BUCKET'))->where('set_type_code', 'text_plain')->get();
+
+		return view('bibles.reader.index', compact('filesets'));
 	}
 
 	/**
@@ -38,26 +40,36 @@ class BibleDisplayController extends Controller
 	 * @return \Illuminate\View\View
 	 *
 	 */
-	public function chapter($bible_id = "ENGESV", $book_id = null, $chapter = null) {
+	public function chapter($bible_id = "ENGESV", $book_id = null, $chapter = null)
+	{
 		// handle starting routes
-		$tableExists = Schema::connection('sophia')->hasTable($bible_id.'_vpl');
-		if(!$tableExists) return "This Bible is currently being updated, please check back later";
-
-		if(!$book_id) {
-			$selection = \DB::connection('sophia')->table($bible_id.'_vpl')->orderBy('canon_order')->first();
-			$book_id = $selection->book;
-			$chapter = $selection->chapter;
-		}
-		if(!$chapter) {
-			$selection = \DB::connection('sophia')->table($bible_id.'_vpl')->orderBy('canon_order')->first();
-			$chapter = $selection->chapter;
+		$tableExists = Schema::connection('sophia')->hasTable($bible_id . '_vpl');
+		if (!$tableExists) {
+			return "This Bible is currently being updated, please check back later";
 		}
 
-		$bibleNavigation =  \DB::connection('sophia')->table($bible_id.'_vpl')->select('book','chapter')->distinct()->get()->groupBy('book');
-		$verses = \DB::connection('sophia')->table($bible_id.'_vpl')->select(['book','verse_start','verse_text','chapter'])->where('book', $book_id)->where('chapter',$chapter)->orderBy('verse_start')->get();
-		$query = false;
+		if (!$book_id) {
+			$selection = \DB::connection('sophia')->table($bible_id . '_vpl')->orderBy('canon_order')->first();
+			$book_id   = $selection->book;
+			$chapter   = $selection->chapter;
+		}
+		if (!$chapter) {
+			$selection = \DB::connection('sophia')->table($bible_id . '_vpl')->orderBy('canon_order')->first();
+			$chapter   = $selection->chapter;
+		}
 
-		return view('bibles.reader.chapter',compact('verses','bibleLanguages','bibleNavigation','query','bible_id'));
+		$bibleNavigation = \DB::connection('sophia')->table($bible_id . '_vpl')->select('book',
+			'chapter')->distinct()->get()->groupBy('book');
+		$verses          = \DB::connection('sophia')->table($bible_id . '_vpl')->select([
+			'book',
+			'verse_start',
+			'verse_text',
+			'chapter',
+		])->where('book', $book_id)->where('chapter', $chapter)->orderBy('verse_start')->get();
+		$query           = false;
+
+		return view('bibles.reader.chapter',
+			compact('verses', 'bibleLanguages', 'bibleNavigation', 'query', 'bible_id'));
 	}
 
 	/**
@@ -73,14 +85,14 @@ class BibleDisplayController extends Controller
 	 */
 	public function search(Request $request, $bible_id)
 	{
-		$query = $request->search;
+		$query    = $request->search;
 		$bible_id = $bible_id ?? $request->bible_id;
-		$limit = 100;
+		$limit    = 100;
 
-		$search = \DB::connection()->getPdo()->quote('+'.str_replace(' ',' +',$query));
-		$verses = \DB::connection('sophia')->table($bible_id.'_vpl')->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($search IN NATURAL LANGUAGE MODE)"))->limit($limit)->get();
+		$search = \DB::connection()->getPdo()->quote('+' . str_replace(' ', ' +', $query));
+		$verses = \DB::connection('sophia')->table($bible_id . '_vpl')->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($search IN NATURAL LANGUAGE MODE)"))->limit($limit)->get();
 
-		return view('bibles.reader.search',compact('verses','query','bible_id'));
+		return view('bibles.reader.search', compact('verses', 'query', 'bible_id'));
 	}
 
 	/**
@@ -96,11 +108,15 @@ class BibleDisplayController extends Controller
 	 */
 	public function navigation($bible_id)
 	{
-		$tableExists = Schema::connection('sophia')->hasTable($bible_id.'_vpl');
-		if(!$tableExists) return "This Bible is currently being updated, please check back later";
+		$tableExists = Schema::connection('sophia')->hasTable($bible_id . '_vpl');
+		if (!$tableExists) {
+			return "This Bible is currently being updated, please check back later";
+		}
 
-		$bibleNavigation =  \DB::connection('sophia')->table($bible_id.'_vpl')->select('book','chapter')->distinct()->get()->groupBy('book');
-		return view('bibles.reader.bibleNav',compact('bibleNavigation','bible_id'));
+		$bibleNavigation = \DB::connection('sophia')->table($bible_id . '_vpl')->select('book',
+			'chapter')->distinct()->get()->groupBy('book');
+
+		return view('bibles.reader.bibleNav', compact('bibleNavigation', 'bible_id'));
 	}
 
 }

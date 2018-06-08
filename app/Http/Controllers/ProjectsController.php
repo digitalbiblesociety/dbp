@@ -11,55 +11,57 @@ use Validator;
 
 class ProjectsController extends APIController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @OAS\Get(
-     *     path="/projects",
-     *     tags={"Users"},
-     *     summary="Returns the projects currently using the DBP",
-     *     description="Returns a list of all your projects currently registered as using the DBP",
-     *     operationId="v4_projects.index",
-     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-     *     @OAS\Parameter(ref="#/components/parameters/key"),
-     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-     *     @OAS\Parameter(ref="#/components/parameters/reply"),
-     *     @OAS\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_projects_index"))
-     *     )
-     * )
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-	    if(!$this->api) return view('community.projects.index');
-	    $all_open_projects = checkParam('all_projects', null, 'optional');
+	/**
+	 * Display a listing of the resource.
+	 *
+	 * @OAS\Get(
+	 *     path="/projects",
+	 *     tags={"Users"},
+	 *     summary="Returns the projects currently using the DBP",
+	 *     description="Returns a list of all your projects currently registered as using the DBP",
+	 *     operationId="v4_projects.index",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_projects_index"))
+	 *     )
+	 * )
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index()
+	{
+		if (!$this->api) {
+			return view('community.projects.index');
+		}
+		$all_open_projects = checkParam('all_projects', null, 'optional');
 
-	    if(!isset($all_open_projects)) {
-		    $key = Key::find($this->key);
-		    $user = $key->user;
-		    $projects = ($user->admin) ? Project::all() : $user->projects;
-	    } else {
-	    	$projects = Project::where('sensitive',0)->get();
-	    }
+		if (!isset($all_open_projects)) {
+			$key      = Key::find($this->key);
+			$user     = $key->user;
+			$projects = ($user->admin) ? Project::all() : $user->projects;
+		} else {
+			$projects = Project::where('sensitive', 0)->get();
+		}
 
-	    return $this->reply(fractal()->transformWith(ProjectTransformer::class)->collection($projects));
-    }
+		return $this->reply(fractal()->transformWith(ProjectTransformer::class)->collection($projects));
+	}
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('dashboard.projects.create');
-    }
+	/**
+	 * Show the form for creating a new resource.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function create()
+	{
+		return view('dashboard.projects.create');
+	}
 
 
 	/**
@@ -98,166 +100,202 @@ class ProjectsController extends APIController
 	 * @return $this|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */
 	public function store(Request $request)
-    {
-	    $user = \Auth::user() ?? Key::find($this->key)->user;
-	    if(!$user) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied',[], $this->preferred_language));
+	{
+		$user = \Auth::user() ?? Key::find($this->key)->user;
+		if (!$user) {
+			return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
+		}
 
-	    $validator = Validator::make($request->all(), [
-		    'id'   => 'required|unique:projects,id|max:24',
-		    'name' => 'required',
-	    ]);
+		$validator = Validator::make($request->all(), [
+			'id'   => 'required|unique:projects,id|max:24',
+			'name' => 'required',
+		]);
 
-	    if ($validator->fails()) {
-		    if($this->api)  return $this->setStatusCode(422)->replyWithError($validator->errors());
-		    if(!$this->api) return redirect('dashboard/projects/create')->withErrors($validator)->withInput();
-	    }
-	    $project = \DB::transaction(function () use($request,$user) {
-	        $project = Project::create([
+		if ($validator->fails()) {
+			if ($this->api) {
+				return $this->setStatusCode(422)->replyWithError($validator->errors());
+			}
+			if (!$this->api) {
+				return redirect('dashboard/projects/create')->withErrors($validator)->withInput();
+			}
+		}
+		$project = \DB::transaction(function () use ($request, $user) {
+			$project = Project::create([
 				'name'            => $request->name,
 				'url_avatar'      => $request->url_avatar,
 				'url_avatar_icon' => $request->url_avatar_icon,
 				'url_site'        => $request->url_site,
 				'description'     => $request->description,
-	        ]);
-	        $project->members()->attach($user->id, ['role' => 'member','admin' => 1]);
-	        return $project;
-	    });
+			]);
+			$project->members()->attach($user->id, ['role' => 'member', 'admin' => 1]);
 
-	    if(!$this->api) return view('dashboard.projects.show', compact('user', 'project'));
-	    return fractal()->transformWith(ProjectTransformer::class)->item($project)->addMeta(['message' => 'Project Creation Successful']);
-    }
+			return $project;
+		});
 
-    /**
-     * Display the specified resource.
-     *
-     * @OAS\Get(
-     *     path="/projects/{project_id}",
-     *     tags={"Users"},
-     *     summary="Get the details for a project",
-     *     description="",
-     *     operationId="v4_projects.show",
-     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-     *     @OAS\Parameter(ref="#/components/parameters/key"),
-     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-     *     @OAS\Parameter(ref="#/components/parameters/reply"),
-     *     @OAS\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_projects_index"))
-     *     )
-     * )
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-	    $access_allowed = true;
-	    $user = \Auth::user() ?? @Key::find($this->key)->user;
+		if (!$this->api) {
+			return view('dashboard.projects.show', compact('user', 'project'));
+		}
 
-	    $project = Project::find($id);
-	    if(!$project) return $this->setStatusCode(404)->replyWithError("Project Not found");
+		return fractal()->transformWith(ProjectTransformer::class)->item($project)->addMeta(['message' => 'Project Creation Successful']);
+	}
 
-	    if($project->sensitive) $access_allowed = isset($user) ? ($project->members->contains($user) OR $user->admin) : false;
-	    if(!$access_allowed) return $this->setStatusCode(404)->replyWithError("Access Not allowed");
+	/**
+	 * Display the specified resource.
+	 *
+	 * @OAS\Get(
+	 *     path="/projects/{project_id}",
+	 *     tags={"Users"},
+	 *     summary="Get the details for a project",
+	 *     description="",
+	 *     operationId="v4_projects.show",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_projects_index"))
+	 *     )
+	 * )
+	 *
+	 * @param  int $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function show($id)
+	{
+		$access_allowed = true;
+		$user           = \Auth::user() ?? @Key::find($this->key)->user;
 
-	    if(!$this->api) return view('community.projects.show', compact('project'));
-	    return $this->reply(fractal()->transformWith(ProjectTransformer::class)->item($project));
-    }
+		$project = Project::find($id);
+		if (!$project) {
+			return $this->setStatusCode(404)->replyWithError("Project Not found");
+		}
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-	    return view('dashboard.projects.edit');
-    }
+		if ($project->sensitive) {
+			$access_allowed = isset($user) ? ($project->members->contains($user) OR $user->admin) : false;
+		}
+		if (!$access_allowed) {
+			return $this->setStatusCode(404)->replyWithError("Access Not allowed");
+		}
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @OAS\Put(
-     *     path="/projects/{project_id}",
-     *     tags={"Users"},
-     *     summary="Update the details for a project",
-     *     description="",
-     *     operationId="v4_projects.update",
-     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-     *     @OAS\Parameter(ref="#/components/parameters/key"),
-     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-     *     @OAS\Parameter(ref="#/components/parameters/reply"),
-     *     @OAS\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_projects_index"))
-     *     )
-     * )
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-	    $user = \Auth::user() ?? Key::find($this->key)->user;
-	    if(!$user) return $this->setStatusCode(401)->replyWithError("you're not logged in");
+		if (!$this->api) {
+			return view('community.projects.show', compact('project'));
+		}
 
-	    $project = Project::find($id);
-	    if(!$project) return $this->setStatusCode(404)->replyWithError("Project Not found");
+		return $this->reply(fractal()->transformWith(ProjectTransformer::class)->item($project));
+	}
 
-	    $access_allowed = ($project->members->contains($user) OR $user->admin) ? true : false;
-	    if(!$access_allowed) return $this->setStatusCode(404)->replyWithError("Access Not allowed");
+	/**
+	 * Show the form for editing the specified resource.
+	 *
+	 * @param  int $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function edit($id)
+	{
+		return view('dashboard.projects.edit');
+	}
 
-	    $project->update($request->all());
-	    $project->save();
+	/**
+	 * Update the specified resource in storage.
+	 *
+	 * @OAS\Put(
+	 *     path="/projects/{project_id}",
+	 *     tags={"Users"},
+	 *     summary="Update the details for a project",
+	 *     description="",
+	 *     operationId="v4_projects.update",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_projects_index"))
+	 *     )
+	 * )
+	 *
+	 * @param  \Illuminate\Http\Request $request
+	 * @param  int $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function update(Request $request, $id)
+	{
+		$user = \Auth::user() ?? Key::find($this->key)->user;
+		if (!$user) {
+			return $this->setStatusCode(401)->replyWithError("you're not logged in");
+		}
 
-	    return $this->reply(trans('api.'));
-    }
+		$project = Project::find($id);
+		if (!$project) {
+			return $this->setStatusCode(404)->replyWithError("Project Not found");
+		}
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @OAS\Delete(
-     *     path="/projects/{project_id}",
-     *     tags={"Users"},
-     *     summary="Remove a project",
-     *     description="",
-     *     operationId="v4_projects.update",
-     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-     *     @OAS\Parameter(ref="#/components/parameters/key"),
-     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-     *     @OAS\Parameter(ref="#/components/parameters/reply"),
-     *     @OAS\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_projects_index"))
-     *     )
-     * )
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-	    $user = \Auth::user() ?? Key::find($this->key)->user;
-	    if(!$user) return $this->setStatusCode(401)->replyWithError("you're not logged in");
+		$access_allowed = ($project->members->contains($user) OR $user->admin) ? true : false;
+		if (!$access_allowed) {
+			return $this->setStatusCode(404)->replyWithError("Access Not allowed");
+		}
 
-	    $project = Project::find($id);
-	    if(!$project) return $this->setStatusCode(404)->replyWithError("Project Not found");
+		$project->update($request->all());
+		$project->save();
 
-	    $access_allowed = $project->admins->contains($user->id);
-	    if(!$access_allowed) return $this->setStatusCode(404)->replyWithError("You must be an admin to delete a project");
+		return $this->reply(trans('api.'));
+	}
 
-	    $project->delete();
-        return $this->reply("project deleted");
-    }
+	/**
+	 * Remove the specified resource from storage.
+	 *
+	 * @OAS\Delete(
+	 *     path="/projects/{project_id}",
+	 *     tags={"Users"},
+	 *     summary="Remove a project",
+	 *     description="",
+	 *     operationId="v4_projects.update",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_projects_index")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_projects_index"))
+	 *     )
+	 * )
+	 *
+	 * @param  int $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function destroy($id)
+	{
+		$user = \Auth::user() ?? Key::find($this->key)->user;
+		if (!$user) {
+			return $this->setStatusCode(401)->replyWithError("you're not logged in");
+		}
+
+		$project = Project::find($id);
+		if (!$project) {
+			return $this->setStatusCode(404)->replyWithError("Project Not found");
+		}
+
+		$access_allowed = $project->admins->contains($user->id);
+		if (!$access_allowed) {
+			return $this->setStatusCode(404)->replyWithError("You must be an admin to delete a project");
+		}
+
+		$project->delete();
+
+		return $this->reply("project deleted");
+	}
 }

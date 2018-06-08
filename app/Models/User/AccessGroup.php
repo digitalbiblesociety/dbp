@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 class AccessGroup extends Model
 {
     public $table = 'access_groups';
+    public $fillable = ['name', 'description'];
 
 	/**
 	 *
@@ -61,7 +62,7 @@ class AccessGroup extends Model
 
     public function filesets()
     {
-    	return $this->hasMany(AccessGroupFileset::class);
+    	return $this->hasMany(AccessGroupFileset::class)->select('hash_id','access_group_id');
     }
 
     public function types()

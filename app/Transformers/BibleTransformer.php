@@ -25,11 +25,20 @@ class BibleTransformer extends BaseTransformer
 
     public function transformForV2($bible)
     {
+    	// Compute v2 ID
+	    $v2id = $bible->bible->first()->iso.substr($bible->id,3,3);
+	    $v2id .= ($bible->set_size_code[0] == "N") ? "N" : "O";
+	    $v2id .= (strpos($bible->set_type_code, 'drama') !== false) ? 2 : 1;
+	    $v2id .= (strpos($bible->set_type_code, 'text') !== false) ? "ET" : "DA";
+	    $v2id = strtoupper($v2id);
+
     	    switch($this->route) {
 
 		        case "v2_library_metadata": {
+		        	// ISO . 3 Letter . TESTAMENT CODE . DRAMATIZED
 		        	$output = [
-				        "dam_id"         => $bible->id,
+				        "dam_id"         => $v2id,
+				        "fileset_id"     => $bible->id,
 				        "mark"           => $bible->copyright->copyright,
 				        "volume_summary" => $bible->copyright->copyright_description,
 				        "font_copyright" => null,
@@ -58,7 +67,7 @@ class BibleTransformer extends BaseTransformer
 
 		        case "v2_volume_history": {
 		        	return [
-		        		"dam_id" => $bible->id,
+		        		"dam_id" => $v2id,
 				        "time"   => $bible->updated_at->toDateTimeString(),
 				        "event"  => "Updated"
 			        ];

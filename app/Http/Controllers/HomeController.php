@@ -12,23 +12,24 @@ use App\Helpers\AWS\Bucket;
 class HomeController extends APIController
 {
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-	    $user = \Auth::user();
-        return view('home',compact('user'));
-    }
+	/**
+	 * Show the application dashboard.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index()
+	{
+		$user = \Auth::user();
 
-    public function admin()
-    {
-    	$status['updates'] = '';
+		return view('home', compact('user'));
+	}
 
-    	return view('dashboard.admin', compact('status'));
-    }
+	public function admin()
+	{
+		$status['updates'] = '';
+
+		return view('dashboard.admin', compact('status'));
+	}
 
 	/**
 	 * Returns a List of Buckets used by the API
@@ -51,24 +52,24 @@ class HomeController extends APIController
 	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_api_buckets"))
 	 *     )
 	 * )
-     *
-     * @OAS\Schema (
-     *     type="object",
-     *     schema="v4_api_buckets",
-     *     description="The aws buckets currently being used by the api",
-     *     title="The buckets response",
-     *     required={"id","organization_id"},
-     *     @OAS\Xml(name="v4_api_buckets"),
-     *     @OAS\Property(property="id",              ref="#/components/schemas/Bucket/properties/id"),
-     *     @OAS\Property(property="organization_id", ref="#/components/schemas/Bucket/properties/organization_id")
-     * )
+	 *
+	 * @OAS\Schema (
+	 *     type="object",
+	 *     schema="v4_api_buckets",
+	 *     description="The aws buckets currently being used by the api",
+	 *     title="The buckets response",
+	 *     required={"id","organization_id"},
+	 *     @OAS\Xml(name="v4_api_buckets"),
+	 *     @OAS\Property(property="id",              ref="#/components/schemas/Bucket/properties/id"),
+	 *     @OAS\Property(property="organization_id", ref="#/components/schemas/Bucket/properties/organization_id")
+	 * )
 	 *
 	 * @return mixed
 	 */
 	public function buckets()
-    {
-    	return $this->reply(\App\Models\Organization\Bucket::with('organization')->get());
-    }
+	{
+		return $this->reply(\App\Models\Organization\Bucket::with('organization')->get());
+	}
 
 	/**
 	 * Show the application dashboard.
@@ -77,18 +78,18 @@ class HomeController extends APIController
 	 */
 	public function welcome()
 	{
-		$count['languages'] = Language::count();
-		$count['countries'] = Country::count();
-		$count['alphabets'] = Alphabet::count();
+		$count['languages']     = Language::count();
+		$count['countries']     = Country::count();
+		$count['alphabets']     = Alphabet::count();
 		$count['organizations'] = Organization::count();
-		$count['bibles'] = Bible::count();
+		$count['bibles']        = Bible::count();
 
-		return view('welcome',compact('count'));
+		return view('welcome', compact('count'));
 	}
 
 	public function versions()
 	{
-		return $this->reply(["versions" => [2,4]]);
+		return $this->reply(["versions" => [2, 4]]);
 	}
 
 	/**
@@ -123,7 +124,8 @@ class HomeController extends APIController
 	public function versionLatest()
 	{
 		$swagger = json_decode(file_get_contents(public_path('swagger.json')));
-		return $this->reply([ "Version" => $swagger->info->version ]);
+
+		return $this->reply(["Version" => $swagger->info->version]);
 	}
 
 	/**
@@ -153,15 +155,15 @@ class HomeController extends APIController
 	 *     )
 	 * )
 	 *
-     * @OAS\Schema (
-     *     type="object",
-     *     schema="v2_api_apiReply",
-     *     description="The return for the api reply",
-     *     title="v2_api_apiReply",
-     *     @OAS\Xml(name="v2_api_apiReply"),
-     *     @OAS\Property(property="2",type="object",example={"json", "jsonp", "html"}),
-     *     @OAS\Property(property="4",type="object",example={"json", "jsonp", "xml", "html"}),
-     * )
+	 * @OAS\Schema (
+	 *     type="object",
+	 *     schema="v2_api_apiReply",
+	 *     description="The return for the api reply",
+	 *     title="v2_api_apiReply",
+	 *     @OAS\Xml(name="v2_api_apiReply"),
+	 *     @OAS\Property(property="2",type="object",example={"json", "jsonp", "html"}),
+	 *     @OAS\Property(property="4",type="object",example={"json", "jsonp", "xml", "html"}),
+	 * )
 	 *
 	 * @return mixed
 	 */
@@ -169,8 +171,9 @@ class HomeController extends APIController
 	{
 		$versionReplies = [
 			"2" => ["json", "jsonp", "html"],
-			"4" => ["json", "jsonp", "xml", "html"]
+			"4" => ["json", "jsonp", "xml", "html"],
 		];
+
 		return $this->reply($versionReplies[$this->v]);
 	}
 
@@ -202,20 +205,20 @@ class HomeController extends APIController
 	 *         @OAS\MediaType(mediaType="application/xml", @OAS\Schema(ref="#/components/schemas/v2_library_asset"))
 	 *     )
 	 * )
-     *
-     * @OAS\Schema (
-     *     type="object",
-     *     schema="v2_library_asset",
-     *     description="v2_library_asset",
-     *     title="v2_library_asset",
-     *     @OAS\Xml(name="v2_library_asset"),
-     *     @OAS\Property(property="server",type="string",example="cloud.faithcomesbyhearing.com"),
-     *     @OAS\Property(property="root_path",type="string",example="/mp3audiobibles2"),
-     *     @OAS\Property(property="protocol",type="string",example="http"),
-     *     @OAS\Property(property="CDN",type="string",example="1"),
-     *     @OAS\Property(property="priority",type="string",example="5"),
-     *     @OAS\Property(property="volume_id",type="string",example="")
-     * )
+	 *
+	 * @OAS\Schema (
+	 *     type="object",
+	 *     schema="v2_library_asset",
+	 *     description="v2_library_asset",
+	 *     title="v2_library_asset",
+	 *     @OAS\Xml(name="v2_library_asset"),
+	 *     @OAS\Property(property="server",type="string",example="cloud.faithcomesbyhearing.com"),
+	 *     @OAS\Property(property="root_path",type="string",example="/mp3audiobibles2"),
+	 *     @OAS\Property(property="protocol",type="string",example="http"),
+	 *     @OAS\Property(property="CDN",type="string",example="1"),
+	 *     @OAS\Property(property="priority",type="string",example="5"),
+	 *     @OAS\Property(property="volume_id",type="string",example="")
+	 * )
 	 *
 	 * @return mixed
 	 */
@@ -225,47 +228,49 @@ class HomeController extends APIController
 
 		$libraryAsset = [
 			[
-				"server" => "cloud.faithcomesbyhearing.com",
+				"server"    => "cloud.faithcomesbyhearing.com",
 				"root_path" => "/mp3audiobibles2",
-				"protocol" => "http",
-				"CDN" => "1",
-				"priority" => "5",
-				"volume_id" => $dam_id
+				"protocol"  => "http",
+				"CDN"       => "1",
+				"priority"  => "5",
+				"volume_id" => $dam_id,
 			],
 			[
-				"server" => "fcbhabdm.s3.amazonaws.com",
+				"server"    => "fcbhabdm.s3.amazonaws.com",
 				"root_path" => "/mp3audiobibles2",
-				"protocol" => "http",
-				"CDN" => "0",
-				"priority" => "6",
-				"volume_id" => $dam_id
+				"protocol"  => "http",
+				"CDN"       => "0",
+				"priority"  => "6",
+				"volume_id" => $dam_id,
 			],
 			[
-				"server" => "cdn.faithcomesbyhearing.com",
+				"server"    => "cdn.faithcomesbyhearing.com",
 				"root_path" => "/cfx/st",
-				"protocol" => "rtmp-amazon",
-				"CDN" => "0",
-				"priority" => "9",
-				"volume_id" => $dam_id
-			]
+				"protocol"  => "rtmp-amazon",
+				"CDN"       => "0",
+				"priority"  => "9",
+				"volume_id" => $dam_id,
+			],
 		];
+
 		return $this->reply($libraryAsset);
 	}
 
 	public function signedUrls()
 	{
 		$filenames = $_GET['filenames'] ?? "";
-		$filenames = explode(",",$filenames);
-		$signer = $_GET['signer'] ?? 's3_fcbh';
-		$bucket = $_GET['bucket'] ?? "dbp-dev";
-		$expiry = $_GET['expiry'] ?? 5;
-		$urls = [];
+		$filenames = explode(",", $filenames);
+		$signer    = $_GET['signer'] ?? 's3_fcbh';
+		$bucket    = $_GET['bucket'] ?? "dbp-dev";
+		$expiry    = $_GET['expiry'] ?? 5;
+		$urls      = [];
 
-		foreach($filenames as $filename) {
-			$filename = ltrim($filename, "/");
-			$paths = explode("/",$filename);
-			$urls["urls"][$paths[0]][$paths[1]][$paths[2]] = Bucket::signedUrl($filename,$signer,$bucket,$expiry);
+		foreach ($filenames as $filename) {
+			$filename                                      = ltrim($filename, "/");
+			$paths                                         = explode("/", $filename);
+			$urls["urls"][$paths[0]][$paths[1]][$paths[2]] = Bucket::signedUrl($filename, $signer, $bucket, $expiry);
 		}
+
 		return $this->reply($urls);
 	}
 
@@ -275,12 +280,14 @@ class HomeController extends APIController
 		// compare to existing equivalents to DBL
 		// return any discrepancy as a to do item
 		$status_dbl = '';
+
 		return $status_dbl;
 	}
 
 	public function status_biblegateway()
 	{
 		$status_gateway = '';
+
 		return $status_gateway;
 	}
 

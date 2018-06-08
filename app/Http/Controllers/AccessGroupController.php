@@ -3,73 +3,91 @@
 namespace App\Http\Controllers;
 
 use App\Models\User\AccessGroup;
+use App\Transformers\AccessGroupTransformer;
 use Illuminate\Http\Request;
 
 class AccessGroupController extends APIController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-    	if(!$this->api) return view('access.groups.index');
+	/**
+	 * Display a listing of the resource.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index()
+	{
+		if (!$this->api) return view('access.groups.index');
+		$access_groups = AccessGroup::select(['id','name'])->get();
+		return $this->reply($access_groups->pluck('name','id'));
+	}
 
-        $access_groups = AccessGroup::all();
-        return $this->reply(AccessGroup::all());
-    }
+	/**
+	 * Store a newly created resource in storage.
+	 *
+	 * @param  \Illuminate\Http\Request $request
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function store(Request $request)
+	{
+		($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
+		$validated = $this->validateAccessGroup($request);
+		dd($validated);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-	    ($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
-	    $this->validateAccessGroup($request);
+		$access_group = AccessGroup::create($request->all());
+		if (!$this->api) return redirect()->route('access.groups.show', ['group_id' => $access_group->id]);
+		return $this->reply(["message" => "Access Group Successfully Created"]);
+	}
 
-	    $access_group = AccessGroup::create($request->all());
-	    if(!$this->api) return redirect()->route('access.groups.show', ['group_id' => $access_group->id]);
-	    return $this->reply(["message" => "Access Group Successfully Created"]);
-    }
+	/**
+	 * Display the specified resource.
+	 *
+	 * @param  int $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function show($id)
+	{
+		$access_group = AccessGroup::with('filesets','types')->find($id);
+		return $this->reply(fractal($access_group, new AccessGroupTransformer()));
+	}
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-	    $access_group = AccessGroup::find($id);
-	    return $this->reply($access_group);
-    }
+	/**
+	 * Update the specified resource in storage.
+	 *
+	 * @param  \Illuminate\Http\Request $request
+	 * @param  int $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function update(Request $request, $id)
+	{
+		$invalid = $this->validateAccessGroup($request);
+		if($invalid) return $this->reply($invalid);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+		$access_group = AccessGroup::find($id);
+		$access_group->fill($request->all())->save();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+		if(isset($request->filesets)) $access_group->filesets()->createMany($request->filesets);
+		if(isset($request->keys)) $access_group->keys()->createMany($request->keys);
+		if(isset($request->types)) $access_group->keys()->sync($request->types);
+
+		return $this->reply($access_group);
+	}
+
+	/**
+	 * Remove the specified resource from storage.
+	 *
+	 * @param  int $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function destroy($id)
+	{
+		$access_group = AccessGroup::find($id);
+		$access_group->delete();
+
+		return $this->reply("successfully delete");
+	}
 
 	/**
 	 * Ensure the current access_group change is valid
@@ -80,18 +98,23 @@ class AccessGroupController extends APIController
 	 */
 	private function validateAccessGroup(Request $request)
 	{
-		$validator = Validator::make($request->all(),[
-			'name'                => ($request->method() == "POST") ? 'required|unique:access_groups,name|max:64|alpha_dash' : 'required|exists:access_groups,name|max:64|alpha_dash',
-			'description'         => 'nullable',
-			'filesets.*.hash_id'  => 'exists:bible_filesets,hash_id',
-			'keys.*.key_id'       => 'exists:user_keys,key',
-			'types.*.type_id'     => 'exists:access_types,id'
+		$validator = \Validator::make($request->all(), [
+			'name'               => 'required|max:64|alpha_dash',
+			'description'        => 'string',
+			'filesets.*'         => 'exists:bible_filesets,hash_id',
+			'keys.*'             => 'exists:user_keys,key',
+			'types.*'            => 'exists:access_types,id',
 		]);
 
 		if ($validator->fails()) {
-			if($this->api)  return $this->setStatusCode(422)->replyWithError($validator->errors());
-			if(!$this->api) return redirect('access/groups/create')->withErrors($validator)->withInput();
+			if (!$this->api) return redirect('access/groups/create')->withErrors($validator)->withInput();
+			return $this->setStatusCode(422)->replyWithError($validator->errors());
 		}
+		return false;
+	}
+
+	private function validateUser()
+	{
 
 	}
 
