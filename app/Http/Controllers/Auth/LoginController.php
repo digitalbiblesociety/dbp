@@ -121,14 +121,11 @@ class LoginController extends APIController
     {
         $user = \Socialite::driver($provider)->stateless()->user();
         $user = $this->createOrGetUser($user, $provider);
+
         \Auth::login($user);
-        if ($this->api) {
-            return $user;
-        }
-        if ($user->admin) {
-            return redirect()->route('admin');
-        }
-        return redirect()->route('home');
+        if ($this->api) return $user;
+        if ($user->admin) return redirect()->route('admin');
+        return view('home',compact('user'));
     }
 
     public function createOrGetUser($providerUser, $provider)
