@@ -210,7 +210,7 @@ class UserNotesController extends APIController
 			'project_id'  => $request->project_id,
 			'chapter'     => $request->chapter,
 			'verse_start' => $request->verse_start,
-			'verse_end'   => $request->verse_end,
+			'verse_end'   => $request->verse_end ?? $request->verse_start,
 			'bookmark'    => ($request->bookmark) ? 1 : 0,
 			'notes'       => isset($request->notes) ? encrypt($request->notes) : null,
 		]);
