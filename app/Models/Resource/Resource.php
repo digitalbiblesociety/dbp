@@ -158,7 +158,6 @@ class Resource extends Model
 	 */
 	protected $updated_at;
 
-
     public function links()
     {
     	return $this->hasMany(ResourceLink::class);
@@ -167,6 +166,11 @@ class Resource extends Model
 	public function translations()
 	{
 		return $this->hasMany(ResourceTranslation::class);
+	}
+
+	public function tags()
+	{
+		return $this->HasMany(ResourceTranslation::class)->where('tags',1);
 	}
 
 	public function currentTranslation()

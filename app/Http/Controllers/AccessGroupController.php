@@ -9,7 +9,28 @@ use Illuminate\Http\Request;
 class AccessGroupController extends APIController
 {
 	/**
-	 * Display a listing of the resource.
+	 * Update the specified resource in storage.
+	 *
+	 * @OAS\Get(
+	 *     path="/access/groups/",
+	 *     tags={"Admin"},
+	 *     summary="Update the specified Access group",
+	 *     description="",
+	 *     operationId="v4_access_groups.index",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/AccessGroup")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/AccessGroup")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/AccessGroup"))
+	 *     )
+	 * )
+	 *
+	 * @param int $id
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
@@ -21,9 +42,29 @@ class AccessGroupController extends APIController
 	}
 
 	/**
-	 * Store a newly created resource in storage.
+	 * Update the specified resource in storage.
 	 *
-	 * @param  \Illuminate\Http\Request $request
+	 * @OAS\Get(
+	 *     path="/access/groups/{group_id}",
+	 *     tags={"Admin"},
+	 *     summary="Update the specified Access group",
+	 *     description="",
+	 *     operationId="v4_access_groups.show",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(name="access_group_id", in="path", required=true, @OAS\Schema(ref="#/components/schemas/AccessGroup/properties/id")),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/AccessGroup")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/AccessGroup")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/AccessGroup"))
+	 *     )
+	 * )
+	 *
+	 * @param int $id
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
@@ -38,16 +79,37 @@ class AccessGroupController extends APIController
 		return $this->reply(["message" => "Access Group Successfully Created"]);
 	}
 
+
 	/**
-	 * Display the specified resource.
+	 * Update the specified resource in storage.
 	 *
-	 * @param  int $id
+	 * @OAS\Get(
+	 *     path="/access/groups/{group_id}",
+	 *     tags={"Admin"},
+	 *     summary="Update the specified Access group",
+	 *     description="",
+	 *     operationId="v4_access_groups.show",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(name="access_group_id", in="path", required=true, @OAS\Schema(ref="#/components/schemas/AccessGroup/properties/id")),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/AccessGroup")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/AccessGroup")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/AccessGroup"))
+	 *     )
+	 * )
+	 *
+	 * @param int $id
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
 	public function show($id)
 	{
-		$access_group = AccessGroup::with('filesets','types')->find($id);
+		$access_group = AccessGroup::with('filesets','types','keys')->find($id);
 		return $this->reply(fractal($access_group, new AccessGroupTransformer()));
 	}
 
@@ -56,7 +118,7 @@ class AccessGroupController extends APIController
 	 *
 	 * @OAS\Put(
 	 *     path="/access/groups/{group_id}",
-	 *     tags={"Community"},
+	 *     tags={"Admin"},
 	 *     summary="Update the specified Access group",
 	 *     description="",
 	 *     operationId="v4_access_groups.update",
@@ -95,8 +157,29 @@ class AccessGroupController extends APIController
 	}
 
 	/**
-	 * Remove the specified resource from storage.
+	 * Update the specified resource in storage.
 	 *
+	 * @OAS\Delete(
+	 *     path="/access/groups/{group_id}",
+	 *     tags={"Admin"},
+	 *     summary="Remove the specified Access group",
+	 *     description="",
+	 *     operationId="v4_access_groups.destroy",
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(name="access_group_id", in="path", required=true, @OAS\Schema(ref="#/components/schemas/AccessGroup/properties/id")),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/AccessGroup")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/AccessGroup")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/AccessGroup"))
+	 *     )
+	 * )
+	 *
+	 * @param  \Illuminate\Http\Request $request
 	 * @param  int $id
 	 *
 	 * @return \Illuminate\Http\Response

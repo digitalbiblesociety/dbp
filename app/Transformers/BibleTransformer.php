@@ -173,7 +173,18 @@ class BibleTransformer extends BaseTransformer
 						return [$item['bucket_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
 					})
 				];
-				if($bible->langauge) if($bible->langauge->relationLoaded('translations')) $output['language_altNames'] = $bible->language->translations->pluck('name');
+				if($bible->langauge) {
+					if($bible->langauge->relationLoaded('translations')) $output['language_altNames'] = $bible->language->translations->pluck('name');
+				}
+
+				if($bible->relationLoaded('country')) {
+					$output['country_id'] = "";
+					$output['continent_id'] = "";
+					if(isset($bible->country[0])) {
+						$output['country_id'] = $bible->country[0]->id;
+						$output['continent_id'] = $bible->country[0]->continent;
+					}
+				}
 				return $output;
 			}
 

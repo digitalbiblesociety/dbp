@@ -9,6 +9,7 @@ return [
 	'auth_errors_twitter_stateless'          => 'Twitter does not support stateless Authentication',
 	'auth_key_validation_failed'             => 'No Authentication Provided or invalid Key',
 	'auth_wiki_validation_failed'            => 'You do not have permission to edit the wiki',
+	'auth_user_validation_failed'            => 'You do not have permission to edit or view users',
 	'email_send_successful'                  => 'Email sent successfully',
 
 	// Bibles Routes

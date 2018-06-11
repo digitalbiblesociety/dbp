@@ -118,6 +118,7 @@ function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
 		];
 		$current_number++;
 	}
+
 	return collect($out_numbers)->pluck('numeral_vernacular','numeral');
 }
 

@@ -85,6 +85,7 @@ Route::domain(env('API_URL'))->group(function () {
 	// VERSION 4 | USERS
 	Route::name('v4_user.index')->get('users',                                            'UsersController@index');
 	Route::name('v4_user.store')->post('users',                                           'UsersController@store');
+	Route::name('v4_user.show')->get('users/{user_id}',                                   'UsersController@show');
 	Route::name('v4_user.update')->put('users/{user_id}',                                 'UsersController@update');
 	Route::name('v4_user.destroy')->delete('users/{user_id}',                             'UsersController@destroy');
 	Route::name('v4_user.login')->post('users/login',                                     'UsersController@login');

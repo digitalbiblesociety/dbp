@@ -85,17 +85,13 @@ class TextController extends APIController
 		$bible = $fileset->bible->first();
 
 		$book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
-		if (!$book) {
-			return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
-		}
+		if (!$book) return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
 		$book->push('name_vernacular', $book->translation($bible->iso)->first());
 
 		if ($formatted) {
 			$path   = 'text/' . $bible->id . '/' . $fileset->id . '/' . $book_id . $chapter . '.html';
 			$exists = Storage::disk($formatted)->exists($path);
-			if (!$exists) {
-				return $this->replyWithError("The path: $path did not result in a file");
-			}
+			if (!$exists) return $this->replyWithError("The path: $path did not result in a file");
 
 			return $this->reply(["filepath" => Bucket::signedUrl($path)]);
 		}

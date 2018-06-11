@@ -93,100 +93,63 @@ class BiblesController extends APIController
 			return view('bibles.index');
 		}
 
-		$dam_id            = checkParam('dam_id|fcbh_id|bible_id', null, 'optional');
-		$media             = checkParam('media', null, 'optional');
-		$language          = checkParam('language', null, 'optional');
-		$full_word         = checkParam('full_word|language_name', null, 'optional');
-		$iso               = checkParam('language_family_code|language_code', null, 'optional');
-		$updated           = checkParam('updated', null, 'optional');
-		$organization      = checkParam('organization_id', null, 'optional');
-		$sort_by           = checkParam('sort_by', null, 'optional');
-		$sort_dir          = checkParam('sort_dir', null, 'optional') ?? 'asc';
-		$fileset_filter    = boolval(checkParam('filter_by_fileset', null, 'optional')) ?? true;
-		$include_alt_names = checkParam('include_alt_names', null, 'optional');
-		$country           = checkParam('country', null, 'optional');
-		$bucket            = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-		$hide_restricted   = checkParam('hide_restricted', null, 'optional') ?? true;
+		$dam_id             = checkParam('dam_id|fcbh_id|bible_id', null, 'optional');
+		$media              = checkParam('media', null, 'optional');
+		$language           = checkParam('language', null, 'optional');
+		$full_word          = checkParam('full_word|language_name', null, 'optional');
+		$iso                = checkParam('language_family_code|language_code', null, 'optional');
+		$updated            = checkParam('updated', null, 'optional');
+		$organization       = checkParam('organization_id', null, 'optional');
+		$sort_by            = checkParam('sort_by', null, 'optional');
+		$sort_dir           = checkParam('sort_dir', null, 'optional') ?? 'asc';
+		$fileset_filter     = boolval(checkParam('filter_by_fileset', null, 'optional')) ?? true;
+		$include_alt_names  = checkParam('include_alt_names', null, 'optional');
+		$include_regionInfo = checkParam('include_region_info', null, 'optional');
+		$country            = checkParam('country', null, 'optional');
+		$bucket             = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$hide_restricted    = checkParam('hide_restricted', null, 'optional') ?? true;
 
 		$access_control = $this->accessControl($this->key, "api");
 
-		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $full_word . '_' . $iso . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $bucket . $access_control->string;
+		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $iso . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $bucket . $access_control->string;
 		Cache::forget($cache_string);
-		$bibles = Cache::remember($cache_string, 1600, function () use (
-			$dam_id,
-			$hide_restricted,
-			$media,
-			$language,
-			$full_word,
-			$iso,
-			$updated,
-			$organization,
-			$sort_by,
-			$sort_dir,
-			$fileset_filter,
-			$country,
-			$bucket,
-			$include_alt_names,
-			$access_control
-		) {
-			$bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use (
-				$bucket,
-				$access_control
-			) {
-				if ($bucket) {
-					$query->where('bucket_id', $bucket);
-				}
-				$query->whereIn('bible_filesets.hash_id', $access_control->keys);
+		$bibles = Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $bucket, $include_alt_names, $include_regionInfo, $access_control) {
+			$bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($bucket, $access_control, $hide_restricted) {
+				if($bucket) $query->where('bucket_id', $bucket);
+				if(!$hide_restricted) $query->whereIn('bible_filesets.hash_id', $access_control->keys);
 			}])
-			               ->when($hide_restricted, function ($q) use ($hide_restricted, $access_control) {
-				               $q->whereHas('filesets', function ($query) use ($hide_restricted, $access_control) {
-					               $query->whereIn('bible_filesets.hash_id', $access_control->keys);
-				               });
-			               })
-			               ->has('translations')->has('language')
-			               ->when($fileset_filter, function ($q) {
-				               $q->has('filesets.files');
-			               })
-			               ->when($country, function ($q) use ($country) {
-				               $q->whereHas('language.primaryCountry', function ($query) use ($country) {
-					               $query->where('country_id', $country);
-				               });
-			               })
-			               ->when($iso, function ($q) use ($iso) {
-				               $q->where('iso', $iso);
-			               })
-			               ->when($organization, function ($q) use ($organization) {
-				               $q->whereHas('organizations', function ($q) use ($organization) {
-					               $q->where('organization_id', $organization);
-				               })->get();
-			               })->when($dam_id, function ($q) use ($dam_id) {
+			->has('translations')->has('language')
+			->when($fileset_filter, function ($q) {
+			    $q->has('filesets.files');
+			})
+			->when($country, function ($q) use ($country) {
+			    $q->whereHas('country', function ($query) use ($country) {
+			        $query->where('countries.id', $country);
+			    });
+			})
+			->when($iso, function ($q) use ($iso) {
+			    $q->where('iso', $iso);
+			})
+			->when($organization, function ($q) use ($organization) {
+			    $q->whereHas('organizations', function ($q) use ($organization) {
+			        $q->where('organization_id', $organization);
+			    })->get();
+			})->when($dam_id, function ($q) use ($dam_id) {
 					$q->where('id', $dam_id);
 				})->when($media, function ($q) use ($media) {
 					switch ($media) {
-						case "video": {
-							$q->has('filesetFilm');
-							break;
-						}
-						case "audio": {
-							$q->has('filesetAudio');
-							break;
-						}
-						case "text": {
-							$q->has('filesetText');
-							break;
-						}
+						case "video": {$q->has('filesetFilm');break;}
+						case "audio": {$q->has('filesetAudio');break;}
+						case "text": {$q->has('filesetText');break;}
 					}
 				})->when($updated, function ($q) use ($updated) {
 					$q->where('updated_at', '>', $updated);
 				})->when($sort_by, function ($q) use ($sort_by, $sort_dir) {
 					$q->orderBy($sort_by, $sort_dir);
-				})
-			               ->orderBy('priority', 'desc')
-			               ->get();
+				})->orderBy('priority', 'desc')->get();
 
-			if ($include_alt_names) {
-				$bibles->load('language.translations');
-			}
+			if ($include_alt_names) $bibles->load('language.translations');
+			if ($include_regionInfo) $bibles->load('country');
 
 			if ($language) {
 				$bibles = $bibles->filter(function ($bible) use ($language, $full_word) {
@@ -203,12 +166,7 @@ class BiblesController extends APIController
 				});
 			}
 
-			if ($this->v == 2) {
-				$bibles->load('language.parent.parentLanguage', 'alphabet', 'organizations');
-			}
-			if ($this->v == "jQueryDataTable") {
-				$bibles->load('language.primaryCountry', 'alphabet', 'organizations');
-			}
+			if ($this->v == 2) $bibles->load('language.parent.parentLanguage', 'alphabet', 'organizations');
 			return fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer);
 		});
 		return $this->reply($bibles);
