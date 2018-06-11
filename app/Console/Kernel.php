@@ -17,13 +17,14 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\processDBLBundle::class,
 	    Commands\testArmor::class,
-	    Commands\fetchAlphabets::class,
-	    Commands\fetchLanguageDescriptions::class,
 	    Commands\countSophia::class,
 	    Commands\organizations_dbl_status::class,
 	    Commands\filesystem_update::class,
 	    Commands\checkIDs::class,
 	    Commands\fetch_s3_audio_length::class,
+	    Commands\fetch_fcbh_apk::class,
+	    Commands\fetchAlphabets::class,
+	    Commands\fetchLanguageDescriptions::class,
     ];
 
     /**
