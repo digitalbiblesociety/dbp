@@ -85,13 +85,9 @@ class BiblesController extends APIController
 	public function index()
 	{
 
-		if (env('APP_ENV') == 'local') {
-			ini_set('memory_limit', '864M');
-		}
+		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 		// Return the documentation if it's not an API request
-		if (!$this->api) {
-			return view('bibles.index');
-		}
+		if (!$this->api) return view('bibles.index');
 
 		$dam_id             = checkParam('dam_id|fcbh_id|bible_id', null, 'optional');
 		$media              = checkParam('media', null, 'optional');
@@ -174,14 +170,16 @@ class BiblesController extends APIController
 
 	public function archival()
     {
+        if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
         $iso               = checkParam('iso', null, 'optional');
         $organization      = checkParam('organization_id', null, 'optional');
         $country           = checkParam('country', null, 'optional');
+        $include_regionInfo = checkParam('include_region_info', null, 'optional');
 
-        $cache_string = 'bibles_archival'.$iso.$organization.$country;
+        $cache_string = 'bibles_archival'.$iso.$organization.$country.$include_regionInfo;
         Cache::forget($cache_string);
-        $bibles = Cache::remember($cache_string, 1600, function () use ($country,$organization,$iso) {
-            $bibles = Bible::with(['translatedTitles', 'language'])
+        $bibles = Cache::remember($cache_string, 1600, function () use ($iso,$organization,$country,$include_regionInfo) {
+            $bibles = Bible::with(['translatedTitles', 'language','filesets.copyrightOrganization'])
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {
                     $q->whereHas('language.primaryCountry', function ($query) use ($country) {
@@ -197,6 +195,8 @@ class BiblesController extends APIController
                     })->get();
                 })->orderBy('priority', 'desc')
                 ->get();
+
+            if ($include_regionInfo) $bibles->load('country');
 
             return fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer);
         });
