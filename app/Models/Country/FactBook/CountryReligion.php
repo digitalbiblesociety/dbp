@@ -32,7 +32,7 @@ class CountryReligion extends Model
 	 *
 	 * @OAS\Property(
      *     title="name",
-     *     description="",
+     *     description="The name of the religion that makes up part of the countries populace",
      *     type="string"
      * )
 	 *
@@ -44,7 +44,7 @@ class CountryReligion extends Model
 	 *
 	 * @OAS\Property(
      *     title="population_percentage",
-     *     description="",
+     *     description="The percentage of the countries populace that adhere to the religion being described",
      *     type="string"
      * )
 	 *
@@ -56,7 +56,7 @@ class CountryReligion extends Model
 	 *
 	 * @OAS\Property(
      *     title="date",
-     *     description="",
+     *     description="The date that this data was recorded",
      *     type="string"
      * )
 	 *
@@ -64,29 +64,5 @@ class CountryReligion extends Model
 	 * @property int $date
 	*/
 	protected $date;
-	/**
-	 *
-	 * @OAS\Property(
-     *     title="created_at",
-     *     description="",
-     *     type="string"
-     * )
-	 *
-	 * @method static CountryReligion whereCreatedAt($value)
-	 * @property \Carbon\Carbon|null $created_at
-	*/
-	protected $created_at;
-	/**
-	 *
-	 * @OAS\Property(
-     *     title="updated_at",
-     *     description="",
-     *     type="string"
-     * )
-	 *
-	 * @method static CountryReligion whereUpdatedAt($value)
-	 * @property \Carbon\Carbon|null $updated_at
-	*/
-	protected $updated_at;
 
 }
