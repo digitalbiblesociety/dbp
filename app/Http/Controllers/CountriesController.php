@@ -119,20 +119,19 @@ class CountriesController extends APIController
 	 */
 	public function joshuaProjectIndex()
 	{
-
 		$l10n = (isset($_GET['iso'])) ? $_GET['iso'] : 'eng';
-
-		return \Cache::remember("countries_jp_" . $l10n, 1600, function () use ($l10n) {
+		\Cache::forget("countries_jp_" . $l10n);
+		$joshua_project_countries = \Cache::remember("countries_jp_" . $l10n, 1600, function () use ($l10n) {
 			$language  = Language::where('iso', $l10n)->first();
 			$countries = JoshuaProject::with([
 				'translations' => function ($query) use ($language) {
 					$query->where('language_id', $language->id);
 				},
-			])->get();
+			],'country')->get();
 
-			return $this->reply(fractal()->collection($countries)->transformWith(CountryTransformer::class));
+			return fractal()->collection($countries)->transformWith(CountryTransformer::class);
 		});
-
+        return $this->reply($joshua_project_countries);
 	}
 
 	/**

@@ -62,6 +62,7 @@ Route::domain(env('API_URL'))->group(function () {
 	Route::name('v4_bible.allBooks')->get('bibles/books/',                                        'BooksController@index');
 	Route::name('v4_text_search')->get('search',                                                  'TextController@search');
 	Route::name('v4_bible.books')->get('bibles/{bible_id}/book/{book?}',                                'BiblesController@books');
+    Route::name('v4_bible.archival')->get('bibles/archival',                                      'BiblesController@archival');
 	Route::name('v4_bible.one')->get('bibles/{bible_id}',                                               'BiblesController@show');
 	Route::name('v4_bible.all')->get('bibles',                                                    'BiblesController@index');
 	Route::name('v4_timestamps')->get('timestamps',                                               'AudioController@availableTimestamps');
