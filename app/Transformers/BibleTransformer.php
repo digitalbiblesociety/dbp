@@ -157,6 +157,7 @@ class BibleTransformer extends BaseTransformer
 			 *   )
 			 * )
 			 */
+            case "v4_bible.archival":
 			case "v4_bible.all": {
 				$name = $bible->translatedTitles->where('iso','eng')->first();
 				$vname = ($bible->iso != 'eng') ? $bible->translatedTitles->where('iso',$bible->iso)->first() : false;

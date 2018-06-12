@@ -73,9 +73,7 @@ class OrganizationsController extends APIController
 	{
 		$organization = Organization::with("bibles.translations", "bibles.language", "translations", "logos",
 			"currentTranslation")->where('id', $slug)->orWhere('slug', $slug)->first();
-		if (!$organization) {
-			return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id' => $slug]));
-		}
+		if (!$organization) return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id' => $slug]));
 
 		// Handle API First
 		if ($this->api) {
@@ -94,7 +92,11 @@ class OrganizationsController extends APIController
 		return view('community.organizations.show', compact('organization'));
 	}
 
-	public function bibles(string $slug)
+    /**
+     * @param string $slug
+     * @return mixed
+     */
+    public function bibles(string $slug)
 	{
 		$organization = Organization::with('bibles')->where('slug', $slug)->first();
 

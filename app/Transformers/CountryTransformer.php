@@ -61,37 +61,6 @@ class CountryTransformer extends BaseTransformer
 		}
 	}
 
-	public function transformForDataTables($country)
-	{
-		if(is_a($country, JoshuaProject::class)) {
-			$name = (isset($country->country->translation)) ? $country->country->translation->name : $country->country->name;
-			return [
-				"<a href='/$this->iso/countries/".$country->country->id."'><svg class=\"icon\"><use xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"/img/flags.svg#".$country->country->id."\"></use></svg>".$name."</a>",
-				$country->country->continent,
-				number_format($country->population),
-				number_format($country->population_unreached),
-				"<a href='/$this->iso/languages/$country->language_official_iso'>".$country->language_official_name."</a>",
-				$country->people_groups,
-				$country->people_groups_unreached,
-				$country->joshua_project_scale,
-				$country->primary_religion,
-				$country->percent_christian,
-				$country->resistant_belt,
-				$country->percent_literate
-			];
-		}
-
-		if(!$country->hidden) {
-			return [
-				"<a href='/countries/".$country->id."'><svg class='icon'><use xmlns:xlink='http://www.w3.org/1999/xlink' xlink:href='/img/flags.svg#" .$country->id. "'></use></svg> $country->name</a>",
-				$country->continent,
-				$country->id,
-				$country->iso_a3,
-				$country->fips
-			];
-		}
-	}
-
 	public function transformForV4($country)
 	{
 		switch($this->route) {
@@ -137,6 +106,7 @@ class CountryTransformer extends BaseTransformer
 			case "v4_countries.jsp": {
 				return [
 					"id"                      => $country->country->id,
+                    "name"                    => $country->country->name,
 					"continent"               => $country->country->continent,
 					"population"              => number_format($country->population),
 					"population_unreached"    => number_format($country->population_unreached),

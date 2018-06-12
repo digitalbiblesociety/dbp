@@ -129,13 +129,8 @@ class BiblesController extends APIController
 			$include_alt_names,
 			$access_control
 		) {
-			$bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use (
-				$bucket,
-				$access_control
-			) {
-				if ($bucket) {
-					$query->where('bucket_id', $bucket);
-				}
+			$bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($bucket, $access_control) {
+				if ($bucket) $query->where('bucket_id', $bucket);
 				$query->whereIn('bible_filesets.hash_id', $access_control->keys);
 			}])
 			               ->when($hide_restricted, function ($q) use ($hide_restricted, $access_control) {
@@ -182,7 +177,8 @@ class BiblesController extends APIController
 					$q->orderBy($sort_by, $sort_dir);
 				})
 			               ->orderBy('priority', 'desc')
-			               ->get();
+			               ->toSql();
+			return $bibles;
 
 			if ($include_alt_names) {
 				$bibles->load('language.translations');
@@ -213,6 +209,37 @@ class BiblesController extends APIController
 		});
 		return $this->reply($bibles);
 	}
+
+	public function archival()
+    {
+        $iso               = checkParam('iso', null, 'optional');
+        $organization      = checkParam('organization_id', null, 'optional');
+        $country           = checkParam('country', null, 'optional');
+
+        $cache_string = 'bibles_archival'.$iso.$organization.$country;
+        Cache::forget($cache_string);
+        $bibles = Cache::remember($cache_string, 1600, function () use ($country,$organization,$iso) {
+            $bibles = Bible::with(['translatedTitles', 'language'])
+                ->has('translations')->has('language')
+                ->when($country, function ($q) use ($country) {
+                    $q->whereHas('language.primaryCountry', function ($query) use ($country) {
+                        $query->where('country_id', $country);
+                    });
+                })
+                ->when($iso, function ($q) use ($iso) {
+                    $q->where('iso', $iso);
+                })
+                ->when($organization, function ($q) use ($organization) {
+                    $q->whereHas('organizations', function ($q) use ($organization) {
+                        $q->where('organization_id', $organization);
+                    })->get();
+                })->orderBy('priority', 'desc')
+                ->get();
+
+            return fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer);
+        });
+        return $this->reply($bibles);
+    }
 
 
 	/**
