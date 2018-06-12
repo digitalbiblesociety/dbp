@@ -111,8 +111,8 @@ class BiblesController extends APIController
 		$access_control = $this->accessControl($this->key, "api");
 
 		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $full_word . '_' . $iso . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $bucket . $access_control->string;
-		Cache::forget($cache_string);
-		$bibles = Cache::remember($cache_string, 1600, function () use (
+		\Cache::forget($cache_string);
+		$bibles = \Cache::remember($cache_string, 60, function () use (
 			$dam_id,
 			$hide_restricted,
 			$media,
