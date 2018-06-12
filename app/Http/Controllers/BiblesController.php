@@ -177,8 +177,7 @@ class BiblesController extends APIController
 					$q->orderBy($sort_by, $sort_dir);
 				})
 			               ->orderBy('priority', 'desc')
-			               ->toSql();
-			return $bibles;
+			               ->get();
 
 			if ($include_alt_names) {
 				$bibles->load('language.translations');
