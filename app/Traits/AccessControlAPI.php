@@ -34,7 +34,7 @@ trait AccessControlAPI {
 				$query->where('key_id', $api_key);
 			})->get();
 
-		$access['keys'] = $accessGroups->map(function ($item, $key) use($user_location) {
+		$access['hashes'] = $accessGroups->map(function ($item, $key) use($user_location) {
 			return $item->filesets->pluck('hash_id');
 		})->unique()->flatten()->toArray();
 		$access['string'] = $accessGroups->pluck('name')->implode('_');

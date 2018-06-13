@@ -132,10 +132,7 @@ class UserNotesController extends APIController
 	public function show($user_id, $note_id)
 	{
 		if (!$this->api) {
-			if (!Auth::user()->hasRole('admin')) {
-				return $this->setStatusCode(401)->replyWithError('You must have admin class access to manage user notes');
-			}
-
+			if (!Auth::user()->hasRole('admin')) return $this->setStatusCode(401)->replyWithError('You must have admin class access to manage user notes');
 			return view('dashboard.notes.index');
 		}
 
@@ -213,7 +210,7 @@ class UserNotesController extends APIController
 			'project_id'  => $request->project_id,
 			'chapter'     => $request->chapter,
 			'verse_start' => $request->verse_start,
-			'verse_end'   => $request->verse_start,
+			'verse_end'   => $request->verse_end ?? $request->verse_start,
 			'bookmark'    => ($request->bookmark) ? 1 : 0,
 			'notes'       => isset($request->notes) ? encrypt($request->notes) : null,
 		]);

@@ -2,6 +2,7 @@
 
 namespace App\Models\Bible;
 
+use App\Models\Country\Country;
 use App\Models\Language\Alphabet;
 use App\Models\User\Access;
 use Illuminate\Database\Eloquent\Builder;
@@ -356,6 +357,11 @@ class Bible extends Model
     public function language()
     {
         return $this->hasOne(Language::class,'iso','iso')->select('name','id','country_id','iso','iso2T','iso2B','iso1','autonym');
+    }
+
+    public function country()
+    {
+    	return $this->hasManyThrough(Country::class,Language::class,'iso','id','iso','country_id');
     }
 
     /**

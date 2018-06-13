@@ -8,6 +8,7 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Book;
 use App\Models\Bible\BibleEquivalent;
 use App\Models\Language\AlphabetFont;
+use App\Traits\AccessControlAPI;
 use App\Transformers\FontsTransformer;
 use App\Transformers\TextTransformer;
 use DB;
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\Storage;
 
 class TextController extends APIController
 {
+
+	use AccessControlAPI;
 
 	/**
 	 * Display a listing of the Verses
@@ -80,22 +83,21 @@ class TextController extends APIController
 		$verse_end   = checkParam('verse_end', null, 'optional');
 		$formatted   = checkParam('bucket|bucket_id', null, 'optional');
 
+		$access_control = $this->accessControl($this->key, "api");
+
 		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->first();
 		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
+		if(!in_array($fileset->hash_id, $access_control->hashes)) return $this->setStatusCode(401)->replyWithError("Your API Key does not have access to this fileset");
 		$bible = $fileset->bible->first();
 
 		$book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
-		if (!$book) {
-			return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
-		}
+		if (!$book) return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
 		$book->push('name_vernacular', $book->translation($bible->iso)->first());
 
 		if ($formatted) {
 			$path   = 'text/' . $bible->id . '/' . $fileset->id . '/' . $book_id . $chapter . '.html';
 			$exists = Storage::disk($formatted)->exists($path);
-			if (!$exists) {
-				return $this->replyWithError("The path: $path did not result in a file");
-			}
+			if (!$exists) return $this->replyWithError("The path: $path did not result in a file");
 
 			return $this->reply(["filepath" => Bucket::signedUrl($path)]);
 		}

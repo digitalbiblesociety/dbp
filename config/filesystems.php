@@ -102,6 +102,14 @@ return [
 	        'bucket' => env('FCBH_AWS_BUCKET'),
         ],
 
+        'dbp-dev-cdn' => [
+	        'driver' => 's3',
+	        'key'    => env('DBS_AWS_KEY'),
+	        'secret' => env('DBS_AWS_SECRET'),
+	        'region' => env('DBS_AWS_REGION'),
+	        'bucket' => 'dbp-dev-cdn',
+        ],
+
         's3_fcbh_ccdn' => [
 	        'driver' => 's3',
 	        'key'    => env('FCBH_AWS_KEY'),

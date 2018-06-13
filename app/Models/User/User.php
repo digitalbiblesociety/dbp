@@ -243,6 +243,11 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 		return $this->HasMany(Note::class);
 	}
 
+	public function developer()
+	{
+		return $this->BelongsToMany(Project::class, 'project_members')->where('role','developer')->withPivot('role','subscribed');
+	}
+
 	public function projects()
 	{
 		return $this->BelongsToMany(Project::class, 'project_members')->withPivot('role','subscribed');
@@ -260,7 +265,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 		return $this->hasOne(Role::class)->where('role','admin');
 	}
 
-	public function canCreateUsers()
+	public function canAlterUsers()
 	{
 		return $this->hasOne(Role::class)->where('role','admin')->OrWhere('role','user_creator');
 	}

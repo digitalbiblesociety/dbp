@@ -51,23 +51,23 @@ Route::domain(env('API_URL'))->group(function () {
 	Route::name('v4_access_groups.update')->put('access/groups/{group_id}',          'AccessGroupController@update');
 	Route::name('v4_access_groups.destroy')->delete('access/groups/{group_id}',      'AccessGroupController@destroy');
 
-	Route::name('v4_bible_filesets.types')->get('bibles/filesets/media/types',                    'BibleFileSetsController@mediaTypes');
-	Route::name('v4_bible_filesets.podcast')->get('bibles/filesets/{fileset_id}/podcast',                 'BibleFileSetsController@podcast');
-	Route::name('v4_bible_filesets.download')->get('bibles/filesets/{fileset_id}/download',               'BibleFileSetsController@download');
-	Route::name('v4_bible_filesets.copyright')->get('bibles/filesets/{fileset_id}/copyright',             'BibleFileSetsController@copyright');
-	Route::name('v4_bible_filesets.chapter')->get('bibles/filesets/{fileset_id}/{book}/{chapter}',        'TextController@index');
-	Route::name('v4_bible_filesets.show')->get('bibles/filesets/{fileset_id?}',                           'BibleFileSetsController@show');
-	Route::name('v4_bible_filesets.update')->put('bibles/filesets/{fileset_id}',                          'BibleFileSetsController@update');
-	Route::name('v4_bible_filesets.store')->post('bibles/filesets/',                              'BibleFileSetsController@store');
-	Route::name('v4_bible.allBooks')->get('bibles/books/',                                        'BooksController@index');
-	Route::name('v4_text_search')->get('search',                                                  'TextController@search');
-	Route::name('v4_bible.books')->get('bibles/{bible_id}/book/{book?}',                                'BiblesController@books');
-    Route::name('v4_bible.archival')->get('bibles/archival',                                      'BiblesController@archival');
-	Route::name('v4_bible.one')->get('bibles/{bible_id}',                                               'BiblesController@show');
-	Route::name('v4_bible.all')->get('bibles',                                                    'BiblesController@index');
-	Route::name('v4_timestamps')->get('timestamps',                                               'AudioController@availableTimestamps');
-	Route::name('v4_timestamps.tag')->get('timestamps/{fileset_id}/{query}',                              'AudioController@timestampsByTag');
-	Route::name('v4_timestamps.verse')->get('timestamps/{fileset_id}/{book}/{chapter}',                   'AudioController@timestampsByReference');
+	Route::name('v4_bible_filesets.types')->get('bibles/filesets/media/types',                      'BibleFileSetsController@mediaTypes');
+	Route::name('v4_bible_filesets.podcast')->get('bibles/filesets/{fileset_id}/podcast',           'BibleFileSetsController@podcast');
+	Route::name('v4_bible_filesets.download')->get('bibles/filesets/{fileset_id}/download',         'BibleFileSetsController@download');
+	Route::name('v4_bible_filesets.copyright')->get('bibles/filesets/{fileset_id}/copyright',       'BibleFileSetsController@copyright');
+	Route::name('v4_bible_filesets.chapter')->get('bibles/filesets/{fileset_id}/{book}/{chapter}',  'TextController@index');
+	Route::name('v4_bible_filesets.show')->get('bibles/filesets/{fileset_id?}',                     'BibleFileSetsController@show');
+	Route::name('v4_bible_filesets.update')->put('bibles/filesets/{fileset_id}',                    'BibleFileSetsController@update');
+	Route::name('v4_bible_filesets.store')->post('bibles/filesets/',                                'BibleFileSetsController@store');
+	Route::name('v4_bible.allBooks')->get('bibles/books/',                                          'BooksController@index');
+	Route::name('v4_text_search')->get('search',                                                    'TextController@search');
+	Route::name('v4_bible.books')->get('bibles/{bible_id}/book/{book?}',                            'BiblesController@books');
+    Route::name('v4_bible.archival')->get('bibles/archival',                                        'BiblesController@archival');
+	Route::name('v4_bible.one')->get('bibles/{bible_id}',                                           'BiblesController@show');
+	Route::name('v4_bible.all')->get('bibles',                                                      'BiblesController@index');
+	Route::name('v4_timestamps')->get('timestamps',                                                 'AudioController@availableTimestamps');
+	Route::name('v4_timestamps.tag')->get('timestamps/{fileset_id}/{query}',                        'AudioController@timestampsByTag');
+	Route::name('v4_timestamps.verse')->get('timestamps/{fileset_id}/{book}/{chapter}',             'AudioController@timestampsByReference');
 
 	// VERSION 4 | WIKI
 	Route::name('v4_countries.all')->get('countries',                                     'CountriesController@index');
@@ -86,6 +86,7 @@ Route::domain(env('API_URL'))->group(function () {
 	// VERSION 4 | USERS
 	Route::name('v4_user.index')->get('users',                                            'UsersController@index');
 	Route::name('v4_user.store')->post('users',                                           'UsersController@store');
+	Route::name('v4_user.show')->get('users/{user_id}',                                   'UsersController@show');
 	Route::name('v4_user.update')->put('users/{user_id}',                                 'UsersController@update');
 	Route::name('v4_user.destroy')->delete('users/{user_id}',                             'UsersController@destroy');
 	Route::name('v4_user.login')->post('users/login',                                     'UsersController@login');

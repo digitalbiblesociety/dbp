@@ -5,12 +5,6 @@ function bookCodeConvert($code = null, $source_type = null, $destination_type = 
 	return BookCode::where('type',$destination_type)->where('book_id',$book->book_id)->first()->code;
 }
 
-function checkUser()
-{
-	$user = (isset($_GET['key'])) ? \App\Models\User\Key::where('key',$_GET['key'])->first()->user : \Auth::user();
-	return $user;
-}
-
 function checkParam($param, $v4Style = null, $optional = false)
 {
 	if(strpos($param, '|') !== false) {
@@ -104,7 +98,7 @@ function fetchBible($bible_id)
 
 function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
 {
-	$numbers = \App\Models\Language\AlphabetNumber::where('script_id',$script)->get()->keyBy('numeral')->ToArray();
+	$numbers = \App\Models\Language\AlphabetNumber::where('script_id',$script)->where('iso',$iso)->get()->keyBy('numeral')->ToArray();
 
 	// Run through the numbers and return the vernaculars
 	$current_number = $start_number;
@@ -124,6 +118,7 @@ function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
 		];
 		$current_number++;
 	}
+
 	return collect($out_numbers)->pluck('numeral_vernacular','numeral');
 }
 

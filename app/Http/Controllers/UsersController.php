@@ -8,12 +8,24 @@ use App\Models\User\User;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
-use Validator;
+use Illuminate\Support\Facades\Input;
 use Laravel\Socialite\Facades\Socialite;
+use Validator;
+use Intervention\Image\Facades\Image;
 
 class UsersController extends APIController
 {
+
+	public function __construct(Request $request)
+	{
+		parent::__construct($request);
+		$this->user = (isset($_GET['key'])) ? \App\Models\User\Key::where('key',$_GET['key'])->first()->user : \Auth::user();
+		if(isset($this->user)) {
+			$this->project_limited = ($this->user->admin or $this->user->archivist) ? false : true;
+		} else {
+			$this->project_limited = true;
+		}
+	}
 
 	/**
 	 * Returns an index of all users within the system
@@ -41,17 +53,17 @@ class UsersController extends APIController
 	 */
 	public function index()
 	{
-		$authorized_user = checkUser();
-		if (!$authorized_user) {
-			return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-		}
-		if (!$this->api) {
-			return view('dashboard.users.index');
-		}
+		$unauthorized_user = $this->unauthorizedToAlterUsers();
+		if($unauthorized_user) return $unauthorized_user;
+		if(!$this->api) return view('dashboard.users.index');
 
-		$users = User::with('organizations.currentTranslation')->get();
+		$users = User::with('organizations.currentTranslation')->when($this->project_limited, function ($q) {
+			$q->whereHas('projects', function ($query) {
+				$query->whereIn('project_members.project_id', $this->user->developer->pluck('id'));
+			});
+		})->get();
 
-		return $this->reply(fractal()->transformWith(UserTransformer::class)->collection($users));
+		return $this->reply(fractal($users,UserTransformer::class));
 	}
 
 	/**
@@ -82,24 +94,24 @@ class UsersController extends APIController
 	 */
 	public function show($id)
 	{
-		$authorized_user = checkUser();
-		if (!$authorized_user) {
-			return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-		}
-		$user = User::with('organizations.currentTranslation')->where('id', $id)->first();
-		if (!$this->api) {
-			return view('dashboard.users.show', compact('user'));
-		}
+		$unauthorized_user = $this->unauthorizedToAlterUsers();
+		if($unauthorized_user) return $unauthorized_user;
 
-		return $this->reply(fractal()->transformWith(UserTransformer::class)->collection($user));
+		$user = User::with('organizations.currentTranslation')->when($this->project_limited, function ($q) {
+			$q->whereHas('projects', function ($query) {
+				$query->whereIn('project_members.project_id', $this->user->developer->pluck('id'));
+			});
+		})->where('id', $id)->first();
+		if(!$user) return $this->replyWithError("user not found");
+
+		if(!$this->api) return view('dashboard.users.show', compact('user'));
+		return $this->reply(fractal($user, UserTransformer::class));
 	}
 
 	public function edit($id)
 	{
-		$authorized_user = checkUser();
-		if (!$authorized_user) {
-			return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-		}
+		$authorized_user = $this->unauthorizedToAlterUsers();
+		if(!$authorized_user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
 		$user = User::with('organizations.currentTranslation')->where('id', $id)->first();
 
 		return view('dashboard.users.edit', compact('user'));
@@ -107,13 +119,9 @@ class UsersController extends APIController
 
 	public function create()
 	{
-		$authorized_user = checkUser();
-		if (!$authorized_user) {
-			return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-		}
-		if (!$this->api) {
-			return view('dashboard.users.create');
-		}
+		$authorized_user = $this->unauthorizedToAlterUsers();
+		if (!$authorized_user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
+		if (!$this->api) return view('dashboard.users.create');
 	}
 
 	/**
@@ -155,16 +163,10 @@ class UsersController extends APIController
 		if (isset($request->social_provider_id)) {
 			$account = Account::where('provider_user_id', $request->social_provider_user_id)->where('provider_id',
 				$request->social_provider_id)->first();
-			if ($account) {
-				return $this->reply($account->user);
-			}
+			if ($account) return $this->reply($account->user);
 		}
 		$user = User::with('accounts')->where('email', $request->email)->first();
-		if ($user) {
-			if (Hash::check($request->password, $user->password)) {
-				return $this->reply($user);
-			}
-		}
+		if ($user) if(Hash::check($request->password, $user->password)) return $this->reply($user);
 
 		return $this->replyWithError(trans('auth.failed', [], $current_locale));
 	}
@@ -210,13 +212,8 @@ class UsersController extends APIController
 	 */
 	public function store(Request $request)
 	{
-		$user = checkUser();
-		if (!$user) {
-			return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-		}
-		if (!$user->canCreateUsers()) {
-			return $this->setStatusCode(401)->replyWithError(trans('api.user_creation_permission_failed'));
-		}
+		$unauthorized_user = $this->unauthorizedToAlterUsers();
+		if($unauthorized_user) return $unauthorized_user;
 
 		$validator = Validator::make($request->all(), [
 			'email'                   => 'required|unique:users,email|max:255|email',
@@ -296,48 +293,47 @@ class UsersController extends APIController
 	 */
 	public function update(Request $request, $id)
 	{
-		$developer = checkUser();
-		if (!$developer) {
-			return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-		}
-		if (!$developer->canCreateUsers()) {
-			return $this->setStatusCode(401)->replyWithError("You are not authorized to update users");
-		}
+		// Validate Request
+		$invalidRequest = $this->validateUserAlterationRequest($request);
+		if($invalidRequest) return $invalidRequest;
 
-		$user = User::where('id', $id)->whereHas('projects', function ($query) use ($request) {
-			$query->where('id', $request->project_id);
-		})->with([
-			'projects' => function ($query) use ($request) {
-				$query->where('id', $request->project_id);
-			},
-		])->first();
-		if (!$user) {
-			return $this->setStatusCode(404)->replyWithError("User not found");
-		}
+		// Validate User
+		$unauthorized_user = $this->unauthorizedToAlterUsers();
+		if($unauthorized_user) return $unauthorized_user;
 
-		$validator = Validator::make($request->all(), [
-			'id'    => 'exists:users',
-			'email' => 'max:255|email',
-		]);
+		// Retrieve User
+		$user = User::where('id', $id)->when($this->project_limited, function ($q) {
+			$q->whereHas('projects', function ($query) {
+				$query->whereIn('project_members.project_id', $this->user->developer->pluck('id'));
+			});
+		})->first();
+		if(!$user) return $this->setStatusCode(404)->replyWithError("User not found");
 
-		if ($validator->fails()) {
-			return $this->replyWithError($validator->errors());
-		}
+		// Fetch Data
+		$input = $request->all();
 
-		// TODO: ENABLE WRITE PERMISSIONS ON S3 BUCKET
-		// TODO: Check Symphony 4 for bugfix regarding PUT multi-type uploads: https://github.com/symfony/symfony/issues/9226
-		// if($request->hasFile('avatar')) return $request->avatar->storeAs('img/users/', $id.".".$request->avatar->extension(), 'local');
-
-		$user->fill($request->all())->save();
-
-		$user->project_role         = $user->projects->first()->pivot->role;
-		$user->project_subscription = $user->projects->first()->pivot->subscribed;
-		unset($user->projects);
-
-		if ($this->api) {
-			return $this->reply(["success" => "User updated", "user" => $user]);
+		// Process Avatar
+		if($request->hasFile('avatar')) {
+			$input['avatar'] = $request->avatar = $id.".".$request->avatar->extension();
+			$image = Image::make($request->avatar);
+			if(isset($request->avatar_crop_width) AND isset($request->avatar_crop_height)) {
+				$image->crop($request->avatar_crop_width, $request->avatar_crop_height, $request->avatar_crop_inital_x_coordinate, $request->avatar_crop_inital_y_coordinate);
+			}
+			$image->resize(300, 300);
+			if(env('APP_ENV') == 'local') {
+				\Storage::disk('local')->put($id.'.'.$request->avatar->extension(), $image->save());
+			} else {
+				\Storage::disk('dbp-dev-cdn')->put($id.'.'.$request->avatar->extension(), $image->save());
+			}
 		}
 
+		$user->fill($input)->save();
+		// $user->project_role         = $user->projects->first()->pivot->role;
+		// $user->project_subscription = $user->projects->first()->pivot->subscribed;
+		// unset($user->projects);
+
+		// Return Updated Model
+		if($this->api) return $this->reply(["success" => "User updated", "user" => $user]);
 		return view('dashboard.users.show', $id);
 	}
 
@@ -390,6 +386,29 @@ class UsersController extends APIController
 			"timezone"    => $geolocation->getAttribute("timezone"),
 			"continent"   => $geolocation->getAttribute("continent"),
 		]);
+	}
+
+	private function validateUserAlterationRequest($request)
+	{
+		$validator = Validator::make($request->all(), [
+			'id'              => 'exists:users,id',
+			'email'           => 'max:191|email',
+			'name'            => 'string|max:191',
+			'nickname'        => 'string|max:191',
+			'remember_token'  => 'max:100',
+			'verified'        => 'boolean',
+			'avatar'          => 'image',
+		]);
+
+		if ($validator->fails()) return $this->replyWithError($validator->errors());
+		return false;
+	}
+
+	private function unauthorizedToAlterUsers()
+	{
+		if(!isset($this->user)) return $this->setStatusCode(401)->replyWithError(trans('api.auth_key_validation_failed'));
+		if(!isset($this->user->canAlterUsers) AND !isset($this->user->developer)) return $this->setStatusCode(401)->replyWithError(trans('api.auth_user_validation_failed'));
+		return false;
 	}
 
 }

@@ -47,6 +47,16 @@ class UserTransformer extends BaseTransformer
 				];
 			}
 
+			case "v4_user.show": {
+				return [
+					'id'        => $user->id,
+					'name'      => $user->name,
+					'nickname'  => $user->nickname,
+					'avatar'    => $user->avatar,
+					'email'     => $user->email
+				];
+			}
+
 		}
 	}
 

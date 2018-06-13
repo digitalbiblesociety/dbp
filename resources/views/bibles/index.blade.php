@@ -8,10 +8,10 @@
     <table class="table" cellspacing="0" width="100%" data-route="bibles">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Vernacular Name</th>
-                <th>Country</th>
-                <th>Language</th>
+                <th data-column-name="name">Name</th>
+                <th data-column-name="vname">Vernacular Name</th>
+                <th data-column-name="country">Country</th>
+                <th data-column-name="language">Language</th>
             </tr>
         </thead>
         <tbody></tbody>

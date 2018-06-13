@@ -16,5 +16,5 @@ mix.js('resources/assets/js/main.js', 'public/js/app.js');
 //mix.js('resources/assets/js/swagger.js', 'public/js/swagger.js');
 
 mix.browserSync({
-    proxy: 'https://dbp.dev'
+    proxy: 'https://dbp.localhost'
 });

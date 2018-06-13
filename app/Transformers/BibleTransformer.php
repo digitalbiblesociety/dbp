@@ -157,7 +157,43 @@ class BibleTransformer extends BaseTransformer
 			 *   )
 			 * )
 			 */
-            case "v4_bible.archival":
+            case "v4_bible.archival": {
+                $name = $bible->translatedTitles->where('iso','eng')->first();
+                $vname = ($bible->iso != 'eng') ? $bible->translatedTitles->where('iso',$bible->iso)->first() : false;
+
+                $output = [
+                    "abbr"              => $bible->id,
+                    "script"            => $bible->script,
+                    "name"              => ($name) ? $name->name : null,
+                    "vname"             => ($vname) ? $vname->name : null,
+                    "language"          => @$bible->language->name ?? null,
+                    "autonym"           => @$bible->language->autonym ?? null,
+                    "iso"               => $bible->iso,
+                    "date"              => $bible->date,
+                    "organizations"     => '',
+                    "types"             => $bible->filesets->pluck('set_type_code')->unique()->implode(',')
+                ];
+                if($bible->langauge) if($bible->langauge->relationLoaded('translations')) $output['language_altNames'] = $bible->language->translations->pluck('name');
+                if($bible->relationLoaded('filesets')) {
+                    $output_organizations = [];
+                    foreach($bible->filesets as $fileset) {
+                        if($fileset->relationLoaded('copyrightOrganization')) {
+                            $output_organizations[] = $fileset->copyrightOrganization->pluck('organization_id')->implode(',');
+                        }
+                    }
+                    $output_organizations = array_flatten(array_unique($output_organizations));
+                    $output['organizations'] = $output_organizations;
+                }
+                if($bible->relationLoaded('country')) {
+                    $output['country_id'] = "";
+                    $output['continent_id'] = "";
+                    if(isset($bible->country[0])) {
+                        $output['country_id'] = $bible->country[0]->id;
+                        $output['continent_id'] = $bible->country[0]->continent;
+                    }
+                }
+                return $output;
+            }
 			case "v4_bible.all": {
 				$name = $bible->translatedTitles->where('iso','eng')->first();
 				$vname = ($bible->iso != 'eng') ? $bible->translatedTitles->where('iso',$bible->iso)->first() : false;
@@ -174,7 +210,18 @@ class BibleTransformer extends BaseTransformer
 						return [$item['bucket_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
 					})
 				];
-				if($bible->langauge) if($bible->langauge->relationLoaded('translations')) $output['language_altNames'] = $bible->language->translations->pluck('name');
+				if($bible->langauge) {
+					if($bible->langauge->relationLoaded('translations')) $output['language_altNames'] = $bible->language->translations->pluck('name');
+				}
+
+				if($bible->relationLoaded('country')) {
+					$output['country_id'] = "";
+					$output['continent_id'] = "";
+					if(isset($bible->country[0])) {
+						$output['country_id'] = $bible->country[0]->id;
+						$output['continent_id'] = $bible->country[0]->continent;
+					}
+				}
 				return $output;
 			}
 
@@ -238,23 +285,5 @@ class BibleTransformer extends BaseTransformer
 			default: return [];
 		}
 	}
-
-	public function transformForDataTables($bible)
-	{
-		$font = isset($bible->alphabet) ? (($bible->alphabet->requires_font) ? ' class="requires-font '.$bible->alphabet->script.'" data-font="'.@$bible->alphabet->primaryFont->fontFileName.'"' : '') : '';
-		return [
-			$bible->language->name ?? "",
-			'<a href="/bibles/'.$bible->id.'">'. @$bible->currentTranslation->name .'</a>',
-			'<span'.$font.'>'.@$bible->vernacularTranslation->name.'</span>' ?? "",
-			$bible->organizations->pluck('slug')->implode(','),
-			isset($bible->language) ? ((($bible->language->primaryCountry) ? '<a href="/languages/'.$bible->language->iso.'/">'.$bible->language->primaryCountry->name.'</a>' : "")) : "",
-			isset($bible->language) ? @$bible->language->primaryCountry->continent : "",
-			$bible->date,
-			$bible->id,
-			$bible->language->iso ?? "zxx",
-			$bible->filesets->pluck('set_type_code')
-		];
-	}
-
 
 }
