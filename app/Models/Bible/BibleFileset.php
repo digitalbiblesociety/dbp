@@ -116,6 +116,11 @@ class BibleFileset extends Model
 		return $this->hasOne(BibleFilesetCopyright::class,'hash_id','hash_id');
 	}
 
+	public function copyrightOrganization()
+    {
+        return $this->hasMany(BibleFilesetCopyrightOrganization::class,'hash_id','hash_id');
+    }
+
 	public function permissions()
 	{
 		return $this->HasMany(Access::class,'hash_id','hash_id');
