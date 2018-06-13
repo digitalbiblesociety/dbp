@@ -75,7 +75,7 @@ class compareV2Keys extends Command
 
     public function fetchAndCompare($route)
     {
-    	$dbp_new = json_decode(file_get_contents("https://api.dbp.dev/$route?key=3e0eed1a69fc6e012fef51b8a28cc6ff&reply=json"));
+    	$dbp_new = json_decode(file_get_contents(env('API_URL')."/$route?key=3e0eed1a69fc6e012fef51b8a28cc6ff&reply=json"));
 	    $dbp_old = json_decode(file_get_contents("https://dbt.io/library/chapter/$route?key=3e0eed1a69fc6e012fef51b8a28cc6ff&reply=json"));
 
     }
