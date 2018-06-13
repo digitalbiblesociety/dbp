@@ -20,7 +20,11 @@ class UsersController extends APIController
 	{
 		parent::__construct($request);
 		$this->user = (isset($_GET['key'])) ? \App\Models\User\Key::where('key',$_GET['key'])->first()->user : \Auth::user();
-		$this->project_limited = ($this->user->admin or $this->user->archivist) ? false : true;
+		if(isset($this->user)) {
+			$this->project_limited = ($this->user->admin or $this->user->archivist) ? false : true;
+		} else {
+			$this->project_limited = true;
+		}
 	}
 
 	/**
