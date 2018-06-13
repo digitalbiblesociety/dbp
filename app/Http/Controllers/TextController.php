@@ -212,9 +212,7 @@ class TextController extends APIController
 	public function search()
 	{
 		// If it's not an API route send them to the documentation
-		if (!$this->api) {
-			return view('docs.v2.text_search');
-		}
+		if (!$this->api) return view('docs.v2.text_search');
 
 		$query   = checkParam('query');
 		$exclude = checkParam('exclude', null, 'optional') ?? false;
@@ -277,9 +275,7 @@ class TextController extends APIController
 	public function searchGroup()
 	{
 		// If it's not an API route send them to the documentation
-		if (!$this->api) {
-			return view('docs.v2.text_search_group');
-		}
+		if (!$this->api) return view('docs.v2.text_search_group');
 
 		$query    = checkParam('query');
 		$bible_id = checkParam('dam_id|fileset_id');
@@ -289,9 +285,7 @@ class TextController extends APIController
 			$bible_id    = substr($bible_id, 0, 6);
 			$tableExists = \Schema::connection('sophia')->hasTable($bible_id . '_vpl');
 		}
-		if (!$tableExists) {
-			return $this->setStatusCode(404)->replyWithError("Table does not exist");
-		}
+		if (!$tableExists) return $this->setStatusCode(404)->replyWithError("Table does not exist");
 
 		$query  = DB::connection('sophia')->getPdo()->quote('+' . str_replace(' ', ' +', $query));
 		$verses = DB::connection('sophia')->table($bible_id . '_vpl')->select(DB::raw('MIN(verse_text) as verse_text, COUNT(verse_text) as resultsCount, book, chapter, verse_start, canon_order'))
@@ -332,12 +326,8 @@ class TextController extends APIController
 		// Fetch Bible for Book Translations
 		$bibleEquivalent = BibleEquivalent::where('equivalent_id', $bible_id)->orWhere('equivalent_id',
 			substr($bible_id, 0, 7))->first();
-		if (!isset($bibleEquivalent)) {
-			$bible = Bible::find($bible_id);
-		}
-		if (isset($bibleEquivalent) AND !isset($bible)) {
-			$bible = $bibleEquivalent->bible;
-		}
+		if (!isset($bibleEquivalent)) $bible = Bible::find($bible_id);
+		if (isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
 		if ($bible) {
 			if ($bible->script != "Latn") {
 				$vernacular_numbers[] = $verses->pluck('verse_start')->ToArray();

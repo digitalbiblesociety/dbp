@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\AccessControlAPI;
 use Validator;
 use Auth;
 use Illuminate\Http\Request;
@@ -27,6 +28,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 class BibleFileSetsController extends APIController
 {
 
+	use AccessControlAPI;
 	/**
 	 *
 	 * @OAS\Get(
@@ -56,9 +58,7 @@ class BibleFileSetsController extends APIController
 	 */
 	public function show($id = null)
 	{
-		if (!$this->api) {
-			return view('bibles.filesets.index');
-		}
+		if (!$this->api) return view('bibles.filesets.index');
 		$bible_id      = CheckParam('dam_id|fileset_id', $id);
 		$chapter_id    = CheckParam('chapter_id', null, 'optional');
 		$book_id       = CheckParam('book_id', null, 'optional');
@@ -67,19 +67,18 @@ class BibleFileSetsController extends APIController
 		$type          = checkParam('type');
 		$versification = checkParam('versification', null, 'optional');
 
-		if ($book_id) {
-			$book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
-		}
-		if (isset($book)) {
-			$book_id = $book->id;
-		}
+		$access_control = $this->accessControl($this->key, "api");
+
+		if ($book_id) $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
+		if (isset($book)) $book_id = $book->id;
 		$fileset = BibleFileset::with('bible')->where('id', $bible_id)->when($bucket_id,
 			function ($query) use ($bucket_id) {
 				return $query->where('bucket_id', $bucket_id);
 			})->where('set_type_code', $type)->first();
-		if (!$fileset) {
-			return $this->setStatusCode(404)->replyWithError("No Fileset Found in the `" . $bucket_id . "` Bucket for the provided params");
-		}
+		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Found in the `" . $bucket_id . "` Bucket for the provided params");
+
+		if(!in_array($fileset->id, $access_control->hashes)) return $this->setStatusCode(401)->replyWithError("You do not have access to this bible");
+
 		$bible         = ($fileset->bible->first()) ? $fileset->bible->first() : false;
 		$bible_path    = ($bible->id) ? $bible->id . "/" : "";
 		$versification = (!$versification) ? $bible->versification : "protestant";
