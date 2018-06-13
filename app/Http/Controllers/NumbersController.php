@@ -64,7 +64,7 @@ class NumbersController extends APIController
 		$out_numbers = [];
 
 		// Fetch Numbers By Iso Or Script Code
-		$numbers = AlphabetNumber::where('script_variant_iso', $iso)->get()->keyBy('numeral')->ToArray();
+		$numbers = AlphabetNumber::where('iso', $iso)->get()->keyBy('numeral')->ToArray();
 
 		// Run through the numbers and return the vernaculars
 		$current_number = $start;
@@ -188,7 +188,7 @@ class NumbersController extends APIController
 		foreach ($request->numerals as $input_numeral) {
 			$alphabetExists = AlphabetNumber::where([
 				['script_id', $input_numeral['script_id']],
-				['script_variant_iso', $input_numeral['script_variant_iso']],
+				['iso', $input_numeral['iso']],
 				['numeral', $input_numeral['numeral']],
 				['numeral_vernacular', $input_numeral['numeral_vernacular']],
 				['numeral_written', $input_numeral['numeral_written']],
@@ -223,6 +223,7 @@ class NumbersController extends APIController
 	{
 		$validator = Validator::make($request->all(), [
 			'script'              => ($request->method() == "POST") ? 'required|unique:alphabets,script|max:4|min:4' : 'required|exists:alphabets,script|max:4|min:4',
+			'iso'                 => 'exists:languages,iso',
 			'unicode_pdf'         => 'url|nullable',
 			'family'              => 'string|max:191|nullable',
 			'type'                => 'string|max:191|nullable',

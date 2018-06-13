@@ -267,7 +267,7 @@
           "script_id": {
             "$ref": "#/components/schemas/field_script_id"
           },
-          "script_variant_iso": {
+          "iso": {
             "$ref": "#/components/schemas/iso_code"
           },
           "numeral": {

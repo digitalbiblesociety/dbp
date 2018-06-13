@@ -29,7 +29,7 @@ class AlphabetNumber extends Model
 	    "numeral_written"
     ];
 
-	protected $columns = ['id','script_id','script_variant_iso','numeral','numeral_vernacular','numeral_written']; // add all columns from you table
+	protected $columns = ['id','script_id','iso','numeral','numeral_vernacular','numeral_written']; // add all columns from you table
 
 	public function scopeExclude($query,$value = array())
 	{
@@ -63,8 +63,8 @@ class AlphabetNumber extends Model
 	 */
     protected $script_id;
 	/**
-	 * @property string script_variant_iso
-	 * @method static Builder|AlphabetNumber whereScriptVariantIso($value)
+	 * @property string iso
+	 * @method static Builder|AlphabetNumber whereIso($value)
 	 *
 	 * @OAS\Property(
 	 *     title="Alphabet Script Variant Iso",
@@ -74,7 +74,7 @@ class AlphabetNumber extends Model
 	 * )
 	 *
 	 */
-    protected $script_variant_iso;
+    protected $iso;
 	/**
 	 * @property string numeral
 	 * @method static Builder|AlphabetNumber whereNumeral($value)
