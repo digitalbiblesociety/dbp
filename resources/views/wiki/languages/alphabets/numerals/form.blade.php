@@ -13,7 +13,7 @@
                         </div>
                     </label>
                     <label class="medium-2 columns">Alphabets <input type="text" name="numerals[{{ $key }}][script_id]" list="alphabets" value="{{ $number->script_id }}"></label>
-                    <label class="medium-2 columns">Languages <input type="text" name="numerals[{{ $key }}][script_variant_iso]" list="languages" value="{{ $number->script_variant_iso }}"></label>
+                    <label class="medium-2 columns">Languages <input type="text" name="numerals[{{ $key }}][iso]" list="languages" value="{{ $number->iso }}"></label>
                     <label class="medium-2 columns">Numeral <input type="number" name="numerals[{{ $key }}][numeral]" value="{{ $number->numeral }}"></label>
                     <label class="medium-2 columns">Vernacular Numeral <input type="text" name="numerals[{{ $key }}][numeral_vernacular]" value="{{ $number->numeral_vernacular }}"></label>
                     <label class="medium-2 columns">Written Numeral <input type="text" name="numerals[{{ $key }}][numeral_written]" value="{{ $number->numeral_written }}"></label>
@@ -28,7 +28,7 @@
                 </div>
             </label>
             <label class="medium-2 columns">Alphabets <input type="text" name="numerals[1][script_id]" list="alphabets"></label>
-            <label class="medium-2 columns">Languages <input type="text" name="numerals[1][script_variant_iso]" list="languages"></label>
+            <label class="medium-2 columns">Languages <input type="text" name="numerals[1][iso]" list="languages"></label>
             <label class="medium-2 columns">Numeral <input type="number" name="numerals[1][numeral]"></label>
             <label class="medium-2 columns">Vernacular Numeral <input type="text" name="numerals[1][numeral_vernacular]"></label>
             <label class="medium-2 columns">Written Numeral <input type="text" name="numerals[1][numeral_written]"></label>

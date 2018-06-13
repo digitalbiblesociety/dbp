@@ -137,7 +137,7 @@ class CreateLanguagesTable extends Migration
 	    	$table->increments('id');
 		    $table->char('script_id',4);
 		    $table->foreign('script_id')->references('script')->on('alphabets')->onUpdate('cascade');
-		    $table->char('script_variant_iso',3)->nullable();
+		    $table->char('iso',3)->nullable();
 		    $table->integer('numeral')->unsigned();
 			$table->string('numeral_vernacular',12);
 		    $table->string('numeral_written',24);
