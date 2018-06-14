@@ -67,7 +67,7 @@ class BibleFileSetsController extends APIController
 		$type          = checkParam('type');
 		$versification = checkParam('versification', null, 'optional');
 
-		$access_control = $this->accessControl($this->key, "api");
+
 
 		if ($book_id) $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
 		if (isset($book)) $book_id = $book->id;
@@ -77,7 +77,9 @@ class BibleFileSetsController extends APIController
 			})->where('set_type_code', $type)->first();
 		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Found in the `" . $bucket_id . "` Bucket for the provided params");
 
-		if(!in_array($fileset->id, $access_control->hashes)) return $this->setStatusCode(401)->replyWithError("You do not have access to this bible");
+		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? "download" : "api";
+		$access_control = $this->accessControl($this->key, $access_control_type);
+		if(!in_array($fileset->hash_id, $access_control->hashes)) return $this->setStatusCode(401)->replyWithError("Your API Key does not have access to this fileset");
 
 		$bible         = ($fileset->bible->first()) ? $fileset->bible->first() : false;
 		$bible_path    = ($bible->id) ? $bible->id . "/" : "";
