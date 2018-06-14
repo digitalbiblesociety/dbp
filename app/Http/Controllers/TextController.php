@@ -83,10 +83,13 @@ class TextController extends APIController
 		$verse_end   = checkParam('verse_end', null, 'optional');
 		$formatted   = checkParam('bucket|bucket_id', null, 'optional');
 
-		$access_control = $this->accessControl($this->key, "api");
+
 
 		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->first();
 		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
+
+		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? "download" : "api";
+		$access_control = $this->accessControl($this->key, $access_control_type);
 		if(!in_array($fileset->hash_id, $access_control->hashes)) return $this->setStatusCode(401)->replyWithError("Your API Key does not have access to this fileset");
 		$bible = $fileset->bible->first();
 
