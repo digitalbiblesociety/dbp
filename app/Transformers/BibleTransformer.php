@@ -160,7 +160,6 @@ class BibleTransformer extends BaseTransformer
             case "v4_bible.archival": {
                 $name = $bible->translatedTitles->where('iso','eng')->first();
                 $vname = ($bible->iso != 'eng') ? $bible->translatedTitles->where('iso',$bible->iso)->first() : false;
-
                 $output = [
                     "abbr"              => $bible->id,
                     "script"            => $bible->script,
@@ -170,6 +169,7 @@ class BibleTransformer extends BaseTransformer
                     "autonym"           => @$bible->language->autonym ?? null,
                     "iso"               => $bible->iso,
                     "date"              => $bible->date,
+	                "links_count"        => $bible->links_count,
                     "organizations"     => '',
                     "types"             => $bible->filesets->pluck('set_type_code')->unique()->implode(',')
                 ];
@@ -263,6 +263,7 @@ class BibleTransformer extends BaseTransformer
 					"vdescription"  => @$bible->vernacularTranslation->description ?? "",
 					"publishers"    => $bible->organizations->where('pivot.relationship_type','publisher')->all(),
 					"providers"     => $bible->organizations->where('pivot.relationship_type','provider')->all(),
+					"equivalents"   => $bible->equivalents,
 					"language"      => @$bible->language->name ?? "",
 					"iso"           => $bible->iso,
 					"date"          => $bible->date,

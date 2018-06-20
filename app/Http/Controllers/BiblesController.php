@@ -184,7 +184,7 @@ class BiblesController extends APIController
         $cache_string = 'bibles_archival'.$iso.$organization.$country.$include_regionInfo;
         Cache::forget($cache_string);
         $bibles = Cache::remember($cache_string, 1600, function () use ($iso,$organization,$country,$include_regionInfo) {
-            $bibles = Bible::with(['translatedTitles', 'language','filesets.copyrightOrganization'])
+            $bibles = Bible::with(['translatedTitles', 'language','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {
                     $q->whereHas('language.primaryCountry', function ($query) use ($country) {
@@ -240,9 +240,7 @@ class BiblesController extends APIController
 	 */
 	public function history()
 	{
-		if (!$this->api) {
-			return view('bibles.history');
-		}
+		if (!$this->api) return view('bibles.history');
 
 		$limit  = checkParam('limit', null, 'optional') ?? 500;
 		$bibles = Bible::select(['id', 'updated_at'])->take($limit)->get();
@@ -460,14 +458,9 @@ class BiblesController extends APIController
 	 */
 	public function show($id)
 	{
-		$bible = Bible::with('filesets.organization', 'translations', 'books.book', 'links', 'organizations.logo',
-			'organizations.logoIcon', 'alphabet.primaryFont')->find($id);
-		if (!$bible) {
-			return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id]));
-		}
-		if (!$this->api) {
-			return view('bibles.show', compact('bible'));
-		}
+		$bible = Bible::with('filesets.organization', 'translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon', 'alphabet.primaryFont','equivalents')->find($id);
+		if (!$bible) return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id]));
+		if (!$this->api) return view('bibles.show', compact('bible'));
 
 		return $this->reply(fractal()->item($bible)->serializeWith($this->serializer)->transformWith(new BibleTransformer())->toArray());
 	}
