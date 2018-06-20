@@ -182,7 +182,7 @@ class BiblesController extends APIController
         $include_regionInfo = checkParam('include_region_info', null, 'optional');
 
         $cache_string = 'bibles_archival'.$iso.$organization.$country.$include_regionInfo;
-        
+		Cache::forget($cache_string);
         $bibles = Cache::remember($cache_string, 1600, function () use ($iso,$organization,$country,$include_regionInfo) {
             $bibles = Bible::with(['translatedTitles', 'language','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
@@ -197,6 +197,8 @@ class BiblesController extends APIController
                 ->when($organization, function ($q) use ($organization) {
                     $q->whereHas('organizations', function ($q) use ($organization) {
                         $q->where('organization_id', $organization)->orWhere('slug',$organization);
+                    })->orWhereHas('links', function ($q) use ($organization) {
+	                    $q->where('provider', $organization);
                     })->get();
                 })->orderBy('priority', 'desc')
                 ->get();
