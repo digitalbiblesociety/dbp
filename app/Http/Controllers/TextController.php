@@ -85,7 +85,7 @@ class TextController extends APIController
 
 
 
-		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->first();
+		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id',substr($fileset_id,0,-4))->orWhere('id',substr($fileset_id,0,-2))->first();
 		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
 
 		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? "download" : "api";
