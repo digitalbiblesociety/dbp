@@ -237,7 +237,7 @@ class HomeController extends APIController
 
 		$libraryAsset = [
 			[
-				"server"    => $client->getEndpoint()->getHost().'/'.$bucket_id,
+				"server"    => $bucket_id.'.'.$client->getEndpoint()->getHost(),
 				"root_path" => "/audio",
 				"protocol"  => $client->getEndpoint()->getScheme(),
 				"CDN"       => "0",
