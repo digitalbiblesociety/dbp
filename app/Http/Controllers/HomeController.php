@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bible\BibleFileset;
 use App\Models\Country\Country;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Models\Bible\Bible;
 use App\Helpers\AWS\Bucket;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends APIController
 {
@@ -225,30 +227,17 @@ class HomeController extends APIController
 	public function libraryAsset()
 	{
 		$dam_id = checkParam('dam_id|fileset_id', null, 'optional') ?? "";
+		$fileset = BibleFileset::where('id',$dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2))->where('bucket_id', 'dbp-dev')->first();
+		$s3 = Storage::disk('s3_fcbh');
+		$client = $s3->getDriver()->getAdapter()->getClient();
 
 		$libraryAsset = [
 			[
-				"server"    => "cloud.faithcomesbyhearing.com",
-				"root_path" => "/mp3audiobibles2",
-				"protocol"  => "http",
-				"CDN"       => "1",
+				"server"    => $client->getEndpoint()->getHost(),
+				"root_path" => "/audio",
+				"protocol"  => $client->getEndpoint()->getScheme(),
+				"CDN"       => "0",
 				"priority"  => "5",
-				"volume_id" => $dam_id,
-			],
-			[
-				"server"    => "fcbhabdm.s3.amazonaws.com",
-				"root_path" => "/mp3audiobibles2",
-				"protocol"  => "http",
-				"CDN"       => "0",
-				"priority"  => "6",
-				"volume_id" => $dam_id,
-			],
-			[
-				"server"    => "cdn.faithcomesbyhearing.com",
-				"root_path" => "/cfx/st",
-				"protocol"  => "rtmp-amazon",
-				"CDN"       => "0",
-				"priority"  => "9",
 				"volume_id" => $dam_id,
 			],
 		];
