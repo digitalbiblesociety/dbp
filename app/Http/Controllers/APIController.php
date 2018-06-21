@@ -115,7 +115,7 @@ class APIController extends Controller
 						break;
 					}
 					case "3": {
-						$this->serializer = new EmbeddedArraySerializer();
+						$this->serializer = new ArraySerializer();
 						break;
 					}
 					default:
