@@ -352,7 +352,7 @@ class TextController extends APIController
 			$verse->bible_id               = $bible_id;
 			$verse->usfm_id                = $currentBook->id;
 			$verse->osis_id                = $currentBook->id_osis;
-			$verse->book_order             = @ltrim(substr($verse->canon_order, 0, 3), "0");
+			$verse->protestant_order       = $currentBook->protestant_order;
 			$verse->book_vernacular_name   = @$currentBook->name;
 			$verse->book_name              = @$currentBook->name;
 			$verse->chapter_vernacular     = isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->chapter] : $verse->chapter;
