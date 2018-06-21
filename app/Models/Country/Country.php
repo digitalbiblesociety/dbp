@@ -198,6 +198,11 @@ class Country extends Model
     	return $this->HasMany(CountryRegion::class);
     }
 
+    public function maps()
+    {
+    	return $this->hasMany(CountryMap::class);
+    }
+
     // World Factbook
 
 	public function communications()
@@ -223,10 +228,6 @@ class Country extends Model
 	public function issues()
 	{
 		return $this->hasOne(CountryIssues::class);
-	}
-	public function language()
-	{
-		return $this->hasOne(CountryLanguage::class);
 	}
 	public function people()
 	{

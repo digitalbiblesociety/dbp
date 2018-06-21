@@ -183,15 +183,11 @@ class CountriesController extends APIController
 	 */
 	public function show($id)
 	{
-		$country  = Country::with('languagesFiltered.bibles.currentTranslation', 'geography')->find($id);
+		$country  = Country::with('languagesFiltered.bibles.currentTranslation', 'geography','maps')->find($id);
 		$includes = $this->loadWorldFacts($country);
-		if (!$country) {
-			return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['l10n' => $id]));
-		}
-		if ($this->api) {
-			return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
-		}
+		if (!$country) return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['l10n' => $id]));
 
+		if ($this->api) return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
 		return view('wiki.countries.show', compact('country'));
 	}
 

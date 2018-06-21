@@ -33,6 +33,15 @@ class CreateCountriesTables extends Migration
 		    $table->timestamps();
 	    });
 
+	    Schema::create('country_maps', function (Blueprint $table) {
+		    $table->char('country_id', 2);
+		    $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
+		    $table->string('name');
+		    $table->string('thumbnail_url');
+		    $table->string('map_url');
+		    $table->timestamps();
+	    });
+
 	    Schema::create('country_people', function (Blueprint $table) {
 		    $table->char('country_id', 2);
 		    $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
