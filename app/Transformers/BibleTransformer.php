@@ -118,7 +118,7 @@ class BibleTransformer extends BaseTransformer
 					        "audio_zip_path"            => "",
 					        "font"                      => null,
 					        "arclight_language_id"      => "",
-					        "media"                     => $fileset->set_type,
+					        "media"                     => (strpos($fileset->set_type_code, 'audio') !== false) ? 'Audio' : 'Text',
 					        "media_type"                => "Drama",
 					        "delivery"                  => [
 					        	"mobile",
