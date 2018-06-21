@@ -31,10 +31,6 @@ class BibleTransformer extends BaseTransformer
 	    } elseif(isset($bible->id)) {
 		    $v2id = $bible->iso.substr($bible->id,3,3);
 	    }
-	    $v2id .= ($bible->set_size_code[0] == "N") ? "N" : "O";
-	    $v2id .= (strpos($bible->set_type_code, 'drama') !== false) ? 2 : 1;
-	    $v2id .= (strpos($bible->set_type_code, 'text') !== false) ? "ET" : "DA";
-	    $v2id = strtoupper($v2id);
 
 
     	    switch($this->route) {
@@ -81,6 +77,10 @@ class BibleTransformer extends BaseTransformer
 
 		        case "v2_library_volume": {
 		        	foreach($bible->filesets as $fileset) {
+				        $v2id .= ($fileset->set_size_code[0] == "N") ? "N" : "O";
+				        $v2id .= (strpos($fileset->set_type_code, 'drama') !== false) ? 2 : 1;
+				        $v2id .= (strpos($fileset->set_type_code, 'text') !== false) ? "ET" : "DA";
+				        $v2id = strtoupper($v2id);
 				        return [
 					        "dam_id"                    => $v2id,
 					        "fcbh_id"                   => $fileset->id,
