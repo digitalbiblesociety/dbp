@@ -227,13 +227,17 @@ class HomeController extends APIController
 	public function libraryAsset()
 	{
 		$dam_id = checkParam('dam_id|fileset_id', null, 'optional') ?? "";
-		$fileset = BibleFileset::where('id',$dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2))->where('bucket_id', 'dbp-dev')->first();
+		$bucket_id = checkParam('bucket_id', null, 'optional') ?? 'dbp-dev';
+
+		$fileset = BibleFileset::where('id',$dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2))->where('bucket_id', $bucket_id)->first();
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError("The fileset requested could not be found");
+
 		$s3 = Storage::disk('s3_fcbh');
 		$client = $s3->getDriver()->getAdapter()->getClient();
 
 		$libraryAsset = [
 			[
-				"server"    => $client->getEndpoint()->getHost(),
+				"server"    => $client->getEndpoint()->getHost().'/'.$bucket_id,
 				"root_path" => "/audio",
 				"protocol"  => $client->getEndpoint()->getScheme(),
 				"CDN"       => "0",
