@@ -26,11 +26,16 @@ class BibleTransformer extends BaseTransformer
     public function transformForV2($bible)
     {
     	// Compute v2 ID
-	    $v2id = $bible->bible->first()->iso.substr($bible->id,3,3);
+	    if(isset($bible->bible)) {
+		    $v2id = $bible->bible->first()->iso.substr($bible->first()->id,3,3);
+	    } elseif(isset($bible->id)) {
+		    $v2id = $bible->iso.substr($bible->id,3,3);
+	    }
 	    $v2id .= ($bible->set_size_code[0] == "N") ? "N" : "O";
 	    $v2id .= (strpos($bible->set_type_code, 'drama') !== false) ? 2 : 1;
 	    $v2id .= (strpos($bible->set_type_code, 'text') !== false) ? "ET" : "DA";
 	    $v2id = strtoupper($v2id);
+
 
     	    switch($this->route) {
 
@@ -77,7 +82,7 @@ class BibleTransformer extends BaseTransformer
 		        case "v2_library_volume": {
 		        	foreach($bible->filesets as $fileset) {
 				        return [
-					        "dam_id"                    => $fileset->id,
+					        "dam_id"                    => $v2id,
 					        "fcbh_id"                   => $fileset->id,
 					        "volume_name"               => @$bible->currentTranslation->name ?? "",
 					        "status"                    => "live", // for the moment these default to Live
