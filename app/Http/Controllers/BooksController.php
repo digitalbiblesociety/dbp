@@ -97,19 +97,31 @@ class BooksController extends APIController
 		if (!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
 
 		$sophiaTable = $this->checkForSophiaTable($fileset);
-		if (!is_string($sophiaTable)) {
-			return $sophiaTable;
+		if (!is_string($sophiaTable)) return $sophiaTable;
+
+		$testament = false;
+		switch (substr($id, -2, 1)) {
+			case "O": {
+				$testament = "OT";
+				break;
+			}
+			case "N": {
+				$testament = "NT";
+			}
 		}
 
-		$libraryBook = \Cache::remember('v2_library_book_' . $id . $bucket_id . $fileset, 1600,
-			function () use ($id, $bucket_id, $fileset, $sophiaTable) {
-				$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book',
-					'chapter')->distinct()->get());
-				$books         = Book::whereIn('id_usfx',
-					$booksChapters->pluck('book')->unique()->toArray())->orderBy('protestant_order')->get();
-				$bible_id      = $fileset->bible->first()->id;
+		$libraryBook = \Cache::remember('v2_library_book_' . $id . $bucket_id . $fileset . $testament, 1600,
+			function () use ($id, $bucket_id, $fileset, $testament, $sophiaTable) {
+				$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
+				$books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
+					->when($testament, function ($q) use ($testament) {
+				             $q->where('book_testament',$testament);
+					})->orderBy('protestant_order')->get();
+				
+				$bible_id = $fileset->bible->first()->id;
 				foreach ($books as $key => $book) {
 					$chapters                     = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
+					$books[$key]->source_id       = $id;
 					$books[$key]->bible_id        = $bible_id;
 					$books[$key]->chapters        = $chapters->implode(",");
 					$books[$key]->number_chapters = $chapters->count();
