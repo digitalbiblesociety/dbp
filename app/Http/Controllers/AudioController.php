@@ -62,21 +62,14 @@ class AudioController extends APIController
 		$chapter_id = CheckParam('chapter_id', null, 'optional');
 		$book_id    = CheckParam('book_id', null, 'optional');
 		$bucket_id  = CheckParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-		if ($book_id) {
-			$book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
-		}
-		if (isset($book)) {
-			$book_id = $book->id;
-		}
-		$fileset = BibleFileset::where('id', $fileset_id)->where('bucket_id', $bucket_id)->where('set_type_code',
-			'like', '%audio%')->first();
-		if (!$fileset) {
-			$fileset = BibleFileset::where('id', substr($fileset_id, 0, -4))->where('bucket_id',
-				$bucket_id)->where('set_type_code', 'like', '%audio%')->first();
-		}
-		if (!$fileset) {
-			return $this->setStatusCode(404)->replyWithError("No Audio Fileset could be found for the code: " . $fileset_id);
-		}
+		$limit = checkParam('expiration', null, 'optional') ?? 5;
+		if($this->v == "2") $limit = 240;
+		
+		if ($book_id) $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
+		if (isset($book)) $book_id = $book->id;
+		$fileset = BibleFileset::where('id', $fileset_id)->where('bucket_id', $bucket_id)->where('set_type_code', 'like', '%audio%')->first();
+		if (!$fileset) $fileset = BibleFileset::where('id', substr($fileset_id, 0, -4))->where('bucket_id', $bucket_id)->where('set_type_code', 'like', '%audio%')->first();
+		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No Audio Fileset could be found for the code: " . $fileset_id);
 
 		$audioChapters = BibleFile::with('book', 'bible')->where('hash_id', $fileset->hash_id)
 		                          ->when($chapter_id, function ($query) use ($chapter_id) {
@@ -86,7 +79,7 @@ class AudioController extends APIController
 			})->orderBy('file_name')->get();
 
 		foreach ($audioChapters as $key => $audio_chapter) {
-			$audioChapters[$key]->file_name = Bucket::signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name);
+			$audioChapters[$key]->file_name = Bucket::signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name,$bucket_id,$limit);
 		}
 
 		return $this->reply(fractal()->collection($audioChapters)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
