@@ -136,7 +136,7 @@ class BiblesController extends APIController
 			        $q->where('organization_id', $organization);
 			    })->get();
 			})->when($dam_id, function ($q) use ($dam_id) {
-					$q->where('id', $dam_id);
+					$q->where('id', $dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2));
 				})->when($media, function ($q) use ($media) {
 					switch ($media) {
 						case "video": {$q->has('filesetFilm');break;}
@@ -187,7 +187,7 @@ class BiblesController extends APIController
             $bibles = Bible::with(['translatedTitles', 'language','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {
-                    $q->whereHas('language.primaryCountry', function ($query) use ($country) {
+                    $q->whereHas('language.countries', function ($query) use ($country) {
                         $query->where('country_id', $country);
                     });
                 })
@@ -203,7 +203,7 @@ class BiblesController extends APIController
                 })->orderBy('priority', 'desc')
                 ->get();
 
-            if ($include_regionInfo) $bibles->load('country');
+	        if ($include_regionInfo) $bibles->load('country');
 
             return fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer);
         });
