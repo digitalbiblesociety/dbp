@@ -36,6 +36,7 @@ class ResourcesController extends APIController
 		}
 
 		$resources = Resource::with('translations', 'links', 'organization.translations','language')
+					->has('links')
 					->when($iso, function ($q) use ($iso) {
 						$q->where('iso', $iso);
 					})
