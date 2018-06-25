@@ -89,12 +89,12 @@ class Bible extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Language/properties/iso")
+	 * @OAS\Property(ref="#/components/schemas/Language/properties/id")
 	 *
-	 * @method static Bible whereIso($value)
-	 * @property string $iso
+	 * @method static Bible whereLanguageId($value)
+	 * @property integer $language_id
 	 */
-	protected $iso;
+	protected $language_id;
 
 	/**
 	 *
@@ -356,7 +356,7 @@ class Bible extends Model
      */
     public function language()
     {
-        return $this->hasOne(Language::class,'iso','iso')->select('name','id','country_id','iso','iso2T','iso2B','iso1','autonym');
+        return $this->hasOne(Language::class,'id','language_id')->select('name','id','country_id','iso','iso2T','iso2B','iso1','autonym');
     }
 
     public function country()
