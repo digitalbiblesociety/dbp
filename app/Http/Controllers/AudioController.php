@@ -155,11 +155,8 @@ class AudioController extends APIController
 
 		// Fetch timestamps
 		return $this->reply(BibleFileTimestamp::
-		select(['bible_file_id as verse_id', 'verse_start', 'timestamp'])
-		                                      ->where('bible_fileset_id', $id)
-		                                      ->where('chapter_start', $chapter)
-		                                      ->where('book_id',
-			                                      $book)->orderBy('chapter_start')->orderBy('verse_start')->get());
+		select(['file_id as verse_id', 'verse_start', 'timestamp'])
+		                                      ->where('file_id', $id)->orderBy('verse_start')->orderBy('verse_start')->get());
 
 		// Return API
 		return $this->reply(fractal()->collection($audioTimestamps)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
