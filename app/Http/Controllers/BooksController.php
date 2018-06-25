@@ -254,7 +254,7 @@ class BooksController extends APIController
 				               ->map(function ($chapter) use ($id, $book) {
 					               $chapter->book_id  = $book->id_osis;
 					               $chapter->bible_id = $id;
-
+					               $chapter->source_id = $id;
 					               return $chapter;
 				               });
 
