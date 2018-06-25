@@ -83,8 +83,6 @@ class TextController extends APIController
 		$verse_end   = checkParam('verse_end', null, 'optional');
 		$formatted   = checkParam('bucket|bucket_id', null, 'optional');
 
-
-
 		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id',substr($fileset_id,0,-4))->orWhere('id',substr($fileset_id,0,-2))->first();
 		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
 
@@ -169,16 +167,11 @@ class TextController extends APIController
 		$name     = checkParam('name', null, 'optional');
 		$platform = checkParam('platform', null, 'optional') ?? 'all';
 
-		if ($name) {
-			$font = AlphabetFont::where('name', $name)->first();
-		} else {
-			$font = ($id) ? AlphabetFont::find($id) : false;
-		}
-		if ($font) {
-			return $this->reply(fractal()->item($font)->transformWith(new FontsTransformer())->serializeWith($this->serializer)->toArray());
-		}
-
-		$fonts = AlphabetFont::all();
+		$fonts = AlphabetFont::when($name, function ($q) use($name) {
+			$q->where('name', $name);
+		})->when($name, function ($q) use($id) {
+			$q->where('id', $id);
+		})->get();
 
 		return $this->reply(fractal()->collection($fonts)->transformWith(new FontsTransformer())->serializeWith($this->serializer)->toArray());
 	}
