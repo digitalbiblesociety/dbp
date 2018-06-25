@@ -187,12 +187,12 @@ class LanguageTransformer extends BaseTransformer
 		 * )
 		 */
 		$return = [
-			'iso_2b'          => $language->iso2B,
-			'iso'             => $language->iso,
-			'name'            => $language->translation->name ?? $language->name,
-			'bibles'          => $language->bibles_count ?? $language->bibles->count()
+			'iso_2b' => $language->iso2B,
+			'iso'    => $language->iso,
+			'name'   => $language->translation->name ?? $language->name,
+			'bibles' => $language->bibles_count ?? $language->bibles->count()
 		];
-		if($language->relationLoaded('translations')) $return['alt_names'] = array_flatten($language->translations->pluck('name')->ToArray());
+		if($language->relationLoaded('translations')) foreach($language->translations as $translation) $return['alt_names'][$translation->translation_iso->iso][] = $translation->name;
 		if($language->bibles) $return['filesets'] = $language->bibles->pluck('filesets')->flatten()->count();
 		return $return;
 	}
