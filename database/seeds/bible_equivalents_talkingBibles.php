@@ -14,7 +14,7 @@ class bible_equivalents_talkingBibles extends Seeder
 	    $seederHelper = new SeederHelper();
 	    $bibleEquivalents = $seederHelper->csv_to_array('https://docs.google.com/spreadsheets/d/1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4/export?format=csv&id=1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4&gid=760436889');
 	    $seederHelper->seedBibleEquivalents($bibleEquivalents,'talking-bibles-international','web-app','talkingBibles');
-        //$this->fetch();
+
     }
 
     public function fetch()
@@ -22,8 +22,8 @@ class bible_equivalents_talkingBibles extends Seeder
 
         $opts = [
 			'http' => [
-				'method' => "GET",
-				'header' => "Authorization:Token token=\"5ef65c3e6aa59f9290939a0999e32d07\""
+				'method' => 'GET',
+				'header' => 'Authorization:Token token=' . env('TALKING_BIBLES_API')
 			]
         ];
         $context = stream_context_create($opts);

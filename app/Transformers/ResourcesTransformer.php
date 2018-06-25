@@ -27,35 +27,22 @@ class ResourcesTransformer extends BaseTransformer
 					'id'                => intval($resource->id),
 					'iso'               => $resource->iso,
 					'language'          => @$resource->language->name,
-					'cover'             => $resource->cover,
-					'cover_thumbnail'   => $resource->cover_thumbnail,
-					'translations'      => $resource->translations->where('tag',0)->map(function ($item, $key) {
-						$translation[$item['iso']]['title'] = $item['title'];
-						$translation[$item['iso']]['description'] = $item['description'];
-						return $translation;
-					}),
-					'tags'              => $resource->translations->where('tag',1),
-					'organization'      => [
-						'slug'              => $resource->organization->slug,
-						'primaryColor'      => $resource->organization->primaryColor,
-						'secondaryColor'    => $resource->organization->secondaryColor,
-						'translations'      => $resource->organization->translations->pluck('name','language_iso'),
-					],
-					'links' => $resource->links
+					'vname'             => @$resource->translations->where('tag',0)->where('iso',$resource->iso)->first()->title ?? '',
+					'name'              => @$resource->translations->where('tag',0)->where('iso',$this->i10n)->first()->title ?? '',
 				];
 			}
 			case "v4_resources.show": {
 				return [
-					'id'                => intval($resource->id),
-					'iso'               => $resource->iso,
-					'language'          => @$resource->language->name,
-					'cover_thumbnail'   => $resource->cover_thumbnail,
-					'translations'      => $resource->translations->where('tag',0)->map(function ($item, $key) {
-						$translation[$item['iso']]['title'] = $item['title'];
-						$translation[$item['iso']]['description'] = $item['description'];
-						return $translation;
-					}),
-					'links' => $resource->links
+					'id'                 => intval($resource->id),
+					'iso'                => $resource->iso,
+					'language'           => @$resource->language->name,
+					'cover_thumbnail'    => $resource->cover_thumbnail,
+					'vname'              => @$resource->translations->where('tag',0)->where('iso',$resource->iso)->first()->title ?? '',
+					'vname_description'  => @$resource->translations->where('tag',0)->where('iso',$resource->iso)->first()->description ?? '',
+					'name'               => @$resource->translations->where('tag',0)->where('iso',$this->i10n)->first()->title ?? '',
+					'name_description'   => @$resource->translations->where('tag',0)->where('iso',$this->i10n)->first()->description ?? '',
+					'links'              => $resource->links,
+					'organization'      => $resource->organization
 				];
 			}
 		}

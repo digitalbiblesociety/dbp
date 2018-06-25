@@ -10505,7 +10505,6 @@ $(document).ready(function () {
                             return data;
                         }
                     };
-                    // apparently returning true is how to use continue in js
                     return true;
                 }
 
@@ -10523,7 +10522,7 @@ $(document).ready(function () {
             });
 
             table.DataTable({
-                ajax: "https://api." + window.location.hostname + "/" + table.data("route") + "?key=1234&v=4" + table.data("params"),
+                ajax: "https://api." + window.location.hostname + "/" + table.data("route") + "?key=18459gba89ga94tha84bg98ba98&v=4" + table.data("params"),
                 dom: '<<"dataTables_header"lf><t>ip>',
                 fixedHeader: true,
                 order: [order, "asc"],

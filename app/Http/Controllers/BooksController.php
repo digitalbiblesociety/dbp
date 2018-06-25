@@ -100,6 +100,7 @@ class BooksController extends APIController
 		if (!is_string($sophiaTable)) return $sophiaTable;
 
 		$testament = false;
+
 		switch (substr($id, -2, 1)) {
 			case "O": {
 				$testament = "OT";

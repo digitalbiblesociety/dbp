@@ -107,8 +107,8 @@ class TextTransformer extends BaseTransformer
 			    return [
 				    "book_name"        => $text->book_name,
 				    "book_id"          => $text->osis_id,
-				    "book_order"       => "$text->protestant_order",
-				    "chapter_id"       => "$text->chapter",
+				    "book_order"       => (string) $text->protestant_order,
+				    "chapter_id"       => (string) $text->chapter,
 				    "chapter_title"    => "Chapter $text->chapter",
 				    "verse_id"         => "$text->verse_start",
 				    "verse_text"       => "$text->verse_text",

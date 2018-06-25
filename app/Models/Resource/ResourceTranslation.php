@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ResourceTranslation extends Model
 {
-    protected $hidden = ['created_at','updated_at', 'resource_id','vernacular'];
+    protected $hidden = ['created_at','updated_at', 'resource_id','vernacular','tag','iso'];
 
 	/**
 	 *
