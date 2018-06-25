@@ -51,6 +51,7 @@ class bible_equivalents_dbp extends Seeder
 
     	foreach ($filsets as $fileset) {
     		$title = 'Web App '.((strpos($fileset->set_type_code, 'audio') !== false) ? 'Audio Player' : 'Reader');
+    		if(!$fileset->bible->first()) {echo "Missing bible connection: ".$fileset->id; continue;}
     		$path = $base_path.strtolower($fileset->bible->first()->id).'/';
 
     		$alreadyExists = BibleLink::where('bible_id',$fileset->bible->first()->id)
