@@ -44,10 +44,10 @@ class AccessGroupController extends APIController
 	/**
 	 * Update the specified resource in storage.
 	 *
-	 * @OAS\Get(
-	 *     path="/access/groups/{group_id}",
+	 * @OAS\Post(
+	 *     path="/access/groups/",
 	 *     tags={"Admin"},
-	 *     summary="Update the specified Access group",
+	 *     summary="Create the specified Access group",
 	 *     description="",
 	 *     operationId="v4_access_groups.show",
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
