@@ -244,6 +244,14 @@ class HomeController extends APIController
 				"priority"  => "5",
 				"volume_id" => $dam_id,
 			],
+			[
+				"server"    => 'ccdn.bible.build',
+				"root_path" => "/audio",
+				"protocol"  => $client->getEndpoint()->getScheme(),
+				"CDN"       => "0",
+				"priority"  => "6",
+				"volume_id" => $dam_id,
+			],
 		];
 
 		return $this->reply($libraryAsset);
