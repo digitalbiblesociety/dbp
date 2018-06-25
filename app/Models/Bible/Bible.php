@@ -229,7 +229,7 @@ class Bible extends Model
     }
 	public function translatedTitles()
 	{
-		return $this->HasMany(BibleTranslation::class)->where('name','!=','')->select(['iso','name','id','bible_id']);
+		return $this->HasMany(BibleTranslation::class)->where('name','!=','');
 	}
     public function currentTranslation()
     {
@@ -348,7 +348,7 @@ class Bible extends Model
      */
     public function links()
     {
-        return $this->HasMany(BibleLink::class);
+        return $this->HasMany(BibleLink::class)->where('visible',true);
     }
 
     /**
