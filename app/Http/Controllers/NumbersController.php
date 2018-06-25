@@ -57,30 +57,26 @@ class NumbersController extends APIController
 	 */
 	public function customRange()
 	{
-		$iso   = checkParam('iso');
-		$start = checkParam('start');
-		$end   = checkParam('end');
-		if (($end - $start) > 2000) return $this->replyWithError(trans('api.numerals_range_error_maxsize', ['num' => $end]));
+		$iso    = checkParam('iso');
+		$script = checkParam('script');
+		$start  = checkParam('start');
+		$end    = checkParam('end');
+
+		if (($end - $start) > 2000) return $this->replyWithError(trans('api.numerals_range_error_maxsize',
+			['num' => $end]));
 		$out_numbers = [];
 
 		// Fetch Numbers By Iso Or Script Code
-		$numbers = AlphabetNumber::where('iso', $iso)->get()->keyBy('numeral')->ToArray();
+		$numbers = AlphabetNumber::where('script_id', $script)->where('iso', $iso)->get()->keyBy('numeral')->ToArray();
 
 		// Run through the numbers and return the vernaculars
 		$current_number = $start;
 		while ($end >= $current_number) {
 			$number_vernacular = "";
-			// If it's not supported by the system return "normal" numbers
-			if (empty($numbers)) {
-				$number_vernacular = $current_number;
-			} else {
-				foreach (str_split($current_number) as $i) {
-					$number_vernacular .= $numbers[$i]['numeral_vernacular'];
-				}
-			}
+			foreach (str_split($current_number) as $i) $number_vernacular .= $numbers[$i]['numeral_vernacular'];
 			$out_numbers[] = [
 				"numeral"            => intval($current_number),
-				"numeral_vernacular" => $number_vernacular,
+				"numeral_vernacular" => !empty($numbers) ? $number_vernacular : $current_number,
 			];
 			$current_number++;
 		}
