@@ -230,6 +230,8 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="id", in="path", required=true, description="The fileset ID", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="bucket_id", in="path", required=true, description="The bucket id", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/bucket_id")),
+	 *     @OAS\Parameter(name="type", in="path", required=true, description="The set type code", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code")),
 	 *     @OAS\Parameter(
 	 *         name="id",
 	 *         in="query",
@@ -250,12 +252,20 @@ class BibleFileSetsController extends APIController
 	 */
 	public function copyright($id)
 	{
-		$iso     = checkParam('iso', null, 'optional') ?? "eng";
-		$fileset = BibleFileset::with(['copyright.organizations.logos', 'copyright.organizations.translations' => function (
-			$query
-		) use ($iso) {
-			$query->where('language_iso', $iso);
-		}])->find($id);
+		$iso = checkParam('iso', null, 'optional') ?? "eng";
+		$type = checkParam('type', null, 'optional');
+		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? 'dbp-dev';
+
+		$fileset = BibleFileset::with(['copyright.organizations.logos', 'copyright.organizations.translations' => function ($q) use ($iso) {
+			$q->where('language_iso', $iso);
+		}])
+		->when($bucket_id, function ($q) use($bucket_id) {
+			$q->where('bucket_id', $bucket_id);
+		})
+		->when($type, function ($q) use($type) {
+			$q->where('set_type_code', $type);
+		})->where('id',$id)->first();
+
 		return $this->reply($fileset);
 	}
 
