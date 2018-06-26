@@ -3,6 +3,7 @@
 namespace App\Models\Organization;
 
 use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleLink;
 use App\Models\Language\Language;
 use App\Models\Resource\Resource;
 use App\Models\Bible\Bible;
@@ -325,6 +326,11 @@ class Organization extends Model
         return $this->belongsToMany(Bible::class,'bible_organizations');
     }
 
+	public function links()
+	{
+		return $this->HasMany(BibleLink::class,'provider','slug');
+	}
+
 	public function getBiblesCountAttribute()
 	{
 		return $this->bibles ? $this->bibles->count() : 0;
@@ -342,7 +348,7 @@ class Organization extends Model
 
     public function resources()
     {
-        return $this->HasMany(Resource::class);
+        return $this->HasMany(Resource::class, 'organization_id', 'id');
     }
 
 	public function logos()

@@ -8,12 +8,14 @@
     "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
     "prod": "npm run production",
     "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-	"speccy": "node node_modules/speccy/speccy.js lint http://dbp-docs.dev/swagger_docs.json"
+    "speccy": "node node_modules/speccy/speccy.js lint http://dbp-docs.dev/swagger_docs.json"
   },
   "devDependencies": {
     "axios": "^0.15.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-stage-2": "^6.24.1",
     "cross-env": "^3.2.3",
-    "datatables.net": "^1.10.16",
+    "datatables.net": "^1.10.19",
     "foundation-sites": "^6.4.4-rc1",
     "jquery": "^3.3.1",
     "laravel-mix": "0.*",
@@ -21,9 +23,11 @@
     "swagger-spec-validator": "^1.0.1"
   },
   "dependencies": {
-    "npm": "^5.8.0",
+    "babel-preset-es2015": "^6.24.1",
+    "npm": "^5.10.0",
     "react-transmit": "^3.2.0",
     "speccy": "github:wework/speccy",
-    "swagger-ui": "^3.12.1"
+    "swagger-ui": "^3.17.1",
+    "vue-openapi": "^0.8.0"
   }
 }

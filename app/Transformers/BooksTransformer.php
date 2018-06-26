@@ -27,7 +27,7 @@ class BooksTransformer extends BaseTransformer
 					"book_order"  => (string) $book->protestant_order,
 					"book_id"     => $book->id,
 					"book_name"   => $book->name,
-					"dam_id_root" => $book->bible_id
+					"dam_id_root" => $book->source_id
 				];
 			}
 
@@ -51,7 +51,7 @@ class BooksTransformer extends BaseTransformer
 			 */
 			case "v2_library_book": {
 				return [
-					"dam_id"             => $book->bible_id,
+					"dam_id"             => $book->source_id,
 					"book_id"            => $book->id_osis,
 					"book_name"          => $book->name,
 					"book_order"         => (string) $book->protestant_order,
@@ -62,7 +62,7 @@ class BooksTransformer extends BaseTransformer
 
 			case "v2_library_chapter": {
 				return [
-					"dam_id"           => $book->bible_id,
+					"dam_id"           => $book->source_id,
                     "book_id"          => $book->book_id,
                     "chapter_id"       => (string) $book->chapter,
                     "chapter_name"     => "Chapter " . $book->chapter,

@@ -44,7 +44,7 @@ class LanguagesController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -68,7 +68,7 @@ class LanguagesController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -79,9 +79,8 @@ class LanguagesController extends APIController
 	 */
 	public function index()
 	{
-		if (!$this->api) {
-			return view('wiki.languages.index');
-		}
+		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
+		if (!$this->api) return view('wiki.languages.index');
 
 		$country       = checkParam('country', null, 'optional');
 		$code          = checkParam('code|iso', null, 'optional');
@@ -118,38 +117,36 @@ class LanguagesController extends APIController
 			$include_alt_names
 		) {
 			$languages = Language::select(['id', 'iso2B', 'iso', 'name'])
-			                     ->when($has_bibles, function ($query) use ($has_bibles) {
-				                     return $query->has('bibles');
-			                     })
-			                     ->when($has_filesets, function ($q) use ($bucket_id) {
-				                     $q->whereHas('bibles.filesets', function ($query) use ($bucket_id) {
-					                     if ($bucket_id) {
-						                     $query->where('bucket_id', $bucket_id);
-					                     }
-				                     })->with('bibles.filesets');
-			                     },
-				                     // if has_filesets is set to false
-				                     function ($q) {
-					                     $q->withCount('bibles');
-				                     })->when($country, function ($query) use ($country) {
-					return $query->where('country_id', $country);
-				})->when($code, function ($query) use ($code) {
-					return $query->where('iso', $code);
-				})->when($include_alt_names, function ($query) use ($has_bibles) {
-					return $query->with('translations');
-				})->when($language_name_portion, function ($query) use ($language_name_portion) {
-					return $query->whereHas('translations', function ($query) use ($language_name_portion) {
-						$query->where('name', $language_name_portion);
-					})->orWhere('name', $language_name_portion);
-				})->when($sort_by, function ($query) use ($sort_by) {
-					return $query->orderBy($sort_by);
-				})->get();
+			->when($has_bibles, function ($query) use ($has_bibles) {
+			    return $query->has('bibles');
+			})
+			->when($has_filesets, function ($q) use ($bucket_id) {
+			        $q->whereHas('bibles.filesets', function ($query) use ($bucket_id) {
+			            if ($bucket_id) {
+			                $query->where('bucket_id', $bucket_id);
+			            }
+			        })->with('bibles.filesets');
+				}, // if has_filesets is set to false
+			    function ($q) { $q->withCount('bibles');
+			})->when($country, function ($query) use ($country) {
+				return $query->where('country_id', $country);
+			})->when($code, function ($query) use ($code) {
+				return $query->where('iso', $code);
+			})->when($include_alt_names, function ($query) use ($has_bibles) {
+				return $query->with('translations.translation_iso');
+			})->when($language_name_portion, function ($query) use ($language_name_portion) {
+				return $query->whereHas('translations', function ($query) use ($language_name_portion) {
+					$query->where('name', $language_name_portion);
+				})->orWhere('name', $language_name_portion);
+			})->when($sort_by, function ($query) use ($sort_by) {
+				return $query->orderBy($sort_by);
+			})->get();
 
 			if ($l10n) {
 				if (!$include_alt_names) {
 					$languages->load([
 						'translation' => function ($query) use ($l10n_language) {
-							$query->where('language_translation', $l10n_language->id);
+							$query->where('language_translation_id', $l10n_language->id);
 						},
 					]);
 				}
@@ -265,7 +262,7 @@ class LanguagesController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -325,7 +322,7 @@ class LanguagesController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="lang_code",in="query",description="Get records by ISO language code", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
 	 *     @OAS\Parameter(name="country_code",in="query",description="Get records by ISO country code", @OAS\Schema(ref="#/components/schemas/Country/properties/id")),
 	 *     @OAS\Parameter(name="additional",in="query",description="Get colon separated list of optional countries", @OAS\Schema(type="integer",enum={0,1},default=0)),
@@ -411,7 +408,7 @@ class LanguagesController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\RequestBody(required=true, description="Fields for User Highlight Creation", @OAS\MediaType(mediaType="application/json",
 	 *          @OAS\Schema(ref="#/components/schemas/Language")
 	 *     )),

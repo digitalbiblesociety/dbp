@@ -141,27 +141,12 @@ Primary style
     span {
       color: shade($color-3, 35%);
     }
-
-    &:hover::before {
-      background-color: $color-1;
-    }
   }
 
-  .gallery li:nth-of-type(1) .icon {
-    background: #f4e58a no-repeat 0 0;
-  }
-
-  .gallery li:nth-of-type(2) .icon {
-    background: #F4AF6D no-repeat -54px 0;
-  }
-
-  .gallery li:nth-of-type(3) .icon {
-    background: #DB6356 no-repeat -108px 0;
-  }
-
-  .gallery li:nth-of-type(4) .icon {
-    background: #8D4645 no-repeat -162px 0;
-  }
+  .gallery li:nth-of-type(1) .icon {background: #f4e58a no-repeat 0 0}
+  .gallery li:nth-of-type(2) .icon {background: #F4AF6D no-repeat -54px 0}
+  .gallery li:nth-of-type(3) .icon {background: #DB6356 no-repeat -108px 0}
+  .gallery li:nth-of-type(4) .icon {background: #8D4645 no-repeat -162px 0}
 
   .links .content > ul > li {
     margin-top: 1em;
@@ -191,7 +176,6 @@ Primary style
     width: 100%;
     padding: 0;
     text-align: center;
-    background-color: #222;
 
     &::before {
       content: 'desktop';

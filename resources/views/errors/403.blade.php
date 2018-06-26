@@ -41,7 +41,7 @@
 
     @include('layouts.partials.banner', [
         'banner_class'  => 'error-401',
-        'title'         =>  $message,
+        'title'         =>  $message ?? '401 Error',
         'image'         => '/img/banners/sword.png',
         'image_class'   => 'error-401-image'
     ])

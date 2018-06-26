@@ -179,7 +179,7 @@ class BibleTranslation extends Model
 
     public function language()
     {
-        return $this->belongsTo(Language::class,'iso','iso');
+        return $this->belongsTo(Language::class);
     }
 
 }

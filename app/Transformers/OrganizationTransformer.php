@@ -74,30 +74,66 @@ class OrganizationTransformer extends BaseTransformer
 	 * @return array
 	 */
 	public function transformForV4(Organization $organization) {
-		return [
-			"id"             => $organization->id,
-			"name"           => $organization->name,
-			"description"    => $organization->description,
-            "slug"           => $organization->slug,
-			"logos"          => $organization->logos,
-            "abbreviation"   => $organization->abbreviation,
-            "notes"          => $organization->notes,
-            "primaryColor"   => $organization->primaryColor,
-            "secondaryColor" => $organization->secondaryColor,
-            "inactive"       => $organization->inactive,
-            "url_facebook"   => $organization->url_facebook,
-            "url_website"    => $organization->url_website,
-            "url_donate"     => $organization->url_donate,
-            "url_twitter"    => $organization->url_twitter,
-            "address"        => $organization->address,
-            "address2"       => $organization->address2,
-            "city"           => $organization->city,
-            "state"          => $organization->state,
-            "country"        => $organization->country,
-            "zip"            => $organization->zip,
-            "phone"          => $organization->phone,
-            "email"          => $organization->email
-		];
+
+		switch($this->route) {
+			case "v4_organizations.one": {
+				return [
+					"id"             => $organization->id,
+					"name"           => $organization->name,
+					"description"    => $organization->description,
+					"slug"           => $organization->slug,
+					"bibles"         => $organization->bibles,
+					"resources"      => $organization->resources,
+					"logos"          => $organization->logos,
+					"abbreviation"   => $organization->abbreviation,
+					"notes"          => $organization->notes,
+					"primaryColor"   => $organization->primaryColor,
+					"secondaryColor" => $organization->secondaryColor,
+					"inactive"       => $organization->inactive,
+					"url_facebook"   => $organization->url_facebook,
+					"url_website"    => $organization->url_website,
+					"url_donate"     => $organization->url_donate,
+					"url_twitter"    => $organization->url_twitter,
+					"address"        => $organization->address,
+					"address2"       => $organization->address2,
+					"city"           => $organization->city,
+					"state"          => $organization->state,
+					"country"        => $organization->country,
+					"zip"            => $organization->zip,
+					"phone"          => $organization->phone,
+					"email"          => $organization->email
+				];
+			}
+
+			default:
+			case "v4_organizations.all": {
+				return [
+					"id"             => $organization->id,
+					"name"           => $organization->name,
+					"description"    => $organization->description,
+					"slug"           => $organization->slug,
+					"logos"          => $organization->logos,
+					"abbreviation"   => $organization->abbreviation,
+					"notes"          => $organization->notes,
+					"primaryColor"   => $organization->primaryColor,
+					"secondaryColor" => $organization->secondaryColor,
+					"inactive"       => $organization->inactive,
+					"url_facebook"   => $organization->url_facebook,
+					"url_website"    => $organization->url_website,
+					"url_donate"     => $organization->url_donate,
+					"url_twitter"    => $organization->url_twitter,
+					"address"        => $organization->address,
+					"address2"       => $organization->address2,
+					"city"           => $organization->city,
+					"state"          => $organization->state,
+					"country"        => $organization->country,
+					"zip"            => $organization->zip,
+					"phone"          => $organization->phone,
+					"email"          => $organization->email
+				];
+			}
+
+		}
 	}
 
 }

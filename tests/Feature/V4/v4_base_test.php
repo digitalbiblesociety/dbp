@@ -4,7 +4,7 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
-abstract class v4_BaseTest extends BaseTestCase
+abstract class v4_base_test extends BaseTestCase
 {
 	use CreatesApplication;
 

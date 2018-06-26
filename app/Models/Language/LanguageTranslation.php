@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class LanguageTranslation extends Model
 {
-    protected $hidden = ["language_source","created_at","updated_at","priority","description","id"];
+    protected $hidden = ["language_source_id","created_at","updated_at","priority","description","id"];
     protected $table = 'language_translations';
 
 	/**
@@ -38,29 +38,29 @@ class LanguageTranslation extends Model
 	/**
 	 *
 	 * @OAS\Property(
-	 *   title="language_source",
+	 *   title="language_source_id",
 	 *   type="integer",
 	 *   description="The incrementing id of the language_source",
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static LanguageTranslation whereLanguageSource($value)
-	 * @property int $language_source
+	 * @method static LanguageTranslation whereLanguageSourceId($value)
+	 * @property int $language_source_id
 	 */
-    protected $language_source;
+    protected $language_source_id;
 	/**
 	 *
 	 * @OAS\Property(
-	 *   title="language_translation",
+	 *   title="language_translation_id",
 	 *   type="integer",
 	 *   description="The incrementing id of the language_translation",
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static LanguageTranslation whereLanguageTranslation($value)
-	 * @property int $language_translation
+	 * @method static LanguageTranslation whereLanguageTranslationId($value)
+	 * @property int $language_translation_id
 	 */
-    protected $language_translation;
+    protected $language_translation_id;
 	/**
 	 *
 	 * @OAS\Property(
@@ -150,6 +150,11 @@ class LanguageTranslation extends Model
             return $translation->name;
         }
         return NULL;
+    }
+
+    public function translation_iso()
+    {
+    	return $this->BelongsTo(Language::class,'language_translation_id','id')->select(['iso','id']);
     }
 
 

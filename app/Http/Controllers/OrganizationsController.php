@@ -71,20 +71,16 @@ class OrganizationsController extends APIController
 	 */
 	public function show($slug)
 	{
-		$organization = Organization::with("bibles.translations", "bibles.language", "translations", "logos",
-			"currentTranslation")->where('id', $slug)->orWhere('slug', $slug)->first();
+		$organization = Organization::with('bibles.translations','bibles.language','links','translations','logos','currentTranslation','resources')->where('id', $slug)->orWhere('slug', $slug)->first();
 		if (!$organization) return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id' => $slug]));
 
 		// Handle API First
-		if ($this->api) {
-			return $this->reply(fractal()->item($organization)->serializeWith($this->serializer)->transformWith(new OrganizationTransformer()));
-		}
+		if ($this->api) return $this->reply(fractal()->item($organization)->serializeWith($this->serializer)->transformWith(new OrganizationTransformer()));
 
 		// Than Try Admin
 		$user = \Auth::user();
 		if ($user) {
 			$organization->load('filesets.bible.currentTranslation');
-
 			return view('dashboard.organizations.show', compact('user', 'organization'));
 		}
 

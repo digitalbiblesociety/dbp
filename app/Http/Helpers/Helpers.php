@@ -88,6 +88,11 @@ function fetchRandomBibleID() {
 	return substr($bible,0,-4);
 }
 
+function fetchRandomFilesetID()
+{
+	return \App\Models\Bible\BibleFileset::random(1)->first()->id;
+}
+
 function fetchBible($bible_id)
 {
 	$bibleEquivalent = \App\Models\Bible\BibleEquivalent::where('equivalent_id',$bible_id)->orWhere('equivalent_id',substr($bible_id,0,7))->first();

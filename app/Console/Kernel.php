@@ -23,8 +23,11 @@ class Kernel extends ConsoleKernel
 	    Commands\checkIDs::class,
 	    Commands\fetch_s3_audio_length::class,
 	    Commands\fetch_fcbh_apk::class,
+	    Commands\fetch_beblia_bible::class,
 	    Commands\fetchAlphabets::class,
 	    Commands\fetchLanguageDescriptions::class,
+	    Commands\generate_worldFactbook::class,
+	    Commands\compare_ebible::class,
     ];
 
     /**

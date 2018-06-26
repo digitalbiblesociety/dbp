@@ -26,15 +26,23 @@ class ResourcesController extends APIController
 		if (!$this->api) {
 			return view('resources.index');
 		}
-		$iso             = checkParam('iso');
+		$iso             = checkParam('iso', null, 'optional');
 		$limit           = checkParam('limit', null, 'optional') ?? 25;
-		$organization_id = checkParam('organization_id', null, 'optional');
+		$organization    = checkParam('organization_id', null, 'optional');
 
-		$resources = Resource::with('translations', 'links', 'organization.translations')
-		                     ->where('iso', $iso)
-		                     ->when($organization_id, function ($q) use ($organization_id) {
-			                     $q->where('organization_id', $organization_id);
-		                     })->get();
+		if(isset($organization)) {
+			$organization = Organization::where('id',$organization)->orWhere('slug',$organization)->first();
+			if(!$organization) return $this->setStatusCode(404)->replyWithError("organization not found");
+		}
+
+		$resources = Resource::with('translations', 'links', 'organization.translations','language')
+					->has('links')
+					->when($iso, function ($q) use ($iso) {
+						$q->where('iso', $iso);
+					})
+		            ->when($organization, function ($q) use ($organization) {
+			            $q->where('organization_id', $organization->id);
+		            })->get();
 
 		return $this->reply(fractal()->collection($resources)->transformWith(new ResourcesTransformer())->serializeWith(new DataArraySerializer()));
 
@@ -76,7 +84,7 @@ class ResourcesController extends APIController
 		}
 		$resource = Resource::with('translations', 'links', 'organization.translations')->find($id);
 
-		return $this->reply($resource);
+		return $this->reply(fractal()->item($resource)->transformWith(new ResourcesTransformer()));
 	}
 
 	/**

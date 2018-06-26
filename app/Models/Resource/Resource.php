@@ -2,6 +2,7 @@
 
 namespace App\Models\Resource;
 
+use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\Model;
 
@@ -157,6 +158,11 @@ class Resource extends Model
 	 *
 	 */
 	protected $updated_at;
+
+	public function language()
+	{
+		return $this->HasOne(Language::class,'iso','iso');
+	}
 
     public function links()
     {

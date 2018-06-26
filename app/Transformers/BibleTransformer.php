@@ -25,12 +25,14 @@ class BibleTransformer extends BaseTransformer
 
     public function transformForV2($bible)
     {
+
     	// Compute v2 ID
-	    $v2id = $bible->bible->first()->iso.substr($bible->id,3,3);
-	    $v2id .= ($bible->set_size_code[0] == "N") ? "N" : "O";
-	    $v2id .= (strpos($bible->set_type_code, 'drama') !== false) ? 2 : 1;
-	    $v2id .= (strpos($bible->set_type_code, 'text') !== false) ? "ET" : "DA";
-	    $v2id = strtoupper($v2id);
+	    if(isset($bible->bible)) {
+		    $v2id = $bible->bible->first()->iso.substr($bible->first()->id,3,3);
+	    } elseif(isset($bible->id)) {
+		    $v2id = $bible->iso.substr($bible->id,3,3);
+	    }
+
 
     	    switch($this->route) {
 
@@ -76,8 +78,12 @@ class BibleTransformer extends BaseTransformer
 
 		        case "v2_library_volume": {
 		        	foreach($bible->filesets as $fileset) {
+				        $v2id .= ($fileset->set_size_code[0] == "N") ? "N" : "O";
+				        $v2id .= (strpos($fileset->set_type_code, 'drama') !== false) ? 2 : 1;
+				        $v2id .= (strpos($fileset->set_type_code, 'text') !== false) ? "ET" : "DA";
+				        $v2id = strtoupper($v2id);
 				        return [
-					        "dam_id"                    => $fileset->id,
+					        "dam_id"                    => $v2id,
 					        "fcbh_id"                   => $fileset->id,
 					        "volume_name"               => @$bible->currentTranslation->name ?? "",
 					        "status"                    => "live", // for the moment these default to Live
@@ -113,7 +119,7 @@ class BibleTransformer extends BaseTransformer
 					        "audio_zip_path"            => "",
 					        "font"                      => null,
 					        "arclight_language_id"      => "",
-					        "media"                     => $fileset->set_type,
+					        "media"                     => (strpos($fileset->set_type_code, 'audio') !== false) ? 'Audio' : 'Text',
 					        "media_type"                => "Drama",
 					        "delivery"                  => [
 					        	"mobile",
@@ -160,7 +166,6 @@ class BibleTransformer extends BaseTransformer
             case "v4_bible.archival": {
                 $name = $bible->translatedTitles->where('iso','eng')->first();
                 $vname = ($bible->iso != 'eng') ? $bible->translatedTitles->where('iso',$bible->iso)->first() : false;
-
                 $output = [
                     "abbr"              => $bible->id,
                     "script"            => $bible->script,
@@ -170,6 +175,7 @@ class BibleTransformer extends BaseTransformer
                     "autonym"           => @$bible->language->autonym ?? null,
                     "iso"               => $bible->iso,
                     "date"              => $bible->date,
+	                "links_count"        => $bible->links_count,
                     "organizations"     => '',
                     "types"             => $bible->filesets->pluck('set_type_code')->unique()->implode(',')
                 ];
@@ -263,6 +269,7 @@ class BibleTransformer extends BaseTransformer
 					"vdescription"  => @$bible->vernacularTranslation->description ?? "",
 					"publishers"    => $bible->organizations->where('pivot.relationship_type','publisher')->all(),
 					"providers"     => $bible->organizations->where('pivot.relationship_type','provider')->all(),
+					"equivalents"   => $bible->equivalents,
 					"language"      => @$bible->language->name ?? "",
 					"iso"           => $bible->iso,
 					"date"          => $bible->date,

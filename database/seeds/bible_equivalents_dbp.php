@@ -3,6 +3,9 @@
 use Illuminate\Database\Seeder;
 use database\seeds\SeederHelper;
 use App\Models\Bible\BibleEquivalent;
+
+use App\Models\Bible\BibleLink;
+
 class bible_equivalents_dbp extends Seeder
 {
     /**
@@ -12,6 +15,7 @@ class bible_equivalents_dbp extends Seeder
      */
     public function run()
     {
+    	/*
 		BibleEquivalent::where('site','bible.is')->delete();
 	    $sheet_id = '1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4';
 	    $gid = '1765248815';
@@ -37,7 +41,33 @@ class bible_equivalents_dbp extends Seeder
 			    }
 		    }
 	    }
+		*/
 
+    	BibleLink::where('url','like', '%is.bible%')->delete();
+    	$filsets = \App\Models\Bible\BibleFileset::with('bible')->where('bucket_id','dbp-dev')->where('hidden',0)->get();
+    	$base_path = "https://is.bible.build/";
+
+    	$organization = \App\Models\Organization\Organization::where('slug','faith-comes-by-hearing')->first();
+
+    	foreach ($filsets as $fileset) {
+    		$title = 'Web App '.((strpos($fileset->set_type_code, 'audio') !== false) ? 'Audio Player' : 'Reader');
+    		if(!$fileset->bible->first()) {echo "Missing bible connection: ".$fileset->id;  continue;}
+    		$path = $base_path.strtolower($fileset->bible->first()->id).'/';
+
+    		$alreadyExists = BibleLink::where('bible_id',$fileset->bible->first()->id)
+			                                ->where('url',$path)
+		                                    ->where('title',$title)->first();
+    		if($alreadyExists) {continue;}
+
+    		BibleLink::create([
+    			'bible_id'        => $fileset->bible->first()->id,
+    			'url'             => $path,
+			    'type'            => (strpos($fileset->set_type_code, 'audio') !== false) ? 'Audio' : 'WEB',
+			    'provider'        => 'Faith Comes By Hearing',
+		        'title'           => $title,
+			    'organization_id' => $organization->id
+		    ]);
+	    }
 
 
     }

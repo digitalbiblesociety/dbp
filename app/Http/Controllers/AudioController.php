@@ -39,7 +39,7 @@ class AudioController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="id", in="path", description="The DAM ID for which to retrieve file path info.", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="dam_id", in="query", description="The DAM ID for which to retrieve file path info.", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="chapter_id", in="query", description="The id for the specified chapter. If chapter is specified only the specified chapter audio information is returned to the caller.", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
@@ -62,21 +62,14 @@ class AudioController extends APIController
 		$chapter_id = CheckParam('chapter_id', null, 'optional');
 		$book_id    = CheckParam('book_id', null, 'optional');
 		$bucket_id  = CheckParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-		if ($book_id) {
-			$book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
-		}
-		if (isset($book)) {
-			$book_id = $book->id;
-		}
-		$fileset = BibleFileset::where('id', $fileset_id)->where('bucket_id', $bucket_id)->where('set_type_code',
-			'like', '%audio%')->first();
-		if (!$fileset) {
-			$fileset = BibleFileset::where('id', substr($fileset_id, 0, -4))->where('bucket_id',
-				$bucket_id)->where('set_type_code', 'like', '%audio%')->first();
-		}
-		if (!$fileset) {
-			return $this->setStatusCode(404)->replyWithError("No Audio Fileset could be found for the code: " . $fileset_id);
-		}
+		$limit = checkParam('expiration', null, 'optional') ?? 5;
+		if($this->v == "2") $limit = 240;
+		
+		if ($book_id) $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
+		if (isset($book)) $book_id = $book->id;
+		$fileset = BibleFileset::where('id', $fileset_id)->where('bucket_id', $bucket_id)->where('set_type_code', 'like', '%audio%')->first();
+		if (!$fileset) $fileset = BibleFileset::where('id', substr($fileset_id, 0, -4))->where('bucket_id', $bucket_id)->where('set_type_code', 'like', '%audio%')->first();
+		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No Audio Fileset could be found for the code: " . $fileset_id);
 
 		$audioChapters = BibleFile::with('book', 'bible')->where('hash_id', $fileset->hash_id)
 		                          ->when($chapter_id, function ($query) use ($chapter_id) {
@@ -86,7 +79,7 @@ class AudioController extends APIController
 			})->orderBy('file_name')->get();
 
 		foreach ($audioChapters as $key => $audio_chapter) {
-			$audioChapters[$key]->file_name = Bucket::signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name);
+			$audioChapters[$key]->file_name = Bucket::signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name,$bucket_id,$limit);
 		}
 
 		return $this->reply(fractal()->collection($audioChapters)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
@@ -104,7 +97,7 @@ class AudioController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -133,7 +126,7 @@ class AudioController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="fileset_id", in="query", description="The specific fileset to return references for", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="book", in="query", description="The Book ID for which to return timestamps", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OAS\Parameter(name="chapter", in="query", description="The chapter for which to return timestamps", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
@@ -161,13 +154,8 @@ class AudioController extends APIController
 		$chapter = CheckParam('chapter', $chapter);
 
 		// Fetch timestamps
-		return $this->reply(BibleFileTimestamp::
-		select(['bible_file_id as verse_id', 'verse_start', 'timestamp'])
-		                                      ->where('bible_fileset_id', $id)
-		                                      ->where('chapter_start', $chapter)
-		                                      ->where('book_id',
-			                                      $book)->orderBy('chapter_start')->orderBy('verse_start')->get());
-
+		$audioTimestamps = BibleFileTimestamp::select(['file_id as verse_id', 'verse_start', 'timestamp'])
+		                                     ->where('file_id', $id)->orderBy('verse_start')->get();
 		// Return API
 		return $this->reply(fractal()->collection($audioTimestamps)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
 	}
@@ -185,7 +173,7 @@ class AudioController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="id", in="path", required=true, description="The specific fileset to return references for", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="query", in="query", required=true, description="The tag for which to return timestamps", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OAS\Response(
@@ -241,7 +229,7 @@ class AudioController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="fileset_id", in="query", description="The specific fileset to return references for", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="book", in="query", description="The Book ID for which to return timestamps", @OAS\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OAS\Parameter(name="chapter", in="query", description="The chapter for which to return timestamps", @OAS\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),

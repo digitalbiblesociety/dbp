@@ -92,7 +92,7 @@ class CountriesController extends APIController
 							if ($include_languages == "with_titles") {
 								$query->with([
 									'translation' => function ($query) use ($language) {
-										$query->where('language_translation', $language->id);
+										$query->where('language_translation_id', $language->id);
 									},
 								]);
 							}
@@ -152,7 +152,7 @@ class CountriesController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="id", in="path", description="The country ID", required=true, @OAS\Schema(ref="#/components/schemas/Country/properties/id")),
 	 *     @OAS\Parameter(name="communications", in="query", description="", @OAS\Schema(ref="#/components/schemas/CountryCommunication")),
 	 *     @OAS\Parameter(name="economy", in="query", description="",        @OAS\Schema(ref="#/components/schemas/CountryEconomy")),
@@ -183,15 +183,11 @@ class CountriesController extends APIController
 	 */
 	public function show($id)
 	{
-		$country  = Country::with('languagesFiltered.bibles.currentTranslation', 'geography')->find($id);
+		$country  = Country::with('languagesFiltered.bibles.currentTranslation', 'geography','maps')->find($id);
 		$includes = $this->loadWorldFacts($country);
-		if (!$country) {
-			return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['l10n' => $id]));
-		}
-		if ($this->api) {
-			return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
-		}
+		if (!$country) return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['l10n' => $id]));
 
+		if ($this->api) return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
 		return view('wiki.countries.show', compact('country'));
 	}
 
@@ -229,7 +225,7 @@ class CountriesController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\RequestBody(required=true, description="Information supplied for Country creation", @OAS\MediaType(mediaType="application/json",
 	 *          @OAS\Schema(ref="#/components/schemas/Country")
 	 *     )),

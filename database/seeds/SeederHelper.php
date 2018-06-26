@@ -157,4 +157,20 @@ class SeederHelper
 		return collect($data);
 	}
 
+
+	function remote_filesize($url, $fallback_to_download = true)
+	{
+		static $regex = '/^Content-Length: *+\K\d++$/im';
+		if (!$fp = @fopen($url, 'rb')) {
+			return false;
+		}
+		if (isset($http_response_header) && preg_match($regex, implode("\n", $http_response_header), $matches)) {
+			return (int)$matches[0];
+		}
+		if (!$fallback_to_download) {
+			return false;
+		}
+		return strlen(stream_get_contents($fp));
+	}
+
 }

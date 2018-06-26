@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\AccessControlAPI;
 use Validator;
 use Auth;
 use Illuminate\Http\Request;
@@ -27,6 +28,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 class BibleFileSetsController extends APIController
 {
 
+	use AccessControlAPI;
 	/**
 	 *
 	 * @OAS\Get(
@@ -38,7 +40,7 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="id", in="path", description="The fileset ID", required=true, @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(name="versification", in="path", description="The versification system", @OAS\Schema(ref="#/components/schemas/Bible/properties/versification")),
 	 *     @OAS\Response(
@@ -56,9 +58,7 @@ class BibleFileSetsController extends APIController
 	 */
 	public function show($id = null)
 	{
-		if (!$this->api) {
-			return view('bibles.filesets.index');
-		}
+		if (!$this->api) return view('bibles.filesets.index');
 		$bible_id      = CheckParam('dam_id|fileset_id', $id);
 		$chapter_id    = CheckParam('chapter_id', null, 'optional');
 		$book_id       = CheckParam('book_id', null, 'optional');
@@ -67,19 +67,20 @@ class BibleFileSetsController extends APIController
 		$type          = checkParam('type');
 		$versification = checkParam('versification', null, 'optional');
 
-		if ($book_id) {
-			$book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
-		}
-		if (isset($book)) {
-			$book_id = $book->id;
-		}
+
+
+		if ($book_id) $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
+		if (isset($book)) $book_id = $book->id;
 		$fileset = BibleFileset::with('bible')->where('id', $bible_id)->when($bucket_id,
 			function ($query) use ($bucket_id) {
 				return $query->where('bucket_id', $bucket_id);
 			})->where('set_type_code', $type)->first();
-		if (!$fileset) {
-			return $this->setStatusCode(404)->replyWithError("No Fileset Found in the `" . $bucket_id . "` Bucket for the provided params");
-		}
+		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Found in the `" . $bucket_id . "` Bucket for the provided params");
+
+		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? "download" : "api";
+		$access_control = $this->accessControl($this->key, $access_control_type);
+		if(!in_array($fileset->hash_id, $access_control->hashes)) return $this->setStatusCode(401)->replyWithError("Your API Key does not have access to this fileset");
+
 		$bible         = ($fileset->bible->first()) ? $fileset->bible->first() : false;
 		$bible_path    = ($bible->id) ? $bible->id . "/" : "";
 		$versification = (!$versification) ? $bible->versification : "protestant";
@@ -141,7 +142,7 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="id", in="path", required=true, description="The fileset ID", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,
@@ -187,7 +188,7 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="id", in="path", required=true, description="The fileset ID", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Response(
 	 *         response=200,
@@ -227,7 +228,7 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="id", in="path", required=true, description="The fileset ID", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OAS\Parameter(
 	 *         name="id",
@@ -278,7 +279,7 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\RequestBody(required=true, description="Fields for Bible Fileset Creation",
 	 *          @OAS\MediaType(mediaType="application/json",                  @OAS\Schema(ref="#/components/schemas/BibleFileset")),
 	 *          @OAS\MediaType(mediaType="application/x-www-form-urlencoded", @OAS\Schema(ref="#/components/schemas/BibleFileset"))
@@ -321,7 +322,7 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="The fileset types",
@@ -373,7 +374,7 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="The fileset just edited",

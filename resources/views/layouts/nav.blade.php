@@ -53,8 +53,6 @@
                             <li>
                                 <b>Koinos</b>
                                 <ul class="links-list">
-                                    <li><a href="{{ route('swagger_docs_ui') }}">Swagger UI</a></li>
-                                    <li><a href="{{ route('swagger_beta') }}">Development Documentation</a></li>
                                     <li><a href="{{ route('swagger_v4') }}">V4 Documentation</a></li>
                                     <li><a href="{{ route('swagger_v2') }}">V2 Documentation</a></li>
                                     <li><a href="{{ route('docs.sdk') }}">Examples and SDKs</a></li>

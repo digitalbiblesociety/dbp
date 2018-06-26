@@ -355,24 +355,24 @@ class Language extends Model
      */
     public function translations()
     {
-        return $this->HasMany(LanguageTranslation::class,'language_source','id')->orderBy('priority', 'desc');
+        return $this->HasMany(LanguageTranslation::class,'language_source_id','id')->orderBy('priority', 'desc');
     }
 
 	public function translation()
 	{
-		return $this->HasOne(LanguageTranslation::class,'language_source','id')->orderBy('priority', 'desc')->select(['language_source','name','priority']);
+		return $this->HasOne(LanguageTranslation::class,'language_source_id','id')->orderBy('priority', 'desc')->select(['language_source_id','name','priority']);
 	}
 
 	public function autonym()
 	{
-		return $this->HasOne(LanguageTranslation::class,'language_source')->where('vernacular', 1);
+		return $this->HasOne(LanguageTranslation::class,'language_source_id')->where('vernacular', 1);
 	}
 
     public function currentTranslation($iso = null)
     {
     	if($iso == null) $iso = \i18n::getCurrentLocale();
         $language = Language::where('iso',$iso)->first();
-        return $this->HasOne(LanguageTranslation::class,'language_source')->where('language_translation', $language->id);
+        return $this->HasOne(LanguageTranslation::class,'language_source_id')->where('language_translation_id', $language->id);
     }
 
     public function countries()

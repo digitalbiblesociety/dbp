@@ -39,7 +39,7 @@ class TextController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -61,7 +61,7 @@ class TextController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -83,10 +83,11 @@ class TextController extends APIController
 		$verse_end   = checkParam('verse_end', null, 'optional');
 		$formatted   = checkParam('bucket|bucket_id', null, 'optional');
 
-		$access_control = $this->accessControl($this->key, "api");
-
-		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->first();
+		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id',substr($fileset_id,0,-4))->orWhere('id',substr($fileset_id,0,-2))->first();
 		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
+
+		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? "download" : "api";
+		$access_control = $this->accessControl($this->key, $access_control_type);
 		if(!in_array($fileset->hash_id, $access_control->hashes)) return $this->setStatusCode(401)->replyWithError("Your API Key does not have access to this fileset");
 		$bible = $fileset->bible->first();
 
@@ -148,7 +149,7 @@ class TextController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -166,16 +167,11 @@ class TextController extends APIController
 		$name     = checkParam('name', null, 'optional');
 		$platform = checkParam('platform', null, 'optional') ?? 'all';
 
-		if ($name) {
-			$font = AlphabetFont::where('name', $name)->first();
-		} else {
-			$font = ($id) ? AlphabetFont::find($id) : false;
-		}
-		if ($font) {
-			return $this->reply(fractal()->item($font)->transformWith(new FontsTransformer())->serializeWith($this->serializer)->toArray());
-		}
-
-		$fonts = AlphabetFont::all();
+		$fonts = AlphabetFont::when($name, function ($q) use($name) {
+			$q->where('name', $name);
+		})->when($name, function ($q) use($id) {
+			$q->where('id', $id);
+		})->get();
 
 		return $this->reply(fractal()->collection($fonts)->transformWith(new FontsTransformer())->serializeWith($this->serializer)->toArray());
 	}
@@ -197,7 +193,7 @@ class TextController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -212,9 +208,7 @@ class TextController extends APIController
 	public function search()
 	{
 		// If it's not an API route send them to the documentation
-		if (!$this->api) {
-			return view('docs.v2.text_search');
-		}
+		if (!$this->api) return view('docs.v2.text_search');
 
 		$query   = checkParam('query');
 		$exclude = checkParam('exclude', null, 'optional') ?? false;
@@ -231,6 +225,8 @@ class TextController extends APIController
 		            ->when($books, function ($q) use ($books) {
 			            $q->whereIn('book', explode(',', $books));
 		            })->get();
+
+		if($verses->count() == 0) return $this->setStatusCode(404)->replyWithError("No results found");
 
 		$this->addMetaDataToVerses($verses, $bible_id);
 
@@ -262,7 +258,7 @@ class TextController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -277,9 +273,7 @@ class TextController extends APIController
 	public function searchGroup()
 	{
 		// If it's not an API route send them to the documentation
-		if (!$this->api) {
-			return view('docs.v2.text_search_group');
-		}
+		if (!$this->api) return view('docs.v2.text_search_group');
 
 		$query    = checkParam('query');
 		$bible_id = checkParam('dam_id|fileset_id');
@@ -289,9 +283,7 @@ class TextController extends APIController
 			$bible_id    = substr($bible_id, 0, 6);
 			$tableExists = \Schema::connection('sophia')->hasTable($bible_id . '_vpl');
 		}
-		if (!$tableExists) {
-			return $this->setStatusCode(404)->replyWithError("Table does not exist");
-		}
+		if (!$tableExists) return $this->setStatusCode(404)->replyWithError("Table does not exist");
 
 		$query  = DB::connection('sophia')->getPdo()->quote('+' . str_replace(' ', ' +', $query));
 		$verses = DB::connection('sophia')->table($bible_id . '_vpl')->select(DB::raw('MIN(verse_text) as verse_text, COUNT(verse_text) as resultsCount, book, chapter, verse_start, canon_order'))
@@ -332,12 +324,8 @@ class TextController extends APIController
 		// Fetch Bible for Book Translations
 		$bibleEquivalent = BibleEquivalent::where('equivalent_id', $bible_id)->orWhere('equivalent_id',
 			substr($bible_id, 0, 7))->first();
-		if (!isset($bibleEquivalent)) {
-			$bible = Bible::find($bible_id);
-		}
-		if (isset($bibleEquivalent) AND !isset($bible)) {
-			$bible = $bibleEquivalent->bible;
-		}
+		if (!isset($bibleEquivalent)) $bible = Bible::find($bible_id);
+		if (isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
 		if ($bible) {
 			if ($bible->script != "Latn") {
 				$vernacular_numbers[] = $verses->pluck('verse_start')->ToArray();
@@ -359,7 +347,7 @@ class TextController extends APIController
 			$verse->bible_id               = $bible_id;
 			$verse->usfm_id                = $currentBook->id;
 			$verse->osis_id                = $currentBook->id_osis;
-			$verse->book_order             = @ltrim(substr($verse->canon_order, 0, 3), "0");
+			$verse->protestant_order       = $currentBook->protestant_order;
 			$verse->book_vernacular_name   = @$currentBook->name;
 			$verse->book_name              = @$currentBook->name;
 			$verse->chapter_vernacular     = isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->chapter] : $verse->chapter;

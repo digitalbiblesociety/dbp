@@ -40,7 +40,6 @@ $(document).ready(function () {
                             return data;
                         }
                     };
-                    // apparently returning true is how to use continue in js
                     return true;
                 }
 
