@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User\Account;
 use App\Models\User\Key;
+use App\Models\User\ProjectMember;
 use App\Models\User\User;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
@@ -337,9 +338,14 @@ class UsersController extends APIController
 		return view('dashboard.users.show', $id);
 	}
 
-	public function destroy(Request $request, $id)
+	public function destroy($id)
 	{
-		$user = User::where('id', $id)->where('project_id', $request->project_id)->first();
+		$project_id = checkParam('project_id');
+
+		$connection = ProjectMember::where('user_id', $id)->where('project_id', $project_id)->first();
+		if(!$connection) return $this->setStatusCode(404)->replyWithError("User/Project connection not found");
+		$connection->delete();
+		return $this->reply("User Project connection successfully removed");
 	}
 
 

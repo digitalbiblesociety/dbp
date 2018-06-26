@@ -19,6 +19,9 @@ use Illuminate\Database\Eloquent\Model;
 class ProjectMember extends Model
 {
     protected $fillable = ['project_id','role','subscribed'];
+    public $incrementing = false;
+    public $keyType = 'string';
+    public $primaryKey = 'user_id';
 
 	/**
 	 *
