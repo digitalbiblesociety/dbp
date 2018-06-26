@@ -152,7 +152,7 @@ class CountriesController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="id", in="path", description="The country ID", required=true, @OAS\Schema(ref="#/components/schemas/Country/properties/id")),
 	 *     @OAS\Parameter(name="communications", in="query", description="", @OAS\Schema(ref="#/components/schemas/CountryCommunication")),
 	 *     @OAS\Parameter(name="economy", in="query", description="",        @OAS\Schema(ref="#/components/schemas/CountryEconomy")),
@@ -225,7 +225,7 @@ class CountriesController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\RequestBody(required=true, description="Information supplied for Country creation", @OAS\MediaType(mediaType="application/json",
 	 *          @OAS\Schema(ref="#/components/schemas/Country")
 	 *     )),

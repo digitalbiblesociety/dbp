@@ -3,5 +3,6 @@
   "/css/app.css": "/css/app.css",
   "/js/app.js": "/js/app.js",
   "/js/main.js": "/js/main.js",
-  "/js/swagger.js": "/js/swagger.js"
+  "/js/swagger.js": "/js/swagger.js",
+  "/js/swagger-vue.js": "/js/swagger-vue.js"
 }

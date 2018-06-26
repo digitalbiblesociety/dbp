@@ -21,7 +21,7 @@ class FilmsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="video_server_bucket", in="query", description="The server's bucket", @OAS\Schema(type="string", default="dbp-video.s3.amazonaws.com", example="dbp-video.s3.amazonaws.com")),
 	 *     @OAS\Parameter(name="video_server_alias", in="query", description="The server's alias",  @OAS\Schema(type="string", default="video.dbt.io", example="video.dbt.io")),
 	 *     @OAS\Response(
@@ -88,7 +88,7 @@ class FilmsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="dam_id", in="query", description="DAM ID for the video volume desired", @OAS\Schema(type="string",title="encoding")),
 	 *     @OAS\Parameter(name="encoding", in="query", description="The video encoding format desired", @OAS\Schema(type="string",enum={"mp4","m3u8"},default="mp4")),
 	 *     @OAS\Parameter(name="resolution", in="query", description="Resolution of video files requested corresponding to the basic categories of low, medium, and high. The default is 'lo'. DBT will determine if the volume is configured for the requested resolution. If not, it will return the next highest resolution to the requested resolution for which the volume is configured", @OAS\Schema(type="string",enum={"lo","med","hi"},example="med")),

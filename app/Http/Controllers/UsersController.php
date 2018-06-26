@@ -39,7 +39,7 @@ class UsersController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -78,7 +78,7 @@ class UsersController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -135,7 +135,7 @@ class UsersController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\RequestBody(required=true, description="Either the `email` & `password` or the `social_provider_user_id` & `social_provider_id` are required for user Login", @OAS\MediaType(mediaType="application/json",
 	 *          @OAS\Schema(
 	 *              @OAS\Property(property="email",                     ref="#/components/schemas/User/properties/email"),
@@ -182,7 +182,7 @@ class UsersController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\RequestBody(required=true, description="Information supplied for user creation", @OAS\MediaType(mediaType="application/json",
 	 *          @OAS\Schema(
 	 *              @OAS\Property(property="nickname",                ref="#/components/schemas/User/properties/nickname"),
@@ -263,7 +263,7 @@ class UsersController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\RequestBody(required=true, description="Information supplied for updating an existing user", @OAS\MediaType(mediaType="application/json",
 	 *          @OAS\Schema(
 	 *              @OAS\Property(property="nickname",                ref="#/components/schemas/User/properties/nickname"),
@@ -354,7 +354,7 @@ class UsersController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",

@@ -29,7 +29,7 @@ class UserHighlightsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -100,7 +100,7 @@ class UserHighlightsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\RequestBody(required=true, description="Fields for User Highlight Creation", @OAS\MediaType(mediaType="application/json",
 	 *          @OAS\Schema(
 	 *              @OAS\Property(property="bible_id",                  ref="#/components/schemas/Bible/properties/id"),
@@ -175,7 +175,7 @@ class UserHighlightsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -225,7 +225,7 @@ class UserHighlightsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -266,7 +266,7 @@ class UserHighlightsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OAS\Parameter(ref="#/components/parameters/key"),
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/reply"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",

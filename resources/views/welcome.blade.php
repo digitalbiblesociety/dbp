@@ -26,8 +26,6 @@
         #banner {
             padding-bottom:70px;
             margin-bottom:70px;
-            background: #222;
-            color:#f8f8f8;
         }
         #banner p {
             text-align: justify;
@@ -57,6 +55,19 @@
 
         #stats a {
             color:#222;
+        }
+
+        .markup {
+            width: 100%;
+            padding:20px!important;
+            text-align: left;
+            color: white;
+            padding: 0 1rem;
+            border-radius: 4px;
+            background-color: #232323;
+            min-height: 285px;
+            animation: fadeUp 2s;
+            box-shadow: 0px 12px 36.8px 9.2px rgba(0, 0, 0, 0.1);
         }
 
     </style>

@@ -36,13 +36,13 @@ class APIController extends Controller
 	 * )
 	 *
 	 * @OAS\Server(
-	 *     url="{schema}://api.bible.build",
+	 *     url="https://api.bible.build",
 	 *     description="Live Server",
 	 *     @OAS\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
 	 * )
 	 *
 	 * @OAS\Server(
-	 *     url="{schema}://api.dbp.dev",
+	 *     url="https://api.dbp.localhost",
 	 *     description="Development server",
 	 *     @OAS\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
 	 * )
@@ -50,7 +50,7 @@ class APIController extends Controller
 	 * @OAS\Parameter(parameter="version_number",name="v",in="query",description="The Version Number",required=true,@OAS\Schema(type="integer",enum={2,4},example=4))
 	 * @OAS\Parameter(parameter="key",name="key",in="query",description="The Key granted to the api user upon sign up",required=true,@OAS\Schema(type="string",example="ar45g3h4ae644"))
 	 * @OAS\Parameter(parameter="pretty",name="pretty",in="query",description="Setting this param to true will add human readable whitespace to the return",@OAS\Schema(type="string",example="true"))
-	 * @OAS\Parameter(parameter="reply",name="reply",in="query",description="Setting this param to true will add format the return as a specific file type. The currently supported return types are `xml`, `csv`, `json`, and `yaml`",@OAS\Schema(type="string",enum={"xml","csv","json","yaml"}))
+	 * @OAS\Parameter(parameter="format",name="reply",in="query",description="Setting this param to true will add format the return as a specific file type. The currently supported return types are `xml`, `csv`, `json`, and `yaml`",@OAS\Schema(type="string",enum={"xml","csv","json","yaml"}))
 	 * @OAS\Parameter(name="sort_by", in="query", description="The field to sort by", @OAS\Schema(type="string"))
 	 * @OAS\Parameter(name="sort_dir", in="query", description="The direction to sort by", @OAS\Schema(type="string",enum={"asc","desc"}))
 	 * @OAS\Parameter(name="l10n", in="query", description="When set to a valid three letter language iso, the returning results will be localized in the language matching that iso. (If an applicable translation exists).", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
