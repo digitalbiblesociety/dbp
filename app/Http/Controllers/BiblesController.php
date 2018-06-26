@@ -10,6 +10,7 @@ use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 use App\Models\Organization\OrganizationTranslation;
 use App\Models\User\Access;
+use App\Models\User\AccessGroup;
 use App\Transformers\BibleTransformer;
 use App\Transformers\BooksTransformer;
 use Illuminate\Support\Facades\Cache;
@@ -84,7 +85,6 @@ class BiblesController extends APIController
 	 */
 	public function index()
 	{
-
 		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 		// Return the documentation if it's not an API request
 		if (!$this->api) return view('bibles.index');
@@ -378,24 +378,23 @@ class BiblesController extends APIController
 	 */
 	public function libraryMetadata()
 	{
-		if (env('APP_ENV') == 'local') {
-			ini_set('memory_limit', '864M');
-		}
+		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
+
 		$fileset_id = checkParam('dam_id', null, 'optional');
 		$bucket_id  = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
 		\Cache::forget('v2_library_metadata' . $fileset_id);
 		$metadata = Cache::remember('v2_library_metadata' . $fileset_id, 1600,
 			function () use ($fileset_id, $bucket_id) {
-				$metadata = BibleFileset::has('copyright')->with('copyright.organizations', 'copyright.role.roleTitle',
-					'bible')->when($fileset_id, function ($q) use ($fileset_id) {
-					$q->where('id', $fileset_id)->first();
-				})->where('bucket_id', $bucket_id)->where('set_type_code', '!=', 'text_format');
 
-				if ($fileset_id) {
-					return fractal()->item($metadata->first())->serializeWith($this->serializer)->transformWith(new BibleTransformer());
-				}
-				return fractal()->collection($metadata->get())->serializeWith($this->serializer)->transformWith(new BibleTransformer());
+				$metadata = BibleFileset::has('copyright')->with('copyright.organizations', 'copyright.role.roleTitle', 'bible')
+				->when($fileset_id, function ($q) use ($fileset_id) {
+					$q->where('id', $fileset_id);
+				})->where('bucket_id', $bucket_id)->get();
+
+				if(count($metadata) == 0) return $this->setStatusCode(404)->replyWithError("Missing metadata");
+				if(count($metadata) == 1) return fractal()->item($metadata[0])->serializeWith($this->serializer)->transformWith(new BibleTransformer());
+				return fractal()->collection($metadata)->serializeWith($this->serializer)->transformWith(new BibleTransformer());
 			});
 
 		return $this->reply($metadata);

@@ -92,7 +92,7 @@ class CountriesController extends APIController
 							if ($include_languages == "with_titles") {
 								$query->with([
 									'translation' => function ($query) use ($language) {
-										$query->where('language_translation', $language->id);
+										$query->where('language_translation_id', $language->id);
 									},
 								]);
 							}

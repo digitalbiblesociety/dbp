@@ -25,6 +25,7 @@ class BibleTransformer extends BaseTransformer
 
     public function transformForV2($bible)
     {
+
     	// Compute v2 ID
 	    if(isset($bible->bible)) {
 		    $v2id = $bible->bible->first()->iso.substr($bible->first()->id,3,3);

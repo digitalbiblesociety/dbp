@@ -102,9 +102,7 @@ class APIController extends Controller
 			$this->v   = checkParam('v');
 			$this->key = checkParam('key');
 			$keyExists = Key::find($this->key);
-			if (!isset($keyExists)) {
-				abort(403, "You need to provide a valid API key");
-			}
+			if (!isset($keyExists)) abort(403, "You need to provide a valid API key");
 			$locale = $keyExists->preferred_language ?? \i18n::getCurrentLocale();
 			\App::setLocale($locale);
 

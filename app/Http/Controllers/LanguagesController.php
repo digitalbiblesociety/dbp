@@ -146,7 +146,7 @@ class LanguagesController extends APIController
 				if (!$include_alt_names) {
 					$languages->load([
 						'translation' => function ($query) use ($l10n_language) {
-							$query->where('language_translation', $l10n_language->id);
+							$query->where('language_translation_id', $l10n_language->id);
 						},
 					]);
 				}

@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Bible\BibleFileset;
+use App\Models\User\AccessGroup;
+use App\Models\User\AccessGroupKey;
 use App\Models\User\User;
 use Tests\TestCase;
 
@@ -22,7 +25,7 @@ class API_V2_Test extends TestCase
 	function setUp() {
 		parent::setUp();
 		$user = User::inRandomOrder()->first();
-		$this->params = ['v' => 2,'key' => 'e8a946a0-d9e2-11e7-bfa7-b1fb2d7f5824','pretty'];
+		$this->params = ['v' => 2,'key' => '1234','pretty'];
 
 		// Fetch the Swagger Docs for Structure Validation
 		$arrContextOptions= [ "ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]];
@@ -44,7 +47,7 @@ class API_V2_Test extends TestCase
 	 * @see HomeController::libraryAsset()
 	 * @category Swagger ID: LibraryAsset
 	 * @category Route Name: v2_library_asset
-	 * @link Route Path: https://api.dbp.dev/library/asset?v=2&pretty
+	 * @link Route Path: https://api.dbp.localhost/library/asset?v=2&pretty
 	 *
 	 */
 	public function test_library_asset() {
@@ -64,7 +67,7 @@ class API_V2_Test extends TestCase
 	 * @see HomeController::versionLatest()
 	 * @category Swagger ID: LibraryAsset
 	 * @category Route Name: v2_library_asset
-	 * @link Route Path: https://api.dbp.dev/api/apiversion?v=2&pretty
+	 * @link Route Path: https://api.dbp.localhost/api/apiversion?v=2&pretty
 	 *
 	 */
 	public function test_library_version() {
@@ -82,7 +85,7 @@ class API_V2_Test extends TestCase
 	 * @see BooksController::show()
 	 * @category Swagger ID: BookOrder
 	 * @category Route Name: v2_library_bookOrder
-	 * @link Route Path: https://api.dbp.dev/library/bookorder?v=2&dam_id=ENGESV&pretty
+	 * @link Route Path: https://api.dbp.localhost/library/bookorder?v=2&dam_id=ENGESV&pretty
 	 *
 	 */
 	public function test_library_bookOrder() {
@@ -103,7 +106,7 @@ class API_V2_Test extends TestCase
 	 * @see BooksController::show()
 	 * @category Swagger ID: BookOrder
 	 * @category Route Name: v2_library_bookOrder
-	 * @link Route Path: https://api.dbp.dev/library/bookorder?v=2&dam_id=AAIWBTN2ET&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
+	 * @link Route Path: https://api.dbp.localhost/library/bookorder?v=2&dam_id=AAIWBTN2ET&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
 	 *
 	 */
 	public function test_library_book() {
@@ -121,7 +124,7 @@ class API_V2_Test extends TestCase
 	 * @see BooksController::bookNames()
 	 * @category Swagger ID: BookName
 	 * @category Route Name: v2_library_bookName
-	 * @link Route Path: https://api.dbp.dev/library/bookname?v=2&language_code=eng&pretty
+	 * @link Route Path: https://api.dbp.localhost/library/bookname?v=2&language_code=eng&pretty
 	 *
 	 */
 	public function test_library_bookName() {
@@ -138,7 +141,7 @@ class API_V2_Test extends TestCase
 	 * @see BooksController::chapters()
 	 * @category Swagger ID: BookName
 	 * @category Route Name: v2_library_bookName
-	 * @link Route Path: https://api.dbp.dev/library/chapter?v=2&dam_id=ENGESV&book_id=GEN&pretty
+	 * @link Route Path: https://api.dbp.localhost/library/chapter?v=2&dam_id=ENGESV&book_id=GEN&pretty
 	 *
 	 */
 	public function test_library_chapter() {
@@ -158,7 +161,7 @@ class API_V2_Test extends TestCase
 	 * @see LanguagesController::index()
 	 * @category Swagger ID: LibraryLanguage
 	 * @category Route Name: v2_library_language
-	 * @link Route Path: https://api.dbp.dev/library/language?v=2&pretty
+	 * @link Route Path: https://api.dbp.localhost/library/language?v=2&pretty&key=1234
 	 *
 	 */
 	public function test_library_language() {
@@ -176,7 +179,7 @@ class API_V2_Test extends TestCase
 	 * @see VerseController::info()
 	 * @category Swagger ID: LibraryVerseInfo
 	 * @category Route Name: v2_library_verseInfo
-	 * @link Route Path: https://api.dbp.dev/library/verseinfo?v=2&pretty&bible_id=ENGESV&book_id=GEN&chapter=1&verse_start=1
+	 * @link Route Path: https://api.dbp.localhost/library/verseinfo?v=2&pretty&bible_id=ENGESV&book_id=GEN&chapter=1&verse_start=1
 	 *
 	 */
 	public function test_library_verseInfo() {
@@ -200,12 +203,12 @@ class API_V2_Test extends TestCase
 	 * @see NumbersController::customRange()
 	 * @category Swagger ID: Number
 	 * @category Route Name: v2_library_numbers
-	 * @link Route Path: https://api.dbp.dev/library/numbers?v=2&pretty&iso=arb&start=1&end=50
+	 * @link Route Path: https://api.dbp.localhost/library/numbers?v=2&pretty&iso=arb&start=1&end=50
 	 *
 	 */
 	public function test_library_numbers()              {
-		$response = $this->get(route('v2_library_numbers'), ['v' => 2, 'iso' => 'arb', 'start' => 1, 'end' => 100, 'key' => $this->params['key']]);
-		echo "\nTesting: ".route('v2_library_numbers', ['v' => 2, 'iso' => 'arb', 'start' => 1, 'end' => 100, 'key' => $this->params['key']]);
+		$response = $this->get(route('v2_library_numbers'), ['v' => 2, 'iso' => 'arb', 'script' => 'Arab', 'start' => 1, 'end' => 100, 'key' => $this->params['key']]);
+		echo "\nTesting: ".route('v2_library_numbers', ['v' => 2, 'iso' => 'arb', 'script' => 'Arab', 'start' => 1, 'end' => 100, 'key' => $this->params['key']]);
 		$response->assertSuccessful();
 		$response->assertJsonStructure([$this->getSchemaKeys('Number')]);
 	}
@@ -218,12 +221,12 @@ class API_V2_Test extends TestCase
 	 * @see BiblesController::libraryMetadata()
 	 * @category Swagger ID: LibraryMetaData
 	 * @category Route Name: v2_library_metadata
-	 * @link Route Path: https://api.dbp.dev/library/metadata?v=2&id=AAIWBT&key=3e0eed1a69fc6e012fef51b8a28cc6ff
+	 * @link Route Path: https://api.dbp.localhost/library/metadata?v=2&id=AAIWBT&key=3e0eed1a69fc6e012fef51b8a28cc6ff
 	 *
 	 */
 	public function test_library_metadata()
 	{
-		$bible_id = fetchRandomBibleID();
+		$bible_id = fetchRandomFilesetID();
 		$response = $this->get(route('v2_library_metadata'), ['v' => 2,'dam_id' => $bible_id, 'key' => $this->params['key']]);
 		echo "\nTesting: ".route('v2_library_metadata', ['v' => 2, 'dam_id' => $bible_id, 'key' => $this->params['key']]);
 		$response->assertSuccessful();
@@ -238,7 +241,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\BiblesController::index()
 	 * @category Swagger ID: LibraryVolume
 	 * @category Route Name: v2_library_volume
-	 * @link Route Path: https://api.dbp.dev/library/volume?v=2&pretty
+	 * @link Route Path: https://api.dbp.localhost/library/volume?v=2&pretty
 	 *
 	 */
 	public function test_library_volume()
@@ -257,7 +260,7 @@ class API_V2_Test extends TestCase
 	 * @see LanguagesController::volumeLanguage()
 	 * @category Swagger ID: LibraryVolume
 	 * @category Route Name: v2_library_volumeLanguage
-	 * @link Route Path: https://api.dbp.dev/library/volumelanguage?v=2&pretty
+	 * @link Route Path: https://api.dbp.localhost/library/volumelanguage?v=2&pretty
 	 *
 	 */
 	public function test_library_volumeLanguage() {
@@ -275,7 +278,7 @@ class API_V2_Test extends TestCase
 	 * @see LanguagesController::volumeLanguage()
 	 * @category Swagger ID: LibraryVolumeLanguageFamily
 	 * @category Route Name: v2_library_volumeLanguageFamily
-	 * @link Route Path: https://api.dbp.dev/library/volumelanguagefamily?v=2&pretty
+	 * @link Route Path: https://api.dbp.localhost/library/volumelanguagefamily?v=2&pretty
 	 *
 	 */
 	public function test_library_volumeLanguageFamily() {
@@ -294,7 +297,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\OrganizationsController::index()
 	 * @category Swagger ID: VolumeOrganization
 	 * @category Route Name: v2_volume_organization_list
-	 * @link Route Path: https://api.dbp.dev/library/volumeorganization?v=2&pretty
+	 * @link Route Path: https://api.dbp.localhost/library/volumeorganization?v=2&pretty
 	 *
 	 */
 	public function test_volume_organization_list() {
@@ -311,7 +314,7 @@ class API_V2_Test extends TestCase
 	 * @see BiblesController::history
 	 * @category Swagger ID: LibraryVolumeLanguageFamily
 	 * @category Route Name: v2_volume_history
-	 * @link Route Path: https://api.dbp.dev/library/volumehistory?v=2&pretty
+	 * @link Route Path: https://api.dbp.localhost/library/volumehistory?v=2&pretty
 	 *
 	 */
 	public function test_volume_history()
@@ -329,7 +332,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\AudioController::index()
 	 * @category Swagger ID:
 	 * @category Route Name: v2_audio_path
-	 * @link Route Path: https://api.dbp.dev/audio/path?v=2&fileset_id=AFRNVVN2DA&pretty
+	 * @link Route Path: https://api.dbp.localhost/audio/path?v=2&fileset_id=AFRNVVN2DA&pretty
 	 *
 	 */
 	public function test_audio_path()
@@ -348,7 +351,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\AudioController::timestampsByReference()
 	 * @category Swagger ID:
 	 * @category Route Name: v2_audio_timestamps
-	 * @link Route Path: https://api.dbp.dev/audio/versestart?v=2&fileset_id=CHNUNVN2DA&chapter=1&book=MAT&pretty
+	 * @link Route Path: https://api.dbp.localhost/audio/versestart?v=2&fileset_id=CHNUNVN2DA&chapter=1&book=MAT&pretty
 	 *
 	 */
 	public function test_audio_timestamps() {
@@ -366,7 +369,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\TextController::fonts()
 	 * @category Swagger ID: TextFont
 	 * @category Route Name: v2_text_font
-	 * @link Route Path: https://api.dbp.dev/text/font?v=2&platform=web&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
+	 * @link Route Path: https://api.dbp.localhost/text/font?v=2&platform=web&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
 	 *
 	 */
 	public function test_text_font() {
@@ -383,13 +386,18 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\TextController::index()
 	 * @category Swagger ID: TextVerse
 	 * @category Route Name: v2_text_verse
-	 * @link Route Path: https://api.dbp.dev/text/verse?v=2&key=3e0eed1a69fc6e012fef51b8a28cc6ff&dam_id=ENGESV&book_id=GEN&chapter_id=1&verse_start=1&verse_end=10
+	 * @link Route Path: https://api.dbp.localhost/text/verse?v=2&key=3e0eed1a69fc6e012fef51b8a28cc6ff&dam_id=ENGESV&book_id=GEN&chapter_id=1&verse_start=1&verse_end=10
 	 *
 	 */
-	public function test_text_verse() {
-		echo "\nTesting: ".route('v2_text_verse', ['v' => 2, 'key' => $this->params['key'], 'dam_id' => "ENGESV", 'book_id' => "GEN", 'chapter_id' => 1, 'verse_start' => 1, 'verse_end' => 10]);
+	public function test_text_verse_allowed() {
+		$public_domain_access_group = \App\Models\User\AccessGroup::with('filesets')->where('name','PUBLIC_DOMAIN')->first();
+		$fileset_hash = $public_domain_access_group->filesets->pluck('hash_id');
+		$fileset = \App\Models\Bible\BibleFileset::with('files')->whereIn('hash_id',$fileset_hash)->first();
+		$file = $fileset->files->random(1)->first();
 
-		$response = $this->get(route('v2_text_verse', ['v' => 2, 'key' => $this->params['key'], 'dam_id' => "ENGESV", 'book_id' => "GEN", 'chapter_id' => 1, 'verse_start' => 1, 'verse_end' => 10]));
+		echo "\nTesting: ".route('v2_text_verse', ['v' => 2, 'key' => $this->params['key'], 'dam_id' => $fileset->id, 'book_id' => $file->book_id, 'chapter_id' => $file->chapter_start, 'verse_start' => 1, 'verse_end' => 10]);
+
+		$response = $this->get(route('v2_text_verse', ['v' => 2, 'key' => $this->params['key'], 'dam_id' => $fileset->id, 'book_id' => $file->book_id, 'chapter_id' => $file->chapter_start, 'verse_start' => 1, 'verse_end' => 10]));
 		$response->assertSuccessful();
 	}
 
@@ -401,13 +409,19 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\TextController::search()
 	 * @category Swagger ID: TextSearch
 	 * @category Route Name: v2_text_search
-	 * @link Route Path: https://api.dbp.dev/text/search?v=2&query=God&dam_id=ENGESV&limit=5&pretty
+	 * @link Route Path: https://api.dbp.localhost/text/search?v=2&query=God&dam_id=ENGESV&limit=5&pretty
 	 *
 	 */
 	public function test_text_search() {
-		$response = $this->get(route('v2_text_search'), ['v' => 2, 'query' => 'God', 'dam_id' => 'ENGESV', 'limit' => 5, 'pretty']);
-		echo "\nTesting: ".route('v2_text_search', ['v' => 2, 'query' => 'God', 'dam_id' => 'ENGESV', 'limit' => 5, 'pretty']);
+		$public_domain_access_group = \App\Models\User\AccessGroup::with('filesets')->where('name','PUBLIC_DOMAIN')->first();
+		$fileset_hashes = $public_domain_access_group->filesets->pluck('hash_id');
+		$fileset = \App\Models\Bible\BibleFileset::with('files')->whereIn('hash_id',$fileset_hashes)->where('set_type_code','text_plain')->inRandomOrder()->first();
 
+		$sophia = \DB::connection('sophia')->table($fileset->id.'_vpl')->inRandomOrder()->take(1)->first();
+		$text = collect(explode(' ',$sophia->verse_text))->random(1)->first();
+
+		echo "\nTesting: " . route('v2_text_search', ['v' => 2, 'query' => $text, 'dam_id' => $fileset->id, 'limit' => 5, 'pretty', 'key' => $this->params['key']]);
+		$response = $this->get(route('v2_text_search'), ['v' => 2, 'query' => $text, 'dam_id' => $fileset->id, 'limit' => 5, 'pretty', 'key' => $this->params['key']]);
 		$response->assertSuccessful();
 	}
 
@@ -419,12 +433,19 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\TextController::searchGroup()
 	 * @category Swagger ID: TextSearchGroup
 	 * @category Route Name: v2_text_search_group
-	 * @link Route Path: https://api.dbp.dev/text/searchgroup?v=2&query=God&dam_id=ENGESV&limit=5&pretty
+	 * @link Route Path: https://api.dbp.localhost/text/searchgroup?v=2&query=God&dam_id=ENGESV&limit=5&pretty
 	 *
 	 */
 	public function test_text_search_group()            {
-		$response = $this->get(route('v2_text_search_group'), ['v' => 2, 'query' => 'God', 'dam_id' => 'ENGESV']);
-		echo "\nTesting: ".route('v2_text_search_group', ['v' => 2, 'query' => 'God', 'dam_id' => 'ENGESV']);
+		$public_domain_access_group = \App\Models\User\AccessGroup::with('filesets')->where('name','PUBLIC_DOMAIN')->first();
+		$fileset_hashes = $public_domain_access_group->filesets->pluck('hash_id');
+		$fileset = \App\Models\Bible\BibleFileset::with('files')->whereIn('hash_id',$fileset_hashes)->where('set_type_code','text_plain')->inRandomOrder()->first();
+
+		$sophia = \DB::connection('sophia')->table($fileset->id.'_vpl')->inRandomOrder()->take(1)->first();
+		$text = collect(explode(' ',$sophia->verse_text))->random(1)->first();
+
+		echo "\nTesting: ".route('v2_text_search_group', ['v' => 2, 'query' => $text, 'dam_id' => $fileset->id, 'limit' => 5, 'pretty', 'key' => $this->params['key']]);
+		$response = $this->get(route('v2_text_search_group'), ['v' => 2, 'query' => $text, 'dam_id' => $fileset->id, 'limit' => 5, 'pretty', 'key' => $this->params['key']]);
 		$response->assertSuccessful();
 	}
 
@@ -436,7 +457,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\FilmsController::location()
 	 * @category Swagger ID: VideoLocation
 	 * @category Route Name: v2_video_location
-	 * @link Route Path: https://api.dbp.dev/video/location?v=2&dam_id=ENGESV
+	 * @link Route Path: https://api.dbp.localhost/video/location?v=2&dam_id=ENGESV
 	 *
 
 	public function test_video_location() {
@@ -454,7 +475,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\FilmsController::videoPath()
 	 * @category Swagger ID: VideoPath
 	 * @category Route Name: v2_video_video_path
-	 * @link Route Path: https://api.dbp.dev/video/path?v=2&dam_id=ENGESV&pretty
+	 * @link Route Path: https://api.dbp.localhost/video/path?v=2&dam_id=ENGESV&pretty
 	 *
 
 	public function test_video_video_path() {
@@ -472,7 +493,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\LanguagesController::CountryLang()
 	 * @category Swagger ID: CountryLang
 	 * @category Route Name: v2_country_lang
-	 * @link Route Path: https://api.dbp.dev/country/countrylang?v=2&pretty
+	 * @link Route Path: https://api.dbp.localhost/country/countrylang?v=2&pretty
 	 *
 
 	public function test_country_lang() {

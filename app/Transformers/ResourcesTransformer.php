@@ -21,14 +21,22 @@ class ResourcesTransformer extends BaseTransformer
 
 	public function transformForV4($resource) {
 
+		$vname = @$resource->translations->where('tag',0)->where('iso',$resource->iso)->first()->title ?? '';
+		$vname_description = @$resource->translations->where('tag',0)->where('iso',$resource->iso)->first()->description ?? '';
+		$name = @$resource->translations->where('tag',0)->where('iso',$this->i10n)->first()->title ?? '';
+		$name_description = @$resource->translations->where('tag',0)->where('iso',$this->i10n)->first()->description ?? '';
+		if($vname == $name) $name = '';
+		if($vname_description == $name_description) $name_description = '';
+
 		switch($this->route) {
 			case "v4_resources.index": {
 				return [
 					'id'                => intval($resource->id),
 					'iso'               => $resource->iso,
 					'language'          => @$resource->language->name,
-					'vname'             => @$resource->translations->where('tag',0)->where('iso',$resource->iso)->first()->title ?? '',
-					'name'              => @$resource->translations->where('tag',0)->where('iso',$this->i10n)->first()->title ?? '',
+					'vname'             => $vname,
+					'name'              => $name,
+					'links'             => $resource->links
 				];
 			}
 			case "v4_resources.show": {
@@ -37,10 +45,10 @@ class ResourcesTransformer extends BaseTransformer
 					'iso'                => $resource->iso,
 					'language'           => @$resource->language->name,
 					'cover_thumbnail'    => $resource->cover_thumbnail,
-					'vname'              => @$resource->translations->where('tag',0)->where('iso',$resource->iso)->first()->title ?? '',
-					'vname_description'  => @$resource->translations->where('tag',0)->where('iso',$resource->iso)->first()->description ?? '',
-					'name'               => @$resource->translations->where('tag',0)->where('iso',$this->i10n)->first()->title ?? '',
-					'name_description'   => @$resource->translations->where('tag',0)->where('iso',$this->i10n)->first()->description ?? '',
+					'vname'              => $vname,
+					'vname_description'  => $vname_description,
+					'name'               => $name,
+					'name_description'   => $name_description,
 					'links'              => $resource->links,
 					'organization'      => $resource->organization
 				];
