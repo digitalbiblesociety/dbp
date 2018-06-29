@@ -129,7 +129,9 @@ class LanguagesController extends APIController
 				}, // if has_filesets is set to false
 			    function ($q) { $q->withCount('bibles');
 			})->when($country, function ($query) use ($country) {
-				return $query->where('country_id', $country);
+				return $query->whereHas('countries', function ($query) use ($country) {
+					$query->where('country_id', $country);
+				});
 			})->when($code, function ($query) use ($code) {
 				return $query->where('iso', $code);
 			})->when($include_alt_names, function ($query) use ($has_bibles) {

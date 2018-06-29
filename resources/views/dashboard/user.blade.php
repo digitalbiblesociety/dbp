@@ -84,9 +84,9 @@
     <h5>Social Account Connections</h5>
     <?php $providers = $user->accounts->pluck('provider')->ToArray(); ?>
     <nav class="social-auth">
-        <a @if(!in_array('google',$providers)) class="disabled"  @endif href="{{ route('login.social_redirect', ['provider' => 'google']) }}"><svg class="icon"><use xlink:href="/img/icons/icons-social.svg#google"></use></svg></a>
-        <a @if(!in_array('facebook',$providers)) class="disabled"  @endif href="{{ route('login.social_redirect', ['provider' => 'facebook']) }}"><svg class="icon"><use xlink:href="/img/icons/icons-social.svg#facebook"></use></svg></a>
-        <a @if(!in_array('twitter',$providers)) class="disabled"  @endif href="{{ route('login.social_redirect', ['provider' => 'twitter']) }}"><svg class="icon"><use xlink:href="/img/icons/icons-social.svg#twitter"></use></svg></a>
-        <a @if(!in_array('github',$providers)) class="disabled" @endif href="{{ route('login.social_redirect', ['provider' => 'github']) }}" href=""><svg class="icon"><use xlink:href="/img/icons/icons-social.svg#github"></use></svg></a>
+        <a @if(!in_array('google',$providers)) class="disabled" @endif href="{{ route('login.social_redirect', ['provider' => 'google']) }}">Google <svg class="icon"><use xlink:href="/img/icons/icons-social.svg#google"></use></svg></a>
+        <a @if(!in_array('facebook',$providers)) class="disabled" @endif href="{{ route('login.social_redirect', ['provider' => 'facebook']) }}">Facebook <svg class="icon"><use xlink:href="/img/icons/icons-social.svg#facebook"></use></svg></a>
+        <a @if(!in_array('twitter',$providers)) class="disabled" @endif href="{{ route('login.social_redirect', ['provider' => 'twitter']) }}">Twitter <svg class="icon"><use xlink:href="/img/icons/icons-social.svg#twitter"></use></svg></a>
+        <a @if(!in_array('github',$providers)) class="disabled" @endif href="{{ route('login.social_redirect', ['provider' => 'github']) }}" href="">Github <svg class="icon"><use xlink:href="/img/icons/icons-social.svg#github"></use></svg></a>
     </nav>
 </div>

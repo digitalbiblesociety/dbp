@@ -75,7 +75,8 @@ class RegisterController extends Controller
             'password'    => \Hash::make($data['password']),
             'email_token' => base64_encode($data['email']),
         ]);
-        \Mail::to($data['email'])->send(new EmailVerification($user));
+	    $this->guard()->login($user);
+	    \Mail::to($data['email'])->send(new EmailVerification($user));
         return $user;
     }
 

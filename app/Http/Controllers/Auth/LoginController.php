@@ -70,16 +70,12 @@ class LoginController extends APIController
     public function redirectToProvider($provider)
     {
         if ($this->api) {
-            if ($provider == "twitter") {
-                return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
-            }
+            if ($provider == "twitter") return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
 
             $project_id = checkParam('project_id');
             $provider   = checkParam('name', $provider);
             $alt_url    = checkParam('alt_url', null, 'optional');
-            if ($provider == "twitter") {
-                return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
-            }
+            if($provider == "twitter") return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
 
             $driverData = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
             $driver     = [
@@ -89,30 +85,14 @@ class LoginController extends APIController
             ];
 
             switch ($provider) {
-                case "facebook": {
-                    $providerClass = FacebookProvider::class;
-                    break;
-                }
-                case "bitbucket": {
-                    $providerClass = BitbucketProvider::class;
-                    break;
-                }
-                case "github": {
-                    $providerClass = GithubProvider::class;
-                    break;
-                }
-                case "twitter": {
-                    $providerClass = TwitterProvider::class;
-                    break;
-                }
-                case "google": {
-                    $providerClass = GoogleProvider::class;
-                    break;
-                }
+	            case "bitbucket": {$providerClass = BitbucketProvider::class; break; }
+	            case "facebook":  {$providerClass = FacebookProvider::class; break; }
+	            case "twitter":   {$providerClass = TwitterProvider::class; break; }
+	            case "github":    {$providerClass = GithubProvider::class; break; }
+                case "google":    {$providerClass = GoogleProvider::class; break; }
             }
 
-            return $this->reply(Socialite::buildProvider($providerClass,
-                $driver)->stateless()->redirect()->getTargetUrl());
+            return $this->reply(Socialite::buildProvider($providerClass, $driver)->stateless()->redirect()->getTargetUrl());
         }
         return Socialite::driver($provider)->redirect();
     }
@@ -123,6 +103,8 @@ class LoginController extends APIController
         $user = $this->createOrGetUser($user, $provider);
 
         \Auth::login($user);
+        $this->guard()->login($user);
+
         if ($this->api) return $user;
         if ($user->admin) return redirect()->route('admin');
         return view('home',compact('user'));
@@ -156,6 +138,7 @@ class LoginController extends APIController
         $user->verified = 1;
         $user->save();
         \Auth::login($user);
+	    $this->guard()->login($user);
         return redirect()->route('home');
     }
 

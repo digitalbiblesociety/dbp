@@ -136,8 +136,8 @@ Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCall
 Auth::routes();
 
 
-Route::get('dashboard', 'HomeController@index')->name('home');
-Route::get('admin', 'HomeController@admin')->name('admin');
+Route::get('dashboard', 'Dashboard\DashboardController@index')->name('home');
+Route::get('admin',     'Dashboard\DashboardController@admin')->name('admin');
 Route::resource('dashboard/users',    'UsersController');
 Route::resource('/projects',          'ProjectsController');
 

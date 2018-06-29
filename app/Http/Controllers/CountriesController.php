@@ -49,12 +49,8 @@ class CountriesController extends APIController
 	 */
 	public function index()
 	{
-		if (!$this->api) {
-			return view('wiki.countries.index');
-		}
-		if (env('APP_ENV') == 'local') {
-			ini_set('memory_limit', '864M');
-		}
+		if (!$this->api) return view('wiki.countries.index');
+		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 
 		$l10n              = checkParam('l10n', null, 'optional') ?? "eng";
 		$has_filesets      = checkParam('has_filesets', null, 'optional') ?? true;
@@ -67,16 +63,12 @@ class CountriesController extends APIController
 			1600, function () use ($l10n, $has_filesets, $bucket_id, $include_languages) {
 				if ($l10n) {
 					$language = Language::where('iso', $l10n)->first();
-					if (!$language) {
-						return $this->setStatusCode(404)->replyWithError(trans('api.language_errors_404'));
-					}
+					if (!$language) return $this->setStatusCode(404)->replyWithError(trans('api.language_errors_404'));
 				}
 				$countries = Country::exclude('introduction')->
 				when($has_filesets, function ($query) use ($bucket_id) {
 					$query->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
-						if ($bucket_id) {
-							$query->where('bucket_id', $bucket_id);
-						}
+						if ($bucket_id) $query->where('bucket_id', $bucket_id);
 					});
 				})->get();
 				if ($l10n != "eng") {

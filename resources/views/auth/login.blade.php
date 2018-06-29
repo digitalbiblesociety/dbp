@@ -62,13 +62,14 @@
         <form role="form" method="POST" action="{{ route('login') }}" class="medium-6 columns centered">
             {{ csrf_field() }}
             <h3 class="text-center">Sign in</h3>
-            <input class="login-box-input" type="text" name="email" placeholder="Username" value="{{ old('email') }}" autocomplete="username" required />
+            <a class="login-box-submit-button" href="login/facebook">Facebook</a> |
+            <a class="login-box-submit-button" href="login/github">Github</a> |
+            <a class="login-box-submit-button" href="login/google">Google</a>
+            <input class="login-box-input" type="text" name="email" placeholder="Email" value="{{ old('email') }}" autocomplete="email" required />
             <input class="login-box-input" type="password" name="password" placeholder="Password" autocomplete="current-password" required />
             <input class="login-box-submit-button" type="submit" name="signup_submit" value="Sign In" />
             <a href="{{ route('register') }}">Register</a> | <a href="{{ route('password.request') }}">Forgot Password?</a>
         </form>
-            <a class="login-box-submit-button" href="login/facebook">Facebook</a>
-            <a class="login-box-submit-button" href="login/github">Github</a>
     </section>
     <section role="tabpanel" aria-hidden="true" id="register-tab">
         <form class="medium-6 columns centered" role="form" method="POST" action="{{ route('register') }}">

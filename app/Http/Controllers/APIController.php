@@ -29,7 +29,7 @@ class APIController extends Controller
 	 * @OAS\Info(
 	 *     description="A Bible API",
 	 *     version="4.0.0",
-	 *     title="Koinos: Digital Bible Platform V4",
+	 *     title="Digital Bible Platform",
 	 *     termsOfService="http://bible.build/terms/",
 	 *     @OAS\Contact(email="jon@dbs.org"),
 	 *     @OAS\License(name="Apache 2.0",url="http://www.apache.org/licenses/LICENSE-2.0.html")

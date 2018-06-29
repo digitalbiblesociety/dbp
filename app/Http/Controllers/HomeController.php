@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Bible\BibleFileset;
 use App\Models\Country\Country;
+use App\Models\Country\CountryLanguage;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Models\Bible\Bible;
 use App\Helpers\AWS\Bucket;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class HomeController extends APIController
@@ -31,6 +33,20 @@ class HomeController extends APIController
 		$status['updates'] = '';
 
 		return view('dashboard.admin', compact('status'));
+	}
+
+	public function passThrough($path1 = null,$path2 = null, Request $request)
+	{
+		$params = checkParam('params',null,'optional') ?? $_GET;
+		if(is_array($params)) {
+			$params = implode('&', array_map(function ($v, $k) {
+				if($k === 'key') return "key=53355c32fca5f3cac4d7a670d2df2e09";
+				if($k === 0) return $v;
+				return sprintf("%s=%s", $k, $v);
+			}, $params, array_keys($params)));
+		}
+
+		return file_get_contents('https://dbt.io/'.$path1.'/'.$path2.'?'.$params);
 	}
 
 	/**

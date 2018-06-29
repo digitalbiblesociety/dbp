@@ -3,6 +3,7 @@
 Route::domain(env('API_URL'))->group(function () {
 	// VERSION 2
 
+	Route::name('v2_pass_through')->get('pass-through/{path1?}/{path2?}',                   'HomeController@passThrough');
 	Route::name('v2_library_asset')->get('library/asset',                                 'HomeController@libraryAsset');
 	Route::name('v2_library_version')->get('library/version',                             'BiblesController@libraryVersion');
 	Route::name('v2_library_book')->get('library/book',                                   'BooksController@show');

@@ -11,9 +11,6 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-use App\Models\User\Role;
-use App\Models\User\Account;
-use App\Traits\Uuids;
 use App\Models\Organization\Organization;
 
 /**
@@ -52,7 +49,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 	 *
 	 * @var array $fillable
 	 */
-	protected $fillable = ['id','name', 'nickname', 'avatar', 'verified', 'email', 'password', 'email_token'];
+	protected $fillable = ['id','name', 'nickname', 'avatar', 'verified', 'email', 'password', 'email_token','remember_token'];
 
 	/**
 	 * The attributes that should be hidden for arrays.
@@ -60,7 +57,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 	 * @var array
 	 */
 	protected $hidden = [
-		'password', 'remember_token',
+		'password', 'remember_token', 'email_token'
 	];
 
 

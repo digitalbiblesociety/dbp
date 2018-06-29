@@ -157,7 +157,7 @@ class BooksController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"}))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/BookName"))
 	 *     )
 	 * )
 	 *
@@ -168,16 +168,24 @@ class BooksController extends APIController
 	 */
 	public function bookNames()
 	{
-		if (!$this->api) {
-			return view('docs.books.bookNames');
-		}
+		if (!$this->api) return view('docs.books.bookNames');
 		$iso = checkParam('language_code');
-
+		\Cache::forget('v2_library_bookName_' . $iso);
 		$libraryBookName = \Cache::remember('v2_library_bookName_' . $iso, 1600, function () use ($iso) {
 			$language = fetchLanguage($iso);
-
-			return BookTranslation::where('iso', $iso)->with('book')->select('name', 'book_id')->get()->pluck('name',
-				'book.id_osis');
+			$bookTranslations = BookTranslation::where('iso', $iso)->with('book')->select('name', 'book_id')->get()->pluck('name','book.id_osis');
+			$bookTranslations["AL"] = "Alternative";
+            $bookTranslations["ON"] = "Old and New Testament";
+            $bookTranslations["OT"] = "Old Testament";
+            $bookTranslations["NT"] = "New Testament";
+            $bookTranslations["AP"] = "Apocrypha";
+            $bookTranslations["VU"] = "Vulgate";
+            $bookTranslations["ET"] = "Ethiopian Orthodox Canon/Geez Translation Additions";
+            $bookTranslations["CO"] = "Coptic Orthodox Canon Additions";
+            $bookTranslations["AO"] = "Armenian Orthodox Canon Additions";
+            $bookTranslations["PE"] = "Peshitta";
+            $bookTranslations["CS"] = "Codex Sinaiticus";
+			return [$bookTranslations];
 		});
 
 		return $this->reply($libraryBookName);
