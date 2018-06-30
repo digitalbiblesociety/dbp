@@ -36,7 +36,9 @@ class ResourcesTransformer extends BaseTransformer
 					'language'          => @$resource->language->name,
 					'vname'             => $vname,
 					'name'              => $name,
-					'links'             => $resource->links
+					'links'             => $resource->links,
+					'type'              => $resource->type,
+					'organization'      => $resource->organization->translations->where('language_iso',$this->i10n)->first()->name
 				];
 			}
 			case "v4_resources.show": {
@@ -50,7 +52,7 @@ class ResourcesTransformer extends BaseTransformer
 					'name'               => $name,
 					'name_description'   => $name_description,
 					'links'              => $resource->links,
-					'organization'      => $resource->organization
+					'organization'       => $resource->organization
 				];
 			}
 		}
