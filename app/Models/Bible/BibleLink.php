@@ -170,4 +170,10 @@ class BibleLink extends Model
     {
         return $this->HasOne(Organization::class, 'id');
     }
+
+    public function bible()
+    {
+    	return $this->belongsTo(Bible::class);
+    }
+
 }

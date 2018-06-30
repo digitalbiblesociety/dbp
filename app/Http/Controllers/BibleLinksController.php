@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Transformers\BibleLinksTransformer;
 use Illuminate\Http\Request;
 use App\Models\Bible\BibleLink;
 use App\Models\Organization\Organization;
@@ -19,12 +20,12 @@ class BibleLinksController extends APIController
 		    if(!$organization) return $this->setStatusCode(404)->replyWithError("organization not found");
 	    }
 
-	    $bibleLinks = BibleLink::when($iso, function ($q) use ($iso) {
+	    $bibleLinks = BibleLink::with('bible.currentTranslation')->when($iso, function ($q) use ($iso) {
 		    $q->where('iso', $iso);
 	    })->when($organization, function ($q) use ($organization) {
 		    $q->where('organization_id', $organization->id);
 	    })->where('visible',1)->get();
 
-	    return $this->reply(["data" => $bibleLinks]);
+	    return $this->reply(fractal($bibleLinks, new BibleLinksTransformer()));
     }
 }
