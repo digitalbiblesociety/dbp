@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bible\BibleLink;
 use App\Models\Organization\Organization;
 use App\Models\Resource\Resource;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ class ResourcesController extends APIController
 			return view('resources.index');
 		}
 		$iso             = checkParam('iso', null, 'optional');
-		$limit           = checkParam('limit', null, 'optional') ?? 25;
+		$limit           = checkParam('limit', null, 'optional') ?? 2000;
 		$organization    = checkParam('organization_id', null, 'optional');
 
 		if(isset($organization)) {
@@ -36,13 +37,13 @@ class ResourcesController extends APIController
 		}
 
 		$resources = Resource::with('translations', 'links', 'organization.translations','language')
-					->has('links')
+					//->has('links')
 					->when($iso, function ($q) use ($iso) {
 						$q->where('iso', $iso);
 					})
 		            ->when($organization, function ($q) use ($organization) {
 			            $q->where('organization_id', $organization->id);
-		            })->get();
+		            })->take($limit)->get();
 
 		return $this->reply(fractal()->collection($resources)->transformWith(new ResourcesTransformer())->serializeWith(new DataArraySerializer()));
 
@@ -79,9 +80,7 @@ class ResourcesController extends APIController
 	 */
 	public function show($id)
 	{
-		if (!$this->api) {
-			return view('resources.show');
-		}
+		if (!$this->api) return view('resources.show');
 		$resource = Resource::with('translations', 'links', 'organization.translations')->find($id);
 
 		return $this->reply(fractal()->item($resource)->transformWith(new ResourcesTransformer()));
