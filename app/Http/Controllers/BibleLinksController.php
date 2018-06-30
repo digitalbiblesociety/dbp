@@ -25,6 +25,6 @@ class BibleLinksController extends APIController
 		    $q->where('organization_id', $organization->id);
 	    })->where('visible',1)->get();
 
-	    return $this->reply($bibleLinks);
+	    return $this->reply(["data" => $bibleLinks]);
     }
 }
