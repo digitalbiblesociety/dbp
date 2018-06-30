@@ -60,6 +60,7 @@ Route::domain(env('API_URL'))->group(function () {
 	Route::name('v4_bible_filesets.show')->get('bibles/filesets/{fileset_id?}',                     'BibleFileSetsController@show');
 	Route::name('v4_bible_filesets.update')->put('bibles/filesets/{fileset_id}',                    'BibleFileSetsController@update');
 	Route::name('v4_bible_filesets.store')->post('bibles/filesets/',                                'BibleFileSetsController@store');
+	Route::name('v4_bible.links')->get('bibles/links',                                              'BibleLinksController@index');
 	Route::name('v4_bible.allBooks')->get('bibles/books/',                                          'BooksController@index');
 	Route::name('v4_text_search')->get('search',                                                    'TextController@search');
 	Route::name('v4_bible.books')->get('bibles/{bible_id}/book/{book?}',                            'BiblesController@books');
