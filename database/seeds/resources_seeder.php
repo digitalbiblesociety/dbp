@@ -18,10 +18,17 @@ class resources_seeder extends Seeder
 	    \DB::table('resource_translations')->delete();
 	    \DB::table('resources')->delete();
 
-	    // Run GRN Seeder
-	    $this->seed_homeForBibleTranslators();
-	    $this->seed_jesusFilm();
+	    echo "\nBeginning G.R.N";
 	    $this->seed_grn();
+
+	    echo "\nBeginning Jesus Film";
+	    $this->seed_jesusFilm();
+
+	    echo "\nBeginning Home for Bible Translators";
+	    $this->seed_homeForBibleTranslators();
+
+
+	    echo "\nBeginning Digital Bible Society";
 	    $this->seed_digitalBibleSociety();
     }
 
@@ -32,16 +39,18 @@ class resources_seeder extends Seeder
     	// Handle Libraries as Collections
 		$libraries = json_decode(file_get_contents(storage_path('data/resources/treasure_libraries/libraries.json')));
 		foreach ($libraries as $iso => $library) {
+			$language = \App\Models\Language\Language::where('iso',$iso)->first();
 			$resource = Resource::create([
 				'source_id'        => '',
 				'organization_id'  => $organization->id,
 				'iso'              => $iso,
+				'language_id'      => $language->id,
 				'type'             => "Library",
 				'cover'            => "https://images.bible.cloud/treasures/box/" . $library->url . "-treasures.jpg",
 				'date'             => ""
 			]);
-			$resource->translations()->create(['iso'=>'eng','title' => $library->etitle,'description' => isset($library->description) ? $library->description : "",'tag' => 0,'vernacular' => 0]);
-			$resource->translations()->create(['iso'=>$iso,'title' => $library->vtitle,'description' => '','tag' => 0,'vernacular' => 1]);
+			$resource->translations()->create(['iso'=>'eng','language_id' => \App\Models\Language\Language::where('iso','eng')->first()->id,'title' => $library->etitle,'description' => isset($library->description) ? $library->description : "",'tag' => 0,'vernacular' => 0]);
+			$resource->translations()->create(['iso'=>$iso,'language_id' => $language->id,'title' => $library->vtitle,'description' => '','tag' => 0,'vernacular' => 1]);
 			$resource->links()->create(['url' => "https://dbs.org/libraries/".$library->url."-treasures",'type' => "Library",'title' => "Collection Preview & Download" ]);
 		}
     }
@@ -60,9 +69,11 @@ class resources_seeder extends Seeder
 		    }
 
     		if(!isset($book['iso'])) { dd($book); }
+    		$language = \App\Models\Language\Language::where('iso',$book['iso'])->select(['iso','id'])->first();
 		    $resource = Resource::create([
 			    'source_id'        => '',
 			    'organization_id'  => "23",
+			    'language_id'      => $language->id,
 			    'iso'              => $book['iso'],
 			    'type'             => "Book",
 			    'cover'            => ($book['cover']) ? "https://bible.cloud/images/resources/".$book['cover'] : '',
@@ -72,6 +83,7 @@ class resources_seeder extends Seeder
 		    $resource->translations()->create([
 		    	'title'       => $book['title'],
 			    'description' => $book['description'],
+			    'language_id' => $language->id,
 			    'iso'         => $book['iso'],
 			    'tag'         => 0,
 			    'vernacular'  => ($book['iso'] == "eng") ? 1 : 0
@@ -120,15 +132,20 @@ class resources_seeder extends Seeder
 	    			$current_film = $media_components->where('mediaComponentId',$film['mediaComponentId'])->first();
 				    if(!isset($film['languageId'])) { continue; }
 	    			if(!isset($languages[$film['languageId']])) { continue; }
+
+				    $language = \App\Models\Language\Language::where('iso',$languages[$film['languageId']])->select(['iso','id'])->first();
+					if(!$language) {continue;}
 	    			$resource = Resource::create([
 	    				'source_id'        => $film['mediaComponentId'],
 					    'organization_id'  => "24",
+					    'language_id'      => $language->id,
 					    'iso'              => $languages[$film['languageId']],
 					    'type'             => "Film",
 					    'cover'            => "https://bible.cloud/images/resources/".$film['mediaComponentId'].'.png',
 					    'cover_thumbnail'  => "https://bible.cloud/images/resources/".$film['mediaComponentId'].'_thumbnail.png'
 				    ]);
-					if($current_film) $resource->translations()->create(['title' => $current_film['title'],'description' => $current_film['shortDescription'],'iso' => 'eng','vernacular' => 0,'tag' => 0]);
+				    $language = \App\Models\Language\Language::where('iso','eng')->select(['iso','id'])->first();
+					if($current_film) $resource->translations()->create(['language_id' => $language->id,'title' => $current_film['title'],'description' => $current_film['shortDescription'],'iso' => 'eng','vernacular' => 0,'tag' => 0]);
 
 					if(isset($film['downloadUrls']['low']['url'])) {
 						$resource->links()->create([
@@ -166,8 +183,14 @@ class resources_seeder extends Seeder
     		foreach ($language->recordings as $key => $recording) {
     			$links = collect($language->programs_info[$key]->links);
 
+    			$spoken_language = \App\Models\Language\Language::where('iso',$iso)->first();
+    			if(!$language) {
+    				echo "\n Missing: iso ". $iso;
+    				continue;
+    			}
     			$currentResource = Resource::create([
     				'organization_id' => $organization_id,
+				    'language_id'     => $spoken_language->id,
     				'iso'             => $iso,
 				    'source_id'       => $recording->program_num,
 					'cover'           => $recording->thumbnail,
@@ -178,6 +201,7 @@ class resources_seeder extends Seeder
 
     			ResourceTranslation::create([
 					'iso'         => 'eng',
+					'language_id' => $spoken_language->id,
 					'resource_id' => $currentResource->id,
 					'vernacular'  => ($iso == 'eng') ? true : false,
 					'tag'         => false,
@@ -187,16 +211,16 @@ class resources_seeder extends Seeder
 
     			foreach ($language->programs_info[$key]->links as $link) {
 
-    				if(isset($link->resources->low[0])) {
-    					ResourceLink::create(['resource_id' => $currentResource->id,'title' => 'Compressed mp3','type' => 'mp3','url' => $link->resources->low[0]]);
+    				if(isset($link->resources->audio->low[0])) {
+    					ResourceLink::create(['resource_id' => $currentResource->id,'title' => 'Compressed mp3','type' => 'mp3','url' => $link->resources->audio->low[0]]);
 				    }
 
-				    if(isset($link->resources->mp3[0])) {
+				    if(isset($link->resources->audio->mp3[0])) {
 					    ResourceLink::create( [
 						    'resource_id' => $currentResource->id,
 						    'title'       => 'Uncompressed mp3',
 						    'type'        => 'mp3',
-						    'url'         => $link->resources->mp3[0],
+						    'url'         => $link->resources->audio->mp3[0],
 					    ] );
 				    }
 			    }
