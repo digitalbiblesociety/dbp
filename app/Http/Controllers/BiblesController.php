@@ -176,9 +176,9 @@ class BiblesController extends APIController
 	public function archival()
     {
         if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
-        $iso               = checkParam('iso', null, 'optional');
-        $organization      = checkParam('organization_id', null, 'optional');
-        $country           = checkParam('country', null, 'optional');
+        $iso                = checkParam('iso', null, 'optional');
+        $organization       = checkParam('organization_id', null, 'optional');
+        $country            = checkParam('country', null, 'optional');
         $include_regionInfo = checkParam('include_region_info', null, 'optional');
 
         $cache_string = 'bibles_archival'.$iso.$organization.$country.$include_regionInfo;
@@ -459,7 +459,7 @@ class BiblesController extends APIController
 	 */
 	public function show($id)
 	{
-		$bible = Bible::with('filesets.organization', 'translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon', 'alphabet.primaryFont','equivalents')->find($id);
+		$bible = Bible::with('filesets.organization', 'translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents')->find($id);
 		if (!$bible) return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id]));
 		if (!$this->api) return view('bibles.show', compact('bible'));
 
