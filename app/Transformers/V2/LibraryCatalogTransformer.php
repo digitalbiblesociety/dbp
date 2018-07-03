@@ -20,6 +20,13 @@ class LibraryCatalogTransformer extends BaseTransformer
 			    $bible_id = $fileset->bible->first()->id;
 			    $language = $fileset->bible->first()->language;
 
+
+			    if (strpos($fileset->set_type_code, 'P') !== false) {
+				    $collection_code = "AL";
+			    } else {
+				    $collection_code = (substr($fileset->id,6,1) == "O") ? "OT" : "NT";
+			    }
+
 			    return [
 				    "dam_id"                    => $fileset->id,
 				    "fcbh_id"                   => $fileset->id,
@@ -45,7 +52,7 @@ class LibraryCatalogTransformer extends BaseTransformer
 				    "version_code"              => substr($fileset->id,3) ?? "",
 				    "version_name"              => "Wycliffe Bible Translators, Inc.",
 				    "version_english"           => @$bible->currentTranslation->name ?? $fileset->id,
-				    "collection_code"           => (substr($fileset->id,6,1) == "O") ? "OT" : "NT",
+				    "collection_code"           => $collection_code,
 				    "rich"                      => ($fileset->set_type_code == 'text_format') ? "1" : "0",
 				    "collection_name"           => $fileset->name,
 				    "updated_on"                => (string) $fileset->updated_at->toDateTimeString(),
