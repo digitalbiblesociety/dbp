@@ -264,7 +264,7 @@ class BibleFileSetsController extends APIController
 		})
 		->when($type, function ($q) use($type) {
 			$q->where('set_type_code', $type);
-		})->where('id',$id)->first();
+		})->select(['hash_id','id','bucket_id','set_type_code as type','set_size_code as size'])->where('id',$id)->first();
 
 		return $this->reply($fileset);
 	}
