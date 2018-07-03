@@ -145,21 +145,24 @@ class LibraryCatalogController extends APIController
 		$access_control = $this->accessControl($this->key, "api");
 
 		$cache_string = 'library_volume' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $iso . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . '_' . $bucket . $access_control->string;
-		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $bucket, $include_regionInfo, $access_control) {
+		//\Cache::forget($cache_string);
+		//$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $bucket, $include_regionInfo, $access_control) {
 			$output = [];
-			$filesets = BibleFileset::with(['bible.translatedTitles','bible.language', 'bible.language.parent.parentLanguage',
+			$filesets = BibleFileset::with(['bible.translatedTitles', 'bible.language.parent.parentLanguage',
 			'bible.organizations' => function ($q) use($organization) {
 				if($organization) $q->where('organization_id', $organization);
-			}])->where('bucket_id', $bucket)->has('bible.translations')->has('bible.language')->has('files')
-
-			// Search by iso code if param given
-			->when($iso, function ($q) use ($iso) {
-			    $q->where('bible.iso', $iso);
-            })
+			},
+			'bible' => function($query) use($iso) {
+				$query->with('language')->whereHas('language', function($query) use($iso) {
+					if($iso) $query->where('iso', $iso);
+				});
+			}
+			])->has('bible.language')
+			->where('bucket_id', $bucket)->has('bible.translations')->has('files')
 
 			// Check substring for several dam_id variations
             ->when($dam_id, function ($q) use ($dam_id) {
-					$q->where('id', $dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2));
+				$q->where('id', $dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2));
 			})
 
 			// Filter by media
@@ -176,15 +179,15 @@ class LibraryCatalogController extends APIController
 			})->get();
 
 			$output = $this->generate_v2_style_id($filesets);
-			return fractal($output, new LibraryCatalogTransformer())->serializeWith($this->serializer);
-		});
-		return $this->reply($bibles);
+			return $this->reply(fractal($output, new LibraryCatalogTransformer())->serializeWith($this->serializer));
+		//});
+		//return $this->reply($bibles);
 	}
 
 	private function generate_v2_style_id($filesets)
 	{
 		foreach($filesets as $fileset) {
-			if(!$fileset->bible) { continue; }
+			if(!$fileset->bible->first()) { continue; }
 			$bible_id = $fileset->bible->first()->id;
 
 			switch($fileset->set_type_code) {
