@@ -242,7 +242,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 	public function developer()
 	{
-		return $this->BelongsToMany(Project::class, 'project_members')->where('role','developer')->withPivot('role','subscribed');
+		return $this->BelongsToMany(Project::class, 'project_members')->where('role','developer')->orWhere('role','admin')->withPivot('role','subscribed');
 	}
 
 	public function projects()

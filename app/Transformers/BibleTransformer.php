@@ -77,14 +77,9 @@ class BibleTransformer extends BaseTransformer
 		        }
 
 		        case "v2_library_volume": {
-		        	foreach($bible->filesets as $fileset) {
-				        $v2id .= ($fileset->set_size_code[0] == "N") ? "N" : "O";
-				        $v2id .= (strpos($fileset->set_type_code, 'drama') !== false) ? 2 : 1;
-				        $v2id .= (strpos($fileset->set_type_code, 'text') !== false) ? "ET" : "DA";
-				        $v2id = strtoupper($v2id);
 				        return [
-					        "dam_id"                    => $v2id,
-					        "fcbh_id"                   => $fileset->id,
+					        "dam_id"                    => $bible->id,
+					        "fcbh_id"                   => $bible->id,
 					        "volume_name"               => @$bible->currentTranslation->name ?? "",
 					        "status"                    => "live", // for the moment these default to Live
 					        "dbp_agreement"             => "true", // for the moment these default to True
@@ -107,9 +102,9 @@ class BibleTransformer extends BaseTransformer
 					        "version_code"              => substr($bible->id,3) ?? "",
 					        "version_name"              => "Wycliffe Bible Translators, Inc.",
 					        "version_english"           => @$bible->currentTranslation->name ?? $bible->id,
-					        "collection_code"           => ($fileset->name == "Old Testament") ? "OT" : "NT",
+					        "collection_code"           => ($bible->name == "Old Testament") ? "OT" : "NT",
 					        "rich"                      => "0",
-					        "collection_name"           => $fileset->name,
+					        "collection_name"           => $bible->name,
 					        "updated_on"                => "".$bible->updated_at->toDateTimeString() ?? "",
 					        "created_on"                => "".$bible->created_at->toDateTimeString() ?? "",
 					        "right_to_left"             => (isset($bible->alphabet)) ? (($bible->alphabet->direction == "rtl") ? "true" : "false") : "false",
@@ -119,7 +114,7 @@ class BibleTransformer extends BaseTransformer
 					        "audio_zip_path"            => "",
 					        "font"                      => null,
 					        "arclight_language_id"      => "",
-					        "media"                     => (strpos($fileset->set_type_code, 'audio') !== false) ? 'Audio' : 'Text',
+					        "media"                     => (strpos($bible->set_type_code, 'audio') !== false) ? 'Audio' : 'Text',
 					        "media_type"                => "Drama",
 					        "delivery"                  => [
 					        	"mobile",
@@ -130,7 +125,6 @@ class BibleTransformer extends BaseTransformer
 					        "resolution"                => []
 				        ];
 				        break;
-			        }
 		        }
 		        default: return [];
 	        }

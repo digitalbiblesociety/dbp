@@ -58,7 +58,6 @@ class CountriesController extends APIController
 		$include_languages = checkParam('include_languages', null, 'optional');
 
 		\Cache::forget("countries" . $l10n . $has_filesets . $bucket_id . $include_languages . \i18n::getCurrentLocale());
-
 		return \Cache::remember("countries" . $l10n . $has_filesets . $bucket_id . $include_languages . \i18n::getCurrentLocale(),
 			1600, function () use ($l10n, $has_filesets, $bucket_id, $include_languages) {
 				if ($l10n) {
@@ -294,10 +293,7 @@ class CountriesController extends APIController
 		$this->validateCountry(request());
 
 		$country = Country::find($id);
-
-		if ($this->api) {
-			return $this->reply(trans('api.countries_update_200', []));
-		}
+		if ($this->api) return $this->reply(trans('api.countries_update_200', []));
 
 		return view('wiki.countries.show', compact('country'));
 	}
@@ -338,19 +334,13 @@ class CountriesController extends APIController
 	 */
 	private function validateUser($user = null)
 	{
-		if (!$this->api) {
-			$user = Auth::user();
-		}
+		if (!$this->api) $user = Auth::user();
 		if (!$user) {
 			$key = Key::where('key', $this->key)->first();
-			if (!isset($key)) {
-				return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed'));
-			}
+			if (!isset($key)) return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed'));
 			$user = $key->user;
 		}
-		if (!$user->archivist AND !$user->admin) {
-			return $this->setStatusCode(401)->replyWithError(trans('api.auth_wiki_validation_failed'));
-		}
+		if (!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError(trans('api.auth_wiki_validation_failed'));
 
 		return $user;
 	}
@@ -373,12 +363,8 @@ class CountriesController extends APIController
 		]);
 
 		if ($validator->fails()) {
-			if ($this->api) {
-				return $this->setStatusCode(422)->replyWithError($validator->errors());
-			}
-			if (!$this->api) {
-				return redirect('dashboard/countries/create')->withErrors($validator)->withInput();
-			}
+			if ($this->api) return $this->setStatusCode(422)->replyWithError($validator->errors());
+			if (!$this->api) return redirect('dashboard/countries/create')->withErrors($validator)->withInput();
 		}
 
 	}

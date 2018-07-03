@@ -356,7 +356,7 @@ class Bible extends Model
      */
     public function language()
     {
-        return $this->hasOne(Language::class,'id','language_id')->select('name','id','country_id','iso','iso2T','iso2B','iso1','autonym');
+        return $this->BelongsTo(Language::class,'language_id','id')->select('name','id','country_id','iso','iso2T','iso2B','iso1','autonym');
     }
 
     public function country()
