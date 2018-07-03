@@ -145,8 +145,7 @@ class LibraryCatalogController extends APIController
 		$access_control = $this->accessControl($this->key, "api");
 
 		$cache_string = 'library_volume' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $iso . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . '_' . $bucket . $access_control->string;
-		//\Cache::forget($cache_string);
-		//$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $bucket, $include_regionInfo, $access_control) {
+		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $bucket, $include_regionInfo, $access_control) {
 			$output = [];
 			$filesets = BibleFileset::with(['bible.translatedTitles','bible.language', 'bible.language.parent.parentLanguage',
 			'bible.organizations' => function ($q) use($organization) {
@@ -177,9 +176,9 @@ class LibraryCatalogController extends APIController
 			})->get();
 
 			$output = $this->generate_v2_style_id($filesets);
-			return $this->reply(fractal($output, new LibraryCatalogTransformer())->serializeWith($this->serializer));
-		//});
-		//return $this->reply($bibles);
+			return fractal($output, new LibraryCatalogTransformer())->serializeWith($this->serializer);
+		});
+		return $this->reply($bibles);
 	}
 
 	private function generate_v2_style_id($filesets)
