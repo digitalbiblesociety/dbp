@@ -315,19 +315,20 @@ class UsersController extends APIController
 
 		// Process Avatar
 		if($request->hasFile('avatar')) {
-			$input['avatar'] = $request->avatar = $id.".".$request->avatar->extension();
-			$image = Image::make($request->avatar);
+			//$input['avatar'] = $id.".".$request->file('avatar')->extension();
+			//dd($request->file('avatar'));
+			$image = Image::make($request->file('avatar'));
 			if(isset($request->avatar_crop_width) AND isset($request->avatar_crop_height)) {
 				$image->crop($request->avatar_crop_width, $request->avatar_crop_height, $request->avatar_crop_inital_x_coordinate, $request->avatar_crop_inital_y_coordinate);
 			}
 			$image->resize(300, 300);
 			if(env('APP_ENV') == 'local') {
-				\Storage::disk('local')->put($id.'.'.$request->avatar->extension(), $image->save());
+				\Storage::disk('public')->put($id.'.'.$request->avatar->extension(), $image->save());
 			} else {
 				\Storage::disk('dbp-dev-cdn')->put($id.'.'.$request->avatar->extension(), $image->save());
 			}
 		}
-
+		$input['avatar'] = $id.'.'.$request->avatar->extension();
 		$user->fill($input)->save();
 		// $user->project_role         = $user->projects->first()->pivot->role;
 		// $user->project_subscription = $user->projects->first()->pivot->subscribed;
