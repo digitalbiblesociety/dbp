@@ -322,11 +322,7 @@ class UsersController extends APIController
 				$image->crop($request->avatar_crop_width, $request->avatar_crop_height, $request->avatar_crop_inital_x_coordinate, $request->avatar_crop_inital_y_coordinate);
 			}
 			$image->resize(300, 300);
-			if(env('APP_ENV') == 'local') {
-				\Storage::disk('public')->put($id.'.'.$request->avatar->extension(), $image->save());
-			} else {
-				\Storage::disk('dbp-dev-cdn')->put($id.'.'.$request->avatar->extension(), $image->save());
-			}
+			\Storage::disk('public')->put($id.'.'.$request->avatar->extension(), $image->save());
 		}
 		$input['avatar'] = \URL::to('/storage/'.$id.'.'.$request->avatar->extension());
 		$user->fill($input)->save();
