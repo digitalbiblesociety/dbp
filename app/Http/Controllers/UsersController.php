@@ -328,7 +328,7 @@ class UsersController extends APIController
 				\Storage::disk('dbp-dev-cdn')->put($id.'.'.$request->avatar->extension(), $image->save());
 			}
 		}
-		$input['avatar'] = $id.'.'.$request->avatar->extension();
+		$input['avatar'] = \URL::to('/storage/'.$id.'.'.$request->avatar->extension());
 		$user->fill($input)->save();
 		// $user->project_role         = $user->projects->first()->pivot->role;
 		// $user->project_subscription = $user->projects->first()->pivot->subscribed;
