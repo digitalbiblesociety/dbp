@@ -35,7 +35,7 @@ class LibraryCatalogTransformer extends BaseTransformer
 				    "dbp_agreement"             => "true", // for the moment these default to True
 				    "expiration"                => "0000-00-00",
 				    "language_code"             => strtoupper($bible->iso),
-				    "language_name"             => $language->autonym ?? "",
+				    "language_name"             => $language->autonym ?? $language->name,
 				    "language_english"          => $language->name ?? "",
 				    "language_iso"              => $bible->iso,
 				    "language_iso_2B"           => $language->iso2B ?? "",
@@ -49,7 +49,7 @@ class LibraryCatalogTransformer extends BaseTransformer
 				    "language_family_iso_2B"    => ((@$language->parent) ? @$language->parent->iso2B : @$language->iso2B) ?? "",
 				    "language_family_iso_2T"    => ((@$language->parent) ? @$language->parent->iso2T : @$language->iso2T) ?? "",
 				    "language_family_iso_1"     => ((@$language->parent) ? @$language->parent->iso1 : @$language->iso1) ?? "",
-				    "version_code"              => substr($fileset->id,3) ?? "",
+				    "version_code"              => substr($fileset->id,3,3) ?? "",
 				    "version_name"              => "Wycliffe Bible Translators, Inc.",
 				    "version_english"           => @$bible->currentTranslation->name ?? $fileset->id,
 				    "collection_code"           => $collection_code,
@@ -62,7 +62,22 @@ class LibraryCatalogTransformer extends BaseTransformer
 				    "num_sample_audio"          => "0",
 				    "sku"                       => "",
 				    "audio_zip_path"            => "",
-				    "font"                      => null,
+				    "font"                      => [
+					    "id" => "12",
+                        "name" => "Charis SIL",
+                        "base_url" => "http://cloud.faithcomesbyhearing.com/fonts/Charis_SIL",
+                        "files" => [
+							"zip" => "all.zip",
+                            "ttf" => "font.ttf"
+                        ],
+                        "platforms" => [
+							"android" => true,
+                            "ios" => true,
+                            "web" => true
+                        ],
+                        "copyright" => "&copy; 2000-2013, SIL International  ",
+                        "url" => "http://bit.ly/1uKBBMx"
+                    ],
 				    "arclight_language_id"      => "",
 				    "media"                     => (strpos($fileset->set_type_code, 'audio') !== false) ? 'Audio' : 'Text',
 				    "media_type"                => ($fileset->set_type_code == 'audio_drama') ? "true" : "false",
