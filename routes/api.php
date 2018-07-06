@@ -10,13 +10,17 @@ Route::domain(env('API_URL'))->group(function () {
 	Route::name('v2_library_bookName')->get('library/bookname',                           'BooksController@bookNames');
 	Route::name('v2_library_bookOrder')->get('library/bookorder',                         'BooksController@show');
 	Route::name('v2_library_chapter')->get('library/chapter',                             'BooksController@chapters');
-	Route::name('v2_library_language')->get('library/language',                           'LanguagesController@index');
+
+	Route::name('v2_library_language')->get('library/language',                           'V2Controllers\LibraryCatalog\LanguageController@languageListing');
+	Route::name('v2_library_volumeLanguage')->get('library/volumelanguage',               'V2Controllers\LibraryCatalog\LanguageController@volumeLanguage');
+	Route::name('v2_library_volumeLanguageFamily')->get('library/volumelanguagefamily',   'V2Controllers\LibraryCatalog\LanguageController@volumeLanguageFamily');
+	Route::name('v2_country_lang')->get('country/countrylang',                            'V2Controllers\LibraryCatalog\LanguageController@CountryLang');
+
 	Route::name('v2_library_verseInfo')->get('library/verseinfo',                         'VerseController@info');
 	Route::name('v2_library_numbers')->get('library/numbers',                             'NumbersController@customRange');
 	Route::name('v2_library_metadata')->get('library/metadata',                           'BiblesController@libraryMetadata');
 	Route::name('v2_library_volume')->get('library/volume',                               'V2Controllers\LibraryCatalogController@libraryVolume');
-	Route::name('v2_library_volumeLanguage')->get('library/volumelanguage',               'LanguagesController@volumeLanguage');
-	Route::name('v2_library_volumeLanguageFamily')->get('library/volumelanguagefamily',   'LanguagesController@volumeLanguageFamily');
+
 	Route::name('v2_volume_organization_list')->get('library/volumeorganization',         'OrganizationsController@index');
 
 	// TODO: Cache below Routes
@@ -31,7 +35,6 @@ Route::domain(env('API_URL'))->group(function () {
 	Route::name('v2_text_search_group')->get('text/searchgroup',                          'TextController@searchGroup');
 	Route::name('v2_video_location')->get('video/location',                               'FilmsController@location');
 	Route::name('v2_video_path')->get('video/path',                                       'FilmsController@videoPath');
-	Route::name('v2_country_lang')->get('country/countrylang',                            'LanguagesController@CountryLang');
 	Route::name('v2_api_versionLatest')->get('api/apiversion',                            'HomeController@versionLatest');
 	Route::name('v2_api_apiReply')->get('api/reply',                                      'HomeController@versionReplyTypes');
 	Route::name('v2_api_jesusFilms')->get('library/jesusfilm',                            'ResourcesController@jesusFilmListing');

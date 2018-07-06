@@ -159,8 +159,8 @@ class APIController extends Controller
 		if (isset($_GET['echo'])) {
 			$object = [$_GET, $object];
 		}
-		$input  = checkParam('callback', null, 'optional') ?? checkParam('jsonp', null, 'optional');
-		$format = @$_GET['format'];
+		$input  = checkParam('callback|jsonp', null, 'optional');
+		$format = checkParam('reply|format', null, 'optional');
 
 		// Status Code, Headers, Params, Body, Time
 
@@ -231,6 +231,7 @@ class APIController extends Controller
 			'error' => [
 				'message'     => $message,
 				'status code' => $status,
+				'status'      => "Fail",
 				'face'        => array_random($faces),
 			],
 		], $this->getStatusCode(), [],

@@ -20,39 +20,43 @@ class countries_factbook_seeder extends Seeder
      */
     public function run()
     {
+    	\DB::table('country_issues')->delete();
 	    \DB::table('country_energy')->delete();
+	    \DB::table('country_people')->delete();
 	    \DB::table('country_economy')->delete();
 	    \DB::table('country_geography')->delete();
-	    \DB::table('country_people')->delete();
+	    \DB::table('country_government')->delete();
 	    \DB::table('country_communications')->delete();
 	    \DB::table('country_transportation')->delete();
+	    \DB::table('country_people_ethnicities')->delete();
 
         $countries = glob(storage_path('data/countries/factbook/*.json'));
         foreach($countries as $path) {
         	$countryData = json_decode(file_get_contents($path), true);
 	        $countryData['code'] = strtoupper(basename($path,'.json'));
-        	$country = Country::find($countryData['code']);
-        	if($country) {
-        		$this->seedEthnicGroups($countryData);
-		        $this->seedEnergy($countryData);
-		        $this->seedGeography($countryData);
-		        $this->seedCommunications($countryData);
-		        $this->seedTransportation($countryData);
-		        $this->seedIssues($countryData);
-		        $this->seedPeople($countryData);
-		        $this->seedGovernment($countryData);
-		        $this->seedEconomy($countryData);
-		        $this->seedIntroduction($countryData);
-		        $this->seedReligions($countryData);
+	        echo "\nPreparing to Seed ".$countryData['code'];
+        	$country_source = Country::where('fips',$countryData['code'])->first();
+        	if($country_source) {
+        		$this->seedEthnicGroups($countryData, $country_source);
+		        $this->seedEnergy($countryData, $country_source);
+		        $this->seedGeography($countryData, $country_source);
+		        $this->seedCommunications($countryData, $country_source);
+		        $this->seedTransportation($countryData, $country_source);
+		        $this->seedIssues($countryData, $country_source);
+		        $this->seedPeople($countryData, $country_source);
+		        $this->seedGovernment($countryData, $country_source);
+		        $this->seedEconomy($countryData, $country_source);
+		        $this->seedIntroduction($countryData, $country_source);
+		        $this->seedReligions($countryData, $country_source);
 	        }
         }
     }
 
-    public function seedIntroduction($country)
+    public function seedIntroduction($country, $country_source)
     {
     	$introduction = $country['Introduction']['Background']['text'] ?? false;
     	if($introduction) {
-		    $country = Country::where('fips',$country['code'])->first();
+		    $country = Country::where('fips',$country_source->id)->first();
 		    if($country) {
 			    $country->introduction = $introduction;
 			    $country->save();
@@ -61,26 +65,28 @@ class countries_factbook_seeder extends Seeder
 
     }
 
-    public function seedEthnicGroups($country)
+    public function seedEthnicGroups($country, $country_source)
     {
     	$ethnicGroups = $country['People and Society']['Ethnic groups'] ?? false;
+
     	if(isset($ethnicGroups)) {
 		    $ethnicGroups = $ethnicGroups['text'];
     	    $ethnicGroups = explode(', ', $ethnicGroups);
     	    foreach ($ethnicGroups as $ethnic_group) {
 			    preg_match("/(.*) (\d+.*?)\%/", $ethnic_group, $ethnicity);
 			    if(isset($ethnicity[2])) {
+
 				    \App\Models\Country\FactBook\CountryEthnicity::create([
-					    'country_id'                    => $country['code'],
+					    'country_id'                    => $country_source->id,
 					    'name'                          => $ethnicity[1],
-					    'population_percentage'         => $ethnicity[2],
+					    'population_percentage'         => floatval($ethnicity[2]),
 				    ]);
 			    }
 	        }
 		}
     }
 
-    public function seedReligions($country) {
+    public function seedReligions($country, $country_source) {
     	$religions = $country['People and Society']['Religions'] ?? false;
     	if($religions) {
 		    $religions = explode(', ', $religions['text']);
@@ -88,7 +94,7 @@ class countries_factbook_seeder extends Seeder
 			    preg_match("/(.*) (\d+.*?)\%/", $religion, $religiousGroup);
 
 				\App\Models\Country\FactBook\CountryReligion::create([
-				    'country_id'                    => $country['code'],
+				    'country_id'                    => $country_source->id,
 				    'name'                          => $religiousGroup[1] ?? $religion,
 				    'population_percentage'         => (isset($religiousGroup[2])) ? intval($religiousGroup[2]) : null,
 				]);
@@ -100,16 +106,16 @@ class countries_factbook_seeder extends Seeder
 	/**
 	 * @param $country
 	 */
-	public function seedGeography($country)
+	public function seedGeography($country, $country_source)
 	{
 		$geography = $country['Geography'];
 		$latlongs = json_decode(file_get_contents(storage_path('/data/countries/countries_latLong.json')), true);
-		$latlongs = $latlongs[$country['code']] ?? [];
+		$latlongs = $latlongs[$country_source->id] ?? [];
 		$lng = $latlongs['lng'] ?? NULL;
 		$lat = $latlongs['lat'] ?? NULL;
 
 		// Need special accommodation for France
-		if($country['code'] == "FR") {
+		if($country_source->id == "FR") {
 			$geography["Location"] = $geography["Location"]["metropolitan France"];
 			$geography["Geographic coordinates"] = $geography["Geographic coordinates"]["metropolitan France"];
 			$geography["Map references"] = $geography["Map references"]["metropolitan France"];
@@ -164,7 +170,7 @@ class countries_factbook_seeder extends Seeder
 		}
 
 		CountryGeography::create([
-			'country_id'           => $country['code'],
+			'country_id'           => $country_source->id,
 			'location_description' => $geography["Location"]["text"],
 			'latitude'             => $lat ?? null,
 			'longitude'            => $lng ?? null,
@@ -181,7 +187,7 @@ class countries_factbook_seeder extends Seeder
 		]);
 	}
 
-	public function seedPeople($country)
+	public function seedPeople($country, $country_source)
 	{
 		if(!isset($country["People and Society"])) return false;
 		$people = $country["People and Society"];
@@ -283,7 +289,7 @@ class countries_factbook_seeder extends Seeder
 
 
 		CountryPeople::create([
-			'country_id'                                    => $country['code'],
+			'country_id'                                    => $country_source->id,
 			'languages'                                     => $country['Languages']['text'] ?? "",
 			'religions'                                     => $country['Religions']['text'] ?? "",
 			'population'                                    => isset($population[1]) ? intval($population[1]) : null,
@@ -355,13 +361,13 @@ class countries_factbook_seeder extends Seeder
 		]);
 
 	}
-	public function seedGovernment($country)
+	public function seedGovernment($country, $country_source)
 	{
 		if(!isset($country["Government"])) return false;
 		$government = $country["Government"];
 
 		CountryGovernment::create([
-			'country_id'                                => $country['code'],
+			'country_id'                                => $country_source->id,
 			'name'                                      => isset($government["Country name"]["conventional long form"]['text']) ? $government["Country name"]["conventional long form"]['text'] : "",
 			'name_etymology'                            => isset($government["Country name"]["etymology"]['text']) ? $government["Country name"]["etymology"]['text'] : "",
 			'conventional_long_form'                    => isset($government["Country name"]["conventional long form"]['text']) ? $government["Country name"]["conventional long form"]['text'] : "",
@@ -401,13 +407,13 @@ class countries_factbook_seeder extends Seeder
 		]);
 	}
 
-	public function seedEconomy($country)
+	public function seedEconomy($country, $country_source)
 	{
 		if(!isset($country['Economy'])) return false;
 		$economic = $country['Economy'];
 
 		CountryEconomy::create([
-			'country_id'                          => $country['code'],
+			'country_id'                          => $country_source->id,
 			'overview'                            => isset($economic["Economy - overview"]['text']) ? $economic["Economy - overview"]['text'] : "",
 			'gdp_power_parity'                    => isset($economic["GDP (purchasing power parity)"]['text']) ? $economic["GDP (purchasing power parity)"]['text'] : "",
 			'gdp_real_growth'                     => isset($economic["GDP - real growth rate"]['text']) ? $economic["GDP - real growth rate"]['text'] : "",
@@ -456,13 +462,13 @@ class countries_factbook_seeder extends Seeder
 		]);
 	}
 
-	public function seedEnergy($country)
+	public function seedEnergy($country, $country_source)
 	{
 		if(!isset($country['Energy'])) return false;
 		$energy = $country['Energy'];
 
 		CountryEnergy::create([
-			'country_id'                      => $country['code'],
+			'country_id'                      => $country_source->id,
 			'electricity_production'          => isset($energy['Electricity - production']) ? $energy['Electricity - production']['text'] : "",
 			'electricity_consumption'         => isset($energy['Electricity - consumption']) ? $energy['Electricity - consumption']['text'] : "",
 			'electricity_exports'             => isset($energy['Electricity - exports']) ? $energy['Electricity - exports']['text'] : "",
@@ -488,14 +494,14 @@ class countries_factbook_seeder extends Seeder
 			'co2_output'                      => isset($energy['Carbon dioxide emissions from consumption of energy']) ? $energy['Carbon dioxide emissions from consumption of energy']['text'] : "",
 		]);
 	}
-	public function seedCommunications($country)
+	public function seedCommunications($country, $country_source)
 	{
 		if(!isset($country['Communications'])) return false;
 		$communications = $country['Communications'];
 		$populationPercentage = isset($communications["Internet users"]["percent of population"]) ? str_replace('%','',substr($communications["Internet users"]["percent of population"]["text"],0,3)) : 0.00;
 
 		CountryCommunication::create([
-			'country_id'                      => $country['code'],
+			'country_id'                      => $country_source->id,
 			'fixed_phones_total'              => isset($communications["Telephones - fixed lines"]["total subscriptions"]) ? $communications["Telephones - fixed lines"]["total subscriptions"]["text"] : "",
 			'fixed_phones_subs_per_100'       => isset($communications["Telephones - fixed lines"]["subscriptions per 100 inhabitants"]) ? $communications["Telephones - fixed lines"]["subscriptions per 100 inhabitants"]["text"] : "",
 			'mobile_phones_total'             => isset($communications["Telephones - mobile cellular"]["total"]) ? $communications["Telephones - mobile cellular"]["total"]["text"] : "",
@@ -509,13 +515,13 @@ class countries_factbook_seeder extends Seeder
 			'internet_population_percent'     => $populationPercentage,
 		]);
 	}
-	public function seedTransportation($country)
+	public function seedTransportation($country, $country_source)
 	{
 		if(!isset($country['Transportation'])) return false;
 		$transportation = $country["Transportation"];
 
 		CountryTransportation::create([
-			'country_id'           => $country['code'],
+			'country_id'           => $country_source->id,
 			'air_carriers'         => isset($transportation["National air transport system"]["number of registered air carriers"]["text"]) ? intval($transportation["National air transport system"]["number of registered air carriers"]["text"]) : null,
 			'aircraft'             => isset($transportation["National air transport system"]["inventory of registered aircraft operated by air carriers"]["text"]) ? intval($transportation["National air transport system"]["inventory of registered aircraft operated by air carriers"]["text"]) : null,
 			'aircraft_passengers'  => isset($transportation["annual passenger traffic on registered air carriers"]["text"]) ? $transportation["annual passenger traffic on registered air carriers"]["text"] : null,
@@ -529,13 +535,13 @@ class countries_factbook_seeder extends Seeder
 			'cruise_ports'         => isset($transportation["cruise port(s)"]["text"]) ? $transportation["cruise port(s)"]["text"] : null,
 		]);
 	}
-	public function seedIssues($country)
+	public function seedIssues($country, $country_source)
 	{
 		if(!isset($country['Transnational Issues'])) return false;
 		$issues = $country["Transnational Issues"];
 
 		CountryIssues::create([
-			'country_id'             => $country['code'],
+			'country_id'             => $country_source->id,
 			'international_disputes' => isset($issues["Disputes - international"]["text"]) ? $issues["Disputes - international"]["text"] : "",
 			'illicit_drugs'          => isset($issues["Illicit drugs"]["text"]) ? $issues["Illicit drugs"]["text"] : "",
 			'refugees'               => isset($issues["Disputes - international"]["text"]) ? $issues["Disputes - international"]["text"] : "",

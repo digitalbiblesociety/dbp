@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\V2Controllers;
+namespace App\Http\Controllers\V2Controllers\LibraryCatalog;
 
 use App\Http\Controllers\APIController;
 use App\Models\Bible\BibleFileset;
-use App\Models\Language\Language;
 use App\Transformers\V2\LibraryCatalogTransformer;
-use App\Transformers\V2\LibraryCatalog\LanguageListingTransformer;
 use App\Traits\AccessControlAPI;
 
 
@@ -243,59 +241,6 @@ class LibraryCatalogController extends APIController
 
 		foreach ($output as $key => $item) {$output[$key]->generated_id = $key;}
 		return $output;
-	}
-
-	/**
-	 * @OAS\Get(
-	 *     path="/library/language/",
-	 *     tags={"Library Catalog"},
-	 *     summary="Returns the list of languages",
-	 *     description="Returns the List of Languages",
-	 *     operationId="v2_library_language",
-	 *     @OAS\Parameter(in="query",name="code",description="Get the entry for a three letter language code",@OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
-	 *     @OAS\Parameter(in="query",name="name",description="Get the entry for a part of a language name in either native language or English",@OAS\Schema(type="string",example="Spanish")),
-	 *     @OAS\Parameter(in="query",name="full_word",description="Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string new is anywhere in the language name, like in Newari and Awa for Papua New Guinea. When true, it will only return volumes where the language name contains the full word 'new', like in `Awa for Papua New Guinea`. Default is false",@OAS\Schema(type="boolean",default=false,example=false)),
-	 *     @OAS\Parameter(in="query",deprecated=true,name="family_only",description="When set to true the returned list is of only legal language families. The default is false",@OAS\Schema(type="boolean")),
-	 *     @OAS\Parameter(in="query",deprecated=true,name="possibilities",description="When set to true the returned list is a combination of DBP languages and ISO languages not yet defined in DBP that meet any of the criteria",@OAS\Schema(type="boolean",default=true,example=true)),
-	 *     @OAS\Parameter(in="query",name="sort_by",description="Primary criteria by which to sort. 'name' refers to the native language name. The default is 'english'",@OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
-	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/format"),
-	 *     @OAS\Response(
-	 *         response=200,
-	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_library_language"))
-	 *     )
-	 * )
-	 *
-	 */
-	public function languageListing()
-	{
-		$code                  = checkParam('code', null, 'optional');
-		$name                  = checkParam('name', null, 'optional');
-		$full_word             = checkParam('full_word', null, 'optional') ?? "false";
-		$sort_by               = checkParam('sort_by', null, 'optional') ?? "name";
-
-		$cache_string = 'v' . $this->v . '_languages_' . $code.$full_word.$name.$sort_by;
-		$languages = \Cache::remember($cache_string, 1600, function () use ($code,$full_word,$name,$sort_by) {
-			$languages = Language::select(['id', 'iso2B', 'iso', 'name'])
-			                     ->when($code, function ($query) use ($code) {
-				                     return $query->where('iso', $code);
-			                     })->when($name, function ($query) use ($name, $full_word) {
-					return $query->whereHas('translations', function ($query) use ($name, $full_word) {
-						if ($full_word == "true") {
-							$query->where('name', 'like', '%' . $name . ' ' . '%')->orWhere('name', $name);
-						} else {
-							$query->where('name', 'like', '%' . $name . '%')->orWhere('name', $name);
-						}
-					});
-				})->when($sort_by, function ($query) use ($sort_by) {
-					return $query->orderBy($sort_by);
-				})->get();
-			return fractal($languages,new LanguageListingTransformer())->serializeWith($this->serializer);
-		});
-		return $this->reply($languages);
 	}
 
 }
