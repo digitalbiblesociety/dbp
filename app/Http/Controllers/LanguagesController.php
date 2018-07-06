@@ -8,8 +8,13 @@ use App\Transformers\LanguageTransformer;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
+use App\Traits\AccessControlAPI;
+
 class LanguagesController extends APIController
 {
+
+	use AccessControlAPI;
+
 	/**
 	 * Display a listing of the resource.
 	 * Fetches the records from the database > passes them through fractal for transforming.
@@ -98,6 +103,9 @@ class LanguagesController extends APIController
 		$has_filesets          = checkParam('has_filesets', null, 'optional');
 		$bucket_id             = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$include_alt_names     = checkParam('include_alt_names', null, 'optional');
+		$hide_restricted       = checkParam('hide_restricted', null, 'optional') ?? true;
+
+		$access_control = $this->accessControl($this->key, "api");
 
 		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $l10n . $l10n_language . $language_name_portion . $full_word . $family_only . $possibilities . $sort_by . $has_bibles . $has_filesets . $bucket_id . $include_alt_names;
 		\Cache::forget($cache_string);
@@ -114,18 +122,21 @@ class LanguagesController extends APIController
 			$has_bibles,
 			$has_filesets,
 			$bucket_id,
-			$include_alt_names
+			$include_alt_names,
+			$hide_restricted,
+			$access_control
 		) {
 			$languages = Language::select(['id', 'iso2B', 'iso', 'name'])
 			->when($has_bibles, function ($query) use ($has_bibles) {
 			    return $query->has('bibles');
 			})
-			->when($has_filesets, function ($q) use ($bucket_id) {
-			        $q->whereHas('bibles.filesets', function ($query) use ($bucket_id) {
-			            if ($bucket_id) {
-			                $query->where('bucket_id', $bucket_id);
-			            }
-			        })->with('bibles.filesets');
+			->when($has_filesets, function ($q) use ($bucket_id,$access_control,$hide_restricted) {
+			        $q->whereHas('bibles.filesets', function ($query) use ($bucket_id,$access_control,$hide_restricted) {
+			            if($bucket_id) $query->where('bucket_id', $bucket_id);
+				        if($hide_restricted) $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
+			        })->with(['bibles.filesets' => function ($query) use ($access_control, $hide_restricted) {
+						if($hide_restricted) $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
+					}]);
 				}, // if has_filesets is set to false
 			    function ($q) { $q->withCount('bibles');
 			})->when($country, function ($query) use ($country) {
@@ -154,7 +165,7 @@ class LanguagesController extends APIController
 				}
 			}
 
-			if ($has_filesets) {
+			if ($has_filesets AND $hide_restricted) {
 				foreach ($languages as $key => $language) {
 					foreach ($language->bibles as $bible_key => $bible) {
 						if ($bible->filesets->count() == 0) {
