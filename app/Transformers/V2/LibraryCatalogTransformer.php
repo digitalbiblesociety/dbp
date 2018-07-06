@@ -53,7 +53,7 @@ class LibraryCatalogTransformer extends BaseTransformer
 				    "version_english"           => @$bible->translatedTitles->where('language_id','eng')->first()->name,
 				    "collection_code"           => $collection_code,
 				    "rich"                      => ($fileset->set_type_code == 'text_format') ? "1" : "0",
-				    "collection_name"           => $fileset->name,
+				    "collection_name"           => ($collection_code == "NT") ? "New Testament" : "Old Testament",
 				    "updated_on"                => (string) $fileset->updated_at->toDateTimeString(),
 				    "created_on"                => (string) $fileset->created_at->toDateTimeString(),
 				    "right_to_left"             => (isset($bible->alphabet)) ? (($bible->alphabet->direction == "rtl") ? "true" : "false") : "false",
