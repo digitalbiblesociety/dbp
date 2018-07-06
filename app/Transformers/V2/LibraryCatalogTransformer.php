@@ -20,7 +20,6 @@ class LibraryCatalogTransformer extends BaseTransformer
 			    $bible_id = $fileset->bible->first()->id;
 			    $language = $fileset->bible->first()->language;
 
-
 			    $ver_title = @$bible->translatedTitles->where('language_id',$language->id)->first()->name;
 			    $eng_title = @$bible->translatedTitles->where('language_id','eng')->first()->name;
 
@@ -30,8 +29,8 @@ class LibraryCatalogTransformer extends BaseTransformer
 				    $collection_code = (substr($fileset->id,6,1) == "O") ? "OT" : "NT";
 			    }
 			    return [
-				    "dam_id"                    => (string) $fileset->id,
-				    "fcbh_id"                   => (string) $fileset->id,
+				    "dam_id"                    => (string) $fileset->generated_id,
+				    "fcbh_id"                   => (string) $fileset->generated_id,
 				    "volume_name"               => (string) $ver_title,
 				    "status"                    => "live", // for the moment these default to Live
 				    "dbp_agreement"             => "true", // for the moment these default to True

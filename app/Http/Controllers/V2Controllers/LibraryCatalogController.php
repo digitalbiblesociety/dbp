@@ -188,6 +188,7 @@ class LibraryCatalogController extends APIController
 
 	private function generate_v2_style_id($filesets)
 	{
+		$output = [];
 		foreach($filesets as $fileset) {
 			if(!$fileset->bible->first()) { continue; }
 			$bible_id = substr($fileset->bible->first()->id,0,6);
@@ -196,32 +197,26 @@ class LibraryCatalogController extends APIController
 				case "audio":       { $type_code = "1DA"; break; }
 				case "text_plain":  { $type_code = "1ET"; break; }
 			}
-			if(!isset($type_code)) { continue; }
+
 			switch ($fileset->set_size_code) {
 				case "C":
 				case "NTOTP":
 				case "OTNTP":
 				case "NTPOTP": {
-					$output[$bible_id.'O'.$type_code] = $fileset;
-					$output[$bible_id.'N'.$type_code] = $fileset;
+					$output[$bible_id.'O'.$type_code] = clone $fileset;
+					$output[$bible_id.'N'.$type_code] = clone $fileset;
 					break;
 				}
 
 				case "NT":
-				case "NTP":    {$output[$bible_id.'N'.$type_code] = $fileset; break;}
+				case "NTP":    {$output[$bible_id.'N'.$type_code] = clone $fileset;break;}
 
 				case "OT":
-				case "OTP":    {$output[$bible_id.'O'.$type_code] = $fileset; break;}
-
-				case "P":
-				case "S":      {
-					break;
-					//$testaments = $fileset->files->pluck('testament.book_testament')->unique();
-					//foreach ($testaments as $testament) $output[$bible_id . substr($testament,0,1) . $type_code] = $fileset;
-				}
+				case "OTP":    {$output[$bible_id.'O'.$type_code] = clone $fileset;break;}
 			}
 		}
-		foreach ($output as $key => $item) $output[$key]->id = $key;
+
+		foreach ($output as $key => $item) {$output[$key]->generated_id = $key;}
 		return $output;
 	}
 
