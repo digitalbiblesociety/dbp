@@ -148,7 +148,7 @@ class LibraryCatalogController extends APIController
 		//\Cache::forget($cache_string);
 		//$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $bucket, $include_regionInfo, $access_control) {
 			$output = [];
-			$filesets = BibleFileset::with(['bible.translatedTitles', 'bible.language.parent.parentLanguage',
+			$filesets = BibleFileset::with(['bible.translatedTitles', 'bible.language.parent.parentLanguage', 'bible.alphabet',
 			'bible.organizations' => function ($q) use($organization) {
 				if($organization) $q->where('organization_id', $organization);
 			},
@@ -158,7 +158,10 @@ class LibraryCatalogController extends APIController
 				});
 			}
 			])->has('bible.language')
-			->where('bucket_id', $bucket)->has('bible.translations')->has('files')
+			->where('bucket_id', $bucket)->has('bible.translations')
+
+			// Version 2 does not support delivery via s3
+			->where('set_type_code','!=','text_format')
 
 			// Check substring for several dam_id variations
             ->when($dam_id, function ($q) use ($dam_id) {
@@ -178,8 +181,7 @@ class LibraryCatalogController extends APIController
 				$q->orderBy($sort_by, $sort_dir);
 			})->get();
 
-			$output = $this->generate_v2_style_id($filesets);
-			return $this->reply(fractal($output, new LibraryCatalogTransformer())->serializeWith($this->serializer));
+			return $this->reply(fractal($this->generate_v2_style_id($filesets), new LibraryCatalogTransformer())->serializeWith($this->serializer));
 		//});
 		//return $this->reply($bibles);
 	}
@@ -188,12 +190,11 @@ class LibraryCatalogController extends APIController
 	{
 		foreach($filesets as $fileset) {
 			if(!$fileset->bible->first()) { continue; }
-			$bible_id = $fileset->bible->first()->id;
-
+			$bible_id = substr($fileset->bible->first()->id,0,6);
 			switch($fileset->set_type_code) {
 				case "audio_drama": { $type_code = "2DA"; break; }
 				case "audio":       { $type_code = "1DA"; break; }
-				case "text_plain":  { $type_code = "ET"; break; }
+				case "text_plain":  { $type_code = "1ET"; break; }
 			}
 			if(!isset($type_code)) { continue; }
 			switch ($fileset->set_size_code) {
@@ -210,10 +211,9 @@ class LibraryCatalogController extends APIController
 
 				case "P":
 				case "S":      {
-					$fileset->load('files.testament');
-					$testaments = $fileset->files->pluck('testament.book_testament')->unique();
-					foreach ($testaments as $testament) $output[$bible_id . substr($testament,0,1) . $type_code] = $fileset;
 					break;
+					//$testaments = $fileset->files->pluck('testament.book_testament')->unique();
+					//foreach ($testaments as $testament) $output[$bible_id . substr($testament,0,1) . $type_code] = $fileset;
 				}
 			}
 		}
