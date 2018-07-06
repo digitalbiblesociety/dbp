@@ -65,7 +65,7 @@ class LibraryCatalogTransformer extends BaseTransformer
 				    "font"                      => null,
 				    "arclight_language_id"      => "",
 				    "media"                     => (strpos($fileset->set_type_code, 'audio') !== false) ? 'Audio' : 'Text',
-				    "media_type"                => ($fileset->set_type_code == 'audio_drama'),
+				    "media_type"                => ($fileset->set_type_code == 'audio_drama') ? "true" : "false",
 				    "delivery"                  => [
 					    "mobile",
 					    "web",
