@@ -21,8 +21,8 @@ class LibraryCatalogTransformer extends BaseTransformer
 			    $language = $fileset->bible->first()->language;
 
 
-			    $ver_title = $bible->translatedTitles->where('language_id',$language->id)->first()->name;
-			    $eng_title = $bible->translatedTitles->where('language_id','eng')->first()->name;
+			    $ver_title = @$bible->translatedTitles->where('language_id',$language->id)->first()->name;
+			    $eng_title = @$bible->translatedTitles->where('language_id','eng')->first()->name;
 
 			    if (strpos($fileset->set_type_code, 'P') !== false) {
 				    $collection_code = "AL";
