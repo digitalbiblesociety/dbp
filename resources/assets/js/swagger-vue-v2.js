@@ -4,7 +4,7 @@ import OpenApi from './docs/OpenApi.vue'
 import '../sass/components/vue-material.css'
 import VueResource from 'vue-resource'
 
-import jsonApi from './swagger.json'
+import jsonApi from './swagger_v2-gen.json'
 
 Vue.use(VueMaterial)
 Vue.use(VueResource)

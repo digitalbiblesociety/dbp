@@ -1,38 +1,17 @@
 @extends('layouts.app')
 
 @section('head')
-    <title>Swagger v2 API</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>html, body {height: 100%}</style>
 @endsection
 
 @section('content')
-
-    <div id="swagger-ui"></div>
-
+    <div class="row">
+        <div id="app"></div>
+    </div>
 @endsection
 
 @section('footer')
-
-    <script src="/js/swagger-ui-bundle.js"> </script>
-    <script src="/js/swagger-ui-standalone-preset.js"> </script>
-    <script>
-        window.onload = function() {
-
-            // Build a system
-            const ui = SwaggerUIBundle({
-                url: "/swagger_docs?v=v2",
-                dom_id: '#swagger-ui',
-                deepLinking: true,
-                presets: [
-                    SwaggerUIBundle.presets.apis,
-                    SwaggerUIStandalonePreset
-                ],
-                plugins: [
-                    SwaggerUIBundle.plugins.DownloadUrl
-                ],
-                layout: "StandaloneLayout"
-            })
-
-            window.ui = ui
-        }
-    </script>
+    <script src="/js/swagger-vue-v2.js"></script>
 @endsection

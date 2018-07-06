@@ -32,8 +32,8 @@
       </md-table-row>
 
 
-      <md-table-row v-for="(parameter, i) in selectedEntry.parameters" :key="i">
-        <md-table-cell>{{parameter.name}}</md-table-cell>
+      <md-table-row v-for="(parameter, i) in selectedEntry.parameters" :key="i" v-bind:class="{ deprecatedRow: parameter.deprecated }">
+        <md-table-cell>{{parameter.name}} <span class="deprecated" v-if="parameter.deprecated">deprecated</span></md-table-cell>
         <md-table-cell v-html="marked(parameter.description)"></md-table-cell>
         <md-table-cell v-if="parameter.schema.type !== 'array'">{{parameter.schema.type}}</md-table-cell>
         <md-table-cell v-if="parameter.schema.type === 'array'">{{parameter.schema.items.type}} array</md-table-cell>
@@ -61,4 +61,13 @@ export default {
 </script>
 
 <style lang="css">
+	.deprecatedRow {
+		opacity: .5;
+	}
+
+	.deprecated {
+		color:red;
+		font-weight:bold;
+		opacity: 1!important;
+	}
 </style>
