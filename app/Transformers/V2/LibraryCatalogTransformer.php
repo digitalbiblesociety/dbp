@@ -21,6 +21,9 @@ class LibraryCatalogTransformer extends BaseTransformer
 			    $language = $fileset->bible->first()->language;
 
 
+			    $ver_title = $bible->translatedTitles->where('language_id',$language->id)->first()->name;
+			    $eng_title = $bible->translatedTitles->where('language_id','eng')->first()->name;
+
 			    if (strpos($fileset->set_type_code, 'P') !== false) {
 				    $collection_code = "AL";
 			    } else {
@@ -29,7 +32,7 @@ class LibraryCatalogTransformer extends BaseTransformer
 			    return [
 				    "dam_id"                    => $fileset->id,
 				    "fcbh_id"                   => $fileset->id,
-				    "volume_name"               => @$bible->translatedTitles->where('language_id',$language->id)->first()->name,
+				    "volume_name"               => $ver_title,
 				    "status"                    => "live", // for the moment these default to Live
 				    "dbp_agreement"             => "true", // for the moment these default to True
 				    "expiration"                => "0000-00-00",
@@ -49,9 +52,9 @@ class LibraryCatalogTransformer extends BaseTransformer
 				    "language_family_iso_2T"    => (string) ((@$language->parent) ? @$language->parent->iso2T : @$language->iso2T) ?? $language->iso2T,
 				    "language_family_iso_1"     => (string) ((@$language->parent) ? @$language->parent->iso1 : @$language->iso1) ?? $language->iso1,
 				    "version_code"              => (string) substr($fileset->id,3,3),
-				    "version_name"              => @$bible->translatedTitles->where('language_id',$language->id)->first()->name,
-				    "version_english"           => @$bible->translatedTitles->where('language_id','eng')->first()->name,
-				    "collection_code"           => $collection_code,
+				    "version_name"              => (string) $ver_title ?? $eng_title,
+				    "version_english"           => (string) $eng_title ?? $ver_title,
+				    "collection_code"           => (string) $collection_code,
 				    "rich"                      => ($fileset->set_type_code == 'text_format') ? "1" : "0",
 				    "collection_name"           => ($collection_code == "NT") ? "New Testament" : "Old Testament",
 				    "updated_on"                => (string) $fileset->updated_at->toDateTimeString(),
