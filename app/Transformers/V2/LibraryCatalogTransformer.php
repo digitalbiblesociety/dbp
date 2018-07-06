@@ -23,6 +23,23 @@ class LibraryCatalogTransformer extends BaseTransformer
 			    $ver_title = @$bible->translatedTitles->where('language_id',$language->id)->first()->name;
 			    $eng_title = @$bible->translatedTitles->where('language_id','eng')->first()->name;
 
+			    $font_array = [
+				    "id" => "12",
+				    "name" => "Charis SIL",
+				    "base_url" => "http://cloud.faithcomesbyhearing.com/fonts/Charis_SIL",
+				    "files" => [
+					    "zip" => "all.zip",
+					    "ttf" => "font.ttf"
+				    ],
+				    "platforms" => [
+					    "android" => true,
+					    "ios" => true,
+					    "web" => true
+				    ],
+				    "copyright" => "&copy; 2000-2013, SIL International  ",
+				    "url" => "http://bit.ly/1uKBBMx"
+			    ];
+
 			    if (strpos($fileset->set_type_code, 'P') !== false) {
 				    $collection_code = "AL";
 			    } else {
@@ -54,7 +71,7 @@ class LibraryCatalogTransformer extends BaseTransformer
 				    "version_name"              => (string) $ver_title ?? $eng_title,
 				    "version_english"           => (string) $eng_title ?? $ver_title,
 				    "collection_code"           => (string) $collection_code,
-				    "rich"                      => (string) ($fileset->set_type_code == 'text_format'),
+				    "rich"                      => (string) ($fileset->set_type_code == 'text_format') ? "1" : "0",
 				    "collection_name"           => (string) ($collection_code == "NT") ? "New Testament" : "Old Testament",
 				    "updated_on"                => (string) $fileset->updated_at->toDateTimeString(),
 				    "created_on"                => (string) $fileset->created_at->toDateTimeString(),
@@ -63,22 +80,7 @@ class LibraryCatalogTransformer extends BaseTransformer
 				    "num_sample_audio"          => "0",
 				    "sku"                       => "",
 				    "audio_zip_path"            => "",
-				    "font"                      => [
-					    "id" => "12",
-                        "name" => "Charis SIL",
-                        "base_url" => "http://cloud.faithcomesbyhearing.com/fonts/Charis_SIL",
-                        "files" => [
-							"zip" => "all.zip",
-                            "ttf" => "font.ttf"
-                        ],
-                        "platforms" => [
-							"android" => true,
-                            "ios" => true,
-                            "web" => true
-                        ],
-                        "copyright" => "&copy; 2000-2013, SIL International  ",
-                        "url" => "http://bit.ly/1uKBBMx"
-                    ],
+				    "font"                      => ($bible->alphabet->requires_font) ? $font_array : null,
 				    "arclight_language_id"      => "",
 				    "media"                     => (strpos($fileset->set_type_code, 'audio') !== false) ? 'Audio' : 'Text',
 				    "media_type"                => ($fileset->set_type_code == 'audio_drama') ? "Drama" : "Non-Drama",
