@@ -201,7 +201,11 @@ class LibraryCatalogController extends APIController
 				case "C":
 				case "NTOTP":
 				case "OTNTP":
-				case "NTPOTP": {$output[$bible_id.'N'.$type_code] = $fileset; break;}
+				case "NTPOTP": {
+					$output[$bible_id.'O'.$type_code] = $fileset;
+					$output[$bible_id.'N'.$type_code] = $fileset;
+					break;
+				}
 
 				case "NT":
 				case "NTP":    {$output[$bible_id.'N'.$type_code] = $fileset; break;}
