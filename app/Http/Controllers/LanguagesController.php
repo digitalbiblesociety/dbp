@@ -57,29 +57,6 @@ class LanguagesController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @OAS\Get(
-	 *     path="/library/language/",
-	 *     tags={"Library Catalog"},
-	 *     summary="Returns the list of languages",
-	 *     description="Returns the List of Languages",
-	 *     operationId="v2_library_language",
-	 *     @OAS\Parameter(name="code",in="query",description="Get the entry for a three letter language code",@OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
-	 *     @OAS\Parameter(name="name",in="query",description="Get the entry for a part of a language name in either native language or English",@OAS\Schema(type="object")),
-	 *     @OAS\Parameter(name="full_word",in="query",description="Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string 'new' is anywhere in the language name, like in `Newari` and `Awa for Papua New Guinea`. When true, it will only return volumes where the language name contains the full word 'new', like in `Awa for Papua New Guinea`. Default is false",@OAS\Schema(type="object")),
-	 *     @OAS\Parameter(name="family_only",in="query",description="When set to true the returned list is of only legal language families. The default is false",@OAS\Schema(type="object")),
-	 *     @OAS\Parameter(name="possibilities",in="query",description="When set to true the returned list is a combination of DBP languages and ISO languages not yet defined in DBP that meet any of the criteria",@OAS\Schema(type="object",default=null,example=true)),
-	 *     @OAS\Parameter(name="sort_by",in="query",description="Primary criteria by which to sort. 'name' refers to the native language name. The default is 'english'",@OAS\Schema(ref="#/components/schemas/Bucket/properties/id")),
-	 *     @OAS\Parameter(ref="#/components/parameters/l10n"),
-	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/format"),
-	 *     @OAS\Response(
-	 *         response=200,
-	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_library_language"))
-	 *     )
-	 * )
 	 *
 	 */
 	public function index()
