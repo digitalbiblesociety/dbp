@@ -80,7 +80,7 @@ class LibraryCatalogTransformer extends BaseTransformer
 				    "num_sample_audio"          => "0",
 				    "sku"                       => "",
 				    "audio_zip_path"            => "",
-				    "font"                      => ($bible->alphabet->requires_font) ? $font_array : null,
+				    "font"                      => (@$bible->alphabet->requires_font) ? $font_array : null,
 				    "arclight_language_id"      => "",
 				    "media"                     => (strpos($fileset->set_type_code, 'audio') !== false) ? 'Audio' : 'Text',
 				    "media_type"                => ($fileset->set_type_code == 'audio_drama') ? "Drama" : "Non-Drama",
