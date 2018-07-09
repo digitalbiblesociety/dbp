@@ -178,7 +178,7 @@ class CountriesController extends APIController
 		$includes = $this->loadWorldFacts($country);
 		if (!$country) return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['l10n' => $id]));
 
-		if ($this->api) return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
+		if ($this->api) return $this->reply(fractal($country, new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
 		return view('wiki.countries.show', compact('country'));
 	}
 
@@ -314,6 +314,7 @@ class CountriesController extends APIController
 		$profiles['regions']        = checkParam('regions', null, 'optional');
 		$profiles['religions']      = checkParam('religions', null, 'optional');
 		$profiles['transportation'] = checkParam('transportation', null, 'optional');
+		$profiles['joshuaProject']  = checkParam('joshuaProject', null, 'optional');
 		foreach ($profiles as $key => $profile) {
 			if ($profile != null) {
 				$country->load($key);

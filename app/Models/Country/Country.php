@@ -203,6 +203,14 @@ class Country extends Model
     	return $this->hasMany(CountryMap::class);
     }
 
+    // Joshua Project
+
+	public function joshuaProject()
+	{
+		return $this->hasOne(JoshuaProject::class);
+	}
+
+
     // World Factbook
 
 	public function communications()
