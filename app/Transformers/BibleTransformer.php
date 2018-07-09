@@ -268,7 +268,7 @@ class BibleTransformer extends BaseTransformer
 					"iso"           => $bible->iso,
 					"date"          => $bible->date,
 					"country"       => $bible->language->primaryCountry->name ?? '',
-					"books"         => $bible->books->sortBy('book.protestant_order')->each(function ($book) {
+					"books"         => $bible->books->sortBy('book.'.$bible->versification.'_order')->each(function ($book) {
 						// convert to integer array
 						$chapters = explode(',',$book->chapters);
 						foreach ($chapters as $key => $chapter) $chapters[$key] = intval($chapter);
