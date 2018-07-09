@@ -127,13 +127,14 @@ function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
 	return collect($out_numbers)->pluck('numeral_vernacular','numeral');
 }
 
-function sendLogsToS3($request, $status_code)
+function sendLogsToS3($request, $status_code, $s3_string = false)
 {
 	$log_string = time().':::'.env('APP_SERVER_NAME').':::'.$status_code.":::".$request->path().":::";
 	$log_string .= '"'.$request->header('User-Agent').'"'.":::";
 	foreach ($_GET as $header => $value) $log_string .= ($value != '') ? $header."=".$value."|" : $header."|";
 	$log_string = rtrim($log_string,"|");
-	$log_string .= ':::'.$request->getClientIps()[0];
+	$log_string .= ':::'.$request->getClientIps()[0].':::';
+	if($s3_string) $log_string .= $s3_string;
 	//if($request->getContent()) foreach (collect($request->getContent())->toArray() as $header => $value) $log_string .= $header."=".$value."|";
 	App\Jobs\send_api_logs::dispatch($log_string);
 }

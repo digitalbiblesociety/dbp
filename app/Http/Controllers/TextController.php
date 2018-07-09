@@ -100,7 +100,7 @@ class TextController extends APIController
 			$exists = Storage::disk($formatted)->exists($path);
 			if (!$exists) return $this->replyWithError("The path: $path did not result in a file");
 
-			return $this->reply(["filepath" => Bucket::signedUrl($path)]);
+			return $this->reply(["path" => Bucket::signedUrl($path)], [], true);
 		}
 
 		// Fetch Verses

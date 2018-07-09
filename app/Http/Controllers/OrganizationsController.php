@@ -47,10 +47,8 @@ class OrganizationsController extends APIController
 					->when($membership, function ($q) use ($membership) {
 					    $q->join('organization_relationships',
 					        function ($join) use ($membership) {
-					            $join->on('organizations.id', '=',
-					                'organization_relationships.organization_child_id')
-					                 ->where('organization_relationships.organization_parent_id',
-					                     $membership);
+					            $join->on('organizations.id', '=', 'organization_relationships.organization_child_id')
+					                 ->where('organization_relationships.organization_parent_id', $membership);
 					        });
 					})->when($bibles, function ($q) {
 						$q->has('bibles')->orHas('links');

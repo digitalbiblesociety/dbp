@@ -82,7 +82,7 @@ class AudioController extends APIController
 			$audioChapters[$key]->file_name = Bucket::signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name,$bucket_id,$limit);
 		}
 
-		return $this->reply(fractal()->collection($audioChapters)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
+		return $this->reply(fractal($audioChapters, new AudioTransformer())->serializeWith($this->serializer), [], true);
 	}
 
 	/**

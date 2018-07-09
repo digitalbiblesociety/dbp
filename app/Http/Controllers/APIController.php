@@ -154,7 +154,7 @@ class APIController extends Controller
 	 *
 	 * @return mixed
 	 */
-	public function reply($object, $meta = [])
+	public function reply($object, $meta = [], $s3response = false)
 	{
 		if (isset($_GET['echo'])) {
 			$object = [$_GET, $object];
@@ -165,7 +165,18 @@ class APIController extends Controller
 		// Status Code, Headers, Params, Body, Time
 
 		try {
-			sendLogsToS3($this->request, $this->getStatusCode());
+			if($s3response) {
+				//134304
+				$url_strings = collect($object->toarray()['data'])->pluck('path');
+				$out_string = '';
+				foreach($url_strings as $url_string) {
+					parse_str($url_string,$output);
+					$out_string .= $output['X-Amz-Signature'].'|';
+				}
+				sendLogsToS3($this->request, $this->getStatusCode(), $out_string);
+			} else {
+				sendLogsToS3($this->request, $this->getStatusCode());
+			}
 		} catch (Exception $e) {
 			//    //echo 'Caught exception: ',  $e->getMessage(), "\n";
 		}

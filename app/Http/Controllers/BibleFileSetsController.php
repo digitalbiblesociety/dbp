@@ -128,7 +128,7 @@ class BibleFileSetsController extends APIController
 			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name,
 				$bucket_id, $lifespan);
 		}
-		return $this->reply(fractal()->collection($fileSetChapters)->serializeWith($this->serializer)->transformWith(new FileSetTransformer()));
+		return $this->reply(fractal($fileSetChapters, new FileSetTransformer())->serializeWith($this->serializer), [], true);
 	}
 
 	/**
