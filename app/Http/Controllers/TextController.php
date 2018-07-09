@@ -88,7 +88,7 @@ class TextController extends APIController
 
 		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? "download" : "api";
 		$access_control = $this->accessControl($this->key, $access_control_type);
-		if(!in_array($fileset->hash_id, $access_control->hashes)) return $this->setStatusCode(401)->replyWithError("Your API Key does not have access to this fileset");
+		if(!in_array($fileset->hash_id, $access_control->hashes)) return $this->setStatusCode(403)->replyWithError("Your API Key does not have access to this fileset");
 		$bible = $fileset->bible->first();
 
 		$book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
