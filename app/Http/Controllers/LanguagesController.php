@@ -103,7 +103,7 @@ class LanguagesController extends APIController
 			$hide_restricted,
 			$access_control
 		) {
-			$languages = Language::select(['id', 'iso2B', 'iso', 'name'])
+			$languages = Language::select(['id', 'iso2B', 'iso', 'name'])->with('bibles.filesets')
 			->when($has_bibles, function ($query) use ($has_bibles) {
 			    return $query->has('bibles');
 			})
