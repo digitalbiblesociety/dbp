@@ -85,7 +85,6 @@ class LanguagesController extends APIController
 		$access_control = $this->accessControl($this->key, "api");
 
 		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $l10n . $l10n_language . $language_name_portion . $full_word . $family_only . $possibilities . $sort_by . $has_bibles . $has_filesets . $bucket_id . $include_alt_names;
-		\Cache::forget($cache_string);
 		$languages = \Cache::remember($cache_string, 1600, function () use (
 			$country,
 			$code,
