@@ -45,6 +45,7 @@
         "itsgoingd/clockwork": "^2.2",
         "krlove/eloquent-model-generator": "^1.2",
         "mockery/mockery": "0.9.*",
+        "phploc/phploc": "^4.0",
         "phpunit/phpunit": "^7.0"
     },
     "autoload": {

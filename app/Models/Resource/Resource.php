@@ -161,7 +161,7 @@ class Resource extends Model
 
 	public function language()
 	{
-		return $this->HasOne(Language::class,'iso','iso');
+		return $this->BelongsTo(Language::class);
 	}
 
     public function links()

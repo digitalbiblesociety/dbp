@@ -6,10 +6,10 @@ Route::domain(env('API_URL'))->group(function () {
 	Route::name('v2_pass_through')->get('pass-through/{path1?}/{path2?}',                 'HomeController@passThrough');
 	Route::name('v2_library_asset')->get('library/asset',                                 'HomeController@libraryAsset');
 	Route::name('v2_library_version')->get('library/version',                             'BiblesController@libraryVersion');
-	Route::name('v2_library_book')->get('library/book',                                   'BooksController@show');
-	Route::name('v2_library_bookName')->get('library/bookname',                           'BooksController@bookNames');
-	Route::name('v2_library_bookOrder')->get('library/bookorder',                         'BooksController@show');
-	Route::name('v2_library_chapter')->get('library/chapter',                             'BooksController@chapters');
+	Route::name('v2_library_book')->get('library/book',                                   'V2Controllers\LibraryCatalog\BooksController@book');
+	Route::name('v2_library_bookOrder')->get('library/bookorder',                         'V2Controllers\LibraryCatalog\BooksController@bookOrder');
+	Route::name('v2_library_bookName')->get('library/bookname',                           'V2Controllers\LibraryCatalog\BooksController@bookNames');
+	Route::name('v2_library_chapter')->get('library/chapter',                             'V2Controllers\LibraryCatalog\BooksController@chapters');
 
 	Route::name('v2_library_language')->get('library/language',                           'V2Controllers\LibraryCatalog\LanguageController@languageListing');
 	Route::name('v2_library_volumeLanguage')->get('library/volumelanguage',               'V2Controllers\LibraryCatalog\LanguageController@volumeLanguage');

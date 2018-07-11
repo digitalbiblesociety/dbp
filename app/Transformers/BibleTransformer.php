@@ -158,15 +158,16 @@ class BibleTransformer extends BaseTransformer
 			 * )
 			 */
             case "v4_bible.archival": {
-                $name = $bible->translatedTitles->where('iso','eng')->first();
-                $vname = ($bible->iso != 'eng') ? $bible->translatedTitles->where('iso',$bible->iso)->first() : false;
+
+                $name = $bible->translatedTitles->where('language_id',$bible->english_language_id)->first();
+                $vname = ($bible->iso != 'eng') ? $bible->translatedTitles->where('language_id',$bible->language_id)->first() : false;
                 $output = [
                     "abbr"              => $bible->id,
                     "script"            => $bible->script,
-                    "name"              => ($name) ? $name->name : null,
-                    "vname"             => ($vname) ? $vname->name : null,
-                    "language"          => @$bible->language->name ?? null,
-                    "autonym"           => @$bible->language->autonym ?? null,
+                    "name"              => ($name) ? $name->name : "",
+                    "vname"             => ($vname) ? $vname->name : "",
+                    "language"          => @$bible->language->name ?? "",
+                    "autonym"           => @$bible->language->autonym ?? "",
                     "iso"               => $bible->iso,
                     "date"              => $bible->date,
 	                "links_count"        => $bible->links_count,

@@ -93,7 +93,7 @@ class TextController extends APIController
 
 		$book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
 		if (!$book) return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
-		$book->push('name_vernacular', $book->translation($bible->iso)->first());
+		$book->push('name_vernacular', $book->translation($bible->language_id)->first());
 
 		if ($formatted) {
 			$path   = 'text/' . $bible->id . '/' . $fileset->id . '/' . $book_id . $chapter . '.html';
@@ -332,7 +332,7 @@ class TextController extends APIController
 				$vernacular_numbers[] = $verses->pluck('verse_end')->ToArray();
 				$vernacular_numbers[] = $verses->first()->chapter;
 				$vernacular_numbers   = array_unique(array_flatten($vernacular_numbers));
-				$vernacular_numbers   = fetchVernacularNumbers($bible->script, $bible->iso, min($vernacular_numbers),
+				$vernacular_numbers   = fetchVernacularNumbers($bible->script, $bible->language_id, min($vernacular_numbers),
 					max($vernacular_numbers));
 			}
 		}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bible\BibleLink;
+use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Models\Resource\Resource;
 use Illuminate\Http\Request;
@@ -24,10 +25,13 @@ class ResourcesController extends APIController
 	 */
 	public function index()
 	{
-		if (!$this->api) {
-			return view('resources.index');
-		}
+		if (!$this->api) return view('resources.index');
 		$iso             = checkParam('iso', null, 'optional');
+		$language = false;
+		if(isset($iso)) {
+			$language        = Language::where('iso',$iso)->first();
+			if(!$language)   return $this->setStatusCode(404)->replyWithError("Language not found for provided iso");
+		}
 		$limit           = checkParam('limit', null, 'optional') ?? 2000;
 		$organization    = checkParam('organization_id', null, 'optional');
 
@@ -37,9 +41,8 @@ class ResourcesController extends APIController
 		}
 
 		$resources = Resource::with('translations', 'links', 'organization.translations','language')
-					//->has('links')
-					->when($iso, function ($q) use ($iso) {
-						$q->where('iso', $iso);
+					->when($language, function ($q) use ($language) {
+						$q->where('language_id', $language->id);
 					})
 		            ->when($organization, function ($q) use ($organization) {
 			            $q->where('organization_id', $organization->id);
@@ -143,9 +146,16 @@ class ResourcesController extends APIController
 
 		$organization = Organization::where('slug', 'the-jesus-film-project')->first();
 		$iso          = strtolower(substr($id, 0, 3));
+		$language = false;
+		if(isset($iso)) {
+			$language = Language::where('iso',$iso)->first();
+			if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for provided iso");
+		}
 
-		$jesusFilm = Resource::with('translations')->where('iso', $iso)->where('organization_id',
-			$organization->id)->first();
+		$jesusFilm = Resource::with('translations')
+			->when($language, function ($q) use ($language) {
+				$q->where('language_id', $language->id);
+			})->where('organization_id', $organization->id)->first();
 
 		return $jesusFilm;
 	}

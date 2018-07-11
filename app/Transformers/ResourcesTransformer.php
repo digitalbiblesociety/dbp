@@ -33,7 +33,7 @@ class ResourcesTransformer extends BaseTransformer
 				return [
 					'id'                => intval($resource->id),
 					'iso'               => $resource->iso,
-					'language'          => @$resource->language->name,
+					'language'          => $resource->language->name,
 					'vname'             => $vname,
 					'name'              => $name,
 					'links'             => $resource->links,
@@ -45,7 +45,7 @@ class ResourcesTransformer extends BaseTransformer
 				return [
 					'id'                 => intval($resource->id),
 					'iso'                => $resource->iso,
-					'language'           => @$resource->language->name,
+					'language'           => $resource->language->name,
 					'cover_thumbnail'    => $resource->cover_thumbnail,
 					'vname'              => $vname,
 					'vname_description'  => $vname_description,

@@ -192,7 +192,8 @@ class BiblesController extends APIController
                     });
                 })
                 ->when($iso, function ($q) use ($iso) {
-                    $q->where('iso', $iso);
+                	$language = Language::where('iso',$iso)->first();
+                    $q->where('language_id', $language->id);
                 })
                 ->when($organization, function ($q) use ($organization) {
                     $q->whereHas('organizations', function ($q) use ($organization) {
@@ -202,6 +203,11 @@ class BiblesController extends APIController
                     })->get();
                 })->orderBy('priority', 'desc')
                 ->get();
+
+            $language = Language::where('iso','eng')->first();
+            foreach ($bibles as $bible) {
+            	$bible->english_language_id = $language->id;
+            }
 
 	        if ($include_regionInfo) $bibles->load('country');
 

@@ -29,13 +29,14 @@ class API_V2_Test extends TestCase
 
 		// Fetch the Swagger Docs for Structure Validation
 		$arrContextOptions= [ "ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]];
-		$swagger_url = env('APP_URL').'/swagger_v2.json';
+		$swagger_url = env('APP_URL').'/swagger_docs?v=v2'; //https://dbp.localhost/
 		$this->swagger = json_decode(file_get_contents($swagger_url, false, stream_context_create($arrContextOptions)), true);
 		$this->schemas = $this->swagger['components']['schemas'];
 	}
 
 	public function getSchemaKeys($schema)
 	{
+		if(isset($this->schemas[$schema]['items'])) return array_keys($this->schemas[$schema]['items']['properties']);
 		return array_keys($this->schemas[$schema]['properties']);
 	}
 
@@ -102,10 +103,10 @@ class API_V2_Test extends TestCase
 	 * Test Library Book Order Route
 	 *
 	 * @category V2_Library
-	 * @see BooksController::show()
-	 * @category Swagger ID: BookOrder
+	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\BooksController::show()
+	 * @category Swagger ID: v2_library_bookOrder
 	 * @category Route Name: v2_library_bookOrder
-	 * @link Route Path: https://api.dbp.localhost/library/bookorder?v=2&dam_id=ENGESV&pretty
+	 * @link Route Path: https://api.dbp.localhost/library/bookorder?v=2&dam_id=ENGESV&pretty&key=1234
 	 *
 	 */
 	public function test_library_bookOrder() {
@@ -117,8 +118,8 @@ class API_V2_Test extends TestCase
 		echo "\nTesting: " . route('v2_library_bookOrder', $this->params);
 		$response = $this->get(route('v2_library_bookOrder'), $this->params);
 		$response->assertSuccessful();
-		$response->assertJsonStructure([$this->getSchemaKeys('BookOrder')]);
-		$this->compareToOriginal($path,[$this->getSchemaKeys('BookOrder')]);
+		$response->assertJsonStructure([$this->getSchemaKeys('v2_library_bookOrder')]);
+		$this->compareToOriginal($path,[$this->getSchemaKeys('v2_library_bookOrder')]);
 	}
 
 	/**
@@ -126,23 +127,23 @@ class API_V2_Test extends TestCase
 	 * Test Library Book
 	 *
 	 * @category V2_Library
-	 * @see BooksController::show()
-	 * @category Swagger ID: BookOrder
-	 * @category Route Name: v2_library_bookOrder
-	 * @link Test Route Path: https://api.dbp.localhost/library/bookorder?v=2&dam_id=AAIWBTN2ET&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
-	 * @link V2 Route Path: https://dbt.io/library/bookorder?v=2&dam_id=AAIWBTN2ET&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
+	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\BooksController::book()
+	 * @category Swagger ID: v2_library_book
+	 * @category Route Name: v2_library_book
+	 * @link Test Route Path: https://api.dbp.localhost/library/book?v=2&dam_id=AAIWBTN2ET&key=1234&pretty
+	 * @link V2 Route Path: https://dbt.io/library/book?v=2&dam_id=AAIWBTN2ET&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
 	 *
 	 */
 	public function test_library_book() {
 		$bible_id = fetchRandomBibleID();
-		$path = route('v2_library_bookOrder',[],false);
+		$path = route('v2_library_book', [], false);
 		$this->params['dam_id'] = $bible_id;
 
 		echo "\nTesting: " . route('v2_library_book', $this->params);
 		$response = $this->get(route('v2_library_book'), $this->params);
 		$response->assertSuccessful();
-		$response->assertJsonStructure([$this->getSchemaKeys('Book')]);
-		$this->compareToOriginal($path,[$this->getSchemaKeys('Book')]);
+		$response->assertJsonStructure([$this->getSchemaKeys('v2_library_book')]);
+		$this->compareToOriginal($path,[$this->getSchemaKeys('v2_library_book')]);
 	}
 
 	/**
@@ -162,10 +163,10 @@ class API_V2_Test extends TestCase
 		echo "\nTesting: " . route('v2_library_bookName', $this->params);
 		$response = $this->get(route('v2_library_bookName'), $this->params);
 		$response->assertSuccessful();
-		$response->assertJsonStructure($this->getSchemaKeys('BookName'));
+		$response->assertJsonStructure([$this->getSchemaKeys('BookName')]);
 
 		$this->params['language_code'] = strtoupper($this->params['language_code']);
-		$this->compareToOriginal($path,$this->getSchemaKeys('BookName'));
+		$this->compareToOriginal($path,[$this->getSchemaKeys('BookName')]);
 	}
 
 	/**

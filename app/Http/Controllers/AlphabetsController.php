@@ -213,7 +213,7 @@ class AlphabetsController extends APIController
 		$this->validateAlphabet($request);
 
 		Alphabet::find($script_id)->fill($request->all())->save();
-		if (!$this->api) return redirect()->route('view_alphabets.show', ['id' => $request->id]);
+		if(!$this->api) return redirect()->route('view_alphabets.show', ['id' => $request->id]);
 
 		return $this->reply("Alphabet Successfully Updated");
 	}

@@ -101,9 +101,9 @@ function fetchBible($bible_id)
 	if(!$bible) return [];
 }
 
-function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
+function fetchVernacularNumbers($script,$language,$start_number,$end_number)
 {
-	$numbers = \App\Models\Language\AlphabetNumber::where('script_id',$script)->where('iso',$iso)->get()->keyBy('numeral')->ToArray();
+	$numbers = \App\Models\Language\AlphabetNumber::where('script_id',$script)->where('language_id',$language->id)->get()->keyBy('numeral')->ToArray();
 
 	// Run through the numbers and return the vernaculars
 	$current_number = $start_number;

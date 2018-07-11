@@ -153,11 +153,10 @@ class LibraryCatalogController extends APIController
 				if($organization) $q->where('organization_id', $organization);
 			},
 			'bible' => function($query) use($iso) {
-				$query->with('language')->whereHas('language', function($query) use($iso) {
-					if($iso) $query->where('iso', $iso);
-				});
-			}
-			])->has('bible.language')
+				$query->with(['language' => function ($q) use($iso) {
+					if($iso) $q->where('iso', $iso);
+				}]);
+			}])->has('bible.language')
 			->where('bucket_id', $bucket)->has('bible.translations')
 
 			// Version 2 does not support delivery via s3
