@@ -28,44 +28,15 @@ class BibleTransformer extends BaseTransformer
 
     	// Compute v2 ID
 	    if(isset($bible->bible)) {
-		    $v2id = $bible->bible->first()->iso.substr($bible->first()->id,3,3);
+	    	$iso = $bible->bible->first()->language->iso;
+		    $v2id = $iso.substr($bible->first()->id,3,3);
 	    } elseif(isset($bible->id)) {
-		    $v2id = $bible->iso.substr($bible->id,3,3);
+		    $iso = $bible->language->iso;
+		    $v2id = $iso.substr($bible->id,3,3);
 	    }
 
 
     	    switch($this->route) {
-
-		        case "v2_library_metadata": {
-		        	// ISO . 3 Letter . TESTAMENT CODE . DRAMATIZED
-		        	$output = [
-				        "dam_id"         => $v2id,
-				        "fileset_id"     => $bible->id,
-				        "mark"           => $bible->copyright->copyright,
-				        "volume_summary" => $bible->copyright->copyright_description,
-				        "font_copyright" => null,
-				        "font_url"       => null
-			        ];
-			        $organization = @$bible->copyright->organizations->first();
-		        	if($organization) {
-				        $output["organization"] = [
-					        'organization_id'       => $organization->id,
-					        'organization'          => $organization->name,
-					        'organization_english'  => $organization->name,
-					        'organization_role'     => $bible->copyright->role->roleTitle->name,
-					        'organization_url'      => $organization->url_website,
-					        'organization_donation' => $organization->url_donate,
-					        'organization_address'  => $organization->address,
-					        'organization_address2' => $organization->address2,
-					        'organization_city'     => $organization->city,
-					        'organization_state'    => $organization->state,
-					        'organization_country'  => $organization->country,
-					        'organization_zip'      => $organization->zip,
-					        'organization_phone'    => $organization->phone,
-				        ];
-			        }
-			        return $output;
-		        }
 
 		        case "v2_volume_history": {
 		        	return [
@@ -233,7 +204,8 @@ class BibleTransformer extends BaseTransformer
 			*	description="The bible being returned",
 			*	title="v4_bible.one",
 			*	@OAS\Xml(name="v4_bible.one"),
-			*	@OAS\Items(              @OAS\Property(property="abbr",          ref="#/components/schemas/Bible/properties/id"),
+			*	@OAS\Items(
+			 *              @OAS\Property(property="abbr",          ref="#/components/schemas/Bible/properties/id"),
 			 *              @OAS\Property(property="alphabet",      ref="#/components/schemas/Alphabet/properties/script"),
 			 *              @OAS\Property(property="mark",          ref="#/components/schemas/Bible/properties/copyright"),
 			 *              @OAS\Property(property="name",          ref="#/components/schemas/BibleTranslation/properties/name"),

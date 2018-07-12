@@ -45,8 +45,8 @@ class HomeController extends APIController
 				return sprintf("%s=%s", $k, $v);
 			}, $params, array_keys($params)));
 		}
-
-		return file_get_contents('https://dbt.io/'.$path1.'/'.$path2.'?'.$params);
+		$contents = json_decode(file_get_contents('https://dbt.io/'.$path1.'/'.$path2.'?'.$params));
+		return response()->json($contents);
 	}
 
 	/**
@@ -132,9 +132,18 @@ class HomeController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_api_apiReply")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_api_apiReply"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_api_versionLatest")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_api_versionLatest"))
 	 *     )
+	 * )
+	 *
+	 * @OAS\Schema (
+	 *     type="object",
+	 *     schema="v2_api_versionLatest",
+	 *     description="The return for the api reply",
+	 *     title="v2_api_versionLatest",
+	 *     @OAS\Xml(name="v2_api_apiReply"),
+	 *     @OAS\Property(property="Version",type="string",example="2.0.0"),
 	 * )
 	 *
 	 * @return mixed

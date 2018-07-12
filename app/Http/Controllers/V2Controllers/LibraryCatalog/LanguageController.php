@@ -155,7 +155,7 @@ class LanguageController extends APIController
 					$languages->load('countries');
 				}
 
-				return fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageListingTransformer());
+				return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer);
 			});
 		// Transform and return JSON
 		return $this->reply($countryLang);
@@ -215,9 +215,9 @@ class LanguageController extends APIController
 		$languages = \Cache::remember('volumeLanguage' . $root . $iso . $media . $organization_id, 2400,
 			function () use ($root, $iso, $media, $organization_id) {
 				$languages = Language::select(['id', 'iso', 'iso2B', 'iso2T', 'iso1', 'name', 'autonym'])->with('parent')
-				               ->when($iso, function ($query) use ($iso) {
-					               return $query->where('iso', $iso);
-				               })->when($root, function ($query) use ($root) {
+					->when($iso, function ($query) use ($iso) {
+						return $query->where('iso', $iso);
+					})->when($root, function ($query) use ($root) {
 						return $query->where('name', '%' . $root . '%');
 					})->when($organization_id, function ($query) use ($organization_id) {
 						return $query->whereHas('filesets', function ($q) use ($organization_id) {
@@ -239,7 +239,7 @@ class LanguageController extends APIController
 							}
 						}
 					})->get();
-				return fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageListingTransformer())->toArray();
+				return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer)->toArray();
 			});
 		return $this->reply($languages);
 	}
@@ -302,21 +302,21 @@ class LanguageController extends APIController
 		$delivery        = checkParam('delivery', null, 'optional');
 		$organization_id = checkParam('organization_id', null, 'optional');
 
+		\Cache::forget('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id);
 		$languages = \Cache::remember('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id,
 			2400, function () use ($root, $iso, $media, $delivery, $organization_id) {
 				$languages = Language::with('bibles')->with('dialects')
-				                     ->with(['dialects.childLanguage' => function ($query) {
-					                     $query->select(['id', 'iso']);
-				                     }])
-				                     ->when($iso, function ($query) use ($iso) {
-					                     return $query->where('iso', $iso);
-				                     })->when($root, function ($query) use ($root) {
+					->with(['dialects.childLanguage' => function ($query) {
+					    $query->select(['id', 'iso']);
+					}])
+					->when($iso, function ($query) use ($iso) {
+					    return $query->where('iso', $iso);
+					})->when($root, function ($query) use ($root) {
 						return $query->where('name', 'LIKE', '%' . $root . '%');
 					})->when($root, function ($query) use ($root) {
 						return $query->where('name', 'LIKE', '%' . $root . '%');
-					})
-				                     ->get();
-				return fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageListingTransformer());
+					})->get();
+				return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer);
 			});
 		return $this->reply($languages);
 	}

@@ -29,9 +29,7 @@ class BookTransformer extends BaseTransformer
 		     *	title="v2_library_bookOrder",
 		     *	@OAS\Xml(name="v2_library_bookOrder"),
 		     *	@OAS\Items(
-		     *          @OAS\Property(property="dam_id_root",
-		     *              description="Seven character DAM ID used to define a book order",
-		     *              @OAS\Schema(type="string"),
+		     *          @OAS\Property(property="dam_id_root", description="Seven character DAM ID used to define a book order", @OAS\Schema(type="string"),
 		     *          @OAS\Property(property="book_id",               ref="#/components/schemas/Book/properties/id"),
 		     *          @OAS\Property(property="book_name",             ref="#/components/schemas/Book/properties/name"),
 		     *          @OAS\Property(property="book_order",            ref="#/components/schemas/Book/properties/protestant_order")
@@ -59,7 +57,7 @@ class BookTransformer extends BaseTransformer
 		     *	schema="v2_library_book",
 		     *	description="The book return",
 		     *	title="v2_library_book",
-		     *	@OAS\Xml(name="v2_library_bookOrder"),
+		     *	@OAS\Xml(name="v2_library_book"),
 		     *	@OAS\Items(
 		     *          @OAS\Property(property="dam_id",                ref="#/components/schemas/Bible/properties/id"),
 		     *          @OAS\Property(property="book_id",               ref="#/components/schemas/Book/properties/id"),
@@ -98,7 +96,6 @@ class BookTransformer extends BaseTransformer
 		     *	@OAS\Items(
 		     *          @OAS\Property(property="dam_id",                ref="#/components/schemas/Bible/properties/id"),
 		     *          @OAS\Property(property="book_id",               ref="#/components/schemas/Book/properties/id"),
-		     *          @OAS\Property(property="book_name",             ref="#/components/schemas/Book/properties/name"),
 		     *          @OAS\Property(property="chapter_id",            ref="#/components/schemas/Book/properties/chapter_id"),
 		     *          @OAS\Property(property="chapter_name",          ref="#/components/schemas/Book/properties/chapter_name"),
 		     *          @OAS\Property(property="default",               @OAS\Schema(type="string")),

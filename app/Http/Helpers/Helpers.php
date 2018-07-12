@@ -90,7 +90,7 @@ function fetchRandomBibleID() {
 
 function fetchRandomFilesetID()
 {
-	return \App\Models\Bible\BibleFileset::random(1)->first()->id;
+	return \App\Models\Bible\BibleFileset::inRandomOrder()->first()->id;
 }
 
 function fetchBible($bible_id)

@@ -7,11 +7,7 @@ use App\Transformers\BaseTransformer;
 
 class LibraryCatalogTransformer extends BaseTransformer
 {
-    /**
-     * A Fractal transformer.
-     *
-     * @return array
-     */
+
     public function transform(BibleFileset $fileset)
     {
 	    switch($this->route) {
@@ -45,6 +41,58 @@ class LibraryCatalogTransformer extends BaseTransformer
 			    } else {
 				    $collection_code = (substr($fileset->id,6,1) == "O") ? "OT" : "NT";
 			    }
+
+			    /**
+			     * @OAS\Schema (
+			     *	type="array",
+			     *	schema="v2_library_volume",
+			     *	description="The v2_library_volume",
+			     *	title="v2_library_volume",
+			     *	@OAS\Xml(name="v2_library_volume"),
+			     *	@OAS\Items(
+			     *              @OAS\Property(property="dam_id",                    ref="#/components/schemas/BibleFileset/id"),
+			     *              @OAS\Property(property="fcbh_id",                   ref="#/components/schemas/BibleEquivalent/equivalent_id"),
+			     *              @OAS\Property(property="volume_name",               ref="#/components/schemas/BibleTranslation/name"),
+			     *              @OAS\Property(property="status",                    @OAS\Schema(type="string",description="A leftover from the original v2, will always be `live`")),
+			     *              @OAS\Property(property="dbp_agreement",             @OAS\Schema(type="string",description="A leftover from the original v2, will always be `true`")),
+			     *              @OAS\Property(property="expiration",                @OAS\Schema(type="string",description="A leftover from the original v2, will always be `0000-00-00`")),
+			     *              @OAS\Property(property="language_code",             ref="#/components/schemas/Language/iso"),
+			     *              @OAS\Property(property="language_name",             ref="#/components/schemas/LanguageTranslation/name"),
+			     *              @OAS\Property(property="language_english",          ref="#/components/schemas/LanguageTranslation/name"),
+			     *              @OAS\Property(property="language_iso",              ref="#/components/schemas/Language/iso"),
+			     *              @OAS\Property(property="language_iso_2B",           ref="#/components/schemas/Language/iso2B"),
+			     *              @OAS\Property(property="language_iso_2T",           ref="#/components/schemas/Language/iso2T"),
+			     *              @OAS\Property(property="language_iso_1",            ref="#/components/schemas/Language/iso1"),
+			     *              @OAS\Property(property="language_iso_name",         ref="#/components/schemas/Language/name"),
+			     *              @OAS\Property(property="language_family_code",      ref="#/components/schemas/Language/iso"),
+			     *              @OAS\Property(property="language_family_name",      ref="#/components/schemas/Language/name"),
+			     *              @OAS\Property(property="language_family_english",   ref="#/components/schemas/Language/name"),
+			     *              @OAS\Property(property="language_family_iso",       ref="#/components/schemas/Language/iso"),
+			     *              @OAS\Property(property="language_family_iso_2B",    ref="#/components/schemas/Language/iso2B"),
+			     *              @OAS\Property(property="language_family_iso_2T",    ref="#/components/schemas/Language/iso2T"),
+			     *              @OAS\Property(property="language_family_iso_1",     ref="#/components/schemas/Language/iso1"),
+			     *              @OAS\Property(property="version_code",              @OAS\Schema(type="string",example="KJV")),
+			     *              @OAS\Property(property="version_name",              ref="#/components/schemas/BibleTranslation/name"),
+			     *              @OAS\Property(property="version_english",           ref="#/components/schemas/BibleTranslation/name"),
+			     *              @OAS\Property(property="collection_code",           @OAS\Schema(type="string",example="OT")),
+			     *              @OAS\Property(property="rich",                      @OAS\Schema(type="string",example="0")),
+			     *              @OAS\Property(property="collection_name",           @OAS\Schema(type="string",example="OT")),
+			     *              @OAS\Property(property="updated_on",                ref="#/components/schemas/BibleFileset/updated_on"),
+			     *              @OAS\Property(property="created_on",                ref="#/components/schemas/BibleFileset/created_on"),
+			     *              @OAS\Property(property="right_to_left",             ref="#/components/schemas/Alphabet/direction"),
+			     *              @OAS\Property(property="num_art",                   @OAS\Schema(type="string",example="OT")),
+			     *              @OAS\Property(property="num_sample_audio",          @OAS\Schema(type="string")),
+			     *              @OAS\Property(property="sku",                       @OAS\Schema(type="string")),
+			     *              @OAS\Property(property="audio_zip_path",            @OAS\Schema(type="string")),
+			     *              @OAS\Property(property="font",                      ref="#/components/schemas/AlphabetFont"),
+			     *              @OAS\Property(property="arclight_language_id",      @OAS\Schema(type="string")),
+			     *              @OAS\Property(property="media",                     @OAS\Schema(type="string")),
+			     *              @OAS\Property(property="media_type",                @OAS\Schema(type="string")),
+			     *              @OAS\Property(property="delivery",                  @OAS\Schema(type="string"))
+			     *     )
+			     *   )
+			     * )
+			     */
 			    return [
 				    "dam_id"                    => (string) $fileset->generated_id,
 				    "fcbh_id"                   => (string) $fileset->generated_id,

@@ -18,8 +18,8 @@ Route::domain(env('API_URL'))->group(function () {
 
 	Route::name('v2_library_verseInfo')->get('library/verseinfo',                         'VerseController@info');
 	Route::name('v2_library_numbers')->get('library/numbers',                             'NumbersController@customRange');
-	Route::name('v2_library_metadata')->get('library/metadata',                           'BiblesController@libraryMetadata');
-	Route::name('v2_library_volume')->get('library/volume',                               'V2Controllers\LibraryCatalogController@libraryVolume');
+	Route::name('v2_library_metadata')->get('library/metadata',                           'V2Controllers\LibraryCatalog\LibraryMetadataController@index');
+	Route::name('v2_library_volume')->get('library/volume',                               'V2Controllers\LibraryCatalog\LibraryCatalogController@libraryVolume');
 
 	Route::name('v2_volume_organization_list')->get('library/volumeorganization',         'OrganizationsController@index');
 
