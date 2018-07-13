@@ -29,7 +29,7 @@ class API_V2_Test extends TestCase
 
 		// Fetch the Swagger Docs for Structure Validation
 		$arrContextOptions= [ "ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]];
-		$swagger_url = env('APP_URL').'/swagger_docs?v=v2'; //https://dbp.localhost/
+		$swagger_url = env('APP_URL').'/swagger_docs?v=v2'; //https://dbp.test/
 		$this->swagger = json_decode(file_get_contents($swagger_url, false, stream_context_create($arrContextOptions)), true);
 		$this->schemas = $this->swagger['components']['schemas'];
 		ini_set('memory_limit', '864M');
@@ -60,7 +60,7 @@ class API_V2_Test extends TestCase
 	 * @see HomeController::libraryAsset()
 	 * @category Swagger ID: LibraryAsset
 	 * @category Route Name: v2_library_asset
-	 * @link Route Path: https://api.dbp.localhost/library/asset?v=2&pretty
+	 * @link Route Path: https://api.dbp.test/library/asset?v=2&pretty
 	 *
 	 */
 	public function test_library_asset() {
@@ -81,7 +81,7 @@ class API_V2_Test extends TestCase
 	 * @see HomeController::versionLatest()
 	 * @category Swagger ID: LibraryAsset
 	 * @category Route Name: v2_library_asset
-	 * @link Route Path: https://api.dbp.localhost/api/apiversion?v=2&pretty&key=1234
+	 * @link Route Path: https://api.dbp.test/api/apiversion?v=2&pretty&key=1234
 	 *
 	 */
 	public function test_library_version() {
@@ -102,15 +102,14 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\BooksController::show()
 	 * @category Swagger ID: v2_library_bookOrder
 	 * @category Route Name: v2_library_bookOrder
-	 * @link Route Path: https://api.dbp.localhost/library/bookorder?v=2&dam_id=ENGESV&pretty&key=1234
+	 * @link Route Path: https://api.dbp.test/library/bookorder?v=2&dam_id=ENGESV&pretty&key=1234
 	 *
 	 */
 	public function test_library_bookOrder() {
 		$bible = "AAIWBTN2ET";
 		$path = route('v2_library_bookOrder',[],false);
 		$this->params['dam_id'] = $bible;
-
-		$this->log("\n\n v2_library_bookOrder: ",'light_green',true);
+		
 		echo "\nTesting: " . route('v2_library_bookOrder', $this->params);
 		$response = $this->get(route('v2_library_bookOrder'), $this->params);
 		$response->assertSuccessful();
@@ -126,20 +125,19 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\BooksController::book()
 	 * @category Swagger ID: v2_library_book
 	 * @category Route Name: v2_library_book
-	 * @link Test Route Path: https://api.dbp.localhost/library/book?v=2&dam_id=AAIWBTN2ET&key=1234&pretty
+	 * @link Test Route Path: https://api.dbp.test/library/book?v=2&dam_id=AAIWBTN2ET&key=1234&pretty
 	 * @link V2 Route Path: https://dbt.io/library/book?v=2&dam_id=AAIWBTN2ET&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
 	 *
 	 */
 	public function test_library_book() {
-		$bible_id = fetchRandomBibleID();
 		$path = route('v2_library_book', [], false);
-		$this->params['dam_id'] = $bible_id;
+		$this->params['dam_id'] = 'ENGESV';
 
 		echo "\nTesting: " . route('v2_library_book', $this->params);
 		$response = $this->get(route('v2_library_book'), $this->params);
 		$response->assertSuccessful();
-		$response->assertJsonStructure($this->getSchemaKeys('v2_library_book'));
-		$this->compareToOriginal($path, $this->getSchemaKeys('v2_library_book'));
+		$response->assertJsonStructure( [$this->getSchemaKeys('v2_library_book')]);
+		$this->compareToOriginal($path, [$this->getSchemaKeys('v2_library_book')]);
 	}
 
 	/**
@@ -149,7 +147,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\BooksController::bookNames()
 	 * @category Swagger ID: BookName
 	 * @category Route Name: v2_library_bookName
-	 * @link Route Path: https://api.dbp.localhost/library/bookname?v=2&language_code=eng&pretty
+	 * @link Route Path: https://api.dbp.test/library/bookname?v=2&language_code=eng&pretty
 	 *
 	 */
 	public function test_library_bookName() {
@@ -172,7 +170,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\BooksController::chapters()
 	 * @category Swagger ID: BookName
 	 * @category Route Name: v2_library_bookName
-	 * @link Route Path: https://api.dbp.localhost/library/chapter?v=2&dam_id=AAIWBTN2ET&book_id=GEN&pretty&key=1234
+	 * @link Route Path: https://api.dbp.test/library/chapter?v=2&dam_id=AAIWBTN2ET&book_id=GEN&pretty&key=1234
 	 * @link V2 Route Path: https://dbt.io/library/chapter?v=2&dam_id=AAIWBTN2ET&key=3e0eed1a69fc6e012fef51b8a28cc6ff
 	 */
 	public function test_library_chapter() {
@@ -195,7 +193,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\LanguageController::languageListing()
 	 * @category Swagger ID: LibraryLanguage
 	 * @category Route Name: v2_library_language
-	 * @link Route Path: https://api.dbp.localhost/library/language?v=2&pretty&key=1234
+	 * @link Route Path: https://api.dbp.test/library/language?v=2&pretty&key=1234
 	 *
 	 */
 	public function test_library_language() {
@@ -216,7 +214,7 @@ class API_V2_Test extends TestCase
 	 * @see VerseController::info()
 	 * @category Swagger ID: LibraryVerseInfo
 	 * @category Route Name: v2_library_verseInfo
-	 * @link Route Path: https://api.dbp.localhost/library/verseinfo?v=2&pretty&bible_id=ENGESV&book_id=GEN&chapter=1&verse_start=1
+	 * @link Route Path: https://api.dbp.test/library/verseinfo?v=2&pretty&bible_id=ENGESV&book_id=GEN&chapter=1&verse_start=1
 	 * @link https://dbt.io/library/verseinfo?v=2&pretty&bible_id=ENGESV&book_id=GEN&chapter=1&verse_start=1
 	 *
 	 */
@@ -250,7 +248,7 @@ class API_V2_Test extends TestCase
 	 * @see NumbersController::customRange()
 	 * @category Swagger ID: Number
 	 * @category Route Name: v2_library_numbers
-	 * @link Route Path: https://api.dbp.localhost/library/numbers?v=2&pretty&iso=arb&start=1&end=50
+	 * @link Route Path: https://api.dbp.test/library/numbers?v=2&pretty&iso=arb&start=1&end=50
 	 *
 	 */
 	public function test_library_numbers()              {
@@ -277,7 +275,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\LibraryMetadataController::index
 	 * @category Swagger ID: LibraryMetaData
 	 * @category Route Name: v2_library_metadata
-	 * @link Route Path: https://api.dbp.localhost/library/metadata?v=2&dam_id=ENGESVN1ET&key=1234
+	 * @link Route Path: https://api.dbp.test/library/metadata?v=2&dam_id=ENGESVN1ET&key=1234
 	 * @link Source Path: https://dbt.io/library/metadata?v=2&dam_id=ENGESVN1ET&key=53355c32fca5f3cac4d7a670d2df2e09
 	 *
 	 */
@@ -304,10 +302,10 @@ class API_V2_Test extends TestCase
 	 * Tests the Library Volume Route
 	 *
 	 * @category V2_Library
-	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\LibraryCatalogController@libraryVolume
+	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\LibraryVolumeController@libraryVolume
 	 * @category Swagger ID: LibraryVolume
 	 * @category Route Name: v2_library_volume
-	 * @link Route Path: https://api.dbp.localhost/library/volume?v=2&pretty
+	 * @link Route Path: https://api.dbp.test/library/volume?v=2&pretty
 	 * @link Route:
 	 *
 	 */
@@ -330,7 +328,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\LanguageController::volumeLanguage()
 	 * @category Swagger ID: LibraryVolume
 	 * @category Route Name: v2_library_volumeLanguage
-	 * @link Route Path: https://api.dbp.localhost/library/volumelanguage?v=2&pretty
+	 * @link Route Path: https://api.dbp.test/library/volumelanguage?v=2&pretty
 	 *
 	 */
 	public function test_library_volumeLanguage() {
@@ -351,7 +349,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\LanguageController::volumeLanguage()
 	 * @category Swagger ID: LibraryVolumeLanguageFamily
 	 * @category Route Name: v2_library_volumeLanguageFamily
-	 * @link Route Path: https://api.dbp.localhost/library/volumelanguagefamily?v=2&pretty&key=1234
+	 * @link Route Path: https://api.dbp.test/library/volumelanguagefamily?v=2&pretty&key=1234
 	 * @link Route Path: https://dbt.io/library/volumelanguagefamily?v=2&key=53355c32fca5f3cac4d7a670d2df2e09
 	 *
 	 */
@@ -373,7 +371,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\OrganizationsController::index()
 	 * @category Swagger ID: VolumeOrganization
 	 * @category Route Name: v2_volume_organization_list
-	 * @link Route Path: https://api.dbp.localhost/library/volumeorganization?v=2&pretty
+	 * @link Route Path: https://api.dbp.test/library/volumeorganization?v=2&pretty
 	 *
 	 */
 	public function test_volume_organization_list() {
@@ -394,7 +392,7 @@ class API_V2_Test extends TestCase
 	 * @see BiblesController::history
 	 * @category Swagger ID: LibraryVolumeLanguageFamily
 	 * @category Route Name: v2_volume_history
-	 * @link Route Path: https://api.dbp.localhost/library/volumehistory?v=2&pretty
+	 * @link Route Path: https://api.dbp.test/library/volumehistory?v=2&pretty&key=1234
 	 *
 	 */
 	public function test_volume_history()
@@ -415,7 +413,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\AudioController::index()
 	 * @category Swagger ID:
 	 * @category Route Name: v2_audio_path
-	 * @link Route Path: https://api.dbp.localhost/audio/path?v=2&fileset_id=AFRNVVN2DA&pretty
+	 * @link Route Path: https://api.dbp.test/audio/path?v=2&fileset_id=AFRNVVN2DA&pretty
 	 *
 	 */
 	public function test_audio_path()
@@ -435,7 +433,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\AudioController::timestampsByReference()
 	 * @category Swagger ID:
 	 * @category Route Name: v2_audio_timestamps
-	 * @link Route Path: https://api.dbp.localhost/audio/versestart?v=2&fileset_id=CHNUNVN2DA&chapter=1&book=MAT&pretty
+	 * @link Route Path: https://api.dbp.test/audio/versestart?v=2&fileset_id=CHNUNVN2DA&chapter=1&book=MAT&pretty
 	 *
 	 */
 	//public function test_audio_timestamps() {
@@ -459,7 +457,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\TextController::fonts()
 	 * @category Swagger ID: TextFont
 	 * @category Route Name: v2_text_font
-	 * @link Route Path: https://api.dbp.localhost/text/font?v=2&platform=web&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
+	 * @link Route Path: https://api.dbp.test/text/font?v=2&platform=web&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
 	 *
 	 */
 	public function test_text_font() {
@@ -477,7 +475,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\TextController::index()
 	 * @category Swagger ID: TextVerse
 	 * @category Route Name: v2_text_verse
-	 * @link Route Path: https://api.dbp.localhost/text/verse?v=2&key=3e0eed1a69fc6e012fef51b8a28cc6ff&dam_id=ENGESV&book_id=GEN&chapter_id=1&verse_start=1&verse_end=10
+	 * @link Route Path: https://api.dbp.test/text/verse?v=2&key=3e0eed1a69fc6e012fef51b8a28cc6ff&dam_id=ENGESV&book_id=GEN&chapter_id=1&verse_start=1&verse_end=10
 	 *
 
 	public function test_text_verse_allowed() {
@@ -506,7 +504,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\TextController::search()
 	 * @category Swagger ID: TextSearch
 	 * @category Route Name: v2_text_search
-	 * @link Route Path: https://api.dbp.localhost/text/search?v=2&query=God&dam_id=ENGESV&limit=5&pretty
+	 * @link Route Path: https://api.dbp.test/text/search?v=2&query=God&dam_id=ENGESV&limit=5&pretty&key=1234
 	 *
 	 */
 	public function test_text_search() {
@@ -534,7 +532,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\TextController::searchGroup()
 	 * @category Swagger ID: TextSearchGroup
 	 * @category Route Name: v2_text_search_group
-	 * @link Route Path: https://api.dbp.localhost/text/searchgroup?v=2&query=God&dam_id=ENGESV&limit=5&pretty
+	 * @link Route Path: https://api.dbp.test/text/searchgroup?v=2&query=God&dam_id=ENGESV&limit=5&pretty
 	 *
 	 */
 	public function test_text_search_group()            {
@@ -562,7 +560,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\FilmsController::location()
 	 * @category Swagger ID: VideoLocation
 	 * @category Route Name: v2_video_location
-	 * @link Route Path: https://api.dbp.localhost/video/location?v=2&dam_id=ENGESV
+	 * @link Route Path: https://api.dbp.test/video/location?v=2&dam_id=ENGESV
 	 *
 
 	public function test_video_location() {
@@ -580,7 +578,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\FilmsController::videoPath()
 	 * @category Swagger ID: VideoPath
 	 * @category Route Name: v2_video_video_path
-	 * @link Route Path: https://api.dbp.localhost/video/path?v=2&dam_id=ENGESV&pretty
+	 * @link Route Path: https://api.dbp.test/video/path?v=2&dam_id=ENGESV&pretty
 	 *
 
 	public function test_video_video_path() {
@@ -598,7 +596,7 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\LanguagesController::CountryLang()
 	 * @category Swagger ID: CountryLang
 	 * @category Route Name: v2_country_lang
-	 * @link Route Path: https://api.dbp.localhost/country/countrylang?v=2&pretty
+	 * @link Route Path: https://api.dbp.test/country/countrylang?v=2&pretty
 	 *
 
 	public function test_country_lang() {

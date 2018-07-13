@@ -11,20 +11,20 @@ Route::domain(env('API_URL'))->group(function () {
 	Route::name('v2_library_bookName')->get('library/bookname',                           'V2Controllers\LibraryCatalog\BooksController@bookNames');
 	Route::name('v2_library_chapter')->get('library/chapter',                             'V2Controllers\LibraryCatalog\BooksController@chapters');
 
-	Route::name('v2_library_language')->get('library/language',                           'V2Controllers\LibraryCatalog\LanguageController@languageListing');
-	Route::name('v2_library_volumeLanguage')->get('library/volumelanguage',               'V2Controllers\LibraryCatalog\LanguageController@volumeLanguage');
+    Route::name('v2_library_language')->get('library/language',                           'V2Controllers\LibraryCatalog\LanguageController@languageListing');
+    Route::name('v2_volume_history')->get('library/volumehistory',                        'V2Controllers\LibraryCatalog\LibraryVolumeController@history');
+    Route::name('v2_library_volumeLanguage')->get('library/volumelanguage',               'V2Controllers\LibraryCatalog\LanguageController@volumeLanguage');
 	Route::name('v2_library_volumeLanguageFamily')->get('library/volumelanguagefamily',   'V2Controllers\LibraryCatalog\LanguageController@volumeLanguageFamily');
 	Route::name('v2_country_lang')->get('country/countrylang',                            'V2Controllers\LibraryCatalog\LanguageController@CountryLang');
 
 	Route::name('v2_library_verseInfo')->get('library/verseinfo',                         'VerseController@info');
 	Route::name('v2_library_numbers')->get('library/numbers',                             'NumbersController@customRange');
 	Route::name('v2_library_metadata')->get('library/metadata',                           'V2Controllers\LibraryCatalog\LibraryMetadataController@index');
-	Route::name('v2_library_volume')->get('library/volume',                               'V2Controllers\LibraryCatalog\LibraryCatalogController@libraryVolume');
+	Route::name('v2_library_volume')->get('library/volume',                               'V2Controllers\LibraryCatalog\LibraryVolumeController@libraryVolume');
 
 	Route::name('v2_volume_organization_list')->get('library/volumeorganization',         'OrganizationsController@index');
 
 	// TODO: Cache below Routes
-	Route::name('v2_volume_history')->get('library/volumehistory',                        'BiblesController@history');
 	Route::name('v2_library_organization')->get('library/organization',                   'OrganizationsController@index');
 	Route::name('v2_audio_location')->get('audio/location',                               'AudioController@location');
 	Route::name('v2_audio_path')->get('audio/path',                                       'AudioController@index');

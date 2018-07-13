@@ -10,8 +10,8 @@ function checkParam($param, $v4Style = null, $optional = false)
 	if(strpos($param, '|') !== false) {
 		$url_params = explode('|',$param);
 		foreach($url_params as $param) {
-			$url_param = (isset($_GET[$param])) ? $_GET[$param] : false;
-			if($url_param) {break;}
+            if(isset($url_param)) {continue;}
+		    $url_param = (isset($_GET[$param])) ? $_GET[$param] : null;
 		}
 	} else {
 		$url_param = (isset($_GET[$param])) ? $_GET[$param] : false;
@@ -103,7 +103,7 @@ function fetchBible($bible_id)
 
 function fetchVernacularNumbers($script,$language,$start_number,$end_number)
 {
-	$numbers = \App\Models\Language\AlphabetNumber::where('script_id',$script)->where('language_id',$language->id)->get()->keyBy('numeral')->ToArray();
+	$numbers = \App\Models\Language\AlphabetNumber::where('script_id',$script)->where('language_id',$language)->get()->keyBy('numeral')->ToArray();
 
 	// Run through the numbers and return the vernaculars
 	$current_number = $start_number;

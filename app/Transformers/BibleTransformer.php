@@ -38,14 +38,7 @@ class BibleTransformer extends BaseTransformer
 
     	    switch($this->route) {
 
-		        case "v2_volume_history": {
-		        	return [
-		        		"dam_id" => $v2id,
-				        "time"   => $bible->updated_at->toDateTimeString(),
-				        "event"  => "Updated"
-			        ];
-			        break;
-		        }
+
 
 		        case "v2_library_volume": {
 				        return [

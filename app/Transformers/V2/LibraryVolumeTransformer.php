@@ -5,12 +5,22 @@ namespace App\Transformers\V2;
 use App\Models\Bible\BibleFileset;
 use App\Transformers\BaseTransformer;
 
-class LibraryCatalogTransformer extends BaseTransformer
+class LibraryVolumeTransformer extends BaseTransformer
 {
 
     public function transform(BibleFileset $fileset)
     {
 	    switch($this->route) {
+
+            case "v2_volume_history": {
+                return [
+                    "dam_id" => $fileset->v2_id,
+                    "time"   => $fileset->updated_at->toDateTimeString(),
+                    "event"  => "Updated"
+                ];
+                break;
+            }
+
 		    case "v2_library_volume": {
 		    	$bible = $fileset->bible->first();
 			    $bible_id = $fileset->bible->first()->id;

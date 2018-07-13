@@ -18,5 +18,5 @@ mix.js('resources/assets/js/swagger-vue-v2.js', 'public/js/swagger-vue-v2.js');
 mix.js('resources/assets/js/swagger-vue-v4.js', 'public/js/swagger-vue-v4.js');
 
 mix.browserSync({
-    proxy: 'https://dbp.localhost'
+    proxy: 'https://dbp.test'
 });

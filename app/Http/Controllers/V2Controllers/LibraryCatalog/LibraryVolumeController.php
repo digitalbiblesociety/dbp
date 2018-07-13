@@ -3,15 +3,59 @@
 namespace App\Http\Controllers\V2Controllers\LibraryCatalog;
 
 use App\Http\Controllers\APIController;
-use App\Models\Bible\BibleFileset;
-use App\Transformers\V2\LibraryCatalogTransformer;
+use App\Transformers\V2\LibraryVolumeTransformer;
 use App\Traits\AccessControlAPI;
 
+use App\Models\Bible\BibleFileset;
+use App\Models\Bible\Bible;
 
-class LibraryCatalogController extends APIController
+class LibraryVolumeController extends APIController
 {
 
 	use AccessControlAPI;
+
+    /**
+     * v2_volume_history
+     *
+     * @link https://api.dbp.dev/library/volumehistory?key=1234&v=2
+     *
+     * @OAS\Get(
+     *     path="/library/volumehistory",
+     *     tags={"Library Catalog"},
+     *     summary="Volume History List",
+     *     description="This call gets the event history for volume changes to status, expiry, basic info, delivery, and organization association. The event reflects the previous state of the volume. In other words, it reflects the state up to the moment of the time of the event.",
+     *     operationId="v2_volume_history",
+     *     @OAS\Parameter(name="limit",  in="query", description="The Number of records to return"),
+     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+     *     @OAS\Parameter(ref="#/components/parameters/key"),
+     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+     *     @OAS\Parameter(ref="#/components/parameters/format"),
+     *     @OAS\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
+     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
+     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_bible.one"))
+     *     )
+     * )
+     *
+     * A Route to Review The Last 500 Recent Changes to The Bible Resources
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+     */
+    public function history()
+    {
+        if (!$this->api) return view('bibles.history');
+
+        $limit  = checkParam('limit', null, 'optional') ?? 500;
+        $filesets = BibleFileset::with('bible.language')->has('bible.language')->take($limit)->get();
+        $filesets->map(function($fileset) {
+            $fileset->v2_id = strtoupper($fileset->bible->first()->language->iso.substr($fileset->bible->first()->id,3,3));
+            return $fileset;
+        });
+
+        return $this->reply(fractal($filesets, new LibraryVolumeTransformer())->serializeWith($this->serializer));
+    }
 
 	/**
 	 *
@@ -180,7 +224,7 @@ class LibraryCatalogController extends APIController
 				$q->orderBy($sort_by, $sort_dir);
 			})->get();
 
-			return $this->reply(fractal($this->generate_v2_style_id($filesets), new LibraryCatalogTransformer())->serializeWith($this->serializer));
+			return $this->reply(fractal($this->generate_v2_style_id($filesets), new LibraryVolumeTransformer())->serializeWith($this->serializer));
 		//});
 		//return $this->reply($bibles);
 	}
