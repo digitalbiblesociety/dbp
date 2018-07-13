@@ -31,8 +31,8 @@ class OrganizationsController extends APIController
 		$content     = checkParam('has_content', null, 'optional');
 		$bibles      = checkParam('bibles', null, 'optional');
 		$resources   = checkParam('resources', null, 'optional');
-		
-        \Cache:forget($this->v . 'organizations' . $iso . $membership . $content . $bibles .$resources);
+
+        \Cache::forget($this->v . 'organizations' . $iso . $membership . $content . $bibles .$resources);
 		$organizations = \Cache::remember($this->v . 'organizations' . $iso . $membership . $content . $bibles .$resources, 2400,
 			function () use ($iso, $membership, $content, $bibles, $resources) {
 				if ($membership) {
@@ -45,7 +45,8 @@ class OrganizationsController extends APIController
 
 				// Otherwise Fetch API route
 				$organizations = Organization::with('translations', 'logos')
-					->when($membership, function ($q) use ($membership) {
+					->when(
+                        $membership, function ($q) use ($membership) {
 					    $q->join('organization_relationships',
 					        function ($join) use ($membership) {
 					            $join->on('organizations.id', '=', 'organization_relationships.organization_child_id')
