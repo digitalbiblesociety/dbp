@@ -31,7 +31,8 @@ class OrganizationsController extends APIController
 		$content     = checkParam('has_content', null, 'optional');
 		$bibles      = checkParam('bibles', null, 'optional');
 		$resources   = checkParam('resources', null, 'optional');
-
+		
+        \Cache:forget($this->v . 'organizations' . $iso . $membership . $content . $bibles .$resources);
 		$organizations = \Cache::remember($this->v . 'organizations' . $iso . $membership . $content . $bibles .$resources, 2400,
 			function () use ($iso, $membership, $content, $bibles, $resources) {
 				if ($membership) {
