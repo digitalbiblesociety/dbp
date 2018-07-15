@@ -156,6 +156,7 @@ Route::domain(env('API_URL'))->group(function () {
 
 	// VERSION 4 | UTILITY
 	Route::name('v4_api.buckets')->get('/api/buckets',                                    'HomeController@buckets');
+    Route::name('v4_api.stats')->get('/stats',                                            'HomeController@stats');
 
 	// VERSION 4 | ERRORS
 	Route::name('v4_api.logs')->get('sign',                                               'HomeController@signedUrls');

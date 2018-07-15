@@ -10,6 +10,7 @@ use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Models\Bible\Bible;
 use App\Helpers\AWS\Bucket;
+use App\Models\Resource\Resource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -105,6 +106,19 @@ class HomeController extends APIController
 		return view('welcome', compact('count'));
 	}
 
+	public function stats()
+    {
+        $count['languages']      = Language::count();
+        $count['countries']      = Country::count();
+        $count['alphabets']      = Alphabet::count();
+        $count['organizations']  = Organization::count();
+        $count['bible_filesets'] = BibleFileset::count();
+        $count['bibles']         = Bible::count();
+        $count['resources']      = Resource::count();
+
+        return $this->reply($count);
+    }
+
 	public function versions()
 	{
 		return $this->reply(["versions" => [2, 4]]);
@@ -188,8 +202,7 @@ class HomeController extends APIController
 	 *     description="The return for the api reply",
 	 *     title="v2_api_apiReply",
 	 *     @OAS\Xml(name="v2_api_apiReply"),
-	 *     @OAS\Property(property="2",type="object",example={"json", "jsonp", "html"}),
-	 *     @OAS\Property(property="4",type="object",example={"json", "jsonp", "xml", "html"}),
+     *     example={"json", "jsonp", "html"}
 	 * )
 	 *
 	 * @return mixed

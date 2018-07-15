@@ -61,6 +61,7 @@ class API_V2_Test extends TestCase
 	 * @category Swagger ID: LibraryAsset
 	 * @category Route Name: v2_library_asset
 	 * @link Route Path: https://api.dbp.test/library/asset?v=2&pretty
+     * @link V2 Route Path: https://dbt.io/library/asset?v=2&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
 	 *
 	 */
 	public function test_library_asset() {
@@ -72,6 +73,26 @@ class API_V2_Test extends TestCase
 		$response->assertJsonStructure([$this->getSchemaKeys('v2_library_asset')]);
 		$this->compareToOriginal($path,[$this->getSchemaKeys('v2_library_asset')]);
 	}
+
+    /**
+     *
+     * Test API Reply Route
+     *
+     * @category V2_API
+     * @see HomeController::versionReplyTypes()
+     * @category Swagger ID: APIReply
+     * @category Route Name: v2_api_apiReply
+     * @link Route Path: https://api.dbp.test/api/reply?v=2&pretty&key=1234
+     * @link V2 Route Path: https://dbt.io/api/reply?v=2&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
+     *
+     */
+	public function test_api_apiReply() {
+	    $path = route('v2_api_apiReply',[],false);
+
+        $this->log("\nTesting: " . route('v2_api_apiReply', $this->params),'light_cyan',true);
+        $response = $this->get(route('v2_api_apiReply'), $this->params);
+        $response->assertSuccessful();
+    }
 
 	/**
 	 *
@@ -109,7 +130,7 @@ class API_V2_Test extends TestCase
 		$bible = "AAIWBTN2ET";
 		$path = route('v2_library_bookOrder',[],false);
 		$this->params['dam_id'] = $bible;
-		
+
 		echo "\nTesting: " . route('v2_library_bookOrder', $this->params);
 		$response = $this->get(route('v2_library_bookOrder'), $this->params);
 		$response->assertSuccessful();
@@ -475,9 +496,9 @@ class API_V2_Test extends TestCase
 	 * @see \app\Http\Controllers\TextController::index()
 	 * @category Swagger ID: TextVerse
 	 * @category Route Name: v2_text_verse
-	 * @link Route Path: https://api.dbp.test/text/verse?v=2&key=3e0eed1a69fc6e012fef51b8a28cc6ff&dam_id=ENGESV&book_id=GEN&chapter_id=1&verse_start=1&verse_end=10
+	 * @link Route Path: https://api.dbp.test/text/verse?v=2&key=1234&dam_id=ENGESV&book_id=GEN&chapter_id=1&verse_start=1&verse_end=10
 	 *
-
+     */
 	public function test_text_verse_allowed() {
 		$public_domain_access_group = \App\Models\User\AccessGroup::with('filesets')->where('name','PUBLIC_DOMAIN')->first();
 		$fileset_hashes = $public_domain_access_group->filesets->pluck('hash_id');
@@ -495,7 +516,7 @@ class API_V2_Test extends TestCase
 		$response = $this->get(route('v2_text_verse', $this->params));
 		$response->assertSuccessful();
 	}
-	 */
+
 	/**
 	 *
 	 * Tests the Text Search
