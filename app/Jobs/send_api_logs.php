@@ -69,7 +69,7 @@ class send_api_logs implements ShouldQueue
 	    $log_array = explode(':::', $this->log_string);
         $ip_address = isset($log_array[6]) ? $log_array[6] : null;
 	    if($ip_address) {
-		    $geo_ip = geoip();
+		    $geo_ip = geoip($ip_address);
 		    $geo_array = [$geo_ip->lat, $geo_ip->lon, $geo_ip->country, $geo_ip->city, $geo_ip->state_name, $geo_ip->postal_code];
 		    $this->log_string = implode(':::', array_merge($log_array,$geo_array));
 	    }
