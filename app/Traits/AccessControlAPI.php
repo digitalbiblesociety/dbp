@@ -35,11 +35,10 @@ trait AccessControlAPI {
 			})->get();
 
 		$access['hashes'] = $accessGroups->map(function ($item, $key) use($user_location) {
-			return $item->filesets->pluck('hash_id');
+			return collect($item->filesets)->pluck('hash_id');
 		})->unique()->flatten()->toArray();
 		$access['string'] = $accessGroups->pluck('name')->implode('_');
 		return (object) $access;
-
 	}
 
 }

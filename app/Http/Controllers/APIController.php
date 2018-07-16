@@ -167,7 +167,8 @@ class APIController extends Controller
 		try {
 			if($s3response) {
 				$response_object = collect($object->toarray());
-				$url_strings = (isset($response_object['data'])) ? $response_object['data']->pluck('path') : $response_object->pluck('path');
+
+				$url_strings = (isset($response_object['data'])) ? collect($response_object['data'])->pluck('path') : collect($response_object)->pluck('path');
 				$out_string = '';
 				foreach($url_strings as $url_string) {
 					parse_str($url_string,$output);

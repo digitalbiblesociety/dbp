@@ -127,46 +127,41 @@ class FileSetTransformer extends BaseTransformer
 				return $meta;
 			}
 
+            default: {
+                /**
+                 * @OAS\Schema (
+                 *	type="array",
+                 *	schema="v4_bible_filesets.show",
+                 *	description="The minimized alphabet return for the all alphabets route",
+                 *	title="v4_bible_filesets.show",
+                 *	@OAS\Xml(name="v4_bible_filesets.show"),
+                 *	@OAS\Items(          @OAS\Property(property="book_id",        ref="#/components/schemas/BibleFile/properties/book_id"),
+                 *          @OAS\Property(property="book_name",      ref="#/components/schemas/BookTranslation/properties/name"),
+                 *          @OAS\Property(property="chapter_start",  ref="#/components/schemas/BibleFile/properties/chapter_start"),
+                 *          @OAS\Property(property="chapter_end",    ref="#/components/schemas/BibleFile/properties/chapter_end"),
+                 *          @OAS\Property(property="verse_start",    ref="#/components/schemas/BibleFile/properties/verse_start"),
+                 *          @OAS\Property(property="verse_end",      ref="#/components/schemas/BibleFile/properties/verse_end"),
+                 *          @OAS\Property(property="timestamp",      ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
+                 *          @OAS\Property(property="path",           ref="#/components/schemas/BibleFile/properties/file_name"),
+                 *     )
+                 *   )
+                 * )
+                 */
+
+                return [
+                    "book_id"       => $fileset->book_id,
+                    "book_name"     => @$fileset->book->name,
+                    "chapter_start" => $fileset->chapter_start,
+                    "chapter_end"   => $fileset->chapter_end,
+                    "verse_start"   => $fileset->verse_start,
+                    "verse_end"     => $fileset->verse_end,
+                    "timestamp"     => $fileset->timestamp,
+                    "path"          => $fileset->file_name,
+                ];
+            }
+
 		}
-		if($fileset->bible) {
-			$bible = $fileset->bible->first();
-			$bookName = "";
-			if($bible) {
-				$books = $bible->books->where('book_id',$fileset->book_id)->first();
-				if($books) $bookName = $books->name;
-			}
-		} else {
-			$bookName = $fileset->book->name;
-		}
-		/**
-		 * @OAS\Schema (
-			*	type="array",
-			*	schema="v4_bible_filesets.show",
-			*	description="The minimized alphabet return for the all alphabets route",
-			*	title="v4_bible_filesets.show",
-			*	@OAS\Xml(name="v4_bible_filesets.show"),
-			*	@OAS\Items(          @OAS\Property(property="book_id",        ref="#/components/schemas/BibleFile/properties/book_id"),
-		 *          @OAS\Property(property="book_name",      ref="#/components/schemas/BookTranslation/properties/name"),
-		 *          @OAS\Property(property="chapter_start",  ref="#/components/schemas/BibleFile/properties/chapter_start"),
-		 *          @OAS\Property(property="chapter_end",    ref="#/components/schemas/BibleFile/properties/chapter_end"),
-		 *          @OAS\Property(property="verse_start",    ref="#/components/schemas/BibleFile/properties/verse_start"),
-		 *          @OAS\Property(property="verse_end",      ref="#/components/schemas/BibleFile/properties/verse_end"),
-		 *          @OAS\Property(property="timestamp",      ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
-		 *          @OAS\Property(property="path",           ref="#/components/schemas/BibleFile/properties/file_name"),
-		 *     )
-		 *   )
-		 * )
-		 */
-		return [
-			"book_id"       => $fileset->book_id,
-			"book_name"     => $bookName,
-			"chapter_start" => $fileset->chapter_start,
-			"chapter_end"   => $fileset->chapter_end,
-			"verse_start"   => $fileset->verse_start,
-			"verse_end"     => $fileset->verse_end,
-			"timestamp"     => $fileset->timestamp,
-			"path"          => $fileset->file_name,
-		];
+
 	}
 
 

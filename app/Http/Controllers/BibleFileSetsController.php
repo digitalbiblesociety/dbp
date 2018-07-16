@@ -67,8 +67,6 @@ class BibleFileSetsController extends APIController
 		$type          = checkParam('type');
 		$versification = checkParam('versification', null, 'optional');
 
-
-
 		if ($book_id) $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
 		if (isset($book)) $book_id = $book->id;
 		$fileset = BibleFileset::with('bible')->where('id', $bible_id)->when($bucket_id,
@@ -110,6 +108,7 @@ class BibleFileSetsController extends APIController
 			}
 		}
 
+
 		$fileSetChapters = BibleFile::with('book', 'bible.books')
 		                            ->join('books', 'books.id', '=', 'bible_files.book_id')
 		                            ->where('hash_id', $fileset->hash_id)
@@ -117,17 +116,14 @@ class BibleFileSetsController extends APIController
 			                            return $query->where('chapter_start', $chapter_id);
 		                            })->when($book_id, function ($query) use ($book_id) {
 				return $query->where('book_id', $book_id);
-			})->orderBy('books.' . $versification . '_order')->where($versification . '_order', '!=',
-				null)->orderBy('chapter_start')->get();
+			})->orderBy('books.' . $versification . '_order')->orderBy('chapter_start')->get();
 
-		if (!$fileset) {
-			return $this->setStatusCode(404)->replyWithError("No Fileset Chapters Found for the provided params");
-		}
+		if (count($fileSetChapters) == 0) return $this->setStatusCode(404)->replyWithError("No Fileset Chapters Found for the provided params");
 
 		foreach ($fileSetChapters as $key => $fileSet_chapter) {
-			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name,
-				$bucket_id, $lifespan);
+			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name, $bucket_id, $lifespan);
 		}
+
 		return $this->reply(fractal($fileSetChapters, new FileSetTransformer())->serializeWith($this->serializer), [], true);
 	}
 
