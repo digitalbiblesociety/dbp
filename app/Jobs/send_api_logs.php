@@ -44,7 +44,7 @@ class send_api_logs implements ShouldQueue
 
 		// If no files exist
 	    if(count($files) == 0) {
-	    	$starting_string = 'timestamp:::server_name:::status_code:::path:::user_agent:::params:::ip_address:::lat:::lon:::country:::city:::state_name:::postal_code:::s3_signatures';
+	    	$starting_string = 'timestamp:::server_name:::status_code:::path:::user_agent:::params:::ip_address:::s3_signatures:::lat:::lon:::country:::city:::state_name:::postal_code';
 		    Storage::disk('data')->put('srv-dbp-dev/' . $current_time->getTimestamp() . '-' . env('APP_SERVER_NAME') . '.log', $starting_string);
 		    $current_file_time = Carbon::now();
 		    $files = Storage::disk('data')->files('srv-dbp-dev');
@@ -54,26 +54,25 @@ class send_api_logs implements ShouldQueue
 		    $current_file_time = Carbon::createFromTimestamp(intval(substr($current_file, 12, -10)));
 	    }
 
-	    // Push to S3 every five minutes, delete the latest file and create a new one
+        Storage::disk('data')->append($current_file, $this->log_string);
+
+	    // Push to S3 every couple minutes, delete the latest file and create a new one
 	    if($current_time->diffInMinutes($current_file_time) > 2) {
 			$log_contents = Storage::disk('data')->get($current_file);
 			Storage::disk('s3_dbs_log')->put($current_file, $log_contents);
 		    Storage::disk('data')->delete($current_file);
-	    } else {
-		    Storage::disk('data')->append($current_file, $this->log_string);
 	    }
     }
 
     private function addGeoData()
     {
 	    $log_array = explode(':::', $this->log_string);
-	    $ip_address = isset($log_array[5]) ? $log_array[5] : null;
+        $ip_address = isset($log_array[6]) ? $log_array[6] : null;
 	    if($ip_address) {
-		    $geo_ip = geoip($ip_address);
+		    $geo_ip = geoip();
 		    $geo_array = [$geo_ip->lat, $geo_ip->lon, $geo_ip->country, $geo_ip->city, $geo_ip->state_name, $geo_ip->postal_code];
 		    $this->log_string = implode(':::', array_merge($log_array,$geo_array));
 	    }
-
     }
 
 }
