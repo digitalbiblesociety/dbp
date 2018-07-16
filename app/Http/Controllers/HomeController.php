@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Bible\BibleFileset;
 use App\Models\Country\Country;
+use App\Models\Country\CountryLanguage;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Models\Bible\Bible;
 use App\Helpers\AWS\Bucket;
+use App\Models\Resource\Resource;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class HomeController extends APIController
@@ -31,6 +34,20 @@ class HomeController extends APIController
 		$status['updates'] = '';
 
 		return view('dashboard.admin', compact('status'));
+	}
+
+	public function passThrough($path1 = null,$path2 = null, Request $request)
+	{
+		$params = checkParam('params',null,'optional') ?? $_GET;
+		if(is_array($params)) {
+			$params = implode('&', array_map(function ($v, $k) {
+				if($k === 'key') return "key=53355c32fca5f3cac4d7a670d2df2e09";
+				if($k === 0) return $v;
+				return sprintf("%s=%s", $k, $v);
+			}, $params, array_keys($params)));
+		}
+		$contents = json_decode(file_get_contents('https://dbt.io/'.$path1.'/'.$path2.'?'.$params));
+		return response()->json($contents);
 	}
 
 	/**
@@ -89,6 +106,19 @@ class HomeController extends APIController
 		return view('welcome', compact('count'));
 	}
 
+	public function stats()
+    {
+        $count['languages']      = Language::count();
+        $count['countries']      = Country::count();
+        $count['alphabets']      = Alphabet::count();
+        $count['organizations']  = Organization::count();
+        $count['bible_filesets'] = BibleFileset::count();
+        $count['bibles']         = Bible::count();
+        $count['resources']      = Resource::count();
+
+        return $this->reply($count);
+    }
+
 	public function versions()
 	{
 		return $this->reply(["versions" => [2, 4]]);
@@ -116,9 +146,18 @@ class HomeController extends APIController
 	 *     @OAS\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_api_apiReply")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_api_apiReply"))
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_api_versionLatest")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_api_versionLatest"))
 	 *     )
+	 * )
+	 *
+	 * @OAS\Schema (
+	 *     type="object",
+	 *     schema="v2_api_versionLatest",
+	 *     description="The return for the api reply",
+	 *     title="v2_api_versionLatest",
+	 *     @OAS\Xml(name="v2_api_apiReply"),
+	 *     @OAS\Property(property="Version",type="string",example="2.0.0"),
 	 * )
 	 *
 	 * @return mixed
@@ -163,8 +202,7 @@ class HomeController extends APIController
 	 *     description="The return for the api reply",
 	 *     title="v2_api_apiReply",
 	 *     @OAS\Xml(name="v2_api_apiReply"),
-	 *     @OAS\Property(property="2",type="object",example={"json", "jsonp", "html"}),
-	 *     @OAS\Property(property="4",type="object",example={"json", "jsonp", "xml", "html"}),
+     *     example={"json", "jsonp", "html"}
 	 * )
 	 *
 	 * @return mixed

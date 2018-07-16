@@ -3,23 +3,28 @@
 Route::domain(env('API_URL'))->group(function () {
 	// VERSION 2
 
+	Route::name('v2_pass_through')->get('pass-through/{path1?}/{path2?}',                 'HomeController@passThrough');
 	Route::name('v2_library_asset')->get('library/asset',                                 'HomeController@libraryAsset');
 	Route::name('v2_library_version')->get('library/version',                             'BiblesController@libraryVersion');
-	Route::name('v2_library_book')->get('library/book',                                   'BooksController@show');
-	Route::name('v2_library_bookName')->get('library/bookname',                           'BooksController@bookNames');
-	Route::name('v2_library_bookOrder')->get('library/bookorder',                         'BooksController@show');
-	Route::name('v2_library_chapter')->get('library/chapter',                             'BooksController@chapters');
-	Route::name('v2_library_language')->get('library/language',                           'LanguagesController@index');
+	Route::name('v2_library_book')->get('library/book',                                   'V2Controllers\LibraryCatalog\BooksController@book');
+	Route::name('v2_library_bookOrder')->get('library/bookorder',                         'V2Controllers\LibraryCatalog\BooksController@bookOrder');
+	Route::name('v2_library_bookName')->get('library/bookname',                           'V2Controllers\LibraryCatalog\BooksController@bookNames');
+	Route::name('v2_library_chapter')->get('library/chapter',                             'V2Controllers\LibraryCatalog\BooksController@chapters');
+
+    Route::name('v2_library_language')->get('library/language',                           'V2Controllers\LibraryCatalog\LanguageController@languageListing');
+    Route::name('v2_volume_history')->get('library/volumehistory',                        'V2Controllers\LibraryCatalog\LibraryVolumeController@history');
+    Route::name('v2_library_volumeLanguage')->get('library/volumelanguage',               'V2Controllers\LibraryCatalog\LanguageController@volumeLanguage');
+	Route::name('v2_library_volumeLanguageFamily')->get('library/volumelanguagefamily',   'V2Controllers\LibraryCatalog\LanguageController@volumeLanguageFamily');
+	Route::name('v2_country_lang')->get('country/countrylang',                            'V2Controllers\LibraryCatalog\LanguageController@CountryLang');
+
 	Route::name('v2_library_verseInfo')->get('library/verseinfo',                         'VerseController@info');
 	Route::name('v2_library_numbers')->get('library/numbers',                             'NumbersController@customRange');
-	Route::name('v2_library_metadata')->get('library/metadata',                           'BiblesController@libraryMetadata');
-	Route::name('v2_library_volume')->get('library/volume',                               'BiblesController@index');
-	Route::name('v2_library_volumeLanguage')->get('library/volumelanguage',               'LanguagesController@volumeLanguage');
-	Route::name('v2_library_volumeLanguageFamily')->get('library/volumelanguagefamily',   'LanguagesController@volumeLanguageFamily');
+	Route::name('v2_library_metadata')->get('library/metadata',                           'V2Controllers\LibraryCatalog\LibraryMetadataController@index');
+	Route::name('v2_library_volume')->get('library/volume',                               'V2Controllers\LibraryCatalog\LibraryVolumeController@libraryVolume');
+
 	Route::name('v2_volume_organization_list')->get('library/volumeorganization',         'OrganizationsController@index');
 
 	// TODO: Cache below Routes
-	Route::name('v2_volume_history')->get('library/volumehistory',                        'BiblesController@history');
 	Route::name('v2_library_organization')->get('library/organization',                   'OrganizationsController@index');
 	Route::name('v2_audio_location')->get('audio/location',                               'AudioController@location');
 	Route::name('v2_audio_path')->get('audio/path',                                       'AudioController@index');
@@ -30,7 +35,6 @@ Route::domain(env('API_URL'))->group(function () {
 	Route::name('v2_text_search_group')->get('text/searchgroup',                          'TextController@searchGroup');
 	Route::name('v2_video_location')->get('video/location',                               'FilmsController@location');
 	Route::name('v2_video_path')->get('video/path',                                       'FilmsController@videoPath');
-	Route::name('v2_country_lang')->get('country/countrylang',                            'LanguagesController@CountryLang');
 	Route::name('v2_api_versionLatest')->get('api/apiversion',                            'HomeController@versionLatest');
 	Route::name('v2_api_apiReply')->get('api/reply',                                      'HomeController@versionReplyTypes');
 	Route::name('v2_api_jesusFilms')->get('library/jesusfilm',                            'ResourcesController@jesusFilmListing');
@@ -59,6 +63,7 @@ Route::domain(env('API_URL'))->group(function () {
 	Route::name('v4_bible_filesets.show')->get('bibles/filesets/{fileset_id?}',                     'BibleFileSetsController@show');
 	Route::name('v4_bible_filesets.update')->put('bibles/filesets/{fileset_id}',                    'BibleFileSetsController@update');
 	Route::name('v4_bible_filesets.store')->post('bibles/filesets/',                                'BibleFileSetsController@store');
+	Route::name('v4_bible.links')->get('bibles/links',                                              'BibleLinksController@index');
 	Route::name('v4_bible.allBooks')->get('bibles/books/',                                          'BooksController@index');
 	Route::name('v4_text_search')->get('search',                                                    'TextController@search');
 	Route::name('v4_bible.books')->get('bibles/{bible_id}/book/{book?}',                            'BiblesController@books');
@@ -151,6 +156,7 @@ Route::domain(env('API_URL'))->group(function () {
 
 	// VERSION 4 | UTILITY
 	Route::name('v4_api.buckets')->get('/api/buckets',                                    'HomeController@buckets');
+    Route::name('v4_api.stats')->get('/stats',                                            'HomeController@stats');
 
 	// VERSION 4 | ERRORS
 	Route::name('v4_api.logs')->get('sign',                                               'HomeController@signedUrls');

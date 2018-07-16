@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User\User;
-
+use database\seeds\SeederHelper;
 class DocsController extends APIController
 {
 	/**
@@ -29,6 +29,15 @@ class DocsController extends APIController
 	public function swagger_v4()
 	{
 		return view('docs.swagger_v4');
+	}
+
+	public function code_analysis()
+	{
+		$csv_helper = new SeederHelper();
+		$analysis = $csv_helper->csv_to_array(storage_path('app/code_analysis.csv'));
+		$analysis = $analysis[0];
+
+		return view('docs.code_analysis',compact('analysis'));
 	}
 
 	public function swagger_docs_gen()

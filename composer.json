@@ -16,7 +16,6 @@
         "intouch/laravel-newrelic": "~2.0",
         "jdavidbakr/signed-s3-filesystem": "^1.0",
         "laravel/framework": "5.6.*",
-        "laravel/horizon": "^1.0",
         "laravel/socialite": "^3.0",
         "laravel/tinker": "~1.0",
         "league/flysystem-aws-s3-v3": "~1.0",
@@ -38,7 +37,7 @@
         "webpatser/laravel-uuid": "^3.0",
         "yajra/laravel-datatables-fractal": "^1.0",
         "yajra/laravel-datatables-oracle": "^8.4",
-        "zircote/swagger-php": "3.*@dev"
+        "zircote/swagger-php": "^3.0@dev"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.4",
@@ -46,6 +45,7 @@
         "itsgoingd/clockwork": "^2.2",
         "krlove/eloquent-model-generator": "^1.2",
         "mockery/mockery": "0.9.*",
+        "phploc/phploc": "^4.0",
         "phpunit/phpunit": "^7.0"
     },
     "autoload": {

@@ -62,8 +62,7 @@ class NumbersController extends APIController
 		$start  = checkParam('start');
 		$end    = checkParam('end');
 
-		if (($end - $start) > 2000) return $this->replyWithError(trans('api.numerals_range_error_maxsize',
-			['num' => $end]));
+		if (($end - $start) > 2000) return $this->replyWithError(trans('api.numerals_range_error_maxsize', ['num' => $end]));
 		$out_numbers = [];
 
 		// Fetch Numbers By Iso Or Script Code
@@ -73,7 +72,9 @@ class NumbersController extends APIController
 		$current_number = $start;
 		while ($end >= $current_number) {
 			$number_vernacular = "";
-			foreach (str_split($current_number) as $i) $number_vernacular .= $numbers[$i]['numeral_vernacular'];
+			foreach (str_split($current_number) as $i) {
+				$number_vernacular .= (isset($numbers[$i]['numeral_vernacular'])) ? $numbers[$i]['numeral_vernacular'] : $i;
+			}
 			$out_numbers[] = [
 				"numeral"            => intval($current_number),
 				"numeral_vernacular" => !empty($numbers) ? $number_vernacular : $current_number,

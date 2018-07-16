@@ -143,6 +143,27 @@ class LanguageTranslation extends Model
 	 */
     protected $updated_at;
 
+    /**
+     * Get translation iso
+     *
+     * @return string
+     */
+    public function getIsoTranslationAttribute()
+    {
+        return $this->translation_iso->iso ?? "";
+    }
+
+    /**
+     * Get source iso
+     *
+     * @return string
+     */
+    public function getIsoSourceAttribute()
+    {
+        return $this->source_iso->iso ?? "";
+    }
+
+
     public static function vernacularTranslation($iso)
     {
         $translation = static::where('iso_translation',$iso)->where('iso_language',$iso)->select('name')->first();
@@ -155,6 +176,11 @@ class LanguageTranslation extends Model
     public function translation_iso()
     {
     	return $this->BelongsTo(Language::class,'language_translation_id','id')->select(['iso','id']);
+    }
+
+    public function source_iso()
+    {
+        return $this->BelongsTo(Language::class,'language_source_id','id')->select(['iso','id']);
     }
 
 

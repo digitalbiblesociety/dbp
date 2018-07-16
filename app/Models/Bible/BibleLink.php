@@ -35,7 +35,7 @@ class BibleLink extends Model
      *
      * @var array
      */
-    protected $hidden = ['created_at','updated_at','id','abbr'];
+    protected $hidden = ['created_at','updated_at','id','abbr','visible'];
     /**
      * Values the User can Edit
      *
@@ -170,4 +170,10 @@ class BibleLink extends Model
     {
         return $this->HasOne(Organization::class, 'id');
     }
+
+    public function bible()
+    {
+    	return $this->belongsTo(Bible::class);
+    }
+
 }

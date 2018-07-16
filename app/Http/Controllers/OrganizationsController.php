@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Organization\Organization;
 use App\Transformers\OrganizationTransformer;
+use function foo\func;
 use Illuminate\View\View;
 use App\Transformers\BibleTransformer;
 
@@ -25,12 +26,15 @@ class OrganizationsController extends APIController
 			return view('dashboard.organizations.index', compact('user'));
 		}
 
-		$iso        = checkParam('iso', null, 'optional') ?? "eng";
-		$membership = checkParam('membership', null, 'optional');
-		$bibles     = checkParam('bibles', null, 'optional');
+		$iso         = checkParam('iso', null, 'optional') ?? "eng";
+		$membership  = checkParam('membership', null, 'optional');
+		$content     = checkParam('has_content', null, 'optional');
+		$bibles      = checkParam('bibles', null, 'optional');
+		$resources   = checkParam('resources', null, 'optional');
 
-		$organizations = \Cache::remember($this->v . 'organizations' . $iso . $membership . $bibles, 2400,
-			function () use ($iso, $membership, $bibles) {
+        \Cache::forget($this->v . 'organizations' . $iso . $membership . $content . $bibles .$resources);
+		$organizations = \Cache::remember($this->v . 'organizations' . $iso . $membership . $content . $bibles .$resources, 2400,
+			function () use ($iso, $membership, $content, $bibles, $resources) {
 				if ($membership) {
 					$membership = Organization::where('slug', $membership)->first();
 					if (!$membership) {
@@ -41,16 +45,19 @@ class OrganizationsController extends APIController
 
 				// Otherwise Fetch API route
 				$organizations = Organization::with('translations', 'logos')
-				                             ->when($membership, function ($q) use ($membership) {
-					                             $q->join('organization_relationships',
-						                             function ($join) use ($membership) {
-							                             $join->on('organizations.id', '=',
-								                             'organization_relationships.organization_child_id')
-							                                  ->where('organization_relationships.organization_parent_id',
-								                                  $membership);
-						                             });
-				                             })->when($bibles, function ($q) {
-						$q->has('bibles');
+					->when(
+                        $membership, function ($q) use ($membership) {
+					    $q->join('organization_relationships',
+					        function ($join) use ($membership) {
+					            $join->on('organizations.id', '=', 'organization_relationships.organization_child_id')
+					                 ->where('organization_relationships.organization_parent_id', $membership);
+					        });
+					})->when($bibles, function ($q) {
+						$q->has('bibles')->orHas('links');
+					})->when($resources, function($q) {
+						$q->has('resources');
+					})->when($content, function($q) {
+						$q->has('bibles')->orHas('links')->orHas('resources');
 					})->has('translations')->get();
 				if (isset($_GET['count']) or (\Route::currentRouteName() == 'v2_volume_organization_list')) {
 					$organizations->load('bibles');

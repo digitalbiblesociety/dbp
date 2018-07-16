@@ -392,12 +392,12 @@ class Language extends Model
 
     public function fonts()
     {
-        return $this->HasMany(AlphabetFont::class, 'iso');
+        return $this->HasMany(AlphabetFont::class);
     }
 
     public function bibles()
     {
-        return $this->HasMany(Bible::class,'iso','iso');
+        return $this->HasMany(Bible::class);
     }
 
     public function bibleCount()
@@ -407,7 +407,7 @@ class Language extends Model
 
     public function resources()
     {
-    	return $this->hasMany(Resource::class,'iso','iso')->has('links');
+    	return $this->hasMany(Resource::class)->has('links');
     }
 
     public function films()

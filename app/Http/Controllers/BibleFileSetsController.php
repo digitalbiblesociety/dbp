@@ -79,7 +79,7 @@ class BibleFileSetsController extends APIController
 
 		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? "download" : "api";
 		$access_control = $this->accessControl($this->key, $access_control_type);
-		if(!in_array($fileset->hash_id, $access_control->hashes)) return $this->setStatusCode(401)->replyWithError("Your API Key does not have access to this fileset");
+		if(!in_array($fileset->hash_id, $access_control->hashes)) return $this->setStatusCode(403)->replyWithError("Your API Key does not have access to this fileset");
 
 		$bible         = ($fileset->bible->first()) ? $fileset->bible->first() : false;
 		$bible_path    = ($bible->id) ? $bible->id . "/" : "";
@@ -128,7 +128,7 @@ class BibleFileSetsController extends APIController
 			$fileSetChapters[$key]->file_name = Bucket::signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name,
 				$bucket_id, $lifespan);
 		}
-		return $this->reply(fractal()->collection($fileSetChapters)->serializeWith($this->serializer)->transformWith(new FileSetTransformer()));
+		return $this->reply(fractal($fileSetChapters, new FileSetTransformer())->serializeWith($this->serializer), [], true);
 	}
 
 	/**
@@ -230,6 +230,8 @@ class BibleFileSetsController extends APIController
 	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OAS\Parameter(ref="#/components/parameters/format"),
 	 *     @OAS\Parameter(name="id", in="path", required=true, description="The fileset ID", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OAS\Parameter(name="bucket_id", in="path", required=true, description="The bucket id", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/bucket_id")),
+	 *     @OAS\Parameter(name="type", in="path", required=true, description="The set type code", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code")),
 	 *     @OAS\Parameter(
 	 *         name="id",
 	 *         in="query",
@@ -250,12 +252,20 @@ class BibleFileSetsController extends APIController
 	 */
 	public function copyright($id)
 	{
-		$iso     = checkParam('iso', null, 'optional') ?? "eng";
-		$fileset = BibleFileset::with(['copyright.organizations.logos', 'copyright.organizations.translations' => function (
-			$query
-		) use ($iso) {
-			$query->where('language_iso', $iso);
-		}])->find($id);
+		$iso = checkParam('iso', null, 'optional') ?? "eng";
+		$type = checkParam('type', null, 'optional');
+		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? 'dbp-dev';
+
+		$fileset = BibleFileset::with(['copyright.organizations.logos', 'copyright.organizations.translations' => function ($q) use ($iso) {
+			$q->where('language_iso', $iso);
+		}])
+		->when($bucket_id, function ($q) use($bucket_id) {
+			$q->where('bucket_id', $bucket_id);
+		})
+		->when($type, function ($q) use($type) {
+			$q->where('set_type_code', $type);
+		})->select(['hash_id','id','bucket_id','set_type_code as type','set_size_code as size'])->where('id',$id)->first();
+
 		return $this->reply($fileset);
 	}
 

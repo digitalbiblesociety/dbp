@@ -108,7 +108,7 @@ class BiblesController extends APIController
 		$access_control = $this->accessControl($this->key, "api");
 
 		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $iso . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $bucket . $access_control->string;
-		\Cache::forget($cache_string);
+		
 		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $bucket, $include_alt_names, $include_regionInfo, $access_control) {
 			$bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($bucket, $access_control, $hide_restricted) {
 				if($bucket) $query->where('bucket_id', $bucket);
@@ -176,14 +176,20 @@ class BiblesController extends APIController
 	public function archival()
     {
         if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
-        $iso               = checkParam('iso', null, 'optional');
-        $organization      = checkParam('organization_id', null, 'optional');
-        $country           = checkParam('country', null, 'optional');
+        $iso                = checkParam('iso', null, 'optional');
+        $organization       = checkParam('organization_id', null, 'optional');
+        $country            = checkParam('country', null, 'optional');
         $include_regionInfo = checkParam('include_region_info', null, 'optional');
+        $dialects           = checkParam('include_dialects', null, 'optional');
 
-        $cache_string = 'bibles_archival'.$iso.$organization.$country.$include_regionInfo;
+        if($iso) {
+            $language = Language::where('iso',$iso)->with('dialects')->first();
+            if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for provided iso");
+        }
+
+        $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects;
 		Cache::forget($cache_string);
-        $bibles = Cache::remember($cache_string, 1600, function () use ($iso,$organization,$country,$include_regionInfo) {
+        $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization,$country,$include_regionInfo,$dialects) {
             $bibles = Bible::with(['translatedTitles', 'language','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {
@@ -191,8 +197,9 @@ class BiblesController extends APIController
                         $query->where('country_id', $country);
                     });
                 })
-                ->when($iso, function ($q) use ($iso) {
-                    $q->where('iso', $iso);
+                ->when($language, function ($q) use ($language,$dialects) {
+                   $q->where('language_id', $language->id);
+                   if($dialects) $q->orWhereIn('language_id',$language->dialects->pluck('dialect_id'));
                 })
                 ->when($organization, function ($q) use ($organization) {
                     $q->whereHas('organizations', function ($q) use ($organization) {
@@ -203,51 +210,17 @@ class BiblesController extends APIController
                 })->orderBy('priority', 'desc')
                 ->get();
 
+            $language = Language::where('iso','eng')->first();
+            foreach ($bibles as $bible) {
+            	$bible->english_language_id = $language->id;
+            }
+
 	        if ($include_regionInfo) $bibles->load('country');
 
             return fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer);
         });
         return $this->reply($bibles);
     }
-
-
-	/**
-	 * v2_volume_history
-	 *
-	 * @link https://api.dbp.dev/library/volumehistory?key=1234&v=2
-	 *
-	 * @OAS\Get(
-	 *     path="/library/volumehistory",
-	 *     tags={"Library Catalog"},
-	 *     summary="",
-	 *     description="",
-	 *     operationId="v2_volume_history",
-	 *     @OAS\Parameter(name="limit",  in="query", description="The Number of records to return"),
-	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/format"),
-	 *     @OAS\Response(
-	 *         response=200,
-	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_bible.one")),
-	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_bible.one"))
-	 *     )
-	 * )
-	 *
-	 * A Route to Review The Last 500 Recent Changes to The Bible Resources
-	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
-	 */
-	public function history()
-	{
-		if (!$this->api) return view('bibles.history');
-
-		$limit  = checkParam('limit', null, 'optional') ?? 500;
-		$bibles = Bible::select(['id', 'updated_at'])->take($limit)->get();
-		return $this->reply(fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer)->toArray());
-	}
 
 	/**
 	 *
@@ -323,84 +296,6 @@ class BiblesController extends APIController
 	}
 
 	/**
-	 *
-	 * @link https://api.dbp.dev/library/metadata?key=1234&pretty&v=2
-	 *
-	 * @OAS\Get(
-	 *     path="/library/metadata",
-	 *     tags={"Library Catalog"},
-	 *     summary="This returns copyright and associated organizations info.",
-	 *     description="",
-	 *     operationId="v2_library_metadata",
-	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/format"),
-	 *     @OAS\Response(
-	 *         response=200,
-	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_library_metadata")),
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_library_metadata")),
-	 *         @OAS\MediaType(mediaType="text/yaml",        @OAS\Schema(ref="#/components/schemas/v2_library_metadata")),
-	 *         @OAS\MediaType(mediaType="text/csv",         @OAS\Schema(ref="#/components/schemas/v2_library_metadata"))
-	 *     )
-	 * )
-	 *
-	 * @OAS\Schema (
-	 *     type="object",
-	 *     schema="v2_library_metadata",
-	 *     description="The various version ids in the old version 2 style",
-	 *     title="v2_library_version",
-	 *     @OAS\Xml(name="v2_library_version"),
-	 *     @OAS\Property(property="dam_id",         ref="#/components/schemas/BibleFileset/id"),
-	 *     @OAS\Property(property="mark",           ref="#/components/schemas/BibleFilesetCopyright/copyright"),
-	 *     @OAS\Property(property="volume_summary", ref="#/components/schemas/BibleFilesetCopyright/copyright_description"),
-	 *     @OAS\Property(property="organization", type="object",
-	 *     @OAS\AdditionalProperties(
-	 *         type="object",
-	 *         @OAS\Property(property="organization_id",       ref="#/components/schemas/Organization/id"),
-	 *         @OAS\Property(property="organization",          ref="#/components/schemas/Organization/name"),
-	 *         @OAS\Property(property="organization_english",  ref="#/components/schemas/Organization/name"),
-	 *         @OAS\Property(property="organization_role",     ref="#/components/schemas/Organization/role"),
-	 *         @OAS\Property(property="organization_url",      ref="#/components/schemas/Organization/url"),
-	 *         @OAS\Property(property="organization_donation", ref="#/components/schemas/Organization/donation"),
-	 *         @OAS\Property(property="organization_address",  ref="#/components/schemas/Organization/address"),
-	 *         @OAS\Property(property="organization_address2", ref="#/components/schemas/Organization/address2"),
-	 *         @OAS\Property(property="organization_city",     ref="#/components/schemas/Organization/city"),
-	 *         @OAS\Property(property="organization_state",    ref="#/components/schemas/Organization/state"),
-	 *         @OAS\Property(property="organization_country",  ref="#/components/schemas/Organization/country"),
-	 *         @OAS\Property(property="organization_zip",      ref="#/components/schemas/Organization/zip"),
-	 *         @OAS\Property(property="organization_phone",    ref="#/components/schemas/Organization/phone")
-	 *     )),
-	 * )
-	 *
-	 * @return mixed
-	 */
-	public function libraryMetadata()
-	{
-		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
-
-		$fileset_id = checkParam('dam_id', null, 'optional');
-		$bucket_id  = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-
-		\Cache::forget('v2_library_metadata' . $fileset_id);
-		$metadata = Cache::remember('v2_library_metadata' . $fileset_id, 1600,
-			function () use ($fileset_id, $bucket_id) {
-
-				$metadata = BibleFileset::has('copyright')->with('copyright.organizations', 'copyright.role.roleTitle', 'bible')
-				->when($fileset_id, function ($q) use ($fileset_id) {
-					$q->where('id', $fileset_id);
-				})->where('bucket_id', $bucket_id)->get();
-
-				if(count($metadata) == 0) return $this->setStatusCode(404)->replyWithError("Missing metadata");
-				if(count($metadata) == 1) return fractal()->item($metadata[0])->serializeWith($this->serializer)->transformWith(new BibleTransformer());
-				return fractal()->collection($metadata)->serializeWith($this->serializer)->transformWith(new BibleTransformer());
-			});
-
-		return $this->reply($metadata);
-	}
-
-	/**
 	 * Store a newly created resource in storage.
 	 *
 	 * @return \Illuminate\Http\Response
@@ -459,7 +354,7 @@ class BiblesController extends APIController
 	 */
 	public function show($id)
 	{
-		$bible = Bible::with('filesets.organization', 'translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon', 'alphabet.primaryFont','equivalents')->find($id);
+		$bible = Bible::with('filesets.organization', 'translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents')->find($id);
 		if (!$bible) return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id]));
 		if (!$this->api) return view('bibles.show', compact('bible'));
 

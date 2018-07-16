@@ -4,6 +4,7 @@
 
 			<md-layout md-row style="flex-wrap: nowrap;">
 				<md-list class="md-dense" ref="menu">
+					<h2 style="text-align: center;padding:30px 0 30px 0;">{{api.info.title}}  <div style="color:#555;font-size:smaller" v-if="api.info.version">{{api.info.version}}</div></h2>
 					<md-list-item v-for="(entries, tag) in tags" :key="tag" md-expand-multiple>
 						<span class="md-title">{{tag}}</span>
 						<md-list-expand>
@@ -16,7 +17,6 @@
 						</md-list-expand>
 					</md-list-item>
 				</md-list>
-
 
 				<md-layout md-flex-offset="5" md-flex="true" v-if="!selectedEntry">
 					<p>Select an entry on the left to see detailed information...</p>

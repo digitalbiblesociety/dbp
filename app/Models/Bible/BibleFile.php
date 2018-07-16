@@ -212,12 +212,17 @@ class BibleFile extends Model
 
 	public function bible()
 	{
-		return $this->hasManyThrough(Bible::class,BibleFilesetConnection::class, 'hash_id','id','hash_id','bible_id');
+		return $this->hasManyThrough(Bible::class, BibleFilesetConnection::class, 'hash_id', 'id', 'hash_id', 'bible_id');
 	}
 
 	public function book()
 	{
 		return $this->BelongsTo(Book::class,'book_id','id')->orderBy('protestant_order');
+	}
+
+	public function testament()
+	{
+		return $this->BelongsTo(Book::class,'book_id','id')->select(['book_testament','id']);
 	}
 
 	public function timestamps()

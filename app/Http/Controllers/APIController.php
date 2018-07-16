@@ -29,7 +29,7 @@ class APIController extends Controller
 	 * @OAS\Info(
 	 *     description="A Bible API",
 	 *     version="4.0.0",
-	 *     title="Koinos: Digital Bible Platform V4",
+	 *     title="Digital Bible Platform",
 	 *     termsOfService="http://bible.build/terms/",
 	 *     @OAS\Contact(email="jon@dbs.org"),
 	 *     @OAS\License(name="Apache 2.0",url="http://www.apache.org/licenses/LICENSE-2.0.html")
@@ -154,18 +154,29 @@ class APIController extends Controller
 	 *
 	 * @return mixed
 	 */
-	public function reply($object, $meta = [])
+	public function reply($object, $meta = [], $s3response = false)
 	{
 		if (isset($_GET['echo'])) {
 			$object = [$_GET, $object];
 		}
-		$input  = checkParam('callback', null, 'optional') ?? checkParam('jsonp', null, 'optional');
-		$format = @$_GET['format'];
+		$input  = checkParam('callback|jsonp', null, 'optional');
+		$format = checkParam('reply|format', null, 'optional');
 
 		// Status Code, Headers, Params, Body, Time
 
 		try {
-			sendLogsToS3($this->request, $this->getStatusCode());
+			if($s3response) {
+				$response_object = collect($object->toarray());
+				$url_strings = (isset($response_object['data'])) ? $response_object['data']->pluck('path') : $response_object->pluck('path');
+				$out_string = '';
+				foreach($url_strings as $url_string) {
+					parse_str($url_string,$output);
+					$out_string .= $output['X-Amz-Signature'].'|';
+				}
+				sendLogsToS3($this->request, $this->getStatusCode(), $out_string);
+			} else {
+				sendLogsToS3($this->request, $this->getStatusCode());
+			}
 		} catch (Exception $e) {
 			//    //echo 'Caught exception: ',  $e->getMessage(), "\n";
 		}
@@ -231,6 +242,7 @@ class APIController extends Controller
 			'error' => [
 				'message'     => $message,
 				'status code' => $status,
+				'status'      => "Fail",
 				'face'        => array_random($faces),
 			],
 		], $this->getStatusCode(), [],

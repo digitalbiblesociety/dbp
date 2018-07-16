@@ -35,8 +35,7 @@ class LanguageTransformer extends BaseTransformer
                     "language_iso_name"         => $language->name ?? "",
 					"language_family_code"      => ($language->parent) ? $language->parent->autonym : strtoupper($language->iso),
 					"language_family_name"      => (($language->parent) ? $language->parent->autonym : $language->autonym) ?? "",
-					"language_family_english"   => (($language->parent) ? $language->parent->
-						name : $language->name) ?? "",
+					"language_family_english"   => (($language->parent) ? $language->parent->name : $language->name) ?? "",
 					"language_family_iso"       => $language->iso ?? "",
 					"language_family_iso_2B"    => (($language->parent) ? $language->parent->iso2B : $language->iso2B) ?? "",
 					"language_family_iso_2T"    => (($language->parent) ? $language->parent->iso2T : $language->iso2T) ?? "",
@@ -47,80 +46,6 @@ class LanguageTransformer extends BaseTransformer
 				];
 			}
 
-			case "v2_library_volumeLanguageFamily": {
-				return [
-					"language_family_code"    => strtoupper($language->iso) ?? "",
-					"language_family_name"    => $language->name ?? "",
-					"language_family_english" => $language->name ?? "",
-					"language_family_iso"     => $language->iso ?? "",
-					"language_family_iso_2B"  => $language->iso2B ?? "",
-					"language_family_iso_2T"  => $language->iso2T ?? "",
-					"language_family_iso_1"   => $language->iso1 ?? "",
-					"language"                => [strtoupper($language->iso)],
-					"media"                   => ["text"],
-					"delivery"                => ["mobile","web","subsplash"],
-					"resolution"              => ["lo"]
-				];
-			}
-
-			/**
-			 * @OAS\Schema (
-			*	type="array",
-			*	schema="v2_country_lang",
-			*	description="The v2_country_lang response",
-			*	title="v2_country_lang",
-			*	@OAS\Xml(name="v2_country_lang"),
-			*	@OAS\Items(          @OAS\Property(property="id",                    ref="#/components/schemas/Language/properties/id"),
-			 *          @OAS\Property(property="lang_code",             ref="#/components/schemas/Language/properties/iso"),
-			 *          @OAS\Property(property="region",                ref="#/components/schemas/Language/properties/area"),
-			 *          @OAS\Property(property="country_primary",       ref="#/components/schemas/Language/properties/country_id"),
-			 *          @OAS\Property(property="lang_id",               ref="#/components/schemas/Language/properties/iso2B"),
-			 *          @OAS\Property(property="iso_language_code",     ref="#/components/schemas/Language/properties/iso2T"),
-			 *          @OAS\Property(property="regional_lang_name",    ref="#/components/schemas/Language/properties/iso1"),
-			 *          @OAS\Property(property="family_id",             ref="#/components/schemas/Language/properties/name"),
-			 *          @OAS\Property(property="primary_country_name",  ref="#/components/schemas/Language/properties/iso2T"),
-			 *          @OAS\Property(property="country_image",         @OAS\Schema(type="string",example="https://cdn.bible.build/img/flags/full/80X60/in.png")),
-			 *          @OAS\Property(property="country_additional",    @OAS\Schema(type="string",example="BM: CH: CN: MM",description="The country names are delimited by both a colon and a space"))
-			 *     )
-			 *   )
-			 * )
-			 */
-			case "v2_country_lang": {
-				return [
-					"id"                   => (string) $language->id,
-                    "lang_code"            => $language->iso,
-                    "region"               => $language->area,
-                    "country_primary"      => strtoupper($language->country_id),
-                    "lang_id"              => strtoupper($language->iso),
-                    "iso_language_code"    => strtoupper($language->iso),
-                    "regional_lang_name"   => $language->autonym ?? $language->name,
-                    "family_id"            => strtoupper($language->iso),
-                    "primary_country_name" => $language->primaryCountry->name,
-					"country_image"        => url("https://cdn.bible.build/img/flags/full/80X60/".strtolower($language->country_id).'.png'),
-					"country_additional"   => strtoupper($language->countries->pluck('id')->implode(': '))
-				];
-			}
-
-			/**
-			 * @OAS\Schema (
-			*	type="array",
-			*	schema="v2_library_language",
-			*	description="The minimized language return for the all languages v2 route",
-			*	title="v2_library_language",
-			*	@OAS\Xml(name="v2_library_language"),
-			*	@OAS\Items(          @OAS\Property(property="language_code",         ref="#/components/schemas/Language/properties/iso"),
-			 *          @OAS\Property(property="language_name",         ref="#/components/schemas/Language/properties/name"),
-			 *          @OAS\Property(property="english_name",          ref="#/components/schemas/Language/properties/name"),
-			 *          @OAS\Property(property="language_iso",          ref="#/components/schemas/Language/properties/iso"),
-			 *          @OAS\Property(property="language_iso_2B",       ref="#/components/schemas/Language/properties/iso2B"),
-			 *          @OAS\Property(property="language_iso_2T",       ref="#/components/schemas/Language/properties/iso2T"),
-			 *          @OAS\Property(property="language_iso_1",        ref="#/components/schemas/Language/properties/iso1"),
-			 *          @OAS\Property(property="language_iso_name",     ref="#/components/schemas/Language/properties/name"),
-			 *          @OAS\Property(property="language_family_code",  ref="#/components/schemas/Language/properties/iso")
-			 *     )
-			 *   )
-			 * )
-			 */
 			default: {
 				return [
 					'language_code'        => strtoupper($language->iso) ?? '',
@@ -157,9 +82,11 @@ class LanguageTransformer extends BaseTransformer
 		 */
 		$full = checkParam('full', null, 'optional');
 		if($full) {
+
 			return [
 				"id"                   => $language->id,
 				"name"                 => $language->name,
+                "description"          => @$language->translations->where('iso_translation',$this->i10n)->first()->description ?? "",
 				'autonym'              => ($language->autonym) ? $language->autonym->name : '',
                 "glotto_id"            => $language->glotto_id,
 				"bibles"               => $language->bibles,
@@ -192,7 +119,9 @@ class LanguageTransformer extends BaseTransformer
 			'name'   => $language->translation->name ?? $language->name,
 			'bibles' => $language->bibles_count ?? $language->bibles->count()
 		];
-		if($language->relationLoaded('translations')) foreach($language->translations as $translation) $return['alt_names'][$translation->translation_iso->iso][] = $translation->name;
+		if($language->relationLoaded('translations')) {
+		    foreach($language->translations as $translation) $return['alt_names'][$translation->translation_iso->iso][] = $translation->name;
+        }
 		if($language->bibles) $return['filesets'] = $language->bibles->pluck('filesets')->flatten()->count();
 		return $return;
 	}

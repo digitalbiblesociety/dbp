@@ -5,7 +5,7 @@
         <ul>
             {{--<li class="has-dropdown gallery" data-content="about"><a href="#0">About</a></li> --}}
             <li class="has-dropdown links" data-content="pricing"><a href="#0">Reference</a></li>
-            @if(!Auth::user())
+            @if(!\Auth::user())
                 <li class="has-dropdown button" data-content="login"><a href="#0">Login/Signup</a></li>
             @else
                 <li class="has-dropdown button" data-content="user"><a href="#0">Home</a></li>

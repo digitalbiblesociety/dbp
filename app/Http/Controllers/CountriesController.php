@@ -49,12 +49,8 @@ class CountriesController extends APIController
 	 */
 	public function index()
 	{
-		if (!$this->api) {
-			return view('wiki.countries.index');
-		}
-		if (env('APP_ENV') == 'local') {
-			ini_set('memory_limit', '864M');
-		}
+		if (!$this->api) return view('wiki.countries.index');
+		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 
 		$l10n              = checkParam('l10n', null, 'optional') ?? "eng";
 		$has_filesets      = checkParam('has_filesets', null, 'optional') ?? true;
@@ -62,21 +58,16 @@ class CountriesController extends APIController
 		$include_languages = checkParam('include_languages', null, 'optional');
 
 		\Cache::forget("countries" . $l10n . $has_filesets . $bucket_id . $include_languages . \i18n::getCurrentLocale());
-
 		return \Cache::remember("countries" . $l10n . $has_filesets . $bucket_id . $include_languages . \i18n::getCurrentLocale(),
 			1600, function () use ($l10n, $has_filesets, $bucket_id, $include_languages) {
 				if ($l10n) {
 					$language = Language::where('iso', $l10n)->first();
-					if (!$language) {
-						return $this->setStatusCode(404)->replyWithError(trans('api.language_errors_404'));
-					}
+					if (!$language) return $this->setStatusCode(404)->replyWithError(trans('api.language_errors_404'));
 				}
 				$countries = Country::exclude('introduction')->
 				when($has_filesets, function ($query) use ($bucket_id) {
 					$query->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
-						if ($bucket_id) {
-							$query->where('bucket_id', $bucket_id);
-						}
+						if ($bucket_id) $query->where('bucket_id', $bucket_id);
 					});
 				})->get();
 				if ($l10n != "eng") {
@@ -187,7 +178,7 @@ class CountriesController extends APIController
 		$includes = $this->loadWorldFacts($country);
 		if (!$country) return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['l10n' => $id]));
 
-		if ($this->api) return $this->reply(fractal()->item($country)->transformWith(new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
+		if ($this->api) return $this->reply(fractal($country, new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
 		return view('wiki.countries.show', compact('country'));
 	}
 
@@ -302,10 +293,7 @@ class CountriesController extends APIController
 		$this->validateCountry(request());
 
 		$country = Country::find($id);
-
-		if ($this->api) {
-			return $this->reply(trans('api.countries_update_200', []));
-		}
+		if ($this->api) return $this->reply(trans('api.countries_update_200', []));
 
 		return view('wiki.countries.show', compact('country'));
 	}
@@ -326,6 +314,7 @@ class CountriesController extends APIController
 		$profiles['regions']        = checkParam('regions', null, 'optional');
 		$profiles['religions']      = checkParam('religions', null, 'optional');
 		$profiles['transportation'] = checkParam('transportation', null, 'optional');
+		$profiles['joshuaProject']  = checkParam('joshuaProject', null, 'optional');
 		foreach ($profiles as $key => $profile) {
 			if ($profile != null) {
 				$country->load($key);
@@ -346,19 +335,13 @@ class CountriesController extends APIController
 	 */
 	private function validateUser($user = null)
 	{
-		if (!$this->api) {
-			$user = Auth::user();
-		}
+		if (!$this->api) $user = Auth::user();
 		if (!$user) {
 			$key = Key::where('key', $this->key)->first();
-			if (!isset($key)) {
-				return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed'));
-			}
+			if (!isset($key)) return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed'));
 			$user = $key->user;
 		}
-		if (!$user->archivist AND !$user->admin) {
-			return $this->setStatusCode(401)->replyWithError(trans('api.auth_wiki_validation_failed'));
-		}
+		if (!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError(trans('api.auth_wiki_validation_failed'));
 
 		return $user;
 	}
@@ -381,12 +364,8 @@ class CountriesController extends APIController
 		]);
 
 		if ($validator->fails()) {
-			if ($this->api) {
-				return $this->setStatusCode(422)->replyWithError($validator->errors());
-			}
-			if (!$this->api) {
-				return redirect('dashboard/countries/create')->withErrors($validator)->withInput();
-			}
+			if ($this->api) return $this->setStatusCode(422)->replyWithError($validator->errors());
+			if (!$this->api) return redirect('dashboard/countries/create')->withErrors($validator)->withInput();
 		}
 
 	}

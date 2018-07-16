@@ -28,63 +28,22 @@ class BibleTransformer extends BaseTransformer
 
     	// Compute v2 ID
 	    if(isset($bible->bible)) {
-		    $v2id = $bible->bible->first()->iso.substr($bible->first()->id,3,3);
+	    	$iso = $bible->bible->first()->language->iso;
+		    $v2id = $iso.substr($bible->first()->id,3,3);
 	    } elseif(isset($bible->id)) {
-		    $v2id = $bible->iso.substr($bible->id,3,3);
+		    $iso = $bible->language->iso;
+		    $v2id = $iso.substr($bible->id,3,3);
 	    }
 
 
     	    switch($this->route) {
 
-		        case "v2_library_metadata": {
-		        	// ISO . 3 Letter . TESTAMENT CODE . DRAMATIZED
-		        	$output = [
-				        "dam_id"         => $v2id,
-				        "fileset_id"     => $bible->id,
-				        "mark"           => $bible->copyright->copyright,
-				        "volume_summary" => $bible->copyright->copyright_description,
-				        "font_copyright" => null,
-				        "font_url"       => null
-			        ];
-			        $organization = @$bible->copyright->organizations->first();
-		        	if($organization) {
-				        $output["organization"] = [
-					        'organization_id'       => $organization->id,
-					        'organization'          => $organization->name,
-					        'organization_english'  => $organization->name,
-					        'organization_role'     => $bible->copyright->role->roleTitle->name,
-					        'organization_url'      => $organization->url_website,
-					        'organization_donation' => $organization->url_donate,
-					        'organization_address'  => $organization->address,
-					        'organization_address2' => $organization->address2,
-					        'organization_city'     => $organization->city,
-					        'organization_state'    => $organization->state,
-					        'organization_country'  => $organization->country,
-					        'organization_zip'      => $organization->zip,
-					        'organization_phone'    => $organization->phone,
-				        ];
-			        }
-			        return $output;
-		        }
 
-		        case "v2_volume_history": {
-		        	return [
-		        		"dam_id" => $v2id,
-				        "time"   => $bible->updated_at->toDateTimeString(),
-				        "event"  => "Updated"
-			        ];
-			        break;
-		        }
 
 		        case "v2_library_volume": {
-		        	foreach($bible->filesets as $fileset) {
-				        $v2id .= ($fileset->set_size_code[0] == "N") ? "N" : "O";
-				        $v2id .= (strpos($fileset->set_type_code, 'drama') !== false) ? 2 : 1;
-				        $v2id .= (strpos($fileset->set_type_code, 'text') !== false) ? "ET" : "DA";
-				        $v2id = strtoupper($v2id);
 				        return [
-					        "dam_id"                    => $v2id,
-					        "fcbh_id"                   => $fileset->id,
+					        "dam_id"                    => $bible->id,
+					        "fcbh_id"                   => $bible->id,
 					        "volume_name"               => @$bible->currentTranslation->name ?? "",
 					        "status"                    => "live", // for the moment these default to Live
 					        "dbp_agreement"             => "true", // for the moment these default to True
@@ -107,9 +66,9 @@ class BibleTransformer extends BaseTransformer
 					        "version_code"              => substr($bible->id,3) ?? "",
 					        "version_name"              => "Wycliffe Bible Translators, Inc.",
 					        "version_english"           => @$bible->currentTranslation->name ?? $bible->id,
-					        "collection_code"           => ($fileset->name == "Old Testament") ? "OT" : "NT",
+					        "collection_code"           => ($bible->name == "Old Testament") ? "OT" : "NT",
 					        "rich"                      => "0",
-					        "collection_name"           => $fileset->name,
+					        "collection_name"           => $bible->name,
 					        "updated_on"                => "".$bible->updated_at->toDateTimeString() ?? "",
 					        "created_on"                => "".$bible->created_at->toDateTimeString() ?? "",
 					        "right_to_left"             => (isset($bible->alphabet)) ? (($bible->alphabet->direction == "rtl") ? "true" : "false") : "false",
@@ -119,7 +78,7 @@ class BibleTransformer extends BaseTransformer
 					        "audio_zip_path"            => "",
 					        "font"                      => null,
 					        "arclight_language_id"      => "",
-					        "media"                     => (strpos($fileset->set_type_code, 'audio') !== false) ? 'Audio' : 'Text',
+					        "media"                     => (strpos($bible->set_type_code, 'audio') !== false) ? 'Audio' : 'Text',
 					        "media_type"                => "Drama",
 					        "delivery"                  => [
 					        	"mobile",
@@ -130,7 +89,6 @@ class BibleTransformer extends BaseTransformer
 					        "resolution"                => []
 				        ];
 				        break;
-			        }
 		        }
 		        default: return [];
 	        }
@@ -164,15 +122,16 @@ class BibleTransformer extends BaseTransformer
 			 * )
 			 */
             case "v4_bible.archival": {
-                $name = $bible->translatedTitles->where('iso','eng')->first();
-                $vname = ($bible->iso != 'eng') ? $bible->translatedTitles->where('iso',$bible->iso)->first() : false;
+
+                $name = $bible->translatedTitles->where('language_id',$bible->english_language_id)->first();
+                $vname = ($bible->iso != 'eng') ? $bible->translatedTitles->where('language_id',$bible->language_id)->first() : false;
                 $output = [
                     "abbr"              => $bible->id,
                     "script"            => $bible->script,
-                    "name"              => ($name) ? $name->name : null,
-                    "vname"             => ($vname) ? $vname->name : null,
-                    "language"          => @$bible->language->name ?? null,
-                    "autonym"           => @$bible->language->autonym ?? null,
+                    "name"              => ($name) ? $name->name : "",
+                    "vname"             => ($vname) ? $vname->name : "",
+                    "language"          => @$bible->language->name ?? "",
+                    "autonym"           => @$bible->language->autonym ?? "",
                     "iso"               => $bible->iso,
                     "date"              => $bible->date,
 	                "links_count"        => $bible->links_count,
@@ -238,7 +197,8 @@ class BibleTransformer extends BaseTransformer
 			*	description="The bible being returned",
 			*	title="v4_bible.one",
 			*	@OAS\Xml(name="v4_bible.one"),
-			*	@OAS\Items(              @OAS\Property(property="abbr",          ref="#/components/schemas/Bible/properties/id"),
+			*	@OAS\Items(
+			 *              @OAS\Property(property="abbr",          ref="#/components/schemas/Bible/properties/id"),
 			 *              @OAS\Property(property="alphabet",      ref="#/components/schemas/Alphabet/properties/script"),
 			 *              @OAS\Property(property="mark",          ref="#/components/schemas/Bible/properties/copyright"),
 			 *              @OAS\Property(property="name",          ref="#/components/schemas/BibleTranslation/properties/name"),
@@ -274,7 +234,7 @@ class BibleTransformer extends BaseTransformer
 					"iso"           => $bible->iso,
 					"date"          => $bible->date,
 					"country"       => $bible->language->primaryCountry->name ?? '',
-					"books"         => $bible->books->sortBy('book.protestant_order')->each(function ($book) {
+					"books"         => $bible->books->sortBy('book.'.$bible->versification.'_order')->each(function ($book) {
 						// convert to integer array
 						$chapters = explode(',',$book->chapters);
 						foreach ($chapters as $key => $chapter) $chapters[$key] = intval($chapter);

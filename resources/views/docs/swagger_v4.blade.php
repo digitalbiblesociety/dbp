@@ -13,5 +13,5 @@
 @endsection
 
 @section('footer')
-    <script src="/js/swagger-vue.js"></script>
+    <script src="/js/swagger-vue-v4.js"></script>
 @endsection

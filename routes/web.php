@@ -1,41 +1,31 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]], function()
 {
-	Route::name('docs')->get('docs',                                        'DocsController@index');
+
 	Route::name('history')->get('docs/history',                             'DocsController@history');
 	Route::name('docs.sdk')->get('docs/sdk',                                'DocsController@sdk');
 	Route::name('docs_team')->get('docs/getting-started',                   'DocsController@getting_started');
 	Route::name('docs_team')->get('docs/team',                              'DocsController@team');
-	Route::name('docs_bibles')->get('docs/bibles',                          'DocsController@bibles');
 	Route::name('docs_bible_equivalents')->get('docs/bibles/equivalents',   'DocsController@bibleEquivalents');
 	Route::name('docs_bible_books')->get('docs/bibles/books',               'DocsController@books');
-	Route::name('docs_languages')->get('docs/languages',                    'DocsController@languages');
+	Route::name('docs_bibles')->get('docs/bibles',                          'DocsController@bibles');
 	Route::name('docs_language_create')->get('docs/language/create',        'DocsController@languages');
 	Route::name('docs_language_update')->get('docs/language/update',        'DocsController@languages');
+	Route::name('docs_languages')->get('docs/languages',                    'DocsController@languages');
 	Route::name('docs_countries')->get('docs/countries',                    'DocsController@countries');
 	Route::name('docs_alphabets')->get('docs/alphabets',                    'DocsController@alphabets');
-	Route::name('docs_books_BookOrderListing')->get('docs/v2/books/book-order-listing',  'BooksController@show');
-	Route::name('v2_docs_text_search')->get('docs/v2/text/search',  'TextController@search');
-	Route::name('data_library_volumeLanguage')->get('library/volumelanguage', 'LanguagesController@volumeLanguage');
+	Route::name('swagger_v4')->get('docs/swagger/v4',                        'DocsController@swagger_v4');
+	Route::name('swagger_v2')->get('docs/swagger/v2',                        'DocsController@swagger_v2');
+	Route::name('docs')->get('docs',                                        'DocsController@index');
 
-	Route::name('projects')->resource('projects',                     'ProjectsController');
+	Route::name('docs_analysis')->get('docs/code-analysis',                 'DocsController@code_analysis');
+Route::name('docs_books_BookOrderListing')->get('docs/v2/books/book-order-listing',  'BooksController@show');
+Route::name('v2_docs_text_search')->get('docs/v2/text/search',  'TextController@search');
+Route::name('data_library_volumeLanguage')->get('library/volumelanguage', 'LanguagesController@volumeLanguage');
+Route::name('projects')->resource('projects',                     'ProjectsController');
 
-});
 
-Route::name('swagger_v2')->get('docs/swagger/v2',                        'DocsController@swagger_v2');
-Route::name('swagger_v4')->get('docs/swagger/v4',                        'DocsController@swagger_v4');
 Route::name('swagger_docs_gen')->get('swagger_docs',                     'DocsController@swagger_docs_gen');
 Route::name('swagger_database')->get('docs/swagger/database',            'DocsController@swagger_database');
 Route::name('swagger_database_model')->get('docs/swagger/database/{id}', 'DocsController@swagger_database_model');
@@ -136,8 +126,8 @@ Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCall
 Auth::routes();
 
 
-Route::get('dashboard', 'HomeController@index')->name('home');
-Route::get('admin', 'HomeController@admin')->name('admin');
+Route::get('dashboard', 'Dashboard\DashboardController@index')->name('home');
+Route::get('admin',     'Dashboard\DashboardController@admin')->name('admin');
 Route::resource('dashboard/users',    'UsersController');
 Route::resource('/projects',          'ProjectsController');
 
@@ -159,6 +149,8 @@ Route::resource('dashboard/organizations', 'OrganizationsController', ['names' =
 ]]);
 
 Route::get('/',     'HomeController@welcome')->name('welcome');
+
+});
 /**
 Route::get('/test-armor', function () {
 	$locations = ['/bin','/home','/etc','/home/forge/aaTrap/'];

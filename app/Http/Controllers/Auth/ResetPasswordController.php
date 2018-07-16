@@ -59,12 +59,8 @@ class ResetPasswordController extends APIController
         ]);
 
         if ($validator->fails()) {
-            if ($this->api) {
-                return $this->setStatusCode(422)->replyWithError($validator->errors());
-            }
-            if (!$this->api) {
-                return redirect('/users/reset')->withErrors($validator)->withInput();
-            }
+            if ($this->api) return $this->setStatusCode(422)->replyWithError($validator->errors());
+            if (!$this->api) return redirect('/users/reset')->withErrors($validator)->withInput();
         }
         // Here we will attempt to reset the user's password. If it is successful we
         // will update the password on an actual user model and persist it to the

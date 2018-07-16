@@ -227,14 +227,18 @@ class Bible extends Model
     {
         return $this->HasMany(BibleTranslation::class)->where('name','!=','');
     }
+
 	public function translatedTitles()
 	{
 		return $this->HasMany(BibleTranslation::class)->where('name','!=','');
 	}
+
     public function currentTranslation()
     {
-        return $this->HasOne(BibleTranslation::class)->where('iso', \i18n::getCurrentLocale())->select('bible_id','name')->where('name','!=','');
+    	$language = Language::where('iso',\i18n::getCurrentLocale())->select(['iso','id'])->first();
+        return $this->HasOne(BibleTranslation::class)->where('iso', $language->id)->where('name','!=','');
     }
+
     public function vernacularTranslation()
     {
         return $this->HasOne(BibleTranslation::class)->where('vernacular', '=', 1)->where('name','!=','');
@@ -356,7 +360,7 @@ class Bible extends Model
      */
     public function language()
     {
-        return $this->hasOne(Language::class,'id','language_id')->select('name','id','country_id','iso','iso2T','iso2B','iso1','autonym');
+        return $this->BelongsTo(Language::class,'language_id','id')->select('name','id','country_id','iso','iso2T','iso2B','iso1','autonym');
     }
 
     public function country()

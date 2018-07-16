@@ -39,7 +39,8 @@ class CountryTransformer extends BaseTransformer
 		'ethnicities',
 		'religions',
 		'translations',
-		'transportation'
+		'transportation',
+		'joshuaProject'
 	];
 
 	/**
@@ -224,6 +225,11 @@ class CountryTransformer extends BaseTransformer
 	public function includeTransportation(Country $country)
 	{
 		return $this->item($country->transportation->toArray(), new TransportationTransformer());
+	}
+
+	public function includeJoshuaProject(Country $country)
+	{
+		return $this->item($country->joshuaProject->toArray(), new JoshuaProjectTransformer());
 	}
 
 }

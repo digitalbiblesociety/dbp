@@ -10,8 +10,8 @@ function checkParam($param, $v4Style = null, $optional = false)
 	if(strpos($param, '|') !== false) {
 		$url_params = explode('|',$param);
 		foreach($url_params as $param) {
-			$url_param = (isset($_GET[$param])) ? $_GET[$param] : false;
-			if($url_param) {break;}
+            if(isset($url_param)) {continue;}
+		    $url_param = (isset($_GET[$param])) ? $_GET[$param] : null;
 		}
 	} else {
 		$url_param = (isset($_GET[$param])) ? $_GET[$param] : false;
@@ -90,7 +90,7 @@ function fetchRandomBibleID() {
 
 function fetchRandomFilesetID()
 {
-	return \App\Models\Bible\BibleFileset::random(1)->first()->id;
+	return \App\Models\Bible\BibleFileset::inRandomOrder()->first()->id;
 }
 
 function fetchBible($bible_id)
@@ -101,9 +101,9 @@ function fetchBible($bible_id)
 	if(!$bible) return [];
 }
 
-function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
+function fetchVernacularNumbers($script,$language,$start_number,$end_number)
 {
-	$numbers = \App\Models\Language\AlphabetNumber::where('script_id',$script)->where('iso',$iso)->get()->keyBy('numeral')->ToArray();
+	$numbers = \App\Models\Language\AlphabetNumber::where('script_id',$script)->where('language_id',$language)->get()->keyBy('numeral')->ToArray();
 
 	// Run through the numbers and return the vernaculars
 	$current_number = $start_number;
@@ -127,13 +127,14 @@ function fetchVernacularNumbers($script,$iso,$start_number,$end_number)
 	return collect($out_numbers)->pluck('numeral_vernacular','numeral');
 }
 
-function sendLogsToS3($request, $status_code)
+function sendLogsToS3($request, $status_code, $s3_string = false)
 {
 	$log_string = time().':::'.env('APP_SERVER_NAME').':::'.$status_code.":::".$request->path().":::";
 	$log_string .= '"'.$request->header('User-Agent').'"'.":::";
 	foreach ($_GET as $header => $value) $log_string .= ($value != '') ? $header."=".$value."|" : $header."|";
 	$log_string = rtrim($log_string,"|");
-	$log_string .= ':::'.$request->getClientIps()[0];
+	$log_string .= ':::'.$request->getClientIps()[0].':::';
+	if($s3_string) $log_string .= $s3_string;
 	//if($request->getContent()) foreach (collect($request->getContent())->toArray() as $header => $value) $log_string .= $header."=".$value."|";
 	App\Jobs\send_api_logs::dispatch($log_string);
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User\Account;
 use App\Models\User\Key;
+use App\Models\User\ProjectMember;
 use App\Models\User\User;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
@@ -314,19 +315,16 @@ class UsersController extends APIController
 
 		// Process Avatar
 		if($request->hasFile('avatar')) {
-			$input['avatar'] = $request->avatar = $id.".".$request->avatar->extension();
-			$image = Image::make($request->avatar);
+			//$input['avatar'] = $id.".".$request->file('avatar')->extension();
+			//dd($request->file('avatar'));
+			$image = Image::make($request->file('avatar'));
 			if(isset($request->avatar_crop_width) AND isset($request->avatar_crop_height)) {
 				$image->crop($request->avatar_crop_width, $request->avatar_crop_height, $request->avatar_crop_inital_x_coordinate, $request->avatar_crop_inital_y_coordinate);
 			}
 			$image->resize(300, 300);
-			if(env('APP_ENV') == 'local') {
-				\Storage::disk('local')->put($id.'.'.$request->avatar->extension(), $image->save());
-			} else {
-				\Storage::disk('dbp-dev-cdn')->put($id.'.'.$request->avatar->extension(), $image->save());
-			}
+			\Storage::disk('public')->put($id.'.'.$request->avatar->extension(), $image->save());
 		}
-
+		$input['avatar'] = \URL::to('/storage/'.$id.'.'.$request->avatar->extension());
 		$user->fill($input)->save();
 		// $user->project_role         = $user->projects->first()->pivot->role;
 		// $user->project_subscription = $user->projects->first()->pivot->subscribed;
@@ -337,9 +335,14 @@ class UsersController extends APIController
 		return view('dashboard.users.show', $id);
 	}
 
-	public function destroy(Request $request, $id)
+	public function destroy($id)
 	{
-		$user = User::where('id', $id)->where('project_id', $request->project_id)->first();
+		$project_id = checkParam('project_id');
+
+		$connection = ProjectMember::where('user_id', $id)->where('project_id', $project_id)->first();
+		if(!$connection) return $this->setStatusCode(404)->replyWithError("User/Project connection not found");
+		$connection->delete();
+		return $this->reply("User Project connection successfully removed");
 	}
 
 

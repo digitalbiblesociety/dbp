@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Koinos: Digital Bible Platform V4",
+        "title": "Digital Bible Platform",
         "description": "A Bible API",
         "termsOfService": "http://bible.build/terms/",
         "contact": {
@@ -888,6 +888,24 @@
                         "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/BibleFileset/properties/id"
+                        }
+                    },
+                    {
+                        "name": "bucket_id",
+                        "in": "path",
+                        "description": "The bucket id",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/BibleFileset/properties/bucket_id"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "description": "The set type code",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/BibleFileset/properties/set_type_code"
                         }
                     },
                     {

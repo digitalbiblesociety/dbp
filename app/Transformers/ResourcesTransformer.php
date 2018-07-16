@@ -33,24 +33,26 @@ class ResourcesTransformer extends BaseTransformer
 				return [
 					'id'                => intval($resource->id),
 					'iso'               => $resource->iso,
-					'language'          => @$resource->language->name,
+					'language'          => $resource->language->name,
 					'vname'             => $vname,
 					'name'              => $name,
-					'links'             => $resource->links
+					'links'             => $resource->links,
+					'type'              => $resource->type,
+					'organization'      => $resource->organization->translations->where('language_iso',$this->i10n)->first()->name
 				];
 			}
 			case "v4_resources.show": {
 				return [
 					'id'                 => intval($resource->id),
 					'iso'                => $resource->iso,
-					'language'           => @$resource->language->name,
+					'language'           => $resource->language->name,
 					'cover_thumbnail'    => $resource->cover_thumbnail,
 					'vname'              => $vname,
 					'vname_description'  => $vname_description,
 					'name'               => $name,
 					'name_description'   => $name_description,
 					'links'              => $resource->links,
-					'organization'      => $resource->organization
+					'organization'       => $resource->organization
 				];
 			}
 		}
