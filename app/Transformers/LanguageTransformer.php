@@ -82,9 +82,11 @@ class LanguageTransformer extends BaseTransformer
 		 */
 		$full = checkParam('full', null, 'optional');
 		if($full) {
+
 			return [
 				"id"                   => $language->id,
 				"name"                 => $language->name,
+                "description"          => @$language->translations->where('iso_translation',$this->i10n)->first()->description ?? "",
 				'autonym'              => ($language->autonym) ? $language->autonym->name : '',
                 "glotto_id"            => $language->glotto_id,
 				"bibles"               => $language->bibles,
@@ -117,7 +119,9 @@ class LanguageTransformer extends BaseTransformer
 			'name'   => $language->translation->name ?? $language->name,
 			'bibles' => $language->bibles_count ?? $language->bibles->count()
 		];
-		if($language->relationLoaded('translations')) foreach($language->translations as $translation) $return['alt_names'][$translation->translation_iso->iso][] = $translation->name;
+		if($language->relationLoaded('translations')) {
+		    foreach($language->translations as $translation) $return['alt_names'][$translation->translation_iso->iso][] = $translation->name;
+        }
 		if($language->bibles) $return['filesets'] = $language->bibles->pluck('filesets')->flatten()->count();
 		return $return;
 	}

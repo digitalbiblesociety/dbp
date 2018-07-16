@@ -41,8 +41,9 @@ class fetchLanguageDescriptions extends Command
     {
 
     	// Base Paths
-	    $base_iso2 = "es";
-	    $base_iso3 = "spa";
+	    $base_iso2 = "fr";
+	    $base_iso3 = "fra";
+
 	    if(!file_exists(storage_path("data/languages/descriptions/$base_iso3"))) mkdir(storage_path("data/languages/descriptions/$base_iso3"));
 	    if(!file_exists(storage_path("data/languages/descriptions/$base_iso3/missing.csv"))) {
 		    $missing_file = fopen(storage_path("data/languages/descriptions/$base_iso3/missing.csv"), "w") or die("couldn't create missing.json");
@@ -50,7 +51,8 @@ class fetchLanguageDescriptions extends Command
 		    fclose($missing_file);
 	    }
 
-    	$base_url = "https://$base_iso2.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=";
+	    //https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=ISO_639:eng&redirects
+    	$base_url = "https://$base_iso2.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&redirects&explaintext=&titles=";
 		$missing_url = storage_path("data/languages/descriptions/$base_iso3/missing.csv");
 	    $alreadyFetched[] = "eng";
 
@@ -65,19 +67,19 @@ class fetchLanguageDescriptions extends Command
     	if($languages->count() == 0) $this->info("All Languages Fetched");
 
         foreach($languages as $language) {
-        	$url = $base_url.str_replace(' ','_',trim($language->name));
+        	$url = $base_url.'ISO_639:'.$base_iso3;
 
-        	$description = @json_decode(file_get_contents($url."_language"));
+        	$description = json_decode(file_get_contents($url));
         	$description = $this->checkExtract($description);
 
 	        if(!$description) {
-	        	$description = @json_decode(file_get_contents($url."_Language"));
+	        	$description = json_decode(file_get_contents($url));
 		        $description = $this->checkExtract($description);
-		        echo "\nAlternative Attempting :". $url."_Language";
+		        echo "\nAlternative Attempting :". $url;
 	        }
 
         	if(!$description) {
-	        	$description = @json_decode(file_get_contents($url));
+	        	$description = json_decode(file_get_contents($url));
 		        $description = $this->checkExtract($description);
 		        echo "\nAttempting :". $url;
 	        }
