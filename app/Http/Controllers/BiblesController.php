@@ -182,9 +182,14 @@ class BiblesController extends APIController
         $include_regionInfo = checkParam('include_region_info', null, 'optional');
         $dialects           = checkParam('include_dialects', null, 'optional');
 
-        $cache_string = 'bibles_archival'.$iso.$organization.$country.$include_regionInfo.$dialects;
+        if($iso) {
+            $language = Language::where('iso',$iso)->with('dialects')->first();
+            if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for provided iso");
+        }
+
+        $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects;
 		Cache::forget($cache_string);
-        $bibles = Cache::remember($cache_string, 1600, function () use ($iso,$organization,$country,$include_regionInfo,$dialects) {
+        $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization,$country,$include_regionInfo,$dialects) {
             $bibles = Bible::with(['translatedTitles', 'language','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {
@@ -192,14 +197,9 @@ class BiblesController extends APIController
                         $query->where('country_id', $country);
                     });
                 })
-                ->when($iso, function ($q) use ($iso,$dialects) {
-                    if($dialects) {
-                        $language = Language::where('iso',$iso)->with('dialects')->first();
-                        $q->where('language_id', $language->id)->orWhereIn('language_id',$language->dialects->pluck('dialect_id'));
-                    } else {
-                        $language = Language::where('iso',$iso)->first();
-                        $q->where('language_id', $language->id);
-                    }
+                ->when($language, function ($q) use ($language,$dialects) {
+                   $q->where('language_id', $language->id);
+                   if($dialects) $q->orWhereIn('language_id',$language->dialects->pluck('dialect_id'));
                 })
                 ->when($organization, function ($q) use ($organization) {
                     $q->whereHas('organizations', function ($q) use ($organization) {

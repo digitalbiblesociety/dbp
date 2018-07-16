@@ -27,13 +27,13 @@ class ResourcesController extends APIController
 	{
 		if (!$this->api) return view('resources.index');
 		$iso             = checkParam('iso', null, 'optional');
-		$language = false;
-		if(isset($iso)) {
-			$language        = Language::where('iso',$iso)->first();
+		if($iso) {
+			$language        = Language::where('iso',$iso)->with('dialects')->first();
 			if(!$language)   return $this->setStatusCode(404)->replyWithError("Language not found for provided iso");
 		}
 		$limit           = checkParam('limit', null, 'optional') ?? 2000;
 		$organization    = checkParam('organization_id', null, 'optional');
+        $dialects        = checkParam('include_dialects', null, 'optional');
 
 		if(isset($organization)) {
 			$organization = Organization::where('id',$organization)->orWhere('slug',$organization)->first();
@@ -41,8 +41,9 @@ class ResourcesController extends APIController
 		}
 
 		$resources = Resource::with('translations', 'links', 'organization.translations','language')
-					->when($language, function ($q) use ($language) {
+					->when($language, function ($q) use ($language, $dialects) {
 						$q->where('language_id', $language->id);
+                        if($dialects) $q->orWhereIn('language_id',$language->dialects->pluck('dialect_id'));
 					})
 		            ->when($organization, function ($q) use ($organization) {
 			            $q->where('organization_id', $organization->id);
