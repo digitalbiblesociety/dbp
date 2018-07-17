@@ -181,6 +181,7 @@ class BiblesController extends APIController
         $country            = checkParam('country', null, 'optional');
         $include_regionInfo = checkParam('include_region_info', null, 'optional');
         $dialects           = checkParam('include_dialects', null, 'optional');
+	    $language           = null;
 
         if($iso) {
             $language = Language::where('iso',$iso)->with('dialects')->first();
@@ -210,7 +211,7 @@ class BiblesController extends APIController
                 })->orderBy('priority', 'desc')
                 ->get();
 
-            $language = Language::where('iso','eng')->first();
+	        $language = Language::where('iso','eng')->first();
             foreach ($bibles as $bible) {
             	$bible->english_language_id = $language->id;
             }
