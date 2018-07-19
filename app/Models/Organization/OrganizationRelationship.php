@@ -92,9 +92,14 @@ class OrganizationRelationship extends Model
 	 */
 	protected $updated_at;
 
-	public function organization()
+	public function child_organization()
 	{
-		return $this->BelongsTo(Organization::class);
+		return $this->BelongsTo(Organization::class,'organization_child_id');
+	}
+
+	public function parent_organization()
+	{
+		return $this->BelongsTo(Organization::class,'organization_parent_id');
 	}
 
 }

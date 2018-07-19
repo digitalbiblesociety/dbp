@@ -84,13 +84,14 @@ class OrganizationsController extends APIController
 	 */
 	public function show($slug)
 	{
-		$i10n        = checkParam('iso', null, 'optional') ?? "eng";
-		$i10n_language     = Language::where('iso',$i10n)->first();
+		$i10n           = checkParam('iso', null, 'optional') ?? "eng";
+		$i10n_language  = Language::where('iso',$i10n)->first();
 		if(!$i10n_language) return $this->setStatusCode(404)->replyWithError(trans('api.i10n_errors_404', ['id' => $i10n]));
-		$organization = Organization::with(['bibles.translations','bibles.language','links','translations','currentTranslation','resources',
+		$organization = Organization::with(['bibles.translations','bibles.language','memberOrganizations.child_organization.bibles.translations','memberOrganizations.child_organization.bibles.links','links','translations','currentTranslation','resources',
 		'logos' => function($query) use ($i10n_language) {
 			$query->where('language_id', $i10n_language->id);
 		}])->where('id', $slug)->orWhere('slug', $slug)->first();
+
 		if (!$organization) return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id' => $slug]));
 
 		// Handle API First

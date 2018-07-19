@@ -181,7 +181,7 @@ class BiblesController extends APIController
         $organization_id    = checkParam('organization_id', null, 'optional');
         if($organization_id) {
 	        $organization   = Organization::with('members')->where('id',$organization_id)->orWhere('slug',$organization_id)->first();
-	        $organization_id = $organization->members->pluck('id');
+	        $organization_id = $organization->relationships->where('type','member')->pluck('organization_child_id');
 	        $organization_id->push($organization->id);
         }
         $country            = checkParam('country', null, 'optional');

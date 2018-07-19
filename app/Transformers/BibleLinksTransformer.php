@@ -21,7 +21,7 @@ class BibleLinksTransformer extends TransformerAbstract
             "url"             => $bible_link->url,
             "provider"        => $bible_link->provider,
             "organization_id" => $bible_link->organization_id,
-	        "name"            => $bible_link->bible->currentTranslation->name
+	        "name"            => @$bible_link->bible->currentTranslation->name ?? @$bible_link->bible->vernacularTranslation->name
         ];
     }
 }

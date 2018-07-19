@@ -172,6 +172,11 @@ class BibleTranslation extends Model
 	 */
 	protected $notes;
 
+	public function getIsoAttribute()
+	{
+		return $this->language->iso;
+	}
+
     public function bible()
     {
         return $this->belongsTo(Bible::class);

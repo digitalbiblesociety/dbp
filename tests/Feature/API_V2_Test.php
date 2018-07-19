@@ -498,7 +498,7 @@ class API_V2_Test extends TestCase
 	 * @category Route Name: v2_text_verse
 	 * @link Route Path: https://api.dbp.test/text/verse?v=2&key=1234&dam_id=ENGESV&book_id=GEN&chapter_id=1&verse_start=1&verse_end=10
 	 *
-     */
+
 	public function test_text_verse_allowed() {
 		$public_domain_access_group = \App\Models\User\AccessGroup::with('filesets')->where('name','PUBLIC_DOMAIN')->first();
 		$fileset_hashes = $public_domain_access_group->filesets->pluck('hash_id');
@@ -516,7 +516,7 @@ class API_V2_Test extends TestCase
 		$response = $this->get(route('v2_text_verse', $this->params));
 		$response->assertSuccessful();
 	}
-
+	 */
 	/**
 	 *
 	 * Tests the Text Search

@@ -4,6 +4,7 @@ namespace App\Models\Language;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\Video;
+use App\Models\Country\CountryLanguage;
 use App\Models\Country\CountryRegion;
 use Illuminate\Database\Eloquent\Model;
 
@@ -344,6 +345,11 @@ class Language extends Model
 	 * @method static whereCountryId($value)
 	 */
 	protected $country_id;
+
+	public function getPopulationAttribute()
+	{
+		return CountryLanguage::where('language_id',$this->id)->select('language_id','population')->count();
+	}
 
     public function alphabets()
     {

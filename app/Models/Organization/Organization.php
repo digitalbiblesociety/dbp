@@ -381,6 +381,11 @@ class Organization extends Model
 		return $this->hasMany(OrganizationRelationship::class, 'organization_parent_id');
 	}
 
+	public function memberOrganizations()
+	{
+		return $this->hasMany(OrganizationRelationship::class, 'organization_parent_id')->where('type','member');
+	}
+
 	public function dbl()
 	{
 		$dbl = Organization::where('slug','the-digital-bible-library')->first();

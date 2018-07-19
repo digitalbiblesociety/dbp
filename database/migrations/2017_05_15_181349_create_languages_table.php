@@ -36,8 +36,6 @@ class CreateLanguagesTable extends Migration
             $table->text('use')->nullable();
             $table->text('location')->nullable();
             $table->text('area')->nullable();
-            $table->integer('population')->unsigned()->nullable();
-            $table->text('population_notes')->nullable();
             $table->text('notes')->nullable();
             $table->text('typology')->nullable();
             $table->text('writing')->nullable();
