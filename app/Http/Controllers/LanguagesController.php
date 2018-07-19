@@ -237,14 +237,9 @@ class LanguagesController extends APIController
 	public function show($id)
 	{
 		$language = fetchLanguage($id);
-		$language->load("translations", "codes", "dialects", "classifications", "countries", "bibles.translations",
-			"bibles.filesets", "resources.translations", "resources.links");
-		if (!$language) {
-			return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
-		}
-		if ($this->api) {
-			return $this->reply(fractal()->item($language)->transformWith(new LanguageTransformer()));
-		}
+		$language->load("translations", "codes", "dialects", "classifications", "countries", "bibles.translations", "bibles.filesets", "resources.translations", "resources.links");
+		if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
+		if($this->api) return $this->reply(fractal($language, new LanguageTransformer()));
 
 		return view('wiki.languages.show', compact('language'));
 	}

@@ -250,17 +250,6 @@ class APIController extends Controller
 			JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'text/json');
 	}
 
-	public function signedUrl($url)
-	{
-		$signer = $_GET['signer'] ?? 's3_fcbh';
-		$bucket = $_GET['bucket'] ?? "dbp-dev";
-		$expiry = $_GET['expiry'] ?? 5;
-
-		$url = Bucket::signedUrl($url, $signer, $bucket, $expiry);
-
-		return $this->reply($url);
-	}
-
 	function utf8_for_xml($string)
 	{
 		return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $string);

@@ -14,6 +14,6 @@ class CommunicationsTransformer extends BaseTransformer
      */
     public function transform($communications)
     {
-        return $communications;
+        return $communications->toArray() ?? [];
     }
 }
