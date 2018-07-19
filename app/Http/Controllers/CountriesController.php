@@ -302,26 +302,25 @@ class CountriesController extends APIController
 	{
 		$loadedProfiles = [];
 		// World Factbook
-		$profiles['communications'] = checkParam('communications', null, 'optional');
-		$profiles['economy']        = checkParam('economy', null, 'optional');
-		$profiles['energy']         = checkParam('energy', null, 'optional');
-		$profiles['geography']      = checkParam('geography', null, 'optional');
-		$profiles['government']     = checkParam('government', null, 'optional');
-		$profiles['government']     = checkParam('government', null, 'optional');
-		$profiles['issues']         = checkParam('issues', null, 'optional');
-		$profiles['people']         = checkParam('people', null, 'optional');
-		$profiles['ethnicities']    = checkParam('ethnicity', null, 'optional');
-		$profiles['regions']        = checkParam('regions', null, 'optional');
-		$profiles['religions']      = checkParam('religions', null, 'optional');
-		$profiles['transportation'] = checkParam('transportation', null, 'optional');
-		$profiles['joshuaProject']  = checkParam('joshuaProject', null, 'optional');
+		$profiles['communications'] = checkParam('communications', null, 'optional') ?? 0;
+		$profiles['economy']        = checkParam('economy', null, 'optional') ?? 0;
+		$profiles['energy']         = checkParam('energy', null, 'optional') ?? 0;
+		$profiles['geography']      = checkParam('geography', null, 'optional') ?? 0;
+		$profiles['government']     = checkParam('government', null, 'optional') ?? 0;
+		$profiles['government']     = checkParam('government', null, 'optional') ?? 0;
+		$profiles['issues']         = checkParam('issues', null, 'optional') ?? 0;
+		$profiles['people']         = checkParam('people', null, 'optional') ?? 0;
+		$profiles['ethnicities']    = checkParam('ethnicity', null, 'optional') ?? 0;
+		$profiles['regions']        = checkParam('regions', null, 'optional') ?? 0;
+		$profiles['religions']      = checkParam('religions', null, 'optional') ?? 0;
+		$profiles['transportation'] = checkParam('transportation', null, 'optional') ?? 0;
+		$profiles['joshuaProject']  = checkParam('joshuaProject', null, 'optional') ?? 0;
 		foreach ($profiles as $key => $profile) {
-			if ($profile != null) {
+			if ($profile != 0) {
 				$country->load($key);
-				$loadedProfiles[] = $key;
+				if($country->{$key} != null) $loadedProfiles[] = $key;
 			}
 		}
-
 		return $loadedProfiles;
 	}
 
