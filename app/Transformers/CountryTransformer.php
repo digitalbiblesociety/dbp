@@ -168,67 +168,67 @@ class CountryTransformer extends BaseTransformer
 
 	public function includeCommunications(Country $country)
 	{
-		return $this->item($country->communications->toArray(), new CommunicationsTransformer());
+		return $this->item($country->communications, new CommunicationsTransformer());
 	}
 
 	public function includeEconomy(Country $country)
 	{
-		return $this->item($country->economy->toArray(), new EconomyTransformer());
+		return $this->item($country->economy, new EconomyTransformer());
 	}
 
 	public function includeEnergy(Country $country)
 	{
-		return $this->item($country->energy->toArray(), new EnergyTransformer());
+		return $this->item($country->energy, new EnergyTransformer());
 	}
 
 	public function includeGeography(Country $country)
 	{
-		return $this->item($country->geography->toArray(), new GeographyTransformer());
+		return $this->item($country->geography, new GeographyTransformer());
 	}
 
 	public function includeGovernment(Country $country)
 	{
-		return $this->item($country->government->toArray(), new GovernmentTransformer());
+		return $this->item($country->government, new GovernmentTransformer());
 	}
 
 	public function includeIssues(Country $country)
 	{
-		return $this->item($country->issues->toArray(), new IssuesTransformer());
+		return $this->item($country->issues, new IssuesTransformer());
 	}
 
 	public function includeLanguage(Country $country)
 	{
-		return $this->item($country->language->toArray(), new LanguageTransformer());
+		return $this->item($country->language, new LanguageTransformer());
 	}
 
 	public function includePeople(Country $country)
 	{
-		return $this->item($country->people->toArray(), new PeopleTransformer());
+		return $this->item($country->people, new PeopleTransformer());
 	}
 
 	public function includeEthnicities(Country $country)
 	{
-		return $this->item($country->ethnicities->toArray(), new EthnicitiesTransformer());
+		return $this->item($country->ethnicities, new EthnicitiesTransformer());
 	}
 
 	public function includeRegions(Country $country)
 	{
-		return $this->item($country->ethnicities->toArray(), new RegionsTransformer());
+		return $this->item($country->ethnicities, new RegionsTransformer());
 	}
 
 	public function includeReligions(Country $country)
 	{
-		return $this->item($country->religions->toArray(), new ReligionsTransformer());
+		return $this->item($country->religions, new ReligionsTransformer());
 	}
 
 	public function includeTransportation(Country $country)
 	{
-		return $this->item($country->transportation->toArray(), new TransportationTransformer());
+		return $this->item($country->transportation, new TransportationTransformer());
 	}
 
 	public function includeJoshuaProject(Country $country)
 	{
-		return $this->item($country->joshuaProject->toArray(), new JoshuaProjectTransformer());
+		return $this->item($country->joshuaProject, new JoshuaProjectTransformer());
 	}
 
 }
