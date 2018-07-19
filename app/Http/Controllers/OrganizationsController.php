@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Transformers\OrganizationTransformer;
 use function foo\func;
@@ -26,15 +27,17 @@ class OrganizationsController extends APIController
 			return view('dashboard.organizations.index', compact('user'));
 		}
 
-		$iso         = checkParam('iso', null, 'optional') ?? "eng";
+		$i10n        = checkParam('iso', null, 'optional') ?? "eng";
+		$i10n_language     = Language::where('iso',$i10n)->first();
+		if(!$i10n_language) return $this->setStatusCode(404)->replyWithError(trans('api.i10n_errors_404', ['id' => $i10n]));
 		$membership  = checkParam('membership', null, 'optional');
 		$content     = checkParam('has_content', null, 'optional');
 		$bibles      = checkParam('bibles', null, 'optional');
 		$resources   = checkParam('resources', null, 'optional');
 
-        \Cache::forget($this->v . 'organizations' . $iso . $membership . $content . $bibles .$resources);
-		$organizations = \Cache::remember($this->v . 'organizations' . $iso . $membership . $content . $bibles .$resources, 2400,
-			function () use ($iso, $membership, $content, $bibles, $resources) {
+        \Cache::forget($this->v . 'organizations' . $i10n . $membership . $content . $bibles .$resources);
+		$organizations = \Cache::remember($this->v . 'organizations' . $i10n . $membership . $content . $bibles .$resources, 2400,
+			function () use ($i10n, $i10n_language, $membership, $content, $bibles, $resources) {
 				if ($membership) {
 					$membership = Organization::where('slug', $membership)->first();
 					if (!$membership) {
@@ -44,7 +47,10 @@ class OrganizationsController extends APIController
 				}
 
 				// Otherwise Fetch API route
-				$organizations = Organization::with('translations', 'logos')
+				$organizations = Organization::with(['translations',
+					'logos' => function($query) use ($i10n_language) {
+						$query->where('language_id', $i10n_language->id);
+					}])
 					->when(
                         $membership, function ($q) use ($membership) {
 					    $q->join('organization_relationships',
@@ -78,7 +84,13 @@ class OrganizationsController extends APIController
 	 */
 	public function show($slug)
 	{
-		$organization = Organization::with('bibles.translations','bibles.language','links','translations','logos','currentTranslation','resources')->where('id', $slug)->orWhere('slug', $slug)->first();
+		$i10n        = checkParam('iso', null, 'optional') ?? "eng";
+		$i10n_language     = Language::where('iso',$i10n)->first();
+		if(!$i10n_language) return $this->setStatusCode(404)->replyWithError(trans('api.i10n_errors_404', ['id' => $i10n]));
+		$organization = Organization::with(['bibles.translations','bibles.language','links','translations','currentTranslation','resources',
+		'logos' => function($query) use ($i10n_language) {
+			$query->where('language_id', $i10n_language->id);
+		}])->where('id', $slug)->orWhere('slug', $slug)->first();
 		if (!$organization) return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id' => $slug]));
 
 		// Handle API First

@@ -8,6 +8,7 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Book;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
+use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationTranslation;
 use App\Models\User\Access;
 use App\Models\User\AccessGroup;
@@ -177,7 +178,12 @@ class BiblesController extends APIController
     {
         if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
         $iso                = checkParam('iso', null, 'optional');
-        $organization       = checkParam('organization_id', null, 'optional');
+        $organization_id    = checkParam('organization_id', null, 'optional');
+        if($organization_id) {
+	        $organization   = Organization::with('members')->where('id',$organization_id)->orWhere('slug',$organization_id)->first();
+	        $organization_id = $organization->members->pluck('id');
+	        $organization_id->push($organization->id);
+        }
         $country            = checkParam('country', null, 'optional');
         $include_regionInfo = checkParam('include_region_info', null, 'optional');
         $dialects           = checkParam('include_dialects', null, 'optional');
@@ -190,7 +196,7 @@ class BiblesController extends APIController
 
         $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects;
 		Cache::forget($cache_string);
-        $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization,$country,$include_regionInfo,$dialects) {
+        $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects) {
             $bibles = Bible::with(['translatedTitles', 'language','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {
@@ -202,11 +208,11 @@ class BiblesController extends APIController
                    $q->where('language_id', $language->id);
                    if($dialects) $q->orWhereIn('language_id',$language->dialects->pluck('dialect_id'));
                 })
-                ->when($organization, function ($q) use ($organization) {
-                    $q->whereHas('organizations', function ($q) use ($organization) {
-                        $q->where('organization_id', $organization)->orWhere('slug',$organization);
-                    })->orWhereHas('links', function ($q) use ($organization) {
-	                    $q->where('provider', $organization);
+                ->when($organization_id, function ($q) use ($organization_id) {
+                    $q->whereHas('organizations', function ($q) use ($organization_id) {
+                        $q->whereIn('organization_id', $organization_id);
+                    })->orWhereHas('links', function ($q) use ($organization_id) {
+	                    $q->where('provider', $organization_id);
                     })->get();
                 })->orderBy('priority', 'desc')
                 ->get();
