@@ -87,12 +87,14 @@ class OrganizationsController extends APIController
 		$i10n           = checkParam('iso', null, 'optional') ?? "eng";
 		$i10n_language  = Language::where('iso',$i10n)->first();
 		if(!$i10n_language) return $this->setStatusCode(404)->replyWithError(trans('api.i10n_errors_404', ['id' => $i10n]));
+		$searchedColumn = (is_numeric($slug)) ? 'id' : 'slug';
+
 		$organization = Organization::with(['bibles.translations','bibles.language','memberOrganizations.child_organization.bibles.translations','memberOrganizations.child_organization.bibles.links','links','translations','currentTranslation','resources',
 		'logos' => function($query) use ($i10n_language) {
 			$query->where('language_id', $i10n_language->id);
-		}])->where('slug', $slug)->first();
+		}])->where($searchedColumn, $slug)->first();
 
-		if (!$organization) return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id' => $slug]));
+		if(!$organization) return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id' => $slug]));
 
 		// Handle API First
 		if ($this->api) return $this->reply(fractal()->item($organization)->serializeWith($this->serializer)->transformWith(new OrganizationTransformer()));
