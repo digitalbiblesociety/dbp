@@ -179,6 +179,7 @@ class BiblesController extends APIController
         if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
         $iso                = checkParam('iso', null, 'optional');
         $organization_id    = checkParam('organization_id', null, 'optional');
+        $organization = '';
         if($organization_id) {
 	        $organization   = Organization::with('members')->where('id',$organization_id)->orWhere('slug',$organization_id)->first();
 	        $organization_id = $organization->relationships->where('type','member')->pluck('organization_child_id');
@@ -197,7 +198,7 @@ class BiblesController extends APIController
         $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects;
 		Cache::forget($cache_string);
         $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects) {
-            $bibles = Bible::with(['translatedTitles', 'language','filesets.copyrightOrganization'])->withCount('links')
+            $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {
                     $q->whereHas('language.countries', function ($query) use ($country) {

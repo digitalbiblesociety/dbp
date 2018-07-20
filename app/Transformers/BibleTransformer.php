@@ -134,7 +134,7 @@ class BibleTransformer extends BaseTransformer
                     "autonym"           => @$bible->language->autonym ?? "",
                     "iso"               => $bible->iso,
                     "date"              => $bible->date,
-	                "links_count"        => $bible->links_count,
+	                "links_count"       => $bible->links_count,
                     "organizations"     => '',
                     "types"             => $bible->filesets->pluck('set_type_code')->unique()->implode(',')
                 ];
@@ -150,10 +150,12 @@ class BibleTransformer extends BaseTransformer
                     $output['organizations'] = $output_organizations;
                 }
                 if($bible->relationLoaded('country')) {
-                    $output['country_id'] = "";
-                    $output['continent_id'] = "";
+                    $output['country_id']   = "";
+	                $output['country_name'] = "";
+	                $output['continent_id'] = "";
                     if(isset($bible->country[0])) {
-                        $output['country_id'] = $bible->country[0]->id;
+	                    $output['country_name'] = $bible->country[0]->name;
+                        $output['country_id']   = $bible->country[0]->id;
                         $output['continent_id'] = $bible->country[0]->continent;
                     }
                 }
