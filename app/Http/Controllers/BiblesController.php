@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleLink;
 use App\Models\Bible\Book;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
@@ -185,19 +186,20 @@ class BiblesController extends APIController
 	        $organization_id = $organization->relationships->where('type','member')->pluck('organization_child_id');
 	        $organization_id->push($organization->id);
         }
-        $country            = checkParam('country', null, 'optional');
-        $include_regionInfo = checkParam('include_region_info', null, 'optional');
-        $dialects           = checkParam('include_dialects', null, 'optional');
-	    $language           = null;
+        $country              = checkParam('country', null, 'optional');
+        $include_regionInfo   = checkParam('include_region_info', null, 'optional');
+        $include_linkedBibles = checkParam('include_linked_bibles', null, 'optional');
+        $dialects             = checkParam('include_dialects', null, 'optional');
+	    $language             = null;
 
         if($iso) {
             $language = Language::where('iso',$iso)->with('dialects')->first();
             if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for provided iso");
         }
 
-        $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects;
+        $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles;
 		Cache::forget($cache_string);
-        $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects) {
+        $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects,$include_linkedBibles) {
             $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {

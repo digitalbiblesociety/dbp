@@ -346,7 +346,7 @@ class Language extends Model
 	 */
 	protected $country_id;
 
-	public function getPopulationAttribute()
+	public function population()
 	{
 		return CountryLanguage::where('language_id',$this->id)->select('language_id','population')->count();
 	}

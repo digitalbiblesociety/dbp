@@ -38,7 +38,7 @@ class ResourcesTransformer extends BaseTransformer
 					'name'              => $name,
 					'links'             => $resource->links,
 					'type'              => $resource->type,
-					'organization'      => $resource->organization->translations->where('language_iso',$this->i10n)->first()->name
+					'organization'      => $resource->organization->translations->where('language_iso',$this->i10n)->first()->name ?? str_replace('-',' ',$resource->organization->slug)
 				];
 			}
 			case "v4_resources.show": {

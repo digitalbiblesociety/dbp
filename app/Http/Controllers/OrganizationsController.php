@@ -90,7 +90,7 @@ class OrganizationsController extends APIController
 		$organization = Organization::with(['bibles.translations','bibles.language','memberOrganizations.child_organization.bibles.translations','memberOrganizations.child_organization.bibles.links','links','translations','currentTranslation','resources',
 		'logos' => function($query) use ($i10n_language) {
 			$query->where('language_id', $i10n_language->id);
-		}])->where('id', $slug)->orWhere('slug', $slug)->first();
+		}])->where('slug', $slug)->first();
 
 		if (!$organization) return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id' => $slug]));
 

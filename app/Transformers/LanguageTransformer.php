@@ -82,23 +82,23 @@ class LanguageTransformer extends BaseTransformer
 		 */
 		$full = checkParam('full', null, 'optional');
 		if($full) {
-
 			return [
-				"id"                   => $language->id,
-				"name"                 => $language->name,
-                "description"          => @$language->translations->where('iso_translation',$this->i10n)->first()->description ?? "",
+				'id'                   => $language->id,
+				'name'                 => $language->name,
+                'description'          => @$language->translations->where('iso_translation',$this->i10n)->first()->description ?? "",
 				'autonym'              => ($language->autonym) ? $language->autonym->name : '',
-                "glotto_id"            => $language->glotto_id,
-				"bibles"               => $language->bibles,
-                "iso"                  => $language->iso,
-                "maps"                 => $language->maps,
-                "area"                 => $language->area,
-                "population"           => $language->population,
-				"country_id"           => $language->country_id,
+                'glotto_id'            => $language->glotto_id,
+                'iso'                  => $language->iso,
+                'maps'                 => $language->maps,
+                'area'                 => $language->area,
+                'population'           => $language->population,
+				'country_id'           => $language->country_id,
+				'country_name'         => $language->primaryCountry->name,
 				'codes'                => $language->codes->pluck('code','source') ?? '',
 				'alternativeNames'     => array_flatten($language->translations->pluck('name')->ToArray()) ?? '',
 				'dialects'             => $language->dialects->pluck('name') ?? '',
 				'classifications'      => $language->classifications->pluck('name','classification_id') ?? '',
+				'bibles'               => $language->bibles,
 				'resources'            => $language->resources
 			];
 		}
