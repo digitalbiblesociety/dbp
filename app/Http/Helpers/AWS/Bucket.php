@@ -10,72 +10,51 @@ class Bucket {
 	{
 		$prefix = 'DBS_';
 		$bucket = 'dbs-web';
+		$expiry = $expiry * 60;
 
-		$parsed['X-Amz-Algorithm'] = 'AWS4-HMAC-SHA256';
-		$parsed['X-Amz-Random'] = rand(0,1000000000);
-		$parsed['X-Amz-Content-Sha256'] = 'UNSIGNED-PAYLOAD';
-		$parsed['X-Amz-Credential'] = env($prefix.'AWS_KEY').'%2F'.date('Ymd').'%2F'.env($prefix.'AWS_REGION').'%2Fs3%2Faws4_request';
-		$parsed['X-Amz-Date'] = gmdate('Ymd\THis\Z', now()->timestamp);
-		$parsed['X-Amz-SignedHeaders'] = 'host';
-		$parsed['X-Amz-Expires'] = $expiry * 60;
-		$parsed['X-Amz-Signature'] = self::createSignature($file,$prefix,$expiry);
-
-		$parsed = implode('&', array_map(
-			function ($v, $k) { return sprintf("%s=%s", $k, $v); },
-			$parsed,
-			array_keys($parsed)
-		));
-
-		$path = "https://$bucket.s3.".env($prefix.'AWS_REGION').".amazonaws.com/".$file.'?'.$parsed;
-		//return $path;
-
-		$name =  ($bucket == 'dbp-dev') ? 's3_fcbh' : 's3_dbs';
-		$s3 = Storage::disk($name);
-
-		$client = $s3->getDriver()->getAdapter()->getClient();
-		$expiry = "+" . $expiry . " minutes";
-
-		$command = $client->getCommand('GetObject', [
-			'Bucket' => $bucket,
-			'Key'    => $file
-		]);
-
-		$request = $client->createPresignedRequest($command, $expiry);
-		return (string) $request->getUri();
+		return self::aws_s3_link(env($prefix.'AWS_KEY'),env($prefix.'AWS_SECRET'),$bucket,'/'.$file,$expiry * 600,env($prefix.'AWS_REGION'));
 	}
 
-	public static function createSignature($file,$prefix,$expiry)
-	{
-		$longDate        = str_replace('-','',str_replace(':','',now()->toIso8601ZuluString()));
-		$shortDate       = substr($longDate, 0, 8);
-		$region          = env($prefix.'AWS_REGION');
-		$service         = 's3';
-		$publicKey       = env($prefix.'AWS_KEY');
-		$secretKey       = env($prefix.'AWS_KEY_SECRET');
-		$bucket          = env($prefix.'AWS_BUCKET');
-		$credentialScope = $shortDate.'/'.env($prefix.'AWS_REGION').'/s3/aws4_request';
-
-$canonicalRequest = "GET
-/$file
-X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=".$publicKey."%2F".$shortDate."%2F".$region."%2Fs3%2Faws4_request&X-Amz-Date=".$shortDate."T000000Z&X-Amz-Expires=".($expiry*60)."&X-Amz-SignedHeaders=host
-host:$bucket.s3.".$region.".amazonaws.com
-
-host
-UNSIGNED-PAYLOAD";
-
-//dd($canonicalRequest);
-
-			// CREATE STRING TO SIGN
-			$hash         = hash('sha256', $canonicalRequest);
-$stringToSign = "AWS4-HMAC-SHA256
-$longDate
-$credentialScope
-$hash";
-			$dateKey      = hash_hmac('sha256', $shortDate, "AWS4{$secretKey}", true);
-			$regionKey    = hash_hmac('sha256', $region, $dateKey, true);
-			$serviceKey   = hash_hmac('sha256', $service, $regionKey, true);
-			$cachedKey    = hash_hmac('sha256', 'aws4_request', $serviceKey, true);
-			return hash_hmac('sha256', $stringToSign, $cachedKey);
+	public static function aws_s3_link($access_key, $secret_key, $bucket, $canonical_uri, $expires = 3000, $region = 'us-east-1', $extra_headers = array()) {
+		$encoded_uri = str_replace('%2F', '/', rawurlencode($canonical_uri));
+		$signed_headers = array();
+		foreach ($extra_headers as $key => $value) {
+			$signed_headers[strtolower($key)] = $value;
+		}
+		if (!array_key_exists('host', $signed_headers)) {
+			$signed_headers['host'] = ($region == 'us-east-1') ? "$bucket.s3.amazonaws.com" : "$bucket.s3-$region.amazonaws.com";
+		}
+		ksort($signed_headers);
+		$header_string = '';
+		foreach ($signed_headers as $key => $value) {
+			$header_string .= $key . ':' . trim($value) . "\n";
+		}
+		$signed_headers_string = implode(';', array_keys($signed_headers));
+		$timestamp = time();
+		$date_text = gmdate('Ymd', $timestamp);
+		$time_text = $date_text . 'T000000Z';
+		$algorithm = 'AWS4-HMAC-SHA256';
+		$scope = "$date_text/$region/s3/aws4_request";
+		$x_amz_params = array(
+			'X-Amz-Algorithm' => $algorithm,
+			'X-Amz-Credential' => $access_key . '/' . $scope,
+			'X-Amz-Date' => $time_text,
+			'X-Amz-Transaction' => rand(0,10000000),
+			'X-Amz-SignedHeaders' => $signed_headers_string
+		);
+		if ($expires > 0) $x_amz_params['X-Amz-Expires'] = $expires;
+		ksort($x_amz_params);
+		$query_string_items = array();
+		foreach ($x_amz_params as $key => $value) {
+			$query_string_items[] = rawurlencode($key) . '=' . rawurlencode($value);
+		}
+		$query_string = implode('&', $query_string_items);
+		$canonical_request = "GET\n$encoded_uri\n$query_string\n$header_string\n$signed_headers_string\nUNSIGNED-PAYLOAD";
+		$string_to_sign = "$algorithm\n$time_text\n$scope\n" . hash('sha256', $canonical_request, false);
+		$signing_key = hash_hmac('sha256', 'aws4_request', hash_hmac('sha256', 's3', hash_hmac('sha256', $region, hash_hmac('sha256', $date_text, 'AWS4' . $secret_key, true), true), true), true);
+		$signature = hash_hmac('sha256', $string_to_sign, $signing_key);
+		$url = 'https://' . $signed_headers['host'] . $encoded_uri . '?' . $query_string . '&X-Amz-Signature=' . $signature;
+		return $url;
 	}
 
 	// public static function signedUrl(string $file, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5)
