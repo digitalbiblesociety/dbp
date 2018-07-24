@@ -15,7 +15,7 @@ before_script:
   - phpenv config-rm xdebug.ini
   - cp .env.travis .env
   - composer self-update
-  - composer install --no-interaction
+  - composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
   - php artisan key:generate
   - php artisan migrate
   - npm install
