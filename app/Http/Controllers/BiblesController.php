@@ -15,8 +15,11 @@ use App\Models\User\Access;
 use App\Models\User\AccessGroup;
 use App\Transformers\BibleTransformer;
 use App\Transformers\BooksTransformer;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
 use App\Traits\AccessControlAPI;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Transformers\Serializers\DataArraySerializer;
 
 class BiblesController extends APIController
 {
@@ -106,17 +109,24 @@ class BiblesController extends APIController
 		$country            = checkParam('country', null, 'optional');
 		$bucket             = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$hide_restricted    = checkParam('hide_restricted', null, 'optional') ?? true;
+		$paginate           = checkParam('paginate', null, 'optional') ?? false;
+		$filter             = checkParam('filter', null, 'optional') ?? false;
 
 		$access_control = $this->accessControl($this->key, "api");
 
-		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $iso . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $bucket . $access_control->string;
-		
-		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $bucket, $include_alt_names, $include_regionInfo, $access_control) {
+		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $iso . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $bucket . $access_control->string . $paginate. $filter;
+		\Cache::forget($cache_string);
+		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $filter, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $bucket, $include_alt_names, $include_regionInfo, $access_control, $paginate) {
 			$bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($bucket, $access_control, $hide_restricted) {
 				if($bucket) $query->where('bucket_id', $bucket);
 				if(!$hide_restricted) $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
 			}])
 			->has('translations')->has('language')
+			->when($filter, function ($q) use($filter) {
+				$q->whereHas('translatedTitles', function ($query) use($filter) {
+					$query->where('name', 'like', '%'.$filter.'%');
+				});
+			})
 			->when($fileset_filter, function ($q) {
 			    $q->has('filesets.files');
 			})
@@ -149,7 +159,16 @@ class BiblesController extends APIController
 					$q->where('updated_at', '>', $updated);
 				})->when($sort_by, function ($q) use ($sort_by, $sort_dir) {
 					$q->orderBy($sort_by, $sort_dir);
-				})->orderBy('priority', 'desc')->get();
+				})->orderBy('priority', 'desc');
+
+			if($paginate) {
+				$queryParams = array_diff_key($_GET, array_flip(['page']));
+				$paginator = $bibles->paginate($paginate);
+				$paginator->appends($queryParams);
+				$bibles = $paginator->getCollection();
+			} else {
+				$bibles = $bibles->get();
+			}
 
 			if ($include_alt_names) $bibles->load('language.translations');
 			if ($include_regionInfo) $bibles->load('country');
@@ -170,7 +189,8 @@ class BiblesController extends APIController
 			}
 
 			if ($this->v == 2) $bibles->load('language.parent.parentLanguage', 'alphabet', 'organizations');
-			return fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer);
+			if($paginate) return fractal($bibles, new BibleTransformer())->paginateWith(new IlluminatePaginatorAdapter($paginator))->serializeWith(new DataArraySerializer());
+			return fractal($bibles, new BibleTransformer())->serializeWith($this->serializer);
 		});
 		return $this->reply($bibles);
 	}
@@ -227,7 +247,7 @@ class BiblesController extends APIController
 
 	        if ($include_regionInfo) $bibles->load('country');
 
-            return fractal()->collection($bibles)->transformWith(new BibleTransformer())->serializeWith($this->serializer);
+            return fractal($bibles, new BibleTransformer())->serializeWith($this->serializer);
         });
         return $this->reply($bibles);
     }
