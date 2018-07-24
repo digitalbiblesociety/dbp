@@ -4,6 +4,7 @@ namespace App\Models\Bible;
 
 use App\Models\Country\Country;
 use App\Models\Language\Alphabet;
+use App\Models\Language\NumberValues;
 use App\Models\User\Access;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Organization\Organization;
@@ -375,6 +376,11 @@ class Bible extends Model
     {
         return $this->hasOne(Alphabet::class,'script','script')->select(['script','name','direction','unicode','requires_font']);
     }
+
+	public function numbers()
+	{
+		return $this->hasOne(NumberValues::class,'number_id','number_id');
+	}
 
 
     /**

@@ -318,10 +318,17 @@ class TextController extends APIController
 		$vernacular_numbers = null;
 
 		// Fetch Bible for Book Translations
-		$bibleEquivalent = BibleEquivalent::where('equivalent_id', $bible_id)->orWhere('equivalent_id',
-			substr($bible_id, 0, 7))->first();
-		if (!isset($bibleEquivalent)) $bible = Bible::find($bible_id);
+		$bible = Bible::find($bible_id);
+		if (!isset($bible)) $bibleEquivalent = BibleEquivalent::where('equivalent_id', $bible_id)->orWhere('equivalent_id', substr($bible_id, 0, 7))->first();
 		if (isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
+		if ($bible) {
+				$vernacular_numbers[] = $verses->pluck('verse_start')->ToArray();
+				$vernacular_numbers[] = $verses->pluck('verse_end')->ToArray();
+				$vernacular_numbers[] = $verses->first()->chapter;
+				$vernacular_numbers   = array_unique(array_flatten($vernacular_numbers));
+				$vernacular_numbers   = fetchVernacularNumbers($bible->number_id, min($vernacular_numbers),
+					max($vernacular_numbers));
+		}
 
 		// Fetch Vernacular Number
 		$verses->map(function ($verse) use ($books, $bible_id, $vernacular_numbers) {
