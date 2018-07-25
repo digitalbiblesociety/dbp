@@ -9,37 +9,27 @@ Setting up the API takes approximately 30 minutes. If you don't already have [gi
 `brew update`
 
 ##### Install PHP 7.2 using Homebrew via brew install homebrew/core/php
-`brew install homebrew/core/php`
-
-`brew install mysql`
+`brew install homebrew/core/php && brew install composer && brew install mysql`
 
 ##### Install Valet with Composer via composer global require laravel/valet
 `composer global require laravel/valet`
 
-##### Add `~/.composer/vendor/bin` to paths
+##### Add `~/.composer/vendor/bin` to paths and restart terminal
 `sudo nano /etc/paths`
 
 ##### Set up valet
-`valet install`
-
-`mkdir ~/Sites`
-
-`cd ~/Sites`
-
-`valet park`
+`valet install && mkdir ~/Sites && cd ~/Sites && valet park`
 
 ##### Install Repo
-`git clone git@bitbucket.org:confirmed/dbp.git`
-
-`cd dbp`
-
-`composer install`
+`git clone git@bitbucket.org:confirmed/dbp.git && cd dbp && mv "env-sample.txt" ".env" && composer install`
 
 ##### Need to set up a valid .env file rename the sample and fill out the fields.
-`mv "env-sample.txt" ".env"`
+`cp env-sample.txt .env`
+
+##### Install Node and run npm install
+`brew install node && npm install`
 
 ##### import a copy of the live database using your preferred method: phpMyAdmin, Sequel pro, ect.
-
 
 ### Running on Windows
 ##### (Coming soon)
