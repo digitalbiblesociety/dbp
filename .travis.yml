@@ -1,22 +1,17 @@
 language: php
 
 php:
-  - '7.0'
-  - '7.1'
   - '7.2'
-  - hhvm # on Trusty only
-  - nightly
 
 before_install:
   - mysql -e 'CREATE DATABASE dbp;'
   - mysql -e 'CREATE DATABASE sophia;'
 
 before_script:
-  - phpenv config-rm xdebug.ini
   - cp .env.travis .env
-  - composer self-update
-  - composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
   - php artisan key:generate
+  - composer self-update
+  - composer install --no-interaction
   - php artisan migrate
   - npm install
   - npm run production
@@ -36,5 +31,4 @@ env:
   - TRAVIS_NODE_VERSION="4"
 
 script:
-  - php artisan key:generate
   - vendor/bin/phpunit
