@@ -9,7 +9,6 @@ before_install:
 
 before_script:
   - cp .env.travis .env
-  - php artisan key:generate
   - composer self-update
   - composer install --no-interaction
   - php artisan migrate
@@ -31,4 +30,5 @@ env:
   - TRAVIS_NODE_VERSION="4"
 
 script:
+  - php artisan key:generate
   - vendor/bin/phpunit
