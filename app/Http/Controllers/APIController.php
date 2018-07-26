@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\send_api_logs;
+use App\Models\Language\Language;
 use App\Transformers\EmbeddedArraySerializer;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -103,8 +104,11 @@ class APIController extends Controller
 			$this->key = checkParam('key');
 			$keyExists = Key::find($this->key);
 			if (!isset($keyExists)) abort(403, "You need to provide a valid API key");
-			$locale = $keyExists->preferred_language ?? \i18n::getCurrentLocale();
-			\App::setLocale($locale);
+
+			// i18n
+			$i18n = checkParam('i18n',null,'optional') ?? 'eng';
+			$GLOBALS['i18n_iso'] = $i18n;
+			$GLOBALS['i18n_id'] = Language::where('iso',$i18n)->select('iso','id')->first()->id;
 
 			if (isset($this->v)) {
 				switch ($this->v) {

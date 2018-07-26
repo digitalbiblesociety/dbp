@@ -57,7 +57,7 @@ class Organization extends Model
 	 * @method static Organization whereId($value)
 	 * @property int $id
 	 */
-	protected $id;
+	public $id;
 	/**
 	 *
 	 * @OAS\Property(
@@ -70,7 +70,7 @@ class Organization extends Model
 	 * @method static Organization whereSlug($value)
 	 * @property $slug
 	 */
-	protected $slug;
+	public $slug;
 	/**
 	 *
 	 * @OAS\Property(
@@ -84,7 +84,7 @@ class Organization extends Model
 	 * @method static Organization whereAbbreviation($value)
 	 * @property $abbreviation
 	 */
-	protected $abbreviation;
+	public $abbreviation;
 	/**
 	 *
 	 * @OAS\Property(
@@ -112,7 +112,7 @@ class Organization extends Model
 	 * @method static Organization wherePrimarycolor($value)
 	 * @property $primaryColor
 	 */
-	protected $primaryColor;
+	public $primaryColor;
 	/**
 	 *
 	 * @OAS\Property(
@@ -127,7 +127,7 @@ class Organization extends Model
 	 * @method static Organization whereSecondarycolor($value)
 	 * @property $secondaryColor
 	 */
-	protected $secondaryColor;
+	public $secondaryColor;
 	/**
 	 *
 	 * @OAS\Property(
@@ -153,7 +153,7 @@ class Organization extends Model
 	 * @method static Organization whereUrlFacebook($value)
 	 * @property $url_facebook
 	 */
-	protected $url_facebook;
+	public $url_facebook;
 	/**
 	 *
 	 * @OAS\Property(
@@ -166,7 +166,7 @@ class Organization extends Model
 	 * @method static Organization whereUrlWebsite($value)
 	 * @property $url_website
 	 */
-	protected $url_website;
+	public $url_website;
 	/**
 	 *
 	 * @OAS\Property(
@@ -179,7 +179,7 @@ class Organization extends Model
 	 * @method static Organization whereUrlDonate($value)
 	 * @property $url_donate
 	 */
-	protected $url_donate;
+	public $url_donate;
 	/**
 	 *
 	 * @OAS\Property(
@@ -192,7 +192,7 @@ class Organization extends Model
 	 * @method static Organization whereUrlTwitter($value)
 	 * @property $url_twitter
 	 */
-	protected $url_twitter;
+	public $url_twitter;
 	/**
 	 *
 	 * @OAS\Property(
@@ -205,7 +205,7 @@ class Organization extends Model
 	 * @method static Organization whereAddress($value)
 	 * @property $address
 	 */
-	protected $address;
+	public $address;
 	/**
 	 *
 	 * @OAS\Property(
@@ -218,7 +218,7 @@ class Organization extends Model
 	 * @method static Organization whereAddress2($value)
 	 * @property $address2
 	 */
-	protected $address2;
+	public $address2;
 	/**
 	 *
 	 * @OAS\Property(
@@ -231,7 +231,7 @@ class Organization extends Model
 	 * @method static Organization whereCity($value)
 	 * @property $city
 	 */
-	protected $city;
+	public $city;
 	/**
 	 *
 	 * @OAS\Property(
@@ -244,7 +244,7 @@ class Organization extends Model
 	 * @method static Organization whereState($value)
 	 * @property $state
 	 */
-	protected $state;
+	public $state;
 	/**
 	 *
 	 * @OAS\Property(
@@ -257,7 +257,7 @@ class Organization extends Model
 	 * @method static Organization whereCountry($value)
 	 * @property $country
 	 */
-	protected $country;
+	public $country;
 	/**
 	 *
 	 * @OAS\Property(
@@ -270,7 +270,7 @@ class Organization extends Model
 	 * @method static Organization whereZip($value)
 	 * @property $zip
 	 */
-	protected $zip;
+	public $zip;
 	/**
 	 *
 	 * @OAS\Property(
@@ -283,7 +283,7 @@ class Organization extends Model
 	 * @method static Organization wherePhone($value)
 	 * @property $phone
 	 */
-	protected $phone;
+	public $phone;
 	/**
 	 *
 	 * @OAS\Property(
@@ -296,14 +296,14 @@ class Organization extends Model
 	 * @method static Organization whereEmail($value)
 	 * @property $email
 	 */
-	protected $email;
+	public $email;
 
     /**
      * The attributes excluded from the model's JSON form.
      *
      * @var array
      */
-    protected $hidden = ['logo','facebook','twitter','id','code','created_at','updated_at'];
+    protected $hidden = ['logo','facebook','twitter','id','code','created_at','updated_at','notes'];
 
     public function translations($iso = null)
     {
