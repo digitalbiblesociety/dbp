@@ -6,8 +6,6 @@ namespace App\Http\Controllers;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Transformers\OrganizationTransformer;
-use function foo\func;
-use Illuminate\View\View;
 use App\Transformers\BibleTransformer;
 
 class OrganizationsController extends APIController
