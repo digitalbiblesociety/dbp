@@ -1,45 +1,19 @@
-# Koinos API
+# DBP v4 API
 
-### Description:
-The Koinos API is a open source end to end Bible delivery API built for Faith Comes by Hearing by the Digital Bible Society. It's easily accessible and expandable, we'd love for you to join our growing community of curated Bible content. Please get in contact with us.
+#### Description
+The DBP v4 API is a open source end to end Bible delivery API built for Faith Comes by Hearing 
+by the Digital Bible Society. It's easily accessible and expandable, we'd love for you to join 
+our growing community of curated Bible content as a text provider, code contributor or tester.
 
-### Getting Started
+#### Getting Started
+See [INSTALLING](docs/INSTALLING.md)
 
-- See [INSTALLING.md](INSTALLING.md)
+#### Contributing
+Please read the [CONTRIBUTING](docs/CONTRIBUTING.md) guide for details on our code of conduct.
 
-#### Dependencies
+#### Versioning
+We use [SemVer 2.0.0](http://semver.org/) for versioning. For the versions available, refer to 
+the [Repository Tags](https://github.com/digitalbiblesociety/dbp/tags) for additional details.
 
-- PHP >= 7.1
-- PECL
-- OpenSSL PHP Extension
-- PDO PHP Extension
-- Mbstring PHP Extension
-- Tokenizer PHP Extension
-- XML PHP Extension
-- Composer
-
-If you're planning on using the OCR capabilities of Koinos you'll need to install [Tesseract](https://github.com/tesseract-ocr/tesseract/).
-
-### Contributing
-
-Please read [CONTRIBUTING.md](https://github.com/your/project/contributing.md) for details on our code of conduct, and the process for submitting pull requests to us.
-
-### Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
-### Authors
-
-* [**Jon Bitgood**](https://github.com/jonBitgood) - *API and Database Design*
-* **Eric Cox** - *Bible Generation*
-* [**Kurt Knauck**](https://github.com/KNauck) - *Security Counselor* 
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-### License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-### Acknowledgments and Thanks
-
-* Laravel, an elegant solution
+#### License
+This project is licensed under the MIT License please refer to the [LICENSE](docs/LICENSE.md).

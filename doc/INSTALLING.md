@@ -1,5 +1,16 @@
 # Installing
 
+#### Dependencies
+
+- PHP >= 7.1
+- PECL
+- OpenSSL PHP Extension
+- PDO PHP Extension
+- Mbstring PHP Extension
+- Tokenizer PHP Extension
+- XML PHP Extension
+- Composer
+
 ### Running on OSX
 Setting up the API takes approximately 30 minutes. If you don't already have [git]('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git') or [homebrew]('https://brew.sh/') installed. You will want install those now.
 
