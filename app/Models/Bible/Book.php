@@ -396,19 +396,14 @@ class Book extends Model
         return $this->HasMany(BookTranslation::class, 'book_id');
     }
 
-	public function translation($iso = null)
-	{
-		return $this->HasOne(BookTranslation::class, 'book_id')->where('iso',$iso);
-	}
-
     public function currentTranslation()
     {
-        return $this->HasOne(BookTranslation::class, 'book_id')->where('iso',i18n::getCurrentLocale());
+        return $this->HasOne(BookTranslation::class, 'book_id')->where('language_id',$GLOBALS['i18n_id']);
     }
 
-    public function vernacularTranslation($iso = null)
+    public function vernacularTranslation()
     {
-        return $this->HasOne(BookTranslation::class, 'book_id')->where('iso',$iso);
+        return $this->HasOne(BookTranslation::class, 'book_id')->where('language_id',$this->language_id);
     }
 
     public function bible()

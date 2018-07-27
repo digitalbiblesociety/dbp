@@ -17,8 +17,8 @@ class OrganizationTransformer extends BaseTransformer
     {
     	$translation = $organization->translations->where('language_iso',$GLOBALS['i18n_iso'])->first();
 	    $organization->name = $translation->name ?? str_replace('-',' ', $organization->slug);
-	    $organization->description = $translation->description ?? '';
-	    
+	    $organization->description = $translation->description_short ?? '';
+
 	    switch ($this->version) {
 		    case "2":
 		    case "3": return $this->transformForV2($organization);
@@ -41,10 +41,10 @@ class OrganizationTransformer extends BaseTransformer
 			default: {
 				return [
 					"id"                  => $organization->id,
-					"name"                => (isset($organization->vernacularTranslation)) ? $organization->vernacularTranslation->name : "",
+					"name"                => (isset($organization->vernacularTranslation)) ? $organization->vernacularTranslation->name : '',
 					"english_name"        => $organization->name ?? "",
-					"description"         => (isset($organization->vernacularTranslation)) ? $organization->vernacularTranslation->description : "",
-					"english_description" => $organization->description ?? "",
+					"description"         => (isset($organization->vernacularTranslation)) ? $organization->vernacularTranslation->description : '',
+					"english_description" => $organization->description_short ?? "",
 					"web_url"             => $organization->website,
 					"donation_url"        => "",
 					"enabled"             => "true",
@@ -82,50 +82,52 @@ class OrganizationTransformer extends BaseTransformer
 					"slug"              => $organization->slug,
 					"name"              => $organization->name,
 					"description"       => $organization->description,
+					"phone"             => $organization->phone,
+					"email"             => $organization->email,
 					"bibles"            => $bibles,
 					"resources"         => $organization->resources,
 					"logos"             => $organization->logos,
-					"abbreviation"      => $organization->abbreviation,
-					"primaryColor"      => $organization->primaryColor,
-					"secondaryColor"    => $organization->secondaryColor,
-					"url_facebook"      => $organization->url_facebook,
-					"url_website"       => $organization->url_website,
-					"url_donate"        => $organization->url_donate,
-					"url_twitter"       => $organization->url_twitter,
-					"address"           => $organization->address,
-					"address2"          => $organization->address2,
-					"city"              => $organization->city,
-					"state"             => $organization->state,
-					"country"           => $organization->country,
-					"zip"               => $organization->zip,
-					"phone"             => $organization->phone,
-					"email"             => $organization->email
+					"colors" => [
+						"primary"      => $organization->primaryColor,
+						"secondary"    => $organization->secondaryColor,
+					],
+					"urls" => [
+						"site"          => $organization->url_website,
+						"donate"        => $organization->url_donate,
+						"twitter"       => $organization->url_twitter,
+						"facebook"      => $organization->url_facebook,
+					],
+					"address" => [
+						"line_1"            => $organization->address,
+						"line_2"            => $organization->address2,
+						"city"              => $organization->city,
+						"state"             => $organization->state,
+						"country"           => $organization->country,
+						"zip"               => $organization->zip,
+					]
 				];
 			}
 
 			default:
 			case "v4_organizations.all": {
 				return [
-					"name"           => $organization->name,
-					"description"    => $organization->description,
-					"slug"           => $organization->slug,
-					"logo"           => @$organization->logos->where('icon',0)->first()->url,
-					"logo_icon"      => @$organization->logos->where('icon',1)->first()->url,
-					"abbreviation"   => $organization->abbreviation,
-					"primaryColor"   => $organization->primaryColor,
-					"secondaryColor" => $organization->secondaryColor,
-					"url_facebook"   => $organization->url_facebook,
-					"url_website"    => $organization->url_website,
-					"url_donate"     => $organization->url_donate,
-					"url_twitter"    => $organization->url_twitter,
-					"address"        => $organization->address,
-					"address2"       => $organization->address2,
-					"city"           => $organization->city,
-					"state"          => $organization->state,
-					"country"        => $organization->country,
-					"zip"            => $organization->zip,
-					"phone"          => $organization->phone,
-					"email"          => $organization->email
+					"name"            => $organization->name,
+					"description"     => $organization->description,
+					"slug"            => $organization->slug,
+					"logo"            => @$organization->logos->where('icon',0)->first()->url,
+					"logo_icon"       => @$organization->logos->where('icon',1)->first()->url,
+					"phone"           => $organization->phone,
+					"email"           => $organization->email,
+					"colors"          => [
+						"primary"     => $organization->primaryColor,
+						"secondary"   => $organization->secondaryColor,
+					],
+					"urls" => [
+						"site"        => $organization->url_website,
+						"donate"      => $organization->url_donate,
+						"twitter"     => $organization->url_twitter,
+						"facebook"    => $organization->url_facebook,
+					]
 				];
 			}
 

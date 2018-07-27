@@ -15,7 +15,6 @@ use App\Models\Bible\BibleFilesetType;
 use App\Models\Bible\Book;
 use App\Helpers\AWS\Bucket;
 use App\Models\User\Key;
-use App\Models\User\Access;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 

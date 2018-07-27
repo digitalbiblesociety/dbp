@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User\Key;
-use App\Models\User\Access;
 use App\Models\Bible\BibleFileset;
 use App\Transformers\BibleFilePermissionsTransformer;
 

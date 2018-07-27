@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
 use SoapBox\Formatter\Formatter;
 use App\Models\User\User;
-use App\Models\User\Access;
 use App\Models\User\Key;
 use i18n;
 use League\Fractal\Serializer\DataArraySerializer;

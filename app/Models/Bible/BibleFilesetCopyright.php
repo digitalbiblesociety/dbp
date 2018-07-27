@@ -2,8 +2,8 @@
 
 namespace App\Models\Bible;
 
-use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Organization\Organization;
 
 /**
  * Class BibleFilesetCopyright

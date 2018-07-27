@@ -11,7 +11,6 @@ use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationTranslation;
-use App\Models\User\Access;
 use App\Models\User\AccessGroup;
 use App\Transformers\BibleTransformer;
 use App\Transformers\BooksTransformer;

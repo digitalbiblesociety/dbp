@@ -181,7 +181,7 @@ class Resource extends Model
 
 	public function currentTranslation()
 	{
-		return $this->hasOne(ResourceTranslation::class)->where('iso',\i18n::getCurrentLocale())->where('tag',0);
+		return $this->hasOne(ResourceTranslation::class)->where('language_id',$GLOBALS['i18n_id'])->where('tag',0);
 	}
 
 	public function organization()

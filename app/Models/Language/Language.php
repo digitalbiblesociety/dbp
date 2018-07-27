@@ -374,11 +374,9 @@ class Language extends Model
 		return $this->HasOne(LanguageTranslation::class,'language_source_id')->where('vernacular', 1);
 	}
 
-    public function currentTranslation($iso = null)
+    public function currentTranslation()
     {
-    	if($iso == null) $iso = \i18n::getCurrentLocale();
-        $language = Language::where('iso',$iso)->first();
-        return $this->HasOne(LanguageTranslation::class,'language_source_id')->where('language_translation_id', $language->id);
+        return $this->HasOne(LanguageTranslation::class,'language_source_id')->where('language_translation_id', $GLOBALS['i18n_id']);
     }
 
     public function countries()

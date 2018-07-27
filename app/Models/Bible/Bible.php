@@ -5,47 +5,44 @@ namespace App\Models\Bible;
 use App\Models\Country\Country;
 use App\Models\Language\Alphabet;
 use App\Models\Language\NumberValues;
-use App\Models\User\Access;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
 
-
 /**
  * App\Models\Bible\Bible
+ * @mixin \Eloquent
  *
  * @property-read \App\Models\Language\Alphabet $alphabet
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleBook[] $books
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleEquivalent[] $dbl
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleEquivalent[] $dbp
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleEquivalent[] $eBible
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleEquivalent[] $eSword
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleEquivalent[] $equivalents
+ * @property-read \App\Models\Bible\BibleBook[] $books
+ * @property-read BibleEquivalent[] $dbl
+ * @property-read BibleEquivalent[] $dbp
+ * @property-read BibleEquivalent[] $eBible
+ * @property-read BibleEquivalent[] $eSword
+ * @property-read BibleEquivalent[] $equivalents
  * @property-read \App\Models\Bible\BibleEquivalent $fcbh
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFile[] $files
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesets
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleEquivalent[] $hasType
+ * @property-read BibleFile[] $files
+ * @property-read BibleFileset[] $filesets
+ * @property-read BibleEquivalent[] $hasType
  * @property-read \App\Models\Language\Language $language
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleLink[] $links
+ * @property-read BibleLink[] $links
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Organization\Organization[] $organizations
  * @property-read \App\Models\Bible\Printable $printable
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleTranslation[] $translations
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Translator[] $translators
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Video[] $videos
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesetAudio
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesetFilm
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileset[] $filesetText
+ * @property-read BibleTranslation[] $translations
+ * @property-read Translator[] $translators
+ * @property-read Video[] $videos
+ * @property-read BibleFileset[] $filesetAudio
+ * @property-read BibleFileset[] $filesetFilm
+ * @property-read BibleFileset[] $filesetText
  * @property int $priority
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible wherePriority($value)
  * @property int $open_access
  * @property int $connection_fab
  * @property int $connection_dbs
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Access[] $access
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible whereConnectionDbs($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible whereConnectionFab($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\Bible whereOpenAccess($value)
+ * @method static Bible wherePriority($value)
+ * @method static Bible whereConnectionDbs($value)
+ * @method static Bible whereConnectionFab($value)
+ * @method static Bible whereOpenAccess($value)
  *
  * @OAS\Schema (
  *     type="object",
@@ -236,8 +233,7 @@ class Bible extends Model
 
     public function currentTranslation()
     {
-    	$language = Language::where('iso',\i18n::getCurrentLocale())->select(['iso','id'])->first();
-        return $this->HasOne(BibleTranslation::class)->where('iso', $language->id)->where('name','!=','');
+        return $this->HasOne(BibleTranslation::class)->where('language_id', $GLOBALS['i18n_id'])->where('name','!=','');
     }
 
     public function vernacularTranslation()
@@ -339,11 +335,6 @@ class Bible extends Model
     {
         return $this->BelongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type']);
     }
-
-	public function access()
-	{
-		return $this->HasMany(Access::class,'bible_id','id');
-	}
 
 
     /**

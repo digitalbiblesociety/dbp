@@ -4,7 +4,8 @@ namespace App\Models\Bible;
 
 use App\Models\Organization\Bucket;
 use App\Models\Organization\Organization;
-use App\Models\User\Access;
+use App\Models\User\AccessGroup;
+use App\Models\User\AccessGroupFileset;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -123,7 +124,7 @@ class BibleFileset extends Model
 
 	public function permissions()
 	{
-		return $this->HasMany(Access::class,'hash_id','hash_id');
+		return $this->HasMany(AccessGroupFileset::class,'hash_id','hash_id');
 	}
 
 	public function bible()

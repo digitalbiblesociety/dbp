@@ -291,7 +291,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 	public function permissions()
 	{
-		return $this->hasMany(Access::class);
+		return $this->hasMany(AccessGroup::class);
 	}
 
 }

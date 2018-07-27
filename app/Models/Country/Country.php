@@ -50,9 +50,9 @@ class Country extends Model
 
 	protected $columns = ['id', 'iso_a3', 'continent', 'name', 'introduction','fips']; // add all columns from you table
 
-	public function scopeExclude($query,$value = array())
+	public function scopeExclude($query,$value = [])
 	{
-		return $query->select( array_diff( $this->columns,(array) $value) );
+		return $query->select( array_diff( $this->columns, (array) $value) );
 	}
 
 	/**
@@ -171,18 +171,21 @@ class Country extends Model
 	protected $created_at;
 	protected $updated_at;
 
-    public function translations($iso = null)
+    public function translations()
     {
-    	if(!isset($iso)) return $this->HasMany(CountryTranslation::class);
-    	$language = Language::where('iso',$iso)->first();
-    	return $this->HasMany(CountryTranslation::class)->where('language_id',$language->id);
+    	return $this->HasMany(CountryTranslation::class);
     }
 
-    public function translation()
+    public function currentTranslation()
     {
-	    return $this->HasOne(CountryTranslation::class,'country_id','id');
+	    return $this->HasOne(CountryTranslation::class,'country_id','id')->where('language_id',$GLOBALS['i18n_id']);
     }
-
+/*
+ *	public function vernacularTranslation()
+ *	{
+ *		return $this->HasOne(CountryTranslation::class,'country_id','id')->where('language_id', $this->primary_language_id);
+ *	}
+ */
     public function languages()
     {
         return $this->BelongsToMany(Language::class)->distinct();
