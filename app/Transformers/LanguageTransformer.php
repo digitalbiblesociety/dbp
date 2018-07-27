@@ -95,7 +95,7 @@ class LanguageTransformer extends BaseTransformer
 				'country_id'           => $language->country_id,
 				'country_name'         => $language->primaryCountry->name ?? '',
 				'codes'                => $language->codes->pluck('code','source') ?? '',
-				'alternativeNames'     => array_flatten($language->translations->pluck('name')->ToArray()) ?? '',
+				'alternativeNames'     => array_unique(array_flatten($language->translations->pluck('name')->ToArray())) ?? '',
 				'dialects'             => $language->dialects->pluck('name') ?? '',
 				'classifications'      => $language->classifications->pluck('name','classification_id') ?? '',
 				'bibles'               => $language->bibles,
