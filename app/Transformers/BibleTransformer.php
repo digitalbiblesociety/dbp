@@ -134,7 +134,7 @@ class BibleTransformer extends BaseTransformer
                     "autonym"           => @$bible->language->autonym ?? "",
                     "iso"               => $bible->iso,
                     "date"              => $bible->date,
-	                "links_count"       => $bible->links_count,
+	                "links_count"       => $bible->links_count + $bible->filesets->count(),
                     "organizations"     => '',
                     "types"             => $bible->filesets->pluck('set_type_code')->unique()->implode(',')
                 ];
