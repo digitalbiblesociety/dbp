@@ -1,7 +1,13 @@
 language: php
+sudo: required
+dist: trusty
 
 php:
   - '7.2'
+
+branches:
+  only:
+    - dev
 
 before_install:
   - mysql -e 'CREATE DATABASE dbp;'
@@ -10,10 +16,10 @@ before_install:
 before_script:
   - cp .env.travis .env
   - composer self-update
-  - composer install --no-interaction
-  - php artisan migrate
+  - travis_retry composer install --no-interaction --prefer-dist --no-suggest
   - npm install
-  - npm run production
+  - php artisan key:generate
+  - php artisan migrate --no-interaction -vvv
 
 script:
   - vendor/bin/phpunit
@@ -28,7 +34,3 @@ cache:
 
 env:
   - TRAVIS_NODE_VERSION="4"
-
-script:
-  - php artisan key:generate
-  - vendor/bin/phpunit
