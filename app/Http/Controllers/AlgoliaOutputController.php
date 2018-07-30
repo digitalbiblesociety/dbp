@@ -21,7 +21,7 @@ class AlgoliaOutputController extends APIController
     {
 	    if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 		$languages = Language::with(['classifications', 'translations', 'countries', 'region'])->get();
-		return $this->reply(fractal($languages, new AlgoliaTransformer());
+		return $this->reply(fractal($languages, new AlgoliaTransformer()));
     }
 
 
