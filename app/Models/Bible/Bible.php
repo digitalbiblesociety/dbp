@@ -67,7 +67,7 @@ class Bible extends Model
      * created_at and updated at are only used for archival work. pivots contain duplicate data;
      * @var array
      */
-    protected $hidden = ['created_at', 'updated_at', 'pivot'];
+    protected $hidden = ['created_at', 'updated_at', 'pivot', 'priority', 'in_progress'];
 
 	/**
 	 *
