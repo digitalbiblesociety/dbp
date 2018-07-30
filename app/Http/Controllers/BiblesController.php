@@ -234,7 +234,7 @@ class BiblesController extends APIController
                     $q->whereHas('organizations', function ($q) use ($organization_id) {
                         $q->whereIn('organization_id', $organization_id);
                     })->orWhereHas('links', function ($q) use ($organization_id) {
-	                    $q->where('provider', $organization_id);
+	                    $q->whereIn('organization_id', $organization_id);
                     })->get();
                 })->orderBy('priority', 'desc')
                 ->get();
