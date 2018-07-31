@@ -93,7 +93,7 @@
 
     <div class="row">
         <div class="medium-9 columns centered">
-            <pre><code class="markup"><?php echo file_get_contents(base_path('CHANGELOG')); ?></code></pre>
+            <pre><code class="markup"><?php echo file_get_contents(base_path('doc/CHANGELOG')); ?></code></pre>
         </div>
     </div>
 
