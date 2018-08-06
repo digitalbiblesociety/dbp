@@ -18,18 +18,21 @@ class organizations_seeder extends Seeder
 		$seederHelper = new SeederHelper();
 		$googleSheetID = '1f5Vhhu7llkg3kI6Ga011Sb-OhwZIbfla4bwuN5Xcins';
 
-		DB::table('organization_logos')->delete();
-		DB::table('organization_translations')->delete();
-		DB::table('organizations')->delete();
+		DB::connection('dbp')->table('organization_logos')->delete();
+		DB::connection('dbp')->table('organization_translations')->delete();
+		DB::connection('dbp')->table('organizations')->delete();
 		$organizations = $seederHelper->csv_to_array("https://docs.google.com/spreadsheets/d/".$googleSheetID."/export?format=csv&id=".$googleSheetID."&gid=0");
 		foreach ($organizations as $key => $data) {
 			$organization = new Organization();
 			foreach ($data as $key => $value) if($value == '') $data[$key] = null;
+			if(!$data['slug']) {continue;}
 			unset($data['fobai']);
 			unset($data['vernacularTitle']);
 			unset($data['dba']);
 			unset($data['globalContributor']);
 			unset($data['libraryContributor']);
+			unset($data['organization']);
+			unset($data['country']);
 
 			$organization->create($data);
 		}
@@ -37,6 +40,7 @@ class organizations_seeder extends Seeder
 		$organizationTranslations = $seederHelper->csv_to_array("https://docs.google.com/spreadsheets/d/$googleSheetID/export?format=csv&id=$googleSheetID&gid=557153729");
 		foreach($organizationTranslations as $key => $data) {
 			$organizationTranslation = new OrganizationTranslation();
+			$data['vernacular'] = boolval($data['vernacular']);
 			if($data['alt'] == '') $data['alt'] = 0;
 			$organizationTranslation->create($data);
 		}

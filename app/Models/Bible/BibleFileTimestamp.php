@@ -10,24 +10,25 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Bible\Book $book
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Bible File Timestamp tag model partitions the file into verse by verse sections",
  *     title="Bible File Timestamp",
- *     @OAS\Xml(name="BibleFileTimestamp")
+ *     @OA\Xml(name="BibleFileTimestamp")
  * )
  *
  */
 
 class BibleFileTimestamp extends Model
 {
+	protected $connection = 'dbp';
 	protected $table = 'bible_file_timestamps';
 	public $primaryKey = 'bible_file_id';
 
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="file_id",
 	 *   type="integer",
 	 *   description="The incrementing id of the file timestamp",
@@ -41,7 +42,7 @@ class BibleFileTimestamp extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="verse_start",
 	 *   type="integer",
 	 *   description="The starting verse for the file timestamp",
@@ -56,7 +57,7 @@ class BibleFileTimestamp extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="verse_end",
 	 *   type="integer",
 	 *   description="The ending verse for the file timestamp",
@@ -71,7 +72,7 @@ class BibleFileTimestamp extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="timestamp",
 	 *   type="integer",
 	 *   description="The ending verse for the file timestamp",

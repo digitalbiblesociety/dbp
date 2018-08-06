@@ -7,22 +7,23 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Resource\ResourceLink
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="ResourceLink",
  *     title="Resource Link",
- *     @OAS\Xml(name="ResourceLink")
+ *     @OA\Xml(name="ResourceLink")
  * )
  *
  * @mixin \Eloquent
  */
 class ResourceLink extends Model
 {
+	protected $connection = 'dbp';
 	protected $hidden = ['created_at','updated_at', 'resource_id'];
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Resource/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Resource/properties/id")
 	 *
 	 * @method static ResourceLink whereResourceId($value)
 	 * @property int $resource_id
@@ -32,7 +33,7 @@ class ResourceLink extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="type",
 	 *   type="string",
 	 *   description="The type of media the resource can be categorized as",
@@ -47,7 +48,7 @@ class ResourceLink extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="size",
 	 *   type="string",
 	 *   description="The size of the resource measured in kilobytes",
@@ -62,7 +63,7 @@ class ResourceLink extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="type",
 	 *   type="string",
 	 *   description="The destination type for the url",
@@ -77,7 +78,7 @@ class ResourceLink extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="url",
 	 *   type="string",
 	 *   description="The link for the url"

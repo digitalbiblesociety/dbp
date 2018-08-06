@@ -14,17 +14,18 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $set_id
  * @property string $hash_id
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     required={"filename"},
  *     description="The Bible fileset tag model communicates general metadata about the filesets",
  *     title="BibleFilesetSize",
- *     @OAS\Xml(name="BibleFilesetSize")
+ *     @OA\Xml(name="BibleFilesetSize")
  * )
  *
  */
 class BibleFilesetTag extends Model
 {
+	protected $connection = 'dbp';
 	public $table = 'bible_fileset_tags';
 	public $primaryKey = 'set_id';
 	public $incrementing = false;
@@ -34,7 +35,7 @@ class BibleFilesetTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/BibleFileset/properties/hash_id")
+	 * @OA\Property(ref="#/components/schemas/BibleFileset/properties/hash_id")
 	 * @method static BibleFilesetTag whereHashId($value)
 	 * @property string $hash_id
 	 *
@@ -43,7 +44,7 @@ class BibleFilesetTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description="The name of the tag, serves as the key/category",
@@ -58,7 +59,7 @@ class BibleFilesetTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="description",
 	 *   type="string",
 	 *   description="The content of the tag, serves as the value of the key value pair of name/description"
@@ -72,7 +73,7 @@ class BibleFilesetTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="admin_only",
 	 *   type="boolean",
 	 *   description="If the tag is only to be visible to admin / archivist users"
@@ -86,7 +87,7 @@ class BibleFilesetTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="notes",
 	 *   type="string",
 	 *   description="Any notes about the tag"
@@ -100,7 +101,7 @@ class BibleFilesetTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Language/properties/iso")
+	 * @OA\Property(ref="#/components/schemas/Language/properties/iso")
 	 * @method static BibleFilesetTag whereIso($value)
 	 * @property string $iso
 	 *

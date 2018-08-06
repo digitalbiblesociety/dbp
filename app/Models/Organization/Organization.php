@@ -31,24 +31,24 @@ use App\Traits\Uuids;
  * @property-read mixed $bibles_count
  * @property-read mixed $filesets_count
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Organization",
  *     title="Organization",
- *     @OAS\Xml(name="Organization")
+ *     @OA\Xml(name="Organization")
  * )
  *
  */
 class Organization extends Model
 {
-
+	protected $connection = 'dbp';
 	// The attributes excluded from the model's JSON form.
 	protected $hidden = ['logo','facebook','twitter','id','code','created_at','updated_at','notes'];
     protected $fillable = ['name', 'email', 'password','facebook','twitter','website','address','phone'];
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="id",
 	 *     description="The Organization's incrementing id",
 	 *     type="integer",
@@ -61,7 +61,7 @@ class Organization extends Model
 	protected $id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="slug",
 	 *     description="The Organization's slug",
 	 *     type="string",
@@ -74,7 +74,7 @@ class Organization extends Model
 	protected $slug;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="abbreviation",
 	 *     description="The Organization's abbreviation",
 	 *     type="string",
@@ -88,7 +88,7 @@ class Organization extends Model
 	protected $abbreviation;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="notes",
 	 *     description="Archivist notes about the organization being described",
 	 *     type="string",
@@ -101,7 +101,7 @@ class Organization extends Model
 	protected $notes;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="primaryColor",
 	 *     description="The Organization's primary color derived from their logo",
 	 *     type="string",
@@ -116,7 +116,7 @@ class Organization extends Model
 	protected $primaryColor;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="secondaryColor",
 	 *     description="The Organization's secondary color derived from their logo",
 	 *     type="string",
@@ -131,7 +131,7 @@ class Organization extends Model
 	protected $secondaryColor;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="inactive",
 	 *     description="If the organization has not responded to several attempts to contact this value will be set to true",
 	 *     type="boolean",
@@ -144,7 +144,7 @@ class Organization extends Model
 	protected $inactive;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="url_facebook",
 	 *     description="The URL to the organization's facebook page",
 	 *     type="string",
@@ -157,7 +157,7 @@ class Organization extends Model
 	protected $url_facebook;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="url_website",
 	 *     description="The url to the Organization's website",
 	 *     type="string",
@@ -170,7 +170,7 @@ class Organization extends Model
 	protected $url_website;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="url_donate",
 	 *     description="The url to the organization's donation page",
 	 *     type="string",
@@ -183,7 +183,7 @@ class Organization extends Model
 	protected $url_donate;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="url_twitter",
 	 *     description="The url to the organization's twitter page",
 	 *     type="string",
@@ -196,7 +196,7 @@ class Organization extends Model
 	protected $url_twitter;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="address",
 	 *     description="The Organization's address",
 	 *     type="string",
@@ -209,7 +209,7 @@ class Organization extends Model
 	protected $address;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="address2",
 	 *     description="The Organization's second line of the address",
 	 *     type="string",
@@ -222,7 +222,7 @@ class Organization extends Model
 	protected $address2;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="city",
 	 *     description="The organization's city",
 	 *     type="string",
@@ -235,7 +235,7 @@ class Organization extends Model
 	protected $city;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="state",
 	 *     description="The Organization's state",
 	 *     type="string",
@@ -248,7 +248,7 @@ class Organization extends Model
 	protected $state;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="country",
 	 *     description="ThThe Organization's country",
 	 *     type="string",
@@ -261,7 +261,7 @@ class Organization extends Model
 	protected $country;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="zip",
 	 *     description="The Organization's zip",
 	 *     type="string",
@@ -274,7 +274,7 @@ class Organization extends Model
 	protected $zip;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="phone",
 	 *     description="The Organization's phone number",
 	 *     type="string",
@@ -287,7 +287,7 @@ class Organization extends Model
 	protected $phone;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="email",
 	 *     description="The Organization's email address",
 	 *     type="string",

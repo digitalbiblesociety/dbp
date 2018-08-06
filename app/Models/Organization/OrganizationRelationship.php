@@ -10,16 +10,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Organization\Organization $organization
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Relationships for the Organization",
  *     title="Organization Relationship",
- *     @OAS\Xml(name="OrganizationRelationship")
+ *     @OA\Xml(name="OrganizationRelationship")
  * )
  *
  */
 class OrganizationRelationship extends Model
 {
+	protected $connection = 'dbp';
 	protected $primaryKey = 'organization_parent_id';
 	protected $fillable = ['type','organization_child_id','organization_parent_id','relationship_id'];
 	public $incrementing = false;
@@ -27,7 +28,7 @@ class OrganizationRelationship extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="organization_parent_id",
 	 *     description="The Organization's id",
 	 *     type="integer",
@@ -41,7 +42,7 @@ class OrganizationRelationship extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="organization_child_id",
 	 *     description="The Organization's id",
 	 *     type="integer",
@@ -54,7 +55,7 @@ class OrganizationRelationship extends Model
 	protected $organization_child_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="type",
 	 *     description="The Organization's type",
 	 *     type="string",
@@ -68,7 +69,7 @@ class OrganizationRelationship extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="relationship_id",
 	 *     description="The Organization's relationship_id",
 	 *     type="string",

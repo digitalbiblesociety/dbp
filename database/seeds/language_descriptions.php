@@ -30,8 +30,14 @@ class language_descriptions extends Seeder
 			$translation_iso = substr($description_url,47,3);
 
 			// Fetch Languages
-			$description_language = Language::where('iso',$description_iso)->first()->id;
-			$translation_language = Language::where('iso',$translation_iso)->first()->id;
+			$description_language = Language::where('iso',$description_iso)->first();
+			if(!$description_language) { continue; }
+			$description_language = $description_language->id;
+
+			$translation_language = Language::where('iso',$translation_iso)->first();
+			if(!$translation_language) { continue; }
+			$translation_language = $translation_language->id;
+
 
 			// Update Language Translations Table
 			$translation = LanguageTranslation::where('language_source',$description_language)->where('language_translation',$translation_language)->first();

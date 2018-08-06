@@ -18,6 +18,10 @@
 @section('content')
     <div class="row docs">
     <h1>Docs (Library Catalog)</h1>
+
+        <a href="{{ route('swagger_v4') }}">Swagger Spec v4</a>
+        <a href="{{ route('swagger_v2') }}">Swagger Spec v2</a>
+
         <div class="medium-3 columns centered">
         <a class="button" href="/docs/progress">Progress</a></div>
     <ul>

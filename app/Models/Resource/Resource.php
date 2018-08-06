@@ -15,23 +15,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Organization\Organization $organization
  * @property-read \App\Models\Resource\ResourceTranslation $currentTranslation
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Resource",
  *     title="Resource",
- *     @OAS\Xml(name="Resource")
+ *     @OA\Xml(name="Resource")
  * )
  *
  */
 class Resource extends Model
 {
-
+	protected $connection = 'dbp';
 	protected $hidden = ['created_at','updated_at'];
 	public $table = "resources";
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="id",
 	 *     description="The Resource's incrementing id",
 	 *     type="integer",
@@ -46,7 +46,7 @@ class Resource extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="iso",
 	 *     description="The Resource's iso",
 	 *     type="string",
@@ -61,7 +61,7 @@ class Resource extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Organization/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Organization/properties/id")
 	 *
 	 * @method static Resource whereOrganizationId($value)
 	 * @property int $organization_id
@@ -71,7 +71,7 @@ class Resource extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="source_id",
 	 *   type="string",
 	 *   description="The owning organization's tracking id for the resource",
@@ -85,7 +85,7 @@ class Resource extends Model
 	protected $source_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="cover",
 	 *   type="string",
 	 *   description="The url to the main cover art for the resource",
@@ -100,7 +100,7 @@ class Resource extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="cover_thumbnail",
 	 *   type="string",
 	 *   description="The url to the thumbnail cover art for the resource",
@@ -115,7 +115,7 @@ class Resource extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="date",
 	 *   type="string",
 	 *   description="The date the resource was originally published",
@@ -130,7 +130,7 @@ class Resource extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="type",
 	 *   type="string",
 	 *   description="The type of media the resource can be categorized as",

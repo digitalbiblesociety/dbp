@@ -9,21 +9,22 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Bible File Title model communicates information about generalized fileset sizes",
  *     title="BibleFileTitle",
- *     @OAS\Xml(name="BibleFileTitle")
+ *     @OA\Xml(name="BibleFileTitle")
  * )
  *
  */
 class BibleFileTitle extends Model
 {
+	protected $connection = 'dbp';
     public $table = "bible_file_titles";
 
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="file_id",
 	  *   type="integer",
 	  *   description="The incrementing id of the file timestamp"
@@ -36,7 +37,7 @@ class BibleFileTitle extends Model
 	 protected $file_id;
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="iso",
 	  *   type="string",
 	  *   description="The translation language of the title"
@@ -49,7 +50,7 @@ class BibleFileTitle extends Model
 	 protected $iso;
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="title",
 	  *   type="string",
 	  *   description="The title of the file"
@@ -62,7 +63,7 @@ class BibleFileTitle extends Model
 	 protected $title;
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="description",
 	  *   type="string",
 	  *   description="The description of the file title"
@@ -75,7 +76,7 @@ class BibleFileTitle extends Model
 	 protected $description;
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="key_words",
 	  *   type="string",
 	  *   description="The words"

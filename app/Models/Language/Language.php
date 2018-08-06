@@ -3,6 +3,7 @@
 namespace App\Models\Language;
 
 use App\Models\Bible\Bible;
+use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Video;
 use App\Models\Country\CountryLanguage;
 use App\Models\Country\CountryRegion;
@@ -33,17 +34,17 @@ use App\Models\Resource\Resource;
  * @property-read \App\Models\Resource\Resource[] $resources
  * @property-read LanguageTranslation[] $translations
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Language",
  *     title="Language",
- *     @OAS\Xml(name="Language")
+ *     @OA\Xml(name="Language")
  * )
  *
  */
 class Language extends Model
 {
-
+	protected $connection = 'dbp';
 	public $table = "languages";
     public $primaryKey = 'id';
 
@@ -53,7 +54,7 @@ class Language extends Model
 	/**
 	 * ID
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="id",
 	 *     description="The incrementing ID for the language",
 	 *     type="integer"
@@ -67,11 +68,11 @@ class Language extends Model
 	/**
 	 * Glotto ID
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="glotto_id",
 	 *     description="The glottolog ID for the language",
 	 *     type="string",
-	 *     @OAS\ExternalDocumentation(
+	 *     @OA\ExternalDocumentation(
 	 *         description="For more info please refer to the Glottolog",
 	 *         url="http://glottolog.org/"
 	 *     ),
@@ -86,11 +87,11 @@ class Language extends Model
 	/**
 	 * Iso
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="iso",
 	 *     description="The iso 639-3 for the language",
 	 *     type="string",
-	 *     @OAS\ExternalDocumentation(
+	 *     @OA\ExternalDocumentation(
 	 *         description="For more info",
 	 *         url="https://en.wikipedia.org/wiki/ISO_639-3"
 	 *     ),
@@ -105,7 +106,7 @@ class Language extends Model
 	/**
 	 * iso2B
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="iso 2b",
 	 *     description="The iso 639-2, B variant for the language",
 	 *     type="integer"
@@ -119,7 +120,7 @@ class Language extends Model
 	/**
 	 * iso2T
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="iso 2t",
 	 *     description="The iso 639-2, T variant for the language",
 	 *     type="integer"
@@ -131,7 +132,7 @@ class Language extends Model
 	protected $iso2T;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="iso1",
 	 *     description="The iso 639-1 for the language",
 	 *     type="integer"
@@ -143,7 +144,7 @@ class Language extends Model
 	protected $iso1;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Name",
 	 *     description="The name of the language",
 	 *     type="string"
@@ -155,7 +156,7 @@ class Language extends Model
 	protected $name;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Name",
 	 *     description="The name of the language in the vernacular of that language",
 	 *     type="string"
@@ -167,7 +168,7 @@ class Language extends Model
 	protected $autonym;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Maps",
 	 *     description="The general area where the language can be found",
 	 *     type="string"
@@ -179,7 +180,7 @@ class Language extends Model
 	protected $maps;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Development",
 	 *     description="The development of the growth of the language",
 	 *     type="string"
@@ -191,7 +192,7 @@ class Language extends Model
 	protected $development;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="use",
 	 *     description="The use of the language",
 	 *     type="string"
@@ -203,7 +204,7 @@ class Language extends Model
 	protected $use;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Location",
 	 *     description="The location of the language",
 	 *     type="string"
@@ -215,7 +216,7 @@ class Language extends Model
 	protected $location;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Area",
 	 *     description="The area of the language",
 	 *     type="string"
@@ -227,7 +228,7 @@ class Language extends Model
 	protected $area;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Population",
 	 *     description="The estimated number of people that speak the language",
 	 *     type="string"
@@ -239,7 +240,7 @@ class Language extends Model
 	protected $population;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Population",
 	 *     description="Any notes regarding the estimated number of people",
 	 *     type="string"
@@ -251,7 +252,7 @@ class Language extends Model
 	protected $population_notes;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Notes",
 	 *     description="Any notes regarding the language",
 	 *     type="string"
@@ -263,7 +264,7 @@ class Language extends Model
 	protected $notes;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Typology",
 	 *     description="The language's Typology",
 	 *     type="string"
@@ -275,7 +276,7 @@ class Language extends Model
 	protected $typology;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Typology",
 	 *     description="The language's script",
 	 *     type="string"
@@ -287,7 +288,7 @@ class Language extends Model
 	protected $writing;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Typology",
 	 *     description="The description of the language",
 	 *     type="string"
@@ -299,7 +300,7 @@ class Language extends Model
 	protected $description;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Latitude",
 	 *     description="A generalized latitude for the location of the language",
 	 *     type="string"
@@ -311,7 +312,7 @@ class Language extends Model
 	protected $latitude;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Longitude",
 	 *     description="A generalized longitude for the location of the language",
 	 *     type="string"
@@ -323,7 +324,7 @@ class Language extends Model
 	protected $longitude;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Status",
 	 *     description="A status of the language",
 	 *     type="string"
@@ -335,7 +336,7 @@ class Language extends Model
 	protected $status;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="country_id",
 	 *     description="The primary country where the language is spoken",
 	 *     type="string"

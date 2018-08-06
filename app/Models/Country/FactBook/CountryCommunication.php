@@ -7,23 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Country\FactBook\CountryCommunication
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Country Communication Model stores information about the communication infrastructure of a country as reported by the CIA's World Factbook",
  *     title="Country Communication",
- *     @OAS\Xml(name="CountryCommunication")
+ *     @OA\Xml(name="CountryCommunication")
  * )
  *
  * @mixin \Eloquent
  */
 class CountryCommunication extends Model
 {
+	protected $connection = 'dbp';
 	public $incrementing = false;
 
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Country/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Country/properties/id")
 	 * @method static CountryCommunication whereCountryId($value)
 	 * @property string $country_id
 	 */
@@ -31,7 +32,7 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="fixed_phones_total",
 	 *     description="The `fixed_phones_total` field indicates the approximate number of phones utilizing landlines within a country",
 	 *     type="string",
@@ -45,7 +46,7 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="fixed_phones_subs_per_100",
 	 *     description="The `fixed_phones_subs_per_100` field describes the approximate number of landline phone subscriptions per 100 people. This gives a sense of the prevalence of landline phone use within a population.",
 	 *     type="string",
@@ -59,7 +60,7 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="mobile_phones_total",
 	 *     description="The `mobile_phones_total` field describes the total approximate number of cellphones within a country",
 	 *     type="string",
@@ -73,7 +74,7 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="mobile_phones_subs_per_100",
 	 *     description="The `mobile_phones_subs_per_100` field describes the total approximate number of cellphone subscriptions within the country per 100 people. This gives a sense of the prevalence of cellphone use within a population.",
 	 *     type="string",
@@ -87,7 +88,7 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="phone_system_general_assessment",
 	 *     description="The `phone_system_general_assessment` field describes the general state of the telephone system within the country.",
 	 *     type="string",
@@ -101,12 +102,12 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="phone_system_international",
 	 *     description="The `phone_system_international` field indicates the international phone code and satellite position for a country.",
 	 *     type="string",
 	 *     example="country code - 257; satellite earth station - 1 Intelsat (Indian Ocean) (2015)",
-	 *     @OAS\ExternalDocumentation(description="For a full list of country phone codes please refer to Wikipedia",url="https://en.wikipedia.org/wiki/List_of_country_calling_codes")
+	 *     @OA\ExternalDocumentation(description="For a full list of country phone codes please refer to Wikipedia",url="https://en.wikipedia.org/wiki/List_of_country_calling_codes")
 	 * )
 	 *
 	 * @method static CountryCommunication wherePhoneSystemInternational($value)
@@ -116,7 +117,7 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="phone_system_domestic",
 	 *     description="This field gives a general assessment of the status of the domestic phone system.",
 	 *     type="string",
@@ -130,7 +131,7 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="broadcast_media",
 	 *     description="This field indicates the independence and connections between the different companies that operate within the country",
 	 *     type="string",
@@ -144,7 +145,7 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="internet_country_code",
 	 *     description="The TLD extension, Top Level Domain, for the country",
 	 *     type="string",
@@ -152,7 +153,7 @@ class CountryCommunication extends Model
 	 *     minLength=2,
 	 *     maxLength=2,
 	 *     example="af",
-	 *     @OAS\ExternalDocumentation(description="For a full list of top level domains",url="https://en.wikipedia.org/wiki/List_of_Internet_top-level_domains")
+	 *     @OA\ExternalDocumentation(description="For a full list of top level domains",url="https://en.wikipedia.org/wiki/List_of_Internet_top-level_domains")
 	 * )
 	 *
 	 * @method static CountryCommunication whereInternetCountryCode($value)
@@ -162,7 +163,7 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="internet_total_users",
 	 *     description="The number of people who have access to the internet.",
 	 *     type="string",
@@ -176,7 +177,7 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="internet_population_percent",
 	 *     description="The percent of the populace who have access to the internet",
 	 *     type="number",
@@ -191,7 +192,7 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="created_at",
 	 *     description="The created_at timestamp for the Communications Model",
 	 *     type="string",
@@ -206,7 +207,7 @@ class CountryCommunication extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="updated_at",
 	 *     description="The updated_at timestamp for the Communications Model",
 	 *     type="string",

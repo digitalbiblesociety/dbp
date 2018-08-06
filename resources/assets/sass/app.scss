@@ -1,31 +1,42 @@
-// Global styles and variables
-//@import "global";
+// Fonts
+@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
 
-@import "global";
+// Variables
+@import "variables";
 
-@import "partials/nav";
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
 
-@import "components/datatables";
-@import "components/dropzone";
-@import "components/tabs";
-@import "components/forms";
-@import "swagger/main";
-
-@import "pages/languages";
-
-nav[role="navigation"] {
+.navbar-laravel {
   background-color: #fff;
-  border-bottom:thin solid #f8f8f8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
-section[role="banner"] {
-  background-color:#F8F8FA;
-  color:#222;
-  z-index: 0;
-}
+// Font Awesome
+@import '~font-awesome/scss/font-awesome';
 
-.centered {
-  margin: 0 auto!important;
-  display: block;
-  float: none!important;
-}
+// Dropzone
+@import "~dropzone/dist/basic";
+@import "~dropzone/dist/dropzone";
+
+// Bootstrap Social Media Buttons - https://github.com/lipis/bootstrap-social
+@import "~bootstrap-social/bootstrap-social.css";
+
+@import "mixins";
+@import "margins";
+@import "helpers";
+@import "typography";
+@import "buttons";
+@import "badges";
+@import "panels";
+@import "wells";
+@import "modals";
+@import "socials";
+@import "forms";
+@import "lists";
+@import "avatar";
+@import "logs";
+@import "password";
+@import "hideShowPassword";
+@import "visibility";
+@import "user-profile";

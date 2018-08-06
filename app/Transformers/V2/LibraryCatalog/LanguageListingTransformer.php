@@ -9,22 +9,22 @@ use League\Fractal\TransformerAbstract;
 class LanguageListingTransformer extends BaseTransformer
 {
 	/**
-	 * @OAS\Schema (
+	 * @OA\Schema (
 	 *	type="array",
 	 *	schema="v2_library_language",
 	 *	description="The minimized language return for the all languages v2 route",
 	 *	title="v2_library_language",
-	 *	@OAS\Xml(name="v2_library_language"),
-	 *	@OAS\Items(
-	 *          @OAS\Property(property="language_code",         ref="#/components/schemas/Language/properties/iso"),
-	 *          @OAS\Property(property="language_name",         ref="#/components/schemas/Language/properties/name"),
-	 *          @OAS\Property(property="english_name",          ref="#/components/schemas/Language/properties/name"),
-	 *          @OAS\Property(property="language_iso",          ref="#/components/schemas/Language/properties/iso"),
-	 *          @OAS\Property(property="language_iso_2B",       ref="#/components/schemas/Language/properties/iso2B"),
-	 *          @OAS\Property(property="language_iso_2T",       ref="#/components/schemas/Language/properties/iso2T"),
-	 *          @OAS\Property(property="language_iso_1",        ref="#/components/schemas/Language/properties/iso1"),
-	 *          @OAS\Property(property="language_iso_name",     ref="#/components/schemas/Language/properties/name"),
-	 *          @OAS\Property(property="language_family_code",  ref="#/components/schemas/Language/properties/iso")
+	 *	@OA\Xml(name="v2_library_language"),
+	 *	@OA\Items(
+	 *          @OA\Property(property="language_code",         ref="#/components/schemas/Language/properties/iso"),
+	 *          @OA\Property(property="language_name",         ref="#/components/schemas/Language/properties/name"),
+	 *          @OA\Property(property="english_name",          ref="#/components/schemas/Language/properties/name"),
+	 *          @OA\Property(property="language_iso",          ref="#/components/schemas/Language/properties/iso"),
+	 *          @OA\Property(property="language_iso_2B",       ref="#/components/schemas/Language/properties/iso2B"),
+	 *          @OA\Property(property="language_iso_2T",       ref="#/components/schemas/Language/properties/iso2T"),
+	 *          @OA\Property(property="language_iso_1",        ref="#/components/schemas/Language/properties/iso1"),
+	 *          @OA\Property(property="language_iso_name",     ref="#/components/schemas/Language/properties/name"),
+	 *          @OA\Property(property="language_family_code",  ref="#/components/schemas/Language/properties/iso")
 	 *     )
 	 *   )
 	 * )
@@ -56,24 +56,24 @@ class LanguageListingTransformer extends BaseTransformer
 		    }
 
 		    /**
-		     * @OAS\Schema (
+		     * @OA\Schema (
 		     *	type="array",
 		     *	schema="v2_library_volumeLanguageFamily",
 		     *	description="",
 		     *	title="v2_library_volumeLanguageFamily",
-		     *	@OAS\Xml(name="v2_library_volumeLanguageFamily"),
-		     *	@OAS\Items(
-		     *          @OAS\Property(property="language_family_code",      ref="#/components/schemas/Language/properties/iso"),
-		     *          @OAS\Property(property="language_family_name",      ref="#/components/schemas/Language/properties/name"),
-		     *          @OAS\Property(property="language_family_english",   ref="#/components/schemas/Language/properties/name"),
-		     *          @OAS\Property(property="language_family_iso",       ref="#/components/schemas/Language/properties/iso"),
-		     *          @OAS\Property(property="language_family_iso_2B",    ref="#/components/schemas/Language/properties/iso2B"),
-		     *          @OAS\Property(property="language_family_iso_2T",    ref="#/components/schemas/Language/properties/iso2T"),
-		     *          @OAS\Property(property="language_family_iso_1",     ref="#/components/schemas/Language/properties/iso1"),
-		     *          @OAS\Property(property="language",                  @OAS\Schema(type="array")),
-		     *          @OAS\Property(property="media",                     @OAS\Schema(type="array")),
-		     *          @OAS\Property(property="delivery",                  @OAS\Schema(type="array")),
-		     *          @OAS\Property(property="resolution",                @OAS\Schema(type="array")),
+		     *	@OA\Xml(name="v2_library_volumeLanguageFamily"),
+		     *	@OA\Items(
+		     *          @OA\Property(property="language_family_code",      ref="#/components/schemas/Language/properties/iso"),
+		     *          @OA\Property(property="language_family_name",      ref="#/components/schemas/Language/properties/name"),
+		     *          @OA\Property(property="language_family_english",   ref="#/components/schemas/Language/properties/name"),
+		     *          @OA\Property(property="language_family_iso",       ref="#/components/schemas/Language/properties/iso"),
+		     *          @OA\Property(property="language_family_iso_2B",    ref="#/components/schemas/Language/properties/iso2B"),
+		     *          @OA\Property(property="language_family_iso_2T",    ref="#/components/schemas/Language/properties/iso2T"),
+		     *          @OA\Property(property="language_family_iso_1",     ref="#/components/schemas/Language/properties/iso1"),
+		     *          @OA\Property(property="language",                  @OA\Schema(type="array")),
+		     *          @OA\Property(property="media",                     @OA\Schema(type="array")),
+		     *          @OA\Property(property="delivery",                  @OA\Schema(type="array")),
+		     *          @OA\Property(property="resolution",                @OA\Schema(type="array")),
 		     *     )
 		     *   )
 		     * )

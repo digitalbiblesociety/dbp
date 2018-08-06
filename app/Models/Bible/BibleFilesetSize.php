@@ -19,22 +19,23 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  *
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     required={"filename"},
  *     description="The Bible fileset size model communicates information about generalized fileset sizes",
  *     title="BibleFilesetSize",
- *     @OAS\Xml(name="BibleFilesetSize")
+ *     @OA\Xml(name="BibleFilesetSize")
  * )
  *
  */
 class BibleFilesetSize extends Model
 {
+	protected $connection = 'dbp';
     protected $table = "bible_fileset_sizes";
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The id",
@@ -50,7 +51,7 @@ class BibleFilesetSize extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="set_size_code",
 	 *   type="string",
 	 *   description="The id",
@@ -65,7 +66,7 @@ class BibleFilesetSize extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description="The name",

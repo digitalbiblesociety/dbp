@@ -2,7 +2,6 @@
 
 namespace App\Console;
 
-use App\Console\Commands\testArmor;
 use Aws\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -16,7 +15,6 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\processDBLBundle::class,
-	    Commands\testArmor::class,
 	    Commands\countSophia::class,
 	    Commands\organizations_dbl_status::class,
 	    Commands\filesystem_update::class,

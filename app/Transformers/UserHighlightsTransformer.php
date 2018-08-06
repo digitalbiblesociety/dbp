@@ -7,21 +7,21 @@ use League\Fractal\TransformerAbstract;
 class UserHighlightsTransformer extends TransformerAbstract
 {
 	/**
-	 * @OAS\Schema (
+	 * @OA\Schema (
 			*	type="array",
 			*	schema="v4_highlights_index",
 			*	description="The v4 highlights index response",
 			*	title="v4_highlights_index",
-			*	@OAS\Xml(name="v4_highlights_index"),
-			*	@OAS\Items(              @OAS\Property(property="book_id",       ref="#/components/schemas/Book/properties/id"),
-	 *              @OAS\Property(property="book_name",     ref="#/components/schemas/Book/properties/name"),
-	 *              @OAS\Property(property="chapter_start", ref="#/components/schemas/BibleFile/properties/chapter_start"),
-	 *              @OAS\Property(property="chapter_end",   ref="#/components/schemas/BibleFile/properties/chapter_end"),
-	 *              @OAS\Property(property="verse_start",   ref="#/components/schemas/BibleFile/properties/verse_start"),
-	 *              @OAS\Property(property="reference",     ref="#/components/schemas/Highlight/properties/reference"),
-	 *              @OAS\Property(property="verse_end",     ref="#/components/schemas/BibleFile/properties/verse_end"),
-	 *              @OAS\Property(property="timestamp",     ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
-	 *              @OAS\Property(property="path",          ref="#/components/schemas/BibleFile/properties/file_name")
+			*	@OA\Xml(name="v4_highlights_index"),
+			*	@OA\Items(              @OA\Property(property="book_id",       ref="#/components/schemas/Book/properties/id"),
+	 *              @OA\Property(property="book_name",     ref="#/components/schemas/Book/properties/name"),
+	 *              @OA\Property(property="chapter_start", ref="#/components/schemas/BibleFile/properties/chapter_start"),
+	 *              @OA\Property(property="chapter_end",   ref="#/components/schemas/BibleFile/properties/chapter_end"),
+	 *              @OA\Property(property="verse_start",   ref="#/components/schemas/BibleFile/properties/verse_start"),
+	 *              @OA\Property(property="reference",     ref="#/components/schemas/Highlight/properties/reference"),
+	 *              @OA\Property(property="verse_end",     ref="#/components/schemas/BibleFile/properties/verse_end"),
+	 *              @OA\Property(property="timestamp",     ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
+	 *              @OA\Property(property="path",          ref="#/components/schemas/BibleFile/properties/file_name")
 	 *     )
 	 *   )
 	 * )

@@ -41,18 +41,18 @@ class countries_translations_seeder extends Seeder
         }
     */
         // Wikipedia Translations
-	    \DB::table('country_translations')->delete();
+	    \DB::connection('dbp')->table('country_translations')->delete();
         $seederhelper = new SeederHelper();
         $wikipedia = $seederhelper->csv_to_array(storage_path()."/data/countries/country_translations_wiki.csv");
         foreach($wikipedia as $entry) {
             if(strlen($entry['language_id']) == 2) {
                 $current_language = LanguageCode::where('source','Iso 639-2')->where('code','=', $entry['language_id'])->first();
                 if(!$current_language) { continue; }
-                $current_language = $current_language->language->iso;
+                $current_language = $current_language->language->id;
             } elseif(strlen($entry['language_id']) == 3) {
                 $current_language = Language::where('iso',$entry['language_id'])->first();
                 if(!$current_language) { continue; }
-                $current_language = $current_language->iso;
+                $current_language = $current_language->id;
             } else {
                 dd($entry['language_id']);
             }

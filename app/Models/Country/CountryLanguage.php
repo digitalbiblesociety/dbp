@@ -8,11 +8,11 @@ use App\Models\Language\Language;
 /**
  * App\Models\Country\CountryLanguage
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Country Language",
  *     title="Country Language",
- *     @OAS\Xml(name="CountryLanguage")
+ *     @OA\Xml(name="CountryLanguage")
  * )
  *
  * @property-read \App\Models\Language\Language $language
@@ -20,13 +20,14 @@ use App\Models\Language\Language;
  */
 class CountryLanguage extends Model
 {
+	protected $connection = 'dbp';
     protected $table = "country_language";
 	public $timestamps = false;
 	public $incrementing = false;
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="continent ID",
 	 *     description="The continent code for the country",
 	 *     type="string",
@@ -41,7 +42,7 @@ class CountryLanguage extends Model
 	protected $country_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="language_id",
 	 *     description="The language_id for the speakers",
 	 *     type="integer"
@@ -53,7 +54,7 @@ class CountryLanguage extends Model
 	protected $language_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="population",
 	 *     description="The population of the speakers",
 	 *     type="integer",

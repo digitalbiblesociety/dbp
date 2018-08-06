@@ -58,7 +58,8 @@ class bible_links_seeder extends Seeder
 		    'Google Play'     => 'wycliffe-global-alliance'
 	    ];
 	    ini_set( 'memory_limit', '600M' );
-	    BibleLink::truncate();
+
+	    \DB::connection('dbp')->table('bible_links')->delete();
 
 	    $seederHelper = new SeederHelper();
 	    $bibleLinks   = $seederHelper->csv_to_array( storage_path() . '/data/bibles/bible_links.csv' );

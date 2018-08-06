@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\User\AccessGroup
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Access Group",
  *     title="AccessGroup",
- *     @OAS\Xml(name="AccessGroup")
+ *     @OA\Xml(name="AccessGroup")
  * )
  *
  */
@@ -23,7 +23,7 @@ class AccessGroup extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The incrementing id for each access group"
@@ -36,7 +36,7 @@ class AccessGroup extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description="The name for each access group"
@@ -49,7 +49,7 @@ class AccessGroup extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="description",
 	 *   type="string",
 	 *   description="The description for each access group"

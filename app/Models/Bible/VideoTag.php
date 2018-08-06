@@ -10,20 +10,22 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @method static VideoTag whereBookId($value)
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The VideoTags model holds miscellaneous information about the video model.",
  *     title="VideoTags",
- *     @OAS\Xml(name="VideoTags")
+ *     @OA\Xml(name="VideoTags")
  * )
  *
  */
 class VideoTag extends Model
 {
 
+	protected $connection = 'dbp';
+
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The incrementing id of the video tag"
@@ -36,7 +38,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="video_id",
 	 *   type="integer",
 	 *   description="The video id"
@@ -49,7 +51,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="category",
 	 *   type="integer",
 	 *   description="The category"
@@ -62,7 +64,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="category",
 	 *   type="integer",
 	 *   description="The category"
@@ -75,7 +77,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="tag",
 	 *   type="string",
 	 *   description="The tag"
@@ -88,7 +90,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="tag",
 	 *   type="integer",
 	 *   description="The language_id",
@@ -102,7 +104,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="organization_id",
 	 *   type="integer",
 	 *   description="The language_id",
@@ -116,7 +118,7 @@ class VideoTag extends Model
 
 	/**
      *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="book_id",
 	 *   type="string",
 	 *   description="The book id",
@@ -130,7 +132,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="chapter_start",
 	 *   type="integer",
 	 *   description="The starting chapter",
@@ -144,7 +146,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="chapter_end",
 	 *   type="integer",
 	 *   description="The ending chapter",
@@ -158,7 +160,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="verse_start",
 	 *   type="integer",
 	 *   description="The verse_start",
@@ -172,7 +174,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="verse_end",
 	 *   type="integer",
 	 *   description="The verse_end",
@@ -186,7 +188,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="time_begin",
 	 *   type="integer",
 	 *   description="The time_begin",
@@ -200,7 +202,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="time_end",
 	 *   type="integer",
 	 *   description="The time_end",
@@ -214,7 +216,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="created_at",
 	 *   type="string",
 	 *   description="The created_at",
@@ -228,7 +230,7 @@ class VideoTag extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description="The updated_at",

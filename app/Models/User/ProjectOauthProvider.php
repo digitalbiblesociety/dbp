@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class ProjectOauthProvider
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Project's oAuth provider model",
  *     title="ProjectOauthProvider",
- *     @OAS\Xml(name="ProjectOauthProvider")
+ *     @OA\Xml(name="ProjectOauthProvider")
  * )
  *
  * @package App\Models\User
@@ -64,7 +64,7 @@ class ProjectOauthProvider extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="string",
 	 *   description="The human readable id for an oauth provider",
@@ -79,7 +79,7 @@ class ProjectOauthProvider extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Project/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Project/properties/id")
 	 *
 	 * @method static Project whereProjectId($value)
 	 * @property string $project_id
@@ -88,7 +88,7 @@ class ProjectOauthProvider extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description="The name for an oauth provider",
@@ -102,7 +102,7 @@ class ProjectOauthProvider extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="string",
 	 *   description="The id for an oauth provider",
@@ -116,7 +116,7 @@ class ProjectOauthProvider extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="secret",
 	 *   type="string",
 	 *   description="The secret for an oauth provider",
@@ -130,7 +130,7 @@ class ProjectOauthProvider extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="callback_url",
 	 *   type="string",
 	 *   description="The callback_url for an oauth provider",
@@ -144,7 +144,7 @@ class ProjectOauthProvider extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="callback_url_alt",
 	 *   type="string",
 	 *   description="An alternative callback_url for an oauth provider",
@@ -158,7 +158,7 @@ class ProjectOauthProvider extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="description",
 	 *   type="string",
 	 *   description="The description for an oauth provider",

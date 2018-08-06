@@ -9,22 +9,23 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Information regarding the publication of bibles in the various languages around the world",
  *     title="Language Bible Info",
- *     @OAS\Xml(name="LanguageBibleInfo")
+ *     @OA\Xml(name="LanguageBibleInfo")
  * )
  *
  */
 class LanguageBibleInfo extends Model
 {
+	protected $connection = 'dbp';
     public $incrementing = false;
     public $table = 'language_bibleInfo';
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *     title="language_id",
      *     type="integer",
      *     description="The foreign key matching the incrementing language ID",
@@ -39,7 +40,7 @@ class LanguageBibleInfo extends Model
 
      /**
       *
-      * @OAS\Property(
+      * @OA\Property(
       *     title="bible_status",
       *     type="integer",
       *     description="The numeral written out the vernacular translations",
@@ -56,7 +57,7 @@ class LanguageBibleInfo extends Model
     /**
      *
      *
-     * @OAS\Property(
+     * @OA\Property(
      *     title="bible_translation_need",
      *     type="integer",
      *     description="The numeral written out the vernacular translations",
@@ -73,7 +74,7 @@ class LanguageBibleInfo extends Model
 	/**
      *
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="bible_year",
 	 *     type="integer",
 	 *     description="The year a full Bible was published",
@@ -88,7 +89,7 @@ class LanguageBibleInfo extends Model
 	protected $bible_year;
      /**
       *
-      * @OAS\Property(
+      * @OA\Property(
       *     title="bible_year_newTestament",
       *     type="integer",
       *     description="The year a new testament Bible was published",
@@ -103,7 +104,7 @@ class LanguageBibleInfo extends Model
 	protected $bible_year_newTestament;
      /**
       *
-      * @OAS\Property(
+      * @OA\Property(
       *     title="bible_year_portions",
       *     type="integer",
       *     description="The year portions of a Bible were published",
@@ -120,7 +121,7 @@ class LanguageBibleInfo extends Model
 	/**
 	 *
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="bible_sample_text",
 	 *     type="string",
 	 *     description="A selection of sample text",
@@ -137,7 +138,7 @@ class LanguageBibleInfo extends Model
      /**
       *
       *
-      * @OAS\Property(
+      * @OA\Property(
       *     title="bible_sample_img",
       *     type="string",
       *     description="A sample image of the bible text for comparison",
@@ -152,7 +153,7 @@ class LanguageBibleInfo extends Model
 	protected $bible_sample_img;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="created_at",
 	 *     type="string",
 	 *     description="The timestamp for the creation of the language bible information model",
@@ -168,7 +169,7 @@ class LanguageBibleInfo extends Model
 
      /**
       *
-      * @OAS\Property(
+      * @OA\Property(
       *     title="updated_at",
       *     type="string",
       *     description="The timestamp of the last update for the language bible information model",

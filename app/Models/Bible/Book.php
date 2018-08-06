@@ -17,23 +17,24 @@ use i18n;
  * @method static Book whereTestamentOrder($value)
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bible
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Book model communicates information about the canonical books of the Bible",
  *     title="Book",
- *     @OAS\Xml(name="Book")
+ *     @OA\Xml(name="Book")
  * )
  *
  */
 class Book extends Model
 {
+	protected $connection = 'dbp';
     protected $table = "books";
     public $incrementing = false;
     public $hidden = ['description','created_at','updated_at','notes'];
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="string",
 	 *   description="The USFM 2.4 id for the books of the Bible",
@@ -49,7 +50,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id_usfx",
 	 *   type="string",
 	 *   description="The usfx id for the books of the Bible",
@@ -65,7 +66,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id_osis",
 	 *   type="string",
 	 *   description="The OSIS id for the books of the Bible",
@@ -81,7 +82,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="protestant_order",
 	 *   type="integer",
 	 *   description="The standard book order for the `protestant_order` in ascending order from Genesis onwards",
@@ -96,7 +97,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="luther_order",
 	 *   type="integer",
 	 *   description="The standard book order for the `luther_order` in ascending order from Genesis onwards",
@@ -111,7 +112,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="synodal_order",
 	 *   type="integer",
 	 *   description="The standard book order for the `synodal_order` in ascending order from Genesis onwards",
@@ -126,7 +127,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="german_order",
 	 *   type="integer",
 	 *   description="The standard book order for the `german_order` in ascending order from Genesis onwards",
@@ -141,7 +142,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="kjva_order",
 	 *   type="integer",
 	 *   description="The standard book order for the `kjva_order` in ascending order from Genesis onwards",
@@ -156,7 +157,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="vulgate_order",
 	 *   type="integer",
 	 *   description="The standard book order for the `vulgate_order` in ascending order from Genesis onwards",
@@ -171,7 +172,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="lxx_order",
 	 *   type="integer",
 	 *   description="The standard book order for the `lxx_order` in ascending order from Genesis onwards",
@@ -186,7 +187,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="orthodox_order",
 	 *   type="integer",
 	 *   description="The standard book order for the `orthodox_order` in ascending order from Genesis onwards",
@@ -201,7 +202,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="nrsva_order",
 	 *   type="integer",
 	 *   description="The standard book order for the `nrsva_order` in ascending order from Genesis onwards",
@@ -216,7 +217,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="catholic_order",
 	 *   type="integer",
 	 *   description="The standard book order for the `catholic_order` in ascending order from Genesis onwards",
@@ -231,7 +232,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="finnish_order",
 	 *   type="integer",
 	 *   description="The standard book order for the `finnish_order` in ascending order from Genesis onwards",
@@ -246,7 +247,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="testament_order",
 	 *   type="integer",
 	 *   description="The standard book order within a testament in ascending order from Genesis to Malachi, and Matthew to Revelations",
@@ -261,7 +262,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="book_testament",
 	 *   type="string",
 	 *   description="A short code identifying the testament containing the book",
@@ -278,7 +279,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="book_group",
 	 *   type="string",
 	 *   description="An english name for the section of books that current book can be categorized in",
@@ -293,7 +294,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="chapters",
 	 *   type="integer",
 	 *   nullable=true,
@@ -308,7 +309,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="verses",
 	 *   type="integer",
 	 *   nullable=true,
@@ -323,7 +324,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description="The English name of the book"
@@ -337,7 +338,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="notes",
 	 *   type="string",
 	 *   description="Any archivist notes about the book"
@@ -351,7 +352,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="description",
 	 *   type="string",
 	 *   description="The book's description"
@@ -365,7 +366,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="created_at",
 	 *   type="string",
 	 *   description="The timestamp for the books creation"
@@ -379,7 +380,7 @@ class Book extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description="The timestamp for the last update of the book"

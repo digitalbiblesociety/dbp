@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Seeder;
 use App\Models\User\User;
+
+use Illuminate\Validation\Rule;
 class users_seeder extends Seeder
 {
     /**
@@ -11,86 +13,41 @@ class users_seeder extends Seeder
      */
     public function run()
     {
-	    \DB::table('user_keys')->delete();
-    	\DB::table('users')->delete();
+	    DB::statement("SET foreign_key_checks=0");
+	    User::truncate();
+	    DB::statement("SET foreign_key_checks=1");
 
-	    $user = new User();
-	    $user->id = $this->generateRandomString();
-	    $user->name = "admin";
-	    $user->email = "amdin@dbs.org";
-	    $user->password = Hash::make("2ch714");
-	    $user->save();
+	    $seederHelper = new \database\seeds\SeederHelper();
+	    ini_set('memory_limit', '2064M');
+	    set_time_limit(-1);
+	    $users = $seederHelper->csv_to_array(storage_path('data/users.csv'));
 
-	    $user = new User();
-	    $user->id = $this->generateRandomString();
-	    $user->name = "Test Build Bible.is";
-	    $user->save();
-
-	    $key = \App\Models\User\Key::create([
-	    	'key' => "e8a946a0-d9e2-11e7-bfa7-b1fb2d7f5824",
-		    'user_id' => $user->id
-	    ])->save();
-
-	    $user = new User();
-	    $user->id = $this->generateRandomString();
-	    $user->name = "Emijo J.";
-	    $user->email = "emily@dbs.org";
-	    $user->password = Hash::make("2ch714");
-	    $user->save();
-
-	    $user = new User();
-	    $user->id = $this->generateRandomString();
-	    $user->name = "Dalton M.";
-	    $user->email = "dalton@dbs.org";
-	    $user->password = Hash::make("2ch714");
-	    $user->save();
-
-	    $user = new User();
-	    $user->id = $this->generateRandomString();
-	    $user->name = "Basha L.";
-	    $user->email = "bishara@dbs.org";
-	    $user->password = Hash::make("2ch714");
-	    $user->save();
-
-	    $user = new User();
-	    $user->id = $this->generateRandomString();
-	    $user->name = "Nathan Daniels";
-	    $user->email = "nathan@dbs.org";
-	    $user->password = Hash::make("2ch714");
-	    $user->save();
-
-	    $user = new User();
-	    $user->id = $this->generateRandomString();
-	    $user->name = "Shannon Gale";
-	    $user->email = "shannon@dbs.org";
-	    $user->password = Hash::make("2ch714");
-	    $user->save();
-
-	    $user = new User();
-	    $user->id = $this->generateRandomString();
-	    $user->name = "Ken B.";
-	    $user->email = "ken@dbs.org";
-	    $user->password = Hash::make("2ch714");
-	    $user->save();
-
-	    $user = new User();
-	    $user->id = $this->generateRandomString();
-	    $user->name = "Rudolf K.";
-	    $user->email = "kurt@dbs.org";
-	    $user->password = Hash::make("2ch714");
-	    $user->save();
-
-	    $user = new User();
-	    $user->id = $this->generateRandomString();
-	    $user->name = "Anesse M.";
-	    $user->email = "aggie@dbs.org";
-	    $user->password = Hash::make("2ch714");
-	    $user->save();
+	    foreach($users as $user) {
+		    if($this->validUser($user)) {
+	    	    $currentUser = [
+	    	    	'id'                => $user['id'],
+				    //'username'          => $user['nickname'] ?? $user['email'],
+				    'password'          => 'needs_resetting',
+	    	    	'name'              => $user['name'],
+				    'token'             => str_random(64),
+				    'email'             => $user['email'],
+				    'activated'         => ($user['verified'] == NULL) ? false : true,
+		        ];
+		        User::create($currentUser);
+		    }
+	    }
     }
 
-	public function generateRandomString($length = 16)
-	{
-		return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
-	}
+    public function validUser($user)
+    {
+    	$verified_badEmails = ['samplefakeemail@mail.com','email','alfakeomega@gmail.com','angelafakes2918@gmail.com','anotherfake@mail.com','b.huffaker@americanexchange.com','blackfakenevo@hotmail.com','bola.fakeye@gmail.com','c8fake2@gmail.com','Dansfakeemail@yahoo.com','davidfakenge@gmail.com','davidpuh@emailfake.us','dorisfakeh@gmail.com','ela.rumfaker@gmail.com','eusoufakedealguem@gmail.com','facetofake@hotmail.fr','fake.laughing@gmail.com','fake.myles@hotmail.com','Fake@fake.com','fake@fakeemail.com','fake123@address.com','fakearney@yahoo.com','fakeeemail@mail.com','Fakeemail@fakeemail.com','fakeEmail@gmail.com','fakeemail@mail.com','fakeju64@yahoo.com','FAkemail@fakemail.com','fakemattjohn@gmail.com','faker2@email.com','fakerfaker561@gmail.com','fakerzahb@gmail.com','fakeslapper@gmail.com','gfakerdinova@gmail.com','Goldenfake2@gmail.com','hackeado-fake@hotmail.com','huffakern@gmail.com','latifakedjar@gmail.com','mackenzie_fake11@hotmail.com','mbfake789@gmail.com','mulletfake@gmail.com','nameisfake@fakename.fknm','nofakejake@aol.com','Oi.xau_fake@hotmail.com','priououd@fakeinbox.info','robert@fakeinbox.com','samplefakeemail@mail.com','sifakerich@gmail.com','sillyguy@fakeaddress.com','Skyiiisntfake@gmail.com','snadhelta@fake.com','Testemailfake@gmail.com','This.is.a@fake.email.com.net.edu.org.us','thisisfake@555.org','tom@fakeinbox.com','Ufake@hotmail.com','wrotreja@fakeinbox.com','yemisifakeye@yahoo.com'];
+		$verified_badNames = ['NULL', '.'];
+	    $validator = Validator::make($user, [
+		    'email' => ['required','unique:users,email','max:255','email',Rule::notIn($verified_badEmails)],
+		    'name'  => ['required','string',Rule::notIn($verified_badNames)]
+	    ]);
+	    if($validator->fails()) return false;
+		return true;
+    }
 
 }

@@ -9,17 +9,17 @@ use App\Models\Language\Language;
  * App\Models\Language\LanguageClassification
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Information regarding alternative language classification systems",
  *     title="Language Codes",
- *     @OAS\Xml(name="LanguageClassification")
+ *     @OA\Xml(name="LanguageClassification")
  * )
  *
  */
 class LanguageClassification extends Model
 {
-
+	protected $connection = 'dbp';
     protected $table = 'language_classifications';
     protected $fillable = ['language_id', 'classification_id', 'order', 'name'];
     protected $hidden = ['language_id','id'];
@@ -28,7 +28,7 @@ class LanguageClassification extends Model
 	/**
 	 *
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   description="Incrementing ID for the Language Classification",
 	 *   type="integer",
@@ -44,7 +44,7 @@ class LanguageClassification extends Model
 	/**
 	 *
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="language_id",
 	 *   description="The foreign key matching the incrementing language ID",
 	 *   type="integer",
@@ -60,7 +60,7 @@ class LanguageClassification extends Model
 	/**
 	 *
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="classification_id",
 	 *   description="The foreign key matching the incrementing language ID",
 	 *   type="integer",
@@ -76,7 +76,7 @@ class LanguageClassification extends Model
 	/**
 	 *
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="order",
 	 *   description="Creates an increasing level of specificity for the classification of the language dialect",
 	 *   type="integer",
@@ -91,7 +91,7 @@ class LanguageClassification extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   description="The name of the classification for the language",
 	 *   type="string",

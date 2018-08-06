@@ -9,11 +9,11 @@ use App\Models\Organization\Organization;
  * App\Models\User\Role
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The User's Role model",
  *     title="Role",
- *     @OAS\Xml(name="Role")
+ *     @OA\Xml(name="Role")
  * )
  *
  */
@@ -27,7 +27,7 @@ class Role extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/User/properties/id"))
+	 * @OA\Property(ref="#/components/schemas/User/properties/id"))
 	 *
 	 * @method static Role whereUserId($value)
 	 * @protected $user_id
@@ -35,7 +35,7 @@ class Role extends Model
 	protected $user_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="role",
 	 *   type="string",
 	 *   description="The user's role",
@@ -48,7 +48,7 @@ class Role extends Model
 	protected $role;
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Organization/properties/id"))
+	 * @OA\Property(ref="#/components/schemas/Organization/properties/id"))
 	 *
 	 * @method static Role whereOrganizationId($value)
 	 * @protected $organization_id
@@ -58,7 +58,7 @@ class Role extends Model
 	/**
 
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description="The timestamp the user was last updated at",

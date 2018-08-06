@@ -43,6 +43,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class JoshuaProject extends Model
 {
+	protected $connection = 'dbp';
     public $table = "country_joshua_project";
 
 	public function Country()

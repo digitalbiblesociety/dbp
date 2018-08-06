@@ -9,16 +9,17 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Bible Book Model stores the vernacular book titles and chapters",
  *     title="Bible Book",
- *     @OAS\Xml(name="BibleBook")
+ *     @OA\Xml(name="BibleBook")
  * )
  *
  */
 class BibleBook extends Model
 {
+	protected $connection = 'dbp';
     protected $table = "bible_books";
     public $incrementing = false;
     public $fillable = ['abbr','book_id', 'name', 'name_short', 'chapters'];
@@ -27,7 +28,7 @@ class BibleBook extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Bible/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Bible/properties/id")
 	 * @method static BibleFileset whereBibleId($value)
 	 * @property string $bible_id
 	 *
@@ -36,7 +37,7 @@ class BibleBook extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Book/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Book/properties/id")
 	 * @method static BibleFileset whereBookId($value)
 	 * @property string $book_id
 	 *
@@ -45,7 +46,7 @@ class BibleBook extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="name",
 	 *     description="The name of the book in the language of the bible",
 	 *     type="string",
@@ -60,7 +61,7 @@ class BibleBook extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="name_short",
 	 *     description="If the vernacular name has an abbreviated form, it will be stored hre",
 	 *     type="string",
@@ -75,7 +76,7 @@ class BibleBook extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="chapters",
 	 *     description="A string of the chapters in the book separated by a comma",
 	 *     type="string",

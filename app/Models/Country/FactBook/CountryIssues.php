@@ -7,29 +7,30 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Country\FactBook\CountryIssues
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="CountryIssues",
  *     title="CountryIssues",
- *     @OAS\Xml(name="CountryIssues")
+ *     @OA\Xml(name="CountryIssues")
  * )
  *
  * @mixin \Eloquent
  */
 class CountryIssues extends Model
 {
+	protected $connection = 'dbp';
 	public $incrementing = false;
 
 /**
  *
- * @OAS\Property(ref="#/components/schemas/Country/properties/id")
+ * @OA\Property(ref="#/components/schemas/Country/properties/id")
  * @static method CountryIssues whereCountryId($value)
  * @property string $country_id
  */
 protected $country_id;
 /**
  *
- * @OAS\Property(
+ * @OA\Property(
  *     title="international_disputes",
  *     description="",
  *     type="string"
@@ -41,7 +42,7 @@ protected $country_id;
 protected $international_disputes;
 /**
  *
- * @OAS\Property(
+ * @OA\Property(
  *     title="illicit_drugs",
  *     description="",
  *     type="string"
@@ -53,7 +54,7 @@ protected $international_disputes;
 protected $illicit_drugs;
 /**
  *
- * @OAS\Property(
+ * @OA\Property(
  *     title="refugees",
  *     description="",
  *     type="string"
@@ -65,7 +66,7 @@ protected $illicit_drugs;
 protected $refugees;
 /**
  *
- * @OAS\Property(
+ * @OA\Property(
  *     title="created_at",
  *     description="",
  *     type="string"
@@ -77,7 +78,7 @@ protected $refugees;
 protected $created_at;
 /**
  *
- * @OAS\Property(
+ * @OA\Property(
  *     title="updated_at",
  *     description="",
  *     type="string"

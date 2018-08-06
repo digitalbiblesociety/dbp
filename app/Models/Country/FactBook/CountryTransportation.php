@@ -7,31 +7,32 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Country\FactBook\CountryTransportation
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="CountryTransportation",
  *     title="CountryTransportation",
- *     @OAS\Xml(name="CountryTransportation")
+ *     @OA\Xml(name="CountryTransportation")
  * )
  *
  * @mixin \Eloquent
  */
 class CountryTransportation extends Model
 {
+	protected $connection = 'dbp';
 	public $incrementing = false;
 	public $table = "country_transportation";
 
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Country/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Country/properties/id")
 	 * @method static CountryTransportation whereCountryId($value)
 	 * @property string $country_id
 	 */
 	protected $country_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="air_carriers",
      *     description="National air transport system; number of registered air carriers",
      *     type="string"
@@ -43,7 +44,7 @@ class CountryTransportation extends Model
 	protected $air_carriers;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="aircraft",
      *     description="National air transport system; inventory of registered aircraft operated by air carriers",
      *     type="string"
@@ -55,7 +56,7 @@ class CountryTransportation extends Model
 	protected $aircraft;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="aircraft_passengers",
      *     description="annual passenger traffic on registered air carriers",
      *     type="string"
@@ -67,7 +68,7 @@ class CountryTransportation extends Model
 	protected $aircraft_passengers;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="aircraft_freight",
      *     description="annual freight traffic on registered air carriers",
      *     type="string"
@@ -79,7 +80,7 @@ class CountryTransportation extends Model
 	protected $aircraft_freight;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="aircraft_code_prefix",
      *     description="Civil aircraft registration country code prefix",
      *     type="string"
@@ -91,7 +92,7 @@ class CountryTransportation extends Model
 	protected $aircraft_code_prefix;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="airports",
      *     description="Airports",
      *     type="string"
@@ -103,7 +104,7 @@ class CountryTransportation extends Model
 	protected $airports;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="airports_paved",
      *     description="Airports - with paved runways; total",
      *     type="string"
@@ -115,7 +116,7 @@ class CountryTransportation extends Model
 	protected $airports_paved;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="airports_info_date",
      *     description="Airports; sub_field",
      *     type="string"
@@ -127,7 +128,7 @@ class CountryTransportation extends Model
 	protected $airports_info_date;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="major_seaports",
      *     description="Ports and terminals",
      *     type="string"
@@ -139,7 +140,7 @@ class CountryTransportation extends Model
 	protected $major_seaports;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="oil_terminals",
      *     description="oil terminal(s)",
      *     type="string"
@@ -151,7 +152,7 @@ class CountryTransportation extends Model
 	protected $oil_terminals;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="cruise_ports",
      *     description="cruise port(s)",
      *     type="string"

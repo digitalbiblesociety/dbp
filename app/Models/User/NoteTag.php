@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\User\NoteTag
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The NoteTag's model",
  *     title="NoteTag",
- *     @OAS\Xml(name="NoteTag")
+ *     @OA\Xml(name="NoteTag")
  * )
  *
  */
@@ -23,7 +23,7 @@ class NoteTag extends Model
 
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="id",
 	  *   type="integer",
 	  *   description="The unique incrementing id for each NoteTag",
@@ -37,7 +37,7 @@ class NoteTag extends Model
 
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="note_id",
 	  *   type="integer",
 	  *   description="The id for the note which the NoteTag is attached to",
@@ -51,7 +51,7 @@ class NoteTag extends Model
 
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="type",
 	  *   type="string",
 	  *   description="The type of tag that this NoteTag is categorized within."
@@ -64,7 +64,7 @@ class NoteTag extends Model
 
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="value",
 	  *   type="string",
 	  *   description="The value to the type of NoteTag for this note."
@@ -77,7 +77,7 @@ class NoteTag extends Model
 
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="created_at",
 	  *   type="string",
 	  *   description="The timestamp the NoteTag was first created at"
@@ -90,7 +90,7 @@ class NoteTag extends Model
 
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="updated_at",
 	  *   type="string",
 	  *   description="The timestamp the NoteTag was last updated"

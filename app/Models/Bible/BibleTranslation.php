@@ -38,22 +38,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $vernacular_trade
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereVernacularTrade($value)
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="BibleTranslation",
  *     title="BibleTranslation",
- *     @OAS\Xml(name="BibleTranslation")
+ *     @OA\Xml(name="BibleTranslation")
  * )
  *
  */
 class BibleTranslation extends Model
 {
-    protected $hidden = ["created_at","updated_at","bible_id","id","notes"];
+	protected $connection = 'dbp';
+    protected $hidden = ["created_at","updated_at","bible_id","id","notes","pivot","language"];
     protected $fillable = ['name','description','bible_id','iso'];
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="string",
 	 *   description=""
@@ -65,7 +66,7 @@ class BibleTranslation extends Model
 	protected $id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="iso",
 	 *   type="string",
 	 *   description=""
@@ -77,7 +78,7 @@ class BibleTranslation extends Model
 	protected $iso;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="iso",
 	 *   type="string",
 	 *   description=""
@@ -89,7 +90,7 @@ class BibleTranslation extends Model
 	protected $bible_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="bible_id",
 	 *   type="string",
 	 *   description=""
@@ -101,7 +102,7 @@ class BibleTranslation extends Model
 	protected $vernacular;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="bible_id",
 	 *   type="string",
 	 *   description=""
@@ -113,7 +114,7 @@ class BibleTranslation extends Model
 	protected $vernacular_trade;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="vernacular",
 	 *   type="string",
 	 *   description=""
@@ -125,7 +126,7 @@ class BibleTranslation extends Model
 	protected $name;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="vernacular_trade",
 	 *   type="string",
 	 *   description=""
@@ -137,7 +138,7 @@ class BibleTranslation extends Model
 	protected $type;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description=""
@@ -149,7 +150,7 @@ class BibleTranslation extends Model
 	protected $features;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="type",
 	 *   type="string",
 	 *   description=""
@@ -161,7 +162,7 @@ class BibleTranslation extends Model
 	protected $description;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="features",
 	 *   type="string",
 	 *   description=""

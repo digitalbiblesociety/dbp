@@ -10,22 +10,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Organization\Organization $organization
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Logo for the Organization",
  *     title="Organization Logo",
- *     @OAS\Xml(name="OrganizationLogo")
+ *     @OA\Xml(name="OrganizationLogo")
  * )
  *
  */
 class OrganizationLogo extends Model
 {
+	protected $connection = 'dbp';
 	protected $hidden = ['organization_id','created_at','updated_at'];
 	protected $primaryKey = 'organization_logos';
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="id",
 	 *     description="The Organization's id",
 	 *     type="integer",
@@ -39,7 +40,7 @@ class OrganizationLogo extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="language_iso",
 	 *     description="If the organization's logo contains words, this iso field indicates what language they are.",
 	 *     type="string",
@@ -56,7 +57,7 @@ class OrganizationLogo extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="url",
 	 *     description="The url to this organization's logo",
 	 *     type="string",
@@ -70,7 +71,7 @@ class OrganizationLogo extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="url",
 	 *     description="If true the url is pointed at a logo suitable for use as an icon",
 	 *     type="boolean"

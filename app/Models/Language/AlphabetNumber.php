@@ -10,16 +10,17 @@ use \Illuminate\Database\Eloquent\Builder;
  *
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Alphabet Number",
  *     title="Alphabet Number",
- *     @OAS\Xml(name="AlphabetNumber")
+ *     @OA\Xml(name="AlphabetNumber")
  * )
  *
  */
 class AlphabetNumber extends Model
 {
+	protected $connection = 'dbp';
     protected $table = "alphabet_numbers";
     protected $hidden = ["created_at","updated_at","id"];
     protected $fillable = [
@@ -40,7 +41,7 @@ class AlphabetNumber extends Model
 	 * @property string id
 	 * @method static Builder|AlphabetNumber whereId($value)
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Incrementing Alphabet Number Id",
 	 *     description="The url to the font file",
 	 *     type="string",
@@ -53,7 +54,7 @@ class AlphabetNumber extends Model
 	 * @property string script_id
 	 * @method static  AlphabetNumber whereScriptId($value)
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Alphabet Script Id",
 	 *     description="The url to the font file",
 	 *     type="string",
@@ -66,7 +67,7 @@ class AlphabetNumber extends Model
 	 * @property string iso
 	 * @method static Builder|AlphabetNumber whereIso($value)
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Alphabet Script Variant Iso",
 	 *     description="The url to the font file",
 	 *     type="string",
@@ -79,7 +80,7 @@ class AlphabetNumber extends Model
 	 * @property string numeral
 	 * @method static Builder|AlphabetNumber whereNumeral($value)
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Alphabet Numeral",
 	 *     description="The url to the font file",
 	 *     type="integer"
@@ -91,7 +92,7 @@ class AlphabetNumber extends Model
 	 * @property string numeral_vernacular
 	 * @method static Builder|AlphabetNumber whereNumeralVernacular($value)
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Alphabet Numeral Vernacular",
 	 *     description="The numeral written out the vernacular translations",
 	 *     type="string",
@@ -104,7 +105,7 @@ class AlphabetNumber extends Model
 	 * @property string numeral_written
 	 * @method static Builder|AlphabetNumber whereNumeralWritten($value)
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Alphabet Numeral Written",
 	 *     description="The word for the numeral written out within the vernacular of the language",
 	 *     type="string",

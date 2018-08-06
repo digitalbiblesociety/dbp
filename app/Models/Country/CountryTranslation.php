@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CountryTranslation extends Model
 {
+	protected $connection = 'dbp';
     protected $table = 'country_translations';
     protected $hidden = ["country_id","vernacular"];
     public $timestamps = false;

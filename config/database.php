@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('DBP_CONNECTION', 'dbp'),
+    'default' => env('DB_CONNECTION', 'dbp_users'),
 
     /*
     |--------------------------------------------------------------------------
@@ -33,11 +33,39 @@ return [
 
     'connections' => [
 
+	    'mysql' => [
+		    'driver'    => 'mysql',
+		    'host'      => env('DBP_USERS_HOST', '127.0.0.1'),
+		    'port'      => env('DBP_USERS_PORT', '3306'),
+		    'database'  => env('DBP_USERS_DATABASE', 'forge'),
+		    'username'  => env('DBP_USERS_USERNAME', 'forge'),
+		    'password'  => env('DBP_USERS_PASSWORD', ''),
+		    'charset'   => 'utf8mb4',
+		    'collation' => 'utf8mb4_unicode_ci',
+		    'prefix'    => '',
+		    'strict'    => true,
+		    'engine'    => null,
+	    ],
+
+        'dbp_users' => [
+            'driver'    => 'mysql',
+            'host'      => env('DBP_USERS_HOST', '127.0.0.1'),
+            'port'      => env('DBP_USERS_PORT', '3306'),
+            'database'  => env('DBP_USERS_DATABASE', 'forge'),
+            'username'  => env('DBP_USERS_USERNAME', 'forge'),
+            'password'  => env('DBP_USERS_PASSWORD', ''),
+            'charset'   => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix'    => '',
+            'strict'    => true,
+            'engine'    => null,
+        ],
+
         'dbp' => [
 	        'driver' => 'mysql',
 	        'host' => env('DBP_HOST', '127.0.0.1'),
 	        'port' => env('DBP_PORT', '3306'),
-	        'database' => env('DBP_DATABASE', 'dbp'),
+	        'database' => env('DBP_DATABASE', 'dbp_staging'),
 	        'username' => env('DBP_USERNAME', 'forge'),
 	        'password' => env('DBP_PASSWORD', ''),
 	        'unix_socket' => env('DBP_SOCKET', ''),
@@ -93,9 +121,9 @@ return [
         'client' => 'predis',
 
         'default' => [
-            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'host'     => env('REDIS_HOST', '127.0.0.1'),
             'password' => env('REDIS_PASSWORD', null),
-            'port' => env('REDIS_PORT', 6379),
+            'port'     => env('REDIS_PORT', 6379),
             'database' => 0,
         ],
 

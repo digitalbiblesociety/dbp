@@ -10,16 +10,18 @@
     {{ $slot }}
 
     {{-- Subcopy --}}
-    @isset($subcopy)
+    @if (isset($subcopy))
         @slot('subcopy')
-            @component('mail::subcopy') {{ $subcopy }} @endcomponent
+            @component('mail::subcopy')
+                {{ $subcopy }}
+            @endcomponent
         @endslot
-    @endisset
+    @endif
 
     {{-- Footer --}}
     @slot('footer')
         @component('mail::footer')
-            Digital Bible Platform<br> <a href="">Edit Email Preferences</a>
+            &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
         @endcomponent
     @endslot
 @endcomponent

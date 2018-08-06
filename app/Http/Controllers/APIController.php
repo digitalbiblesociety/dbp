@@ -2,81 +2,74 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\send_api_logs;
-use App\Models\Language\Language;
-use App\Transformers\EmbeddedArraySerializer;
-use Illuminate\Http\Request;
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\URL;
-use SoapBox\Formatter\Formatter;
-use App\Models\User\User;
-use App\Models\User\Key;
-use i18n;
-use League\Fractal\Serializer\DataArraySerializer;
-use \Spatie\Fractalistic\ArraySerializer;
-use Spatie\ArrayToXml\ArrayToXml;
+use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\Log;
+use App\Models\Language\Language;
+use App\Models\User\Key;
+
+use SoapBox\Formatter\Formatter;
+use League\Fractal\Serializer\DataArraySerializer;
+
+use Spatie\Fractalistic\ArraySerializer;
+use Spatie\ArrayToXml\ArrayToXml;
 
 class APIController extends Controller
 {
-
 	// Top Level Swagger Docs
 
 	/**
-	 * @OAS\Info(
+	 * @OA\Info(
 	 *     description="A Bible API",
 	 *     version="4.0.0",
 	 *     title="Digital Bible Platform",
 	 *     termsOfService="http://bible.build/terms/",
-	 *     @OAS\Contact(email="jon@dbs.org"),
-	 *     @OAS\License(name="Apache 2.0",url="http://www.apache.org/licenses/LICENSE-2.0.html")
+	 *     @OA\Contact(email="jon@dbs.org"),
+	 *     @OA\License(name="Apache 2.0",url="http://www.apache.org/licenses/LICENSE-2.0.html")
 	 * )
 	 *
-	 * @OAS\Server(
+	 * @OA\Server(
 	 *     url="https://api.bible.build",
 	 *     description="Live Server",
-	 *     @OAS\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
+	 *     @OA\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
 	 * )
 	 *
-	 * @OAS\Server(
+	 * @OA\Server(
 	 *     url="https://api.dbp.localhost",
 	 *     description="Development server",
-	 *     @OAS\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
+	 *     @OA\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
 	 * )
 	 *
-	 * @OAS\Parameter(parameter="version_number",name="v",in="query",description="The Version Number",required=true,@OAS\Schema(type="integer",enum={2,4},example=4))
-	 * @OAS\Parameter(parameter="key",name="key",in="query",description="The Key granted to the api user upon sign up",required=true,@OAS\Schema(type="string",example="ar45g3h4ae644"))
-	 * @OAS\Parameter(parameter="pretty",name="pretty",in="query",description="Setting this param to true will add human readable whitespace to the return",@OAS\Schema(type="boolean"))
-	 * @OAS\Parameter(parameter="format",name="format",in="query",description="Setting this param to true will add format the return as a specific file type. The currently supported return types are `xml`, `csv`, `json`, and `yaml`",@OAS\Schema(type="string",enum={"xml","csv","json","yaml"}))
-	 * @OAS\Parameter(name="sort_by", in="query", description="The field to sort by", @OAS\Schema(type="string"))
-	 * @OAS\Parameter(name="sort_dir", in="query", description="The direction to sort by", @OAS\Schema(type="string",enum={"asc","desc"}))
-	 * @OAS\Parameter(name="l10n", in="query", description="When set to a valid three letter language iso, the returning results will be localized in the language matching that iso. (If an applicable translation exists).", @OAS\Schema(ref="#/components/schemas/Language/properties/iso")),
+	 * @OA\Parameter(parameter="version_number",name="v",in="query",description="The Version Number",required=true,@OA\Schema(type="integer",enum={2,4},example=4))
+	 * @OA\Parameter(parameter="key",name="key",in="query",description="The Key granted to the api user upon sign up",required=true,@OA\Schema(type="string",example="ar45g3h4ae644"))
+	 * @OA\Parameter(parameter="pretty",name="pretty",in="query",description="Setting this param to true will add human readable whitespace to the return",@OA\Schema(type="boolean"))
+	 * @OA\Parameter(parameter="format",name="format",in="query",description="Setting this param to true will add format the return as a specific file type. The currently supported return types are `xml`, `csv`, `json`, and `yaml`",@OA\Schema(type="string",enum={"xml","csv","json","yaml"}))
+	 * @OA\Parameter(name="sort_by", in="query", description="The field to sort by", @OA\Schema(type="string"))
+	 * @OA\Parameter(name="sort_dir", in="query", description="The direction to sort by", @OA\Schema(type="string",enum={"asc","desc"}))
+	 * @OA\Parameter(name="l10n", in="query", description="When set to a valid three letter language iso, the returning results will be localized in the language matching that iso. (If an applicable translation exists).", @OA\Schema(ref="#/components/schemas/Language/properties/iso")),
 	 *
 	 */
 
 	/**
 	 * Version 2 Tags
 	 *
-	 * @OAS\Tag(name="Library Audio",    description="v2 These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume.")
-	 * @OAS\Tag(name="Library Catalog",  description="v2 These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume.")
-	 * @OAS\Tag(name="Library Text",     description="v2 These methods allow the caller to retrieve Bible text in a variety of configurations.")
-	 * @OAS\Tag(name="Library Video",    description="v2 These calls address the information needed to build and retrieve video information for each volume.")
-	 * @OAS\Tag(name="Country Language", description="v2 These calls provide all information pertaining to country languages.")
-	 * @OAS\Tag(name="Study Programs",   description="v2 These calls provide all information pertaining to Bible study programs.")
-	 * @OAS\Tag(name="API",              description="v2 These calls provide basic information regarding API specifics.")
+	 * @OA\Tag(name="Library Audio",    description="v2 These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume.")
+	 * @OA\Tag(name="Library Catalog",  description="v2 These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume.")
+	 * @OA\Tag(name="Library Text",     description="v2 These methods allow the caller to retrieve Bible text in a variety of configurations.")
+	 * @OA\Tag(name="Library Video",    description="v2 These calls address the information needed to build and retrieve video information for each volume.")
+	 * @OA\Tag(name="Country Language", description="v2 These calls provide all information pertaining to country languages.")
+	 * @OA\Tag(name="Study Programs",   description="v2 These calls provide all information pertaining to Bible study programs.")
+	 * @OA\Tag(name="API",              description="v2 These calls provide basic information regarding API specifics.")
 	 *
 	 */
 
 	/**
 	 * Version 4 Tags
 	 *
-	 * @OAS\Tag(name="Languages",       description="v4 ")
-	 * @OAS\Tag(name="Countries",       description="v4 ")
-	 * @OAS\Tag(name="Bibles",          description="v4 ")
-	 * @OAS\Tag(name="Users",           description="v4 ")
+	 * @OA\Tag(name="Languages",       description="v4 ")
+	 * @OA\Tag(name="Countries",       description="v4 ")
+	 * @OA\Tag(name="Bibles",          description="v4 ")
+	 * @OA\Tag(name="Users",           description="v4 ")
 	 *
 	 */
 
@@ -101,13 +94,13 @@ class APIController extends Controller
 			$this->api = true;
 			$this->v   = checkParam('v');
 			$this->key = checkParam('key');
-			$keyExists = Key::find($this->key);
+			$keyExists = Key::where('key',$this->key)->select('key')->first();
 			if (!isset($keyExists)) abort(403, "You need to provide a valid API key");
 
 			// i18n
 			$i18n = checkParam('i18n',null,'optional') ?? 'eng';
 			$GLOBALS['i18n_iso'] = $i18n;
-			$GLOBALS['i18n_id'] = Language::where('iso',$i18n)->select('iso','id')->first()->id;
+			$GLOBALS['i18n_id'] = Language::where('iso',$i18n)->select('iso','id')->first()->id ?? '';
 
 			if (isset($this->v)) {
 				switch ($this->v) {
@@ -124,7 +117,6 @@ class APIController extends Controller
 				}
 			}
 		}
-		//$this->middleware('auth')->only(['create','edit']);
 	}
 
 	/**
@@ -225,16 +217,10 @@ class APIController extends Controller
 	public function replyWithError($message)
 	{
 		$status = $this->getStatusCode();
-
-		//\Log::error([$message, $status]);
 		sendLogsToS3($this->request, $status);
 
-		if (!$this->api AND !isset($status)) {
-			return view('errors.broken', compact('message'));
-		}
-		if (!$this->api) {
-			return view("errors.$status", compact('message', 'status'));
-		}
+		if ((!$this->api AND !isset($status)) OR isset($_GET['local'])) redirect()->route('error')->with(['message' => $message, 'status' => $status]);
+		if (!$this->api OR isset($_GET['local'])) return redirect()->route("errors.$status", compact('message'))->with(['message' => $message]);
 		$faces = ['⤜(ʘ_ʘ)⤏', '¯\_ツ_/¯', 'ᗒ ͟ʖᗕ', 'ᖗ´• ꔢ •`ᖘ', '|▰╭╮▰|'];
 
 

@@ -13,22 +13,22 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\VideoTranslation[] $translations
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Video model holds information about biblical films. It serves as a wrapper for all Video{Value} Models including VideoTags and VideoTranslations.",
  *     title="VideoTranslations",
- *     @OAS\Xml(name="VideoTranslations")
+ *     @OA\Xml(name="VideoTranslations")
  * )
  *
  */
 class Video extends Model
 {
-
+	protected $connection = 'dbp';
 	protected $table = "videos";
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="string",
 	 *   description=""
@@ -41,7 +41,7 @@ class Video extends Model
 	protected $id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="language_id",
 	 *   type="string",
 	 *   description=""
@@ -54,7 +54,7 @@ class Video extends Model
 	protected $language_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="bible_id",
 	 *   type="string",
 	 *   description=""
@@ -67,7 +67,7 @@ class Video extends Model
 	protected $bible_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="series",
 	 *   type="string",
 	 *   description=""
@@ -80,7 +80,7 @@ class Video extends Model
 	protected $series;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="episode",
 	 *   type="string",
 	 *   description=""
@@ -93,7 +93,7 @@ class Video extends Model
 	protected $episode;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="section",
 	 *   type="string",
 	 *   description=""
@@ -106,7 +106,7 @@ class Video extends Model
 	protected $section;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="url",
 	 *   type="string",
 	 *   description=""
@@ -119,7 +119,7 @@ class Video extends Model
 	protected $url;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="url_download",
 	 *   type="string",
 	 *   description=""
@@ -132,7 +132,7 @@ class Video extends Model
 	protected $url_download;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="picture",
 	 *   type="string",
 	 *   description=""
@@ -145,7 +145,7 @@ class Video extends Model
 	protected $picture;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="duration",
 	 *   type="string",
 	 *   description=""
@@ -158,7 +158,7 @@ class Video extends Model
 	protected $duration;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="created_at",
 	 *   type="string",
 	 *   description=""
@@ -171,7 +171,7 @@ class Video extends Model
 	protected $created_at;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description=""

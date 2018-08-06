@@ -22,17 +22,17 @@ class BookTransformer extends BaseTransformer
 		     * @see https://dbt.io/library/bookorder?key=111a125057abd2f8931f6d6ad9f2921f&dam_id=ENGESVN1ET&v=2
 		     * @see https://api.dbp.localhost/library/bookorder?key=1234&v=2&dam_id=ENGESV
 		     *
-		     * @OAS\Schema (
+		     * @OA\Schema (
 		     *	type="array",
 		     *	schema="v2_library_bookOrder",
 		     *	description="The book return",
 		     *	title="v2_library_bookOrder",
-		     *	@OAS\Xml(name="v2_library_bookOrder"),
-		     *	@OAS\Items(
-		     *          @OAS\Property(property="dam_id_root", description="Seven character DAM ID used to define a book order", @OAS\Schema(type="string"),
-		     *          @OAS\Property(property="book_id",               ref="#/components/schemas/Book/properties/id"),
-		     *          @OAS\Property(property="book_name",             ref="#/components/schemas/Book/properties/name"),
-		     *          @OAS\Property(property="book_order",            ref="#/components/schemas/Book/properties/protestant_order")
+		     *	@OA\Xml(name="v2_library_bookOrder"),
+		     *	@OA\Items(
+		     *          @OA\Property(property="dam_id_root", description="Seven character DAM ID used to define a book order", @OA\Schema(type="string"),
+		     *          @OA\Property(property="book_id",               ref="#/components/schemas/Book/properties/id"),
+		     *          @OA\Property(property="book_name",             ref="#/components/schemas/Book/properties/name"),
+		     *          @OA\Property(property="book_order",            ref="#/components/schemas/Book/properties/protestant_order")
 		     *     )
 		     *   )
 		     * )
@@ -52,19 +52,19 @@ class BookTransformer extends BaseTransformer
 		     * @see https://dbt.io/library/book?key=111a125057abd2f8931f6d6ad9f2921f&v=2&dam_id=ENGESVN1ET
 		     * @see https://api.dbp.localhost/library/book?key=1234&pretty&v=2&dam_id=ENGESVN1ET
 		     *
-		     * @OAS\Schema (
+		     * @OA\Schema (
 		     *	type="array",
 		     *	schema="v2_library_book",
 		     *	description="The book return",
 		     *	title="v2_library_book",
-		     *	@OAS\Xml(name="v2_library_book"),
-		     *	@OAS\Items(
-		     *          @OAS\Property(property="dam_id",                ref="#/components/schemas/Bible/properties/id"),
-		     *          @OAS\Property(property="book_id",               ref="#/components/schemas/Book/properties/id"),
-		     *          @OAS\Property(property="book_name",             ref="#/components/schemas/Book/properties/name"),
-		     *          @OAS\Property(property="book_order",            ref="#/components/schemas/Book/properties/protestant_order"),
-		     *          @OAS\Property(property="number_of_chapters",    ref="#/components/schemas/Book/properties/chapters"),
-		     *          @OAS\Property(property="chapters",              ref="#/components/schemas/Book/properties/chapters"),
+		     *	@OA\Xml(name="v2_library_book"),
+		     *	@OA\Items(
+		     *          @OA\Property(property="dam_id",                ref="#/components/schemas/Bible/properties/id"),
+		     *          @OA\Property(property="book_id",               ref="#/components/schemas/Book/properties/id"),
+		     *          @OA\Property(property="book_name",             ref="#/components/schemas/Book/properties/name"),
+		     *          @OA\Property(property="book_order",            ref="#/components/schemas/Book/properties/protestant_order"),
+		     *          @OA\Property(property="number_of_chapters",    ref="#/components/schemas/Book/properties/chapters"),
+		     *          @OA\Property(property="chapters",              ref="#/components/schemas/Book/properties/chapters"),
 		     *     )
 		     *   )
 		     * )
@@ -87,18 +87,18 @@ class BookTransformer extends BaseTransformer
 		     * @see https://dbt.io/library/book?key=111a125057abd2f8931f6d6ad9f2921f&v=2&dam_id=ENGESVN1ET
 		     * @see https://api.dbp.localhost/library/book?key=1234&pretty&v=2&dam_id=ENGESVN1ET
 		     *
-		     * @OAS\Schema (
+		     * @OA\Schema (
 		     *	type="array",
 		     *	schema="v2_library_chapter",
 		     *	description="The book return",
 		     *	title="v2_library_chapter",
-		     *	@OAS\Xml(name="v2_library_chapter"),
-		     *	@OAS\Items(
-		     *          @OAS\Property(property="dam_id",                ref="#/components/schemas/Bible/properties/id"),
-		     *          @OAS\Property(property="book_id",               ref="#/components/schemas/Book/properties/id"),
-		     *          @OAS\Property(property="chapter_id",            ref="#/components/schemas/Book/properties/chapter_id"),
-		     *          @OAS\Property(property="chapter_name",          ref="#/components/schemas/Book/properties/chapter_name"),
-		     *          @OAS\Property(property="default",               @OAS\Schema(type="string")),
+		     *	@OA\Xml(name="v2_library_chapter"),
+		     *	@OA\Items(
+		     *          @OA\Property(property="dam_id",                ref="#/components/schemas/Bible/properties/id"),
+		     *          @OA\Property(property="book_id",               ref="#/components/schemas/Book/properties/id"),
+		     *          @OA\Property(property="chapter_id",            ref="#/components/schemas/BibleFile/properties/chapter_start"),
+		     *          @OA\Property(property="chapter_name",          ref="#/components/schemas/BibleFile/properties/chapter_start"),
+		     *          @OA\Property(property="default",               @OA\Schema(type="string")),
 		     *     )
 		     *   )
 		     * )

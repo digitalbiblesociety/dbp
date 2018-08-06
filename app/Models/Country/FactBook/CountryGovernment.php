@@ -7,30 +7,31 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Country\FactBook\CountryGovernment
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="CountryGovernment",
  *     title="CountryGovernment",
- *     @OAS\Xml(name="CountryGovernment")
+ *     @OA\Xml(name="CountryGovernment")
  * )
  *
  * @mixin \Eloquent
  */
 class CountryGovernment extends Model
 {
+	protected $connection = 'dbp';
 	public $incrementing = false;
 	public $table = "country_government";
 
  /**
   *
-  * @OAS\Property(ref="#/components/schemas/Country/properties/id")
+  * @OA\Property(ref="#/components/schemas/Country/properties/id")
   * @method static CountryGovernment whereCountryId($value)
   * @property string $country_id
   */
  protected $country_id;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="name",
  *     description="",
  *     type="string"
@@ -42,7 +43,7 @@ class CountryGovernment extends Model
  protected $name;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="name_etymology",
  *     description="",
  *     type="string"
@@ -54,7 +55,7 @@ class CountryGovernment extends Model
  protected $name_etymology;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="conventional_long_form",
  *     description="",
  *     type="string"
@@ -66,7 +67,7 @@ class CountryGovernment extends Model
  protected $conventional_long_form;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="conventional_short_form",
  *     description="",
  *     type="string"
@@ -78,7 +79,7 @@ class CountryGovernment extends Model
  protected $conventional_short_form;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="dependency_status",
  *     description="",
  *     type="string"
@@ -90,7 +91,7 @@ class CountryGovernment extends Model
  protected $dependency_status;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="government_type",
  *     description="",
  *     type="string"
@@ -102,7 +103,7 @@ class CountryGovernment extends Model
  protected $government_type;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="capital",
  *     description="",
  *     type="string"
@@ -114,7 +115,7 @@ class CountryGovernment extends Model
  protected $capital;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="capital_coordinates",
  *     description="",
  *     type="string"
@@ -126,7 +127,7 @@ class CountryGovernment extends Model
  protected $capital_coordinates;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="capital_time_zone",
  *     description="",
  *     type="string"
@@ -138,7 +139,7 @@ class CountryGovernment extends Model
  protected $capital_time_zone;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="administrative_divisions",
  *     description="",
  *     type="string"
@@ -150,7 +151,7 @@ class CountryGovernment extends Model
  protected $administrative_divisions;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="administrative_divisions_note",
  *     description="",
  *     type="string"
@@ -162,7 +163,7 @@ class CountryGovernment extends Model
  protected $administrative_divisions_note;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="independence",
  *     description="",
  *     type="string"
@@ -174,7 +175,7 @@ class CountryGovernment extends Model
  protected $independence;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="national_holiday",
  *     description="",
  *     type="string"
@@ -186,7 +187,7 @@ class CountryGovernment extends Model
  protected $national_holiday;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="constitution",
  *     description="",
  *     type="string"
@@ -198,7 +199,7 @@ class CountryGovernment extends Model
  protected $constitution;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legal_system",
  *     description="",
  *     type="string"
@@ -210,7 +211,7 @@ class CountryGovernment extends Model
  protected $legal_system;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="citizenship",
  *     description="",
  *     type="string"
@@ -222,7 +223,7 @@ class CountryGovernment extends Model
  protected $citizenship;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="suffrage",
  *     description="",
  *     type="string"
@@ -234,7 +235,7 @@ class CountryGovernment extends Model
  protected $suffrage;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="executive_chief_of_state",
  *     description="",
  *     type="string"
@@ -246,7 +247,7 @@ class CountryGovernment extends Model
  protected $executive_chief_of_state;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="executive_head_of_government",
  *     description="",
  *     type="string"
@@ -258,7 +259,7 @@ class CountryGovernment extends Model
  protected $executive_head_of_government;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="executive_cabinet",
  *     description="",
  *     type="string"
@@ -270,7 +271,7 @@ class CountryGovernment extends Model
  protected $executive_cabinet;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="executive_elections",
  *     description="",
  *     type="string"
@@ -282,7 +283,7 @@ class CountryGovernment extends Model
  protected $executive_elections;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="executive_election_results",
  *     description="",
  *     type="string"
@@ -294,7 +295,7 @@ class CountryGovernment extends Model
  protected $executive_election_results;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legislative_description",
  *     description="",
  *     type="string"
@@ -306,7 +307,7 @@ class CountryGovernment extends Model
  protected $legislative_description;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legislative_elections",
  *     description="",
  *     type="string"
@@ -318,7 +319,7 @@ class CountryGovernment extends Model
  protected $legislative_elections;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legislative_election_results",
  *     description="",
  *     type="string"
@@ -330,7 +331,7 @@ class CountryGovernment extends Model
  protected $legislative_election_results;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legislative_highest_courts",
  *     description="",
  *     type="string"
@@ -342,7 +343,7 @@ class CountryGovernment extends Model
  protected $legislative_highest_courts;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legislative_judge_selection",
  *     description="",
  *     type="string"
@@ -354,7 +355,7 @@ class CountryGovernment extends Model
  protected $legislative_judge_selection;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legislative_subordinate_courts",
  *     description="",
  *     type="string"
@@ -366,7 +367,7 @@ class CountryGovernment extends Model
  protected $legislative_subordinate_courts;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="political_parties",
  *     description="",
  *     type="string"
@@ -378,7 +379,7 @@ class CountryGovernment extends Model
  protected $political_parties;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="political_pressure",
  *     description="",
  *     type="string"
@@ -390,7 +391,7 @@ class CountryGovernment extends Model
  protected $political_pressure;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="international_organization_participation",
  *     description="",
  *     type="string"
@@ -402,7 +403,7 @@ class CountryGovernment extends Model
  protected $international_organization_participation;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="diplomatic_representation_in_usa",
  *     description="",
  *     type="string"
@@ -414,7 +415,7 @@ class CountryGovernment extends Model
  protected $diplomatic_representation_in_usa;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="diplomatic_representation_from_usa",
  *     description="",
  *     type="string"
@@ -426,7 +427,7 @@ class CountryGovernment extends Model
  protected $diplomatic_representation_from_usa;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="flag_description",
  *     description="",
  *     type="string"
@@ -438,7 +439,7 @@ class CountryGovernment extends Model
  protected $flag_description;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="national_symbols",
  *     description="",
  *     type="string"
@@ -450,7 +451,7 @@ class CountryGovernment extends Model
  protected $national_symbols;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="national_anthem",
  *     description="",
  *     type="string"
@@ -462,7 +463,7 @@ class CountryGovernment extends Model
  protected $national_anthem;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="created_at",
  *     description="",
  *     type="string"
@@ -474,7 +475,7 @@ class CountryGovernment extends Model
  protected $created_at;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="updated_at",
  *     description="",
  *     type="string"

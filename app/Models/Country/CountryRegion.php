@@ -9,22 +9,23 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Country Region",
  *     title="Country Region",
- *     @OAS\Xml(name="CountryRegion")
+ *     @OA\Xml(name="CountryRegion")
  * )
  *
  */
 class CountryRegion extends Model
 {
+	protected $connection = 'dbp';
 	protected $table = 'country_regions';
 	public $timestamps = false;
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="country_id",
 	 *   type="string",
 	 *   description="The ID of the ",

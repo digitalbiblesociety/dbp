@@ -23,14 +23,14 @@ class AudioTransformer extends BaseTransformer
 		switch($this->route) {
 
 			/**
-			 * @OAS\Schema (
+			 * @OA\Schema (
 			*	type="array",
 			*	schema="v2_audio_timestamps",
 			*	description="The v2_audio_timestamps response",
 			*	title="v2_audio_timestamps",
-			*	@OAS\Xml(name="v2_audio_timestamps"),
-			*	@OAS\Items(              @OAS\Property(property="verse_id",             ref="#/components/schemas/BibleFile/properties/verse_start"),
-			 *              @OAS\Property(property="verse_start",          @OAS\Schema(type="string",example="1",description="The duration of the timestamp in seconds"))
+			*	@OA\Xml(name="v2_audio_timestamps"),
+			*	@OA\Items(              @OA\Property(property="verse_id",             ref="#/components/schemas/BibleFile/properties/verse_start"),
+			 *              @OA\Property(property="verse_start",          @OA\Schema(type="string",example="1",description="The duration of the timestamp in seconds"))
 			 *     )
 			 *   )
 			 * )
@@ -43,15 +43,15 @@ class AudioTransformer extends BaseTransformer
 			}
 
 			/**
-			 * @OAS\Schema (
+			 * @OA\Schema (
 			*	type="array",
 			*	schema="v2_audio_path",
 			*	description="The audio_path",
 			*	title="v2_audio_path",
-			*	@OAS\Xml(name="v2_audio_path"),
-			*	@OAS\Items(              @OAS\Property(property="book_id",       ref="#/components/schemas/Book/properties/id_osis"),
-			 *              @OAS\Property(property="chapter_id",    ref="#/components/schemas/BibleFile/properties/chapter_start"),
-			 *              @OAS\Property(property="path",          @OAS\Schema(type="string"))
+			*	@OA\Xml(name="v2_audio_path"),
+			*	@OA\Items(              @OA\Property(property="book_id",       ref="#/components/schemas/Book/properties/id_osis"),
+			 *              @OA\Property(property="chapter_id",    ref="#/components/schemas/BibleFile/properties/chapter_start"),
+			 *              @OA\Property(property="path",          @OA\Schema(type="string"))
 			 *     )
 			 *   )
 			 * )
@@ -69,20 +69,20 @@ class AudioTransformer extends BaseTransformer
 
 	public function transformForV4($audio) {
 		/**
-		 * @OAS\Schema (
+		 * @OA\Schema (
 			*	type="array",
 			*	schema="v4_timestamps_tag",
 			*	description="The v4 timestamps tag",
 			*	title="v4_timestamps_tag",
-			*	@OAS\Xml(name="v4_timestamps_tag"),
-			*	@OAS\Items(              @OAS\Property(property="book_id",       ref="#/components/schemas/Book/properties/id"),
-		 *              @OAS\Property(property="book_name",     ref="#/components/schemas/Book/properties/name"),
-		 *              @OAS\Property(property="chapter_start", ref="#/components/schemas/BibleFile/properties/chapter_start"),
-		 *              @OAS\Property(property="chapter_end",   ref="#/components/schemas/BibleFile/properties/chapter_end"),
-		 *              @OAS\Property(property="verse_start",   ref="#/components/schemas/BibleFile/properties/verse_start"),
-		 *              @OAS\Property(property="verse_end",     ref="#/components/schemas/BibleFile/properties/verse_end"),
-		 *              @OAS\Property(property="timestamp",     ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
-		 *              @OAS\Property(property="path",          ref="#/components/schemas/BibleFile/properties/file_name")
+			*	@OA\Xml(name="v4_timestamps_tag"),
+			*	@OA\Items(              @OA\Property(property="book_id",       ref="#/components/schemas/Book/properties/id"),
+		 *              @OA\Property(property="book_name",     ref="#/components/schemas/Book/properties/name"),
+		 *              @OA\Property(property="chapter_start", ref="#/components/schemas/BibleFile/properties/chapter_start"),
+		 *              @OA\Property(property="chapter_end",   ref="#/components/schemas/BibleFile/properties/chapter_end"),
+		 *              @OA\Property(property="verse_start",   ref="#/components/schemas/BibleFile/properties/verse_start"),
+		 *              @OA\Property(property="verse_end",     ref="#/components/schemas/BibleFile/properties/verse_end"),
+		 *              @OA\Property(property="timestamp",     ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
+		 *              @OA\Property(property="path",          ref="#/components/schemas/BibleFile/properties/file_name")
 		 *     )
 		 *   )
 		 * )

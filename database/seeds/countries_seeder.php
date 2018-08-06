@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use \database\seeds\SeederHelper;
 use App\Models\Country\Country;
 use App\Models\Country\CountryLanguage;
+
 class countries_seeder extends Seeder
 {
     /**

@@ -9,22 +9,23 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Information regarding language translations",
  *     title="Language Translation",
- *     @OAS\Xml(name="LanguageTranslation")
+ *     @OA\Xml(name="LanguageTranslation")
  * )
  *
  */
 class LanguageTranslation extends Model
 {
+	protected $connection = 'dbp';
     protected $hidden = ["language_source_id","created_at","updated_at","priority","description","id"];
     protected $table = 'language_translations';
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The incrementing id of the language",
@@ -37,7 +38,7 @@ class LanguageTranslation extends Model
     protected $id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="language_source_id",
 	 *   type="integer",
 	 *   description="The incrementing id of the language_source",
@@ -50,7 +51,7 @@ class LanguageTranslation extends Model
     protected $language_source_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="language_translation_id",
 	 *   type="integer",
 	 *   description="The incrementing id of the language_translation",
@@ -63,7 +64,7 @@ class LanguageTranslation extends Model
     protected $language_translation_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="integer",
 	 *   description="The incrementing id of the name",
@@ -77,7 +78,7 @@ class LanguageTranslation extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="vernacular",
 	 *   type="integer",
 	 *   description="The vernacular",
@@ -91,7 +92,7 @@ class LanguageTranslation extends Model
 	protected $vernacular;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Priority",
 	 *     description="The priority of the language translation",
 	 *     type="integer",
@@ -107,7 +108,7 @@ class LanguageTranslation extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="description",
 	 *   type="string",
 	 *   description="The description of the language translation"
@@ -120,7 +121,7 @@ class LanguageTranslation extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="created_at",
 	 *   type="string",
 	 *   description="The timestamp at which the translation was created at"
@@ -132,7 +133,7 @@ class LanguageTranslation extends Model
     protected $created_at;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description="The timestamp at which the translation was last updated at"
