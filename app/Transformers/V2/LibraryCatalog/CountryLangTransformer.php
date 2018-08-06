@@ -8,24 +8,24 @@ use League\Fractal\TransformerAbstract;
 class CountryLangTransformer extends TransformerAbstract
 {
 	/**
-	 * @OAS\Schema (
+	 * @OA\Schema (
 	 *	type="array",
 	 *	schema="v2_country_lang",
 	 *	description="The v2_country_lang response",
 	 *	title="v2_country_lang",
-	 *	@OAS\Xml(name="v2_country_lang"),
-	 *	@OAS\Items(
-	 *          @OAS\Property(property="id",                    ref="#/components/schemas/Language/properties/id"),
-	 *          @OAS\Property(property="lang_code",             ref="#/components/schemas/Language/properties/iso"),
-	 *          @OAS\Property(property="region",                ref="#/components/schemas/Language/properties/area"),
-	 *          @OAS\Property(property="country_primary",       ref="#/components/schemas/Language/properties/country_id"),
-	 *          @OAS\Property(property="lang_id",               ref="#/components/schemas/Language/properties/iso2B"),
-	 *          @OAS\Property(property="iso_language_code",     ref="#/components/schemas/Language/properties/iso2T"),
-	 *          @OAS\Property(property="regional_lang_name",    ref="#/components/schemas/Language/properties/iso1"),
-	 *          @OAS\Property(property="family_id",             ref="#/components/schemas/Language/properties/name"),
-	 *          @OAS\Property(property="primary_country_name",  ref="#/components/schemas/Language/properties/iso2T"),
-	 *          @OAS\Property(property="country_image",         @OAS\Schema(type="string",example="https://cdn.bible.build/img/flags/full/80X60/in.png")),
-	 *          @OAS\Property(property="country_additional",    @OAS\Schema(type="string",example="BM: CH: CN: MM",description="The country names are delimited by both a colon and a space"))
+	 *	@OA\Xml(name="v2_country_lang"),
+	 *	@OA\Items(
+	 *          @OA\Property(property="id",                    ref="#/components/schemas/Language/properties/id"),
+	 *          @OA\Property(property="lang_code",             ref="#/components/schemas/Language/properties/iso"),
+	 *          @OA\Property(property="region",                ref="#/components/schemas/Language/properties/area"),
+	 *          @OA\Property(property="country_primary",       ref="#/components/schemas/Language/properties/country_id"),
+	 *          @OA\Property(property="lang_id",               ref="#/components/schemas/Language/properties/iso2B"),
+	 *          @OA\Property(property="iso_language_code",     ref="#/components/schemas/Language/properties/iso2T"),
+	 *          @OA\Property(property="regional_lang_name",    ref="#/components/schemas/Language/properties/iso1"),
+	 *          @OA\Property(property="family_id",             ref="#/components/schemas/Language/properties/name"),
+	 *          @OA\Property(property="primary_country_name",  ref="#/components/schemas/Language/properties/iso2T"),
+	 *          @OA\Property(property="country_image",         @OA\Schema(type="string",example="https://cdn.bible.build/img/flags/full/80X60/in.png")),
+	 *          @OA\Property(property="country_additional",    @OA\Schema(type="string",example="BM: CH: CN: MM",description="The country names are delimited by both a colon and a space"))
 	 *     )
 	 *   )
 	 * )

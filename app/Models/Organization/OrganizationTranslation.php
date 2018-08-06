@@ -10,16 +10,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Organization\Organization $organization
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The alternative names in different languages for an organization",
  *     title="Organization Translation",
- *     @OAS\Xml(name="OrganizationTranslation")
+ *     @OA\Xml(name="OrganizationTranslation")
  * )
  *
  */
 class OrganizationTranslation extends Model
 {
+	protected $connection = 'dbp';
     protected $primaryKey = 'organization_id';
     protected $fillable = ['iso', 'name','description'];
     protected $table = 'organization_translations';
@@ -28,7 +29,7 @@ class OrganizationTranslation extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="language_iso",
 	 *     description="The iso code for the translation language",
 	 *     type="string",
@@ -43,7 +44,7 @@ class OrganizationTranslation extends Model
 
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *     title="id",
 	  *     description="The Organization's incrementing id",
 	  *     type="integer",
@@ -58,7 +59,7 @@ class OrganizationTranslation extends Model
 
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *     title="id",
 	  *     description="If the current translation is the primary/vernacular translation",
 	  *     type="boolean"
@@ -71,7 +72,7 @@ class OrganizationTranslation extends Model
 	protected $vernacular;
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *     title="alt",
 	  *     description="If the current name is a secondary title for the organization",
 	  *     type="boolean"
@@ -84,7 +85,7 @@ class OrganizationTranslation extends Model
 	protected $alt;
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *     title="name",
 	  *     description="The current translated name for the organization",
 	  *     type="string",
@@ -98,7 +99,7 @@ class OrganizationTranslation extends Model
 	protected $name;
 	 /**
 	  *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *     title="description",
 	  *     description="The current translated description for the organization",
 	  *     type="string"
@@ -111,7 +112,7 @@ class OrganizationTranslation extends Model
 	protected $description;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="description_short",
 	 *     description="The current translated shortened description for the organization",
 	 *     type="string"

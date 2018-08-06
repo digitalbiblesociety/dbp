@@ -28,7 +28,6 @@ use App\Models\Language\Language;
  * @property-read \App\Models\Language\Language $language
  * @property-read BibleLink[] $links
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Organization\Organization[] $organizations
- * @property-read \App\Models\Bible\Printable $printable
  * @property-read BibleTranslation[] $translations
  * @property-read Translator[] $translators
  * @property-read Video[] $videos
@@ -44,11 +43,11 @@ use App\Models\Language\Language;
  * @method static Bible whereConnectionFab($value)
  * @method static Bible whereOpenAccess($value)
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Bible",
  *     title="Bible",
- *     @OAS\Xml(name="Bible")
+ *     @OA\Xml(name="Bible")
  * )
  *
  */
@@ -57,6 +56,7 @@ class Bible extends Model
     /**
      * @var string
      */
+    protected $connection = 'dbp';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
     //protected $dates = ['date'];
@@ -71,7 +71,7 @@ class Bible extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="string",
 	 *   description="The Archivist created Bible ID string. This will be between six and twelve letters usually starting with the iso639-3 code and ending with the acronym for the Bible",
@@ -87,7 +87,7 @@ class Bible extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Language/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Language/properties/id")
 	 *
 	 * @method static Bible whereLanguageId($value)
 	 * @property integer $language_id
@@ -96,7 +96,7 @@ class Bible extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="date",
 	 *   type="integer",
 	 *   description="The year the Bible was originally published",
@@ -110,7 +110,7 @@ class Bible extends Model
 	protected $date;
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/BibleFilesetSize/properties/set_size_code")
+	 * @OA\Property(ref="#/components/schemas/BibleFilesetSize/properties/set_size_code")
 	 *
 	 * @method static Bible whereScope($value)
 	 * @property string|null $scope
@@ -119,7 +119,7 @@ class Bible extends Model
 
 	/**
 	 *
-     * @OAS\Property(ref="#/components/schemas/Alphabet/properties/script")
+     * @OA\Property(ref="#/components/schemas/Alphabet/properties/script")
 	 *
 	 * @method static Bible whereScript($value)
 	 * @property string|null $script
@@ -128,7 +128,7 @@ class Bible extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="derived",
 	 *   type="string",
      *   nullable=true,
@@ -142,7 +142,7 @@ class Bible extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="copyright",
 	 *   type="string",
 	 *   description="A short copyright description for the bible text.",
@@ -156,7 +156,7 @@ class Bible extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="in_progress",
 	 *   type="string",
 	 *   description="If the Bible being described is currently in progress.",
@@ -169,7 +169,7 @@ class Bible extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="versification",
 	 *   type="string",
 	 *   description="The versification system for ordering books and chapters",
@@ -183,7 +183,7 @@ class Bible extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="created_at",
 	 *   type="string",
 	 *   description="The timestamp at which the bible was originally created"
@@ -195,7 +195,7 @@ class Bible extends Model
 	protected $created_at;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="updated_at",
 	 *   type="string",
      *   description="The timestamp at which the bible was last updated"
@@ -249,11 +249,6 @@ class Bible extends Model
     public function translators()
     {
         return $this->BelongsToMany(Translator::class);
-    }
-
-    public function printable()
-    {
-        return $this->hasOne(Printable::class);
     }
 
     /*

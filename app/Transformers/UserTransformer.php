@@ -22,17 +22,17 @@ class UserTransformer extends BaseTransformer
 		switch($this->route) {
 
 			/**
-			 * @OAS\Schema (
+			 * @OA\Schema (
 			*	type="array",
 			*	schema="v4_user_index",
 			*	description="The v4 user index response",
 			*	title="v4_user_index",
-			*	@OAS\Xml(name="v4_user_index"),
-			*	@OAS\Items(              @OAS\Property(property="id",       ref="#/components/schemas/User/properties/id"),
-			 *              @OAS\Property(property="name",     ref="#/components/schemas/User/properties/name"),
-			 *              @OAS\Property(property="nickname", ref="#/components/schemas/User/properties/nickname"),
-			 *              @OAS\Property(property="avatar",   ref="#/components/schemas/User/properties/avatar"),
-			 *              @OAS\Property(property="email",    ref="#/components/schemas/User/properties/email")
+			*	@OA\Xml(name="v4_user_index"),
+			*	@OA\Items(              @OA\Property(property="id",       ref="#/components/schemas/User/properties/id"),
+			 *              @OA\Property(property="name",     ref="#/components/schemas/User/properties/name"),
+			 *              @OA\Property(property="nickname", ref="#/components/schemas/User/properties/nickname"),
+			 *              @OA\Property(property="avatar",   ref="#/components/schemas/User/properties/avatar"),
+			 *              @OA\Property(property="email",    ref="#/components/schemas/User/properties/email")
 			 *     )
 			 *   )
 			 * )

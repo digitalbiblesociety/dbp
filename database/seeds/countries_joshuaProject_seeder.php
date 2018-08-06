@@ -12,7 +12,7 @@ class countries_joshuaProject_seeder extends Seeder
      */
     public function run()
     {
-    	\DB::table('country_joshua_project')->delete();
+    	\DB::connection('dbp')->table('country_joshua_project')->delete();
     	$seederHelper = new \database\seeds\SeederHelper();
     	$countries = $seederHelper->csv_to_array(storage_path('/data/countries/countries_joshuaProject_export.csv'));
 

@@ -8,29 +8,30 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="CountryGeography",
  *     title="CountryGeography",
- *     @OAS\Xml(name="CountryGeography")
+ *     @OA\Xml(name="CountryGeography")
  * )
  *
  */
 class CountryGeography extends Model
 {
+	protected $connection = 'dbp';
 	public $table = "country_geography";
 	public $incrementing = false;
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Country/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Country/properties/id")
 	 * @method static CountryGeography whereCountryId($value)
 	 * @property string $country_id
 	 */
 	protected $country_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Location Description",
 	 *     description="A description of where the country is located on a geo-political map of the world.",
 	 *     type="string"
@@ -42,7 +43,7 @@ class CountryGeography extends Model
 	protected $location_description;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="latitude",
 	 *     description="A point of latitude that falls within the borders of the country being described",
 	 *     type="number",
@@ -55,7 +56,7 @@ class CountryGeography extends Model
 	protected $latitude;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="longitude",
 	 *     description="longitude",
 	 *     description="A point of longitude that falls within the borders of the country being described",
@@ -69,7 +70,7 @@ class CountryGeography extends Model
 	protected $longitude;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Map References",
 	 *     description="The name of the general continent or region where the country is located.",
 	 *     type="string"
@@ -81,7 +82,7 @@ class CountryGeography extends Model
 	protected $mapReferences;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Total Area in square kilometers",
 	 *     description="area_sqkm_total",
 	 *     type="integer"
@@ -93,7 +94,7 @@ class CountryGeography extends Model
 	protected $area_sqkm_total;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="area_sqkm_land",
 	 *     description="area_sqkm_land",
 	 *     type="integer"
@@ -105,7 +106,7 @@ class CountryGeography extends Model
 	protected $area_sqkm_land;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="area_sqkm_water",
 	 *     description="area_sqkm_water",
 	 *     type="integer"
@@ -117,7 +118,7 @@ class CountryGeography extends Model
 	protected $area_sqkm_water;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="The country's coastline length",
 	 *     description="The length of the country's coastline in Kilometers",
 	 *     type="integer"
@@ -129,7 +130,7 @@ class CountryGeography extends Model
 	protected $area_km_coastline;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="area_note",
 	 *     description="area_note",
 	 *     type="string"
@@ -141,7 +142,7 @@ class CountryGeography extends Model
 	protected $area_note;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="climate",
 	 *     description="climate",
 	 *     type="string"
@@ -153,7 +154,7 @@ class CountryGeography extends Model
 	protected $climate;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="terrain",
 	 *     description="terrain",
 	 *     type="string"
@@ -165,7 +166,7 @@ class CountryGeography extends Model
 	protected $terrain;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="hazards",
 	 *     description="hazards",
 	 *     type="string"
@@ -177,7 +178,7 @@ class CountryGeography extends Model
 	protected $hazards;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="notes",
 	 *     description="notes",
 	 *     type="string"

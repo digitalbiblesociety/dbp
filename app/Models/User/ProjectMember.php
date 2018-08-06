@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class ProjectMember
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Project member's model",
  *     title="ProjectMember",
- *     @OAS\Xml(name="ProjectMember")
+ *     @OA\Xml(name="ProjectMember")
  * )
  *
  *
@@ -25,7 +25,7 @@ class ProjectMember extends Model
 
 	/**
 	 *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="user_id",
      *   type="integer",
      *   description="The incrementing ID for the account",
@@ -37,7 +37,7 @@ class ProjectMember extends Model
 	protected $user_id;
 	/**
 	 *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="project_id",
      *   type="integer",
      *   description="The incrementing ID for the account",
@@ -49,7 +49,7 @@ class ProjectMember extends Model
 	protected $project_id;
 	/**
 	 *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="role",
      *   type="integer",
      *   description="The incrementing ID for the account",
@@ -61,7 +61,7 @@ class ProjectMember extends Model
 	protected $role;
 	/**
 	 *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="subscribed",
      *   type="integer",
      *   description="The incrementing ID for the account",

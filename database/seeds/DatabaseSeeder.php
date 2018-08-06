@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -11,12 +12,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-	    ini_set('memory_limit', '1000G');
+        Model::unguard();
+
+        // Users
 
 	    $this->call(countries_seeder::class);
 
 	    // 1. Languages
-	    $this->call(language_seeder::class);
+	    //$this->call(language_seeder::class); Manual
 	    $this->call(language_equivalents_glottolog::class);
 	    $this->call(language_equivalents_iso::class);
 	    $this->call(language_primaryCountrySeeder::class);
@@ -36,7 +39,7 @@ class DatabaseSeeder extends Seeder
 	    $this->call(countries_language_seeder::class);
 	    $this->call(countries_joshuaProject_seeder::class);
 
-		// 3. Bibles
+	    // 3. Bibles
 	    $this->call(bible_seeder::class);
 	    $this->call(bible_links_seeder::class);
 
@@ -44,7 +47,6 @@ class DatabaseSeeder extends Seeder
 	    // 4. Organizations
 	    $this->call(organizations_seeder::class);
 	    $this->call(organizations_relationships::class);
-	    $this->call(users_seeder::class);
 	    $this->call(bible_organization::class);
 
 	    // 4.0 Projects
@@ -68,5 +70,6 @@ class DatabaseSeeder extends Seeder
 	    //$this->call(bible_filesets_seeder::class);
 	    $this->call(bible_translators_seeder::class);
 
+        Model::reguard();
     }
 }

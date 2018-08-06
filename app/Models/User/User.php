@@ -3,13 +3,8 @@
 namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Auth\Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Foundation\Auth\Access\Authorizable;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use App\Models\Organization\Organization;
 
@@ -31,19 +26,19 @@ use App\Models\Organization\Organization;
  * @property-read Project[] $projects
  * @property-read Key[] $keys
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The User model communicates information about everyone involved with the project",
  *     title="User",
- *     @OAS\Xml(name="User")
+ *     @OA\Xml(name="User")
  * )
  *
  */
-class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract {
+class User extends Authenticatable {
 	public $incrementing = false;
 	public $table = 'users';
 	public $keyType = 'string';
-	use Notifiable, Authenticatable, Authorizable, CanResetPassword;
+	use Notifiable;
 	/**
 	 * The attributes that are mass assignable.
 	 *
@@ -63,7 +58,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="string",
 	 *   description="The unique id for the user",
@@ -78,7 +73,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description="The name of the user",
@@ -93,7 +88,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="password",
 	 *   type="string",
 	 *   description="The password for the user's account",
@@ -108,7 +103,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="nickname",
 	 *   type="string",
 	 *   description="The preferred name for the user or an informal means of addressing them",
@@ -123,7 +118,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="avatar",
 	 *   type="string",
 	 *   description="The url to the user's profile picture",
@@ -138,7 +133,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="email",
 	 *   type="string",
 	 *   format="email",
@@ -153,7 +148,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="verified",
 	 *   type="boolean",
 	 *   description="If the user has verified the email address they've provided or if they're connected via a social account",
@@ -167,7 +162,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="email_token",
 	 *   type="string",
 	 *   description="The token sent to the user to verify that user's email",

@@ -71,12 +71,12 @@ class LanguageTransformer extends BaseTransformer
 	 */
 	public function transformForV4(Language $language) {
 		/**
-		 * @OAS\Response(
+		 * @OA\Response(
 		 *   response="v4_languages.one",
 		 *   description="The Full alphabet return for the single alphabet route",
-		 *   @OAS\MediaType(
+		 *   @OA\MediaType(
 		 *     mediaType="application/json",
-		 *     @OAS\Schema(ref="#/components/schemas/Language")
+		 *     @OA\Schema(ref="#/components/schemas/Language")
 		 *   )
 		 * )
 		 */
@@ -104,12 +104,12 @@ class LanguageTransformer extends BaseTransformer
 		}
 
 		/**
-		 * @OAS\Response(
+		 * @OA\Response(
 		 *   response="v4_languages.all",
 		 *   description="The minimized language return for the single language route",
-		 *   @OAS\MediaType(
+		 *   @OA\MediaType(
 		 *     mediaType="application/json",
-		 *     @OAS\Schema(ref="#/components/schemas/Language")
+		 *     @OA\Schema(ref="#/components/schemas/Language")
 		 *   )
 		 * )
 		 */

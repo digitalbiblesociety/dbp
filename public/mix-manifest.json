@@ -1,10 +1,4 @@
 {
-  "/mix.js": "/mix.js",
-  "/css/app.css": "/css/app.css",
-  "/js/app.js": "/js/app.js",
-  "/js/main.js": "/js/main.js",
-  "/js/swagger.js": "/js/swagger.js",
-  "/js/swagger-vue.js": "/js/swagger-vue.js",
-  "/js/swagger-vue-v4.js": "/js/swagger-vue-v4.js",
-  "/js/swagger-vue-v2.js": "/js/swagger-vue-v2.js"
+    "/js/app.js": "/js/app.js?id=10d5418f3e5558f74ccc",
+    "/css/app.css": "/css/app.css?id=52e685ea93d1d6d61123"
 }

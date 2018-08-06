@@ -12,17 +12,18 @@ use App\Models\Language\Language;
  * @property-read \App\Models\Language\Language $language
  * @property-read \App\Models\Language\Language $parentLanguage
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Information regarding alternative language dialects",
  *     title="Language Dialect",
- *     @OAS\Xml(name="LanguageDialect")
+ *     @OA\Xml(name="LanguageDialect")
  * )
  *
  * @mixin \Eloquent
  */
 class LanguageDialect extends Model
 {
+	protected $connection = 'dbp';
     public $primaryKey = 'glotto_id';
     protected $table = 'language_dialects';
 	protected $hidden = ['language_id','id'];
@@ -30,7 +31,7 @@ class LanguageDialect extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The incrementing id of the language",
@@ -44,7 +45,7 @@ class LanguageDialect extends Model
     protected $id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="language_id",
 	 *   type="integer",
 	 *   description="The foreign key pointing at the language id, indicating the parent language",
@@ -58,7 +59,7 @@ class LanguageDialect extends Model
     protected $language_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="dialect_id",
 	 *   type="integer",
 	 *   description="The foreign key pointing at the language id, indicating the dialect",
@@ -72,7 +73,7 @@ class LanguageDialect extends Model
     protected $dialect_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description="The name of the language dialect",
@@ -86,7 +87,7 @@ class LanguageDialect extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="created_at",
 	 *   type="string",
 	 *   description="The timestamp for which the language created at",
@@ -100,7 +101,7 @@ class LanguageDialect extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description="The timestamp for which the language updated at",

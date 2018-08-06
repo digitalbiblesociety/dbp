@@ -17,7 +17,7 @@ class countries_language_seeder extends Seeder
 	 */
     public function run(SeederHelper $seeder_helper)
     {
-    	\DB::table('country_language')->delete();
+    	\DB::connection('dbp')->table('country_language')->delete();
 	    $languagePopulationByCountry = json_decode(file_get_contents(storage_path('data/countries/languagePopulationByCountry.json')));
 	    foreach($languagePopulationByCountry as $country_id => $languages) {
 	    	foreach($languages as $iso => $population) {

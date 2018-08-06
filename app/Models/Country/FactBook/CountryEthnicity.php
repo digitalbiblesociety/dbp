@@ -7,24 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Country\FactBook\CountryEthnicity
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="",
  *     title="Country Ethnicity",
- *     @OAS\Xml(name="CountryEthnicity")
+ *     @OA\Xml(name="CountryEthnicity")
  * )
  *
  * @mixin \Eloquent
  */
 class CountryEthnicity extends Model
 {
+	protected $connection = 'dbp';
 	public $table = "country_people_ethnicities";
 	public $incrementing = false;
 
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Country/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Country/properties/id")
 	 * @method static CountryGeography whereCountryId($value)
 	 * @property string $country_id
 	 */
@@ -32,7 +33,7 @@ class CountryEthnicity extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="name",
 	 *     description="The name of the people group within the country",
 	 *     type="string"
@@ -44,7 +45,7 @@ class CountryEthnicity extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="population_percentage",
 	 *     description="The percentage of the people group compared to the total population of the country",
 	 *     type="number",
@@ -58,7 +59,7 @@ class CountryEthnicity extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="date",
 	 *     description="The date the data was archived",
 	 *     type="integer",

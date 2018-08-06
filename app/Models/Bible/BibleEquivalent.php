@@ -10,16 +10,17 @@ use App\Models\Organization\Organization;
  * App\Models\Bible\BibleEquivalent
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Bible Equivalent Model stores the connections between the bible IDs and external organizations",
  *     title="BibleEquivalent",
- *     @OAS\Xml(name="BibleEquivalent")
+ *     @OA\Xml(name="BibleEquivalent")
  * )
  *
  */
 class BibleEquivalent extends Model
 {
+	protected $connection = 'dbp';
     protected $table = "bible_equivalents";
     protected $primaryKey = 'equivalent_id';
     protected $hidden = ['created_at','updated_at','bible_id'];
@@ -28,7 +29,7 @@ class BibleEquivalent extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Bible/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Bible/properties/id")
 	 * @method static BibleEquivalent whereBibleId($value)
 	 * @property string $bible_id
 	 *
@@ -37,7 +38,7 @@ class BibleEquivalent extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="equivalent_id",
 	 *   type="string",
 	 *   description="The equivalent_id",
@@ -53,7 +54,7 @@ class BibleEquivalent extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Organization/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Organization/properties/id")
 	 * @method static BibleEquivalent whereOrganizationId($value)
 	 * @property int $organization_id
 	 *
@@ -62,7 +63,7 @@ class BibleEquivalent extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="type",
 	 *   type="string",
 	 *   description="The type of connection that the equivalent id refers to",
@@ -78,7 +79,7 @@ class BibleEquivalent extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="site",
 	 *   type="string",
 	 *   description="The name of the site/organization/app where the equivalent id is based",
@@ -94,7 +95,7 @@ class BibleEquivalent extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="site",
 	 *   type="string",
 	 *   description="Additional metadata affecting the type of equivalent connection",

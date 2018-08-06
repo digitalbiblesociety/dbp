@@ -9,22 +9,23 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="CountryPeople",
  *     title="CountryPeople",
- *     @OAS\Xml(name="CountryPeople")
+ *     @OA\Xml(name="CountryPeople")
  * )
  *
  */
 class CountryPeople extends Model {
+	protected $connection = 'dbp';
 	public $incrementing = false;
 	public $table = "country_people";
 
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Country/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Country/properties/id")
 	 * @method static CountryPeople whereCountryId( $value )
 	 * @property string $country_id
 	 */
@@ -32,7 +33,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="languages",
 	 *     description="languages",
 	 *     type="string"
@@ -45,7 +46,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="religions",
 	 *     description="religions",
 	 *     type="string"
@@ -58,7 +59,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="population",
 	 *     description="population",
 	 *     type="string"
@@ -71,7 +72,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="population_date",
 	 *     description="population_date",
 	 *     type="string"
@@ -84,7 +85,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="nationality_noun",
 	 *     description="nationality_noun",
 	 *     type="string"
@@ -97,7 +98,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="nationality_adjective",
 	 *     description="nationality_adjective",
 	 *     type="string"
@@ -110,7 +111,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="age_structure_14",
 	 *     description="age_structure_14",
 	 *     type="string"
@@ -123,7 +124,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="age_structure_24",
 	 *     description="age_structure_24",
 	 *     type="string"
@@ -136,7 +137,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="age_structure_54",
 	 *     description="age_structure_54",
 	 *     type="string"
@@ -149,7 +150,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="age_structure_64",
 	 *     description="age_structure_64",
 	 *     type="string"
@@ -162,7 +163,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="age_structure_65",
 	 *     description="age_structure_65",
 	 *     type="string"
@@ -175,7 +176,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="dependency_total",
 	 *     description="dependency_total",
 	 *     type="string"
@@ -188,7 +189,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="dependency_youth",
 	 *     description="dependency_youth",
 	 *     type="string"
@@ -201,7 +202,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="dependency_elder",
 	 *     description="dependency_elder",
 	 *     type="string"
@@ -214,7 +215,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="dependency_potential",
 	 *     description="dependency_potential",
 	 *     type="string"
@@ -227,7 +228,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="median_age_total",
 	 *     description="median_age_total",
 	 *     type="string"
@@ -240,7 +241,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="median_age_male",
 	 *     description="median_age_male",
 	 *     type="string"
@@ -253,7 +254,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="median_age_female",
 	 *     description="median_age_female",
 	 *     type="string"
@@ -266,7 +267,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="population_growth_rate_percentage",
 	 *     description="population_growth_rate_percentage",
 	 *     type="string"
@@ -279,7 +280,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="birth_rate_per_1k",
 	 *     description="birth_rate_per_1k",
 	 *     type="string"
@@ -292,7 +293,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="death_rate_per_1k",
 	 *     description="death_rate_per_1k",
 	 *     type="string"
@@ -305,7 +306,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="net_migration_per_1k",
 	 *     description="net_migration_per_1k",
 	 *     type="string"
@@ -318,7 +319,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="population_distribution",
 	 *     description="population_distribution",
 	 *     type="string"
@@ -331,7 +332,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="urban_population_percentage",
 	 *     description="urban_population_percentage",
 	 *     type="string"
@@ -344,7 +345,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="urbanization_rate",
 	 *     description="urbanization_rate",
 	 *     type="string"
@@ -357,7 +358,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="major_urban_areas_population",
 	 *     description="major_urban_areas_population",
 	 *     type="string"
@@ -370,7 +371,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="sex_ratio_birth",
 	 *     description="sex_ratio_birth",
 	 *     type="string"
@@ -383,7 +384,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="sex_ratio_14",
 	 *     description="sex_ratio_14",
 	 *     type="string"
@@ -396,7 +397,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="sex_ratio_24",
 	 *     description="sex_ratio_24",
 	 *     type="string"
@@ -409,7 +410,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="sex_ratio_54",
 	 *     description="sex_ratio_54",
 	 *     type="string"
@@ -422,7 +423,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="sex_ratio_64",
 	 *     description="sex_ratio_64",
 	 *     type="string"
@@ -435,7 +436,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="sex_ratio_65",
 	 *     description="sex_ratio_65",
 	 *     type="string"
@@ -448,7 +449,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="sex_ratio_total",
 	 *     description="sex_ratio_total",
 	 *     type="string"
@@ -461,7 +462,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="mother_age_first_birth",
 	 *     description="mother_age_first_birth",
 	 *     type="string"
@@ -474,7 +475,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="maternal_mortality_rate",
 	 *     description="maternal_mortality_rate",
 	 *     type="string"
@@ -487,7 +488,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="infant_mortality_per_1k_total",
 	 *     description="infant_mortality_per_1k_total",
 	 *     type="string"
@@ -500,7 +501,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="infant_mortality_per_1k_male",
 	 *     description="infant_mortality_per_1k_male",
 	 *     type="string"
@@ -513,7 +514,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="infant_mortality_per_1k_female",
 	 *     description="infant_mortality_per_1k_female",
 	 *     type="string"
@@ -526,7 +527,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="life_expectancy_at_birth_total",
 	 *     description="life_expectancy_at_birth_total",
 	 *     type="string"
@@ -539,7 +540,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="life_expectancy_at_birth_male",
 	 *     description="life_expectancy_at_birth_male",
 	 *     type="string"
@@ -552,7 +553,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="life_expectancy_at_birth_female",
 	 *     description="life_expectancy_at_birth_female",
 	 *     type="string"
@@ -565,7 +566,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="total_fertility_rate",
 	 *     description="total_fertility_rate",
 	 *     type="string"
@@ -578,7 +579,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="contraceptive_prevalence",
 	 *     description="contraceptive_prevalence",
 	 *     type="string"
@@ -591,7 +592,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="health_expenditures",
 	 *     description="health_expenditures",
 	 *     type="string"
@@ -604,7 +605,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="physicians",
 	 *     description="physicians",
 	 *     type="string"
@@ -617,7 +618,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="hospital_beds",
 	 *     description="hospital_beds",
 	 *     type="string"
@@ -630,7 +631,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="drinking_water_source_urban_improved",
 	 *     description="drinking_water_source_urban_improved",
 	 *     type="string"
@@ -643,7 +644,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="drinking_water_source_rural_improved",
 	 *     description="drinking_water_source_rural_improved",
 	 *     type="string"
@@ -657,7 +658,7 @@ class CountryPeople extends Model {
 	/**
 	 *
 	 * @method static CountryPeople
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="sanitation_facility_access_urban_improved",
 	 *     description="sanitation_facility_access_urban_improved",
 	 *     type="string"
@@ -670,7 +671,7 @@ class CountryPeople extends Model {
 	/**
 	 *
 	 * @method static CountryPeople
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="sanitation_facility_access_rural_improved",
 	 *     description="",
 	 *     type="string"
@@ -682,7 +683,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="hiv_infection_rate",
 	 *     description="hiv_infection_rate",
 	 *     type="string"
@@ -695,7 +696,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="hiv_infected",
 	 *     description="hiv_infected",
 	 *     type="string"
@@ -708,7 +709,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="hiv_deaths",
 	 *     description="hiv_deaths",
 	 *     type="string"
@@ -721,7 +722,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="obesity_rate",
 	 *     description="obesity_rate",
 	 *     type="string"
@@ -734,7 +735,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="underweight_children",
 	 *     description="underweight_children",
 	 *     type="string"
@@ -747,7 +748,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="education_expenditures",
 	 *     description="education_expenditures",
 	 *     type="string"
@@ -760,7 +761,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="literacy_definition",
 	 *     description="literacy_definition",
 	 *     type="string"
@@ -773,7 +774,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="literacy_total",
 	 *     description="literacy_total",
 	 *     type="string"
@@ -786,7 +787,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="literacy_male",
 	 *     description="literacy_male",
 	 *     type="string"
@@ -799,7 +800,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="literacy_female",
 	 *     description="literacy_female",
 	 *     type="string"
@@ -812,7 +813,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="school_years_total",
 	 *     description="school_years_total",
 	 *     type="string"
@@ -825,7 +826,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="school_years_male",
 	 *     description="school_years_male",
 	 *     type="string"
@@ -838,7 +839,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="school_years_female",
 	 *     description="school_years_female",
 	 *     type="string"
@@ -851,7 +852,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="child_labor",
 	 *     description="child_labor",
 	 *     type="string"
@@ -864,7 +865,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="child_labor_percentage",
 	 *     description="child_labor_percentage",
 	 *     type="string"
@@ -877,7 +878,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="unemployment_youth_total",
 	 *     description="unemployment_youth_total",
 	 *     type="string"
@@ -890,7 +891,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="unemployment_youth_male",
 	 *     description="unemployment_youth_male",
 	 *     type="string"
@@ -903,7 +904,7 @@ class CountryPeople extends Model {
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="unemployment_youth_female",
 	 *     description="unemployment_youth_female",
 	 *     type="string"

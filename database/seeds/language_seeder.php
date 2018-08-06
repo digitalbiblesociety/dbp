@@ -16,14 +16,14 @@ class language_seeder extends Seeder
 
     public function run()
     {
-	    \DB::table('language_translations')->delete();
-	    \DB::table('language_dialects')->delete();
-	    \DB::table('language_codes')->delete();
-	    \DB::table('language_classifications')->delete();
-    	\DB::table('languages')->delete();
+	    \DB::connection('dbp')->table('language_translations')->delete();
+	    \DB::connection('dbp')->table('language_dialects')->delete();
+	    \DB::connection('dbp')->table('language_codes')->delete();
+	    \DB::connection('dbp')->table('language_classifications')->delete();
+    	\DB::connection('dbp')->table('languages')->delete();
 
 	    $seederHelper = new \database\seeds\SeederHelper();
-        $languages = Yaml::parse(file_get_contents(storage_path().'/data/languages/languages.yaml'));
+        $languages = Yaml::parse(file_get_contents(storage_path('/data/languages/languages.yaml')));
         foreach($languages as $id => $language) {
 
             // Skip Entries Not officially in the Glottolog

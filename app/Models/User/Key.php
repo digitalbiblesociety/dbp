@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\User\Key
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Key's model",
  *     title="Key",
- *     @OAS\Xml(name="Key")
+ *     @OA\Xml(name="Key")
  * )
  *
  */
@@ -25,14 +25,14 @@ class Key extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/User/properties/id")
+	 * @OA\Property(ref="#/components/schemas/User/properties/id")
 	 * @method static Key whereUserId($value)
 	 * @property string $user_id
 	 */
 	protected $user_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="key",
 	 *   type="string",
 	 *   description="The unique generated api key for Key model",
@@ -45,7 +45,7 @@ class Key extends Model
 	protected $key;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description="The user provided distinctive name to differentiate different keys provided to the same user.",
@@ -58,7 +58,7 @@ class Key extends Model
 	protected $name;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="description",
 	 *   type="string",
 	 *   description="Any additional identifying information about the key provided and it's use can be stored here"
@@ -70,7 +70,7 @@ class Key extends Model
 	protected $description;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="created_at",
 	 *   type="string",
 	 *   description="The timestamp at which the key was created at"
@@ -82,7 +82,7 @@ class Key extends Model
 	protected $created_at;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description="The timestamp at which the key was last updated at"

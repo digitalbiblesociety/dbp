@@ -12,7 +12,6 @@
         <testsuite name="Feature Tests">
             <directory suffix="Test.php">./tests/Feature</directory>
         </testsuite>
-
         <testsuite name="Unit Tests">
             <directory suffix="Test.php">./tests/Unit</directory>
         </testsuite>
@@ -27,8 +26,5 @@
         <env name="CACHE_DRIVER" value="array"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="QUEUE_DRIVER" value="sync"/>
-        <env name="APP_URL" value="https://dbp.test" />
-        <env name="API_URL" value="https://api.dbp.test" />
-        <env name="APP_KEY" value="base64:pMMIVqAsxH/REcn8M0wld0aEY9VTc6P6bmSit8JKkvo="/>
     </php>
 </phpunit>

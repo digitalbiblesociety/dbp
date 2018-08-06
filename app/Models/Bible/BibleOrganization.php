@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BibleOrganization extends Model
 {
+	protected $connection = 'dbp';
     protected $table = "bible_organizations";
     public $timestamps = false;
     public $incrementing = false;

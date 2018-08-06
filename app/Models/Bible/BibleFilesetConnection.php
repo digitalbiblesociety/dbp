@@ -14,23 +14,24 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read BibleFilesetSize $size
  * @property-read BibleFilesetType $type
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="BibleFilesetConnection",
  *     title="BibleFileset Connection",
- *     @OAS\Xml(name="BibleFilesetConnection")
+ *     @OA\Xml(name="BibleFilesetConnection")
  * )
  *
  */
 class BibleFilesetConnection extends Model
 {
+	protected $connection = 'dbp';
     public $incrementing = false;
     public $keyType = 'string';
     public $primaryKey = 'hash_id';
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/BibleFileset/properties/hash_id")
+	 * @OA\Property(ref="#/components/schemas/BibleFileset/properties/hash_id")
 	 * @method static BibleFilesetConnection whereHashId($value)
 	 * @property string $hash_id
 	 */
@@ -38,7 +39,7 @@ class BibleFilesetConnection extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Bible/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Bible/properties/id")
 	 * @method static BibleFilesetConnection whereBibleId($value)
 	 * @property string $bible_id
 	 */

@@ -67,16 +67,16 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * 
  * Class Alphabet
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Alphabet",
  *     title="Alphabet",
- *     @OAS\Xml(name="Alphabet")
+ *     @OA\Xml(name="Alphabet")
  * )
  */
 class Alphabet extends Model
 {
-
+	protected $connection = 'dbp';
     protected $table = "alphabets";
     protected $primaryKey = 'script';
     public $incrementing = false;
@@ -97,14 +97,14 @@ class Alphabet extends Model
     protected $fillable = [ "script", "name", "unicode_pdf", "family", "type", "white_space", "open_type_tag", "complex_positioning", "requires_font", "unicode", "diacritics", "contextual_forms", "reordering", "case", "split_graphs", "status", "baseline", "ligatures", "direction", "sample", "sample_img"];
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Alphabet Script",
 	 *     description="The Script ID for the alphabet aligning with the iso 15924 standard",
 	 *     type="string",
      *     minLength=4,
      *     maxLength=4,
 	 *     example="Cans",
-	 *     @OAS\ExternalDocumentation(
+	 *     @OA\ExternalDocumentation(
 	 *         description="For more info please refer to the Unicode Consortium",
 	 *         url="https://http://www.unicode.org/iso15924/"
 	 *     ),
@@ -115,7 +115,7 @@ class Alphabet extends Model
 	protected $script;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="Alphabet Name",
 	 *   type="string",
      *   maxLength=191,
@@ -128,7 +128,7 @@ class Alphabet extends Model
 	protected $name;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Unicode PDF",
 	 *     description="A url to a reference PDF for the alphabet",
 	 *     type="string",
@@ -142,7 +142,7 @@ class Alphabet extends Model
 	protected $unicode_pdf;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Family",
 	 *     description="The linguistic family the alphabet can be categorized within",
 	 *     type="string",
@@ -154,7 +154,7 @@ class Alphabet extends Model
 	protected $family;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Type",
 	 *     description="The type of alphabet be described",
 	 *     type="string",
@@ -166,7 +166,7 @@ class Alphabet extends Model
 	protected $type;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="White Space",
 	 *     description="The usage white space within the alphabet",
 	 *     type="string",
@@ -178,7 +178,7 @@ class Alphabet extends Model
 	protected $white_space;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Open Type Tag",
 	 *     description="The open type tag of the alphabet",
 	 *     type="string",
@@ -190,7 +190,7 @@ class Alphabet extends Model
 	protected $open_type_tag;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Open Type Tag",
 	 *     description="The open type tag of the alphabet",
 	 *     type="string",
@@ -202,7 +202,7 @@ class Alphabet extends Model
 	protected $complex_positioning;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Requires Font",
 	 *     description="If the Alphabet generally requires the use of a font to display correctly online",
 	 *     type="boolean",
@@ -214,7 +214,7 @@ class Alphabet extends Model
 	protected $requires_font;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Unicode",
 	 *     description="If the Alphabet is fully supported by the unicode spec",
 	 *     type="boolean",
@@ -226,7 +226,7 @@ class Alphabet extends Model
 	protected $unicode;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Diacritics",
 	 *     description="If the Alphabet contains diacritics",
 	 *     type="boolean",
@@ -238,7 +238,7 @@ class Alphabet extends Model
 	protected $diacritics;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Contextual Forms",
 	 *     description="If the Alphabet contains contextual forms",
 	 *     type="boolean",
@@ -250,7 +250,7 @@ class Alphabet extends Model
 	protected $contextual_forms;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Reordering",
 	 *     description="If the Alphabet contains reordering",
 	 *     type="boolean",
@@ -263,7 +263,7 @@ class Alphabet extends Model
 	protected $reordering;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Case",
 	 *     description="If the Alphabet utilizes different cases",
 	 *     type="boolean",
@@ -276,12 +276,12 @@ class Alphabet extends Model
 	protected $case;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Split Graphs",
 	 *     description="If the Alphabet contains letters that are written using two separate distinct elements.",
 	 *     type="boolean",
 	 *     example=false,
-	 *     @OAS\ExternalDocumentation(
+	 *     @OA\ExternalDocumentation(
 	 *         description="For more info please refer to the Script Source Feature Definitions",
 	 *         url="http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#50d6cb6e"
 	 *     ),
@@ -292,13 +292,13 @@ class Alphabet extends Model
 	protected $split_graphs;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Status",
 	 *     description="The status of the alphabet",
 	 *     type="string",
 	 *     example="Current",
 	 *     enum={"Current","Historical","Fictional","Unclear"},
-	 *     @OAS\ExternalDocumentation(
+	 *     @OA\ExternalDocumentation(
 	 *         description="For more info please refer to the Script Source Feature Definitions",
 	 *         url="http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#71259eae"
 	 *     ),
@@ -309,13 +309,13 @@ class Alphabet extends Model
 	protected $status;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Baseline",
 	 *     description="The alignment of the text within the alphabet",
 	 *     type="string",
 	 *     enum={"Hanging","Centered","Bottom","Vertical"},
 	 *     example="Bottom",
-	 *     @OAS\ExternalDocumentation(
+	 *     @OA\ExternalDocumentation(
 	 *         description="For more info please refer to the Script Source Feature Definitions",
 	 *         url="http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#a4a32c47"
 	 *     ),
@@ -326,17 +326,17 @@ class Alphabet extends Model
 	protected $baseline;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Ligatures",
 	 *     description="Indicates on if letters may be or are required to be joined as a single glyph",
 	 *     type="string",
 	 *     enum={"required","optional","none"},
 	 *     example="none",
-	 *     @OAS\ExternalDocumentation(
+	 *     @OA\ExternalDocumentation(
 	 *         description="For more information please refer to the Script Source Feature Definitions",
 	 *         url="http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#3e655409"
 	 *     ),
-	 *     @OAS\ExternalDocumentation(
+	 *     @OA\ExternalDocumentation(
 	 *         description="For more information about Ligatures",
 	 *         url="https://en.wikipedia.org/wiki/Typographic_ligature"
 	 *     ),
@@ -347,13 +347,13 @@ class Alphabet extends Model
 	protected $ligatures;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Direction",
 	 *     description="The direction that the alphabet is read",
 	 *     type="string",
 	 *     enum={"rtl","ltr"},
 	 *     example="ltr",
-	 *     @OAS\ExternalDocumentation(
+	 *     @OA\ExternalDocumentation(
 	 *         description="For more information please refer to the Script Source Feature Definitions",
 	 *         url="http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#02674a4e"
 	 *     )
@@ -364,7 +364,7 @@ class Alphabet extends Model
 	protected $direction;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Sample Image",
 	 *     description="A sample section of text for the alphabet",
 	 *     type="string"
@@ -375,7 +375,7 @@ class Alphabet extends Model
 	protected $sample;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Sample Image",
 	 *     description="A url to an image of the sample section of text for the alphabet",
 	 *     type="string"

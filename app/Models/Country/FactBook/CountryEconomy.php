@@ -8,30 +8,31 @@ use Illuminate\Database\Eloquent\Model;
  * Class CountryEconomy
  * @package App\Models\Country\FactBook
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Country Economy Model stores information about the economic status of a country as reported by the CIA's World Factbook",
  *     title="Country Economy",
- *     @OAS\Xml(name="CountryEconomy")
+ *     @OA\Xml(name="CountryEconomy")
  * )
  *
  */
 class CountryEconomy extends Model
 {
+	protected $connection = 'dbp';
 	public $incrementing = false;
 	public $table = "country_economy";
 
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Country/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Country/properties/id")
 	 * @method static CountryEconomy whereCountryId($value)
 	 * @property string $country_id
 	 */
 	protected $country_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="Overview",
 	 *     type="string",
 	 *     description="A general overview of the countries economic status.",
@@ -44,12 +45,12 @@ class CountryEconomy extends Model
 	protected $overview;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="GDP (purchasing power parity)",
      *     description="The GDP (PPP) of the country",
      *     type="string",
 	 *     example="$64.08 billion (2016 est.) ++ $62.82 billion (2015 est.) ++ $62.35 billion (2014 est.)",
-	 *     @OAS\ExternalDocumentation(description="For a detailed list of countries and their PPP GDP see:",url="https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(PPP)_per_capita")
+	 *     @OA\ExternalDocumentation(description="For a detailed list of countries and their PPP GDP see:",url="https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(PPP)_per_capita")
      * )
 	 *
 	 * @method static CountryEconomy whereGdpPowerParity($value)
@@ -58,11 +59,11 @@ class CountryEconomy extends Model
 	protected $gdp_power_parity;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="GDP real growth rate",
      *     description="The GDP (RGR) of the country",
      *     type="string",
-	 *     @OAS\ExternalDocumentation(description="For a detailed list of countries and their RGR GDP see:",url="https://en.wikipedia.org/wiki/List_of_countries_by_real_GDP_growth_rate")
+	 *     @OA\ExternalDocumentation(description="For a detailed list of countries and their RGR GDP see:",url="https://en.wikipedia.org/wiki/List_of_countries_by_real_GDP_growth_rate")
      * )
 	 *
 	 * @method static CountryEconomy whereGdpRealGrowth($value)
@@ -71,7 +72,7 @@ class CountryEconomy extends Model
 	protected $gdp_real_growth;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="GDP - per capita (PPP)",
      *     description="The GDP (PPP) of the country",
      *     type="string"
@@ -83,7 +84,7 @@ class CountryEconomy extends Model
 	protected $gdp_per_capita;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="GDP - composition, by end use; household consumption",
      *     description="",
      *     type="string"
@@ -95,7 +96,7 @@ class CountryEconomy extends Model
 	protected $gdp_household_consumption;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="gdp_consumption",
      *     description="GDP - composition, by end use; government consumption",
      *     type="string"
@@ -107,7 +108,7 @@ class CountryEconomy extends Model
 	protected $gdp_consumption;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="gdp_investment_in_fixed_capital",
      *     description="GDP - composition, by end use; investment in fixed capital",
      *     type="string"
@@ -119,7 +120,7 @@ class CountryEconomy extends Model
 	protected $gdp_investment_in_fixed_capital;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="gdp_investment_in_inventories",
      *     description="GDP - composition, by end use; investment in inventories",
      *     type="string"
@@ -131,7 +132,7 @@ class CountryEconomy extends Model
 	protected $gdp_investment_in_inventories;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="gdp_exports",
      *     description="GDP - composition, by end use; exports of goods and services",
      *     type="string"
@@ -143,7 +144,7 @@ class CountryEconomy extends Model
 	protected $gdp_exports;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="gdp_imports",
      *     description="GDP - composition, by end use; imports of goods and services",
      *     type="string"
@@ -155,7 +156,7 @@ class CountryEconomy extends Model
 	protected $gdp_imports;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="gdp_sector_agriculture",
      *     description="GDP - composition, by sector of origin; agriculture",
      *     type="string"
@@ -167,7 +168,7 @@ class CountryEconomy extends Model
 	protected $gdp_sector_agriculture;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="gdp_sector_industry",
      *     description="GDP - composition, by sector of origin; industry",
      *     type="string"
@@ -179,7 +180,7 @@ class CountryEconomy extends Model
 	protected $gdp_sector_industry;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="gdp_sector_services",
      *     description="GDP - composition, by sector of origin; services",
      *     type="string"
@@ -191,7 +192,7 @@ class CountryEconomy extends Model
 	protected $gdp_sector_services;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="agriculture_products",
      *     description="Agriculture - products",
      *     type="string"
@@ -203,7 +204,7 @@ class CountryEconomy extends Model
 	protected $agriculture_products;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="industries",
      *     description="Industries",
      *     type="string"
@@ -215,7 +216,7 @@ class CountryEconomy extends Model
 	protected $industries;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="industrial_growth_rate",
      *     description="Industrial production growth rate",
      *     type="string"
@@ -227,7 +228,7 @@ class CountryEconomy extends Model
 	protected $industrial_growth_rate;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="labor_force",
      *     description="Labor force",
      *     type="string"
@@ -239,7 +240,7 @@ class CountryEconomy extends Model
 	protected $labor_force;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="labor_force_notes",
      *     description="Labor force; note",
      *     type="string"
@@ -251,7 +252,7 @@ class CountryEconomy extends Model
 	protected $labor_force_notes;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="labor_force_services",
      *     description="Labor force - by occupation; services",
      *     type="string"
@@ -263,7 +264,7 @@ class CountryEconomy extends Model
 	protected $labor_force_services;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="labor_force_industry",
      *     description="Labor force - by occupation; industry",
      *     type="string"
@@ -275,7 +276,7 @@ class CountryEconomy extends Model
 	protected $labor_force_industry;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="labor_force_agriculture",
      *     description="Labor force - by occupation; agriculture",
      *     type="string"
@@ -287,7 +288,7 @@ class CountryEconomy extends Model
 	protected $labor_force_agriculture;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="labor_force_occupation_notes",
      *     description="Labor force - by occupation; note",
      *     type="string"
@@ -299,7 +300,7 @@ class CountryEconomy extends Model
 	protected $labor_force_occupation_notes;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="unemployment_rate",
      *     description="Unemployment rate",
      *     type="string"
@@ -311,7 +312,7 @@ class CountryEconomy extends Model
 	protected $unemployment_rate;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="population_below_poverty",
      *     description="Population below poverty line",
      *     type="string"
@@ -323,7 +324,7 @@ class CountryEconomy extends Model
 	protected $population_below_poverty;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="household_income_lowest_10",
      *     description="Household income or consumption by percentage share; lowest 10%",
      *     type="string"
@@ -335,7 +336,7 @@ class CountryEconomy extends Model
 	protected $household_income_lowest_10;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="household_income_highest_10",
      *     description="Household income or consumption by percentage share; highest 10%",
      *     type="string"
@@ -347,7 +348,7 @@ class CountryEconomy extends Model
 	protected $household_income_highest_10;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="budget_revenues",
      *     description="Budget",
      *     type="string"
@@ -359,7 +360,7 @@ class CountryEconomy extends Model
 	protected $budget_revenues;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="taxes_revenues",
      *     description="Taxes and other revenues",
      *     type="string"
@@ -371,7 +372,7 @@ class CountryEconomy extends Model
 	protected $taxes_revenues;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="budget_net",
      *     description="Budget surplus (+) or deficit (-)",
      *     type="string"
@@ -383,7 +384,7 @@ class CountryEconomy extends Model
 	protected $budget_net;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="public_debt",
      *     description="Public debt",
      *     type="string"
@@ -395,7 +396,7 @@ class CountryEconomy extends Model
 	protected $public_debt;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="external_debt",
      *     description="Debt - external",
      *     type="string"
@@ -407,7 +408,7 @@ class CountryEconomy extends Model
 	protected $external_debt;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="fiscal_year",
      *     description="Fiscal year",
      *     type="string"
@@ -419,7 +420,7 @@ class CountryEconomy extends Model
 	protected $fiscal_year;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="inflation_rate",
      *     description="Inflation rate (consumer prices)",
      *     type="string"
@@ -431,7 +432,7 @@ class CountryEconomy extends Model
 	protected $inflation_rate;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="central_bank_discount_rate",
      *     description="Central bank discount rate",
      *     type="string"
@@ -443,7 +444,7 @@ class CountryEconomy extends Model
 	protected $central_bank_discount_rate;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="commercial_bank_prime_lending_rate",
      *     description="Commercial bank prime lending rate",
      *     type="string"
@@ -455,7 +456,7 @@ class CountryEconomy extends Model
 	protected $commercial_bank_prime_lending_rate;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="stock_money_narrow",
      *     description="Stock of narrow money",
      *     type="string"
@@ -467,7 +468,7 @@ class CountryEconomy extends Model
 	protected $stock_money_narrow;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="stock_money_broad",
      *     description="Stock of broad money",
      *     type="string"
@@ -479,7 +480,7 @@ class CountryEconomy extends Model
 	protected $stock_money_broad;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="stock_domestic_credit",
      *     description="Stock of domestic credit",
      *     type="string"
@@ -491,7 +492,7 @@ class CountryEconomy extends Model
 	protected $stock_domestic_credit;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="exports",
      *     description="Exports",
      *     type="string"
@@ -503,7 +504,7 @@ class CountryEconomy extends Model
 	protected $exports;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="exports_commodities",
      *     description="Exports - commodities",
      *     type="string"
@@ -515,7 +516,7 @@ class CountryEconomy extends Model
 	protected $exports_commodities;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="exports_partners",
      *     description="Exports - partners",
      *     type="string"
@@ -527,7 +528,7 @@ class CountryEconomy extends Model
 	protected $exports_partners;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="imports",
      *     description="Imports",
      *     type="string"
@@ -539,7 +540,7 @@ class CountryEconomy extends Model
 	protected $imports;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="imports_commodities",
      *     description="Imports - commodities",
      *     type="string"
@@ -551,7 +552,7 @@ class CountryEconomy extends Model
 	protected $imports_commodities;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="imports_partners",
      *     description="Imports - partners",
      *     type="string"
@@ -563,7 +564,7 @@ class CountryEconomy extends Model
 	protected $imports_partners;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="exchange_rates",
      *     description="Exchange rates",
      *     type="string"

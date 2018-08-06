@@ -1,113 +1,98 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="{{ config('app.locale') }}">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-@section('head')
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/androidstudio.min.css" rel="stylesheet" />
-    <style>
-        #stats {
-            padding-bottom: 5px;
-            height:80px;
-            margin:0 auto 10px;
-            border-bottom: thick solid #00b09b;
-        }
+        <title>Laravel</title>
 
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
 
-        .stat {
-            font-size:1rem;
-        }
-        .stat a {
-            color:#666;
-        }
+        <!-- Styles -->
+        <style>
+            html, body {
+                background-color: #fff;
+                color: #636b6f;
+                font-family: 'Raleway', sans-serif;
+                font-weight: 100;
+                height: 100vh;
+                margin: 0;
+            }
 
-        .stat:before {
-            content: attr(data-stat);
-            display: block;
-            font-size:2rem
-        }
-        #banner {
-            padding-bottom:70px;
-            margin-bottom:70px;
-        }
-        #banner p {
-            text-align: justify;
-            max-width:500px;
-            margin:2rem auto;
-        }
+            .full-height {
+                height: 100vh;
+            }
 
-        #banner h1 {
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            padding: 70px;
-            font-size:2rem;
-        }
-        #banner .button {
-            background-color: #f1f1f1;
-            color:#222;
-            text-align: center;
-            display: block;
-            width:100%;
-            height:40px;
-            line-height: 40px;
-        }
+            .flex-center {
+                align-items: center;
+                display: flex;
+                justify-content: center;
+            }
 
-        #banner .button:hover {
-            background-color: #fff;
-        }
+            .position-ref {
+                position: relative;
+            }
 
-        #stats a {
-            color:#222;
-        }
+            .top-right {
+                position: absolute;
+                right: 10px;
+                top: 18px;
+            }
 
-        .markup {
-            width: 100%;
-            padding:20px!important;
-            text-align: left;
-            color: white;
-            padding: 0 1rem;
-            border-radius: 4px;
-            background-color: #232323;
-            min-height: 285px;
-            animation: fadeUp 2s;
-            box-shadow: 0px 12px 36.8px 9.2px rgba(0, 0, 0, 0.1);
-        }
+            .content {
+                text-align: center;
+            }
 
-    </style>
-@endsection
+            .title {
+                font-size: 84px;
+            }
 
-@section('content')
+            .title small {
+                font-size: 60px;
+            }
 
-    <section id="banner">
-        <h1 class="text-center">The Bible in your language on your Site</h1>
-        <div class="medium-6 columns centered">
-            <div class="medium-4 columns"><a class="button" href="{{ route('swagger_v4') }}">v4 Documentation</a></div>
-            <div class="medium-4 columns"><a class="button" href="{{ route('register') }}">Get Started</a></div>
-            <div class="medium-4 columns"><a class="button" href="{{ route('swagger_v2') }}">v2 Documentation</a></div>
+            .links > a {
+                color: #636b6f;
+                padding: 0 25px;
+                font-size: 12px;
+                font-weight: 600;
+                letter-spacing: .1rem;
+                text-decoration: none;
+                text-transform: uppercase;
+            }
+
+            .m-b-md {
+                margin-bottom: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="flex-center position-ref full-height">
+            @if (Route::has('login'))
+                <div class="top-right links">
+                    @if (Auth::check())
+                        <a href="{{ url('/home') }}">Home</a>
+                    @else
+                        <a href="{{ url('/login') }}">Login</a>
+                        <a href="{{ url('/register') }}">Register</a>
+                    @endif
+                </div>
+            @endif
+            <div class="content">
+                <div class="title m-b-md">
+                    @lang('titles.app')<br />
+                    <small>
+                        {{ trans('titles.app2', ['version' => config('settings.app_project_version')]) }}
+                    </small>
+                    <div class="links">
+                        <a href="/docs">Documentation</a>
+                        <a href="/articles">News</a>
+                        <a href="https://github.com/digitalbiblesociety/dbp">GitHub</a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </section>
-
-    <section id="stats" class="text-center">
-        <a class="small-6 medium-3 columns stat" href="/languages" data-stat="{{ $count['languages'] or 0 }}">{{ trans('docs.languages') }}</a>
-        <a class="small-6 medium-3 columns stat" href="/countries" data-stat="{{ $count['countries'] or 0 }}">{{ trans('docs.countries') }}</a>
-        <a class="small-6 medium-3 columns stat" href="/alphabets" data-stat="{{ $count['alphabets'] or 0 }}">{{ trans('docs.alphabets') }}</a>
-        <a class="small-6 medium-3 columns stat" href="/bibles" data-stat="{{ $count['bibles'] or 0 }}">{{ trans('docs.bibles') }}</a>
-    </section>
-
-    <div class="row">
-        <div class="medium-9 columns centered">
-            <pre><code class="markup"><?php echo file_get_contents(base_path('doc/CHANGELOG')); ?></code></pre>
-        </div>
-    </div>
-
-@endsection
-
-@section('footer')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/markdown.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-    <script>
-        $(document).ready(function() {
-            $('pre code').each(function(i, block) {
-                hljs.highlightBlock(block);
-            });
-        });
-    </script>
-@endsection
+    </body>
+</html>

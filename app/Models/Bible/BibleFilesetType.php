@@ -10,24 +10,25 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property-read \App\Models\Bible\BibleFileset $fileset
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     required={"filename"},
  *     description="The Bible Fileset Type model communicates general metadata about the bible_filesets.set_size_code",
  *     title="BibleFilesetType",
- *     @OAS\Xml(name="BibleFilesetType")
+ *     @OA\Xml(name="BibleFilesetType")
  * )
  *
  */
 class BibleFilesetType extends Model
 {
+	protected $connection = 'dbp';
     public $table = "bible_fileset_types";
 
     protected $hidden = ['updated_at','id'];
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="string",
 	 *   description=""
@@ -39,7 +40,7 @@ class BibleFilesetType extends Model
 	protected $id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="set_type_code",
 	 *   type="string",
 	 *   description=""
@@ -51,7 +52,7 @@ class BibleFilesetType extends Model
 	protected $set_type_code;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description=""
@@ -63,7 +64,7 @@ class BibleFilesetType extends Model
 	protected $name;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="created_at",
 	 *   type="string",
 	 *   description=""
@@ -75,7 +76,7 @@ class BibleFilesetType extends Model
 	protected $created_at;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description=""

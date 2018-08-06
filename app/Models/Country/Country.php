@@ -33,16 +33,17 @@ use App\Models\Country\FactBook\CountryTransportation;
  * @property-read CountryGeography $geography
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Country",
  *     title="Country",
- *     @OAS\Xml(name="Country")
+ *     @OA\Xml(name="Country")
  * )
  *
  */
 class Country extends Model
 {
+	protected $connection = 'dbp';
     protected $table = 'countries';
     protected $hidden = ['pivot','created_at','updated_at','introduction'];
     public $incrementing = false;
@@ -56,14 +57,14 @@ class Country extends Model
 	}
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Country Iso 3166-1",
 	 *     description="The Country ID for the country aligning with the ISO 3166-1 standard",
 	 *     type="string",
 	 *     minLength=2,
 	 *     maxLength=2,
 	 *     example="AD",
-	 *     @OAS\ExternalDocumentation(
+	 *     @OA\ExternalDocumentation(
 	 *         description="For more info please refer to the Iso Registration Authority",
 	 *         url="https://www.iso.org/iso-3166-country-codes.html"
 	 *     ),
@@ -76,14 +77,14 @@ class Country extends Model
 	protected $id;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Country Iso 3166-3",
 	 *     description="The Country iso for the country aligning with the ISO 3166-3 standard",
 	 *     type="string",
 	 *     minLength=3,
 	 *     maxLength=3,
 	 *     example="AND",
-	 *     @OAS\ExternalDocumentation(
+	 *     @OA\ExternalDocumentation(
 	 *         description="For more info please refer to the Iso Wiki",
 	 *         url="https://en.wikipedia.org/wiki/ISO_3166-3"
 	 *     ),
@@ -96,14 +97,14 @@ class Country extends Model
 	protected $iso_a3;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="FIPS ID",
 	 *     description="The Country id for the country aligning with the FIPS standard of the United Nations",
 	 *     type="string",
 	 *     minLength=2,
 	 *     maxLength=2,
 	 *     example="AN",
-	 *     @OAS\ExternalDocumentation(
+	 *     @OA\ExternalDocumentation(
 	 *         description="For more info please refer to the FIPS Wiki",
 	 *         url="https://en.wikipedia.org/wiki/List_of_FIPS_country_codes"
 	 *     ),
@@ -116,7 +117,7 @@ class Country extends Model
 	protected $fips;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="continent ID",
 	 *     description="The continent code for the country",
 	 *     type="string",
@@ -132,7 +133,7 @@ class Country extends Model
 	protected $continent;
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Country Name",
 	 *     description="The name for the country in English",
 	 *     type="string",
@@ -148,7 +149,7 @@ class Country extends Model
 
 
 	/**
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *     title="Country introduction",
 	 *     description="A brief description of the country in English",
 	 *     type="string",

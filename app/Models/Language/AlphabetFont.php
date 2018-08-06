@@ -10,22 +10,23 @@ use App\Models\Language\Alphabet;
  *
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Alphabet Font",
  *     title="Alphabet Font",
- *     @OAS\Xml(name="AlphabetFont")
+ *     @OA\Xml(name="AlphabetFont")
  * )
  *
  */
 class AlphabetFont extends Model
 {
+	protected $connection = 'dbp';
     protected $table = 'alphabet_fonts';
     protected $hidden = ['iso','created_at','updated_at'];
 
 	/**
 	*
-	* @OAS\Property(
+	* @OA\Property(
 	*     title="Alphabet Font ID",
 	*     description="The incrementing numeric id for the alphabet fonts",
 	*     type="integer",
@@ -47,7 +48,7 @@ class AlphabetFont extends Model
 	* @property string $fontName
 	* @method static AlphabetFont whereFontName($value)
 	*
-	* @OAS\Property(
+	* @OA\Property(
 	*     title="Alphabet Font Name",
 	*     description="The Font Name",
 	*     type="string",
@@ -62,7 +63,7 @@ class AlphabetFont extends Model
 	* @property string $fontFileName
 	* @method static AlphabetFont whereFontFileName($value)
 	*
-	* @OAS\Property(
+	* @OA\Property(
 	*     title="Alphabet Font File Name",
 	*     description="The File name for the font",
 	*     type="string",
@@ -77,7 +78,7 @@ class AlphabetFont extends Model
 	* @property int|null $fontWeight
 	* @method static AlphabetFont whereFontWeight($value)
 	*
-	* @OAS\Property(
+	* @OA\Property(
 	*     title="Alphabet Font Weight",
 	*     description="The boldness of the font",
 	*     nullable=true,
@@ -93,7 +94,7 @@ class AlphabetFont extends Model
 	* @property string|null $copyright
 	* @method static AlphabetFont whereCopyright($value)
 	*
-	* @OAS\Property(
+	* @OA\Property(
 	*     title="Alphabet copyright",
 	*     description="The copyright of the font if any",
 	*     type="string",
@@ -109,7 +110,7 @@ class AlphabetFont extends Model
 	* @property string|null $url
 	* @method static AlphabetFont whereUrl($value)
 	*
-	* @OAS\Property(
+	* @OA\Property(
 	*     title="Alphabet URL",
 	*     description="The url to the font file",
 	*     type="string",
@@ -123,7 +124,7 @@ class AlphabetFont extends Model
 	* @property string|null $notes
 	* @method static AlphabetFont whereNotes($value)
 	*
-	* @OAS\Property(
+	* @OA\Property(
 	*     title="Notes",
 	*     description="Any notes for the font file name",
 	*     type="string",
@@ -137,7 +138,7 @@ class AlphabetFont extends Model
 	* @property int $italic
 	* @method static AlphabetFont whereItalic($value)
 	*
-	* @OAS\Property(
+	* @OA\Property(
 	*     title="Italic",
 	*     description="Determines if the font file contains or supports italics",
 	*     type="boolean",

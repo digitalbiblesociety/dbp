@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\User\Note
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Note's model",
  *     title="Note",
- *     @OAS\Xml(name="Note")
+ *     @OA\Xml(name="Note")
  * )
  *
  */
@@ -24,7 +24,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The unique incrementing id for each NoteTag",
@@ -46,7 +46,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
+	 * @OA\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
 	 * @method static Note whereChapter($value)
 	 * @property int $chapter
 	 */
@@ -54,7 +54,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
+	 * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
 	 * @method static Note whereVerseStart($value)
 	 * @property int $verse_start
 	 */
@@ -62,7 +62,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/BibleFile/properties/verse_end")
+	 * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_end")
 	 * @method static Note whereVerseEnd($value)
 	 * @property int|null $verse_end
 	 */
@@ -70,7 +70,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="bookmark",
 	 *   type="integer",
 	 *   description="The unique incrementing id for each NoteTag"
@@ -83,7 +83,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/User/properties/id")
+	 * @OA\Property(ref="#/components/schemas/User/properties/id")
 	 * @method static Note whereUserId($value)
 	 * @property string $user_id
 	 */
@@ -91,7 +91,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Bible/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Bible/properties/id")
 	 * @method static Note whereBibleId($value)
 	 * @property string $bible_id
 	 */
@@ -99,7 +99,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Project/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Project/properties/id")
 	 * @method static Note whereProjectId($value)
 	 * @property string $project_id
 	 */
@@ -107,7 +107,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="reference_id",
 	 *   type="string",
 	 *   description="The unique incrementing id for each NoteTag"
@@ -120,7 +120,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="notes",
 	 *   type="string",
 	 *   description="The body of the notes",
@@ -134,7 +134,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="created_at",
 	 *   type="string",
 	 *   description="The timestamp the note was created at"
@@ -147,7 +147,7 @@ class Note extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description="The timestamp the Note was last updated at",

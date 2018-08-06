@@ -8,11 +8,11 @@ use App\Models\User\User;
  * App\Models\User\Account
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Account Model describes the connections between Users and their social accounts",
  *     title="Account",
- *     @OAS\Xml(name="Account")
+ *     @OA\Xml(name="Account")
  * )
  *
  */
@@ -24,7 +24,7 @@ class Account extends Model
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="id",
      *   type="integer",
      *   description="The incrementing ID for the account",
@@ -39,7 +39,7 @@ class Account extends Model
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="user_id",
      *   type="string",
      *   description="The user id for the user who has the account being described"
@@ -52,7 +52,7 @@ class Account extends Model
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="provider_id",
      *   type="string",
      *   description="The social account provider that the user has logged in with",
@@ -66,7 +66,7 @@ class Account extends Model
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="provider_user_id",
      *   type="string",
      *   description="The key of the provider for the account being described",
@@ -80,7 +80,7 @@ class Account extends Model
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="created_at",
      *   type="string",
      *   description="The time the social account was originally connected to the user"
@@ -93,7 +93,7 @@ class Account extends Model
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="updated_at",
      *   type="string",
      *   description="The time the social account was last updated"

@@ -7,23 +7,23 @@ class FilmTransformer extends BaseTransformer
     /**
      * A Fractal transformer.
      *
-     * @OAS\Schema (
+     * @OA\Schema (
 			*	type="array",
 			*	schema="v2_video_path",
 			*	description="The v2_video_path",
 			*	title="v2_video_path",
-			*	@OAS\Xml(name="v2_video_path"),
-			*	@OAS\Items(        @OAS\Property(property="segment_order",      ref="#/components/schemas/Video/properties/id"),
-     *        @OAS\Property(property="title",              ref="#/components/schemas/VideoTag/properties/tag"),
-     *        @OAS\Property(property="book_id",            ref="#/components/schemas/Book/properties/id"),
-     *        @OAS\Property(property="path",               ref="#/components/schemas/Video/properties/url"),
-     *        @OAS\Property(property="chapter_start",      ref="#/components/schemas/VideoTag/properties/chapter_start"),
-     *        @OAS\Property(property="verse_start",        ref="#/components/schemas/VideoTag/properties/verse_start"),
-     *        @OAS\Property(property="chapter_end",        ref="#/components/schemas/VideoTag/properties/chapter_end"),
-     *        @OAS\Property(property="verse_end",          ref="#/components/schemas/VideoTag/properties/verse_end"),
-     *        @OAS\Property(property="thumbnail_image",    ref="#/components/schemas/Video/properties/picture"),
-     *        @OAS\Property(property="references",         @OAS\Schema(type="object")),
-     *        @OAS\Property(property="related_videos",     ref="#/components/schemas/Video")
+			*	@OA\Xml(name="v2_video_path"),
+			*	@OA\Items(        @OA\Property(property="segment_order",      ref="#/components/schemas/Video/properties/id"),
+     *        @OA\Property(property="title",              ref="#/components/schemas/VideoTag/properties/tag"),
+     *        @OA\Property(property="book_id",            ref="#/components/schemas/Book/properties/id"),
+     *        @OA\Property(property="path",               ref="#/components/schemas/Video/properties/url"),
+     *        @OA\Property(property="chapter_start",      ref="#/components/schemas/VideoTag/properties/chapter_start"),
+     *        @OA\Property(property="verse_start",        ref="#/components/schemas/VideoTag/properties/verse_start"),
+     *        @OA\Property(property="chapter_end",        ref="#/components/schemas/VideoTag/properties/chapter_end"),
+     *        @OA\Property(property="verse_end",          ref="#/components/schemas/VideoTag/properties/verse_end"),
+     *        @OA\Property(property="thumbnail_image",    ref="#/components/schemas/Video/properties/picture"),
+     *        @OA\Property(property="references",         @OA\Schema(type="object")),
+     *        @OA\Property(property="related_videos",     ref="#/components/schemas/Video")
      *     )
      *   )
      * )

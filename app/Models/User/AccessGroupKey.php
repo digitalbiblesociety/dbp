@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\User\AccessGroupFunction
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Access Group Key",
  *     title="AccessGroupKey",
- *     @OAS\Xml(name="AccessGroupKey")
+ *     @OA\Xml(name="AccessGroupKey")
  * )
  *
  */
@@ -23,7 +23,7 @@ class AccessGroupKey extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description="The name for each access group"
@@ -36,7 +36,7 @@ class AccessGroupKey extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description="The name for each access group"

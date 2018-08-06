@@ -23,23 +23,24 @@ use App\Models\Language\Language;
  * @property int|null $duration
  * @property-read \App\Models\Bible\BibleFilesetConnection $connections
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     required={"filename"},
  *     description="The Bible File Model communicates information about biblical files stored in S3",
  *     title="BibleFile",
- *     @OAS\Xml(name="BibleFile")
+ *     @OA\Xml(name="BibleFile")
  * )
  *
  */
 class BibleFile extends Model
 {
+	protected $connection = 'dbp';
 	protected $table = "bible_files";
 	protected $hidden = ["created_at","updated_at"];
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The id",
@@ -53,7 +54,7 @@ class BibleFile extends Model
 	protected $id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="hash_id",
 	 *   type="string",
 	 *   description="The hash_id",
@@ -65,7 +66,7 @@ class BibleFile extends Model
 	protected $hash_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="book_id",
 	 *   type="string",
 	 *   description="The book_id",
@@ -77,7 +78,7 @@ class BibleFile extends Model
 	protected $book_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="chapter_start",
 	 *   type="integer",
 	 *   description="The chapter_start",
@@ -92,7 +93,7 @@ class BibleFile extends Model
 	protected $chapter_start;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="chapter_end",
 	 *   type="integer",
 	 *   description="If the Bible File spans multiple chapters this field indicates the last chapter of the selection",
@@ -108,7 +109,7 @@ class BibleFile extends Model
 	protected $chapter_end;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="verse_start",
 	 *   type="integer",
 	 *   description="The starting verse at which the BibleFile reference begins",
@@ -124,7 +125,7 @@ class BibleFile extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="verse_end",
 	 *   type="string",
 	 *   description="If the Bible File spans multiple verses this value will indicate the last verse in that reference. This value is inclusive, so for the reference John 1:1-4. The value would be 4 and the reference would contain verse 4.",
@@ -141,7 +142,7 @@ class BibleFile extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="verse_text",
 	 *   type="string",
 	 *   description="If the BibleFile model returns text instead of a file_name this field will contain it.",
@@ -155,7 +156,7 @@ class BibleFile extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="file_name",
 	 *   type="string",
 	 *   description="The file_name",
@@ -169,7 +170,7 @@ class BibleFile extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="file_size",
 	 *   type="integer",
 	 *   description="The file size in kilobytes"
@@ -182,7 +183,7 @@ class BibleFile extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="duration",
 	 *   type="integer",
 	 *   description="If the file has a set length of time, this field indicates that time in milliseconds",

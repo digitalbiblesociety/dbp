@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\User\Highlight
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Highlight model",
  *     title="Highlight",
- *     @OAS\Xml(name="Highlight")
+ *     @OA\Xml(name="Highlight")
  * )
  *
  */
@@ -24,7 +24,7 @@ class Highlight extends Model
 
      /**
       *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="id",
 	  *   type="integer",
 	  *   description="The highlight id",
@@ -37,7 +37,7 @@ class Highlight extends Model
      protected $id;
      /**
       *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="user_id",
 	  *   type="string",
 	  *   description="The user that created the highlight"
@@ -49,28 +49,28 @@ class Highlight extends Model
      protected $user_id;
      /**
       *
-      * @OAS\Property(ref="#/components/schemas/BibleFileset/properties/id")
+      * @OA\Property(ref="#/components/schemas/BibleFileset/properties/id")
       * @method static Highlight whereBibleId($value)
       * @property string $bible_id
       */
      protected $bible_id;
      /**
       *
-      * @OAS\Property(ref="#/components/schemas/Book/properties/id")
+      * @OA\Property(ref="#/components/schemas/Book/properties/id")
       * @method static Highlight whereBookId($value)
       * @property string $book_id
       */
      protected $book_id;
      /**
       *
-      * @OAS\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
+      * @OA\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
       * @method static Highlight whereChapter($value)
       * @property int $chapter
       */
      protected $chapter;
      /**
       *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="highlighted_color",
 	  *   type="string",
 	  *   description="The highlight's highlighted color in hexadecimal notation.",
@@ -85,7 +85,7 @@ class Highlight extends Model
      protected $highlighted_color;
      /**
       *
-      * @OAS\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
+      * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
       * @method static Highlight whereVerseStart($value)
       * @property int $verse_start
       */
@@ -93,7 +93,7 @@ class Highlight extends Model
 
 	/**
 	 *
-	 * @OAS\Property(type="string")
+	 * @OA\Property(type="string")
 	 * @method static Highlight whereReference($value)
 	 * @property int $verse_start
 	 */
@@ -101,14 +101,14 @@ class Highlight extends Model
 
      /**
       *
-      * @OAS\Property(ref="#/components/schemas/Project/properties/id")
+      * @OA\Property(ref="#/components/schemas/Project/properties/id")
       * @method static Highlight whereProjectId($value)
       * @property string|null $project_id
       */
      protected $project_id;
      /**
       *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="highlight_start",
 	  *   type="integer",
 	  *   description="The number of words from the beginning of the verse to start the highlight at. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
@@ -121,7 +121,7 @@ class Highlight extends Model
      protected $highlight_start;
      /**
       *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="highlighted_words",
 	  *   type="string",
       *   description="The number of words being highlighted. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
@@ -133,7 +133,7 @@ class Highlight extends Model
      protected $highlighted_words;
      /**
       *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="created_at",
 	  *   type="string",
 	  *   description="The highlight's created_at timestamp"
@@ -145,7 +145,7 @@ class Highlight extends Model
      protected $created_at;
      /**
       *
-	  * @OAS\Property(
+	  * @OA\Property(
 	  *   title="updated_at",
 	  *   type="string",
 	  *   description="The highlight's updated_at timestamp"

@@ -8,18 +8,18 @@ use App\Models\Organization\Organization;
 /**
  * Class BibleFilesetCopyright
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="BibleFilesetCopyright",
  *     title="Bible Fileset Copyright",
- *     @OAS\Xml(name="BibleFilesetCopyright")
+ *     @OA\Xml(name="BibleFilesetCopyright")
  * )
  *
  * @package App\Models\Bible
  */
 class BibleFilesetCopyright extends Model
 {
-
+	protected $connection = 'dbp';
 	public $table = 'bible_fileset_copyrights';
 	protected $primaryKey = 'hash_id';
 	protected $keyType = 'string';
@@ -28,11 +28,10 @@ class BibleFilesetCopyright extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="hash id",
 	 *   type="string",
 	 *   description="The hash value for the created fileset",
-
 	 *   minLength=12,
 	 *   maxLength=12,
 	 *   example="ENGESV"
@@ -46,7 +45,7 @@ class BibleFilesetCopyright extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="copyright_date",
 	 *   type="string",
 	 *   description="The copyright date created copyright",
@@ -62,7 +61,7 @@ class BibleFilesetCopyright extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="copyright",
 	 *   type="string",
 	 *   description="The copyright"
@@ -76,7 +75,7 @@ class BibleFilesetCopyright extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="copyright_description",
 	 *   type="string",
 	 *   description="The copyright description",
@@ -90,7 +89,7 @@ class BibleFilesetCopyright extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="open_access",
 	 *   type="string",
 	 *   description="The open_access description",

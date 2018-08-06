@@ -5,11 +5,11 @@ namespace App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 /**
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Password Reset Model",
  *     title="PasswordReset",
- *     @OAS\Xml(name="PasswordReset")
+ *     @OA\Xml(name="PasswordReset")
  * )
  *
  */
@@ -24,7 +24,7 @@ class PasswordReset extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="email",
 	 *   type="string",
 	 *   description="The email of the user who requested the password reset",
@@ -39,7 +39,7 @@ class PasswordReset extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="token",
 	 *   type="string",
 	 *   description="The generated token for the password reset",
@@ -53,7 +53,7 @@ class PasswordReset extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="reset_path",
 	 *   type="string",
 	 *   description="The url to redirect the user to create a new password",

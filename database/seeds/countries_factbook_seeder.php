@@ -20,15 +20,15 @@ class countries_factbook_seeder extends Seeder
      */
     public function run()
     {
-    	\DB::table('country_issues')->delete();
-	    \DB::table('country_energy')->delete();
-	    \DB::table('country_people')->delete();
-	    \DB::table('country_economy')->delete();
-	    \DB::table('country_geography')->delete();
-	    \DB::table('country_government')->delete();
-	    \DB::table('country_communications')->delete();
-	    \DB::table('country_transportation')->delete();
-	    \DB::table('country_people_ethnicities')->delete();
+    	\DB::connection('dbp')->table('country_issues')->delete();
+	    \DB::connection('dbp')->table('country_energy')->delete();
+	    \DB::connection('dbp')->table('country_people')->delete();
+	    \DB::connection('dbp')->table('country_economy')->delete();
+	    \DB::connection('dbp')->table('country_geography')->delete();
+	    \DB::connection('dbp')->table('country_government')->delete();
+	    \DB::connection('dbp')->table('country_communications')->delete();
+	    \DB::connection('dbp')->table('country_transportation')->delete();
+	    \DB::connection('dbp')->table('country_people_ethnicities')->delete();
 
         $countries = glob(storage_path('data/countries/factbook/*.json'));
         foreach($countries as $path) {

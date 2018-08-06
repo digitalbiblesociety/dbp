@@ -7,30 +7,31 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Country\FactBook\CountryReligions
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="CountryReligion",
  *     title="CountryReligion",
- *     @OAS\Xml(name="CountryReligion")
+ *     @OA\Xml(name="CountryReligion")
  * )
  *
  * @mixin \Eloquent
  */
 class CountryReligion extends Model
 {
+	protected $connection = 'dbp';
 	public $incrementing = false;
 	public $table = "country_religions";
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Country/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Country/properties/id")
 	 * @method static CountryReligion whereCountryId($value)
 	 * @property string $country_id
 	*/
 	protected $country_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="name",
      *     description="The name of the religion that makes up part of the countries populace",
      *     type="string"
@@ -42,7 +43,7 @@ class CountryReligion extends Model
 	protected $name;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="population_percentage",
      *     description="The percentage of the countries populace that adhere to the religion being described",
      *     type="string"
@@ -54,7 +55,7 @@ class CountryReligion extends Model
 	protected $population_percentage;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
      *     title="date",
      *     description="The date that this data was recorded",
      *     type="string"

@@ -12,17 +12,17 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\Bible\BibleFileset
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="BibleFileset",
  *     title="Bible Fileset",
- *     @OAS\Xml(name="BibleFileset")
+ *     @OA\Xml(name="BibleFileset")
  * )
  *
  */
 class BibleFileset extends Model
 {
-
+	protected $connection = 'dbp';
 	public $primaryKey = 'id';
 	public $incrementing = false;
 	protected $keyType = "string";
@@ -32,7 +32,7 @@ class BibleFileset extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="string",
 	 *   description="The fileset id",
@@ -47,7 +47,7 @@ class BibleFileset extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="hash_id",
 	 *   type="string",
 	 *   description="The hash_id generated from the `bucket_id`, `set_type_code`, and `id`",
@@ -62,7 +62,7 @@ class BibleFileset extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="bucket_id",
 	 *   type="string",
 	 *   description="The bucket id of the AWS Bucket",
@@ -76,7 +76,7 @@ class BibleFileset extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="set_type_code",
 	 *   type="string",
 	 *   description="The set_type_code indicating the type of the fileset",
@@ -90,7 +90,7 @@ class BibleFileset extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="set_size_code",
 	 *   type="string",
 	 *   description="The set_size_code indicating the size of the fileset",

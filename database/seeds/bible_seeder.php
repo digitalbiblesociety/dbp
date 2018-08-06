@@ -12,10 +12,10 @@ class bible_seeder extends Seeder {
 	 * @return void
 	 */
 	public function run() {
-		\DB::table('bible_translations')->delete();
-		\DB::table('bibles')->delete();
+		\DB::connection('dbp')->table('bible_translations')->delete();
+		\DB::connection('dbp')->table('bibles')->delete();
 		$seederhelper = new SeederHelper();
-		$bibles       = $seederhelper->csv_to_array( storage_path() . "/data/bibles/bibles.csv" );
+		$bibles       = $seederhelper->csv_to_array( storage_path("/data/bibles/bibles.csv") );
 		foreach ( $bibles as $key => $bible ) {
 			if(!isset($bible['abbr'])) continue;
 			if($bible['abbr'] == null) continue;

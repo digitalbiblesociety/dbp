@@ -11,24 +11,24 @@ use App\Models\Language\Language;
  * @property-read \App\Models\Language\Language $language
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Information regarding alternative language coding systems",
  *     title="Language Codes",
- *     @OAS\Xml(name="LanguageCode")
+ *     @OA\Xml(name="LanguageCode")
  * )
  *
  */
 class LanguageCode extends Model
 {
-
+	protected $connection = 'dbp';
     protected $table = 'language_codes';
     protected $fillable = ['code', 'source', 'glotto_id'];
 	protected $hidden = ['language_id'];
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="integer",
 	 *   description="The incrementing id of the language Code",
@@ -42,7 +42,7 @@ class LanguageCode extends Model
 	protected $id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="language_id",
 	 *   type="integer",
 	 *   description="The foreign key pointing to the incrementing id of the language",
@@ -56,7 +56,7 @@ class LanguageCode extends Model
 	protected $language_id;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="source",
 	 *   type="string",
 	 *   description="The source pointing to the incrementing id of the language"

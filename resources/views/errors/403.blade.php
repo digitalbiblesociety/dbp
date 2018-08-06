@@ -1,51 +1,47 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>403 | Forbidden.</title>
 
-@section('head')
-    <title>{{ trans('titles.401_page_title') }} | {{ trans('fields.siteTitle') }}</title>
-    <meta name="description" content="{{ trans('titles.401_description') }}">
+        <link href="//fonts.googleapis.com/css?family=Lato:100" rel="stylesheet" type="text/css">
 
-    <style>
-        .error-401 h1 {
-            font-size:2rem;
-            max-width:500px;
-            margin:0 auto;
-            letter-spacing: 2px;
-        }
+        <style>
+            html, body {
+                height: 100%;
+            }
 
-        .error-401 {
+            body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                color: #B0BEC5;
+                display: table;
+                font-weight: 100;
+                font-family: 'Lato';
+            }
 
-        }
+            .container {
+                text-align: center;
+                display: table-cell;
+                vertical-align: middle;
+            }
 
+            .content {
+                text-align: center;
+                display: inline-block;
+            }
 
-        .error-401-image {
-            margin:0 auto;
-            display: block;
-            width:120px;
-        }
-
-        .reference {
-            position: absolute;
-            top:145px;
-            text-align: center;
-            width:600px;
-            left:50%;
-            margin-left:-300px;
-            opacity: .1;
-            color:#FFF;
-            font-size:2rem;
-        }
-    </style>
-@endsection
-
-@section('content')
-
-    @include('layouts.partials.banner', [
-        'banner_class'  => 'error-401',
-        'title'         =>  $message ?? '401 Error',
-        'image'         => '/img/banners/sword.png',
-        'image_class'   => 'error-401-image'
-    ])
-
-    <div class="reference">      וַיֹּ֣אמֶר ׀ יְהוָ֣ה אֱלֹהִ֗ים הֵ֤ן הָֽאָדָם֙ הָיָה֙ כְּאַחַ֣ד מִמֶּ֔נּוּ לָדַ֖עַת ט֣וֹב וָרָ֑ע וְעַתָּ֣ה ׀ פֶּן־יִשְׁלַ֣ח יָד֗וֹ וְלָקַח֙ גַּ֚ם מֵעֵ֣ץ הַֽחַיִּ֔ים וְאָכַ֖ל וָחַ֥י לְעֹלָֽם׃  וַֽיְשַׁלְּחֵ֛הוּ יְהוָ֥ה אֱלֹהִ֖ים מִגַּן־עֵ֑דֶן לַֽעֲבֹד֙ אֶת־הָ֣אֲדָמָ֔ה אֲשֶׁ֥ר לֻקַּ֖ח מִשָּֽׁם׃  וַיְגָ֖רֶשׁ אֶת־הָֽאָדָ֑ם וַיַּשְׁכֵּן֩ מִקֶּ֨דֶם לְגַן־עֵ֜דֶן</div>
-
-@endsection
+            .title {
+                font-size: 72px;
+                margin-bottom: 40px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="content">
+                <div class="title">Forbidden.</div>
+            </div>
+        </div>
+    </body>
+</html>

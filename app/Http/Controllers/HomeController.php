@@ -53,34 +53,34 @@ class HomeController extends APIController
 	/**
 	 * Returns a List of Buckets used by the API
 	 *
-	 * @OAS\Get(
+	 * @OA\Get(
 	 *     path="/api/buckets",
 	 *     tags={"Bibles"},
 	 *     summary="Returns aws buckets currently being used by the api",
 	 *     description="",
 	 *     operationId="v4_api.buckets",
-	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/format"),
-	 *     @OAS\Response(
+	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OA\Parameter(ref="#/components/parameters/key"),
+	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OA\Parameter(ref="#/components/parameters/format"),
+	 *     @OA\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v4_api_buckets")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v4_api_buckets")),
-	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(ref="#/components/schemas/v4_api_buckets"))
+	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_api_buckets")),
+	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_api_buckets")),
+	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_api_buckets"))
 	 *     )
 	 * )
 	 *
-	 * @OAS\Schema (
+	 * @OA\Schema (
 	 *     type="object",
 	 *     schema="v4_api_buckets",
 	 *     description="The aws buckets currently being used by the api",
 	 *     title="The buckets response",
 	 *     required={"id","organization_id"},
-	 *     @OAS\Xml(name="v4_api_buckets"),
-	 *     @OAS\Property(property="id",              ref="#/components/schemas/Bucket/properties/id"),
-	 *     @OAS\Property(property="organization_id", ref="#/components/schemas/Bucket/properties/organization_id")
+	 *     @OA\Xml(name="v4_api_buckets"),
+	 *     @OA\Property(property="id",              ref="#/components/schemas/Bucket/properties/id"),
+	 *     @OA\Property(property="organization_id", ref="#/components/schemas/Bucket/properties/organization_id")
 	 * )
 	 *
 	 * @return mixed
@@ -133,40 +133,38 @@ class HomeController extends APIController
 	 * @link https://api.dbp.dev/api/reply?key=1234&v=4&pretty - V4 Test Access
 	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
 	 *
-	 * @OAS\Get(
+	 * @OA\Get(
 	 *     path="/api/apiversion",
 	 *     tags={"API"},
 	 *     summary="Returns version information",
 	 *     description="Gives information about return types of the different versions of the APIs",
 	 *     operationId="v2_api_versionLatest",
-	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/format"),
-	 *     @OAS\Response(
+	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OA\Parameter(ref="#/components/parameters/key"),
+	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OA\Parameter(ref="#/components/parameters/format"),
+	 *     @OA\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_api_versionLatest")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_api_versionLatest"))
+	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_api_versionLatest")),
+	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_api_versionLatest"))
 	 *     )
 	 * )
 	 *
-	 * @OAS\Schema (
+	 * @OA\Schema (
 	 *     type="object",
 	 *     schema="v2_api_versionLatest",
 	 *     description="The return for the api reply",
 	 *     title="v2_api_versionLatest",
-	 *     @OAS\Xml(name="v2_api_apiReply"),
-	 *     @OAS\Property(property="Version",type="string",example="2.0.0"),
+	 *     @OA\Xml(name="v2_api_apiReply"),
+	 *     @OA\Property(property="Version",type="string",example="2.0.0"),
 	 * )
 	 *
 	 * @return mixed
 	 */
 	public function versionLatest()
 	{
-		$swagger = json_decode(file_get_contents(public_path('swagger.json')));
-
-		return $this->reply(["Version" => $swagger->info->version]);
+		return $this->reply(["Version" => $this->v.'.0']);
 	}
 
 	/**
@@ -178,30 +176,30 @@ class HomeController extends APIController
 	 * @link https://api.dbp.dev/api/reply?key=1234&v=4&pretty - V4 Test Access
 	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
 	 *
-	 * @OAS\Get(
+	 * @OA\Get(
 	 *     path="/api/reply",
 	 *     tags={"API"},
 	 *     summary="Returns version information",
 	 *     description="Gives information about return types of the different versions of the APIs",
 	 *     operationId="v2_api_apiReply",
-	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/format"),
-	 *     @OAS\Response(
+	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OA\Parameter(ref="#/components/parameters/key"),
+	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OA\Parameter(ref="#/components/parameters/format"),
+	 *     @OA\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_api_apiReply")),
-	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(ref="#/components/schemas/v2_api_apiReply"))
+	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_api_apiReply")),
+	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_api_apiReply"))
 	 *     )
 	 * )
 	 *
-	 * @OAS\Schema (
+	 * @OA\Schema (
 	 *     type="object",
 	 *     schema="v2_api_apiReply",
 	 *     description="The return for the api reply",
 	 *     title="v2_api_apiReply",
-	 *     @OAS\Xml(name="v2_api_apiReply"),
+	 *     @OA\Xml(name="v2_api_apiReply"),
      *     example={"json", "jsonp", "html"}
 	 * )
 	 *
@@ -227,37 +225,37 @@ class HomeController extends APIController
 	 * @link https://api.dbp.dev/library/asset?key=1234&v=4&pretty - V4 Test Access
 	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v2_library_asset - V4 Test Docs
 	 *
-	 * @OAS\Get(
+	 * @OA\Get(
 	 *     path="/library/asset",
 	 *     tags={"Library Catalog"},
 	 *     summary="Returns Library File path information",
 	 *     description="This call returns the file path information. This information can be used with the response of the locations calls to create a URI to retrieve files.",
 	 *     operationId="v2_library_asset",
-	 *     @OAS\Parameter(name="dam_id", in="query", description="The DAM ID for which to retrieve file path info.", @OAS\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OAS\Parameter(ref="#/components/parameters/key"),
-	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OAS\Parameter(ref="#/components/parameters/format"),
-	 *     @OAS\Response(
+	 *     @OA\Parameter(name="dam_id", in="query", description="The DAM ID for which to retrieve file path info.", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OA\Parameter(ref="#/components/parameters/key"),
+	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OA\Parameter(ref="#/components/parameters/format"),
+	 *     @OA\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(ref="#/components/schemas/v2_library_asset")),
-	 *         @OAS\MediaType(mediaType="application/xml", @OAS\Schema(ref="#/components/schemas/v2_library_asset"))
+	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_asset")),
+	 *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_asset"))
 	 *     )
 	 * )
 	 *
-	 * @OAS\Schema (
+	 * @OA\Schema (
 	 *     type="object",
 	 *     schema="v2_library_asset",
 	 *     description="v2_library_asset",
 	 *     title="v2_library_asset",
-	 *     @OAS\Xml(name="v2_library_asset"),
-	 *     @OAS\Property(property="server",type="string",example="cloud.faithcomesbyhearing.com"),
-	 *     @OAS\Property(property="root_path",type="string",example="/mp3audiobibles2"),
-	 *     @OAS\Property(property="protocol",type="string",example="http"),
-	 *     @OAS\Property(property="CDN",type="string",example="1"),
-	 *     @OAS\Property(property="priority",type="string",example="5"),
-	 *     @OAS\Property(property="volume_id",type="string",example="")
+	 *     @OA\Xml(name="v2_library_asset"),
+	 *     @OA\Property(property="server",type="string",example="cloud.faithcomesbyhearing.com"),
+	 *     @OA\Property(property="root_path",type="string",example="/mp3audiobibles2"),
+	 *     @OA\Property(property="protocol",type="string",example="http"),
+	 *     @OA\Property(property="CDN",type="string",example="1"),
+	 *     @OA\Property(property="priority",type="string",example="5"),
+	 *     @OA\Property(property="volume_id",type="string",example="")
 	 * )
 	 *
 	 * @return mixed
@@ -328,6 +326,12 @@ class HomeController extends APIController
 		$status_gateway = '';
 
 		return $status_gateway;
+	}
+
+	public function error($status = null,$message = "")
+	{
+		if($status) return view('errors.'.$status,compact('message'));
+		return view('errors.broken',compact('message'));
 	}
 
 }

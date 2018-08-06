@@ -4,13 +4,26 @@ namespace App\Transformers\V2\LibraryCatalog;
 
 use League\Fractal\TransformerAbstract;
 
+/**
+ * Class LibraryMetadataTransformer
+ *
+ *
+ * @package App\Transformers\V2\LibraryCatalog
+ */
 class LibraryMetadataTransformer extends TransformerAbstract
 {
-    /**
-     * A Fractal transformer.
-     *
-     * @return array
-     */
+	/**
+	 * A Fractal transformer.
+	 *
+	 * @OA\Schema (
+	 *     type="object",
+	 *     schema="v2_library_metadata",
+	 *     description="The various version ids in the old version 2 style",
+	 *     title="v2_library_version",
+	 *     @OA\Xml(name="v2_library_version")
+	 * )
+	 *
+	 */
     public function transform($bible_fileset)
     {
 	        $output = [

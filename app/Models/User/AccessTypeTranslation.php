@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\User\Account
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The AccessTypeTranslation",
  *     title="AccessTypeTranslation",
- *     @OAS\Xml(name="AccessTypeTranslation")
+ *     @OA\Xml(name="AccessTypeTranslation")
  * )
  *
  */
@@ -22,7 +22,7 @@ class AccessTypeTranslation extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/AccessType/properties/id")
+	 * @OA\Property(ref="#/components/schemas/AccessType/properties/id")
 	 *
 	 * @method static AccessTypeTranslation whereAccessFunctionTranslationId($value)
 	 * @property string $access_function_translation_id
@@ -31,7 +31,7 @@ class AccessTypeTranslation extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Language/properties/iso")
+	 * @OA\Property(ref="#/components/schemas/Language/properties/iso")
 	 *
 	 * @method static AccessTypeTranslation whereIso($value)
 	 * @property string $iso
@@ -40,7 +40,7 @@ class AccessTypeTranslation extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="name",
 	 *   type="string",
 	 *   description="The translated name for each access type"
@@ -53,7 +53,7 @@ class AccessTypeTranslation extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="description",
 	 *   type="string",
 	 *   description="The translated description for each access type"

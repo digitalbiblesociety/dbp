@@ -17,7 +17,8 @@ class OrganizationTransformer extends BaseTransformer
     {
     	$translation = $organization->translations->where('language_iso',$GLOBALS['i18n_iso'])->first();
 	    $organization->name = $translation->name ?? str_replace('-',' ', $organization->slug);
-	    $organization->description = $translation->description_short ?? '';
+	    $organization->description = $translation->description ?? '';
+	    $organization->tagline = $translation->description_short ?? '';
 
 	    switch ($this->version) {
 		    case "2":
@@ -82,6 +83,7 @@ class OrganizationTransformer extends BaseTransformer
 					"slug"              => $organization->slug,
 					"name"              => $organization->name,
 					"description"       => $organization->description,
+					"description_short" => $organization->tagline,
 					"phone"             => $organization->phone,
 					"email"             => $organization->email,
 					"bibles"            => $bibles,
@@ -92,10 +94,11 @@ class OrganizationTransformer extends BaseTransformer
 						"secondary"    => $organization->secondaryColor,
 					],
 					"urls" => [
-						"site"          => $organization->url_website,
-						"donate"        => $organization->url_donate,
-						"twitter"       => $organization->url_twitter,
-						"facebook"      => $organization->url_facebook,
+						"site"          => $organization->url_website ?? '',
+						"donate"        => $organization->url_donate ?? '',
+						"twitter"       => $organization->url_twitter ?? '',
+						"facebook"      => $organization->url_facebook ?? '',
+						"instagram"     => $organization->url_instagram ?? '',
 					],
 					"address" => [
 						"line_1"            => $organization->address,
@@ -111,16 +114,16 @@ class OrganizationTransformer extends BaseTransformer
 			default:
 			case "v4_organizations.all": {
 				return [
-					"name"            => $organization->name,
-					"description"     => $organization->description,
-					"slug"            => $organization->slug,
-					"logo"            => @$organization->logos->where('icon',0)->first()->url,
-					"logo_icon"       => @$organization->logos->where('icon',1)->first()->url,
-					"phone"           => $organization->phone,
-					"email"           => $organization->email,
-					"colors"          => [
-						"primary"     => $organization->primaryColor,
-						"secondary"   => $organization->secondaryColor,
+					"name"              => $organization->name,
+					"description_short" => $organization->tagline,
+					"slug"              => $organization->slug,
+					"logo"              => @$organization->logos->where('icon',0)->first()->url,
+					"logo_icon"         => @$organization->logos->where('icon',1)->first()->url,
+					"phone"             => $organization->phone,
+					"email"             => $organization->email,
+					"colors"            => [
+						"primary"       => $organization->primaryColor,
+						"secondary"     => $organization->secondaryColor,
 					],
 					"urls" => [
 						"site"        => $organization->url_website,

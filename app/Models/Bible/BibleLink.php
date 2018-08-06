@@ -20,16 +20,17 @@ use Illuminate\Database\Eloquent\Model;
  * @method static BibleLink whereUpdatedAt($value)
  * @method static BibleLink whereUrl($value)
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="BibleLink",
  *     title="BibleLink",
- *     @OAS\Xml(name="BibleLink")
+ *     @OA\Xml(name="BibleLink")
  * )
  *
  */
 class BibleLink extends Model
 {
+	protected $connection = 'dbp';
     /**
      * BibleLinks will only be called from the Bibles Model. So we don't need ID or Abbr.
      *
@@ -46,7 +47,7 @@ class BibleLink extends Model
 
     /**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="string",
 	 *   description=""
@@ -59,7 +60,7 @@ class BibleLink extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="bible_id",
 	 *   type="string",
 	 *   description=""
@@ -72,7 +73,7 @@ class BibleLink extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="type",
 	 *   type="string",
 	 *   description=""
@@ -85,7 +86,7 @@ class BibleLink extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="url",
 	 *   type="string",
 	 *   description=""
@@ -98,7 +99,7 @@ class BibleLink extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="title",
 	 *   type="string",
 	 *   description=""
@@ -111,7 +112,7 @@ class BibleLink extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="organization_id",
 	 *   type="string",
 	 *   description=""
@@ -124,7 +125,7 @@ class BibleLink extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="created_at",
 	 *   type="string",
 	 *   description=""
@@ -137,7 +138,7 @@ class BibleLink extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description=""
@@ -150,7 +151,7 @@ class BibleLink extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="provider",
 	 *   type="string",
 	 *   description=""

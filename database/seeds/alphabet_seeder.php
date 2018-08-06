@@ -14,10 +14,10 @@ class alphabet_seeder extends Seeder
      */
     public function run()
     {
-	    \DB::table('alphabet_fonts')->delete();
-    	\DB::table('alphabet_numbers')->delete();
-	    \DB::table('alphabet_language')->delete();
-	    \DB::table('alphabets')->delete();
+	    \DB::connection('dbp')->table('alphabet_fonts')->delete();
+    	\DB::connection('dbp')->table('alphabet_numbers')->delete();
+	    \DB::connection('dbp')->table('alphabet_language')->delete();
+	    \DB::connection('dbp')->table('alphabets')->delete();
         $seederhelper = new SeederHelper();
         $sheet_id = '1GoBzI4VRP2bQW8LMdv0eJrEICSSAJ-k_8yix3XjBf8w';
         //$alphabets = $seederhelper->csv_to_array("https://docs.google.com/spreadsheets/d/$sheet_id/export?format=csv&id=$sheet_id");
@@ -74,9 +74,6 @@ class alphabet_seeder extends Seeder
 			    $alphabetExists->save();
 		    }
 	    }
-
-	    $alphabet_numbers = $seederhelper->csv_to_array("https://docs.google.com/spreadsheets/d/$sheet_id/export?format=csv&id=$sheet_id&gid=1908412109");
-	    foreach ($alphabet_numbers as $alphabet_number) AlphabetNumber::create($alphabet_number);
 
     }
 

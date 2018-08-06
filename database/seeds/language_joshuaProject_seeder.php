@@ -13,7 +13,7 @@ class language_joshuaProject_seeder extends Seeder
      */
     public function run()
     {
-		\DB::table('language_bibleInfo')->delete();
+		\DB::connection('dbp')->table('language_bibleInfo')->delete();
 	    $seederHelper = new SeederHelper();
 	    $languages = $seederHelper->csv_to_array(storage_path('/data/languages/language_joshuaProject.csv'));
 

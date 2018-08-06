@@ -14,7 +14,7 @@
         'subtitle'        => '',
         'subtitle_class'  => '',
         'backgroundImage' => null,
-        'noGradient' => true,
+        'noGradient'      => true,
         'breadcrumbs' => [
             '/docs'    => trans('docs.title'),
             '/docs/v2' => trans('docs.version2'),

@@ -1,4 +1,4 @@
-const { mix } = require('laravel-mix');
+let mix = require('laravel-mix');
 
 /*
  |--------------------------------------------------------------------------
@@ -11,12 +11,6 @@ const { mix } = require('laravel-mix');
  |
  */
 
-mix.sass('resources/assets/sass/app.scss', 'public/css');
-mix.js('resources/assets/js/main.js', 'public/js/app.js');
-
-mix.js('resources/assets/js/swagger-vue-v2.js', 'public/js/swagger-vue-v2.js');
-mix.js('resources/assets/js/swagger-vue-v4.js', 'public/js/swagger-vue-v4.js');
-
-mix.browserSync({
-    proxy: 'https://dbp.test'
-});
+mix.js('resources/assets/js/app.js', 'public/js')
+   .sass('resources/assets/sass/app.scss', 'public/css')
+   .version();

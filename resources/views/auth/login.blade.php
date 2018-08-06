@@ -1,87 +1,76 @@
 @extends('layouts.app')
 
-@section('head')
-    <style>
-        .auth-option-wrap {
-            display: flex;
-            height:100%;
-        }
-        .auth-option {
-            flex:1;
-            transition: all 150ms ease-in-out;
-        }
-        .auth-option:hover {
-            flex-grow: 1.2;
-        }
-        .auth-option img {
-            width: 100px;
-            margin:0 auto;
-            display: block;
-            fill: white;
-        }
-
-        .auth-option-action {
-
-        }
-
-        .sign-in {}
-        .sign-up {}
-
-        .social-auth {
-            background-color:#222;
-            font-size:2rem;
-            text-align: center;
-        }
-        .social-auth .icon {
-            color:#FFF;
-        }
-    </style>
-@endsection
-
 @section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">{{ __('Login') }}</div>
 
-    @include('layouts.partials.banner', [
-        'title' => "",
-        'tabs' => [
-            'login-tab'    => 'Login',
-            'register-tab' => 'Sign Up'
-		]
-    ])
-    <nav class="social-auth">
-        <a href="{{ route('login.social_redirect', ['provider' => 'google']) }}"><svg class="icon"><use xlink:href="/img/icons/icons-social.svg#google"></use></svg></a>
-        <a href="{{ route('login.social_redirect', ['provider' => 'facebook']) }}"><svg class="icon"><use xlink:href="/img/icons/icons-social.svg#facebook"></use></svg></a>
-        <a href="{{ route('login.social_redirect', ['provider' => 'twitter']) }}"><svg class="icon"><use xlink:href="/img/icons/icons-social.svg#twitter"></use></svg></a>
-        <a href="{{ route('login.social_redirect', ['provider' => 'github']) }}" href=""><svg class="icon"><use xlink:href="/img/icons/icons-social.svg#github"></use></svg></a>
-    </nav>
-    <section role="tabpanel" aria-hidden="false" id="login-tab">
-        @if($errors->any())
-            <div class="medium-6 columns centered">
-                <div data-abide-error class="alert callout">@foreach($errors->all() as $error) <p>{{ $error }}</p> @endforeach</div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('login') }}">
+                        @csrf
+
+                        <div class="form-group row">
+                            <label for="email" class="col-sm-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required autofocus>
+
+                                @if ($errors->has('email'))
+                                    <span class="invalid-feedback">
+                                        <strong>{{ $errors->first('email') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
+
+                                @if ($errors->has('password'))
+                                    <span class="invalid-feedback">
+                                        <strong>{{ $errors->first('password') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-6 offset-md-4">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> {{ __('Remember Me') }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <div class="col-md-8 offset-md-4">
+                                <button type="submit" class="btn btn-primary">
+                                    {{ __('Login') }}
+                                </button>
+
+                                <a class="btn btn-link" href="{{ route('password.request') }}">
+                                    {{ __('Forgot Your Password?') }}
+                                </a>
+                            </div>
+                        </div>
+
+                        <p class="text-center mb-3">
+                            Or Login with
+                        </p>
+
+                        @include('layouts.partials.socials-icons')
+
+                    </form>
+                </div>
             </div>
-        @endif
-        <form role="form" method="POST" action="{{ route('login') }}" class="medium-6 columns centered">
-            {{ csrf_field() }}
-            <h3 class="text-center">Sign in</h3>
-            <a class="login-box-submit-button" href="login/facebook">Facebook</a> |
-            <a class="login-box-submit-button" href="login/github">Github</a> |
-            <a class="login-box-submit-button" href="login/google">Google</a>
-            <input class="login-box-input" type="text" name="email" placeholder="Email" value="{{ old('email') }}" autocomplete="email" required />
-            <input class="login-box-input" type="password" name="password" placeholder="Password" autocomplete="current-password" required />
-            <input class="login-box-submit-button" type="submit" name="signup_submit" value="Sign In" />
-            <a href="{{ route('register') }}">Register</a> | <a href="{{ route('password.request') }}">Forgot Password?</a>
-        </form>
-    </section>
-    <section role="tabpanel" aria-hidden="true" id="register-tab">
-        <form class="medium-6 columns centered" role="form" method="POST" action="{{ route('register') }}">
-                {{ csrf_field() }}
-                <h3 class="text-center">Register</h3>
-                <label>Name <input id="name" type="text" name="name" value="{{ old('name') }}" autocomplete='name' required autofocus></label>
-                <label>E-Mail Address <input id="email" type="email" name="email" autocomplete="email" value="{{ old('email') }}" required></label>
-                <label>Password <input id="password" type="password" name="password" autocomplete="new-password" required></label>
-                <label>Confirm Password <input id="password-confirm" type="password" name="password_confirmation" autocomplete="new-password" required></label>
-                {!! app('captcha')->render() !!}
-                <button type="submit" class="button expand">Register</button>
-            </div>
-        </form>
-    </section>
+        </div>
+    </div>
+</div>
 @endsection

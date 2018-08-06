@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Organization\Bucket
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="Bucket",
  *     title="Bucket",
- *     @OAS\Xml(name="Bucket")
+ *     @OA\Xml(name="Bucket")
  * )
  *
  * @property-read \App\Models\Organization\Organization $organization
@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Bucket extends Model
 {
+	protected $connection = 'dbp';
 	public $primaryKey = 'id';
     public $incrementing = false;
     public $keyType = 'string';
@@ -27,7 +28,7 @@ class Bucket extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="id",
 	 *   type="string",
 	 *   description="The id of the Bucket",
@@ -43,7 +44,7 @@ class Bucket extends Model
 
 	/**
 	 *
-	 * @OAS\Property(ref="#/components/schemas/Organization/properties/id")
+	 * @OA\Property(ref="#/components/schemas/Organization/properties/id")
 	 *
 	 * @method static Bucket whereOrganizationId($value)
 	 * @property int $organization_id
@@ -53,7 +54,7 @@ class Bucket extends Model
 
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="created_at",
 	 *   type="string",
 	 *   description="The timestamp at which the bucket was created",
@@ -66,7 +67,7 @@ class Bucket extends Model
 	protected $created_at;
 	/**
 	 *
-	 * @OAS\Property(
+	 * @OA\Property(
 	 *   title="updated_at",
 	 *   type="string",
 	 *   description="The timestamp at which the bucket was last updated",
