@@ -65,7 +65,7 @@
                             Or Login with
                         </p>
 
-                        @include('layouts.partials.socials-icons')
+                        @include('layouts.partials.socials')
 
                     </form>
                 </div>
