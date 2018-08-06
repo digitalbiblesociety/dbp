@@ -11,6 +11,7 @@
 /public/uploads
 /public/swagger-editor
 /storage/framework/
+/storage/logs/*
 /storage/*.key
 /storage/data/
 /storage/s3/
