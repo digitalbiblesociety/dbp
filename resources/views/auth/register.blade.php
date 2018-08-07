@@ -1,126 +1,75 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card">
-                <div class="card-header">{{ __('Register') }}</div>
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
-                        @csrf
+    @include('layouts.partials.banner', ['title' => __('Register')])
 
-                        <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Username') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" required autofocus>
-
-                                @if ($errors->has('name'))
-                                    <span class="invalid-feedback">
-                                        <strong>{{ $errors->first('name') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="first_name" class="col-md-4 col-form-label text-md-right">{{ __('First Name') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="first_name" type="text" class="form-control{{ $errors->has('first_name') ? ' is-invalid' : '' }}" name="first_name" value="{{ old('first_name') }}" required autofocus>
-
-                                @if ($errors->has('first_name'))
-                                    <span class="invalid-feedback">
-                                        <strong>{{ $errors->first('first_name') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="last_name" class="col-md-4 col-form-label text-md-right">{{ __('Last Name') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="last_name" type="text" class="form-control{{ $errors->has('last_name') ? ' is-invalid' : '' }}" name="last_name" value="{{ old('last_name') }}" required autofocus>
-
-                                @if ($errors->has('last_name'))
-                                    <span class="invalid-feedback">
-                                        <strong>{{ $errors->first('last_name') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required>
-
-                                @if ($errors->has('email'))
-                                    <span class="invalid-feedback">
-                                        <strong>{{ $errors->first('email') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
-
-                                @if ($errors->has('password'))
-                                    <span class="invalid-feedback">
-                                        <strong>{{ $errors->first('password') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
-                            </div>
-                        </div>
-
-
-                        @if(config('settings.reCaptchStatus'))
-                            <div class="form-group">
-                                <div class="col-sm-6 col-sm-offset-4">
-                                    <div class="g-recaptcha" data-sitekey="{{ config('settings.reCaptchSite') }}"></div>
-                                </div>
-                            </div>
-                        @endif
-
-                        <div class="form-group row mb-4">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Register') }}
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-12 col-lg-10 offset-lg-1 col-xl-8 offset-xl-2">
-                                <p class="text-center mb-4">
-                                    Or Use Social Logins to Register
-                                </p>
-                                @include('layouts.partials.socials')
-                            </div>
-                        </div>
-
-                    </form>
-                </div>
+    <div class="container">
+        <div class="column is-8-tablet is-offset-2-tablet">
+            <div class="tabs is-centered">
+                <ul>
+                    <li><a href="{{ route('login') }}">{{ __('Login') }}</a></li>
+                    <li class="is-active"><a href="#">{{ __('Register') }}</a></li>
+                </ul>
             </div>
+
+            <form method="POST" action="{{ route('register') }}">
+                @csrf
+                <div class="columns">
+                <div class="field column">
+                    <label class="label" for="email">{{ __('Username') }}</label>
+                    <div class="control"><input class="input" type="text" name="email" value="{{ old('name') }}" required autofocus placeholder="username"></div>
+                    @if($errors->has('name')) <p class="help is-danger">{{ $errors->first('name') }}</p> @endif
+                </div>
+
+                <div class="field column">
+                    <label class="label" for="email">{{ __('E-Mail Address') }}</label>
+                    <div class="control"><input class="input" type="text" name="email" value="{{ old('email') }}" required placeholder="Email"></div>
+                    @if($errors->has('email')) <p class="help is-danger">{{ $errors->first('email') }}</p> @endif
+                </div>
+                </div>
+
+                <div class="columns">
+                <div class="field column">
+                    <label class="label" for="email">{{ __('First Name') }}</label>
+                    <div class="control"><input class="input" type="text" name="first_name" value="{{ old('first_name') }}" required placeholder="First Name"></div>
+                    @if($errors->has('first_name')) <p class="help is-danger">{{ $errors->first('first_name') }}</p> @endif
+                </div>
+
+                <div class="field column">
+                    <label class="label" for="email">{{ __('Last Name') }}</label>
+                    <div class="control"><input class="input" type="text" name="last_name" value="{{ old('last_name') }}" required placeholder="Last Name"></div>
+                    @if($errors->has('last_name')) <p class="help is-danger">{{ $errors->first('last_name') }}</p> @endif
+                </div>
+                </div>
+                <div class="columns">
+                <div class="field column">
+                    <label class="label" for="email">{{ __('Password') }}</label>
+                    <div class="control"><input class="input" type="text" name="password" required placeholder="Password"></div>
+                    @if($errors->has('password')) <p class="help is-danger">{{ $errors->first('password') }}</p> @endif
+                </div>
+
+                <div class="field column">
+                    <label class="label" for="email">{{ __('Confirm Password') }}</label>
+                    <div class="control"><input class="input" type="text" name="password_confirmation" required placeholder="Password"></div>
+                    @if($errors->has('password_confirmation')) <p class="help is-danger">{{ $errors->first('password_confirmation') }}</p> @endif
+                </div>
+                </div>
+
+                    @if(config('settings.reCaptchStatus'))
+                        <div class="form-group">
+                            <div class="col-sm-6 col-sm-offset-4">
+                                <div class="g-recaptcha" data-sitekey="{{ config('settings.reCaptchSite') }}"></div>
+                            </div>
+                        </div>
+                    @endif
+
+                <button type="submit" class="button is-primary">{{ __('Register') }}</button>
+                @include('layouts.partials.socials')
+
+            </form>
         </div>
     </div>
-</div>
 @endsection
 
 @section('footer_scripts')

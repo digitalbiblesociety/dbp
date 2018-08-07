@@ -31,6 +31,12 @@
                 <h3>Bibles</h3>
                 <a href="{{ route('dashboard.bibles') }}">Create New</a> |
                 <a href="/bibles">View All</a>
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Example input">
+                    </div>
+                    <button class="btn btn-primary" type="submit">Jump To Bible</button>
+                </form>
             </div>
 
             <div class="col-md-6 text-center">

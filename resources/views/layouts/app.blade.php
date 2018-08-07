@@ -57,20 +57,8 @@
         <div id="app">
 
             @include('layouts.partials.nav')
-
-            <main class="py-4">
-
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            @include('layouts.partials.form-status')
-                        </div>
-                    </div>
-                </div>
-
-                @yield('content')
-
-            </main>
+            @include('layouts.partials.form-status')
+            @yield('content')
 
         </div>
 

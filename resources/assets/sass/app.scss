@@ -1,42 +1,46 @@
-// Fonts
-@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
+// Header
+@charset "utf-8";
 
-// Variables
-@import "variables";
+// Set your brand colors
+$purple: rgb(200, 60, 100);
+$pink: #FA7C91;
+$brown: #757763;
+$beige-light: #D0D1CD;
+$beige-lighter: #EFF0EB;
 
-// Bootstrap
-@import '~bootstrap/scss/bootstrap';
+// Update Bulma's global variables
+$family-sans-serif: "Nunito", sans-serif;
+$grey-dark: $brown;
+$grey-light: $beige-light;
+$primary: rgb(200, 60, 100);
+$link: rgb(100, 60, 100);
+$widescreen-enabled: false;
+$fullhd-enabled: false;
 
-.navbar-laravel {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+// Update some of Bulma's component variables
+$body-background-color: $beige-lighter;
+$control-border-width: 2px;
+$input-border-color: transparent;
+$input-shadow: none;
+
+// Import only what you need from Bulma
+@import "../../../node_modules/bulma/sass/utilities/_all";
+@import "../../../node_modules/bulma/sass/base/_all";
+@import "../../../node_modules/bulma/sass/elements/_all";
+@import "../../../node_modules/bulma/sass/components/_all";
+@import "../../../node_modules/bulma/sass/grid/_all";
+@import "../../../node_modules/bulma/sass/layout/_all";
+
+
+// Footer
+
+
+// Menu
+.navbar-item.is-mega {
+  position: static;
+
+  .is-mega-menu-title {
+    margin-bottom: 0;
+    padding: .375rem 1rem;
+  }
 }
-
-// Font Awesome
-@import '~font-awesome/scss/font-awesome';
-
-// Dropzone
-@import "~dropzone/dist/basic";
-@import "~dropzone/dist/dropzone";
-
-// Bootstrap Social Media Buttons - https://github.com/lipis/bootstrap-social
-@import "~bootstrap-social/bootstrap-social.css";
-
-@import "mixins";
-@import "margins";
-@import "helpers";
-@import "typography";
-@import "buttons";
-@import "badges";
-@import "panels";
-@import "wells";
-@import "modals";
-@import "socials";
-@import "forms";
-@import "lists";
-@import "avatar";
-@import "logs";
-@import "password";
-@import "hideShowPassword";
-@import "visibility";
-@import "user-profile";
