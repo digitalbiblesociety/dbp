@@ -1,106 +1,213 @@
-<nav class="navbar navbar-expand-md navbar-light navbar-laravel">
-    <div class="container">
-        <a class="navbar-brand" href="{{ url('/') }}">
-            {!! config('app.name', trans('titles.app')) !!}
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-            <span class="sr-only">{!! trans('titles.toggleNav') !!}</span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            {{-- Left Side Of Navbar --}}
-            <ul class="navbar-nav mr-auto">
-                @role('admin')
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {!! trans('titles.adminDropdownNav') !!}
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+<nav class="navbar ">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="{{ url('/') }}">{!! config('app.name', trans('titles.app')) !!}</a>
+        <a class="navbar-item is-hidden-desktop" href="https://github.com/digitalbiblesociety/dbp" target="_blank"><span class="icon" style="color: #333;"><i class="fa fa-github"></i></span></a>
+        <a class="navbar-item is-hidden-desktop" href="https://twitter.com/dbp" target="_blank"><span class="icon" style="color: #55acee;"><i class="fa fa-twitter"></i></span></a>
 
-                            <a class="dropdown-item {{ Request::is('users', 'users/' . Auth::user()->id, 'users/' . Auth::user()->id . '/edit') ? 'active' : null }}" href="{{ url('/users') }}">
-                                @lang('titles.adminUserList')
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item {{ Request::is('users/create') ? 'active' : null }}" href="{{ url('/users/create') }}">
-                                @lang('titles.adminNewUser')
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item {{ Request::is('themes','themes/create') ? 'active' : null }}" href="{{ url('/themes') }}">
-                                @lang('titles.adminThemesList')
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item {{ Request::is('logs') ? 'active' : null }}" href="{{ url('/logs') }}">
-                                @lang('titles.adminLogs')
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item {{ Request::is('activity') ? 'active' : null }}" href="{{ url('/activity') }}">
-                                @lang('titles.adminActivity')
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item {{ Request::is('phpinfo') ? 'active' : null }}" href="{{ url('/phpinfo') }}">
-                                @lang('titles.adminPHP')
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item {{ Request::is('routes') ? 'active' : null }}" href="{{ url('/routes') }}">
-                                @lang('titles.adminRoutes')
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item {{ Request::is('active-users') ? 'active' : null }}" href="{{ url('/active-users') }}">
-                                @lang('titles.activeUsers')
-                            </a>
+        <div class="navbar-burger burger" data-target="navMenubd-example">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <div id="navMenubd-example" class="navbar-menu">
+        <div class="navbar-start">
+
+            <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link" href="{{ route('docs') }}">Docs</a>
+                <div class="navbar-dropdown">
+                    <a class="navbar-item" href="{{ route('swagger_v4') }}"><p><strong>v4 API Docs</strong><br><small>OAS Specification & Inspector</small></p></a>
+                    <a class="navbar-item" href="{{ route('swagger_v2') }}">v2 API Routes</a>
+                    <a class="navbar-item" href="{{ route('docs.sdk') }}">SDK & Examples</a>
+                    <a class="navbar-item" href="https://github.com/digitalbiblesociety/dbp/issues">Issues & Feedback</a>
+                    <hr class="navbar-divider">
+                    <div class="navbar-item">
+                        <div>
+                            <p class="is-size-6-desktop"><strong class="has-text-info">0.5.1</strong></p>
+                            <small><a class="bd-view-all-versions" href="https://github.com/digitalbiblesociety/dbp/releases">View all versions</a></small>
                         </div>
-                    </li>
-                @endrole
-                @role('archivist')
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {!! trans('titles.archivistDropdownNav') !!}
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item {{ Request::is('bibles', 'bibles/' . Auth::user()->id, 'bibles/' . Auth::user()->id . '/edit') ? 'active' : null }}" href="{{ url('/bibles') }}">
-                            @lang('titles.adminBiblesList')
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item {{ Request::is('bibles/create') ? 'active' : null }}" href="{{ url('/bibles/create') }}">
-                            @lang('titles.adminNewBible')
-                        </a>
                     </div>
-                </li>
-                @endrole
-            </ul>
-            {{-- Right Side Of Navbar --}}
-            <ul class="navbar-nav ml-auto">
-                {{-- Authentication Links --}}
-                @guest
-                    <li><a class="nav-link" href="{{ route('login') }}">{{ trans('titles.login') }}</a></li>
-                    <li><a class="nav-link" href="{{ route('register') }}">{{ trans('titles.register') }}</a></li>
-                @else
-                    <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            @if ((Auth::User()->profile) && Auth::user()->profile->avatar_status == 1)
-                                <img src="{{ Auth::user()->profile->avatar }}" alt="{{ Auth::user()->name }}" class="user-avatar-nav">
-                            @else
-                                <div class="user-avatar-nav"></div>
-                            @endif
-                            {{ Auth::user()->name }} <span class="caret"></span>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item {{ Request::is('profile/'.Auth::user()->name, 'profile/'.Auth::user()->name . '/edit') ? 'active' : null }}" href="{{ url('/profile/'.Auth::user()->name) }}">
-                                @lang('titles.profile')
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ route('logout') }}"
-                               onclick="event.preventDefault();
-                                             document.getElementById('logout-form').submit();">
-                                {{ __('Logout') }}
-                            </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form>
+                </div>
+            </div>
+
+
+            @role('admin')
+            <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link" href="{{ route('public.home') }}">{!! trans('titles.adminDropdownNav') !!}</a>
+                <div class="navbar-dropdown">
+                    <a class="navbar-item" href="{{ url('/users') }}">@lang('titles.adminUserList')</a>
+                    <a class="navbar-item" href="{{ url('/users/create') }}">@lang('titles.adminNewUser')</a>
+                    <a class="navbar-item" href="{{ url('/themes') }}">@lang('titles.adminThemesList')</a>
+                    <a class="navbar-item" href="{{ url('/logs') }}">@lang('titles.adminLogs')</a>
+                    <a class="navbar-item" href="{{ url('/activity') }}">@lang('titles.adminActivity')</a>
+                    <a class="navbar-item" href="{{ url('/phpinfo') }}">@lang('titles.adminPHP')</a>
+                    <a class="navbar-item" href="{{ url('/routes') }}">@lang('titles.adminRoutes')</a>
+                    <a class="navbar-item" href="{{ url('/active-users') }}">@lang('titles.activeUsers')</a>
+                </div>
+            </div>
+            @endrole
+            {{--
+            <div class="navbar-item has-dropdown is-hoverable is-mega">
+                <div class="navbar-link">Blog</div>
+                <div id="blogDropdown" class="navbar-dropdown " data-style="width: 18rem;">
+                    <div class="container is-fluid">
+                        <div class="columns">
+                            <div class="column">
+                                <h1 class="title is-6 is-mega-menu-title">Sub Menu Title</h1>
+                                <a class="navbar-item" href="/2017/08/03/list-of-tags/">
+                                    <div class="navbar-content">
+                                        <p>
+                                            <small class="has-text-info">03 Aug 2017</small>
+                                        </p>
+                                        <p>New feature: list of tags</p>
+                                    </div></a>
+                                <a class="navbar-item" href="/2017/08/03/list-of-tags/">
+                                    <div class="navbar-content">
+                                        <p>
+                                            <small class="has-text-info">03 Aug 2017</small>
+                                        </p>
+                                        <p>New feature: list of tags</p>
+                                    </div></a>
+                                <a class="navbar-item" href="/2017/08/03/list-of-tags/">
+                                    <div class="navbar-content">
+                                        <p>
+                                            <small class="has-text-info">03 Aug 2017</small>
+                                        </p>
+                                        <p>New feature: list of tags</p>
+                                    </div></a>
+                            </div>
+                            <div class="column">
+                                <h1 class="title is-6 is-mega-menu-title">Sub Menu Title</h1>
+                                <a class="navbar-item" href="/2017/08/03/list-of-tags/">
+                                    <div class="navbar-content">
+
+                                        <p>
+                                            <small class="has-text-info">03 Aug 2017</small>
+                                        </p>
+                                        <p>New feature: list of tags</p>
+                                    </div></a>
+                                <a class="navbar-item" href="/documentation/overview/start/">
+                                    Overview</a>
+                                <a class="navbar-item" href="http://bulma.io/documentation/modifiers/syntax/">
+                                    Modifiers</a>
+                                <a class="navbar-item" href="http://bulma.io/documentation/columns/basics/">
+                                    Columns</a>
+                            </div>
+                            <div class="column">
+                                <h1 class="title is-6 is-mega-menu-title">Sub Menu Title</h1>
+                                <a class="navbar-item" href="/2017/08/03/list-of-tags/">
+                                    <div class="navbar-content">
+                                        <p>
+                                            <small class="has-text-info">03 Aug 2017</small>
+                                        </p>
+                                        <p>New feature: list of tags</p>
+                                    </div></a>
+                                <a class="navbar-item" href="/2017/08/03/list-of-tags/">
+                                    <div class="navbar-content">
+                                        <p>
+                                            <small class="has-text-info">03 Aug 2017</small>
+                                        </p>
+                                        <p>New feature: list of tags</p>
+                                    </div></a>
+                                <a class="navbar-item" href="/2017/08/03/list-of-tags/">
+                                    <div class="navbar-content">
+                                        <p>
+                                            <small class="has-text-info">03 Aug 2017</small>
+                                        </p>
+                                        <p>New feature: list of tags</p>
+                                    </div></a>
+
+                            </div>
+                            <div class="column">
+                                <h1 class="title is-6 is-mega-menu-title">Sub Menu Title</h1>
+                                <a class="navbar-item" href="/documentation/overview/start/">
+                                    Overview</a>
+                                <a class="navbar-item" href="http://bulma.io/documentation/modifiers/syntax/">
+                                    Modifiers</a>
+                                <a class="navbar-item" href="http://bulma.io/documentation/columns/basics/">
+                                    Columns</a>
+                                <a class="navbar-item" href="http://bulma.io/documentation/layout/container/">
+                                    Layout</a>
+                            </div>
                         </div>
-                    </li>
-                @endguest
-            </ul>
+                    </div>
+
+                    <hr class="navbar-divider">
+                    <div class="navbar-item">
+                        <div class="navbar-content">
+                            <div class="level is-mobile">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        <strong>Stay up to date!</strong>
+                                    </div>
+                                </div>
+                                <div class="level-right">
+                                    <div class="level-item">
+                                        <a class="button bd-is-rss is-small" href="http://bulma.io/atom.xml">
+                      <span class="icon is-small">
+                        <i class="fa fa-rss"></i>
+                      </span>
+                                            <span>Subscribe</span></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="navbar-item has-dropdown is-hoverable">
+                <div class="navbar-link">
+                    More
+                </div>
+                <div id="moreDropdown" class="navbar-dropdown ">
+                    <a class="navbar-item" href="http://bulma.io/extensions/">
+                        <div class="level is-mobile">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <p>
+                                        <strong>Extensions</strong>
+                                        <br>
+                                        <small>Side projects to enhance Bulma</small>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="level-right">
+                                <div class="level-item">
+                  <span class="icon has-text-info">
+                    <i class="fa fa-plug"></i>
+                  </span>
+                                </div>
+                            </div>
+                        </div></a>
+                </div>
+            </div>
+
+            <a class="navbar-item" href="http://bulma.io/expo/"><span class="bd-emoji">🎨</span> &nbsp;Expo</a>
+            <a class="navbar-item" href="http://bulma.io/love/"><span class="bd-emoji">❤️</span> &nbsp;Love</a>
+            --}}
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                 @guest <a class="button is-primary" href="{{ route('login') }}">Login</a> @else
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link" href="#">
+                            @if((Auth::User()->profile) && Auth::user()->profile->avatar_status == 1)
+                                <img src="{{ Auth::user()->profile->avatar }}" alt="{{ Auth::user()->name }}" class="user-avatar-nav">
+                            @endif
+                            {{ Auth::user()->name }}
+                        </a>
+                        <div class="navbar-dropdown">
+                            <a class="navbar-item" href="{{ url('/profile/'.Auth::user()->name) }}">@lang('titles.profile')</a>
+                            <a class="navbar-item" href="{{ route('logout') }}"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> {{ __('Logout') }}</a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;"> @csrf </form>
+                        </div>
+                    </div>
+                 @endguest
+                </div>
+            </div>
         </div>
     </div>
 </nav>
