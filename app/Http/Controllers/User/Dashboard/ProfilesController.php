@@ -54,19 +54,6 @@ class ProfilesController extends APIController
     }
 
     /**
-     * Fetch user
-     * (You can extract this to repository method).
-     *
-     * @param $username
-     *
-     * @return mixed
-     */
-    public function getUserByUsername($username)
-    {
-        return User::with('profile')->wherename($username)->firstOrFail();
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param string $username
@@ -75,20 +62,8 @@ class ProfilesController extends APIController
      */
     public function show($username)
     {
-        try {
-            $user = $this->getUserByUsername($username);
-        } catch (ModelNotFoundException $exception) {
-            abort(404);
-        }
-
-        $currentTheme = Theme::find($user->profile->theme_id);
-
-        $data = [
-            'user'         => $user,
-            'currentTheme' => $currentTheme,
-        ];
-
-        return view('profiles.show')->with($data);
+		$user = User::with('profile')->wherename($username)->firstOrFail();
+        return view('dashboard.profiles.show',compact('user'));
     }
 
     /**
@@ -100,28 +75,8 @@ class ProfilesController extends APIController
      */
     public function edit($username)
     {
-        try {
-            $user = $this->getUserByUsername($username);
-        } catch (ModelNotFoundException $exception) {
-            return view('pages.status')
-                ->with('error', trans('profile.notYourProfile'))
-                ->with('error_title', trans('profile.notYourProfileTitle'));
-        }
-
-        $themes = Theme::where('status', 1)
-                        ->orderBy('name', 'asc')
-                        ->get();
-
-        $currentTheme = Theme::find($user->profile->theme_id);
-
-        $data = [
-            'user'         => $user,
-            'themes'       => $themes,
-            'currentTheme' => $currentTheme,
-
-        ];
-
-        return view('profiles.edit')->with($data);
+	    $user = User::with('profile')->wherename($username)->firstOrFail();
+        return view('dashboard.profiles.edit',compact('user'));
     }
 
     /**
@@ -135,8 +90,7 @@ class ProfilesController extends APIController
      */
     public function update($username, Request $request)
     {
-        $user = $this->getUserByUsername($username);
-
+	    $user = User::with('profile')->wherename($username)->firstOrFail();
         $input = Input::only('theme_id', 'location', 'bio', 'twitter_username', 'github_username', 'avatar_status');
 
         $ipAddress = new CaptureIpTrait();

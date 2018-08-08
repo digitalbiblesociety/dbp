@@ -25,7 +25,10 @@ class users_notes_seeder extends Seeder
 	    ini_set('memory_limit', '2064M');
 	    set_time_limit(-1);
 	    $user_notes = $seederHelper->csv_to_array(storage_path('data/user_notes.csv'));
-	    foreach ($user_notes as $note) Note::create($note);
+	    foreach ($user_notes as $note) {
+	    	foreach ($note as $key => $element) if($element == "NULL") $note[$key] = null;
+	    	if(User::where('id',$note['user_id'])->exists()) Note::create($note);
+	    }
 
     }
 
