@@ -31,7 +31,7 @@ class users_seeder extends Seeder
 	    	    	'name'              => $user['name'],
 				    'token'             => str_random(64),
 				    'email'             => $user['email'],
-				    'activated'         => ($user['verified'] == NULL) ? false : true,
+				    'activated'         => 0,
 		        ];
 		        User::create($currentUser);
 		    }

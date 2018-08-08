@@ -22,6 +22,8 @@ Auth::routes();
 // Public Routes
 Route::group(['middleware' => ['web', 'activity']], function () {
 
+	Route::name('notes')->get('notes',                                       'User\UserNotesController@index');
+
 	// Docs Routes
 	Route::name('docs')->get('docs',                                         'User\DocsController@index');
 	Route::name('swagger_v4')->get('docs/swagger/v4',                        'User\DocsController@swagger_v4');
