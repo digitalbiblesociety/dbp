@@ -113,7 +113,9 @@ class OrganizationTransformer extends BaseTransformer
 
 			default:
 			case "v4_organizations.all": {
-				return [
+
+				$output = [
+					"id"                => $organization->id,
 					"name"              => $organization->name,
 					"description_short" => $organization->tagline,
 					"slug"              => $organization->slug,
@@ -134,6 +136,16 @@ class OrganizationTransformer extends BaseTransformer
 						"facebook"    => $organization->url_facebook,
 					]
 				];
+
+				if($organization->relationLoaded('relationships')) {
+					$output['relationships'] = $organization->relationships;
+				}
+
+				if($organization->relationLoaded('memberships')) {
+					$output['memberships'] = $organization->memberships;
+				}
+
+				return $output;
 			}
 
 		}
