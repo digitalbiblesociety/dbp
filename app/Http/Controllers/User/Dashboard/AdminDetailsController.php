@@ -30,7 +30,7 @@ class AdminDetailsController extends APIController
             'routes' => $routes,
         ];
 
-        return view('pages.admin.route-details', $data);
+        return view('dashboard.route-details', $data);
     }
 
     /**
@@ -42,6 +42,6 @@ class AdminDetailsController extends APIController
     {
         $users = User::count();
 
-        return view('pages.admin.active-users', ['users' => $users]);
+        return view('dashboard.active-users', ['users' => $users]);
     }
 }

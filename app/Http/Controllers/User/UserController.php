@@ -27,9 +27,9 @@ class UserController extends APIController
         $user = Auth::user();
 
         if ($user->isAdmin()) {
-            return view('pages.admin.home');
+            return view('dashboard.admin');
         }
 
-        return view('pages.user.home');
+        return view('dashboard.home');
     }
 }
