@@ -71,8 +71,8 @@ class OrganizationTransformer extends BaseTransformer
 
 		// If the Organization contains member organizations return their Bibles as well.
 		$bibles = $organization->bibles->toArray();
-		if($organization->relationLoaded('memberOrganizations')) {
-			foreach ($organization->memberOrganizations as $member_organization) {
+		if($organization->relationLoaded('memberships')) {
+			foreach ($organization->memberships as $member_organization) {
 				$bibles[] = $member_organization->child_organization->bibles->toArray();
 			}
 		}
