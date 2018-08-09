@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-class WelcomeController extends Controller
+class WelcomeController extends APIController
 {
     /**
      * Show the application dashboard.

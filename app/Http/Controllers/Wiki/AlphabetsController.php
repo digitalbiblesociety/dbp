@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Wiki;
 
 use App\Http\Controllers\APIController;
 
-use App\Models\User;
+use App\Models\User\User;
 use Auth;
 use Validator;
 use Illuminate\View\View;

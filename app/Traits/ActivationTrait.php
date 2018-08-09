@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 use App\Logic\Activation\ActivationRepository;
-use App\Models\User;
+use App\Models\User\User;
 use Illuminate\Support\Facades\Validator;
 
 trait ActivationTrait

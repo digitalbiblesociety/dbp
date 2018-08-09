@@ -4,7 +4,7 @@ namespace App\Http\Controllers\User\Dashboard;
 
 use App\Http\Controllers\APIController;
 use App\Models\Profile;
-use App\Models\User;
+use App\Models\User\User;
 use App\Traits\CaptureIpTrait;
 use Auth;
 use Illuminate\Http\Request;

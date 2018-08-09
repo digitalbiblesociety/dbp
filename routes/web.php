@@ -108,13 +108,6 @@ Route::group(['middleware' => ['auth', 'activated', 'role:admin', 'activity', 't
     ]);
     Route::post('search-users', 'User\Dashboard\UsersManagementController@search')->name('search-users');
 
-    Route::resource('themes', 'User\Dashboard\ThemesManagementController', [
-        'names' => [
-            'index'   => 'themes',
-            'destroy' => 'themes.destroy',
-        ],
-    ]);
-
     Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
     Route::get('routes', 'User\Dashboard\AdminDetailsController@listRoutes');
     Route::get('active-users', 'User\Dashboard\AdminDetailsController@activeUsers');

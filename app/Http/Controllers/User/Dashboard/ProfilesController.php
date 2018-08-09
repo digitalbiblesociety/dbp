@@ -5,7 +5,7 @@ namespace App\Http\Controllers\User\Dashboard;
 use App\Http\Controllers\APIController;
 use App\Models\Profile;
 use App\Models\Theme;
-use App\Models\User;
+use App\Models\User\User;
 use App\Notifications\SendGoodbyeEmail;
 use App\Traits\CaptureIpTrait;
 use File;

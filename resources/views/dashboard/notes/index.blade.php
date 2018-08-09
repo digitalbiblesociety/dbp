@@ -1,54 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<nav class="navbar has-shadow">
-    <div class="container">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="../">
-                <img src="http://bulma.io/images/bulma-logo.png" alt="Bulma: a modern CSS framework based on Flexbox">
-            </a>
-
-            <div class="navbar-burger burger" data-target="navMenu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-
-        <div id="navMenu" class="navbar-menu">
-            <div class="navbar-end">
-                <div class="navbar-item has-dropdown is-active">
-                    <a class="navbar-link">
-                        Account
-                    </a>
-
-                    <div class="navbar-dropdown">
-                        <a class="navbar-item">
-                            Dashboard
-                        </a>
-                        <a class="navbar-item">
-                            Profile
-                        </a>
-                        <a class="navbar-item">
-                            Settings
-                        </a>
-                        <hr class="navbar-divider">
-                        <div class="navbar-item">
-                            Logout
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</nav>
 <div class="columns" id="mail-app">
     <aside class="column is-2 aside hero is-fullheight">
         <div>
             <div class="compose has-text-centered">
-                <a class="button is-danger is-block is-bold">
-                    <span class="compose">Compose</span>
-                </a>
+                <a href="/notes/create" class="button is-danger is-block is-bold">Compose</a>
             </div>
             <div class="main">
                 <a href="#" class="item active"><span class="icon"><i class="fa fa-inbox"></i></span><span class="name">Inbox</span></a>
@@ -74,7 +31,7 @@
                 <a class="button is-small"><i class="fa fa-tag"></i></a>
             </div>
             <div class="control is-grouped pg">
-                <div class="title">{{ paginate.pointer.start }}-{{ paginate.pointer.end }} of {{ paginate.total }}</div>
+                <div class="title">@{{ paginate.pointer.start }}-@{{ paginate.pointer.end }} of @{{ paginate.total }}</div>
                 <a class="button is-link"><i class="fa fa-chevron-left"></i></a>
                 <a class="button is-link"><i class="fa fa-chevron-right"></i></a>
             </div>
@@ -84,15 +41,15 @@
             <div v-for="(msg, index) in messages" class="card" v-bind:id="'msg-card-'+index" v-on:click="showMessage(msg,index)" v-bind:data-preview-id="index">
                 <div class="card-content">
                     <div class="msg-header">
-                        <span class="msg-from"><small>From: {{ msg.from }}</small></span>
+                        <span class="msg-from"><small>From: @{{ msg.from }}</small></span>
                         <span class="msg-timestamp"></span>
                         <span class="msg-attachment"><i class="fa fa-paperclip"></i></span>
                     </div>
                     <div class="msg-subject">
-                        <span class="msg-subject"><strong id="fake-subject-1">{{ msg.subject }}</strong></span>
+                        <span class="msg-subject"><strong id="fake-subject-1">@{{ msg.subject }}</strong></span>
                     </div>
                     <div class="msg-snippet">
-                        <p id="fake-snippet-1">{{ msg.snippet }}</p>
+                        <p id="fake-snippet-1">@{{ msg.snippet }}</p>
                     </div>
                 </div>
             </div>
@@ -141,9 +98,6 @@
 
 @endsection
 @section('footer_scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/vue@2.5.16/dist/vue.min.js"></script>
-<script src="../js/bulma.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js" integrity="sha256-QHdJObhDO++VITP6S4tMlDHRWMaUOk+s/xWIRgF/YY0=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js" integrity="sha256-4PIvl58L9q7iwjT654TQJM+C/acEyoG738iL8B8nhXg=" crossorigin="anonymous"></script>
 <script>
@@ -173,6 +127,11 @@
 					},
 					total: 100
 				}
+			},
+			mounted () {
+				axios
+					.get('https://api.coindesk.com/v1/bpi/currentprice.json')
+					.then(response => (this.info = response))
 			},
 			methods: {
 				showMessage: function(msg, index) {
