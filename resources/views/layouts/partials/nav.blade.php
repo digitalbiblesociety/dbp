@@ -15,7 +15,7 @@
         <div class="navbar-start">
 
             <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link" href="{{ route('docs') }}">Docs</a>
+                <div class="navbar-link">Docs</div>
                 <div class="navbar-dropdown">
                     <a class="navbar-item" href="{{ route('swagger_v4') }}"><p><strong>v4 API Docs</strong><br><small>OAS Specification & Inspector</small></p></a>
                     <a class="navbar-item" href="{{ route('swagger_v2') }}">v2 API Routes</a>
@@ -38,7 +38,6 @@
                 <div class="navbar-dropdown">
                     <a class="navbar-item" href="{{ url('/users') }}">@lang('titles.adminUserList')</a>
                     <a class="navbar-item" href="{{ url('/users/create') }}">@lang('titles.adminNewUser')</a>
-                    <a class="navbar-item" href="{{ url('/themes') }}">@lang('titles.adminThemesList')</a>
                     <a class="navbar-item" href="{{ url('/logs') }}">@lang('titles.adminLogs')</a>
                     <a class="navbar-item" href="{{ url('/activity') }}">@lang('titles.adminActivity')</a>
                     <a class="navbar-item" href="{{ url('/phpinfo') }}">@lang('titles.adminPHP')</a>
