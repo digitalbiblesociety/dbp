@@ -32,12 +32,13 @@ class OrganizationsController extends APIController
 		$content     = checkParam('has_content', null, 'optional');
 		$bibles      = checkParam('bibles', null, 'optional');
 		$resources   = checkParam('resources', null, 'optional');
+		$relationships = checkParam('relationships',null,'optional');
 
-		$cache_string = $this->v . 'organizations' . $i10n . $membership . $content . $bibles .$resources;
+		$cache_string = $this->v . 'organizations' . $i10n . $membership . $relationships . $content . $bibles .$resources;
 
         \Cache::forget($cache_string);
 		$organizations = \Cache::remember($cache_string, 2400,
-			function () use ($i10n, $i10n_language, $membership, $content, $bibles, $resources) {
+			function () use ($i10n, $i10n_language, $membership, $relationships, $content, $bibles, $resources) {
 				if ($membership) {
 					$membership = Organization::where('slug', $membership)->first();
 					if (!$membership) {
@@ -58,7 +59,12 @@ class OrganizationsController extends APIController
 					            $join->on('organizations.id', '=', 'organization_relationships.organization_child_id')
 					                 ->where('organization_relationships.organization_parent_id', $membership);
 					        });
-					})->when($bibles, function ($q) {
+					})
+					->when(
+					$relationships, function ($q) use ($relationships) {
+						$q->with('memberships','relationships');
+					})
+					->when($bibles, function ($q) {
 						$q->has('bibles')->orHas('links');
 					})->when($resources, function($q) {
 						$q->has('resources');
