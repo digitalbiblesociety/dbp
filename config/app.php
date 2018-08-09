@@ -227,6 +227,7 @@ return [
         'Gravatar'     => Creativeorange\Gravatar\Facades\Gravatar::class,
         'Image'        => Intervention\Image\Facades\Image::class,
         'Uuid'         => Webpatser\Uuid\Uuid::class,
+        'i18n'         => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
     ],
 
 ];
