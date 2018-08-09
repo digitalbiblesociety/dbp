@@ -144,6 +144,8 @@ class CountryTransformer extends BaseTransformer
 					'introduction'   => $country->introduction,
 					'continent_code' => $country->continent,
 					'maps'           => $country->maps->keyBy('name'),
+					'wfb'            => $country->wfb,
+					'ethnologue'     => $country->ethnologue,
 					'languages'      => $country->languagesFiltered->map(function ($language) {
 						return [
 							'name'   => $language->name,
