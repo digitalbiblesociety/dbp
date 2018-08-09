@@ -26,7 +26,6 @@ return [
     'showProfileEmail'           => 'Adresse mail',
     'showProfileLocation'        => 'Adresse',
     'showProfileBio'             => 'Biographie',
-    'showProfileTheme'           => 'Thème',
     'showProfileTwitterUsername' => 'Comte Twitter',
     'showProfileGitHubUsername'  => 'Compte Github',
 
@@ -37,9 +36,6 @@ return [
     'editProfileTitle' => 'Mes coordonnées',
 
     // User edit profile form
-    'label-theme' => 'Votre thème :',
-    'ph-theme'    => 'Selectionnez votre thème',
-
     'label-location' => 'Votre adresse :',
     'ph-location'    => 'Entrez votre adresse',
 
