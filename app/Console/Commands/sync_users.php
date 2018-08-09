@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Book;
-use App\Models\User;
+use App\Models\User\User;
 use App\Models\User\Note;
 use Carbon\Carbon;
 use Illuminate\Console\Command;

@@ -353,7 +353,7 @@ class Organization extends Model
 
 	public function members()
 	{
-		return $this->BelongsToMany(User::class, 'user_roles');
+		return $this->BelongsToMany(User::class, 'role_user');
 	}
 
 	public function relationships()

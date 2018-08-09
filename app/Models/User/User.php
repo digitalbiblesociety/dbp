@@ -2,11 +2,16 @@
 
 namespace App\Models\User;
 
+use App\Models\Profile;
+use App\Models\Social;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use App\Models\Organization\Organization;
+
+use Illuminate\Database\Eloquent\SoftDeletes;
+use jeremykenedy\LaravelRoles\Traits\HasRoleAndPermission;
 
 /**
  * App\Models\User\User
@@ -35,10 +40,27 @@ use App\Models\Organization\Organization;
  *
  */
 class User extends Authenticatable {
+
+	use HasRoleAndPermission;
+	use Notifiable;
+	use SoftDeletes;
+
+	public $connection = 'dbp_users';
 	public $incrementing = false;
 	public $table = 'users';
 	public $keyType = 'string';
 	use Notifiable;
+
+	public static function boot()
+	{
+		parent::boot();
+
+		static::creating(function($table)
+		{
+			$table->id = str_random(rand(24,64));
+		});
+	}
+
 	/**
 	 * The attributes that are mass assignable.
 	 *
@@ -287,6 +309,45 @@ class User extends Authenticatable {
 	public function permissions()
 	{
 		return $this->hasMany(AccessGroup::class);
+	}
+
+
+	public function social()
+	{
+		return $this->hasMany(Social::class);
+	}
+
+	public function profile()
+	{
+		return $this->hasOne(Profile::class);
+	}
+
+	// User Profile Setup - SHould move these to a trait or interface...
+
+	public function profiles()
+	{
+		return $this->belongsToMany(Profile::class)->withTimestamps();
+	}
+
+	public function hasProfile($name)
+	{
+		foreach ($this->profiles as $profile) {
+			if ($profile->name == $name) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public function assignProfile($profile)
+	{
+		return $this->profiles()->attach($profile);
+	}
+
+	public function removeProfile($profile)
+	{
+		return $this->profiles()->detach($profile);
 	}
 
 }

@@ -3,7 +3,7 @@
 namespace App\Logic\Activation;
 
 use App\Models\Activation;
-use App\Models\User;
+use App\Models\User\User;
 use App\Notifications\SendActivationEmail;
 use App\Traits\CaptureIpTrait;
 use Carbon\Carbon;

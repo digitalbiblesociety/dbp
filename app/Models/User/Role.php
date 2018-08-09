@@ -3,8 +3,8 @@
 namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User\User;
 use App\Models\Organization\Organization;
+
 /**
  * App\Models\User\Role
  * @mixin \Eloquent
@@ -19,8 +19,8 @@ use App\Models\Organization\Organization;
  */
 class Role extends Model
 {
-
-	protected $table = 'user_roles';
+	protected $connection = 'dbp_users';
+	protected $table = 'roles';
 	public $incrementing = false;
 	public $timestamps = true;
 	public $fillable = ['organization_id','user_id','role'];

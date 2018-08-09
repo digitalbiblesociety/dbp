@@ -52,9 +52,6 @@ class UserNotesController extends APIController
 			if (!$authorized_user) {
 				return $this->setStatusCode(401)->replyWithError('You must be logged in to access this page');
 			}
-			if (!$authorized_user->admin) {
-				return $this->setStatusCode(401)->replyWithError('You must have admin class access to manage user notes');
-			}
 
 			$notes['most_popular_bible'] = Bible::find(Note::selectRaw('count(*) AS count, bible_id')->groupBy('bible_id')->orderBy('count',
 				'DESC')->limit(1)->first()->bible_id)->currentTranslation->name;
