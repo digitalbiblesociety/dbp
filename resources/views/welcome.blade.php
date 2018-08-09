@@ -1,98 +1,87 @@
-<!DOCTYPE html>
-<html lang="{{ config('app.locale') }}">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-        <title>Digital Bible Platform</title>
+@section('head')
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+    <style>
+        .card .image {
+            padding-top:10px;
+            margin: 0 auto;
+        }
 
-        <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Raleway', sans-serif;
-                font-weight: 100;
-                height: 100vh;
-                margin: 0;
-            }
+        i {
+            font-size:1.5rem;
+        }
 
-            .full-height {
-                height: 100vh;
-            }
+    </style>
 
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
+@endsection
 
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-            .title small {
-                font-size: 60px;
-            }
-
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 12px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @if (Auth::check())
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ url('/login') }}">Login</a>
-                        <a href="{{ url('/register') }}">Register</a>
-                    @endif
-                </div>
-            @endif
-            <div class="content">
-                <div class="title m-b-md">
-                    @lang('titles.app')<br />
-                    <small>
-                        {{ trans('titles.app2', ['version' => config('settings.app_project_version')]) }}
-                    </small>
-                    <div class="links">
-                        <a href="/docs">Documentation</a>
-                        <a href="/articles">News</a>
-                        <a href="https://github.com/digitalbiblesociety/dbp">GitHub</a>
-                    </div>
-                </div>
+@section('content')
+<section class="hero is-primary is-medium is-bold">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <h1 class="title">The Open Bible API</h1>
+            <h2 class="subtitle">A collection of thousands of Bibles and resources brought to you by Faith Comes By Hearing<br> with the partnership of the Forum of Bible Agencies and Digital Bible Society.</h2>
+            <div class="field is-grouped columns is-mobile is-centered">
+                <p class="control"><a href="/docs/" class="button is-link">Get Started</a></p>
+                {{-- <p class="control"><a href="https://github.com/digitalbiblesociety/dbp" class="button">Github</a></p> --}}
             </div>
         </div>
-    </body>
-</html>
+    </div>
+</section>
+<div class="box cta">
+    <p class="has-text-centered">
+        <span class="tag is-primary">New</span> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    </p>
+</div>
+<section class="container">
+    <div class="columns features">
+
+        <div class="column is-4">
+            <div class="card is-shady">
+                <div class="card-content">
+                    <div class="content">
+                        <h4>Expansible Architecture</h4>
+                        <p>The OBA API joins together multiple organization's content via Amazon's S3 Buckets and it's easy to add your bucket to the list.</p>
+                    </div>
+                </div>
+                <footer class="card-footer">
+                    <a href="/api/buckets/" class="card-footer-item">Learn More</a>
+                </footer>
+            </div>
+        </div>
+
+        <div class="column is-4">
+            <div class="card is-shady">
+                <div class="card-content">
+                    <div class="content">
+                        <h4>Open Source</h4>
+                        <p>Published with an MIT license, the code for the DBP is open to the community of bible developers to build plugins and extensions for.</p>
+                    </div>
+                </div>
+                <footer class="card-footer">
+                    <a href="/about/license" class="card-footer-item">License</a>
+                    <a target="_blank" href="https://github.com/digitalbiblesociety/dbp" class="card-footer-item">Github</a>
+                    <a href="/about/contributing" href="#" class="card-footer-item">Contributing</a>
+                </footer>
+            </div>
+        </div>
+
+        <div class="column is-4">
+            <div class="card is-shady">
+                <div class="card-content">
+                    <div class="content">
+                        <h4>Open Api 3.0</h4>
+                        <p>Injest the api with any of our SDKs or any system compatible with the OAS 3.0 spec and be up and running in 5 minutes</p>
+                    </div>
+                </div>
+                <footer class="card-footer">
+                    <a href="/docs/" class="card-footer-item">Learn More</a>
+                </footer>
+            </div>
+        </div>
+    </div>
+    </div>
+</section>
+
+@endsection
