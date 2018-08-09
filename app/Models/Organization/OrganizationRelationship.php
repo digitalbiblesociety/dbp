@@ -23,6 +23,7 @@ class OrganizationRelationship extends Model
 	protected $connection = 'dbp';
 	protected $primaryKey = 'organization_parent_id';
 	protected $fillable = ['type','organization_child_id','organization_parent_id','relationship_id'];
+	public $hidden = ['created_at','updated_at'];
 	public $incrementing = false;
 
 
