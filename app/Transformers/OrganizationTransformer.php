@@ -121,6 +121,8 @@ class OrganizationTransformer extends BaseTransformer
 					"logo_icon"         => @$organization->logos->where('icon',1)->first()->url,
 					"phone"             => $organization->phone,
 					"email"             => $organization->email,
+					"latitude"          => $organization->latitude,
+					"longitude"         => $organization->longitude,
 					"colors"            => [
 						"primary"       => $organization->primaryColor,
 						"secondary"     => $organization->secondaryColor,

@@ -47,6 +47,9 @@
 
 	// VERSION 4
 
+	// VERSION 4 | ALGOLIA
+	Route::name('v4_access_groups.index')->get('algolia/organizations',                 'Connections\AlgoliaOutputController@organizations');
+
 	// VERSION 4 | BIBLE
 	Route::name('v4_access_groups.index')->get('access/groups',                          'User\AccessGroupController@index');
 	Route::name('v4_access_groups.store')->post('access/groups/',                        'User\AccessGroupController@store');

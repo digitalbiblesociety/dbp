@@ -3,6 +3,7 @@
 namespace App\Models\Organization;
 
 use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleFilesetConnection;
 use App\Models\Bible\BibleLink;
 use App\Models\Language\Language;
 use App\Models\Resource\Resource;
@@ -324,20 +325,11 @@ class Organization extends Model
 		return $this->HasMany(BibleLink::class,'provider','slug');
 	}
 
-	public function getBiblesCountAttribute()
-	{
-		return $this->bibles ? $this->bibles->count() : 0;
-	}
-
+	// TODO FIX This
     public function filesets()
     {
-    	return $this->HasMany(BibleFileset::class);
+    	return $this->HasManyThrough(BibleFilesetConnection::class, BibleFileset::class);
     }
-
-	public function getFilesetsCountAttribute()
-	{
-		return $this->filesets ? $this->filesets->count() : 0;
-	}
 
     public function resources()
     {
@@ -366,18 +358,12 @@ class Organization extends Model
 
 	public function relationships()
 	{
+		return $this->hasMany(OrganizationRelationship::class, 'organization_child_id');
+	}
+
+	public function memberships()
+	{
 		return $this->hasMany(OrganizationRelationship::class, 'organization_parent_id');
-	}
-
-	public function memberOrganizations()
-	{
-		return $this->hasMany(OrganizationRelationship::class, 'organization_parent_id')->where('type','member');
-	}
-
-	public function dbl()
-	{
-		$dbl = Organization::where('slug','the-digital-bible-library')->first();
-		return $this->hasOne(OrganizationRelationship::class, 'organization_child_id')->where('organization_parent_id',$dbl->id);
 	}
 
 }
