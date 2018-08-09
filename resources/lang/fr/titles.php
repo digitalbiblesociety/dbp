@@ -23,9 +23,6 @@ return [
     'adminEditUsers' => 'Edition membres',
     'adminNewUser'   => 'Créer un nouveau membre',
 
-    'adminThemesList' => 'Thèmes',
-    'adminThemesAdd'  => 'Ajouter un nouveau thème',
-
     'adminLogs'   => 'Fichier Log',
     'adminPHP'    => 'Information PHP',
     'adminRoutes' => 'Details routage',

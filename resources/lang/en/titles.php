@@ -28,9 +28,6 @@ return [
     'adminEditUsers'    => 'Edit Users',
     'adminNewUser'      => 'Create New User',
 
-    'adminThemesList'   => 'Themes',
-    'adminThemesAdd'    => 'Add New Theme',
-
     'adminLogs'         => 'Log Files',
     'adminActivity'     => 'Activity Log',
     'adminPHP'          => 'PHP Information',
