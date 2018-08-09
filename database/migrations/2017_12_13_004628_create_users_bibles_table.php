@@ -73,8 +73,6 @@ class CreateUsersBiblesTable extends Migration
 				$table->tinyInteger('chapter')->unsigned();
 				$table->tinyInteger('verse_start')->unsigned();
 				$table->tinyInteger('verse_end')->unsigned()->nullable();
-				$table->string('project_id', 24)->nullable();
-				$table->foreign('project_id')->references('id')->on('projects')->onUpdate('cascade')->onDelete('cascade');
 				$table->text('notes')->nullable();
 				$table->boolean('bookmark')->default(false);
 				$table->timestamps();

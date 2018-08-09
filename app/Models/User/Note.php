@@ -20,7 +20,7 @@ class Note extends Model
 {
     protected $table = "user_notes";
     protected $hidden = ['user_id','project_id'];
-    protected $fillable = ['user_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','bookmark','notes'];
+    protected $fillable = ['user_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','bookmark','notes','created_at','updated_at'];
 
 	/**
 	 *
@@ -96,14 +96,6 @@ class Note extends Model
 	 * @property string $bible_id
 	 */
 	protected $bible_id;
-
-	/**
-	 *
-	 * @OA\Property(ref="#/components/schemas/Project/properties/id")
-	 * @method static Note whereProjectId($value)
-	 * @property string $project_id
-	 */
-	protected $project_id;
 
 	/**
 	 *
