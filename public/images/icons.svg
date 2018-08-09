@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+
+<symbol id="mit" width="256" height="256">
+  <path d="M245.467 134.782a113.137 109.096 0 1 1 0-.002" transform="matrix(1.05723 0 0 1.09302 -12.041 -18.814)" fill="#fff" stroke="#000" stroke-width="15.349" stroke-linecap="round"/>
+  <text style="line-height:125%;text-align:start;" x="35" y="870" transform="matrix(.8908 0 0 1.12258 0 -796.362)" font-family="Arial" font-size="124" font-weight="700">MIT</text>
+</symbol>
+
+</svg>
