@@ -10,6 +10,7 @@
 /public/scriptures
 /public/uploads
 /public/swagger-editor
+/storage/
 /storage/framework/
 /storage/logs/*
 /storage/*.key
