@@ -13,10 +13,23 @@ use App\Mail\EmailPasswordReset;
 use Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 
 class UserPasswordsController extends APIController
 {
 
+	public function showResetForm(Request $request, $token = null)
+	{
+		$reset_request = PasswordReset::where('token',$token)->first();
+		if(!$reset_request) return $this->replyWithError("No matching Token found");
+		return view('auth.passwords.reset', compact('reset_request'));
+	}
+
+	public function showRequestForm()
+	{
+		$project = Project::where('name','Digital Bible Platform')->first();
+		return view('auth.passwords.email', compact('project'));
+	}
 
 	/**
 	 *
@@ -59,19 +72,16 @@ class UserPasswordsController extends APIController
 	 */
 	public function triggerPasswordResetEmail(Request $request)
 	{
-		$local = checkParam('local', null, 'optional');
-
+		$generatedToken = PasswordReset::create(['email' => $request->email, 'token' => str_random(64),'created_at' => Carbon::now()]);
 		$user = User::where('email', $request->email)->first();
-		if (!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => $request->email]));
+		$user->token = $generatedToken->token;
+		if(!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => $request->email]));
 
 		$project = $user->projects->where('id', $request->project_id)->first();
-		if (!$project) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project', ['user' => $user->id, 'project' => $request->project_id]));
+		//if (!$project) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project', ['user' => $user->id, 'project' => $request->project_id]));
 
-		$generatedToken = PasswordReset::create(['email' => $request->email, 'token' => str_random(64), 'reset_path' => $request->reset_path]);
-
-		$user->token         = $generatedToken->token;
 		\Mail::to($user)->send(new EmailPasswordReset($user, $project));
-		if($local) return view('auth.verification-required');
+		if(!$this->api) return view('auth.verification-required');
 		return $this->reply(trans('api.email_send_successful', []));
 	}
 
@@ -121,15 +131,16 @@ class UserPasswordsController extends APIController
 	{
 		$validated = $this->validatePassword($request);
 		if($validated != "valid") return $validated;
-		$local = checkParam('local', null, 'optional');
+
 		$user = User::where('email', $request->email)->first();
+
 		$user->password = (\Hash::needsRehash($request->new_password)) ? \Hash::make($request->new_password) : $request->new_password;
 		$user->save();
-		if($local) {
-			\Auth::login($user);
-			return redirect(env('APP_URL').'/dashboard');
-		}
-		return $this->reply($user);
+
+		if($this->api) return $this->reply($user);
+
+		\Auth::login($user);
+		return redirect(env('APP_URL').'/home');
 	}
 
 
@@ -143,9 +154,9 @@ class UserPasswordsController extends APIController
 	private function validatePassword(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'password'         => 'confirmed|required',
+			'new_password'     => 'confirmed|required|min:8|regex:/^(?=.*[a-z])(?=.*\d).+$/',
 			'email'            => 'required|exists:users,email',
-			'project_id'       => 'required|exists:projects,id',
+			'project_id'       => 'exists:projects,id',
 			'token_id'         => ['required',
 				Rule::exists('password_resets', 'token')
 				    ->where(function ($query) use ($request) {
@@ -155,7 +166,7 @@ class UserPasswordsController extends APIController
 
 		if ($validator->fails()) {
 			if($this->api AND !isset($_GET['local'])) return $this->setStatusCode(422)->replyWithError($validator->errors());
-			return redirect()->back()->with(['errors' =>$validator->errors()->toArray()])->withInput();
+			return redirect()->back()->with(['errors' => $validator->errors()])->withInput();
 		}
 		return "valid";
 	}

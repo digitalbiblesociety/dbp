@@ -14,9 +14,15 @@ use Illuminate\Support\Facades\Input;
 use Laravel\Socialite\Facades\Socialite;
 use Validator;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class UsersController extends APIController
 {
+
+	use AuthenticatesUsers;
+
+	protected $redirectAfterLogout = '/';
 
 	public function __construct(Request $request)
 	{
@@ -121,9 +127,7 @@ class UsersController extends APIController
 
 	public function create()
 	{
-		$authorized_user = $this->unauthorizedToAlterUsers();
-		if (!$authorized_user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
-		if (!$this->api) return view('dashboard.users.create');
+		return view('auth.register');
 	}
 
 	/**
@@ -166,9 +170,41 @@ class UsersController extends APIController
 			if ($account) return $this->reply($account->user);
 		}
 		$user = User::with('accounts')->where('email', $request->email)->first();
-		if ($user) if(Hash::check($request->password, $user->password)) return $this->reply($user);
+		if(!$user) {
+			if($this->api) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email'));
+			return redirect()->back()->withErrors(['errors' => 'No user found for the email provided']);
+		}
 
-		return $this->setStatusCode(401)->replyWithError(trans('auth.failed', [], $GLOBALS['i18n_iso']));
+		//dd(Hash::check($request->password, $user->password));
+
+		if (Hash::check($request->password, $user->password)) {
+			Auth::guard()->login($user, true);
+			Auth::guard('administrator')->login($user, true);
+			Auth::guard('user')->login($user, true);
+			if($this->api) return $this->reply($user);
+			//return redirect()->route('public.home');
+			return view('dashboard.home');
+		}
+
+		//$this->incrementLoginAttempts($request);
+		//if($this->api) return $this->setStatusCode(401)->replyWithError(trans('auth.failed', [], $GLOBALS['i18n_iso']));
+		//return $this->sendFailedLoginResponse($request);
+		dd("didn't match");
+	}
+
+	public function authenticated()
+	{
+		if(auth()->user()->admin)
+		{
+			return redirect('/admin/dashboard');
+		}
+
+		return redirect('/user/dashboard');
+	}
+
+	public function showLoginForm()
+	{
+		return view('auth.login');
 	}
 
 	/**

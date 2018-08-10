@@ -16,8 +16,22 @@
 // Homepage Route
 Route::get('/', 'WelcomeController@welcome')->name('welcome');
 
-// Authentication Routes
-Auth::routes();
+// Registration Routes...
+Route::name('register')->get('register',                                   'User\UsersController@create');
+Route::post('register',                                                    'User\UsersController@store');
+
+// Login Routes...
+Route::name('login')->get('login',                                         'User\UsersController@showLoginForm');
+Route::name('login.action')->post('login',                                 'User\UsersController@login');
+Route::name('logout')->post('logout',                                      'User\UsersController@logout');
+
+// Password Reset Routes...
+Route::name('password.reset')->get('users/password/reset/{token?}',        'User\UserPasswordsController@showResetForm');
+Route::name('password.reset_action')->post('users/password/reset',         'User\UserPasswordsController@validatePasswordReset');
+Route::name('password.request')->get('users/password/email',               'User\UserPasswordsController@showRequestForm');
+Route::name('password.request_email')->post('users/password/email',        'User\UserPasswordsController@triggerPasswordResetEmail');
+
+// Authentication Routes | Passwords
 
 // Public Routes
 Route::group(['middleware' => ['web', 'activity']], function () {

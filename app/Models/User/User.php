@@ -51,22 +51,12 @@ class User extends Authenticatable {
 	public $keyType = 'string';
 	use Notifiable;
 
-	public static function boot()
-	{
-		parent::boot();
-
-		static::creating(function($table)
-		{
-			$table->id = str_random(rand(24,64));
-		});
-	}
-
 	/**
 	 * The attributes that are mass assignable.
 	 *
 	 * @var array $fillable
 	 */
-	protected $fillable = ['id','name', 'nickname', 'avatar', 'verified', 'email', 'password', 'email_token','remember_token'];
+	protected $fillable = ['id','name', 'nickname', 'token', 'avatar', 'verified', 'email', 'password', 'email_token','remember_token'];
 
 	/**
 	 * The attributes that should be hidden for arrays.
@@ -229,7 +219,7 @@ class User extends Authenticatable {
 	 */
 	public function accounts()
 	{
-		return $this->HasMany(Account::class);
+		return $this->HasMany(Account::class,'id','user_id');
 	}
 
 	public function github()
@@ -249,7 +239,7 @@ class User extends Authenticatable {
 
 	public function roles()
 	{
-		return $this->HasMany(Role::class);
+		return $this->belongsToMany(Role::class,'role_user');
 	}
 
 	public function notes()
@@ -276,27 +266,27 @@ class User extends Authenticatable {
 
 	public function admin()
 	{
-		return $this->hasOne(Role::class)->where('role','admin');
+		return $this->belongsToMany(Role::class)->where('name','admin');
 	}
 
 	public function canAlterUsers()
 	{
-		return $this->hasOne(Role::class)->where('role','admin')->OrWhere('role','user_creator');
+		return $this->belongsToMany(Role::class)->where('name','admin')->OrWhere('name','user_creator');
 	}
 
 	public function archivist()
 	{
-		return $this->hasOne(Role::class)->where('role','archivist');
+		return $this->belongsToMany(Role::class)->where('name','archivist');
 	}
 
 	public function authorizedArchivist($id = null)
 	{
-		return $this->hasOne(Role::class)->where('role','archivist')->where('organization_id',$id);
+		return $this->belongsToMany(Role::class)->where('name','archivist')->where('organization_id',$id);
 	}
 
 	public function role($role = null,$organization = null)
 	{
-		return $this->HasOne(Role::class)->where('role',$role)->when($organization, function($q) use ($organization) {
+		return $this->belongsToMany(Role::class)->where('name',$role)->when($organization, function($q) use ($organization) {
 			$q->where('organization_id', '=', $organization);
 		});
 	}
