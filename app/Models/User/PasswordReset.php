@@ -3,6 +3,8 @@
 namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
+
+use Carbon\Carbon;
 /**
  *
  * @OA\Schema (
@@ -15,11 +17,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 class PasswordReset extends Model
 {
+	protected $connection = 'dbp_users';
 	protected $table = 'password_resets';
-	protected $fillable = ['email','token','reset_path'];
+	protected $fillable = ['email','token','created_at'];
 	public $incrementing = false;
 	public $keyType = 'string';
 	public $primaryKey = 'token';
+	public $timestamps = false;
 
 
 	/**
@@ -68,6 +72,10 @@ class PasswordReset extends Model
 	public function user()
 	{
 		return $this->BelongsTo(User::class,'email','email');
+	}
+
+	public function setCreatedAtAttribute($value) {
+		$this->attributes['created_at'] = Carbon::now();
 	}
 
 }
