@@ -99,6 +99,7 @@ class APIController extends Controller
 
 			// i18n
 			$i18n = checkParam('i18n',null,'optional') ?? 'eng';
+			dd($i18n);
 			$GLOBALS['i18n_iso'] = $i18n;
 			$GLOBALS['i18n_id'] = Language::where('iso',$i18n)->select('iso','id')->first()->id ?? '';
 
@@ -220,7 +221,7 @@ class APIController extends Controller
 		sendLogsToS3($this->request, $status);
 
 		if ((!$this->api AND !isset($status)) OR isset($_GET['local'])) redirect()->route('error')->with(['message' => $message, 'status' => $status]);
-		if (!$this->api OR isset($_GET['local'])) return redirect()->route("errors.$status", compact('message'))->with(['message' => $message]);
+		if (!$this->api OR isset($_GET['local'])) return view('layouts.errors.broken',compact('message','status'));
 		$faces = ['⤜(ʘ_ʘ)⤏', '¯\_ツ_/¯', 'ᗒ ͟ʖᗕ', 'ᖗ´• ꔢ •`ᖘ', '|▰╭╮▰|'];
 
 
