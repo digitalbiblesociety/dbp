@@ -18,7 +18,7 @@
                 <div class="columns">
                 <div class="field column">
                     <label class="label" for="email">{{ __('Username') }}</label>
-                    <div class="control"><input class="input" type="text" name="email" value="{{ old('name') }}" required autofocus placeholder="username"></div>
+                    <div class="control"><input class="input" type="text" name="name" value="{{ old('name') }}" required autofocus placeholder="username"></div>
                     @if($errors->has('name')) <p class="help is-danger">{{ $errors->first('name') }}</p> @endif
                 </div>
 
@@ -45,13 +45,13 @@
                 <div class="columns">
                 <div class="field column">
                     <label class="label" for="email">{{ __('Password') }}</label>
-                    <div class="control"><input class="input" type="text" name="password" required placeholder="Password"></div>
+                    <div class="control"><input class="input" type="password" name="password" required placeholder="Password"></div>
                     @if($errors->has('password')) <p class="help is-danger">{{ $errors->first('password') }}</p> @endif
                 </div>
 
                 <div class="field column">
                     <label class="label" for="email">{{ __('Confirm Password') }}</label>
-                    <div class="control"><input class="input" type="text" name="password_confirmation" required placeholder="Password"></div>
+                    <div class="control"><input class="input" type="password" name="password_confirmation" required placeholder="Password"></div>
                     @if($errors->has('password_confirmation')) <p class="help is-danger">{{ $errors->first('password_confirmation') }}</p> @endif
                 </div>
                 </div>
