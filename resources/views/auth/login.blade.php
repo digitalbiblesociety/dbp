@@ -12,7 +12,7 @@
                 <li><a href="{{ route('register') }}">Register</a></li>
             </ul>
         </div>
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('login.action') }}">
             @csrf
             <div class="field">
                 <label class="label" for="email">{{ __('E-Mail Address') }}</label>
@@ -26,6 +26,7 @@
             </div>
             <div class="field">
                 <div class="control"><label name="remember" class="checkbox"><input type="checkbox" {{ old('remember') ? 'checked' : '' }}> {{ __('Remember Me') }}</label></div>
+                <a href="{{ route('password.request') }}">Forgot Password?</a>
             </div>
             <div class="field is-grouped">
                 <div class="control"><button type="submit" class="button is-link">{{ __('Login') }}</button></div>

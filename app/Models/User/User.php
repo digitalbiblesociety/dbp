@@ -4,11 +4,10 @@ namespace App\Models\User;
 
 use App\Models\Profile;
 use App\Models\Social;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Organization\Organization;
+
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
-use App\Models\Organization\Organization;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use jeremykenedy\LaravelRoles\Traits\HasRoleAndPermission;
@@ -46,27 +45,19 @@ class User extends Authenticatable {
 	use SoftDeletes;
 
 	public $connection = 'dbp_users';
-	public $incrementing = false;
 	public $table = 'users';
+	public $incrementing = false;
 	public $keyType = 'string';
-	use Notifiable;
+	public $primaryKey = 'email';
 
 	/**
 	 * The attributes that are mass assignable.
 	 *
 	 * @var array $fillable
 	 */
-	protected $fillable = ['id','name', 'nickname', 'token', 'avatar', 'verified', 'email', 'password', 'email_token','remember_token'];
-
-	/**
-	 * The attributes that should be hidden for arrays.
-	 *
-	 * @var array
-	 */
-	protected $hidden = [
-		'password', 'remember_token', 'email_token'
-	];
-
+	protected $fillable = ['id', 'name', 'first_name', 'last_name', 'email', 'password', 'token', 'avatar', 'verified', 'email_token','remember_token', 'signup_ip_address', 'signup_confirmation_ip_address', 'signup_sm_ip_address', 'admin_ip_address', 'updated_ip_address', 'deleted_ip_address'];
+	protected $hidden = ['password', 'remember_token', 'email_token','activated','token'];
+	protected $dates = ['deleted_at'];
 
 	/**
 	 *
@@ -239,7 +230,7 @@ class User extends Authenticatable {
 
 	public function roles()
 	{
-		return $this->belongsToMany(Role::class,'role_user');
+		return $this->belongsToMany(Role::class,'role_user','user_id','id');
 	}
 
 	public function notes()
@@ -309,14 +300,14 @@ class User extends Authenticatable {
 
 	public function profile()
 	{
-		return $this->hasOne(Profile::class);
+		return $this->hasOne(Profile::class,'user_id','id');
 	}
 
 	// User Profile Setup - SHould move these to a trait or interface...
 
 	public function profiles()
 	{
-		return $this->belongsToMany(Profile::class)->withTimestamps();
+		return $this->belongsToMany(Profile::class,'user_id','id')->withTimestamps();
 	}
 
 	public function hasProfile($name)
@@ -339,5 +330,16 @@ class User extends Authenticatable {
 	{
 		return $this->profiles()->detach($profile);
 	}
+
+	// Mutators
+
+	public function setPasswordAttribute($value)
+	{
+		if( \Hash::needsRehash($value) ) {
+			$value = \Hash::make($value);
+		}
+		$this->attributes['password'] = $value;
+	}
+
 
 }

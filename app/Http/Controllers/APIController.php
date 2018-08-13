@@ -99,7 +99,6 @@ class APIController extends Controller
 
 			// i18n
 			$i18n = checkParam('i18n',null,'optional') ?? 'eng';
-			dd($i18n);
 			$GLOBALS['i18n_iso'] = $i18n;
 			$GLOBALS['i18n_id'] = Language::where('iso',$i18n)->select('iso','id')->first()->id ?? '';
 
