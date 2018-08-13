@@ -20,7 +20,7 @@ $link: rgb(100, 60, 100);
 // Update some of Bulma's component variables
 $body-background-color: $beige-lighter;
 $control-border-width: 2px;
-$input-border-color: transparent;
+$input-border-color: #ddd;
 $input-shadow: none;
 
 // Import only what you need from Bulma
@@ -32,6 +32,11 @@ $input-shadow: none;
 @import "../../../node_modules/bulma/sass/layout/_all";
 
 .icon {width: 1em; height: 1em;vertical-align: -0.15em;fill: currentColor;overflow: hidden}
+
+
+.hero.is-primary {
+  margin-bottom:25px;
+}
 
 // Footer
 

@@ -3212,7 +3212,7 @@ a.box:active {
 .input,
 .textarea {
   background-color: white;
-  border-color: transparent;
+  border-color: #ddd;
   color: #363636;
   -webkit-box-shadow: none;
           box-shadow: none;
@@ -3581,7 +3581,7 @@ a.box:active {
 
 .select select {
   background-color: white;
-  border-color: transparent;
+  border-color: #ddd;
   color: #363636;
   cursor: pointer;
   display: block;
@@ -11511,6 +11511,18 @@ label.panel-block:hover {
 .footer {
   background-color: #fafafa;
   padding: 3rem 1.5rem 6rem;
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+
+.hero.is-primary {
+  margin-bottom: 25px;
 }
 
 .navbar-item.is-mega {
