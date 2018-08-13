@@ -250,7 +250,7 @@ class User extends Authenticatable {
 
 	public function projectMembers()
 	{
-		return $this->HasMany(ProjectMember::class);
+		return $this->HasMany(ProjectMember::class,'user_id','id');
 	}
 
 	// Roles
