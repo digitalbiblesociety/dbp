@@ -77,7 +77,7 @@ class UserPasswordsController extends APIController
 		$user->token = $generatedToken->token;
 		if(!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => $request->email]));
 
-		$project = $user->projects->where('id', $request->project_id)->first();
+		$project = $user->projects->where('id', $request->project_id)->first() ?? false;
 		//if (!$project) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project', ['user' => $user->id, 'project' => $request->project_id]));
 
 		\Mail::to($user)->send(new EmailPasswordReset($user, $project));
