@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Article extends Model
 {
+	protected $connection = 'dbp_users';
     protected $fillable = ['title','description','cover','cover_thumbnail'];
 
     public function translations()

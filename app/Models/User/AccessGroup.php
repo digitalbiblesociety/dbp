@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AccessGroup extends Model
 {
+	protected $connection = 'dbp';
     public $table = 'access_groups';
     public $fillable = ['name', 'description'];
 

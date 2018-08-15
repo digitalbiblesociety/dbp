@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Key extends Model
 {
+	protected $connection = 'dbp_users';
     public $table = 'user_keys';
     protected $primaryKey = 'key';
     public $incrementing = 'false';

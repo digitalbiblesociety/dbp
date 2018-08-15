@@ -18,7 +18,7 @@ class TwoStepAuth extends Model
      *
      * @var string
      */
-    protected $connection;
+	protected $connection = 'dbp_users';
 
     /**
      * Indicates if the model should be timestamped.

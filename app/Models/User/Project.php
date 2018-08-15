@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Project extends Model
 {
+	protected $connection = 'dbp_users';
 	protected $fillable = ['id','name','url_avatar','url_avatar_icon','url_site','description','role','reset_path'];
 	public $keyType = 'string';
 	public $incrementing = false;

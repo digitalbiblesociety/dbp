@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AccessType extends Model
 {
+	protected $connection = 'dbp';
     public $table = 'access_types';
 	public $fillable = ['hash_id'];
 

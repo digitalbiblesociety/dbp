@@ -25,5 +25,5 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ArticleTranslation extends Model
 {
-    //
+	protected $connection = 'dbp_users';
 }

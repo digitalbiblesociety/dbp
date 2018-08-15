@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AccessTypeTranslation extends Model
 {
+	protected $connection = 'dbp';
 	public $table = 'access_type_translations';
 
 	/**

@@ -18,6 +18,7 @@ use App\Models\User\User;
  */
 class Account extends Model
 {
+	protected $connection = 'dbp_users';
 	public $incrementing = false;
 	protected $table = 'user_accounts';
 	protected $fillable = ['user_id', 'provider_user_id', 'provider_id'];
