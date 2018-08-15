@@ -64,6 +64,7 @@ class CreateUsersTable extends Migration
 			    $table->increments('id');
 			    $table->string('email')->index();
 			    $table->string('token')->index();
+			    $table->string('reset_path')->nullable();
 			    $table->timestamp('created_at')->nullable();
 	        });
 	    }

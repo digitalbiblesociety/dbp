@@ -179,10 +179,10 @@ class CreateBiblesTable extends Migration
 		    Schema::connection('dbp')->create('bible_size_translations', function (Blueprint $table) {
 			    $table->char('set_size_code', 9)->primary();
 			    $table->foreign('set_size_code')->references('set_size_code')->on('bible_fileset_sizes')->onUpdate('cascade')->onDelete('cascade');
+			    $table->integer('language_id')->unsigned();
+			    $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
 			    $table->string('name');
 			    $table->string('description');
-			    $table->char('iso', 3)->index();
-			    $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
 			    $table->timestamps();
 		    });
 	    }

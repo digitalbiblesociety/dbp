@@ -46,7 +46,7 @@ class CreateUsersBiblesTable extends Migration
 				$table->string('project_id', 24);
 				$table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
 				$table->string('role');
-				$table->boolean('subscribed')->default(false);
+				$table->boolean('subscribed')->default(false)->nullable();
 				$table->timestamps();
 			});
 		}
@@ -75,6 +75,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->tinyInteger('verse_end')->unsigned()->nullable();
 				$table->text('notes')->nullable();
 				$table->boolean('bookmark')->default(false);
+				$table->string('project_id', 24)->nullable();
+				$table->foreign('project_id')->references('id')->on('projects')->onUpdate('cascade')->onDelete('cascade');
 				$table->timestamps();
 			});
 		}
@@ -89,10 +91,11 @@ class CreateUsersBiblesTable extends Migration
 				$table->foreign('book_id')->references('id')->on('dbp.books');
 				$table->tinyInteger('chapter')->unsigned();
 				$table->tinyInteger('verse_start')->unsigned();
-				$table->string('reference');
+				$table->tinyInteger('verse_end')->unsigned()->nullable();
+				$table->string('reference')->nullable();
 				$table->string('project_id', 24)->nullable();
 				$table->foreign('project_id')->references('id')->on('projects')->onUpdate('cascade')->onDelete('cascade');
-				$table->smallInteger('highlight_start')->unsigned();
+				$table->integer('highlight_start')->unsigned();
 				$table->integer('highlighted_words')->unsigned();
 				$table->string('highlighted_color', 24);
 				$table->timestamps();
