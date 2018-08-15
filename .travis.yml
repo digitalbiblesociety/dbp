@@ -17,12 +17,12 @@ before_script:
   - cp .env.travis .env
   - composer self-update
   - travis_retry composer install --no-interaction --prefer-dist --no-suggest
+  - composer dump-autoload
+  - sudo chgrp -R www-data storage bootstrap/cache
+  - sudo chmod -R ug+rwx storage bootstrap/cache
   - npm install
   - php artisan key:generate
   - php artisan migrate --no-interaction -vvv
-
-script:
-  - vendor/bin/phpunit
 
 services:
   - mysql
