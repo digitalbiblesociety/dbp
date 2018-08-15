@@ -11,7 +11,7 @@
 /public/uploads
 /public/swagger-editor
 /storage/
-
+/storage/app/geoip.mmdb
 /storage/framework/
 /storage/logs/*
 /storage/logs/laravel.log
