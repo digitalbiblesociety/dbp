@@ -35,13 +35,14 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+	        \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+	        \App\Http\Middleware\Laravel2step::class
         ],
         'api' => [
             'throttle:60,1',
             'bindings',
-	        \Barryvdh\Cors\HandleCors::class,
+	        Cors::class
         ],
         'activated' => [
             CheckIsUserActivated::class,
