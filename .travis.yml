@@ -11,6 +11,7 @@ branches:
 
 before_install:
   - mysql -e 'CREATE DATABASE dbp;'
+  - mysql -e 'CREATE DATABASE dbp_users;'
   - mysql -e 'CREATE DATABASE sophia;'
 
 before_script:
