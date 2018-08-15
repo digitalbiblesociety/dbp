@@ -159,22 +159,24 @@ class APIController extends Controller
 
 		// Status Code, Headers, Params, Body, Time
 
-		try {
-			if($s3response) {
-				$response_object = collect($object->toarray());
+		if(env('APP_ENV') != 'local') {
+			try {
+				if($s3response) {
+					$response_object = collect($object->toarray());
 
-				$url_strings = (isset($response_object['data'])) ? collect($response_object['data'])->pluck('path') : collect($response_object)->pluck('path');
-				$out_string = '';
-				foreach($url_strings as $url_string) {
-					parse_str($url_string,$output);
-					$out_string .= $output['X-Amz-Signature'].'|';
+					$url_strings = (isset($response_object['data'])) ? collect($response_object['data'])->pluck('path') : collect($response_object)->pluck('path');
+					$out_string = '';
+					foreach($url_strings as $url_string) {
+						parse_str($url_string,$output);
+						$out_string .= $output['X-Amz-Signature'].'|';
+					}
+					sendLogsToS3($this->request, $this->getStatusCode(), $out_string);
+				} else {
+					sendLogsToS3($this->request, $this->getStatusCode());
 				}
-				sendLogsToS3($this->request, $this->getStatusCode(), $out_string);
-			} else {
-				sendLogsToS3($this->request, $this->getStatusCode());
+			} catch (Exception $e) {
+				//    //echo 'Caught exception: ',  $e->getMessage(), "\n";
 			}
-		} catch (Exception $e) {
-			//    //echo 'Caught exception: ',  $e->getMessage(), "\n";
 		}
 
 		switch ($format) {
