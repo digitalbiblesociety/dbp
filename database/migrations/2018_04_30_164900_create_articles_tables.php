@@ -21,7 +21,7 @@ class CreateArticlesTables extends Migration
 			    $table->foreign('iso')->references('iso')->on('dbp.languages')->onUpdate('cascade')->onDelete('cascade');
 			    $table->integer('organization_id')->unsigned();
 			    $table->foreign('organization_id')->references('id')->on('dbp.organizations')->onUpdate('cascade')->onDelete('cascade');
-			    $table->string('user_id', 64);
+			    $table->integer('user_id')->unsigned();
 			    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
 			    $table->string('cover')->nullable();
 			    $table->string('cover_thumbnail')->nullable();

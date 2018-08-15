@@ -28,7 +28,7 @@ class CreateRolesTable extends Migration
 		        $table->increments('id')->unsigned();
 		        $table->integer('role_id')->unsigned()->index();
 		        $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
-		        $table->string('user_id', 64)->index();
+		        $table->integer('user_id')->unsigned()->index();
 		        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 		        $table->timestamps();
 	        });
@@ -61,7 +61,7 @@ class CreateRolesTable extends Migration
 			    $table->increments('id')->unsigned();
 			    $table->integer('permission_id')->unsigned()->index();
 			    $table->foreign('permission_id')->references('id')->on('permissions')->onDelete('cascade');
-			    $table->string('user_id', 64)->index();
+			    $table->integer('user_id')->unsigned()->index();
 			    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 			    $table->timestamps();
 		    });
