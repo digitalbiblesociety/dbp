@@ -17,14 +17,12 @@
     @include('layouts.partials.banner', ['title' => 'Verification Required'])
 
     <div class="container">
-        <div class="content">
 
             <div class="message is-info">
                 <div class="message-header">Email Sent</div>
                 <div class="message-body">Please check your email for the verification URL</div>
             </div>
 
-        </div>
     </div>
 
 @endsection

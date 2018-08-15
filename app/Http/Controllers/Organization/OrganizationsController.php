@@ -32,13 +32,12 @@ class OrganizationsController extends APIController
 		$content     = checkParam('has_content', null, 'optional');
 		$bibles      = checkParam('bibles', null, 'optional');
 		$resources   = checkParam('resources', null, 'optional');
-		$relationships = checkParam('relationships',null,'optional');
 
-		$cache_string = $this->v . 'organizations' . $i10n . $membership . $relationships . $content . $bibles .$resources;
+		$cache_string = $this->v . 'organizations' . $i10n . $membership . $content . $bibles .$resources;
 
         \Cache::forget($cache_string);
 		$organizations = \Cache::remember($cache_string, 2400,
-			function () use ($i10n, $i10n_language, $membership, $relationships, $content, $bibles, $resources) {
+			function () use ($i10n, $i10n_language, $membership, $content, $bibles, $resources) {
 				if ($membership) {
 					$membership = Organization::where('slug', $membership)->first();
 					if (!$membership) {
@@ -59,12 +58,7 @@ class OrganizationsController extends APIController
 					            $join->on('organizations.id', '=', 'organization_relationships.organization_child_id')
 					                 ->where('organization_relationships.organization_parent_id', $membership);
 					        });
-					})
-					->when(
-					$relationships, function ($q) use ($relationships) {
-						$q->with('memberships','relationships');
-					})
-					->when($bibles, function ($q) {
+					})->when($bibles, function ($q) {
 						$q->has('bibles')->orHas('links');
 					})->when($resources, function($q) {
 						$q->has('resources');
@@ -95,7 +89,7 @@ class OrganizationsController extends APIController
 		if(!$i10n_language) return $this->setStatusCode(404)->replyWithError(trans('api.i10n_errors_404', ['id' => $i10n]));
 		$searchedColumn = (is_numeric($slug)) ? 'id' : 'slug';
 
-		$organization = Organization::with(['bibles.translations','bibles.language','memberships.child_organization.bibles.translations','memberships.child_organization.bibles.links','links','translations','currentTranslation','resources',
+		$organization = Organization::with(['bibles.translations','bibles.language','memberOrganizations.child_organization.bibles.translations','memberOrganizations.child_organization.bibles.links','links','translations','currentTranslation','resources',
 		'logos' => function($query) use ($i10n_language) {
 			$query->where('language_id', $i10n_language->id);
 		}])->where($searchedColumn, $slug)->first();

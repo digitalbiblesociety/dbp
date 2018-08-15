@@ -2,12 +2,11 @@
 
 namespace App\Models\User;
 
-use App\Models\Profile;
-use App\Models\Social;
-use App\Models\Organization\Organization;
-
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+
+use App\Models\Organization\Organization;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use jeremykenedy\LaravelRoles\Traits\HasRoleAndPermission;
@@ -44,20 +43,10 @@ class User extends Authenticatable {
 	use Notifiable;
 	use SoftDeletes;
 
-	public $connection = 'dbp_users';
-	public $table = 'users';
-	public $incrementing = false;
-	public $keyType = 'string';
-	public $primaryKey = 'email';
-
-	/**
-	 * The attributes that are mass assignable.
-	 *
-	 * @var array $fillable
-	 */
-	protected $fillable = ['id', 'name', 'first_name', 'last_name', 'email', 'password', 'token', 'avatar', 'verified', 'email_token','remember_token', 'signup_ip_address', 'signup_confirmation_ip_address', 'signup_sm_ip_address', 'admin_ip_address', 'updated_ip_address', 'deleted_ip_address'];
-	protected $hidden = ['password', 'remember_token', 'email_token','activated','token'];
-	protected $dates = ['deleted_at'];
+	protected $table     = 'users';
+	protected $fillable  = ['name', 'first_name', 'last_name', 'email', 'password', 'activated', 'token', 'signup_ip_address', 'signup_confirmation_ip_address', 'signup_sm_ip_address', 'admin_ip_address', 'updated_ip_address', 'deleted_ip_address'];
+	protected $hidden    = ['password', 'remember_token', 'activated', 'token'];
+	protected $dates     = ['deleted_at'];
 
 	/**
 	 *
@@ -210,7 +199,7 @@ class User extends Authenticatable {
 	 */
 	public function accounts()
 	{
-		return $this->HasMany(Account::class,'id','user_id');
+		return $this->HasMany(Account::class);
 	}
 
 	public function github()
@@ -226,11 +215,6 @@ class User extends Authenticatable {
 	public function bitbucket()
 	{
 		return $this->HasOne(Account::class)->where('provider','bitbucket');
-	}
-
-	public function roles()
-	{
-		return $this->belongsToMany(Role::class,'role_user','user_id','id');
 	}
 
 	public function notes()
@@ -250,34 +234,34 @@ class User extends Authenticatable {
 
 	public function projectMembers()
 	{
-		return $this->HasMany(ProjectMember::class,'user_id','id');
+		return $this->HasMany(ProjectMember::class);
 	}
 
 	// Roles
 
 	public function admin()
 	{
-		return $this->belongsToMany(Role::class)->where('name','admin');
+		return $this->hasOne(Role::class)->where('role','admin');
 	}
 
 	public function canAlterUsers()
 	{
-		return $this->belongsToMany(Role::class)->where('name','admin')->OrWhere('name','user_creator');
+		return $this->hasOne(Role::class)->where('role','admin')->OrWhere('role','user_creator');
 	}
 
 	public function archivist()
 	{
-		return $this->belongsToMany(Role::class)->where('name','archivist');
+		return $this->hasOne(Role::class)->where('role','archivist');
 	}
 
 	public function authorizedArchivist($id = null)
 	{
-		return $this->belongsToMany(Role::class)->where('name','archivist')->where('organization_id',$id);
+		return $this->hasOne(Role::class)->where('role','archivist')->where('organization_id',$id);
 	}
 
 	public function role($role = null,$organization = null)
 	{
-		return $this->belongsToMany(Role::class)->where('name',$role)->when($organization, function($q) use ($organization) {
+		return $this->HasOne(Role::class)->where('role',$role)->when($organization, function($q) use ($organization) {
 			$q->where('organization_id', '=', $organization);
 		});
 	}
@@ -292,22 +276,31 @@ class User extends Authenticatable {
 		return $this->hasMany(AccessGroup::class);
 	}
 
-
+	/**
+	 * Build Social Relationships.
+	 *
+	 * @var array
+	 */
 	public function social()
 	{
-		return $this->hasMany(Social::class);
+		return $this->hasMany('App\Models\Social');
 	}
 
+	/**
+	 * User Profile Relationships.
+	 *
+	 * @var array
+	 */
 	public function profile()
 	{
-		return $this->hasOne(Profile::class,'user_id','id');
+		return $this->hasOne('App\Models\Profile');
 	}
 
 	// User Profile Setup - SHould move these to a trait or interface...
 
 	public function profiles()
 	{
-		return $this->belongsToMany(Profile::class,'user_id','id')->withTimestamps();
+		return $this->belongsToMany('App\Models\Profile')->withTimestamps();
 	}
 
 	public function hasProfile($name)
@@ -330,16 +323,5 @@ class User extends Authenticatable {
 	{
 		return $this->profiles()->detach($profile);
 	}
-
-	// Mutators
-
-	public function setPasswordAttribute($value)
-	{
-		if( \Hash::needsRehash($value) ) {
-			$value = \Hash::make($value);
-		}
-		$this->attributes['password'] = $value;
-	}
-
 
 }

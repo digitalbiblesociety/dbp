@@ -1,16 +1,10 @@
 @extends('layouts.app')
 
-@section('template_title')
-    Welcome {{ Auth::user()->name }}
-@endsection
-
-@section('head')
-@endsection
 
 @section('content')
 
     @include('layouts.partials.banner', [
-        'title'     => 'Welcome '. Auth::user()->name,
+        'title'     => 'Welcome '. $user->name,
         'subtitle'  => 'Admin Access'
     ])
     <div class="container">

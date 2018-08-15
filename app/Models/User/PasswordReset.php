@@ -3,8 +3,6 @@
 namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
-
-use Carbon\Carbon;
 /**
  *
  * @OA\Schema (
@@ -19,11 +17,10 @@ class PasswordReset extends Model
 {
 	protected $connection = 'dbp_users';
 	protected $table = 'password_resets';
-	protected $fillable = ['email','token','created_at'];
+	protected $fillable = ['email','token','reset_path','created_at'];
 	public $incrementing = false;
 	public $keyType = 'string';
 	public $primaryKey = 'token';
-	public $timestamps = false;
 
 
 	/**

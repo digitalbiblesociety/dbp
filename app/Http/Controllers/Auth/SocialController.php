@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Profile;
 use App\Models\Social;
-use App\Models\User\User;
+use App\Models\User;
 use App\Traits\ActivationTrait;
 use App\Traits\CaptureIpTrait;
 use Illuminate\Support\Facades\Config;
@@ -27,7 +27,11 @@ class SocialController extends Controller
     public function getSocialRedirect($provider)
     {
         $providerKey = Config::get('services.'.$provider);
-        if(empty($providerKey)) return view('dashboard.status')->with('error', trans('socials.noProvider'));
+
+        if (empty($providerKey)) {
+            return view('pages.status')
+                ->with('error', trans('socials.noProvider'));
+        }
 
         return Socialite::driver($provider)->redirect();
     }
@@ -42,7 +46,9 @@ class SocialController extends Controller
     public function getSocialHandle($provider)
     {
         if (Input::get('denied') != '') {
-            return redirect()->to('login')->with('status', 'danger')->with('message', trans('socials.denied'));
+            return redirect()->to('login')
+                ->with('status', 'danger')
+                ->with('message', trans('socials.denied'));
         }
 
         $socialUserObject = Socialite::driver($provider)->user();
@@ -50,14 +56,18 @@ class SocialController extends Controller
         $socialUser = null;
 
         // Check if email is already registered
-        $userExists = User::where('email', '=', $socialUserObject->email)->first();
+        $userCheck = User::where('email', '=', $socialUserObject->email)->first();
 
         $email = $socialUserObject->email;
 
-        if (!$socialUserObject->email) $email = 'missing'.str_random(10).'@'.str_random(10).'.example.org';
+        if (!$socialUserObject->email) {
+            $email = 'missing'.str_random(10).'@'.str_random(10).'.example.org';
+        }
 
-        if (empty($userExists)) {
-            $sameSocialId = Social::where('social_id', '=', $socialUserObject->id)->where('provider', '=', $provider)->first();
+        if (empty($userCheck)) {
+            $sameSocialId = Social::where('social_id', '=', $socialUserObject->id)
+                ->where('provider', '=', $provider)
+                ->first();
 
             if (empty($sameSocialId)) {
                 $ipAddress = new CaptureIpTrait();
@@ -65,10 +75,16 @@ class SocialController extends Controller
                 $profile = new Profile();
                 $role = Role::where('slug', '=', 'user')->first();
                 $fullname = explode(' ', $socialUserObject->name);
-                if (count($fullname) == 1) $fullname[1] = '';
+                if (count($fullname) == 1) {
+                    $fullname[1] = '';
+                }
                 $username = $socialUserObject->nickname;
 
-                if ($username == null) foreach ($fullname as $name) $username .= $name;
+                if ($username == null) {
+                    foreach ($fullname as $name) {
+                        $username .= $name;
+                    }
+                }
 
                 // Check to make sure username does not already exist in DB before recording
                 $username = $this->checkUserName($username, $email);
@@ -94,10 +110,15 @@ class SocialController extends Controller
                 $user->profile()->save($profile);
                 $user->save();
 
-	            // Twitter User Object details: https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/user-object
-	            if ($socialData->provider == 'twitter') $user->profile()->twitter_username = $socialUserObject->screen_name;
-	            if ($socialData->provider == 'github') $user->profile->github_username = $socialUserObject->nickname;
-	            $user->profile->save();
+                if ($socialData->provider == 'github') {
+                    $user->profile->github_username = $socialUserObject->nickname;
+                }
+
+                // Twitter User Object details: https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/user-object
+                if ($socialData->provider == 'twitter') {
+                    $user->profile()->twitter_username = $socialUserObject->screen_name;
+                }
+                $user->profile->save();
 
                 $socialUser = $user;
             } else {
@@ -109,7 +130,7 @@ class SocialController extends Controller
             return redirect('home')->with('success', trans('socials.registerSuccess'));
         }
 
-        $socialUser = $userExists;
+        $socialUser = $userCheck;
 
         auth()->login($socialUser, true);
 

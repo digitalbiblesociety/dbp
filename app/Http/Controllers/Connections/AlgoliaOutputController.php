@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Connections;
 
 use App\Models\Bible\Bible;
 use App\Models\Language\Language;
-use App\Models\Organization\Organization;
 use App\Transformers\AlgoliaTransformer;
 use App\Http\Controllers\APIController;
 
@@ -23,11 +22,6 @@ class AlgoliaOutputController extends APIController
 	    if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 		$languages = Language::with(['classifications', 'translations', 'countries', 'region'])->get();
 		return $this->reply(fractal($languages, new AlgoliaTransformer()));
-    }
-
-    public function organizations() {
-	    $organizations = Organization::with('currentTranslation','vernacularTranslation','relationships','logos')->withCount('resources')->withCount('bibles')->get();
-	    return $this->reply($organizations);
     }
 
 

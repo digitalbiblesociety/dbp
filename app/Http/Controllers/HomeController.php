@@ -164,7 +164,9 @@ class HomeController extends APIController
 	 */
 	public function versionLatest()
 	{
-		return $this->reply(["Version" => $this->v.'.0']);
+		$swagger = json_decode(file_get_contents(public_path('swagger.json')));
+
+		return $this->reply(["Version" => $swagger->info->version]);
 	}
 
 	/**
@@ -330,8 +332,8 @@ class HomeController extends APIController
 
 	public function error($status = null,$message = "")
 	{
-		if($status) return view('layouts.errors.'.$status,compact('message'));
-		return view('layouts.errors.broken',compact('message'));
+		if($status) return view('errors.'.$status,compact('message'));
+		return view('errors.broken',compact('message'));
 	}
 
 }

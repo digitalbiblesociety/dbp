@@ -7,9 +7,8 @@ use App\Models\Bible\Bible;
 use App\Models\Bible\Book;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
-use App\Models\Organization\Organization;
 use App\Models\Profile;
-use App\Models\User\User;
+use App\Models\User;
 
 use App\Traits\CaptureIpTrait;
 use Auth;
@@ -145,8 +144,8 @@ class BiblesManagementController extends APIController
         $alphabets = Alphabet::select(['script','name'])->get();
         $languages = Language::select(['id','name'])->get();
         $books = Book::orderBy('protestant_order','asc')->get()->groupBy('book_group');
-		$organizations  = Organization::all();
-        return view('bibles.management.edit-bible', compact('bible','alphabets','languages','books','organizations'));
+
+        return view('bibles.management.edit-bible', compact('bible','alphabets','languages','books'));
     }
 
     /**

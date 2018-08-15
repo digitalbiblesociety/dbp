@@ -68,8 +68,18 @@ class LibraryVolumeController extends APIController
 	 *     summary="",
 	 *     description="This method retrieves the available volumes in the system according to the filter specified",
 	 *     operationId="v2_library_volume",
-	 *     @OA\Parameter(name="dam_id",in="query",description="The Bible Id",ref="#/components/schemas/Bible/properties/id"),
-	 *     @OA\Parameter(name="fcbh_id",in="query",description="An alternative query name for the bible id",@OA\Schema(type="string")),
+	 *     @OA\Parameter(
+	 *          name="dam_id",
+	 *          in="query",
+	 *          description="The Bible Id",
+	 *          ref="#/components/schemas/Bible/properties/id"
+	 *     ),
+	 *     @OA\Parameter(
+	 *          name="fcbh_id",
+	 *          in="query",
+	 *          description="An alternative query name for the bible id",
+	 *          @OA\Schema(type="string")
+	 *     ),
 	 *     @OA\Parameter(
 	 *          name="media",
 	 *          in="query",
