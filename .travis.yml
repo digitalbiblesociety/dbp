@@ -22,7 +22,7 @@ before_script:
   - sudo chmod -R ug+rwx storage bootstrap/cache
   - npm install
   - php artisan key:generate
-  - php artisan migrate --no-interaction -vvv
+  - php artisan migrate
 
 services:
   - mysql
