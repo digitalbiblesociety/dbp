@@ -15,7 +15,7 @@ class CreateUsersTable extends Migration
     {
     	if(!Schema::connection('dbp_users')->hasTable('users')){
 	        Schema::connection('dbp_users')->create('users', function (Blueprint $table) {
-			    $table->string('id', 64)->primary();
+			    $table->increments('id');
 		        $table->string('name');
 			    $table->string('first_name')->nullable();
 			    $table->string('last_name')->nullable();
@@ -29,6 +29,7 @@ class CreateUsersTable extends Migration
 			    $table->ipAddress('admin_ip_address')->nullable();
 			    $table->ipAddress('updated_ip_address')->nullable();
 			    $table->ipAddress('deleted_ip_address')->nullable();
+		        $table->text('notes');
 			    $table->rememberToken();
 			    $table->timestamps();
 			    $table->softDeletes();
@@ -37,7 +38,7 @@ class CreateUsersTable extends Migration
 
         if(!Schema::connection('dbp_users')->hasTable('user_keys')) {
 	        Schema::connection('dbp_users')->create('user_keys', function (Blueprint $table) {
-			    $table->string('user_id', 64)->primary();
+			    $table->integer('user_id')->unsigned()->primary();
 			    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
 			    $table->string('key',64)->unique();
 			    $table->string('name')->nullable();
@@ -48,7 +49,7 @@ class CreateUsersTable extends Migration
 
 	    if(!Schema::connection('dbp_users')->hasTable('user_organizations')) {
 	        Schema::connection('dbp_users')->create('user_organizations', function (Blueprint $table) {
-			    $table->string('user_id', 64)->primary();
+			    $table->integer('user_id')->unsigned()->primary();
 			    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
 			    $table->string('title');
 			    $table->string('role');
@@ -70,7 +71,7 @@ class CreateUsersTable extends Migration
 	    if(!Schema::connection('dbp_users')->hasTable('social_logins')) {
 	        Schema::connection('dbp_users')->create('social_logins', function (Blueprint $table) {
 			    $table->increments('id');
-			    $table->string('user_id', 64);
+			    $table->integer('user_id')->unsigned();
 			    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 			    $table->string('provider', 50);
 			    $table->text('social_id');
@@ -81,7 +82,7 @@ class CreateUsersTable extends Migration
 	    if(!Schema::connection('dbp_users')->hasTable('activations')) {
 	        Schema::connection('dbp_users')->create('activations', function (Blueprint $table) {
 			    $table->increments('id');
-			    $table->string('user_id', 64)->index();
+			    $table->integer('user_id')->unsigned()->index();
 			    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 			    $table->string('token');
 			    $table->ipAddress('ip_address');
@@ -89,26 +90,11 @@ class CreateUsersTable extends Migration
 	        });
 	    }
 
-	    if(!Schema::connection('dbp_users')->hasTable('themes')) {
-	        Schema::connection('dbp_users')->create('themes', function (Blueprint $table) {
-			    $table->increments('id')->index();
-			    $table->string('name')->index()->unique();
-			    $table->string('link')->unique();
-			    $table->string('notes')->nullable();
-			    $table->boolean('status')->default(1);
-			    $table->morphs('taggable');
-			    $table->timestamps();
-			    $table->softDeletes();
-	        });
-	    }
-
 	    if(!Schema::connection('dbp_users')->hasTable('profiles')) {
     		Schema::connection('dbp_users')->create('profiles', function (Blueprint $table) {
 		        $table->increments('id');
-		        $table->string('user_id', 64)->index();
+		        $table->integer('user_id')->unsigned()->index();
 		        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-		        $table->integer('theme_id')->unsigned()->default(1);
-		        $table->foreign('theme_id')->references('id')->on('themes');
 		        $table->string('location')->nullable();
 		        $table->text('bio')->nullable();
 		        $table->string('twitter_username')->nullable();
@@ -135,6 +121,5 @@ class CreateUsersTable extends Migration
 	    Schema::connection('dbp_users')->dropIfExists('social_logins');
 	    Schema::connection('dbp_users')->dropIfExists('activations');
 	    Schema::connection('dbp_users')->dropIfExists('profiles');
-	    Schema::connection('dbp_users')->dropIfExists('themes');
     }
 }

@@ -41,7 +41,7 @@ class CreateUsersBiblesTable extends Migration
 		}
 		if(!Schema::connection('dbp_users')->hasTable('project_members')) {
 			Schema::connection('dbp_users')->create('project_members', function (Blueprint $table) {
-				$table->string('user_id', 64);
+				$table->integer('user_id')->unsigned();
 				$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
 				$table->string('project_id', 24);
 				$table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
@@ -53,7 +53,7 @@ class CreateUsersBiblesTable extends Migration
 		if(!Schema::connection('dbp_users')->hasTable('user_accounts')) {
 			Schema::connection('dbp_users')->create('user_accounts', function (Blueprint $table) {
 				$table->increments('id');
-				$table->string('user_id', 64);
+				$table->integer('user_id')->unsigned();
 				$table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
 				$table->string('provider_id');
 				$table->string('provider_user_id');
@@ -64,7 +64,7 @@ class CreateUsersBiblesTable extends Migration
 		if(!Schema::connection('dbp_users')->hasTable('user_notes')) {
 			Schema::connection('dbp_users')->create('user_notes', function (Blueprint $table) {
 				$table->increments('id');
-				$table->string('user_id', 64);
+				$table->integer('user_id')->unsigned();
 				$table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
 				$table->string('bible_id', 12);
 				$table->foreign('bible_id')->references('id')->on('dbp.bibles')->onDelete('cascade')->onUpdate('cascade');
@@ -81,7 +81,7 @@ class CreateUsersBiblesTable extends Migration
 		if(!Schema::connection('dbp_users')->hasTable('user_highlights')) {
 			Schema::connection('dbp_users')->create('user_highlights', function (Blueprint $table) {
 				$table->increments('id');
-				$table->string('user_id', 64);
+				$table->integer('user_id')->unsigned();
 				$table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
 				$table->string('bible_id', 12);
 				$table->foreign('bible_id')->references('id')->on('dbp.bibles')->onDelete('cascade')->onUpdate('cascade');
@@ -108,16 +108,16 @@ class CreateUsersBiblesTable extends Migration
 				$table->timestamps();
 			});
 		}
-		if(!Schema::connection('dbp_users')->hasTable('access_groups')) {
-			Schema::connection('dbp_users')->create('access_groups', function (Blueprint $table) {
+		if(!Schema::connection('dbp')->hasTable('access_groups')) {
+			Schema::connection('dbp')->create('access_groups', function (Blueprint $table) {
 				$table->increments('id');
 				$table->string('name', 64);
 				$table->text('description');
 				$table->timestamps();
 			});
 		}
-		if(!Schema::connection('dbp_users')->hasTable('access_types')) {
-			Schema::connection('dbp_users')->create('access_types', function (Blueprint $table) {
+		if(!Schema::connection('dbp')->hasTable('access_types')) {
+			Schema::connection('dbp')->create('access_types', function (Blueprint $table) {
 				$table->increments('id');
 				$table->string('name', 24);
 				$table->char('country_id', 2)->nullable();
@@ -128,8 +128,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->timestamps();
 			});
 		}
-		if(!Schema::connection('dbp_users')->hasTable('access_type_translations')) {
-			Schema::connection('dbp_users')->create('access_type_translations', function (Blueprint $table) {
+		if(!Schema::connection('dbp')->hasTable('access_type_translations')) {
+			Schema::connection('dbp')->create('access_type_translations', function (Blueprint $table) {
 				$table->primary(['access_type_id', 'iso'], 'uq_access_type_translations');
 				$table->integer('access_type_id')->unsigned();
 				$table->foreign('access_type_id')->references('id')->on('access_types')->onUpdate('cascade')->onDelete('cascade');
@@ -140,8 +140,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->timestamps();
 			});
 		}
-		if(!Schema::connection('dbp_users')->hasTable('access_group_types')) {
-			Schema::connection('dbp_users')->create('access_group_types', function (Blueprint $table) {
+		if(!Schema::connection('dbp')->hasTable('access_group_types')) {
+			Schema::connection('dbp')->create('access_group_types', function (Blueprint $table) {
 				$table->increments('id');
 				$table->integer('access_group_id')->unsigned();
 				$table->foreign('access_group_id')->references('id')->on('access_groups')->onUpdate('cascade')->onDelete('cascade');
@@ -150,8 +150,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->timestamps();
 			});
 		}
-		if(!Schema::connection('dbp_users')->hasTable('access_group_filesets')) {
-			Schema::connection('dbp_users')->create('access_group_filesets', function (Blueprint $table) {
+		if(!Schema::connection('dbp')->hasTable('access_group_filesets')) {
+			Schema::connection('dbp')->create('access_group_filesets', function (Blueprint $table) {
 				$table->integer('access_group_id')->unsigned();
 				$table->foreign('access_group_id')->references('id')->on('access_groups')->onUpdate('cascade')->onDelete('cascade');
 				$table->char('hash_id', 12)->index();
@@ -162,7 +162,7 @@ class CreateUsersBiblesTable extends Migration
 		if(!Schema::connection('dbp_users')->hasTable('access_group_keys')) {
 			Schema::connection('dbp_users')->create('access_group_keys', function (Blueprint $table) {
 				$table->integer('access_group_id')->unsigned();
-				$table->foreign('access_group_id')->references('id')->on('access_groups')->onUpdate('cascade')->onDelete('cascade');
+				$table->foreign('access_group_id')->references('id')->on('dbp.access_groups')->onUpdate('cascade')->onDelete('cascade');
 				$table->string('key_id', 64);
 				$table->foreign('key_id')->references('key')->on('user_keys')->onUpdate('cascade')->onDelete('cascade');
 				$table->timestamps();

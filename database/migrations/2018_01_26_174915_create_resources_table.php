@@ -16,6 +16,7 @@ class CreateResourcesTable extends Migration
         if(!Schema::connection('dbp')->hasTable('resources')) {
 	        Schema::connection('dbp')->create('resources', function (Blueprint $table) {
 		        $table->increments('id');
+		        $table->string('slug')->nullable();
 		        $table->integer('language_id')->unsigned();
 		        $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
 		        $table->char('iso', 3)->index();

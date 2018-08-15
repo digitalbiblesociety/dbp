@@ -179,9 +179,10 @@ class CreateLanguagesTable extends Migration
 		        $table->foreign('numeral_system_id')->references('id')->on('numeral_systems')->onUpdate('cascade');
 		        $table->tinyInteger('value')->unsigned();
 		        $table->string('glyph', 8);
-		        $table->string('numeral_written', 8);
+		        $table->string('numeral_written', 8)->nullable();
 		        $table->timestamps();
 	        });
+			DB::connection('dbp')->statement('ALTER TABLE numeral_system_glyphs ADD CONSTRAINT uq_numeral_system_glyph UNIQUE(`numeral_system_id`, `value`, `glyph`)');
         }
 
 		if(!Schema::connection('dbp')->hasTable('alphabet_language')) {
