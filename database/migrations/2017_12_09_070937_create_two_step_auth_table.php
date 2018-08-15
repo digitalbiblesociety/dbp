@@ -20,10 +20,10 @@ class CreateTwoStepAuthTable extends Migration
         $tableCheck = Schema::connection($connection)->hasTable($table);
 
         if (!$tableCheck) {
-            Schema::connection($connection)->create($table, function (Blueprint $table) {
+            Schema::connection('dbp_users')->create($table, function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('user_id')->unsigned()->index();
-                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+                $table->foreign('user_id')->references('id')->on('dbp_users.users')->onDelete('cascade');
                 $table->string('authCode')->nullable();
                 $table->integer('authCount');
                 $table->boolean('authStatus')->default(false);
