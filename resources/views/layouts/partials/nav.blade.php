@@ -15,7 +15,7 @@
         <div class="navbar-start">
 
             <div class="navbar-item has-dropdown is-hoverable">
-                <div class="navbar-link">Docs</div>
+                <a class="navbar-link" href="{{ route('docs') }}">Docs</a>
                 <div class="navbar-dropdown">
                     <a class="navbar-item" href="{{ route('swagger_v4') }}"><p><strong>v4 API Docs</strong><br><small>OAS Specification & Inspector</small></p></a>
                     <a class="navbar-item" href="{{ route('swagger_v2') }}">v2 API Routes</a>

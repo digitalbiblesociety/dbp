@@ -16,22 +16,16 @@
 // Homepage Route
 Route::get('/', 'WelcomeController@welcome')->name('welcome');
 
-// Registration Routes...
-Route::name('register')->get('register',                                   'User\UsersController@create');
-Route::post('register',                                                    'User\UsersController@store');
-
-// Login Routes...
-Route::name('login')->get('login',                                         'User\UsersController@showLoginForm');
-Route::name('login.action')->post('login',                                 'User\UsersController@login');
-Route::name('logout')->post('logout',                                      'User\UsersController@logout');
-
-// Password Reset Routes...
-Route::name('password.reset')->get('users/password/reset/{token?}',        'User\UserPasswordsController@showResetForm');
-Route::name('password.reset_action')->post('users/password/reset',         'User\UserPasswordsController@validatePasswordReset');
-Route::name('password.request')->get('users/password/email',               'User\UserPasswordsController@showRequestForm');
-Route::name('password.request_email')->post('users/password/email',        'User\UserPasswordsController@triggerPasswordResetEmail');
-
 // Authentication Routes | Passwords
+Auth::routes();
+
+Route::group(['prefix' => 'verification','as' => 'laravel2step::','middleware' => ['web']], function() {
+
+	Route::name('verificationNeeded')->get('/needed',           'User\UserTwoStepController@showVerification');
+	Route::name('verify')->post('/verify',                      'User\UserTwoStepController@verify');
+	Route::name('resend')->post('/resend',                      'User\UserTwoStepController@resend');
+
+});
 
 // Public Routes
 Route::group(['middleware' => ['web', 'activity']], function () {
@@ -77,16 +71,13 @@ Route::group(['middleware' => ['web', 'activity']], function () {
 Route::group(['middleware' => ['auth', 'activated', 'activity']], function () {
     Route::name('activation-required')->get('/activation-required',     'Auth\ActivateController@activationRequired');
     Route::name('logout')->get('/logout',                               'Auth\LoginController@logout');
-});
 
-// Registered and Activated User Routes
-Route::group(['middleware' => ['auth', 'activated', 'activity', 'twostep']], function () {
     Route::name('public.home')->get('/home',                           'User\UserController@index');       //  Homepage Route - Redirect based on user role is in controller.
     Route::name('{username}')->get('profile/{username}',               'User\Dashboard\ProfilesController@show');    // Show users profile - viewable by other users.
 });
 
 // Registered, activated, and is current user routes.
-Route::group(['middleware' => ['auth', 'activated', 'currentUser', 'activity', 'twostep']], function () {
+Route::group(['middleware' => ['auth', 'activated', 'currentUser', 'activity']], function () {
 
     // User Profile and Account Routes
     Route::resource('profile', 'User\Dashboard\ProfilesController', ['only' => ['show', 'edit', 'update', 'create']]);
@@ -126,5 +117,3 @@ Route::group(['middleware' => ['auth', 'activated', 'role:admin', 'activity', 't
     Route::get('routes', 'User\Dashboard\AdminDetailsController@listRoutes');
     Route::get('active-users', 'User\Dashboard\AdminDetailsController@activeUsers');
 });
-
-Route::redirect('/php', '/phpinfo', 301);
