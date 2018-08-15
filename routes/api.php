@@ -4,17 +4,16 @@
 	Route::name('v2_pass_through')->get('pass-through/{path1?}/{path2?}',                 'HomeController@passThrough');
 	Route::name('v2_library_asset')->get('library/asset',                                 'HomeController@libraryAsset');
 	Route::name('v2_library_version')->get('library/version',                             'Bible\BiblesController@libraryVersion');
+	Route::name('v2_library_book')->get('library/book',                                   'Bible\BooksController@book');
+	Route::name('v2_library_bookOrder')->get('library/bookorder',                         'Bible\BooksController@bookOrder');
+	Route::name('v2_library_bookName')->get('library/bookname',                           'Bible\BooksController@bookNames');
+	Route::name('v2_library_chapter')->get('library/chapter',                             'Bible\BooksController@chapters');
 
-	Route::name('v2_library_book')->get('library/book',                                   'Connections\V2Controllers\LibraryCatalog\BooksController@book');
-	Route::name('v2_library_bookOrder')->get('library/bookorder',                         'Connections\V2Controllers\LibraryCatalog\BooksController@bookOrder');
-	Route::name('v2_library_bookName')->get('library/bookname',                           'Connections\V2Controllers\LibraryCatalog\BooksController@bookNames');
-	Route::name('v2_library_chapter')->get('library/chapter',                             'Connections\V2Controllers\LibraryCatalog\BooksController@chapters');
-
-	Route::name('v2_library_language')->get('library/language',                           'Connections\V2Controllers\LibraryCatalog\LanguageController@languageListing');
+	Route::name('v2_library_language')->get('library/language',                           'Wiki\LanguagesController@languageListing');
 	Route::name('v2_volume_history')->get('library/volumehistory',                        'Connections\V2Controllers\LibraryCatalog\LibraryVolumeController@history');
-	Route::name('v2_library_volumeLanguage')->get('library/volumelanguage',               'Connections\V2Controllers\LibraryCatalog\LanguageController@volumeLanguage');
-	Route::name('v2_library_volumeLanguageFamily')->get('library/volumelanguagefamily',   'Connections\V2Controllers\LibraryCatalog\LanguageController@volumeLanguageFamily');
-	Route::name('v2_country_lang')->get('country/countrylang',                            'Connections\V2Controllers\LibraryCatalog\LanguageController@CountryLang');
+	Route::name('v2_library_volumeLanguage')->get('library/volumelanguage',               'Wiki\LanguagesController@volumeLanguage');
+	Route::name('v2_library_volumeLanguageFamily')->get('library/volumelanguagefamily',   'Wiki\LanguagesController@volumeLanguageFamily');
+	Route::name('v2_country_lang')->get('country/countrylang',                            'Wiki\LanguagesController@CountryLang');
 
 	Route::name('v2_library_verseInfo')->get('library/verseinfo',                         'Bible\VerseController@info');
 	Route::name('v2_library_numbers')->get('library/numbers',                             'Wiki\NumbersController@customRange');
@@ -46,9 +45,6 @@
 	});
 
 	// VERSION 4
-
-	// VERSION 4 | ALGOLIA
-	Route::name('v4_access_groups.index')->get('algolia/organizations',                 'Connections\AlgoliaOutputController@organizations');
 
 	// VERSION 4 | BIBLE
 	Route::name('v4_access_groups.index')->get('access/groups',                          'User\AccessGroupController@index');

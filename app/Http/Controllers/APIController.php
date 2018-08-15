@@ -94,13 +94,13 @@ class APIController extends Controller
 			$this->api = true;
 			$this->v   = checkParam('v');
 			$this->key = checkParam('key');
-			$keyExists = Key::where('key',$this->key)->select('key')->first();
+			$keyExists = Key::find($this->key);
 			if (!isset($keyExists)) abort(403, "You need to provide a valid API key");
 
 			// i18n
 			$i18n = checkParam('i18n',null,'optional') ?? 'eng';
 			$GLOBALS['i18n_iso'] = $i18n;
-			$GLOBALS['i18n_id'] = Language::where('iso',$i18n)->select('iso','id')->first()->id ?? '';
+			$GLOBALS['i18n_id'] = Language::where('iso',$i18n)->select('iso','id')->first()->id;
 
 			if (isset($this->v)) {
 				switch ($this->v) {
@@ -220,7 +220,7 @@ class APIController extends Controller
 		sendLogsToS3($this->request, $status);
 
 		if ((!$this->api AND !isset($status)) OR isset($_GET['local'])) redirect()->route('error')->with(['message' => $message, 'status' => $status]);
-		if (!$this->api OR isset($_GET['local'])) return view('layouts.errors.broken',compact('message','status'));
+		if (!$this->api OR isset($_GET['local'])) return redirect()->route("errors.$status", compact('message'))->with(['message' => $message]);
 		$faces = ['⤜(ʘ_ʘ)⤏', '¯\_ツ_/¯', 'ᗒ ͟ʖᗕ', 'ᖗ´• ꔢ •`ᖘ', '|▰╭╮▰|'];
 
 

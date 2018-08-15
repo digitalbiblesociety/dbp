@@ -11,7 +11,7 @@
 
         <div class="columns">
             <form class="column is-half is-offset-one-quarter" method="POST" action="{{ route('password.request_email') }}">
-                @csrf
+                {{ csrf_field() }}
                 <div class="box">
                     <input class="input" type="hidden" name="project_id" value="{{ $project->id ?? null }}" required>
                     <div class="field">

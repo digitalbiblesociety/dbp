@@ -20,7 +20,11 @@
         <div class="content">
 
             <div class="message is-danger">
-                <div class="message-header">{{ trans('api.errors_'.$status) }}</div>
+                @isset($status)
+                    <div class="message-header">{{ trans('api.errors_'.$status) }}</div>
+                @else
+                    <div class="message-header">{{ trans('api.errors') }}</div>
+                @endif
                 <div class="message-body">@if(isset($message)) {{ trans($message) }} @endif</div>
             </div>
 

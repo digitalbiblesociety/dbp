@@ -14,9 +14,7 @@ class ComposerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        View::composer(
-            'layouts.app', 'App\Http\ViewComposers\ThemeComposer'
-        );
+
     }
 
     /**

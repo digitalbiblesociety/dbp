@@ -2,12 +2,11 @@
 namespace App\Http\Controllers\Connections\V2Controllers\LibraryCatalog;
 
 use App\Http\Controllers\APIController;
-use App\Transformers\V2\LibraryCatalog\LanguageListingTransformer;
-
 use App\Models\Language\Language;
 use App\Models\User\User;
-
+use App\Transformers\V2\LibraryCatalog\LanguageListingTransformer;
 use Illuminate\Http\Request;
+
 
 class LanguageController extends APIController
 {
@@ -44,32 +43,25 @@ class LanguageController extends APIController
 		$name                  = checkParam('name', null, 'optional');
 		$full_word             = checkParam('full_word', null, 'optional') ?? "false";
 		$sort_by               = checkParam('sort_by', null, 'optional') ?? "name";
-		$filter_languages      = checkParam('all_languages', null, 'optional') ?? true;
 
-		// Caching
-		$cache_string = 'v' . $this->v . '_languages_' . $code.$full_word.$name.$sort_by.$filter_languages;
-		$cached_languages = \Cache::remember($cache_string, 1600, function () use ($code, $full_word, $name, $sort_by,$filter_languages) {
+		// Caching Logic
+		$cache_string = 'v' . $this->v . '_languages_' . $code.$full_word.$name.$sort_by;
+		$cached_languages = \Cache::remember($cache_string, 1600, function () use ($code, $full_word, $name, $sort_by) {
 
-			$languages = Language::select(['id', 'iso2B', 'iso', 'name'])->with('autonym')->orderBy($sort_by)
+			$languages = Language::select(['id', 'iso2B', 'iso', 'name'])->orderBy($sort_by)
 				// Filter results by iso code when set
-				->when($code, function ($query) use ($code) {
+				                 ->when($code, function ($query) use ($code) {
 					return $query->where('iso', $code);
 				})
-
-				// Only return languages that have bibles
-				->when($filter_languages, function ($query) {
-					return $query->has('bibles.filesets');
-				})
-
 				// Filter results by language name when set
-				->when($name, function ($query) use ($name, $full_word) {
+				                 ->when($name, function ($query) use ($name, $full_word) {
 					return $query->whereHas('translations', function ($query) use ($name, $full_word) {
 						$added_space = ($full_word == "true") ? " ": "";
 						$query->where('name', 'like', '%' . $name . $added_space . '%')->orWhere('name', $name);
 					});
 				})->get();
 
-			return fractal($languages,new LanguageListingTransformer());
+			return fractal($languages,new LanguageListingTransformer())->serializeWith($this->serializer);
 		});
 		return $this->reply($cached_languages);
 	}

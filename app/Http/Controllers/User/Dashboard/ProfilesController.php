@@ -4,7 +4,6 @@ namespace App\Http\Controllers\User\Dashboard;
 
 use App\Http\Controllers\APIController;
 use App\Models\Profile;
-use App\Models\Theme;
 use App\Models\User\User;
 use App\Notifications\SendGoodbyeEmail;
 use App\Traits\CaptureIpTrait;
@@ -43,7 +42,6 @@ class ProfilesController extends APIController
     public function profile_validator(array $data)
     {
         return Validator::make($data, [
-            'theme_id'         => '',
             'location'         => '',
             'bio'              => 'max:500',
             'twitter_username' => 'max:50',
@@ -91,7 +89,7 @@ class ProfilesController extends APIController
     public function update($username, Request $request)
     {
 	    $user = User::with('profile')->wherename($username)->firstOrFail();
-        $input = Input::only('theme_id', 'location', 'bio', 'twitter_username', 'github_username', 'avatar_status');
+        $input = Input::only('location', 'bio', 'twitter_username', 'github_username', 'avatar_status');
 
         $ipAddress = new CaptureIpTrait();
 

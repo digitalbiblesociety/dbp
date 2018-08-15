@@ -20,6 +20,7 @@ class API_V2_Test extends TestCase
 	/**
 	 * API_V2_Test constructor
 	 *
+	 *
 	 */
 	function setUp() {
 		parent::setUp();
@@ -119,7 +120,7 @@ class API_V2_Test extends TestCase
 	 * Test Library Book Order Route
 	 *
 	 * @category V2_Library
-	 * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::show()
+	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\BooksController::show()
 	 * @category Swagger ID: v2_library_bookOrder
 	 * @category Route Name: v2_library_bookOrder
 	 * @link Route Path: https://api.dbp.test/library/bookorder?v=2&dam_id=ENGESV&pretty&key=1234
@@ -142,7 +143,7 @@ class API_V2_Test extends TestCase
 	 * Test Library Book
 	 *
 	 * @category V2_Library
-	 * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::book()
+	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\BooksController::book()
 	 * @category Swagger ID: v2_library_book
 	 * @category Route Name: v2_library_book
 	 * @link Test Route Path: https://api.dbp.test/library/book?v=2&dam_id=AAIWBTN2ET&key=1234&pretty
@@ -164,7 +165,7 @@ class API_V2_Test extends TestCase
 	 * Tests the Library Book Name Route
 	 *
 	 * @category V2_Library
-	 * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::bookNames()
+	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\BooksController::bookNames()
 	 * @category Swagger ID: BookName
 	 * @category Route Name: v2_library_bookName
 	 * @link Route Path: https://api.dbp.test/library/bookname?v=2&language_code=eng&pretty
@@ -187,7 +188,7 @@ class API_V2_Test extends TestCase
 	 * Tests the Library Chapter Route
 	 *
 	 * @category V2_Library
-	 * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::chapters()
+	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\BooksController::chapters()
 	 * @category Swagger ID: BookName
 	 * @category Route Name: v2_library_bookName
 	 * @link Route Path: https://api.dbp.test/library/chapter?v=2&dam_id=AAIWBTN2ET&book_id=GEN&pretty&key=1234
@@ -210,7 +211,7 @@ class API_V2_Test extends TestCase
 	 * Tests the Library Language Route
 	 *
 	 * @category V2_Library
-	 * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LanguageController::languageListing()
+	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\LanguageController::languageListing()
 	 * @category Swagger ID: LibraryLanguage
 	 * @category Route Name: v2_library_language
 	 * @link Route Path: https://api.dbp.test/library/language?v=2&pretty&key=1234
@@ -292,7 +293,7 @@ class API_V2_Test extends TestCase
 	 * Tests the Library MetaData Route
 	 *
 	 * @category V2_Library
-	 * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LibraryMetadataController::index
+	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\LibraryMetadataController::index
 	 * @category Swagger ID: LibraryMetaData
 	 * @category Route Name: v2_library_metadata
 	 * @link Route Path: https://api.dbp.test/library/metadata?v=2&dam_id=ENGESVN1ET&key=1234
@@ -322,7 +323,7 @@ class API_V2_Test extends TestCase
 	 * Tests the Library Volume Route
 	 *
 	 * @category V2_Library
-	 * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LibraryVolumeController@libraryVolume
+	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\LibraryVolumeController@libraryVolume
 	 * @category Swagger ID: LibraryVolume
 	 * @category Route Name: v2_library_volume
 	 * @link Route Path: https://api.dbp.test/library/volume?v=2&pretty
@@ -345,7 +346,7 @@ class API_V2_Test extends TestCase
 	 * Tests the Volume Language Route
 	 *
 	 * @category V2_Library
-	 * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LanguageController::volumeLanguage()
+	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\LanguageController::volumeLanguage()
 	 * @category Swagger ID: LibraryVolume
 	 * @category Route Name: v2_library_volumeLanguage
 	 * @link Route Path: https://api.dbp.test/library/volumelanguage?v=2&pretty
@@ -366,7 +367,7 @@ class API_V2_Test extends TestCase
 	 * Tests the Volume Language Family
 	 *
 	 * @category V2_Library
-	 * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LanguageController::volumeLanguage()
+	 * @see \app\Http\Controllers\V2Controllers\LibraryCatalog\LanguageController::volumeLanguage()
 	 * @category Swagger ID: LibraryVolumeLanguageFamily
 	 * @category Route Name: v2_library_volumeLanguageFamily
 	 * @link Route Path: https://api.dbp.test/library/volumelanguagefamily?v=2&pretty&key=1234

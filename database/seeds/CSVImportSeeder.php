@@ -83,13 +83,39 @@ class CSVImportSeeder extends Seeder
 		    // 'video_sources',
 		    // 'video_tags',
 		    // 'video_translations'
+		    'number_values',
+		    'numbers',
 		    ];
+
+    	$tables = [
+		    'access_group_filesets',
+			'access_group_types',
+			'access_groups',
+			'access_type_translations',
+			'access_types'
+	    ];
+
     	\Schema::connection('dbp')->disableForeignKeyConstraints();
 		foreach ($tables as $table) {
+
+			$seedData = $seederHelper->csv_to_array(storage_path('data/csv_exports/'.$table.'.csv'));
+			if($table == 'number_values') $table = 'numeral_system_glyphs';
 			\DB::connection('dbp')->table($table)->truncate();
-			$seedData = $seederHelper->csv_to_array(storage_path('data/'.$table.'.csv'));
 			foreach($seedData as $data) {
-				foreach ($data as $key => $item) {
+
+				// Removed random_order field from Books
+				if($table == 'books') {
+					unset($data['random_order']);
+				}
+
+				if($table == 'numeral_system_glyphs') {
+					$data['numeral_system_id'] = $data['number_id'];
+					$data['numeral_written'] = '';
+					unset($data['number_id']);
+				}
+
+				foreach($data as $key => $item) {
+					if($item == '0000-00-00 00:00:00') $data[$key] = \Carbon\Carbon::now()->toDateTimeString();
 					if($item == 'NULL') $data[$key] = null;
 				}
 				\DB::connection('dbp')->table($table)->insert($data);

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User\Dashboard;
 
 use App\Http\Controllers\APIController;
-use App\Models\User\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 class AdminDetailsController extends APIController
@@ -42,6 +42,6 @@ class AdminDetailsController extends APIController
     {
         $users = User::count();
 
-        return view('dashboard.active-users', ['users' => $users]);
+        return view('dashboard.admin.active-users', ['users' => $users]);
     }
 }
