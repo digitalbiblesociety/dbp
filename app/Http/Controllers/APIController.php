@@ -159,7 +159,7 @@ class APIController extends Controller
 
 		// Status Code, Headers, Params, Body, Time
 
-		if(env('APP_ENV') != 'local') {
+		if((env('APP_ENV') != 'local') AND (env('APP_ENV') != 'testing')) {
 			try {
 				if($s3response) {
 					$response_object = collect($object->toarray());
