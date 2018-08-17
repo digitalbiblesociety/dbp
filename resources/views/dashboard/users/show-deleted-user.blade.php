@@ -437,10 +437,3 @@
   @include('layouts.partials.modals.modal-delete')
 
 @endsection
-
-@section('footer_scripts')
-
-  @include('scripts.delete-modal-script')
-  @include('scripts.tooltips')
-
-@endsection

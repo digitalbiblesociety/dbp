@@ -149,17 +149,3 @@
     @include('layouts.partials.modals.modal-delete')
 
 @endsection
-
-@section('footer_scripts')
-    @if ((count($users) > config('usersmanagement.datatablesJsStartCount')) && config('usersmanagement.enabledDatatablesJs'))
-        @include('scripts.datatables')
-    @endif
-    @include('scripts.delete-modal-script')
-    @include('scripts.save-modal-script')
-    @if(config('usersmanagement.tooltipsEnabled'))
-        @include('scripts.tooltips')
-    @endif
-    @if(config('usersmanagement.enableSearchUsers'))
-        @include('scripts.search-users')
-    @endif
-@endsection

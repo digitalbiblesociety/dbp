@@ -76,11 +76,3 @@
 		</div>
 	</div>
 @endsection
-
-@section('footer_scripts')
-
-	@if(config('settings.googleMapsAPIStatus'))
-		@include('scripts.google-maps-geocode-and-map')
-	@endif
-
-@endsection

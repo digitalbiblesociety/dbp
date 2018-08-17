@@ -124,17 +124,3 @@
     @include('layouts.partials.modals.modal-delete')
 
 @endsection
-
-@section('footer_scripts')
-    @if ((count($bibles) > config('biblesmanagement.datatablesJsStartCount')) && config('biblesmanagement.enabledDatatablesJs'))
-        @include('scripts.datatables')
-    @endif
-    @include('scripts.delete-modal-script')
-    @include('scripts.save-modal-script')
-    @if(config('biblesmanagement.tooltipsEnabled'))
-        @include('scripts.tooltips')
-    @endif
-    @if(config('biblesmanagement.enableSearchUsers'))
-        @include('scripts.search-users')
-    @endif
-@endsection

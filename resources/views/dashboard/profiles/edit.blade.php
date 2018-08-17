@@ -63,15 +63,3 @@
 
 
 @endsection
-
-@section('footer_scripts')
-
-    @include('scripts.form-modal-script')
-
-    @if(config('settings.googleMapsAPIStatus'))
-        @include('scripts.gmaps-address-lookup-api3')
-    @endif
-
-    @include('scripts.user-avatar-dz')
-
-@endsection

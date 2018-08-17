@@ -142,13 +142,3 @@
 
 @endsection
 
-@section('footer_scripts')
-
-    @if (count($users) > 10)
-        @include('scripts.datatables')
-    @endif
-    @include('scripts.delete-modal-script')
-    @include('scripts.save-modal-script')
-    @include('scripts.tooltips')
-
-@endsection

@@ -401,10 +401,3 @@
   @include('layouts.partials.modals.modal-delete')
 
 @endsection
-
-@section('footer_scripts')
-  @include('scripts.delete-modal-script')
-  @if(config('usersmanagement.tooltipsEnabled'))
-    @include('scripts.tooltips')
-  @endif
-@endsection
