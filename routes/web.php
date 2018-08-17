@@ -14,7 +14,8 @@
 */
 
 // Homepage Route
-Route::get('/', 'WelcomeController@welcome')->name('welcome');
+Route::get('/',                'WelcomeController@welcome')->name('welcome');
+Route::get('/license',         'WelcomeController@license')->name('license');
 
 // Authentication Routes | Passwords
 Auth::routes();
@@ -73,7 +74,7 @@ Route::group(['middleware' => ['auth', 'activated', 'activity']], function () {
     Route::name('logout')->get('/logout',                               'Auth\LoginController@logout');
 
     Route::name('public.home')->get('/home',                           'User\UserController@index');       //  Homepage Route - Redirect based on user role is in controller.
-    Route::name('{username}')->get('profile/{username}',               'User\Dashboard\ProfilesController@show');    // Show users profile - viewable by other users.
+    Route::name('profiles.show')->get('profile/{username}',               'User\Dashboard\ProfilesController@show');    // Show users profile - viewable by other users.
 });
 
 // Registered, activated, and is current user routes.

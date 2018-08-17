@@ -13,4 +13,10 @@ class WelcomeController extends APIController
     {
         return view('welcome');
     }
+
+    public function license()
+    {
+    	return view('about.license');
+    }
+
 }
