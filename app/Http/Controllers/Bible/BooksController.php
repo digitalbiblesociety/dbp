@@ -108,7 +108,7 @@ class BooksController extends APIController
 			$general_books = Book::whereIn('id_usfx',$booksChapters->pluck('book')->unique()->toArray())->get();
 			$books = BookTranslation::with('book')->whereIn('book_id', $general_books->pluck('id'))->where('language_id',$bible->language_id)
 						->when($testament, function ($q) use ($testament) {
-						    $q->where('book_testament',$testament);
+						    $q->where('book_testament',$testament.'_order');
 						})->get();
 
 			foreach ($books as $book) $book->chapters = $booksChapters->where('book_id',$book->id)->pluck('chapter')->unique();
@@ -118,7 +118,7 @@ class BooksController extends APIController
 			$bible_files = BibleFile::where('hash_id',$fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
 			$books = BookTranslation::with('book')->whereIn('book_id',$bible_files->pluck('book_id')->unique())->where('language_id',$bible->language_id)->get();
 			foreach ($books as $book) $book->chapters = $bible_files->where('book_id',$book->book_id)->pluck('chapter_start')->unique();
-			$books = $books->sortBy('book.'.$bible->versification);
+			$books = $books->sortBy('book.'.$bible->versification.'_order');
 		}
 
 		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer));
