@@ -98,6 +98,7 @@ class BooksController extends APIController
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
 
 		$bible = $fileset->bible->first();
+		if(!$bible) return $this->setStatusCode(404)->replyWithError(trans('api.bible_errors_404', ['id' => $id]));
 
 		// If the bible is stored in the sophia database
 		if($fileset->set_type_code == "text_plain") {
@@ -105,18 +106,19 @@ class BooksController extends APIController
 			if(is_a($sophiaTable,JsonResponse::class)) return $sophiaTable;
 			$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
 			$general_books = Book::whereIn('id_usfx',$booksChapters->pluck('book')->unique()->toArray())->get();
-			$books = BookTranslation::whereIn('book_id', $general_books->pluck('id'))->where('language_id',$bible->language_id)
+			$books = BookTranslation::with('book')->whereIn('book_id', $general_books->pluck('id'))->where('language_id',$bible->language_id)
 						->when($testament, function ($q) use ($testament) {
 						    $q->where('book_testament',$testament);
 						})->get();
 
 			foreach ($books as $book) $book->chapters = $booksChapters->where('book_id',$book->id)->pluck('chapter')->unique();
-
+			$books = $books->sortBy('book.'.$bible->versification);
 		} else {
 			// Otherwise select from bible_files table
 			$bible_files = BibleFile::where('hash_id',$fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
 			$books = BookTranslation::with('book')->whereIn('book_id',$bible_files->pluck('book_id')->unique())->where('language_id',$bible->language_id)->get();
 			foreach ($books as $book) $book->chapters = $bible_files->where('book_id',$book->book_id)->pluck('chapter_start')->unique();
+			$books = $books->sortBy('book.'.$bible->versification);
 		}
 
 		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer));
