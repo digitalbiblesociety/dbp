@@ -107,26 +107,15 @@ class BooksTransformer extends BaseTransformer
 	 */
 	public function transformForV4($book) {
 		return [
-			"id"              => $book->id,
-			"id_usfx"         => $book->id_usfx,
-			"id_osis"         => $book->id_osis,
-			"book_order"      => $book->protestant_order,
-			"testament_order" => $book->testament_order,
-			"book_testament"  => $book->book_testament,
-			"book_group"      => $book->book_group,
-			"chapters"        => $book->chapters,
-			"verses"          => $book->verses,
+			"id"              => $book->book_id,
+			"id_usfx"         => $book->book->id_usfx,
+			"id_osis"         => $book->book->id_osis,
 			"name"            => $book->name,
-			"translations" => ($book->relationLoaded('translations')) ? $book->translations->mapWithKeys(function ($value) {
-				return [
-					$value->iso => [
-						"name"              => $value->name,
-						"name_long"         => $value->name_long,
-						"name_short"        => $value->name_short,
-						"name_abbreviation" => $value->name_abbreviation,
-					]];
-			}) : null,
-			"bible" => ($book->relationLoaded('bible')) ? $book->bible->implode('id', ', ') : null
+			"testament"       => $book->book->book_testament,
+			"testament_order" => $book->book->testament_order,
+			"book_order"      => $book->book->protestant_order,
+			"book_group"      => $book->book->book_group,
+			"chapters"        => $book->chapters,
 		];
 	}
 
