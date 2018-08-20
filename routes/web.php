@@ -14,8 +14,10 @@
 */
 
 // Homepage Route
-Route::get('/',                'WelcomeController@welcome')->name('welcome');
-Route::get('/license',         'WelcomeController@license')->name('license');
+Route::get('/',                      'WelcomeController@welcome')->name('welcome');
+Route::get('/about/license',         'WelcomeController@license')->name('license');
+Route::get('/about/contact',         'User\UserContactController@create')->name('contact.create');
+Route::post('/about/contact',        'User\UserContactController@store')->name('contact.store');
 
 // Authentication Routes | Passwords
 Auth::routes();
@@ -90,7 +92,10 @@ Route::group(['middleware' => ['auth', 'activated', 'currentUser', 'activity']],
 });
 
 // Registered, activated, and is admin routes.
-Route::group(['middleware' => ['auth', 'activated', 'role:admin', 'activity', 'twostep']], function () {
+Route::group(['middleware' => ['auth', 'activated', 'role:admin', 'activity']], function () {
+
+
+	Route::get('/messages',           'User\UserContactController@index')->name('messages.index');
     Route::resource('/users/deleted', 'User\Dashboard\SoftDeletesController', ['only' => ['index', 'show', 'update', 'destroy']]);
 
 	Route::resource('bibles', 'Bible\BiblesManagementController', [

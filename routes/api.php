@@ -116,6 +116,10 @@
 	Route::name('v4_notes.update')->put('users/{user_id}/notes/{note_id}',                'User\UserNotesController@update');
 	Route::name('v4_notes.destroy')->delete('users/{user_id}/notes/{note_id}',            'User\UserNotesController@destroy');
 
+	// VERSION 4 | USER Messages
+	Route::name('v4_messages.index')->get('users/messages',                                'User\UserContactController@index');
+	Route::name('v4_messages.show')->get('users/messages/{note_id}',                       'User\UserContactController@show');
+
 	// VERSION 4 | USER BOOKMARKS
 	Route::name('v4_bookmarks.index')->get('users/{user_id}/bookmarks',                     'User\UserNotesController@index');
 	Route::name('v4_bookmarks.show')->get('users/{user_id}/bookmarks/{bookmark_id}',        'User\UserNotesController@show');

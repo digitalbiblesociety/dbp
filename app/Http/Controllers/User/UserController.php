@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
+use App\Models\User\User;
 use Auth;
 
 class UserController extends APIController
@@ -25,11 +26,9 @@ class UserController extends APIController
     public function index()
     {
         $user = Auth::user();
+        $user = User::with('accounts','projects')->where('id',$user->id)->first();
 
-        if ($user->isAdmin()) {
-            return view('dashboard.admin');
-        }
-
-        return view('dashboard.home');
+        if ($user->isAdmin()) return view('dashboard.admin',compact('user'));
+        return view('dashboard.home',compact('user'));
     }
 }

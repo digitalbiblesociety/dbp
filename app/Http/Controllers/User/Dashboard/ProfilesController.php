@@ -58,10 +58,10 @@ class ProfilesController extends APIController
      *
      * @return Response
      */
-    public function show($username)
+    public function show($id)
     {
-		$user = User::with('profile')->wherename($username)->firstOrFail();
-        return view('dashboard.profiles.show',compact('user'));
+		$user = User::with('profile')->where('id',$id)->firstOrFail();
+        return view('dashboard.profiles.show', compact('user'));
     }
 
     /**

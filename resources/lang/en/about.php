@@ -29,4 +29,13 @@ return [
 	'license_condition_include'                  => 'Include Copyright',
 	'license_condition_include_description'      => 'You must include the copyright notice in all copies or substantial uses of the work.',
 
+	'contact_title'                              => 'Contact',
+	'contact_form_title'                         => 'Get in Touch',
+	'contact_form_email'                         => 'Your Email Address',
+	'contact_form_subject'                       => 'Subject',
+	'contact_form_inquiry'                       => 'Reason for inquiry',
+	'contact_form_purpose_general'               => 'General',
+	'contact_form_purpose_bug'                   => 'Bug',
+	'contact_form_purpose_help'                  => 'Help',
+
 ];
