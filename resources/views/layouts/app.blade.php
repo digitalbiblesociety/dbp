@@ -14,7 +14,7 @@
 <body>
 @include('layouts.partials.nav')
 
-<main>
+<main id="app">
 @yield('content')
 </main>
 
