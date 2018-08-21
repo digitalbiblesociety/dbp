@@ -111,12 +111,15 @@ class BooksController extends APIController
 						    $q->where('book_testament',$testament);
 						})->get();
 
-			foreach ($books as $book) $book->chapters = $booksChapters->where('book_id',$book->id)->pluck('chapter')->unique();
+			// Append Chapters to book object
+			foreach ($books as $book) $book->chapters = $booksChapters->where('book',$book->book->id_usfx)->pluck('chapter')->toArray();
 			$books = $books->sortBy('book.'.$bible->versification.'_order');
 		} else {
 			// Otherwise select from bible_files table
 			$bible_files = BibleFile::where('hash_id',$fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
 			$books = BookTranslation::with('book')->whereIn('book_id',$bible_files->pluck('book_id')->unique())->where('language_id',$bible->language_id)->get();
+
+			// Append Chapters to book object
 			foreach ($books as $book) $book->chapters = $bible_files->where('book_id',$book->book_id)->pluck('chapter_start')->unique();
 			$books = $books->sortBy('book.'.$bible->versification.'_order');
 		}
