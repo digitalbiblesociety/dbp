@@ -60,252 +60,120 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 236);
+/******/ 	return __webpack_require__(__webpack_require__.s = 110);
 /******/ })
 /************************************************************************/
-/******/ ({
+/******/ ([
+/* 0 */
+/***/ (function(module, exports) {
 
-/***/ 10:
-/***/ (function(module, exports, __webpack_require__) {
+/* globals __VUE_SSR_CONTEXT__ */
 
-/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
-    "use strict";
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
 
-    if (global.setImmediate) {
-        return;
-    }
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
 
-    var nextHandle = 1; // Spec says greater than zero
-    var tasksByHandle = {};
-    var currentlyRunningATask = false;
-    var doc = global.document;
-    var registerImmediate;
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
 
-    function setImmediate(callback) {
-      // Callback can either be a function or a string
-      if (typeof callback !== "function") {
-        callback = new Function("" + callback);
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
       }
-      // Copy function arguments
-      var args = new Array(arguments.length - 1);
-      for (var i = 0; i < args.length; i++) {
-          args[i] = arguments[i + 1];
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
       }
-      // Store and register the task
-      var task = { callback: callback, args: args };
-      tasksByHandle[nextHandle] = task;
-      registerImmediate(nextHandle);
-      return nextHandle++;
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
     }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
 
-    function clearImmediate(handle) {
-        delete tasksByHandle[handle];
-    }
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
 
-    function run(task) {
-        var callback = task.callback;
-        var args = task.args;
-        switch (args.length) {
-        case 0:
-            callback();
-            break;
-        case 1:
-            callback(args[0]);
-            break;
-        case 2:
-            callback(args[0], args[1]);
-            break;
-        case 3:
-            callback(args[0], args[1], args[2]);
-            break;
-        default:
-            callback.apply(undefined, args);
-            break;
-        }
-    }
-
-    function runIfPresent(handle) {
-        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
-        // So if we're currently running a task, we'll need to delay this invocation.
-        if (currentlyRunningATask) {
-            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
-            // "too much recursion" error.
-            setTimeout(runIfPresent, 0, handle);
-        } else {
-            var task = tasksByHandle[handle];
-            if (task) {
-                currentlyRunningATask = true;
-                try {
-                    run(task);
-                } finally {
-                    clearImmediate(handle);
-                    currentlyRunningATask = false;
-                }
-            }
-        }
-    }
-
-    function installNextTickImplementation() {
-        registerImmediate = function(handle) {
-            process.nextTick(function () { runIfPresent(handle); });
-        };
-    }
-
-    function canUsePostMessage() {
-        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
-        // where `global.postMessage` means something completely different and can't be used for this purpose.
-        if (global.postMessage && !global.importScripts) {
-            var postMessageIsAsynchronous = true;
-            var oldOnMessage = global.onmessage;
-            global.onmessage = function() {
-                postMessageIsAsynchronous = false;
-            };
-            global.postMessage("", "*");
-            global.onmessage = oldOnMessage;
-            return postMessageIsAsynchronous;
-        }
-    }
-
-    function installPostMessageImplementation() {
-        // Installs an event handler on `global` for the `message` event: see
-        // * https://developer.mozilla.org/en/DOM/window.postMessage
-        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
-
-        var messagePrefix = "setImmediate$" + Math.random() + "$";
-        var onGlobalMessage = function(event) {
-            if (event.source === global &&
-                typeof event.data === "string" &&
-                event.data.indexOf(messagePrefix) === 0) {
-                runIfPresent(+event.data.slice(messagePrefix.length));
-            }
-        };
-
-        if (global.addEventListener) {
-            global.addEventListener("message", onGlobalMessage, false);
-        } else {
-            global.attachEvent("onmessage", onGlobalMessage);
-        }
-
-        registerImmediate = function(handle) {
-            global.postMessage(messagePrefix + handle, "*");
-        };
-    }
-
-    function installMessageChannelImplementation() {
-        var channel = new MessageChannel();
-        channel.port1.onmessage = function(event) {
-            var handle = event.data;
-            runIfPresent(handle);
-        };
-
-        registerImmediate = function(handle) {
-            channel.port2.postMessage(handle);
-        };
-    }
-
-    function installReadyStateChangeImplementation() {
-        var html = doc.documentElement;
-        registerImmediate = function(handle) {
-            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
-            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
-            var script = doc.createElement("script");
-            script.onreadystatechange = function () {
-                runIfPresent(handle);
-                script.onreadystatechange = null;
-                html.removeChild(script);
-                script = null;
-            };
-            html.appendChild(script);
-        };
-    }
-
-    function installSetTimeoutImplementation() {
-        registerImmediate = function(handle) {
-            setTimeout(runIfPresent, 0, handle);
-        };
-    }
-
-    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
-    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
-    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
-
-    // Don't get fooled by e.g. browserify environments.
-    if ({}.toString.call(global.process) === "[object process]") {
-        // For Node.js before 0.9
-        installNextTickImplementation();
-
-    } else if (canUsePostMessage()) {
-        // For non-IE10 modern browsers
-        installPostMessageImplementation();
-
-    } else if (global.MessageChannel) {
-        // For web workers, where supported
-        installMessageChannelImplementation();
-
-    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
-        // For IE 6–8
-        installReadyStateChangeImplementation();
-
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
     } else {
-        // For older browsers
-        installSetTimeoutImplementation();
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
     }
+  }
 
-    attachTo.setImmediate = setImmediate;
-    attachTo.clearImmediate = clearImmediate;
-}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(7)))
-
-/***/ }),
-
-/***/ 236:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(237);
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
 
 
 /***/ }),
-
-/***/ 237:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-throw new Error("Cannot find module \"vue-material\"");
-throw new Error("Cannot find module \"./docs/OpenApi.vue\"");
-throw new Error("Cannot find module \"../sass/components/vue-material.css\"");
-throw new Error("Cannot find module \"vue-resource\"");
-throw new Error("Cannot find module \"./swagger_v4.json\"");
-
-
-
-
-
-
-
-
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_material___default.a);
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_4_vue_resource___default.a);
-
-new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
-	el: '#app',
-	template: '<open-api v-if="jsonApi" :api="jsonApi" md-theme="\'default\'" :query-params="queryParams" :headers="headers"></open-api>',
-	data: function data() {
-		return {
-			jsonApi: __WEBPACK_IMPORTED_MODULE_5__swagger_v4_json___default.a
-		};
-	},
-	components: {
-		OpenApi: __WEBPACK_IMPORTED_MODULE_2__docs_OpenApi_vue___default.a
-	}
-});
-
-/***/ }),
-
-/***/ 3:
+/* 1 */
 /***/ (function(module, exports) {
 
 var g;
@@ -332,8 +200,1898 @@ module.exports = g;
 
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports) {
 
-/***/ 7:
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+  Modified by Evan You @yyx990803
+*/
+
+var hasDocument = typeof document !== 'undefined'
+
+if (typeof DEBUG !== 'undefined' && DEBUG) {
+  if (!hasDocument) {
+    throw new Error(
+    'vue-style-loader cannot be used in a non-browser environment. ' +
+    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
+  ) }
+}
+
+var listToStyles = __webpack_require__(22)
+
+/*
+type StyleObject = {
+  id: number;
+  parts: Array<StyleObjectPart>
+}
+
+type StyleObjectPart = {
+  css: string;
+  media: string;
+  sourceMap: ?string
+}
+*/
+
+var stylesInDom = {/*
+  [id: number]: {
+    id: number,
+    refs: number,
+    parts: Array<(obj?: StyleObjectPart) => void>
+  }
+*/}
+
+var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
+var singletonElement = null
+var singletonCounter = 0
+var isProduction = false
+var noop = function () {}
+var options = null
+var ssrIdKey = 'data-vue-ssr-id'
+
+// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+// tags it will allow on a page
+var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\b/.test(navigator.userAgent.toLowerCase())
+
+module.exports = function (parentId, list, _isProduction, _options) {
+  isProduction = _isProduction
+
+  options = _options || {}
+
+  var styles = listToStyles(parentId, list)
+  addStylesToDom(styles)
+
+  return function update (newList) {
+    var mayRemove = []
+    for (var i = 0; i < styles.length; i++) {
+      var item = styles[i]
+      var domStyle = stylesInDom[item.id]
+      domStyle.refs--
+      mayRemove.push(domStyle)
+    }
+    if (newList) {
+      styles = listToStyles(parentId, newList)
+      addStylesToDom(styles)
+    } else {
+      styles = []
+    }
+    for (var i = 0; i < mayRemove.length; i++) {
+      var domStyle = mayRemove[i]
+      if (domStyle.refs === 0) {
+        for (var j = 0; j < domStyle.parts.length; j++) {
+          domStyle.parts[j]()
+        }
+        delete stylesInDom[domStyle.id]
+      }
+    }
+  }
+}
+
+function addStylesToDom (styles /* Array<StyleObject> */) {
+  for (var i = 0; i < styles.length; i++) {
+    var item = styles[i]
+    var domStyle = stylesInDom[item.id]
+    if (domStyle) {
+      domStyle.refs++
+      for (var j = 0; j < domStyle.parts.length; j++) {
+        domStyle.parts[j](item.parts[j])
+      }
+      for (; j < item.parts.length; j++) {
+        domStyle.parts.push(addStyle(item.parts[j]))
+      }
+      if (domStyle.parts.length > item.parts.length) {
+        domStyle.parts.length = item.parts.length
+      }
+    } else {
+      var parts = []
+      for (var j = 0; j < item.parts.length; j++) {
+        parts.push(addStyle(item.parts[j]))
+      }
+      stylesInDom[item.id] = { id: item.id, refs: 1, parts: parts }
+    }
+  }
+}
+
+function createStyleElement () {
+  var styleElement = document.createElement('style')
+  styleElement.type = 'text/css'
+  head.appendChild(styleElement)
+  return styleElement
+}
+
+function addStyle (obj /* StyleObjectPart */) {
+  var update, remove
+  var styleElement = document.querySelector('style[' + ssrIdKey + '~="' + obj.id + '"]')
+
+  if (styleElement) {
+    if (isProduction) {
+      // has SSR styles and in production mode.
+      // simply do nothing.
+      return noop
+    } else {
+      // has SSR styles but in dev mode.
+      // for some reason Chrome can't handle source map in server-rendered
+      // style tags - source maps in <style> only works if the style tag is
+      // created and inserted dynamically. So we remove the server rendered
+      // styles and inject new ones.
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  if (isOldIE) {
+    // use singleton mode for IE9.
+    var styleIndex = singletonCounter++
+    styleElement = singletonElement || (singletonElement = createStyleElement())
+    update = applyToSingletonTag.bind(null, styleElement, styleIndex, false)
+    remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true)
+  } else {
+    // use multi-style-tag mode in all other cases
+    styleElement = createStyleElement()
+    update = applyToTag.bind(null, styleElement)
+    remove = function () {
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  update(obj)
+
+  return function updateStyle (newObj /* StyleObjectPart */) {
+    if (newObj) {
+      if (newObj.css === obj.css &&
+          newObj.media === obj.media &&
+          newObj.sourceMap === obj.sourceMap) {
+        return
+      }
+      update(obj = newObj)
+    } else {
+      remove()
+    }
+  }
+}
+
+var replaceText = (function () {
+  var textStore = []
+
+  return function (index, replacement) {
+    textStore[index] = replacement
+    return textStore.filter(Boolean).join('\n')
+  }
+})()
+
+function applyToSingletonTag (styleElement, index, remove, obj) {
+  var css = remove ? '' : obj.css
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = replaceText(index, css)
+  } else {
+    var cssNode = document.createTextNode(css)
+    var childNodes = styleElement.childNodes
+    if (childNodes[index]) styleElement.removeChild(childNodes[index])
+    if (childNodes.length) {
+      styleElement.insertBefore(cssNode, childNodes[index])
+    } else {
+      styleElement.appendChild(cssNode)
+    }
+  }
+}
+
+function applyToTag (styleElement, obj) {
+  var css = obj.css
+  var media = obj.media
+  var sourceMap = obj.sourceMap
+
+  if (media) {
+    styleElement.setAttribute('media', media)
+  }
+  if (options.ssrId) {
+    styleElement.setAttribute(ssrIdKey, obj.id)
+  }
+
+  if (sourceMap) {
+    // https://developer.chrome.com/devtools/docs/javascript-debugging
+    // this makes source maps inside style tags work properly in Chrome
+    css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */'
+    // http://stackoverflow.com/a/26603875
+    css += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + ' */'
+  }
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = css
+  } else {
+    while (styleElement.firstChild) {
+      styleElement.removeChild(styleElement.firstChild)
+    }
+    styleElement.appendChild(document.createTextNode(css))
+  }
+}
+
+
+/***/ }),
+/* 4 */,
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {/**
+ * marked - a markdown parser
+ * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
+ * https://github.com/markedjs/marked
+ */
+
+;(function(root) {
+'use strict';
+
+/**
+ * Block-Level Grammar
+ */
+
+var block = {
+  newline: /^\n+/,
+  code: /^( {4}[^\n]+\n*)+/,
+  fences: noop,
+  hr: /^ {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)/,
+  heading: /^ *(#{1,6}) *([^\n]+?) *(?:#+ *)?(?:\n+|$)/,
+  nptable: noop,
+  blockquote: /^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/,
+  list: /^( *)(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )\n*|\s*$)/,
+  html: '^ {0,3}(?:' // optional indentation
+    + '<(script|pre|style)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)' // (1)
+    + '|comment[^\\n]*(\\n+|$)' // (2)
+    + '|<\\?[\\s\\S]*?\\?>\\n*' // (3)
+    + '|<![A-Z][\\s\\S]*?>\\n*' // (4)
+    + '|<!\\[CDATA\\[[\\s\\S]*?\\]\\]>\\n*' // (5)
+    + '|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:\\n{2,}|$)' // (6)
+    + '|<(?!script|pre|style)([a-z][\\w-]*)(?:attribute)*? */?>(?=\\h*\\n)[\\s\\S]*?(?:\\n{2,}|$)' // (7) open tag
+    + '|</(?!script|pre|style)[a-z][\\w-]*\\s*>(?=\\h*\\n)[\\s\\S]*?(?:\\n{2,}|$)' // (7) closing tag
+    + ')',
+  def: /^ {0,3}\[(label)\]: *\n? *<?([^\s>]+)>?(?:(?: +\n? *| *\n *)(title))? *(?:\n+|$)/,
+  table: noop,
+  lheading: /^([^\n]+)\n *(=|-){2,} *(?:\n+|$)/,
+  paragraph: /^([^\n]+(?:\n(?!hr|heading|lheading| {0,3}>|<\/?(?:tag)(?: +|\n|\/?>)|<(?:script|pre|style|!--))[^\n]+)*)/,
+  text: /^[^\n]+/
+};
+
+block._label = /(?!\s*\])(?:\\[\[\]]|[^\[\]])+/;
+block._title = /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/;
+block.def = edit(block.def)
+  .replace('label', block._label)
+  .replace('title', block._title)
+  .getRegex();
+
+block.bullet = /(?:[*+-]|\d+\.)/;
+block.item = /^( *)(bull) [^\n]*(?:\n(?!\1bull )[^\n]*)*/;
+block.item = edit(block.item, 'gm')
+  .replace(/bull/g, block.bullet)
+  .getRegex();
+
+block.list = edit(block.list)
+  .replace(/bull/g, block.bullet)
+  .replace('hr', '\\n+(?=\\1?(?:(?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$))')
+  .replace('def', '\\n+(?=' + block.def.source + ')')
+  .getRegex();
+
+block._tag = 'address|article|aside|base|basefont|blockquote|body|caption'
+  + '|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption'
+  + '|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe'
+  + '|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option'
+  + '|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr'
+  + '|track|ul';
+block._comment = /<!--(?!-?>)[\s\S]*?-->/;
+block.html = edit(block.html, 'i')
+  .replace('comment', block._comment)
+  .replace('tag', block._tag)
+  .replace('attribute', / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/)
+  .getRegex();
+
+block.paragraph = edit(block.paragraph)
+  .replace('hr', block.hr)
+  .replace('heading', block.heading)
+  .replace('lheading', block.lheading)
+  .replace('tag', block._tag) // pars can be interrupted by type (6) html blocks
+  .getRegex();
+
+block.blockquote = edit(block.blockquote)
+  .replace('paragraph', block.paragraph)
+  .getRegex();
+
+/**
+ * Normal Block Grammar
+ */
+
+block.normal = merge({}, block);
+
+/**
+ * GFM Block Grammar
+ */
+
+block.gfm = merge({}, block.normal, {
+  fences: /^ *(`{3,}|~{3,})[ \.]*(\S+)? *\n([\s\S]*?)\n? *\1 *(?:\n+|$)/,
+  paragraph: /^/,
+  heading: /^ *(#{1,6}) +([^\n]+?) *#* *(?:\n+|$)/
+});
+
+block.gfm.paragraph = edit(block.paragraph)
+  .replace('(?!', '(?!'
+    + block.gfm.fences.source.replace('\\1', '\\2') + '|'
+    + block.list.source.replace('\\1', '\\3') + '|')
+  .getRegex();
+
+/**
+ * GFM + Tables Block Grammar
+ */
+
+block.tables = merge({}, block.gfm, {
+  nptable: /^ *([^|\n ].*\|.*)\n *([-:]+ *\|[-| :]*)(?:\n((?:.*[^>\n ].*(?:\n|$))*)\n*|$)/,
+  table: /^ *\|(.+)\n *\|?( *[-:]+[-| :]*)(?:\n((?: *[^>\n ].*(?:\n|$))*)\n*|$)/
+});
+
+/**
+ * Pedantic grammar
+ */
+
+block.pedantic = merge({}, block.normal, {
+  html: edit(
+    '^ *(?:comment *(?:\\n|\\s*$)'
+    + '|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)' // closed tag
+    + '|<tag(?:"[^"]*"|\'[^\']*\'|\\s[^\'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))')
+    .replace('comment', block._comment)
+    .replace(/tag/g, '(?!(?:'
+      + 'a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub'
+      + '|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)'
+      + '\\b)\\w+(?!:|[^\\w\\s@]*@)\\b')
+    .getRegex(),
+  def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/
+});
+
+/**
+ * Block Lexer
+ */
+
+function Lexer(options) {
+  this.tokens = [];
+  this.tokens.links = Object.create(null);
+  this.options = options || marked.defaults;
+  this.rules = block.normal;
+
+  if (this.options.pedantic) {
+    this.rules = block.pedantic;
+  } else if (this.options.gfm) {
+    if (this.options.tables) {
+      this.rules = block.tables;
+    } else {
+      this.rules = block.gfm;
+    }
+  }
+}
+
+/**
+ * Expose Block Rules
+ */
+
+Lexer.rules = block;
+
+/**
+ * Static Lex Method
+ */
+
+Lexer.lex = function(src, options) {
+  var lexer = new Lexer(options);
+  return lexer.lex(src);
+};
+
+/**
+ * Preprocessing
+ */
+
+Lexer.prototype.lex = function(src) {
+  src = src
+    .replace(/\r\n|\r/g, '\n')
+    .replace(/\t/g, '    ')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\u2424/g, '\n');
+
+  return this.token(src, true);
+};
+
+/**
+ * Lexing
+ */
+
+Lexer.prototype.token = function(src, top) {
+  src = src.replace(/^ +$/gm, '');
+  var next,
+      loose,
+      cap,
+      bull,
+      b,
+      item,
+      listStart,
+      listItems,
+      t,
+      space,
+      i,
+      tag,
+      l,
+      isordered,
+      istask,
+      ischecked;
+
+  while (src) {
+    // newline
+    if (cap = this.rules.newline.exec(src)) {
+      src = src.substring(cap[0].length);
+      if (cap[0].length > 1) {
+        this.tokens.push({
+          type: 'space'
+        });
+      }
+    }
+
+    // code
+    if (cap = this.rules.code.exec(src)) {
+      src = src.substring(cap[0].length);
+      cap = cap[0].replace(/^ {4}/gm, '');
+      this.tokens.push({
+        type: 'code',
+        text: !this.options.pedantic
+          ? rtrim(cap, '\n')
+          : cap
+      });
+      continue;
+    }
+
+    // fences (gfm)
+    if (cap = this.rules.fences.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'code',
+        lang: cap[2],
+        text: cap[3] || ''
+      });
+      continue;
+    }
+
+    // heading
+    if (cap = this.rules.heading.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'heading',
+        depth: cap[1].length,
+        text: cap[2]
+      });
+      continue;
+    }
+
+    // table no leading pipe (gfm)
+    if (top && (cap = this.rules.nptable.exec(src))) {
+      item = {
+        type: 'table',
+        header: splitCells(cap[1].replace(/^ *| *\| *$/g, '')),
+        align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
+        cells: cap[3] ? cap[3].replace(/\n$/, '').split('\n') : []
+      };
+
+      if (item.header.length === item.align.length) {
+        src = src.substring(cap[0].length);
+
+        for (i = 0; i < item.align.length; i++) {
+          if (/^ *-+: *$/.test(item.align[i])) {
+            item.align[i] = 'right';
+          } else if (/^ *:-+: *$/.test(item.align[i])) {
+            item.align[i] = 'center';
+          } else if (/^ *:-+ *$/.test(item.align[i])) {
+            item.align[i] = 'left';
+          } else {
+            item.align[i] = null;
+          }
+        }
+
+        for (i = 0; i < item.cells.length; i++) {
+          item.cells[i] = splitCells(item.cells[i], item.header.length);
+        }
+
+        this.tokens.push(item);
+
+        continue;
+      }
+    }
+
+    // hr
+    if (cap = this.rules.hr.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'hr'
+      });
+      continue;
+    }
+
+    // blockquote
+    if (cap = this.rules.blockquote.exec(src)) {
+      src = src.substring(cap[0].length);
+
+      this.tokens.push({
+        type: 'blockquote_start'
+      });
+
+      cap = cap[0].replace(/^ *> ?/gm, '');
+
+      // Pass `top` to keep the current
+      // "toplevel" state. This is exactly
+      // how markdown.pl works.
+      this.token(cap, top);
+
+      this.tokens.push({
+        type: 'blockquote_end'
+      });
+
+      continue;
+    }
+
+    // list
+    if (cap = this.rules.list.exec(src)) {
+      src = src.substring(cap[0].length);
+      bull = cap[2];
+      isordered = bull.length > 1;
+
+      listStart = {
+        type: 'list_start',
+        ordered: isordered,
+        start: isordered ? +bull : '',
+        loose: false
+      };
+
+      this.tokens.push(listStart);
+
+      // Get each top-level item.
+      cap = cap[0].match(this.rules.item);
+
+      listItems = [];
+      next = false;
+      l = cap.length;
+      i = 0;
+
+      for (; i < l; i++) {
+        item = cap[i];
+
+        // Remove the list item's bullet
+        // so it is seen as the next token.
+        space = item.length;
+        item = item.replace(/^ *([*+-]|\d+\.) +/, '');
+
+        // Outdent whatever the
+        // list item contains. Hacky.
+        if (~item.indexOf('\n ')) {
+          space -= item.length;
+          item = !this.options.pedantic
+            ? item.replace(new RegExp('^ {1,' + space + '}', 'gm'), '')
+            : item.replace(/^ {1,4}/gm, '');
+        }
+
+        // Determine whether the next list item belongs here.
+        // Backpedal if it does not belong in this list.
+        if (this.options.smartLists && i !== l - 1) {
+          b = block.bullet.exec(cap[i + 1])[0];
+          if (bull !== b && !(bull.length > 1 && b.length > 1)) {
+            src = cap.slice(i + 1).join('\n') + src;
+            i = l - 1;
+          }
+        }
+
+        // Determine whether item is loose or not.
+        // Use: /(^|\n)(?! )[^\n]+\n\n(?!\s*$)/
+        // for discount behavior.
+        loose = next || /\n\n(?!\s*$)/.test(item);
+        if (i !== l - 1) {
+          next = item.charAt(item.length - 1) === '\n';
+          if (!loose) loose = next;
+        }
+
+        if (loose) {
+          listStart.loose = true;
+        }
+
+        // Check for task list items
+        istask = /^\[[ xX]\] /.test(item);
+        ischecked = undefined;
+        if (istask) {
+          ischecked = item[1] !== ' ';
+          item = item.replace(/^\[[ xX]\] +/, '');
+        }
+
+        t = {
+          type: 'list_item_start',
+          task: istask,
+          checked: ischecked,
+          loose: loose
+        };
+
+        listItems.push(t);
+        this.tokens.push(t);
+
+        // Recurse.
+        this.token(item, false);
+
+        this.tokens.push({
+          type: 'list_item_end'
+        });
+      }
+
+      if (listStart.loose) {
+        l = listItems.length;
+        i = 0;
+        for (; i < l; i++) {
+          listItems[i].loose = true;
+        }
+      }
+
+      this.tokens.push({
+        type: 'list_end'
+      });
+
+      continue;
+    }
+
+    // html
+    if (cap = this.rules.html.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: this.options.sanitize
+          ? 'paragraph'
+          : 'html',
+        pre: !this.options.sanitizer
+          && (cap[1] === 'pre' || cap[1] === 'script' || cap[1] === 'style'),
+        text: cap[0]
+      });
+      continue;
+    }
+
+    // def
+    if (top && (cap = this.rules.def.exec(src))) {
+      src = src.substring(cap[0].length);
+      if (cap[3]) cap[3] = cap[3].substring(1, cap[3].length - 1);
+      tag = cap[1].toLowerCase().replace(/\s+/g, ' ');
+      if (!this.tokens.links[tag]) {
+        this.tokens.links[tag] = {
+          href: cap[2],
+          title: cap[3]
+        };
+      }
+      continue;
+    }
+
+    // table (gfm)
+    if (top && (cap = this.rules.table.exec(src))) {
+      item = {
+        type: 'table',
+        header: splitCells(cap[1].replace(/^ *| *\| *$/g, '')),
+        align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
+        cells: cap[3] ? cap[3].replace(/(?: *\| *)?\n$/, '').split('\n') : []
+      };
+
+      if (item.header.length === item.align.length) {
+        src = src.substring(cap[0].length);
+
+        for (i = 0; i < item.align.length; i++) {
+          if (/^ *-+: *$/.test(item.align[i])) {
+            item.align[i] = 'right';
+          } else if (/^ *:-+: *$/.test(item.align[i])) {
+            item.align[i] = 'center';
+          } else if (/^ *:-+ *$/.test(item.align[i])) {
+            item.align[i] = 'left';
+          } else {
+            item.align[i] = null;
+          }
+        }
+
+        for (i = 0; i < item.cells.length; i++) {
+          item.cells[i] = splitCells(
+            item.cells[i].replace(/^ *\| *| *\| *$/g, ''),
+            item.header.length);
+        }
+
+        this.tokens.push(item);
+
+        continue;
+      }
+    }
+
+    // lheading
+    if (cap = this.rules.lheading.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'heading',
+        depth: cap[2] === '=' ? 1 : 2,
+        text: cap[1]
+      });
+      continue;
+    }
+
+    // top-level paragraph
+    if (top && (cap = this.rules.paragraph.exec(src))) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'paragraph',
+        text: cap[1].charAt(cap[1].length - 1) === '\n'
+          ? cap[1].slice(0, -1)
+          : cap[1]
+      });
+      continue;
+    }
+
+    // text
+    if (cap = this.rules.text.exec(src)) {
+      // Top-level should never reach here.
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'text',
+        text: cap[0]
+      });
+      continue;
+    }
+
+    if (src) {
+      throw new Error('Infinite loop on byte: ' + src.charCodeAt(0));
+    }
+  }
+
+  return this.tokens;
+};
+
+/**
+ * Inline-Level Grammar
+ */
+
+var inline = {
+  escape: /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/,
+  autolink: /^<(scheme:[^\s\x00-\x1f<>]*|email)>/,
+  url: noop,
+  tag: '^comment'
+    + '|^</[a-zA-Z][\\w:-]*\\s*>' // self-closing tag
+    + '|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>' // open tag
+    + '|^<\\?[\\s\\S]*?\\?>' // processing instruction, e.g. <?php ?>
+    + '|^<![a-zA-Z]+\\s[\\s\\S]*?>' // declaration, e.g. <!DOCTYPE html>
+    + '|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>', // CDATA section
+  link: /^!?\[(label)\]\(href(?:\s+(title))?\s*\)/,
+  reflink: /^!?\[(label)\]\[(?!\s*\])((?:\\[\[\]]?|[^\[\]\\])+)\]/,
+  nolink: /^!?\[(?!\s*\])((?:\[[^\[\]]*\]|\\[\[\]]|[^\[\]])*)\](?:\[\])?/,
+  strong: /^__([^\s])__(?!_)|^\*\*([^\s])\*\*(?!\*)|^__([^\s][\s\S]*?[^\s])__(?!_)|^\*\*([^\s][\s\S]*?[^\s])\*\*(?!\*)/,
+  em: /^_([^\s_])_(?!_)|^\*([^\s*"<\[])\*(?!\*)|^_([^\s][\s\S]*?[^\s_])_(?!_)|^_([^\s_][\s\S]*?[^\s])_(?!_)|^\*([^\s"<\[][\s\S]*?[^\s*])\*(?!\*)|^\*([^\s*"<\[][\s\S]*?[^\s])\*(?!\*)/,
+  code: /^(`+)\s*([\s\S]*?[^`]?)\s*\1(?!`)/,
+  br: /^( {2,}|\\)\n(?!\s*$)/,
+  del: noop,
+  text: /^[\s\S]+?(?=[\\<!\[`*]|\b_| {2,}\n|$)/
+};
+
+inline._escapes = /\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/g;
+
+inline._scheme = /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/;
+inline._email = /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/;
+inline.autolink = edit(inline.autolink)
+  .replace('scheme', inline._scheme)
+  .replace('email', inline._email)
+  .getRegex();
+
+inline._attribute = /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/;
+
+inline.tag = edit(inline.tag)
+  .replace('comment', block._comment)
+  .replace('attribute', inline._attribute)
+  .getRegex();
+
+inline._label = /(?:\[[^\[\]]*\]|\\[\[\]]?|`[^`]*`|[^\[\]\\])*?/;
+inline._href = /\s*(<(?:\\[<>]?|[^\s<>\\])*>|(?:\\[()]?|\([^\s\x00-\x1f\\]*\)|[^\s\x00-\x1f()\\])*?)/;
+inline._title = /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/;
+
+inline.link = edit(inline.link)
+  .replace('label', inline._label)
+  .replace('href', inline._href)
+  .replace('title', inline._title)
+  .getRegex();
+
+inline.reflink = edit(inline.reflink)
+  .replace('label', inline._label)
+  .getRegex();
+
+/**
+ * Normal Inline Grammar
+ */
+
+inline.normal = merge({}, inline);
+
+/**
+ * Pedantic Inline Grammar
+ */
+
+inline.pedantic = merge({}, inline.normal, {
+  strong: /^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,
+  em: /^_(?=\S)([\s\S]*?\S)_(?!_)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/,
+  link: edit(/^!?\[(label)\]\((.*?)\)/)
+    .replace('label', inline._label)
+    .getRegex(),
+  reflink: edit(/^!?\[(label)\]\s*\[([^\]]*)\]/)
+    .replace('label', inline._label)
+    .getRegex()
+});
+
+/**
+ * GFM Inline Grammar
+ */
+
+inline.gfm = merge({}, inline.normal, {
+  escape: edit(inline.escape).replace('])', '~|])').getRegex(),
+  url: edit(/^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/)
+    .replace('email', inline._email)
+    .getRegex(),
+  _backpedal: /(?:[^?!.,:;*_~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_~)]+(?!$))+/,
+  del: /^~+(?=\S)([\s\S]*?\S)~+/,
+  text: edit(inline.text)
+    .replace(']|', '~]|')
+    .replace('|', '|https?://|ftp://|www\\.|[a-zA-Z0-9.!#$%&\'*+/=?^_`{\\|}~-]+@|')
+    .getRegex()
+});
+
+/**
+ * GFM + Line Breaks Inline Grammar
+ */
+
+inline.breaks = merge({}, inline.gfm, {
+  br: edit(inline.br).replace('{2,}', '*').getRegex(),
+  text: edit(inline.gfm.text).replace('{2,}', '*').getRegex()
+});
+
+/**
+ * Inline Lexer & Compiler
+ */
+
+function InlineLexer(links, options) {
+  this.options = options || marked.defaults;
+  this.links = links;
+  this.rules = inline.normal;
+  this.renderer = this.options.renderer || new Renderer();
+  this.renderer.options = this.options;
+
+  if (!this.links) {
+    throw new Error('Tokens array requires a `links` property.');
+  }
+
+  if (this.options.pedantic) {
+    this.rules = inline.pedantic;
+  } else if (this.options.gfm) {
+    if (this.options.breaks) {
+      this.rules = inline.breaks;
+    } else {
+      this.rules = inline.gfm;
+    }
+  }
+}
+
+/**
+ * Expose Inline Rules
+ */
+
+InlineLexer.rules = inline;
+
+/**
+ * Static Lexing/Compiling Method
+ */
+
+InlineLexer.output = function(src, links, options) {
+  var inline = new InlineLexer(links, options);
+  return inline.output(src);
+};
+
+/**
+ * Lexing/Compiling
+ */
+
+InlineLexer.prototype.output = function(src) {
+  var out = '',
+      link,
+      text,
+      href,
+      title,
+      cap,
+      prevCapZero;
+
+  while (src) {
+    // escape
+    if (cap = this.rules.escape.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += cap[1];
+      continue;
+    }
+
+    // autolink
+    if (cap = this.rules.autolink.exec(src)) {
+      src = src.substring(cap[0].length);
+      if (cap[2] === '@') {
+        text = escape(this.mangle(cap[1]));
+        href = 'mailto:' + text;
+      } else {
+        text = escape(cap[1]);
+        href = text;
+      }
+      out += this.renderer.link(href, null, text);
+      continue;
+    }
+
+    // url (gfm)
+    if (!this.inLink && (cap = this.rules.url.exec(src))) {
+      do {
+        prevCapZero = cap[0];
+        cap[0] = this.rules._backpedal.exec(cap[0])[0];
+      } while (prevCapZero !== cap[0]);
+      src = src.substring(cap[0].length);
+      if (cap[2] === '@') {
+        text = escape(cap[0]);
+        href = 'mailto:' + text;
+      } else {
+        text = escape(cap[0]);
+        if (cap[1] === 'www.') {
+          href = 'http://' + text;
+        } else {
+          href = text;
+        }
+      }
+      out += this.renderer.link(href, null, text);
+      continue;
+    }
+
+    // tag
+    if (cap = this.rules.tag.exec(src)) {
+      if (!this.inLink && /^<a /i.test(cap[0])) {
+        this.inLink = true;
+      } else if (this.inLink && /^<\/a>/i.test(cap[0])) {
+        this.inLink = false;
+      }
+      src = src.substring(cap[0].length);
+      out += this.options.sanitize
+        ? this.options.sanitizer
+          ? this.options.sanitizer(cap[0])
+          : escape(cap[0])
+        : cap[0]
+      continue;
+    }
+
+    // link
+    if (cap = this.rules.link.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.inLink = true;
+      href = cap[2];
+      if (this.options.pedantic) {
+        link = /^([^'"]*[^\s])\s+(['"])(.*)\2/.exec(href);
+
+        if (link) {
+          href = link[1];
+          title = link[3];
+        } else {
+          title = '';
+        }
+      } else {
+        title = cap[3] ? cap[3].slice(1, -1) : '';
+      }
+      href = href.trim().replace(/^<([\s\S]*)>$/, '$1');
+      out += this.outputLink(cap, {
+        href: InlineLexer.escapes(href),
+        title: InlineLexer.escapes(title)
+      });
+      this.inLink = false;
+      continue;
+    }
+
+    // reflink, nolink
+    if ((cap = this.rules.reflink.exec(src))
+        || (cap = this.rules.nolink.exec(src))) {
+      src = src.substring(cap[0].length);
+      link = (cap[2] || cap[1]).replace(/\s+/g, ' ');
+      link = this.links[link.toLowerCase()];
+      if (!link || !link.href) {
+        out += cap[0].charAt(0);
+        src = cap[0].substring(1) + src;
+        continue;
+      }
+      this.inLink = true;
+      out += this.outputLink(cap, link);
+      this.inLink = false;
+      continue;
+    }
+
+    // strong
+    if (cap = this.rules.strong.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.strong(this.output(cap[4] || cap[3] || cap[2] || cap[1]));
+      continue;
+    }
+
+    // em
+    if (cap = this.rules.em.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.em(this.output(cap[6] || cap[5] || cap[4] || cap[3] || cap[2] || cap[1]));
+      continue;
+    }
+
+    // code
+    if (cap = this.rules.code.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.codespan(escape(cap[2].trim(), true));
+      continue;
+    }
+
+    // br
+    if (cap = this.rules.br.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.br();
+      continue;
+    }
+
+    // del (gfm)
+    if (cap = this.rules.del.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.del(this.output(cap[1]));
+      continue;
+    }
+
+    // text
+    if (cap = this.rules.text.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.text(escape(this.smartypants(cap[0])));
+      continue;
+    }
+
+    if (src) {
+      throw new Error('Infinite loop on byte: ' + src.charCodeAt(0));
+    }
+  }
+
+  return out;
+};
+
+InlineLexer.escapes = function(text) {
+  return text ? text.replace(InlineLexer.rules._escapes, '$1') : text;
+}
+
+/**
+ * Compile Link
+ */
+
+InlineLexer.prototype.outputLink = function(cap, link) {
+  var href = link.href,
+      title = link.title ? escape(link.title) : null;
+
+  return cap[0].charAt(0) !== '!'
+    ? this.renderer.link(href, title, this.output(cap[1]))
+    : this.renderer.image(href, title, escape(cap[1]));
+};
+
+/**
+ * Smartypants Transformations
+ */
+
+InlineLexer.prototype.smartypants = function(text) {
+  if (!this.options.smartypants) return text;
+  return text
+    // em-dashes
+    .replace(/---/g, '\u2014')
+    // en-dashes
+    .replace(/--/g, '\u2013')
+    // opening singles
+    .replace(/(^|[-\u2014/(\[{"\s])'/g, '$1\u2018')
+    // closing singles & apostrophes
+    .replace(/'/g, '\u2019')
+    // opening doubles
+    .replace(/(^|[-\u2014/(\[{\u2018\s])"/g, '$1\u201c')
+    // closing doubles
+    .replace(/"/g, '\u201d')
+    // ellipses
+    .replace(/\.{3}/g, '\u2026');
+};
+
+/**
+ * Mangle Links
+ */
+
+InlineLexer.prototype.mangle = function(text) {
+  if (!this.options.mangle) return text;
+  var out = '',
+      l = text.length,
+      i = 0,
+      ch;
+
+  for (; i < l; i++) {
+    ch = text.charCodeAt(i);
+    if (Math.random() > 0.5) {
+      ch = 'x' + ch.toString(16);
+    }
+    out += '&#' + ch + ';';
+  }
+
+  return out;
+};
+
+/**
+ * Renderer
+ */
+
+function Renderer(options) {
+  this.options = options || marked.defaults;
+}
+
+Renderer.prototype.code = function(code, lang, escaped) {
+  if (this.options.highlight) {
+    var out = this.options.highlight(code, lang);
+    if (out != null && out !== code) {
+      escaped = true;
+      code = out;
+    }
+  }
+
+  if (!lang) {
+    return '<pre><code>'
+      + (escaped ? code : escape(code, true))
+      + '</code></pre>';
+  }
+
+  return '<pre><code class="'
+    + this.options.langPrefix
+    + escape(lang, true)
+    + '">'
+    + (escaped ? code : escape(code, true))
+    + '</code></pre>\n';
+};
+
+Renderer.prototype.blockquote = function(quote) {
+  return '<blockquote>\n' + quote + '</blockquote>\n';
+};
+
+Renderer.prototype.html = function(html) {
+  return html;
+};
+
+Renderer.prototype.heading = function(text, level, raw) {
+  if (this.options.headerIds) {
+    return '<h'
+      + level
+      + ' id="'
+      + this.options.headerPrefix
+      + raw.toLowerCase().replace(/[^\w]+/g, '-')
+      + '">'
+      + text
+      + '</h'
+      + level
+      + '>\n';
+  }
+  // ignore IDs
+  return '<h' + level + '>' + text + '</h' + level + '>\n';
+};
+
+Renderer.prototype.hr = function() {
+  return this.options.xhtml ? '<hr/>\n' : '<hr>\n';
+};
+
+Renderer.prototype.list = function(body, ordered, start) {
+  var type = ordered ? 'ol' : 'ul',
+      startatt = (ordered && start !== 1) ? (' start="' + start + '"') : '';
+  return '<' + type + startatt + '>\n' + body + '</' + type + '>\n';
+};
+
+Renderer.prototype.listitem = function(text) {
+  return '<li>' + text + '</li>\n';
+};
+
+Renderer.prototype.checkbox = function(checked) {
+  return '<input '
+    + (checked ? 'checked="" ' : '')
+    + 'disabled="" type="checkbox"'
+    + (this.options.xhtml ? ' /' : '')
+    + '> ';
+}
+
+Renderer.prototype.paragraph = function(text) {
+  return '<p>' + text + '</p>\n';
+};
+
+Renderer.prototype.table = function(header, body) {
+  if (body) body = '<tbody>' + body + '</tbody>';
+
+  return '<table>\n'
+    + '<thead>\n'
+    + header
+    + '</thead>\n'
+    + body
+    + '</table>\n';
+};
+
+Renderer.prototype.tablerow = function(content) {
+  return '<tr>\n' + content + '</tr>\n';
+};
+
+Renderer.prototype.tablecell = function(content, flags) {
+  var type = flags.header ? 'th' : 'td';
+  var tag = flags.align
+    ? '<' + type + ' align="' + flags.align + '">'
+    : '<' + type + '>';
+  return tag + content + '</' + type + '>\n';
+};
+
+// span level renderer
+Renderer.prototype.strong = function(text) {
+  return '<strong>' + text + '</strong>';
+};
+
+Renderer.prototype.em = function(text) {
+  return '<em>' + text + '</em>';
+};
+
+Renderer.prototype.codespan = function(text) {
+  return '<code>' + text + '</code>';
+};
+
+Renderer.prototype.br = function() {
+  return this.options.xhtml ? '<br/>' : '<br>';
+};
+
+Renderer.prototype.del = function(text) {
+  return '<del>' + text + '</del>';
+};
+
+Renderer.prototype.link = function(href, title, text) {
+  if (this.options.sanitize) {
+    try {
+      var prot = decodeURIComponent(unescape(href))
+        .replace(/[^\w:]/g, '')
+        .toLowerCase();
+    } catch (e) {
+      return text;
+    }
+    if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
+      return text;
+    }
+  }
+  if (this.options.baseUrl && !originIndependentUrl.test(href)) {
+    href = resolveUrl(this.options.baseUrl, href);
+  }
+  try {
+    href = encodeURI(href).replace(/%25/g, '%');
+  } catch (e) {
+    return text;
+  }
+  var out = '<a href="' + escape(href) + '"';
+  if (title) {
+    out += ' title="' + title + '"';
+  }
+  out += '>' + text + '</a>';
+  return out;
+};
+
+Renderer.prototype.image = function(href, title, text) {
+  if (this.options.baseUrl && !originIndependentUrl.test(href)) {
+    href = resolveUrl(this.options.baseUrl, href);
+  }
+  var out = '<img src="' + href + '" alt="' + text + '"';
+  if (title) {
+    out += ' title="' + title + '"';
+  }
+  out += this.options.xhtml ? '/>' : '>';
+  return out;
+};
+
+Renderer.prototype.text = function(text) {
+  return text;
+};
+
+/**
+ * TextRenderer
+ * returns only the textual part of the token
+ */
+
+function TextRenderer() {}
+
+// no need for block level renderers
+
+TextRenderer.prototype.strong =
+TextRenderer.prototype.em =
+TextRenderer.prototype.codespan =
+TextRenderer.prototype.del =
+TextRenderer.prototype.text = function (text) {
+  return text;
+}
+
+TextRenderer.prototype.link =
+TextRenderer.prototype.image = function(href, title, text) {
+  return '' + text;
+}
+
+TextRenderer.prototype.br = function() {
+  return '';
+}
+
+/**
+ * Parsing & Compiling
+ */
+
+function Parser(options) {
+  this.tokens = [];
+  this.token = null;
+  this.options = options || marked.defaults;
+  this.options.renderer = this.options.renderer || new Renderer();
+  this.renderer = this.options.renderer;
+  this.renderer.options = this.options;
+}
+
+/**
+ * Static Parse Method
+ */
+
+Parser.parse = function(src, options) {
+  var parser = new Parser(options);
+  return parser.parse(src);
+};
+
+/**
+ * Parse Loop
+ */
+
+Parser.prototype.parse = function(src) {
+  this.inline = new InlineLexer(src.links, this.options);
+  // use an InlineLexer with a TextRenderer to extract pure text
+  this.inlineText = new InlineLexer(
+    src.links,
+    merge({}, this.options, {renderer: new TextRenderer()})
+  );
+  this.tokens = src.reverse();
+
+  var out = '';
+  while (this.next()) {
+    out += this.tok();
+  }
+
+  return out;
+};
+
+/**
+ * Next Token
+ */
+
+Parser.prototype.next = function() {
+  return this.token = this.tokens.pop();
+};
+
+/**
+ * Preview Next Token
+ */
+
+Parser.prototype.peek = function() {
+  return this.tokens[this.tokens.length - 1] || 0;
+};
+
+/**
+ * Parse Text Tokens
+ */
+
+Parser.prototype.parseText = function() {
+  var body = this.token.text;
+
+  while (this.peek().type === 'text') {
+    body += '\n' + this.next().text;
+  }
+
+  return this.inline.output(body);
+};
+
+/**
+ * Parse Current Token
+ */
+
+Parser.prototype.tok = function() {
+  switch (this.token.type) {
+    case 'space': {
+      return '';
+    }
+    case 'hr': {
+      return this.renderer.hr();
+    }
+    case 'heading': {
+      return this.renderer.heading(
+        this.inline.output(this.token.text),
+        this.token.depth,
+        unescape(this.inlineText.output(this.token.text)));
+    }
+    case 'code': {
+      return this.renderer.code(this.token.text,
+        this.token.lang,
+        this.token.escaped);
+    }
+    case 'table': {
+      var header = '',
+          body = '',
+          i,
+          row,
+          cell,
+          j;
+
+      // header
+      cell = '';
+      for (i = 0; i < this.token.header.length; i++) {
+        cell += this.renderer.tablecell(
+          this.inline.output(this.token.header[i]),
+          { header: true, align: this.token.align[i] }
+        );
+      }
+      header += this.renderer.tablerow(cell);
+
+      for (i = 0; i < this.token.cells.length; i++) {
+        row = this.token.cells[i];
+
+        cell = '';
+        for (j = 0; j < row.length; j++) {
+          cell += this.renderer.tablecell(
+            this.inline.output(row[j]),
+            { header: false, align: this.token.align[j] }
+          );
+        }
+
+        body += this.renderer.tablerow(cell);
+      }
+      return this.renderer.table(header, body);
+    }
+    case 'blockquote_start': {
+      body = '';
+
+      while (this.next().type !== 'blockquote_end') {
+        body += this.tok();
+      }
+
+      return this.renderer.blockquote(body);
+    }
+    case 'list_start': {
+      body = '';
+      var ordered = this.token.ordered,
+          start = this.token.start;
+
+      while (this.next().type !== 'list_end') {
+        body += this.tok();
+      }
+
+      return this.renderer.list(body, ordered, start);
+    }
+    case 'list_item_start': {
+      body = '';
+      var loose = this.token.loose;
+
+      if (this.token.task) {
+        body += this.renderer.checkbox(this.token.checked);
+      }
+
+      while (this.next().type !== 'list_item_end') {
+        body += !loose && this.token.type === 'text'
+          ? this.parseText()
+          : this.tok();
+      }
+
+      return this.renderer.listitem(body);
+    }
+    case 'html': {
+      // TODO parse inline content if parameter markdown=1
+      return this.renderer.html(this.token.text);
+    }
+    case 'paragraph': {
+      return this.renderer.paragraph(this.inline.output(this.token.text));
+    }
+    case 'text': {
+      return this.renderer.paragraph(this.parseText());
+    }
+  }
+};
+
+/**
+ * Helpers
+ */
+
+function escape(html, encode) {
+  return html
+    .replace(!encode ? /&(?!#?\w+;)/g : /&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function unescape(html) {
+  // explicitly match decimal, hex, and named HTML entities
+  return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/ig, function(_, n) {
+    n = n.toLowerCase();
+    if (n === 'colon') return ':';
+    if (n.charAt(0) === '#') {
+      return n.charAt(1) === 'x'
+        ? String.fromCharCode(parseInt(n.substring(2), 16))
+        : String.fromCharCode(+n.substring(1));
+    }
+    return '';
+  });
+}
+
+function edit(regex, opt) {
+  regex = regex.source || regex;
+  opt = opt || '';
+  return {
+    replace: function(name, val) {
+      val = val.source || val;
+      val = val.replace(/(^|[^\[])\^/g, '$1');
+      regex = regex.replace(name, val);
+      return this;
+    },
+    getRegex: function() {
+      return new RegExp(regex, opt);
+    }
+  };
+}
+
+function resolveUrl(base, href) {
+  if (!baseUrls[' ' + base]) {
+    // we can ignore everything in base after the last slash of its path component,
+    // but we might need to add _that_
+    // https://tools.ietf.org/html/rfc3986#section-3
+    if (/^[^:]+:\/*[^/]*$/.test(base)) {
+      baseUrls[' ' + base] = base + '/';
+    } else {
+      baseUrls[' ' + base] = rtrim(base, '/', true);
+    }
+  }
+  base = baseUrls[' ' + base];
+
+  if (href.slice(0, 2) === '//') {
+    return base.replace(/:[\s\S]*/, ':') + href;
+  } else if (href.charAt(0) === '/') {
+    return base.replace(/(:\/*[^/]*)[\s\S]*/, '$1') + href;
+  } else {
+    return base + href;
+  }
+}
+var baseUrls = {};
+var originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
+
+function noop() {}
+noop.exec = noop;
+
+function merge(obj) {
+  var i = 1,
+      target,
+      key;
+
+  for (; i < arguments.length; i++) {
+    target = arguments[i];
+    for (key in target) {
+      if (Object.prototype.hasOwnProperty.call(target, key)) {
+        obj[key] = target[key];
+      }
+    }
+  }
+
+  return obj;
+}
+
+function splitCells(tableRow, count) {
+  // ensure that every cell-delimiting pipe has a space
+  // before it to distinguish it from an escaped pipe
+  var row = tableRow.replace(/\|/g, function (match, offset, str) {
+        var escaped = false,
+            curr = offset;
+        while (--curr >= 0 && str[curr] === '\\') escaped = !escaped;
+        if (escaped) {
+          // odd number of slashes means | is escaped
+          // so we leave it alone
+          return '|';
+        } else {
+          // add space before unescaped |
+          return ' |';
+        }
+      }),
+      cells = row.split(/ \|/),
+      i = 0;
+
+  if (cells.length > count) {
+    cells.splice(count);
+  } else {
+    while (cells.length < count) cells.push('');
+  }
+
+  for (; i < cells.length; i++) {
+    // leading or trailing whitespace is ignored per the gfm spec
+    cells[i] = cells[i].trim().replace(/\\\|/g, '|');
+  }
+  return cells;
+}
+
+// Remove trailing 'c's. Equivalent to str.replace(/c*$/, '').
+// /c*$/ is vulnerable to REDOS.
+// invert: Remove suffix of non-c chars instead. Default falsey.
+function rtrim(str, c, invert) {
+  if (str.length === 0) {
+    return '';
+  }
+
+  // Length of suffix matching the invert condition.
+  var suffLen = 0;
+
+  // Step left until we fail to match the invert condition.
+  while (suffLen < str.length) {
+    var currChar = str.charAt(str.length - suffLen - 1);
+    if (currChar === c && !invert) {
+      suffLen++;
+    } else if (currChar !== c && invert) {
+      suffLen++;
+    } else {
+      break;
+    }
+  }
+
+  return str.substr(0, str.length - suffLen);
+}
+
+/**
+ * Marked
+ */
+
+function marked(src, opt, callback) {
+  // throw error in case of non string input
+  if (typeof src === 'undefined' || src === null) {
+    throw new Error('marked(): input parameter is undefined or null');
+  }
+  if (typeof src !== 'string') {
+    throw new Error('marked(): input parameter is of type '
+      + Object.prototype.toString.call(src) + ', string expected');
+  }
+
+  if (callback || typeof opt === 'function') {
+    if (!callback) {
+      callback = opt;
+      opt = null;
+    }
+
+    opt = merge({}, marked.defaults, opt || {});
+
+    var highlight = opt.highlight,
+        tokens,
+        pending,
+        i = 0;
+
+    try {
+      tokens = Lexer.lex(src, opt)
+    } catch (e) {
+      return callback(e);
+    }
+
+    pending = tokens.length;
+
+    var done = function(err) {
+      if (err) {
+        opt.highlight = highlight;
+        return callback(err);
+      }
+
+      var out;
+
+      try {
+        out = Parser.parse(tokens, opt);
+      } catch (e) {
+        err = e;
+      }
+
+      opt.highlight = highlight;
+
+      return err
+        ? callback(err)
+        : callback(null, out);
+    };
+
+    if (!highlight || highlight.length < 3) {
+      return done();
+    }
+
+    delete opt.highlight;
+
+    if (!pending) return done();
+
+    for (; i < tokens.length; i++) {
+      (function(token) {
+        if (token.type !== 'code') {
+          return --pending || done();
+        }
+        return highlight(token.text, token.lang, function(err, code) {
+          if (err) return done(err);
+          if (code == null || code === token.text) {
+            return --pending || done();
+          }
+          token.text = code;
+          token.escaped = true;
+          --pending || done();
+        });
+      })(tokens[i]);
+    }
+
+    return;
+  }
+  try {
+    if (opt) opt = merge({}, marked.defaults, opt);
+    return Parser.parse(Lexer.lex(src, opt), opt);
+  } catch (e) {
+    e.message += '\nPlease report this to https://github.com/markedjs/marked.';
+    if ((opt || marked.defaults).silent) {
+      return '<p>An error occurred:</p><pre>'
+        + escape(e.message + '', true)
+        + '</pre>';
+    }
+    throw e;
+  }
+}
+
+/**
+ * Options
+ */
+
+marked.options =
+marked.setOptions = function(opt) {
+  merge(marked.defaults, opt);
+  return marked;
+};
+
+marked.getDefaults = function () {
+  return {
+    baseUrl: null,
+    breaks: false,
+    gfm: true,
+    headerIds: true,
+    headerPrefix: '',
+    highlight: null,
+    langPrefix: 'language-',
+    mangle: true,
+    pedantic: false,
+    renderer: new Renderer(),
+    sanitize: false,
+    sanitizer: null,
+    silent: false,
+    smartLists: false,
+    smartypants: false,
+    tables: true,
+    xhtml: false
+  };
+}
+
+marked.defaults = marked.getDefaults();
+
+/**
+ * Expose
+ */
+
+marked.Parser = Parser;
+marked.parser = Parser.parse;
+
+marked.Renderer = Renderer;
+marked.TextRenderer = TextRenderer;
+
+marked.Lexer = Lexer;
+marked.lexer = Lexer.lex;
+
+marked.InlineLexer = InlineLexer;
+marked.inlineLexer = InlineLexer.output;
+
+marked.parse = marked;
+
+if (true) {
+  module.exports = marked;
+} else if (typeof define === 'function' && define.amd) {
+  define(function() { return marked; });
+} else {
+  root.marked = marked;
+}
+})(this || (typeof window !== 'undefined' ? window : global));
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -523,8 +2281,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-
-/***/ 8:
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11487,11 +13244,10 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(9).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(8).setImmediate))
 
 /***/ }),
-
-/***/ 9:
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -11547,7 +13303,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(10);
+__webpack_require__(9);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -11558,8 +13314,8276 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
                          (typeof global !== "undefined" && global.clearImmediate) ||
                          (this && this.clearImmediate);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(6)))
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(59)
+/* template */
+var __vue_template__ = __webpack_require__(60)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "node_modules/vue-bulma-tabs/src/TabList.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-344725e5", Component.options)
+  } else {
+    hotAPI.reload("data-v-344725e5", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 11 */,
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+var stylesInDom = {};
+
+var	memoize = function (fn) {
+	var memo;
+
+	return function () {
+		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+		return memo;
+	};
+};
+
+var isOldIE = memoize(function () {
+	// Test for IE <= 9 as proposed by Browserhacks
+	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+	// Tests for existence of standard globals is to allow style-loader
+	// to operate correctly into non-standard environments
+	// @see https://github.com/webpack-contrib/style-loader/issues/177
+	return window && document && document.all && !window.atob;
+});
+
+var getElement = (function (fn) {
+	var memo = {};
+
+	return function(selector) {
+		if (typeof memo[selector] === "undefined") {
+			memo[selector] = fn.call(this, selector);
+		}
+
+		return memo[selector]
+	};
+})(function (target) {
+	return document.querySelector(target)
+});
+
+var singleton = null;
+var	singletonCounter = 0;
+var	stylesInsertedAtTop = [];
+
+var	fixUrls = __webpack_require__(13);
+
+module.exports = function(list, options) {
+	if (typeof DEBUG !== "undefined" && DEBUG) {
+		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+
+	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
+
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (!options.singleton) options.singleton = isOldIE();
+
+	// By default, add <style> tags to the <head> element
+	if (!options.insertInto) options.insertInto = "head";
+
+	// By default, add <style> tags to the bottom of the target
+	if (!options.insertAt) options.insertAt = "bottom";
+
+	var styles = listToStyles(list, options);
+
+	addStylesToDom(styles, options);
+
+	return function update (newList) {
+		var mayRemove = [];
+
+		for (var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+
+		if(newList) {
+			var newStyles = listToStyles(newList, options);
+			addStylesToDom(newStyles, options);
+		}
+
+		for (var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+
+			if(domStyle.refs === 0) {
+				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
+
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+};
+
+function addStylesToDom (styles, options) {
+	for (var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+
+		if(domStyle) {
+			domStyle.refs++;
+
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles (list, options) {
+	var styles = [];
+	var newStyles = {};
+
+	for (var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = options.base ? item[0] + options.base : item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+
+		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
+		else newStyles[id].parts.push(part);
+	}
+
+	return styles;
+}
+
+function insertStyleElement (options, style) {
+	var target = getElement(options.insertInto)
+
+	if (!target) {
+		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
+	}
+
+	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
+
+	if (options.insertAt === "top") {
+		if (!lastStyleElementInsertedAtTop) {
+			target.insertBefore(style, target.firstChild);
+		} else if (lastStyleElementInsertedAtTop.nextSibling) {
+			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			target.appendChild(style);
+		}
+		stylesInsertedAtTop.push(style);
+	} else if (options.insertAt === "bottom") {
+		target.appendChild(style);
+	} else {
+		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+	}
+}
+
+function removeStyleElement (style) {
+	if (style.parentNode === null) return false;
+	style.parentNode.removeChild(style);
+
+	var idx = stylesInsertedAtTop.indexOf(style);
+	if(idx >= 0) {
+		stylesInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement (options) {
+	var style = document.createElement("style");
+
+	options.attrs.type = "text/css";
+
+	addAttrs(style, options.attrs);
+	insertStyleElement(options, style);
+
+	return style;
+}
+
+function createLinkElement (options) {
+	var link = document.createElement("link");
+
+	options.attrs.type = "text/css";
+	options.attrs.rel = "stylesheet";
+
+	addAttrs(link, options.attrs);
+	insertStyleElement(options, link);
+
+	return link;
+}
+
+function addAttrs (el, attrs) {
+	Object.keys(attrs).forEach(function (key) {
+		el.setAttribute(key, attrs[key]);
+	});
+}
+
+function addStyle (obj, options) {
+	var style, update, remove, result;
+
+	// If a transform function was defined, run it on the css
+	if (options.transform && obj.css) {
+	    result = options.transform(obj.css);
+
+	    if (result) {
+	    	// If transform returns a value, use that instead of the original css.
+	    	// This allows running runtime transformations on the css.
+	    	obj.css = result;
+	    } else {
+	    	// If the transform function returns a falsy value, don't add this css.
+	    	// This allows conditional loading of css
+	    	return function() {
+	    		// noop
+	    	};
+	    }
+	}
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+
+		style = singleton || (singleton = createStyleElement(options));
+
+		update = applyToSingletonTag.bind(null, style, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
+
+	} else if (
+		obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function"
+	) {
+		style = createLinkElement(options);
+		update = updateLink.bind(null, style, options);
+		remove = function () {
+			removeStyleElement(style);
+
+			if(style.href) URL.revokeObjectURL(style.href);
+		};
+	} else {
+		style = createStyleElement(options);
+		update = applyToTag.bind(null, style);
+		remove = function () {
+			removeStyleElement(style);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle (newObj) {
+		if (newObj) {
+			if (
+				newObj.css === obj.css &&
+				newObj.media === obj.media &&
+				newObj.sourceMap === obj.sourceMap
+			) {
+				return;
+			}
+
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag (style, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (style.styleSheet) {
+		style.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = style.childNodes;
+
+		if (childNodes[index]) style.removeChild(childNodes[index]);
+
+		if (childNodes.length) {
+			style.insertBefore(cssNode, childNodes[index]);
+		} else {
+			style.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag (style, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		style.setAttribute("media", media)
+	}
+
+	if(style.styleSheet) {
+		style.styleSheet.cssText = css;
+	} else {
+		while(style.firstChild) {
+			style.removeChild(style.firstChild);
+		}
+
+		style.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink (link, options, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	/*
+		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
+		and there is no publicPath defined then lets turn convertToAbsoluteUrls
+		on by default.  Otherwise default to the convertToAbsoluteUrls option
+		directly
+	*/
+	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
+
+	if (options.convertToAbsoluteUrls || autoFixUrls) {
+		css = fixUrls(css);
+	}
+
+	if (sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = link.href;
+
+	link.href = URL.createObjectURL(blob);
+
+	if(oldSrc) URL.revokeObjectURL(oldSrc);
+}
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
+
+/**
+ * When source maps are enabled, `style-loader` uses a link element with a data-uri to
+ * embed the css on the page. This breaks all relative urls because now they are relative to a
+ * bundle instead of the current page.
+ *
+ * One solution is to only use full urls, but that may be impossible.
+ *
+ * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
+ *
+ * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
+ *
+ */
+
+module.exports = function (css) {
+  // get current location
+  var location = typeof window !== "undefined" && window.location;
+
+  if (!location) {
+    throw new Error("fixUrls requires window.location");
+  }
+
+	// blank or null?
+	if (!css || typeof css !== "string") {
+	  return css;
+  }
+
+  var baseUrl = location.protocol + "//" + location.host;
+  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
+
+	// convert each url(...)
+	/*
+	This regular expression is just a way to recursively match brackets within
+	a string.
+
+	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
+	   (  = Start a capturing group
+	     (?:  = Start a non-capturing group
+	         [^)(]  = Match anything that isn't a parentheses
+	         |  = OR
+	         \(  = Match a start parentheses
+	             (?:  = Start another non-capturing groups
+	                 [^)(]+  = Match anything that isn't a parentheses
+	                 |  = OR
+	                 \(  = Match a start parentheses
+	                     [^)(]*  = Match anything that isn't a parentheses
+	                 \)  = Match a end parentheses
+	             )  = End Group
+              *\) = Match anything and then a close parens
+          )  = Close non-capturing group
+          *  = Match anything
+       )  = Close capturing group
+	 \)  = Match a close parens
+
+	 /gi  = Get all matches, not the first.  Be case insensitive.
+	 */
+	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
+		// strip quotes (if they exist)
+		var unquotedOrigUrl = origUrl
+			.trim()
+			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
+			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
+
+		// already a full url? no change
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
+		  return fullMatch;
+		}
+
+		// convert the url to a full url
+		var newUrl;
+
+		if (unquotedOrigUrl.indexOf("//") === 0) {
+		  	//TODO: should we add protocol?
+			newUrl = unquotedOrigUrl;
+		} else if (unquotedOrigUrl.indexOf("/") === 0) {
+			// path should be relative to the base url
+			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
+		} else {
+			// path should be relative to current directory
+			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
+		}
+
+		// send back the fixed url(...)
+		return "url(" + JSON.stringify(newUrl) + ")";
+	});
+
+	// send back the fixed css
+	return fixedCss;
+};
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(15)
+/* template */
+var __vue_template__ = __webpack_require__(70)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/Docs/OpenApi.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-28473f33", Component.options)
+  } else {
+    hotAPI.reload("data-v-28473f33", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_marked__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_marked___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_marked__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__RequestForm_vue__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__RequestForm_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__RequestForm_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ResponseDisplay_vue__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ResponseDisplay_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__ResponseDisplay_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ResponsesTable_vue__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ResponsesTable_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__ResponsesTable_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ParametersTable_vue__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ParametersTable_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__ParametersTable_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SchemaView_vue__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SchemaView_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__SchemaView_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_vue_bulma_collapse__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_vue_bulma_collapse___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_vue_bulma_collapse__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_vue_bulma_tabs__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_json_schema_deref_local__ = __webpack_require__(65);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_json_schema_deref_local___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_json_schema_deref_local__);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	name: 'open-api',
+	components: {
+		RequestForm: __WEBPACK_IMPORTED_MODULE_1__RequestForm_vue___default.a,
+		ResponseDisplay: __WEBPACK_IMPORTED_MODULE_2__ResponseDisplay_vue___default.a,
+		ResponsesTable: __WEBPACK_IMPORTED_MODULE_3__ResponsesTable_vue___default.a,
+		ParametersTable: __WEBPACK_IMPORTED_MODULE_4__ParametersTable_vue___default.a,
+		SchemaView: __WEBPACK_IMPORTED_MODULE_5__SchemaView_vue___default.a,
+		Collapse: __WEBPACK_IMPORTED_MODULE_6_vue_bulma_collapse__["Collapse"],
+		CollapseItem: __WEBPACK_IMPORTED_MODULE_6_vue_bulma_collapse__["Item"],
+		Tabs: __WEBPACK_IMPORTED_MODULE_7_vue_bulma_tabs__["b" /* Tabs */],
+		TabPane: __WEBPACK_IMPORTED_MODULE_7_vue_bulma_tabs__["a" /* TabPane */]
+	},
+	props: ['api', 'headers', 'queryParams'],
+	data: function data() {
+		return {
+			selectedEntry: null,
+			currentSchema: ' ',
+			currentExamples: [],
+			currentRequest: {
+				contentType: '',
+				body: '',
+				params: {}
+			},
+			currentResponse: null
+		};
+	},
+	computed: {
+		tags: function tags() {
+			return getTag(this.api);
+		}
+	},
+	methods: {
+		marked: __WEBPACK_IMPORTED_MODULE_0_marked___default.a,
+		reset: function reset(entry) {
+			var _this = this;
+
+			var newParams = {};
+			(entry.parameters || []).forEach(function (p) {
+				_this.currentRequest.params[p.name] = p.in === 'query' && _this.queryParams && _this.queryParams[p.name] || p.in === 'header' && _this.headers && _this.headers[p.name] || null;
+				if (!newParams[p.name]) {
+					if (p.schema && p.schema.enum) {
+						newParams[p.name] = p.schema.enum[0];
+					}
+					if (p.schema && p.schema.type === 'array') {
+						newParams[p.name] = [];
+					}
+					if (p.example) {
+						newParams[p.name] = p.example;
+					}
+				}
+			});
+			this.currentRequest.params = newParams;
+			if (entry.requestBody) {
+				this.currentRequest.contentType = entry.requestBody.selectedType;
+				var example = entry.requestBody.content[this.currentRequest.contentType].example;
+				this.currentRequest.body = typeof example === 'string' ? example : JSON.stringify(example, null, 2);
+			}
+		},
+		select: function select(entry) {
+			this.reset(entry);
+			this.selectedEntry = entry;
+		},
+		openSchemaDialog: function openSchemaDialog(schema) {
+			this.currentSchema = schema;
+			this.$refs.schemaDialog.open();
+		},
+		openExamplesDialog: function openExamplesDialog(examples) {
+			this.currentExamples = examples;
+			this.$refs.examplesDialog.open();
+		},
+		request: function request() {
+			var _this2 = this;
+
+			this.currentResponse = null;
+			fetch(this.currentRequest, this.selectedEntry, this.api).then(function (res) {
+				_this2.currentResponse = res;
+			}, function (res) {
+				_this2.currentResponse = res;
+			});
+		}
+	}
+
+	/*
+  * HTTP requests utils
+  */
+
+});function fetch(request, entry, api) {
+	var params = Object.assign.apply(Object, [{}].concat(_toConsumableArray((entry.parameters || []).filter(function (p) {
+		return p.in === 'query' && (p.schema.type === 'array' ? request.params[p.name].length : request.params[p.name]);
+	}).map(function (p) {
+		return _defineProperty({}, p.name, p.schema.type === 'array' ? request.params[p.name].join(',') : request.params[p.name]);
+	}))));
+	var headers = Object.assign.apply(Object, [{}].concat(_toConsumableArray((entry.parameters || []).filter(function (p) {
+		return p.in === 'header' && (p.schema.type === 'array' ? request.params[p.name].length : request.params[p.name]);
+	}).map(function (p) {
+		return _defineProperty({}, p.name, p.schema.type === 'array' ? request.params[p.name].join(',') : request.params[p.name]);
+	}))));
+	var httpRequest = {
+		method: entry.method,
+		url: api.servers[0].url + entry.path.replace(/{(\w*)}/g, function (m, key) {
+			return request.params[key];
+		}),
+		params: params,
+		headers: headers
+	};
+	if (entry.requestBody) {
+		httpRequest.headers['Content-type'] = entry.requestBody.selectedType;
+		httpRequest.body = request.body;
+	}
+	return Vue.http(httpRequest);
+}
+
+/*
+ * Tags management utils
+ */
+
+
+
+var defaultStyle = {
+	query: 'form',
+	path: 'simple',
+	header: 'simple',
+	cookie: 'form'
+};
+
+function processContent(contentType, api) {
+	// Spec allow examples as an item or an array. In the API or in the schema
+	// we always fall back on an array
+	if (contentType.schema) {
+		contentType.examples = contentType.examples || contentType.schema.examples;
+		contentType.example = contentType.example || contentType.schema.example;
+	}
+
+	if (contentType.example) {
+		contentType.examples = [contentType.example];
+	}
+}
+
+function getTag(api) {
+	var derefAPI = __WEBPACK_IMPORTED_MODULE_8_json_schema_deref_local___default()(api);
+	console.log(derefAPI);
+	var tags = {};
+	Object.keys(derefAPI.paths).forEach(function (path) {
+		Object.keys(derefAPI.paths[path]).filter(function (method) {
+			return ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'].indexOf(method.toLowerCase()) !== -1;
+		}).forEach(function (method) {
+			var entry = derefAPI.paths[path][method];
+			entry.method = method;
+			entry.path = path;
+			// Filling tags entries
+			entry.tags = entry.tags || [];
+			if (!entry.tags.length) {
+				entry.tags.push('No category');
+			}
+			entry.tags.forEach(function (tag) {
+				tags[tag] = tags[tag] || [];
+				tags[tag].push(entry);
+			});
+
+			entry.parameters = entry.parameters || [];
+			if (derefAPI.paths[path].parameters) {
+				entry.parameters = derefAPI.paths[path].parameters.concat(entry.parameters);
+			}
+			if (entry.parameters) {
+				entry.parameters.forEach(function (p) {
+					p.style = p.style || defaultStyle[p.in];
+					p.explode = p.explode || p.style === 'form';
+					p.schema = p.schema || { type: 'string' };
+				});
+			}
+			if (entry.requestBody) {
+				if (entry.requestBody.content) {
+					Vue.set(entry.requestBody, 'selectedType', Object.keys(entry.requestBody.content)[0]);
+					entry.requestBody.required = true;
+					Object.values(entry.requestBody.content).forEach(function (contentType) {
+						return processContent(contentType, api);
+					});
+				}
+			}
+
+			// Some preprocessing with responses
+			entry.responses = entry.responses || {};
+			Object.values(entry.responses).forEach(function (response) {
+				if (response.content) {
+					// preselecting responses mime-type
+					Vue.set(response, 'selectedType', Object.keys(response.content)[0]);
+					Object.values(response.content).forEach(function (contentType) {
+						return processContent(contentType, api);
+					});
+				}
+			});
+		});
+	});
+	return tags;
+}
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(17)
+/* template */
+var __vue_template__ = __webpack_require__(18)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/Docs/RequestForm.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-56988cb6", Component.options)
+  } else {
+    hotAPI.reload("data-v-56988cb6", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['selectedEntry', 'currentRequest']
+});
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm.selectedEntry
+    ? _c(
+        "form",
+        {
+          attrs: { novalidate: "", id: "request-form" },
+          on: {
+            submit: function($event) {
+              $event.stopPropagation()
+              $event.preventDefault()
+              return _vm.submit($event)
+            }
+          }
+        },
+        [
+          _vm.selectedEntry.requestBody
+            ? _c("div", [
+                _c(
+                  "label",
+                  { staticClass: "label", attrs: { for: "payload" } },
+                  [
+                    _vm._v(
+                      "Payload (" +
+                        _vm._s(_vm.selectedEntry.requestBody.selectedType) +
+                        ")"
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _c("textarea", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.currentRequest.body,
+                      expression: "currentRequest.body"
+                    }
+                  ],
+                  attrs: { name: "payload" },
+                  domProps: { value: _vm.currentRequest.body },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.currentRequest, "body", $event.target.value)
+                    }
+                  }
+                })
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm._l(_vm.selectedEntry.parameters, function(parameter, i) {
+            return _c("div", { key: i }, [
+              (parameter.schema.type === "string" ||
+                parameter.schema.type === "integer" ||
+                parameter.schema.type === "number") &&
+              !parameter.schema.enum
+                ? _c("div", [
+                    _c("label", { staticClass: "label" }, [
+                      _vm._v(_vm._s(parameter.name))
+                    ]),
+                    _vm._v(" "),
+                    (parameter.schema.type === "string" ? "text" : "number") ===
+                    "checkbox"
+                      ? _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.currentRequest.params[parameter.name],
+                              expression:
+                                "currentRequest.params[parameter.name]"
+                            }
+                          ],
+                          staticClass: "input",
+                          attrs: { type: "checkbox" },
+                          domProps: {
+                            checked: Array.isArray(
+                              _vm.currentRequest.params[parameter.name]
+                            )
+                              ? _vm._i(
+                                  _vm.currentRequest.params[parameter.name],
+                                  null
+                                ) > -1
+                              : _vm.currentRequest.params[parameter.name]
+                          },
+                          on: {
+                            change: function($event) {
+                              var $$a =
+                                  _vm.currentRequest.params[parameter.name],
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = null,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    _vm.$set(
+                                      _vm.currentRequest.params,
+                                      parameter.name,
+                                      $$a.concat([$$v])
+                                    )
+                                } else {
+                                  $$i > -1 &&
+                                    _vm.$set(
+                                      _vm.currentRequest.params,
+                                      parameter.name,
+                                      $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1))
+                                    )
+                                }
+                              } else {
+                                _vm.$set(
+                                  _vm.currentRequest.params,
+                                  parameter.name,
+                                  $$c
+                                )
+                              }
+                            }
+                          }
+                        })
+                      : (parameter.schema.type === "string"
+                          ? "text"
+                          : "number") === "radio"
+                        ? _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value:
+                                  _vm.currentRequest.params[parameter.name],
+                                expression:
+                                  "currentRequest.params[parameter.name]"
+                              }
+                            ],
+                            staticClass: "input",
+                            attrs: { type: "radio" },
+                            domProps: {
+                              checked: _vm._q(
+                                _vm.currentRequest.params[parameter.name],
+                                null
+                              )
+                            },
+                            on: {
+                              change: function($event) {
+                                _vm.$set(
+                                  _vm.currentRequest.params,
+                                  parameter.name,
+                                  null
+                                )
+                              }
+                            }
+                          })
+                        : _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value:
+                                  _vm.currentRequest.params[parameter.name],
+                                expression:
+                                  "currentRequest.params[parameter.name]"
+                              }
+                            ],
+                            staticClass: "input",
+                            attrs: {
+                              type:
+                                parameter.schema.type === "string"
+                                  ? "text"
+                                  : "number"
+                            },
+                            domProps: {
+                              value: _vm.currentRequest.params[parameter.name]
+                            },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.currentRequest.params,
+                                  parameter.name,
+                                  $event.target.value
+                                )
+                              }
+                            }
+                          })
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              parameter.schema.enum
+                ? _c("div", [
+                    _c("label", { staticClass: "label" }, [
+                      _vm._v(_vm._s(parameter.name))
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "select",
+                      {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.currentRequest.params[parameter.name],
+                            expression: "currentRequest.params[parameter.name]"
+                          }
+                        ],
+                        staticClass: "select",
+                        on: {
+                          change: function($event) {
+                            var $$selectedVal = Array.prototype.filter
+                              .call($event.target.options, function(o) {
+                                return o.selected
+                              })
+                              .map(function(o) {
+                                var val = "_value" in o ? o._value : o.value
+                                return val
+                              })
+                            _vm.$set(
+                              _vm.currentRequest.params,
+                              parameter.name,
+                              $event.target.multiple
+                                ? $$selectedVal
+                                : $$selectedVal[0]
+                            )
+                          }
+                        }
+                      },
+                      _vm._l(parameter.schema.enum, function(val) {
+                        return _c(
+                          "option",
+                          { key: val, domProps: { value: val } },
+                          [_vm._v(_vm._s(val))]
+                        )
+                      })
+                    )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              parameter.schema.type === "array" && parameter.schema.items.enum
+                ? _c("div", [
+                    _c("label", { staticClass: "label" }, [
+                      _vm._v(_vm._s(parameter.name))
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "select",
+                      {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.currentRequest.params[parameter.name],
+                            expression: "currentRequest.params[parameter.name]"
+                          }
+                        ],
+                        staticClass: "select is-multiple",
+                        attrs: { multiple: "" },
+                        on: {
+                          change: function($event) {
+                            var $$selectedVal = Array.prototype.filter
+                              .call($event.target.options, function(o) {
+                                return o.selected
+                              })
+                              .map(function(o) {
+                                var val = "_value" in o ? o._value : o.value
+                                return val
+                              })
+                            _vm.$set(
+                              _vm.currentRequest.params,
+                              parameter.name,
+                              $event.target.multiple
+                                ? $$selectedVal
+                                : $$selectedVal[0]
+                            )
+                          }
+                        }
+                      },
+                      _vm._l(parameter.schema.items.enum, function(val) {
+                        return _c(
+                          "option",
+                          { key: val, domProps: { value: val } },
+                          [_vm._v(_vm._s(val))]
+                        )
+                      })
+                    )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              parameter.schema.type === "boolean"
+                ? _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.currentRequest.params[parameter.name],
+                        expression: "currentRequest.params[parameter.name]"
+                      }
+                    ],
+                    attrs: { type: "checkbox" },
+                    domProps: {
+                      checked: Array.isArray(
+                        _vm.currentRequest.params[parameter.name]
+                      )
+                        ? _vm._i(
+                            _vm.currentRequest.params[parameter.name],
+                            null
+                          ) > -1
+                        : _vm.currentRequest.params[parameter.name]
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.currentRequest.params[parameter.name],
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = null,
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 &&
+                              _vm.$set(
+                                _vm.currentRequest.params,
+                                parameter.name,
+                                $$a.concat([$$v])
+                              )
+                          } else {
+                            $$i > -1 &&
+                              _vm.$set(
+                                _vm.currentRequest.params,
+                                parameter.name,
+                                $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                              )
+                          }
+                        } else {
+                          _vm.$set(
+                            _vm.currentRequest.params,
+                            parameter.name,
+                            $$c
+                          )
+                        }
+                      }
+                    }
+                  })
+                : _vm._e(),
+              _vm._v(_vm._s(parameter.name) + "\n\n  ")
+            ])
+          })
+        ],
+        2
+      )
+    : _vm._e()
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-56988cb6", module.exports)
+  }
+}
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(20)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(23)
+/* template */
+var __vue_template__ = __webpack_require__(24)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/Docs/ResponseDisplay.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5a2d54f8", Component.options)
+  } else {
+    hotAPI.reload("data-v-5a2d54f8", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(21);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(3)("76ec2cfd", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5a2d54f8\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ResponseDisplay.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5a2d54f8\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ResponseDisplay.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.response-display pre {\n  white-space: pre-wrap;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports) {
+
+/**
+ * Translates the list format produced by css-loader into something
+ * easier to manipulate.
+ */
+module.exports = function listToStyles (parentId, list) {
+  var styles = []
+  var newStyles = {}
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i]
+    var id = item[0]
+    var css = item[1]
+    var media = item[2]
+    var sourceMap = item[3]
+    var part = {
+      id: parentId + ':' + i,
+      css: css,
+      media: media,
+      sourceMap: sourceMap
+    }
+    if (!newStyles[id]) {
+      styles.push(newStyles[id] = { id: id, parts: [part] })
+    } else {
+      newStyles[id].parts.push(part)
+    }
+  }
+  return styles
+}
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['response', 'entry'],
+  computed: {
+    formattedBody: function formattedBody() {
+      var res = void 0;
+      try {
+        res = JSON.stringify(this.response.body, null, 2);
+        if (typeof res === 'string') res = this.response.body;
+      } catch (err) {
+        res = this.response.body;
+      }
+      return res;
+    }
+  }
+});
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "response-display" }, [
+    _c("span", [
+      _vm._v(
+        _vm._s(_vm.entry.method.toUpperCase()) +
+          " " +
+          _vm._s(_vm.response.url) +
+          "    "
+      ),
+      _c("span", { class: _vm.response.ok ? "md-primary" : "md-warn" }, [
+        _vm._v(
+          _vm._s(_vm.response.status) + " " + _vm._s(_vm.response.statusText)
+        )
+      ])
+    ]),
+    _vm._v(" "),
+    _c("br"),
+    _vm._v(" "),
+    _c("ul", { staticClass: "md-dense" }, [
+      _c("li", [
+        _c("strong", { staticStyle: { "padding-left": "0px" } }, [
+          _vm._v("Headers")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "expand" }, [
+          _c(
+            "ul",
+            _vm._l(Object.keys(_vm.response.headers.map), function(header) {
+              return _c("li", [
+                _vm._v(
+                  _vm._s(header) +
+                    ": " +
+                    _vm._s(
+                      Array.isArray(_vm.response.headers.map[header])
+                        ? _vm.response.headers.map[header].join(",")
+                        : _vm.response.headers.map[header]
+                    )
+                )
+              ])
+            })
+          )
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("h4", [_vm._v("Body")]),
+    _vm._v(" "),
+    _c("pre", [_vm._v(_vm._s(_vm.formattedBody))])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-5a2d54f8", module.exports)
+  }
+}
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(26)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(28)
+/* template */
+var __vue_template__ = __webpack_require__(29)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/Docs/ResponsesTable.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-a4bcb8ae", Component.options)
+  } else {
+    hotAPI.reload("data-v-a4bcb8ae", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(27);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(3)("28767dac", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-a4bcb8ae\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ResponsesTable.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-a4bcb8ae\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ResponsesTable.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_marked__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_marked___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_marked__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['selectedEntry', 'openSchemaDialog', 'openExamplesDialog'],
+  methods: { marked: __WEBPACK_IMPORTED_MODULE_0_marked___default.a }
+});
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("table", { staticClass: "table" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c(
+      "tbody",
+      _vm._l(_vm.selectedEntry.responses, function(response, code) {
+        return _c("tr", { key: code }, [
+          _c("td", [_vm._v(_vm._s(code))]),
+          _vm._v(" "),
+          _c("td", {
+            domProps: { innerHTML: _vm._s(_vm.marked(response.description)) }
+          }),
+          _vm._v(" "),
+          !response.content ? _c("td") : _vm._e(),
+          _vm._v(" "),
+          response.content
+            ? _c("td", [
+                _c(
+                  "select",
+                  {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: response.selectedType,
+                        expression: "response.selectedType"
+                      }
+                    ],
+                    staticClass: "select",
+                    on: {
+                      change: function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.$set(
+                          response,
+                          "selectedType",
+                          $event.target.multiple
+                            ? $$selectedVal
+                            : $$selectedVal[0]
+                        )
+                      }
+                    }
+                  },
+                  _vm._l(response.content, function(value, content) {
+                    return _c(
+                      "option",
+                      { key: content, domProps: { value: content } },
+                      [_vm._v(_vm._s(content))]
+                    )
+                  })
+                )
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          !response.content || !response.content[response.selectedType].schema
+            ? _c("td")
+            : _vm._e(),
+          _vm._v(" "),
+          response.content && response.content[response.selectedType].schema
+            ? _c("td", [
+                _c(
+                  "button",
+                  {
+                    staticClass: "button",
+                    on: {
+                      click: function($event) {
+                        _vm.openSchemaDialog(
+                          response.content[response.selectedType].schema
+                        )
+                      }
+                    }
+                  },
+                  [_vm._v("Open")]
+                )
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          !response.content || !response.content[response.selectedType].examples
+            ? _c("td")
+            : _vm._e(),
+          _vm._v(" "),
+          response.content && response.content[response.selectedType].examples
+            ? _c("td", [
+                _c(
+                  "button",
+                  {
+                    staticClass: "button",
+                    on: {
+                      click: function($event) {
+                        _vm.openExamplesDialog(
+                          response.content[response.selectedType].examples
+                        )
+                      }
+                    }
+                  },
+                  [_vm._v("Open")]
+                )
+              ])
+            : _vm._e()
+        ])
+      })
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("HTTP Code")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Response")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Type")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Schema")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Examples")])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-a4bcb8ae", module.exports)
+  }
+}
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(31)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(33)
+/* template */
+var __vue_template__ = __webpack_require__(34)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/Docs/ParametersTable.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-293fe6c7", Component.options)
+  } else {
+    hotAPI.reload("data-v-293fe6c7", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(32);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(3)("6c328c13", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-293fe6c7\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ParametersTable.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-293fe6c7\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ParametersTable.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.deprecatedRow {\n\topacity: .5;\n}\n.deprecated {\n\tcolor:red;\n\tfont-weight:bold;\n\topacity: 1!important;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_marked__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_marked___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_marked__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['selectedEntry', 'openSchemaDialog', 'openExamplesDialog'],
+  methods: { marked: __WEBPACK_IMPORTED_MODULE_0_marked___default.a }
+});
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return (_vm.selectedEntry.parameters &&
+    _vm.selectedEntry.parameters.length) ||
+    _vm.selectedEntry.requestBody
+    ? _c("table", { staticClass: "table" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c(
+          "tbody",
+          [
+            _vm.selectedEntry.requestBody
+              ? _c("tr", [
+                  _c("td", [_vm._v("Payload")]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v("Request body")]),
+                  _vm._v(" "),
+                  !_vm.selectedEntry.requestBody.content ? _c("td") : _vm._e(),
+                  _vm._v(" "),
+                  _vm.selectedEntry.requestBody.content
+                    ? _c("td", [
+                        _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value:
+                                  _vm.selectedEntry.requestBody.selectedType,
+                                expression:
+                                  "selectedEntry.requestBody.selectedType"
+                              }
+                            ],
+                            on: {
+                              change: function($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function(o) {
+                                    return o.selected
+                                  })
+                                  .map(function(o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.$set(
+                                  _vm.selectedEntry.requestBody,
+                                  "selectedType",
+                                  $event.target.multiple
+                                    ? $$selectedVal
+                                    : $$selectedVal[0]
+                                )
+                              }
+                            }
+                          },
+                          _vm._l(
+                            Object.keys(_vm.selectedEntry.requestBody.content),
+                            function(contentType) {
+                              return _c(
+                                "option",
+                                {
+                                  key: contentType,
+                                  domProps: { value: contentType }
+                                },
+                                [_vm._v(_vm._s(contentType))]
+                              )
+                            }
+                          )
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  !_vm.selectedEntry.requestBody.content ||
+                  !_vm.selectedEntry.requestBody.content[
+                    _vm.selectedEntry.requestBody.selectedType
+                  ].schema
+                    ? _c("td")
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.selectedEntry.requestBody.content &&
+                  _vm.selectedEntry.requestBody.content[
+                    _vm.selectedEntry.requestBody.selectedType
+                  ].schema
+                    ? _c("td", { staticStyle: { "align-items": "left" } }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "button",
+                            on: {
+                              click: function($event) {
+                                _vm.openSchemaDialog(
+                                  _vm.selectedEntry.requestBody.content[
+                                    _vm.selectedEntry.requestBody.selectedType
+                                  ].schema
+                                )
+                              }
+                            }
+                          },
+                          [_vm._v("View Schema")]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("td", [_vm._v("body")]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.selectedEntry.requestBody.required,
+                          expression: "selectedEntry.requestBody.required"
+                        }
+                      ],
+                      attrs: { type: "checkbox", disabled: "" },
+                      domProps: {
+                        checked: Array.isArray(
+                          _vm.selectedEntry.requestBody.required
+                        )
+                          ? _vm._i(
+                              _vm.selectedEntry.requestBody.required,
+                              null
+                            ) > -1
+                          : _vm.selectedEntry.requestBody.required
+                      },
+                      on: {
+                        change: function($event) {
+                          var $$a = _vm.selectedEntry.requestBody.required,
+                            $$el = $event.target,
+                            $$c = $$el.checked ? true : false
+                          if (Array.isArray($$a)) {
+                            var $$v = null,
+                              $$i = _vm._i($$a, $$v)
+                            if ($$el.checked) {
+                              $$i < 0 &&
+                                _vm.$set(
+                                  _vm.selectedEntry.requestBody,
+                                  "required",
+                                  $$a.concat([$$v])
+                                )
+                            } else {
+                              $$i > -1 &&
+                                _vm.$set(
+                                  _vm.selectedEntry.requestBody,
+                                  "required",
+                                  $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                                )
+                            }
+                          } else {
+                            _vm.$set(
+                              _vm.selectedEntry.requestBody,
+                              "required",
+                              $$c
+                            )
+                          }
+                        }
+                      }
+                    })
+                  ])
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm._l(_vm.selectedEntry.parameters, function(parameter, i) {
+              return _c(
+                "tr",
+                { key: i, class: { deprecatedRow: parameter.deprecated } },
+                [
+                  _c("td", [
+                    _vm._v(_vm._s(parameter.name) + " "),
+                    parameter.deprecated
+                      ? _c("span", { staticClass: "deprecated" }, [
+                          _vm._v("deprecated")
+                        ])
+                      : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  _c("td", {
+                    domProps: {
+                      innerHTML: _vm._s(_vm.marked(parameter.description))
+                    }
+                  }),
+                  _vm._v(" "),
+                  parameter.schema.type !== "array"
+                    ? _c("td", [_vm._v(_vm._s(parameter.schema.type))])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  parameter.schema.type === "array"
+                    ? _c("td", [
+                        _vm._v(_vm._s(parameter.schema.items.type) + " array")
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  parameter.schema.type !== "array" && parameter.schema.enum
+                    ? _c("td", [
+                        _vm._v(_vm._s(parameter.schema.enum.join(", ")))
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  parameter.schema.type !== "array" && !parameter.schema.enum
+                    ? _c("td")
+                    : _vm._e(),
+                  _vm._v(" "),
+                  parameter.schema.type === "array"
+                    ? _c("td", [
+                        _c(
+                          "div",
+                          {
+                            staticStyle: {
+                              "overflow-y": "scroll",
+                              "max-height": "200px"
+                            }
+                          },
+                          [
+                            _vm._v(
+                              _vm._s(
+                                (parameter.schema.items.enum || []).join(", ")
+                              )
+                            )
+                          ]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(parameter.in))]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: parameter.required,
+                          expression: "parameter.required"
+                        }
+                      ],
+                      attrs: { type: "checkbox", disabled: "" },
+                      domProps: {
+                        checked: Array.isArray(parameter.required)
+                          ? _vm._i(parameter.required, null) > -1
+                          : parameter.required
+                      },
+                      on: {
+                        change: function($event) {
+                          var $$a = parameter.required,
+                            $$el = $event.target,
+                            $$c = $$el.checked ? true : false
+                          if (Array.isArray($$a)) {
+                            var $$v = null,
+                              $$i = _vm._i($$a, $$v)
+                            if ($$el.checked) {
+                              $$i < 0 &&
+                                _vm.$set(
+                                  parameter,
+                                  "required",
+                                  $$a.concat([$$v])
+                                )
+                            } else {
+                              $$i > -1 &&
+                                _vm.$set(
+                                  parameter,
+                                  "required",
+                                  $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                                )
+                            }
+                          } else {
+                            _vm.$set(parameter, "required", $$c)
+                          }
+                        }
+                      }
+                    })
+                  ])
+                ]
+              )
+            })
+          ],
+          2
+        )
+      ])
+    : _vm._e()
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("Name")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Description")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Type")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Values")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Location")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Required")])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-293fe6c7", module.exports)
+  }
+}
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(36)
+/* template */
+var __vue_template__ = __webpack_require__(41)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/Docs/SchemaView.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2be6e273", Component.options)
+  } else {
+    hotAPI.reload("data-v-2be6e273", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 36 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__node_modules_json_formatter_js__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__node_modules_json_formatter_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__node_modules_json_formatter_js__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_json_schema_view_js_dist_bundle_js__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_json_schema_view_js_dist_bundle_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__node_modules_json_schema_view_js_dist_bundle_js__);
+//
+//
+//
+//
+
+
+global.JSONFormatter = __WEBPACK_IMPORTED_MODULE_0__node_modules_json_formatter_js___default.a;
+
+__webpack_require__(39);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['schema'],
+	watch: {
+		schema: function schema() {
+			while (this.$el.firstChild) {
+				this.$el.removeChild(this.$el.firstChild);
+			}
+			var view = new __WEBPACK_IMPORTED_MODULE_1__node_modules_json_schema_view_js_dist_bundle_js___default.a(this.schema, 2);
+			this.$el.appendChild(view.render());
+		}
+	}
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports) {
+
+module.exports = function(modules) {
+    function __webpack_require__(moduleId) {
+        if (installedModules[moduleId]) return installedModules[moduleId].exports;
+        var module = installedModules[moduleId] = {
+            i: moduleId,
+            l: !1,
+            exports: {}
+        };
+        return modules[moduleId].call(module.exports, module, module.exports, __webpack_require__), 
+        module.l = !0, module.exports;
+    }
+    var installedModules = {};
+    return __webpack_require__.m = modules, __webpack_require__.c = installedModules, 
+    __webpack_require__.i = function(value) {
+        return value;
+    }, __webpack_require__.d = function(exports, name, getter) {
+        __webpack_require__.o(exports, name) || Object.defineProperty(exports, name, {
+            configurable: !1,
+            enumerable: !0,
+            get: getter
+        });
+    }, __webpack_require__.n = function(module) {
+        var getter = module && module.__esModule ? function() {
+            return module.default;
+        } : function() {
+            return module;
+        };
+        return __webpack_require__.d(getter, "a", getter), getter;
+    }, __webpack_require__.o = function(object, property) {
+        return Object.prototype.hasOwnProperty.call(object, property);
+    }, __webpack_require__.p = "dist", __webpack_require__(__webpack_require__.s = 6);
+}([ function(module, __webpack_exports__, __webpack_require__) {
+    "use strict";
+    Object.defineProperty(__webpack_exports__, "__esModule", {
+        value: !0
+    });
+    var __WEBPACK_IMPORTED_MODULE_0__helpers__ = __webpack_require__(5), __WEBPACK_IMPORTED_MODULE_1__style_less__ = __webpack_require__(4), DATE_STRING_REGEX = (__webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__style_less__), 
+    /(^\d{1,4}[\.|\\\/|-]\d{1,2}[\.|\\\/|-]\d{1,4})(\s*(?:0?[1-9]:[0-5]|1(?=[012])\d:[0-5])\d\s*[ap]m)?$/), PARTIAL_DATE_REGEX = /\d{2}:\d{2}:\d{2} GMT-\d{4}/, JSON_DATE_REGEX = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/, requestAnimationFrame = window.requestAnimationFrame || function(cb) {
+        return cb(), 0;
+    }, _defaultConfig = {
+        hoverPreviewEnabled: !1,
+        hoverPreviewArrayCount: 100,
+        hoverPreviewFieldCount: 5,
+        animateOpen: !0,
+        animateClose: !0,
+        theme: null,
+        useToJSON: !0,
+        sortPropertiesBy: null
+    }, JSONFormatter = function() {
+        function JSONFormatter(json, open, config, key) {
+            void 0 === open && (open = 1), void 0 === config && (config = _defaultConfig), this.json = json, 
+            this.open = open, this.config = config, this.key = key, this._isOpen = null, void 0 === this.config.hoverPreviewEnabled && (this.config.hoverPreviewEnabled = _defaultConfig.hoverPreviewEnabled), 
+            void 0 === this.config.hoverPreviewArrayCount && (this.config.hoverPreviewArrayCount = _defaultConfig.hoverPreviewArrayCount), 
+            void 0 === this.config.hoverPreviewFieldCount && (this.config.hoverPreviewFieldCount = _defaultConfig.hoverPreviewFieldCount), 
+            void 0 === this.config.useToJSON && (this.config.useToJSON = _defaultConfig.useToJSON);
+        }
+        return Object.defineProperty(JSONFormatter.prototype, "isOpen", {
+            get: function() {
+                return null !== this._isOpen ? this._isOpen : this.open > 0;
+            },
+            set: function(value) {
+                this._isOpen = value;
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "isDate", {
+            get: function() {
+                return this.json instanceof Date || "string" === this.type && (DATE_STRING_REGEX.test(this.json) || JSON_DATE_REGEX.test(this.json) || PARTIAL_DATE_REGEX.test(this.json));
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "isUrl", {
+            get: function() {
+                return "string" === this.type && 0 === this.json.indexOf("http");
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "isArray", {
+            get: function() {
+                return Array.isArray(this.json);
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "isObject", {
+            get: function() {
+                return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.a)(this.json);
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "isEmptyObject", {
+            get: function() {
+                return !this.keys.length && !this.isArray;
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "isEmpty", {
+            get: function() {
+                return this.isEmptyObject || this.keys && !this.keys.length && this.isArray;
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "useToJSON", {
+            get: function() {
+                return this.config.useToJSON && "stringifiable" === this.type;
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "hasKey", {
+            get: function() {
+                return void 0 !== this.key;
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "constructorName", {
+            get: function() {
+                return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.b)(this.json);
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "type", {
+            get: function() {
+                return null === this.json ? "null" : this.config.useToJSON && this.json && this.json.toJSON ? "stringifiable" : typeof this.json;
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "keys", {
+            get: function() {
+                if (this.isObject) {
+                    var keys = Object.keys(this.json).map(function(key) {
+                        return key || '""';
+                    });
+                    return !this.isArray && this.config.sortPropertiesBy ? keys.sort(this.config.sortPropertiesBy) : keys;
+                }
+                return [];
+            },
+            enumerable: !0,
+            configurable: !0
+        }), JSONFormatter.prototype.toggleOpen = function() {
+            this.isOpen = !this.isOpen, this.element && (this.isOpen ? this.appendChildren(this.config.animateOpen) : this.removeChildren(this.config.animateClose), 
+            this.element.classList.toggle(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)("open")));
+        }, JSONFormatter.prototype.openAtDepth = function(depth) {
+            void 0 === depth && (depth = 1), depth < 0 || (this.open = depth, this.isOpen = 0 !== depth, 
+            this.element && (this.removeChildren(!1), 0 === depth ? this.element.classList.remove(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)("open")) : (this.appendChildren(this.config.animateOpen), 
+            this.element.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)("open")))));
+        }, JSONFormatter.prototype.getInlinepreview = function() {
+            var _this = this;
+            if (this.isArray) return this.json.length > this.config.hoverPreviewArrayCount ? "Array[" + this.json.length + "]" : "[" + this.json.map(__WEBPACK_IMPORTED_MODULE_0__helpers__.d).join(", ") + "]";
+            var keys = this.keys, narrowKeys = keys.slice(0, this.config.hoverPreviewFieldCount), kvs = narrowKeys.map(function(key) {
+                return key + ":" + __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)(_this.type, _this.json[key]);
+            }), ellipsis = keys.length >= this.config.hoverPreviewFieldCount ? "…" : "";
+            return "{" + kvs.join(", ") + ellipsis + "}";
+        }, JSONFormatter.prototype.render = function() {
+            this.element = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("div", "row");
+            var togglerLink = this.isObject ? __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("a", "toggler-link") : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("span");
+            if (this.isObject && !this.useToJSON && togglerLink.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("span", "toggler")), 
+            this.hasKey && togglerLink.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("span", "key", this.key + ":")), 
+            this.isObject && !this.useToJSON) {
+                var value = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("span", "value"), objectWrapperSpan = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("span"), constructorName = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("span", "constructor-name", this.constructorName);
+                if (objectWrapperSpan.appendChild(constructorName), this.isArray) {
+                    var arrayWrapperSpan = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("span");
+                    arrayWrapperSpan.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("span", "bracket", "[")), 
+                    arrayWrapperSpan.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("span", "number", this.json.length)), 
+                    arrayWrapperSpan.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("span", "bracket", "]")), 
+                    objectWrapperSpan.appendChild(arrayWrapperSpan);
+                }
+                value.appendChild(objectWrapperSpan), togglerLink.appendChild(value);
+            } else {
+                var value = this.isUrl ? __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("a") : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("span");
+                value.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)(this.type)), 
+                this.isDate && value.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)("date")), 
+                this.isUrl && (value.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)("url")), 
+                value.setAttribute("href", this.json));
+                var valuePreview = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)(this.type, this.json, this.useToJSON ? this.json.toJSON() : this.json);
+                value.appendChild(document.createTextNode(valuePreview)), togglerLink.appendChild(value);
+            }
+            if (this.isObject && this.config.hoverPreviewEnabled) {
+                var preview = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("span", "preview-text");
+                preview.appendChild(document.createTextNode(this.getInlinepreview())), togglerLink.appendChild(preview);
+            }
+            var children = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)("div", "children");
+            return this.isObject && children.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)("object")), 
+            this.isArray && children.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)("array")), 
+            this.isEmpty && children.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)("empty")), 
+            this.config && this.config.theme && this.element.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)(this.config.theme)), 
+            this.isOpen && this.element.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)("open")), 
+            this.element.appendChild(togglerLink), this.element.appendChild(children), this.isObject && this.isOpen && this.appendChildren(), 
+            this.isObject && !this.useToJSON && togglerLink.addEventListener("click", this.toggleOpen.bind(this)), 
+            this.element;
+        }, JSONFormatter.prototype.appendChildren = function(animated) {
+            var _this = this;
+            void 0 === animated && (animated = !1);
+            var children = this.element.querySelector("div." + __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)("children"));
+            if (children && !this.isEmpty) if (animated) {
+                var index_1 = 0, addAChild_1 = function() {
+                    var key = _this.keys[index_1], formatter = new JSONFormatter(_this.json[key], _this.open - 1, _this.config, key);
+                    children.appendChild(formatter.render()), (index_1 += 1) < _this.keys.length && (index_1 > 10 ? addAChild_1() : requestAnimationFrame(addAChild_1));
+                };
+                requestAnimationFrame(addAChild_1);
+            } else this.keys.forEach(function(key) {
+                var formatter = new JSONFormatter(_this.json[key], _this.open - 1, _this.config, key);
+                children.appendChild(formatter.render());
+            });
+        }, JSONFormatter.prototype.removeChildren = function(animated) {
+            void 0 === animated && (animated = !1);
+            var childrenElement = this.element.querySelector("div." + __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)("children"));
+            if (animated) {
+                var childrenRemoved_1 = 0, removeAChild_1 = function() {
+                    childrenElement && childrenElement.children.length && (childrenElement.removeChild(childrenElement.children[0]), 
+                    childrenRemoved_1 += 1, childrenRemoved_1 > 10 ? removeAChild_1() : requestAnimationFrame(removeAChild_1));
+                };
+                requestAnimationFrame(removeAChild_1);
+            } else childrenElement && (childrenElement.innerHTML = "");
+        }, JSONFormatter;
+    }();
+    __webpack_exports__.default = JSONFormatter;
+}, function(module, exports, __webpack_require__) {
+    exports = module.exports = __webpack_require__(2)(), exports.push([ module.i, '.json-formatter-row {\n  font-family: monospace;\n}\n.json-formatter-row,\n.json-formatter-row a,\n.json-formatter-row a:hover {\n  color: black;\n  text-decoration: none;\n}\n.json-formatter-row .json-formatter-row {\n  margin-left: 1rem;\n}\n.json-formatter-row .json-formatter-children.json-formatter-empty {\n  opacity: 0.5;\n  margin-left: 1rem;\n}\n.json-formatter-row .json-formatter-children.json-formatter-empty:after {\n  display: none;\n}\n.json-formatter-row .json-formatter-children.json-formatter-empty.json-formatter-object:after {\n  content: "No properties";\n}\n.json-formatter-row .json-formatter-children.json-formatter-empty.json-formatter-array:after {\n  content: "[]";\n}\n.json-formatter-row .json-formatter-string,\n.json-formatter-row .json-formatter-stringifiable {\n  color: green;\n  white-space: pre;\n  word-wrap: break-word;\n}\n.json-formatter-row .json-formatter-number {\n  color: blue;\n}\n.json-formatter-row .json-formatter-boolean {\n  color: red;\n}\n.json-formatter-row .json-formatter-null {\n  color: #855A00;\n}\n.json-formatter-row .json-formatter-undefined {\n  color: #ca0b69;\n}\n.json-formatter-row .json-formatter-function {\n  color: #FF20ED;\n}\n.json-formatter-row .json-formatter-date {\n  background-color: rgba(0, 0, 0, 0.05);\n}\n.json-formatter-row .json-formatter-url {\n  text-decoration: underline;\n  color: blue;\n  cursor: pointer;\n}\n.json-formatter-row .json-formatter-bracket {\n  color: blue;\n}\n.json-formatter-row .json-formatter-key {\n  color: #00008B;\n  padding-right: 0.2rem;\n}\n.json-formatter-row .json-formatter-toggler-link {\n  cursor: pointer;\n}\n.json-formatter-row .json-formatter-toggler {\n  line-height: 1.2rem;\n  font-size: 0.7rem;\n  vertical-align: middle;\n  opacity: 0.6;\n  cursor: pointer;\n  padding-right: 0.2rem;\n}\n.json-formatter-row .json-formatter-toggler:after {\n  display: inline-block;\n  transition: transform 100ms ease-in;\n  content: "\\25BA";\n}\n.json-formatter-row > a > .json-formatter-preview-text {\n  opacity: 0;\n  transition: opacity 0.15s ease-in;\n  font-style: italic;\n}\n.json-formatter-row:hover > a > .json-formatter-preview-text {\n  opacity: 0.6;\n}\n.json-formatter-row.json-formatter-open > .json-formatter-toggler-link .json-formatter-toggler:after {\n  transform: rotate(90deg);\n}\n.json-formatter-row.json-formatter-open > .json-formatter-children:after {\n  display: inline-block;\n}\n.json-formatter-row.json-formatter-open > a > .json-formatter-preview-text {\n  display: none;\n}\n.json-formatter-row.json-formatter-open.json-formatter-empty:after {\n  display: block;\n}\n.json-formatter-dark.json-formatter-row {\n  font-family: monospace;\n}\n.json-formatter-dark.json-formatter-row,\n.json-formatter-dark.json-formatter-row a,\n.json-formatter-dark.json-formatter-row a:hover {\n  color: white;\n  text-decoration: none;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-row {\n  margin-left: 1rem;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-children.json-formatter-empty {\n  opacity: 0.5;\n  margin-left: 1rem;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-children.json-formatter-empty:after {\n  display: none;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-children.json-formatter-empty.json-formatter-object:after {\n  content: "No properties";\n}\n.json-formatter-dark.json-formatter-row .json-formatter-children.json-formatter-empty.json-formatter-array:after {\n  content: "[]";\n}\n.json-formatter-dark.json-formatter-row .json-formatter-string,\n.json-formatter-dark.json-formatter-row .json-formatter-stringifiable {\n  color: #31F031;\n  white-space: pre;\n  word-wrap: break-word;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-number {\n  color: #66C2FF;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-boolean {\n  color: #EC4242;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-null {\n  color: #EEC97D;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-undefined {\n  color: #ef8fbe;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-function {\n  color: #FD48CB;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-date {\n  background-color: rgba(255, 255, 255, 0.05);\n}\n.json-formatter-dark.json-formatter-row .json-formatter-url {\n  text-decoration: underline;\n  color: #027BFF;\n  cursor: pointer;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-bracket {\n  color: #9494FF;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-key {\n  color: #23A0DB;\n  padding-right: 0.2rem;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-toggler-link {\n  cursor: pointer;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-toggler {\n  line-height: 1.2rem;\n  font-size: 0.7rem;\n  vertical-align: middle;\n  opacity: 0.6;\n  cursor: pointer;\n  padding-right: 0.2rem;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-toggler:after {\n  display: inline-block;\n  transition: transform 100ms ease-in;\n  content: "\\25BA";\n}\n.json-formatter-dark.json-formatter-row > a > .json-formatter-preview-text {\n  opacity: 0;\n  transition: opacity 0.15s ease-in;\n  font-style: italic;\n}\n.json-formatter-dark.json-formatter-row:hover > a > .json-formatter-preview-text {\n  opacity: 0.6;\n}\n.json-formatter-dark.json-formatter-row.json-formatter-open > .json-formatter-toggler-link .json-formatter-toggler:after {\n  transform: rotate(90deg);\n}\n.json-formatter-dark.json-formatter-row.json-formatter-open > .json-formatter-children:after {\n  display: inline-block;\n}\n.json-formatter-dark.json-formatter-row.json-formatter-open > a > .json-formatter-preview-text {\n  display: none;\n}\n.json-formatter-dark.json-formatter-row.json-formatter-open.json-formatter-empty:after {\n  display: block;\n}\n', "" ]);
+}, function(module, exports) {
+    module.exports = function() {
+        var list = [];
+        return list.toString = function() {
+            for (var result = [], i = 0; i < this.length; i++) {
+                var item = this[i];
+                item[2] ? result.push("@media " + item[2] + "{" + item[1] + "}") : result.push(item[1]);
+            }
+            return result.join("");
+        }, list.i = function(modules, mediaQuery) {
+            "string" == typeof modules && (modules = [ [ null, modules, "" ] ]);
+            for (var alreadyImportedModules = {}, i = 0; i < this.length; i++) {
+                var id = this[i][0];
+                "number" == typeof id && (alreadyImportedModules[id] = !0);
+            }
+            for (i = 0; i < modules.length; i++) {
+                var item = modules[i];
+                "number" == typeof item[0] && alreadyImportedModules[item[0]] || (mediaQuery && !item[2] ? item[2] = mediaQuery : mediaQuery && (item[2] = "(" + item[2] + ") and (" + mediaQuery + ")"), 
+                list.push(item));
+            }
+        }, list;
+    };
+}, function(module, exports) {
+    function addStylesToDom(styles, options) {
+        for (var i = 0; i < styles.length; i++) {
+            var item = styles[i], domStyle = stylesInDom[item.id];
+            if (domStyle) {
+                domStyle.refs++;
+                for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j](item.parts[j]);
+                for (;j < item.parts.length; j++) domStyle.parts.push(addStyle(item.parts[j], options));
+            } else {
+                for (var parts = [], j = 0; j < item.parts.length; j++) parts.push(addStyle(item.parts[j], options));
+                stylesInDom[item.id] = {
+                    id: item.id,
+                    refs: 1,
+                    parts: parts
+                };
+            }
+        }
+    }
+    function listToStyles(list) {
+        for (var styles = [], newStyles = {}, i = 0; i < list.length; i++) {
+            var item = list[i], id = item[0], css = item[1], media = item[2], sourceMap = item[3], part = {
+                css: css,
+                media: media,
+                sourceMap: sourceMap
+            };
+            newStyles[id] ? newStyles[id].parts.push(part) : styles.push(newStyles[id] = {
+                id: id,
+                parts: [ part ]
+            });
+        }
+        return styles;
+    }
+    function insertStyleElement(options, styleElement) {
+        var head = getHeadElement(), lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+        if ("top" === options.insertAt) lastStyleElementInsertedAtTop ? lastStyleElementInsertedAtTop.nextSibling ? head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling) : head.appendChild(styleElement) : head.insertBefore(styleElement, head.firstChild), 
+        styleElementsInsertedAtTop.push(styleElement); else {
+            if ("bottom" !== options.insertAt) throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+            head.appendChild(styleElement);
+        }
+    }
+    function removeStyleElement(styleElement) {
+        styleElement.parentNode.removeChild(styleElement);
+        var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+        idx >= 0 && styleElementsInsertedAtTop.splice(idx, 1);
+    }
+    function createStyleElement(options) {
+        var styleElement = document.createElement("style");
+        return styleElement.type = "text/css", insertStyleElement(options, styleElement), 
+        styleElement;
+    }
+    function createLinkElement(options) {
+        var linkElement = document.createElement("link");
+        return linkElement.rel = "stylesheet", insertStyleElement(options, linkElement), 
+        linkElement;
+    }
+    function addStyle(obj, options) {
+        var styleElement, update, remove;
+        if (options.singleton) {
+            var styleIndex = singletonCounter++;
+            styleElement = singletonElement || (singletonElement = createStyleElement(options)), 
+            update = applyToSingletonTag.bind(null, styleElement, styleIndex, !1), remove = applyToSingletonTag.bind(null, styleElement, styleIndex, !0);
+        } else obj.sourceMap && "function" == typeof URL && "function" == typeof URL.createObjectURL && "function" == typeof URL.revokeObjectURL && "function" == typeof Blob && "function" == typeof btoa ? (styleElement = createLinkElement(options), 
+        update = updateLink.bind(null, styleElement), remove = function() {
+            removeStyleElement(styleElement), styleElement.href && URL.revokeObjectURL(styleElement.href);
+        }) : (styleElement = createStyleElement(options), update = applyToTag.bind(null, styleElement), 
+        remove = function() {
+            removeStyleElement(styleElement);
+        });
+        return update(obj), function(newObj) {
+            if (newObj) {
+                if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap) return;
+                update(obj = newObj);
+            } else remove();
+        };
+    }
+    function applyToSingletonTag(styleElement, index, remove, obj) {
+        var css = remove ? "" : obj.css;
+        if (styleElement.styleSheet) styleElement.styleSheet.cssText = replaceText(index, css); else {
+            var cssNode = document.createTextNode(css), childNodes = styleElement.childNodes;
+            childNodes[index] && styleElement.removeChild(childNodes[index]), childNodes.length ? styleElement.insertBefore(cssNode, childNodes[index]) : styleElement.appendChild(cssNode);
+        }
+    }
+    function applyToTag(styleElement, obj) {
+        var css = obj.css, media = obj.media;
+        if (media && styleElement.setAttribute("media", media), styleElement.styleSheet) styleElement.styleSheet.cssText = css; else {
+            for (;styleElement.firstChild; ) styleElement.removeChild(styleElement.firstChild);
+            styleElement.appendChild(document.createTextNode(css));
+        }
+    }
+    function updateLink(linkElement, obj) {
+        var css = obj.css, sourceMap = obj.sourceMap;
+        sourceMap && (css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */");
+        var blob = new Blob([ css ], {
+            type: "text/css"
+        }), oldSrc = linkElement.href;
+        linkElement.href = URL.createObjectURL(blob), oldSrc && URL.revokeObjectURL(oldSrc);
+    }
+    var stylesInDom = {}, memoize = function(fn) {
+        var memo;
+        return function() {
+            return void 0 === memo && (memo = fn.apply(this, arguments)), memo;
+        };
+    }, isOldIE = memoize(function() {
+        return /msie [6-9]\b/.test(self.navigator.userAgent.toLowerCase());
+    }), getHeadElement = memoize(function() {
+        return document.head || document.getElementsByTagName("head")[0];
+    }), singletonElement = null, singletonCounter = 0, styleElementsInsertedAtTop = [];
+    module.exports = function(list, options) {
+        if ("undefined" != typeof DEBUG && DEBUG && "object" != typeof document) throw new Error("The style-loader cannot be used in a non-browser environment");
+        options = options || {}, void 0 === options.singleton && (options.singleton = isOldIE()), 
+        void 0 === options.insertAt && (options.insertAt = "bottom");
+        var styles = listToStyles(list);
+        return addStylesToDom(styles, options), function(newList) {
+            for (var mayRemove = [], i = 0; i < styles.length; i++) {
+                var item = styles[i], domStyle = stylesInDom[item.id];
+                domStyle.refs--, mayRemove.push(domStyle);
+            }
+            if (newList) {
+                addStylesToDom(listToStyles(newList), options);
+            }
+            for (var i = 0; i < mayRemove.length; i++) {
+                var domStyle = mayRemove[i];
+                if (0 === domStyle.refs) {
+                    for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
+                    delete stylesInDom[domStyle.id];
+                }
+            }
+        };
+    };
+    var replaceText = function() {
+        var textStore = [];
+        return function(index, replacement) {
+            return textStore[index] = replacement, textStore.filter(Boolean).join("\n");
+        };
+    }();
+}, function(module, exports, __webpack_require__) {
+    var content = __webpack_require__(1);
+    "string" == typeof content && (content = [ [ module.i, content, "" ] ]);
+    __webpack_require__(3)(content, {});
+    content.locals && (module.exports = content.locals);
+}, function(module, __webpack_exports__, __webpack_require__) {
+    "use strict";
+    function escapeString(str) {
+        return str.replace('"', '"');
+    }
+    function isObject(value) {
+        var type = typeof value;
+        return !!value && "object" == type;
+    }
+    function getObjectName(object) {
+        if (void 0 === object) return "";
+        if (null === object) return "Object";
+        if ("object" == typeof object && !object.constructor) return "Object";
+        var funcNameRegex = /function ([^(]*)/, results = funcNameRegex.exec(object.constructor.toString());
+        return results && results.length > 1 ? results[1] : "";
+    }
+    function getValuePreview(type, object, value) {
+        return "null" === type || "undefined" === type ? type : ("string" !== type && "stringifiable" !== type || (value = '"' + escapeString(value) + '"'), 
+        "function" === type ? object.toString().replace(/[\r\n]/g, "").replace(/\{.*\}/, "") + "{…}" : value);
+    }
+    function getPreview(type, object) {
+        var value = "";
+        return isObject(object) ? (value = getObjectName(object), Array.isArray(object) && (value += "[" + object.length + "]")) : value = getValuePreview(type, object, object), 
+        value;
+    }
+    function cssClass(className) {
+        return "json-formatter-" + className;
+    }
+    function createElement(type, className, content) {
+        var el = document.createElement(type);
+        return className && el.classList.add(cssClass(className)), void 0 !== content && (content instanceof Node ? el.appendChild(content) : el.appendChild(document.createTextNode(String(content)))), 
+        el;
+    }
+    __webpack_exports__.a = isObject, __webpack_exports__.b = getObjectName, __webpack_exports__.f = getValuePreview, 
+    __webpack_exports__.d = getPreview, __webpack_exports__.c = cssClass, __webpack_exports__.e = createElement;
+}, function(module, exports, __webpack_require__) {
+    module.exports = __webpack_require__(0);
+} ]);
+//# sourceMappingURL=json-formatter.js.map
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(true)
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["json-schema-view-js"] = factory();
+	else
+		root["json-schema-view-js"] = factory();
+})(this, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__json_schema_view__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__style_less__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__style_less___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__style_less__);
+
+
+
+window['JSONSchemaView'] = __WEBPACK_IMPORTED_MODULE_0__json_schema_view__["a" /* default */];
+
+/* harmony default export */ __webpack_exports__["default"] = (__WEBPACK_IMPORTED_MODULE_0__json_schema_view__["a" /* default */]);
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_json_formatter_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_json_formatter_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_json_formatter_js__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_js__ = __webpack_require__(3);
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _templateObject = _taggedTemplateLiteral(['\n        <div class="any">\n          ', '\n\n          <span class="type type-any">&lt;any&gt;</span>\n\n          ', '\n        </div>\n      '], ['\n        <div class="any">\n          ', '\n\n          <span class="type type-any">&lt;any&gt;</span>\n\n          ', '\n        </div>\n      ']),
+    _templateObject2 = _taggedTemplateLiteral(['\n            <a class="title"><span class="toggle-handle"></span>', ' </a>\n          '], ['\n            <a class="title"><span class="toggle-handle"></span>', ' </a>\n          ']),
+    _templateObject3 = _taggedTemplateLiteral(['\n            <div class="inner description">', '</div>\n          '], ['\n            <div class="inner description">', '</div>\n          ']),
+    _templateObject4 = _taggedTemplateLiteral(['\n        <div class="primitive">\n          ', '\n\n            <span class="type">', '</span>\n\n          ', '\n\n          ', '\n\n          ', ' \n\n          ', '\n\n          ', '\n\n          ', '\n\n          ', '\n\n          ', '\n\n          ', '\n\n          ', '\n\n          ', '\n\n          ', '\n          ', '\n          ', '\n        </div>\n      '], ['\n        <div class="primitive">\n          ', '\n\n            <span class="type">', '</span>\n\n          ', '\n\n          ', '\n\n          ', ' \n\n          ', '\n\n          ', '\n\n          ', '\n\n          ', '\n\n          ', '\n\n          ', '\n\n          ', '\n\n          ', '\n\n          ', '\n          ', '\n          ', '\n        </div>\n      ']),
+    _templateObject5 = _taggedTemplateLiteral(['\n            <span class="required">*</span>\n          '], ['\n            <span class="required">*</span>\n          ']),
+    _templateObject6 = _taggedTemplateLiteral(['\n            <span class="format">(', ')</span>\n          '], ['\n            <span class="format">(', ')</span>\n          ']),
+    _templateObject7 = _taggedTemplateLiteral(['\n            <span class="default">default: ', '</span>\n          '], ['\n            <span class="default">default: ', '</span>\n          ']),
+    _templateObject8 = _taggedTemplateLiteral(['\n            <span class="range minimum">minimum:', '</span>\n          '], ['\n            <span class="range minimum">minimum:', '</span>\n          ']),
+    _templateObject9 = _taggedTemplateLiteral(['\n            <span class="range exclusiveMinimum">(ex)minimum:', '</span>\n          '], ['\n            <span class="range exclusiveMinimum">(ex)minimum:', '</span>\n          ']),
+    _templateObject10 = _taggedTemplateLiteral(['\n            <span class="range maximum">maximum:', '</span>\n          '], ['\n            <span class="range maximum">maximum:', '</span>\n          ']),
+    _templateObject11 = _taggedTemplateLiteral(['\n            <span class="range exclusiveMaximum">(ex)maximum:', '</span>\n          '], ['\n            <span class="range exclusiveMaximum">(ex)maximum:', '</span>\n          ']),
+    _templateObject12 = _taggedTemplateLiteral(['\n            <span class="range minLength">minLength:', '</span>\n          '], ['\n            <span class="range minLength">minLength:', '</span>\n          ']),
+    _templateObject13 = _taggedTemplateLiteral(['\n            <span class="range maxLength">maxLength:', '</span>\n          '], ['\n            <span class="range maxLength">maxLength:', '</span>\n          ']),
+    _templateObject14 = _taggedTemplateLiteral(['\n            ', '\n          '], ['\n            ', '\n          ']),
+    _templateObject15 = _taggedTemplateLiteral(['', ''], ['', '']),
+    _templateObject16 = _taggedTemplateLiteral(['\n        <div class="array">\n          <a class="title"><span class="toggle-handle"></span>', '<span class="opening bracket">[</span>', '</a>\n          ', '\n          <div class="inner">\n            ', '\n          </div>\n\n          ', '\n\n          ', '\n          ', '\n          ', '\n\n          ', '\n        </div>\n      '], ['\n        <div class="array">\n          <a class="title"><span class="toggle-handle"></span>', '<span class="opening bracket">[</span>', '</a>\n          ', '\n          <div class="inner">\n            ', '\n          </div>\n\n          ', '\n\n          ', '\n          ', '\n          ', '\n\n          ', '\n        </div>\n      ']),
+    _templateObject17 = _taggedTemplateLiteral(['<span class="closing bracket">]</span>'], ['<span class="closing bracket">]</span>']),
+    _templateObject18 = _taggedTemplateLiteral(['\n          <span>\n            <span title="items range">(', '..', ')</span>\n            ', '\n          </span>\n          '], ['\n          <span>\n            <span title="items range">(', '..', ')</span>\n            ', '\n          </span>\n          ']),
+    _templateObject19 = _taggedTemplateLiteral(['<span title="unique" class="uniqueItems">\u2666</span>'], ['<span title="unique" class="uniqueItems">\u2666</span>']),
+    _templateObject20 = _taggedTemplateLiteral(['\n              <div class="description">', '</div>\n            '], ['\n              <div class="description">', '</div>\n            ']),
+    _templateObject21 = _taggedTemplateLiteral(['\n          <span class="closing bracket">]</span>\n          '], ['\n          <span class="closing bracket">]</span>\n          ']),
+    _templateObject22 = _taggedTemplateLiteral(['\n        <div class="object">\n          <a class="title"><span\n            class="toggle-handle"></span>', ' <span\n            class="opening brace">{</span>', '</a>\n\n          <div class="inner">\n            ', '\n            <!-- children go here -->\n          </div>\n\n          ', '\n\n          ', '\n          ', '\n          ', '\n\n          ', '\n        </div>\n      '], ['\n        <div class="object">\n          <a class="title"><span\n            class="toggle-handle"></span>', ' <span\n            class="opening brace">{</span>', '</a>\n\n          <div class="inner">\n            ', '\n            <!-- children go here -->\n          </div>\n\n          ', '\n\n          ', '\n          ', '\n          ', '\n\n          ', '\n        </div>\n      ']),
+    _templateObject23 = _taggedTemplateLiteral(['\n              <span class="closing brace" ng-if="isCollapsed">}</span>\n          '], ['\n              <span class="closing brace" ng-if="isCollapsed">}</span>\n          ']),
+    _templateObject24 = _taggedTemplateLiteral(['\n          <span class="closing brace">}</span>\n          '], ['\n          <span class="closing brace">}</span>\n          ']),
+    _templateObject25 = _taggedTemplateLiteral(['\n        <div class="inner enums">\n          <b>Enum:</b>\n        </div>\n      '], ['\n        <div class="inner enums">\n          <b>Enum:</b>\n        </div>\n      ']);
+
+function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+
+
+/**
+ * @class JSONSchemaView
+ *
+ * A pure JavaScript component for rendering JSON Schema in HTML.
+*/
+
+var JSONSchemaView = function () {
+
+  /**
+   * @param {object} schema The JSON Schema object
+   *
+   * @param {number} [open=1] his number indicates up to how many levels the
+   * rendered tree should expand. Set it to `0` to make the whole tree collapsed
+   * or set it to `Infinity` to expand the tree deeply
+   * @param {object} options.
+   *  theme {string}: one of the following options: ['dark']
+  */
+  function JSONSchemaView(schema, open) {
+    var _this = this;
+
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : { theme: null };
+
+    _classCallCheck(this, JSONSchemaView);
+
+    this.schema = schema;
+    this.open = open;
+    this.options = options;
+    this.isCollapsed = open <= 0;
+
+    // if schema is an empty object which means any JOSN
+    this.isAny = (typeof schema === 'undefined' ? 'undefined' : _typeof(schema)) === 'object' && !Array.isArray(schema) && !Object.keys(schema).filter(function (k) {
+      return ['title', 'description'].indexOf(k) === -1;
+    }).length;
+
+    // Determine if a schema is an array
+    this.isArray = !this.isAny && this.schema && this.schema.type === 'array';
+
+    this.isObject = this.schema && (this.schema.type === 'object' || this.schema.properties || this.schema.anyOf || this.schema.oneof || this.schema.allOf);
+
+    // Determine if a schema is a primitive
+    this.isPrimitive = !this.isAny && !this.isArray && !this.isObject;
+
+    //
+    this.showToggle = this.schema.description || this.schema.title || this.isPrimitive && (this.schema.minimum || this.schema.maximum || this.schema.exclusiveMinimum || this.schema.exclusiveMaximum || this.schema.format || this.schema.default || this.schema.minLength || this.schema.maxLength || this.schema.enum);
+
+    // populate isRequired property down to properties
+    if (this.schema && Array.isArray(this.schema.required)) {
+      this.schema.required.forEach(function (requiredProperty) {
+        if (_typeof(_this.schema.properties[requiredProperty]) === 'object') {
+          _this.schema.properties[requiredProperty].isRequired = true;
+        }
+      });
+    }
+  }
+
+  /*
+   * Returns the template with populated properties.
+   * This template does not have the children
+  */
+
+
+  _createClass(JSONSchemaView, [{
+    key: 'template',
+    value: function template() {
+      if (!this.schema) {
+        return '';
+      }
+
+      return ('\n      <!-- Any -->\n      ' + Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.isAny)(_templateObject, Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.showToggle)(_templateObject2, this.schema.title || ''), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.schema.description && !this.isCollapsed)(_templateObject3, this.schema.description)) + '\n\n      <!-- Primitive -->\n      ' + Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.isPrimitive)(_templateObject4, Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.showToggle)(_templateObject2, this.schema.title || ''), this.schema.type, Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.schema.isRequired)(_templateObject5), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.format)(_templateObject6, this.schema.format), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.default)(_templateObject7, this.schema.default), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.minimum)(_templateObject8, this.schema.minimum), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.exclusiveMinimum)(_templateObject9, this.schema.exclusiveMinimum), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.maximum)(_templateObject10, this.schema.maximum), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.exclusiveMaximum)(_templateObject11, this.schema.exclusiveMaximum), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.minLength)(_templateObject12, this.schema.minLength), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.maxLength)(_templateObject13, this.schema.maxLength), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.schema.description && !this.isCollapsed)(_templateObject3, this.schema.description), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.enum)(_templateObject14, this.enum(this.schema, this.isCollapsed, this.open)), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.schema.allOf && !this.isCollapsed)(_templateObject15, this.xOf(this.schema, 'allOf')), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.schema.oneOf && !this.isCollapsed)(_templateObject15, this.xOf(this.schema, 'oneOf')), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.schema.anyOf && !this.isCollapsed)(_templateObject15, this.xOf(this.schema, 'anyOf'))) + '\n\n\n      <!-- Array -->\n      ' + Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.isArray)(_templateObject16, this.schema.title || '', Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.isCollapsed)(_templateObject17), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && (this.schema.uniqueItems || this.schema.minItems || this.schema.maxItems))(_templateObject18, this.schema.minItems || 0, this.schema.maxItems || '∞', Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.uniqueItems)(_templateObject19)), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.description)(_templateObject20, this.schema.description), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.enum)(_templateObject14, this.enum(this.schema, this.isCollapsed, this.open)), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.schema.allOf && !this.isCollapsed)(_templateObject15, this.xOf(this.schema, 'allOf')), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.schema.oneOf && !this.isCollapsed)(_templateObject15, this.xOf(this.schema, 'oneOf')), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.schema.anyOf && !this.isCollapsed)(_templateObject15, this.xOf(this.schema, 'anyOf')), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed)(_templateObject21)) + '\n\n      <!-- Object -->\n      ' + Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isPrimitive && !this.isArray && !this.isAny)(_templateObject22, this.schema.title || '', Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.isCollapsed)(_templateObject23), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.description)(_templateObject20, this.schema.description), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed && this.schema.enum)(_templateObject14, this.enum(this.schema, this.isCollapsed, this.open)), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.schema.allOf && !this.isCollapsed)(_templateObject15, this.xOf(this.schema, 'allOf')), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.schema.oneOf && !this.isCollapsed)(_templateObject15, this.xOf(this.schema, 'oneOf')), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(this.schema.anyOf && !this.isCollapsed)(_templateObject15, this.xOf(this.schema, 'anyOf')), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!this.isCollapsed)(_templateObject24)) + '\n').replace(/\s*\n/g, '\n').replace(/(<!--).+/g, '').trim();
+    }
+
+    /*
+     * Template for oneOf, anyOf and allOf
+    */
+
+  }, {
+    key: 'xOf',
+    value: function xOf(schema, type) {
+      return '\n      <div class="inner ' + type + '">\n        <b>' + Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["b" /* convertXOf */])(type) + ':</b>\n      </div>\n    ';
+    }
+
+    /*
+     * Template for enums
+    */
+
+  }, {
+    key: 'enum',
+    value: function _enum(schema, isCollapsed /*, open*/) {
+      return '\n      ' + Object(__WEBPACK_IMPORTED_MODULE_1__helpers_js__["a" /* _if */])(!isCollapsed && schema.enum)(_templateObject25) + '\n    ';
+    }
+
+    /*
+     * Toggles the 'collapsed' state
+    */
+
+  }, {
+    key: 'toggle',
+    value: function toggle() {
+      this.isCollapsed = !this.isCollapsed;
+      this.render();
+    }
+
+    /*
+     * Renders the element and returns it
+    */
+
+  }, {
+    key: 'render',
+    value: function render() {
+      if (!this.element) {
+        this.element = document.createElement('div');
+        this.element.classList.add('json-schema-view');
+      }
+
+      if (this.isCollapsed) {
+        this.element.classList.add('collapsed');
+      } else {
+        this.element.classList.remove('collapsed');
+      }
+
+      if (this.options.theme) {
+        this.element.classList.add('json-schema-view-' + this.options.theme);
+      }
+
+      this.element.innerHTML = this.template();
+
+      if (!this.schema) {
+        return this.element;
+      }
+
+      if (!this.isCollapsed) {
+        this.appendChildren(this.element);
+      }
+
+      // add event listener for toggling
+      if (this.element.querySelector('a.title')) {
+        this.element.querySelector('a.title').addEventListener('click', this.toggle.bind(this));
+      }
+      return this.element;
+    }
+
+    /*
+     * Appends children to given element based on current schema
+    */
+
+  }, {
+    key: 'appendChildren',
+    value: function appendChildren(element) {
+      var _this2 = this;
+
+      var inner = element.querySelector('.inner');
+
+      if (!inner) {
+        return;
+      }
+
+      if (this.schema.enum) {
+        var formatter = new __WEBPACK_IMPORTED_MODULE_0_json_formatter_js___default.a(this.schema.enum, this.open - 1);
+        var formatterEl = formatter.render();
+        formatterEl.classList.add('inner');
+        element.querySelector('.enums.inner').appendChild(formatterEl);
+      }
+
+      if (this.isArray) {
+        var view = new JSONSchemaView(this.schema.items, this.open - 1);
+        inner.appendChild(view.render());
+      }
+
+      if (_typeof(this.schema.properties) === 'object') {
+        Object.keys(this.schema.properties).forEach(function (propertyName) {
+          var property = _this2.schema.properties[propertyName];
+          var tempDiv = document.createElement('div');
+          tempDiv.innerHTML = '<div class="property">\n          <span class="name">' + propertyName + ':</span>\n        </div>';
+          var view = new JSONSchemaView(property, _this2.open - 1);
+          tempDiv.querySelector('.property').appendChild(view.render());
+
+          inner.appendChild(tempDiv.querySelector('.property'));
+        });
+      }
+
+      if (this.schema.allOf) {
+        appendXOf.call(this, 'allOf');
+      }
+      if (this.schema.oneOf) {
+        appendXOf.call(this, 'oneOf');
+      }
+      if (this.schema.anyOf) {
+        appendXOf.call(this, 'anyOf');
+      }
+
+      function appendXOf(type) {
+        var _this3 = this;
+
+        var innerAllOf = element.querySelector('.inner.' + type);
+
+        this.schema[type].forEach(function (schema) {
+          var inner = document.createElement('div');
+          inner.classList.add('inner');
+          var view = new JSONSchemaView(schema, _this3.open - 1);
+          inner.appendChild(view.render());
+          innerAllOf.appendChild(inner);
+        });
+      }
+    }
+  }]);
+
+  return JSONSchemaView;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (JSONSchemaView);
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+module.exports = function(modules) {
+    function __webpack_require__(moduleId) {
+        if (installedModules[moduleId]) return installedModules[moduleId].exports;
+        var module = installedModules[moduleId] = {
+            i: moduleId,
+            l: !1,
+            exports: {}
+        };
+        return modules[moduleId].call(module.exports, module, module.exports, __webpack_require__), 
+        module.l = !0, module.exports;
+    }
+    var installedModules = {};
+    return __webpack_require__.m = modules, __webpack_require__.c = installedModules, 
+    __webpack_require__.i = function(value) {
+        return value;
+    }, __webpack_require__.d = function(exports, name, getter) {
+        __webpack_require__.o(exports, name) || Object.defineProperty(exports, name, {
+            configurable: !1,
+            enumerable: !0,
+            get: getter
+        });
+    }, __webpack_require__.n = function(module) {
+        var getter = module && module.__esModule ? function() {
+            return module.default;
+        } : function() {
+            return module;
+        };
+        return __webpack_require__.d(getter, "a", getter), getter;
+    }, __webpack_require__.o = function(object, property) {
+        return Object.prototype.hasOwnProperty.call(object, property);
+    }, __webpack_require__.p = "dist", __webpack_require__(__webpack_require__.s = 6);
+}([ function(module, __webpack_exports__, __webpack_require__) {
+    "use strict";
+    Object.defineProperty(__webpack_exports__, "__esModule", {
+        value: !0
+    });
+    var __WEBPACK_IMPORTED_MODULE_0__helpers__ = __webpack_require__(5), __WEBPACK_IMPORTED_MODULE_1__style_less__ = __webpack_require__(4), DATE_STRING_REGEX = (__webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__style_less__), 
+    /(^\d{1,4}[\.|\\\/|-]\d{1,2}[\.|\\\/|-]\d{1,4})(\s*(?:0?[1-9]:[0-5]|1(?=[012])\d:[0-5])\d\s*[ap]m)?$/), PARTIAL_DATE_REGEX = /\d{2}:\d{2}:\d{2} GMT-\d{4}/, JSON_DATE_REGEX = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/, requestAnimationFrame = window.requestAnimationFrame || function(cb) {
+        return cb(), 0;
+    }, _defaultConfig = {
+        hoverPreviewEnabled: !1,
+        hoverPreviewArrayCount: 100,
+        hoverPreviewFieldCount: 5,
+        animateOpen: !0,
+        animateClose: !0,
+        theme: null
+    }, JSONFormatter = function() {
+        function JSONFormatter(json, open, config, key) {
+            void 0 === open && (open = 1), void 0 === config && (config = _defaultConfig), this.json = json, 
+            this.open = open, this.config = config, this.key = key, this._isOpen = null, void 0 === this.config.hoverPreviewEnabled && (this.config.hoverPreviewEnabled = _defaultConfig.hoverPreviewEnabled), 
+            void 0 === this.config.hoverPreviewArrayCount && (this.config.hoverPreviewArrayCount = _defaultConfig.hoverPreviewArrayCount), 
+            void 0 === this.config.hoverPreviewFieldCount && (this.config.hoverPreviewFieldCount = _defaultConfig.hoverPreviewFieldCount);
+        }
+        return Object.defineProperty(JSONFormatter.prototype, "isOpen", {
+            get: function() {
+                return null !== this._isOpen ? this._isOpen : this.open > 0;
+            },
+            set: function(value) {
+                this._isOpen = value;
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "isDate", {
+            get: function() {
+                return "string" === this.type && (DATE_STRING_REGEX.test(this.json) || JSON_DATE_REGEX.test(this.json) || PARTIAL_DATE_REGEX.test(this.json));
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "isUrl", {
+            get: function() {
+                return "string" === this.type && 0 === this.json.indexOf("http");
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "isArray", {
+            get: function() {
+                return Array.isArray(this.json);
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "isObject", {
+            get: function() {
+                return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.a)(this.json);
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "isEmptyObject", {
+            get: function() {
+                return !this.keys.length && !this.isArray;
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "isEmpty", {
+            get: function() {
+                return this.isEmptyObject || this.keys && !this.keys.length && this.isArray;
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "hasKey", {
+            get: function() {
+                return void 0 !== this.key;
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "constructorName", {
+            get: function() {
+                return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.b)(this.json);
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "type", {
+            get: function() {
+                return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.c)(this.json);
+            },
+            enumerable: !0,
+            configurable: !0
+        }), Object.defineProperty(JSONFormatter.prototype, "keys", {
+            get: function() {
+                return this.isObject ? Object.keys(this.json).map(function(key) {
+                    return key || '""';
+                }) : [];
+            },
+            enumerable: !0,
+            configurable: !0
+        }), JSONFormatter.prototype.toggleOpen = function() {
+            this.isOpen = !this.isOpen, this.element && (this.isOpen ? this.appendChildren(this.config.animateOpen) : this.removeChildren(this.config.animateClose), 
+            this.element.classList.toggle(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)("open")));
+        }, JSONFormatter.prototype.openAtDepth = function(depth) {
+            void 0 === depth && (depth = 1), depth < 0 || (this.open = depth, this.isOpen = 0 !== depth, 
+            this.element && (this.removeChildren(!1), 0 === depth ? this.element.classList.remove(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)("open")) : (this.appendChildren(this.config.animateOpen), 
+            this.element.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)("open")))));
+        }, JSONFormatter.prototype.getInlinepreview = function() {
+            var _this = this;
+            if (this.isArray) return this.json.length > this.config.hoverPreviewArrayCount ? "Array[" + this.json.length + "]" : "[" + this.json.map(__WEBPACK_IMPORTED_MODULE_0__helpers__.e).join(", ") + "]";
+            var keys = this.keys, narrowKeys = keys.slice(0, this.config.hoverPreviewFieldCount), kvs = narrowKeys.map(function(key) {
+                return key + ":" + __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.e)(_this.json[key]);
+            }), ellipsis = keys.length >= this.config.hoverPreviewFieldCount ? "…" : "";
+            return "{" + kvs.join(", ") + ellipsis + "}";
+        }, JSONFormatter.prototype.render = function() {
+            this.element = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("div", "row");
+            var togglerLink = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("a", "toggler-link");
+            if (this.isObject && togglerLink.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("span", "toggler")), 
+            this.hasKey && togglerLink.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("span", "key", this.key + ":")), 
+            this.isObject) {
+                var value = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("span", "value"), objectWrapperSpan = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("span"), constructorName = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("span", "constructor-name", this.constructorName);
+                if (objectWrapperSpan.appendChild(constructorName), this.isArray) {
+                    var arrayWrapperSpan = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("span");
+                    arrayWrapperSpan.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("span", "bracket", "[")), 
+                    arrayWrapperSpan.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("span", "number", this.json.length)), 
+                    arrayWrapperSpan.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("span", "bracket", "]")), 
+                    objectWrapperSpan.appendChild(arrayWrapperSpan);
+                }
+                value.appendChild(objectWrapperSpan), togglerLink.appendChild(value);
+            } else {
+                var value = this.isUrl ? __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("a") : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("span");
+                value.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)(this.type)), 
+                this.isDate && value.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)("date")), 
+                this.isUrl && (value.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)("url")), 
+                value.setAttribute("href", this.json));
+                var valuePreview = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.g)(this.json, this.json);
+                value.appendChild(document.createTextNode(valuePreview)), togglerLink.appendChild(value);
+            }
+            if (this.isObject && this.config.hoverPreviewEnabled) {
+                var preview = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("span", "preview-text");
+                preview.appendChild(document.createTextNode(this.getInlinepreview())), togglerLink.appendChild(preview);
+            }
+            var children = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.f)("div", "children");
+            return this.isObject && children.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)("object")), 
+            this.isArray && children.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)("array")), 
+            this.isEmpty && children.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)("empty")), 
+            this.config && this.config.theme && this.element.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)(this.config.theme)), 
+            this.isOpen && this.element.classList.add(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)("open")), 
+            this.element.appendChild(togglerLink), this.element.appendChild(children), this.isObject && this.isOpen && this.appendChildren(), 
+            this.isObject && togglerLink.addEventListener("click", this.toggleOpen.bind(this)), 
+            this.element;
+        }, JSONFormatter.prototype.appendChildren = function(animated) {
+            var _this = this;
+            void 0 === animated && (animated = !1);
+            var children = this.element.querySelector("div." + __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)("children"));
+            if (children && !this.isEmpty) if (animated) {
+                var index_1 = 0, addAChild_1 = function() {
+                    var key = _this.keys[index_1], formatter = new JSONFormatter(_this.json[key], _this.open - 1, _this.config, key);
+                    children.appendChild(formatter.render()), (index_1 += 1) < _this.keys.length && (index_1 > 10 ? addAChild_1() : requestAnimationFrame(addAChild_1));
+                };
+                requestAnimationFrame(addAChild_1);
+            } else this.keys.forEach(function(key) {
+                var formatter = new JSONFormatter(_this.json[key], _this.open - 1, _this.config, key);
+                children.appendChild(formatter.render());
+            });
+        }, JSONFormatter.prototype.removeChildren = function(animated) {
+            void 0 === animated && (animated = !1);
+            var childrenElement = this.element.querySelector("div." + __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__helpers__.d)("children"));
+            if (animated) {
+                var childrenRemoved_1 = 0, removeAChild_1 = function() {
+                    childrenElement && childrenElement.children.length && (childrenElement.removeChild(childrenElement.children[0]), 
+                    childrenRemoved_1 += 1, childrenRemoved_1 > 10 ? removeAChild_1() : requestAnimationFrame(removeAChild_1));
+                };
+                requestAnimationFrame(removeAChild_1);
+            } else childrenElement && (childrenElement.innerHTML = "");
+        }, JSONFormatter;
+    }();
+    __webpack_exports__.default = JSONFormatter;
+}, function(module, exports, __webpack_require__) {
+    exports = module.exports = __webpack_require__(2)(), exports.push([ module.i, '.json-formatter-row {\n  font-family: monospace;\n}\n.json-formatter-row,\n.json-formatter-row a,\n.json-formatter-row a:hover {\n  color: black;\n  text-decoration: none;\n}\n.json-formatter-row .json-formatter-row {\n  margin-left: 1rem;\n}\n.json-formatter-row .json-formatter-children.json-formatter-empty {\n  opacity: 0.5;\n  margin-left: 1rem;\n}\n.json-formatter-row .json-formatter-children.json-formatter-empty:after {\n  display: none;\n}\n.json-formatter-row .json-formatter-children.json-formatter-empty.json-formatter-object:after {\n  content: "No properties";\n}\n.json-formatter-row .json-formatter-children.json-formatter-empty.json-formatter-array:after {\n  content: "[]";\n}\n.json-formatter-row .json-formatter-string {\n  color: green;\n  white-space: pre;\n  word-wrap: break-word;\n}\n.json-formatter-row .json-formatter-number {\n  color: blue;\n}\n.json-formatter-row .json-formatter-boolean {\n  color: red;\n}\n.json-formatter-row .json-formatter-null {\n  color: #855A00;\n}\n.json-formatter-row .json-formatter-undefined {\n  color: #ca0b69;\n}\n.json-formatter-row .json-formatter-function {\n  color: #FF20ED;\n}\n.json-formatter-row .json-formatter-date {\n  background-color: rgba(0, 0, 0, 0.05);\n}\n.json-formatter-row .json-formatter-url {\n  text-decoration: underline;\n  color: blue;\n  cursor: pointer;\n}\n.json-formatter-row .json-formatter-bracket {\n  color: blue;\n}\n.json-formatter-row .json-formatter-key {\n  color: #00008B;\n  cursor: pointer;\n  padding-right: 0.2rem;\n}\n.json-formatter-row .json-formatter-constructor-name {\n  cursor: pointer;\n}\n.json-formatter-row .json-formatter-toggler {\n  line-height: 1.2rem;\n  font-size: 0.7rem;\n  vertical-align: middle;\n  opacity: 0.6;\n  cursor: pointer;\n  padding-right: 0.2rem;\n}\n.json-formatter-row .json-formatter-toggler:after {\n  display: inline-block;\n  transition: transform 100ms ease-in;\n  content: "\\25BA";\n}\n.json-formatter-row > a > .json-formatter-preview-text {\n  opacity: 0;\n  transition: opacity 0.15s ease-in;\n  font-style: italic;\n}\n.json-formatter-row:hover > a > .json-formatter-preview-text {\n  opacity: 0.6;\n}\n.json-formatter-row.json-formatter-open > .json-formatter-toggler-link .json-formatter-toggler:after {\n  transform: rotate(90deg);\n}\n.json-formatter-row.json-formatter-open > .json-formatter-children:after {\n  display: inline-block;\n}\n.json-formatter-row.json-formatter-open > a > .json-formatter-preview-text {\n  display: none;\n}\n.json-formatter-row.json-formatter-open.json-formatter-empty:after {\n  display: block;\n}\n.json-formatter-dark.json-formatter-row {\n  font-family: monospace;\n}\n.json-formatter-dark.json-formatter-row,\n.json-formatter-dark.json-formatter-row a,\n.json-formatter-dark.json-formatter-row a:hover {\n  color: white;\n  text-decoration: none;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-row {\n  margin-left: 1rem;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-children.json-formatter-empty {\n  opacity: 0.5;\n  margin-left: 1rem;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-children.json-formatter-empty:after {\n  display: none;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-children.json-formatter-empty.json-formatter-object:after {\n  content: "No properties";\n}\n.json-formatter-dark.json-formatter-row .json-formatter-children.json-formatter-empty.json-formatter-array:after {\n  content: "[]";\n}\n.json-formatter-dark.json-formatter-row .json-formatter-string {\n  color: #31F031;\n  white-space: pre;\n  word-wrap: break-word;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-number {\n  color: #66C2FF;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-boolean {\n  color: #EC4242;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-null {\n  color: #EEC97D;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-undefined {\n  color: #ef8fbe;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-function {\n  color: #FD48CB;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-date {\n  background-color: rgba(255, 255, 255, 0.05);\n}\n.json-formatter-dark.json-formatter-row .json-formatter-url {\n  text-decoration: underline;\n  color: #027BFF;\n  cursor: pointer;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-bracket {\n  color: #9494FF;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-key {\n  color: #23A0DB;\n  cursor: pointer;\n  padding-right: 0.2rem;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-constructor-name {\n  cursor: pointer;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-toggler {\n  line-height: 1.2rem;\n  font-size: 0.7rem;\n  vertical-align: middle;\n  opacity: 0.6;\n  cursor: pointer;\n  padding-right: 0.2rem;\n}\n.json-formatter-dark.json-formatter-row .json-formatter-toggler:after {\n  display: inline-block;\n  transition: transform 100ms ease-in;\n  content: "\\25BA";\n}\n.json-formatter-dark.json-formatter-row > a > .json-formatter-preview-text {\n  opacity: 0;\n  transition: opacity 0.15s ease-in;\n  font-style: italic;\n}\n.json-formatter-dark.json-formatter-row:hover > a > .json-formatter-preview-text {\n  opacity: 0.6;\n}\n.json-formatter-dark.json-formatter-row.json-formatter-open > .json-formatter-toggler-link .json-formatter-toggler:after {\n  transform: rotate(90deg);\n}\n.json-formatter-dark.json-formatter-row.json-formatter-open > .json-formatter-children:after {\n  display: inline-block;\n}\n.json-formatter-dark.json-formatter-row.json-formatter-open > a > .json-formatter-preview-text {\n  display: none;\n}\n.json-formatter-dark.json-formatter-row.json-formatter-open.json-formatter-empty:after {\n  display: block;\n}\n', "" ]);
+}, function(module, exports) {
+    module.exports = function() {
+        var list = [];
+        return list.toString = function() {
+            for (var result = [], i = 0; i < this.length; i++) {
+                var item = this[i];
+                item[2] ? result.push("@media " + item[2] + "{" + item[1] + "}") : result.push(item[1]);
+            }
+            return result.join("");
+        }, list.i = function(modules, mediaQuery) {
+            "string" == typeof modules && (modules = [ [ null, modules, "" ] ]);
+            for (var alreadyImportedModules = {}, i = 0; i < this.length; i++) {
+                var id = this[i][0];
+                "number" == typeof id && (alreadyImportedModules[id] = !0);
+            }
+            for (i = 0; i < modules.length; i++) {
+                var item = modules[i];
+                "number" == typeof item[0] && alreadyImportedModules[item[0]] || (mediaQuery && !item[2] ? item[2] = mediaQuery : mediaQuery && (item[2] = "(" + item[2] + ") and (" + mediaQuery + ")"), 
+                list.push(item));
+            }
+        }, list;
+    };
+}, function(module, exports) {
+    function addStylesToDom(styles, options) {
+        for (var i = 0; i < styles.length; i++) {
+            var item = styles[i], domStyle = stylesInDom[item.id];
+            if (domStyle) {
+                domStyle.refs++;
+                for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j](item.parts[j]);
+                for (;j < item.parts.length; j++) domStyle.parts.push(addStyle(item.parts[j], options));
+            } else {
+                for (var parts = [], j = 0; j < item.parts.length; j++) parts.push(addStyle(item.parts[j], options));
+                stylesInDom[item.id] = {
+                    id: item.id,
+                    refs: 1,
+                    parts: parts
+                };
+            }
+        }
+    }
+    function listToStyles(list) {
+        for (var styles = [], newStyles = {}, i = 0; i < list.length; i++) {
+            var item = list[i], id = item[0], css = item[1], media = item[2], sourceMap = item[3], part = {
+                css: css,
+                media: media,
+                sourceMap: sourceMap
+            };
+            newStyles[id] ? newStyles[id].parts.push(part) : styles.push(newStyles[id] = {
+                id: id,
+                parts: [ part ]
+            });
+        }
+        return styles;
+    }
+    function insertStyleElement(options, styleElement) {
+        var head = getHeadElement(), lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+        if ("top" === options.insertAt) lastStyleElementInsertedAtTop ? lastStyleElementInsertedAtTop.nextSibling ? head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling) : head.appendChild(styleElement) : head.insertBefore(styleElement, head.firstChild), 
+        styleElementsInsertedAtTop.push(styleElement); else {
+            if ("bottom" !== options.insertAt) throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+            head.appendChild(styleElement);
+        }
+    }
+    function removeStyleElement(styleElement) {
+        styleElement.parentNode.removeChild(styleElement);
+        var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+        idx >= 0 && styleElementsInsertedAtTop.splice(idx, 1);
+    }
+    function createStyleElement(options) {
+        var styleElement = document.createElement("style");
+        return styleElement.type = "text/css", insertStyleElement(options, styleElement), 
+        styleElement;
+    }
+    function createLinkElement(options) {
+        var linkElement = document.createElement("link");
+        return linkElement.rel = "stylesheet", insertStyleElement(options, linkElement), 
+        linkElement;
+    }
+    function addStyle(obj, options) {
+        var styleElement, update, remove;
+        if (options.singleton) {
+            var styleIndex = singletonCounter++;
+            styleElement = singletonElement || (singletonElement = createStyleElement(options)), 
+            update = applyToSingletonTag.bind(null, styleElement, styleIndex, !1), remove = applyToSingletonTag.bind(null, styleElement, styleIndex, !0);
+        } else obj.sourceMap && "function" == typeof URL && "function" == typeof URL.createObjectURL && "function" == typeof URL.revokeObjectURL && "function" == typeof Blob && "function" == typeof btoa ? (styleElement = createLinkElement(options), 
+        update = updateLink.bind(null, styleElement), remove = function() {
+            removeStyleElement(styleElement), styleElement.href && URL.revokeObjectURL(styleElement.href);
+        }) : (styleElement = createStyleElement(options), update = applyToTag.bind(null, styleElement), 
+        remove = function() {
+            removeStyleElement(styleElement);
+        });
+        return update(obj), function(newObj) {
+            if (newObj) {
+                if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap) return;
+                update(obj = newObj);
+            } else remove();
+        };
+    }
+    function applyToSingletonTag(styleElement, index, remove, obj) {
+        var css = remove ? "" : obj.css;
+        if (styleElement.styleSheet) styleElement.styleSheet.cssText = replaceText(index, css); else {
+            var cssNode = document.createTextNode(css), childNodes = styleElement.childNodes;
+            childNodes[index] && styleElement.removeChild(childNodes[index]), childNodes.length ? styleElement.insertBefore(cssNode, childNodes[index]) : styleElement.appendChild(cssNode);
+        }
+    }
+    function applyToTag(styleElement, obj) {
+        var css = obj.css, media = obj.media;
+        if (media && styleElement.setAttribute("media", media), styleElement.styleSheet) styleElement.styleSheet.cssText = css; else {
+            for (;styleElement.firstChild; ) styleElement.removeChild(styleElement.firstChild);
+            styleElement.appendChild(document.createTextNode(css));
+        }
+    }
+    function updateLink(linkElement, obj) {
+        var css = obj.css, sourceMap = obj.sourceMap;
+        sourceMap && (css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */");
+        var blob = new Blob([ css ], {
+            type: "text/css"
+        }), oldSrc = linkElement.href;
+        linkElement.href = URL.createObjectURL(blob), oldSrc && URL.revokeObjectURL(oldSrc);
+    }
+    var stylesInDom = {}, memoize = function(fn) {
+        var memo;
+        return function() {
+            return void 0 === memo && (memo = fn.apply(this, arguments)), memo;
+        };
+    }, isOldIE = memoize(function() {
+        return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
+    }), getHeadElement = memoize(function() {
+        return document.head || document.getElementsByTagName("head")[0];
+    }), singletonElement = null, singletonCounter = 0, styleElementsInsertedAtTop = [];
+    module.exports = function(list, options) {
+        if ("undefined" != typeof DEBUG && DEBUG && "object" != typeof document) throw new Error("The style-loader cannot be used in a non-browser environment");
+        options = options || {}, void 0 === options.singleton && (options.singleton = isOldIE()), 
+        void 0 === options.insertAt && (options.insertAt = "bottom");
+        var styles = listToStyles(list);
+        return addStylesToDom(styles, options), function(newList) {
+            for (var mayRemove = [], i = 0; i < styles.length; i++) {
+                var item = styles[i], domStyle = stylesInDom[item.id];
+                domStyle.refs--, mayRemove.push(domStyle);
+            }
+            if (newList) {
+                addStylesToDom(listToStyles(newList), options);
+            }
+            for (var i = 0; i < mayRemove.length; i++) {
+                var domStyle = mayRemove[i];
+                if (0 === domStyle.refs) {
+                    for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
+                    delete stylesInDom[domStyle.id];
+                }
+            }
+        };
+    };
+    var replaceText = function() {
+        var textStore = [];
+        return function(index, replacement) {
+            return textStore[index] = replacement, textStore.filter(Boolean).join("\n");
+        };
+    }();
+}, function(module, exports, __webpack_require__) {
+    var content = __webpack_require__(1);
+    "string" == typeof content && (content = [ [ module.i, content, "" ] ]);
+    __webpack_require__(3)(content, {});
+    content.locals && (module.exports = content.locals);
+}, function(module, __webpack_exports__, __webpack_require__) {
+    "use strict";
+    function escapeString(str) {
+        return str.replace('"', '"');
+    }
+    function isObject(value) {
+        var type = typeof value;
+        return !!value && "object" == type;
+    }
+    function getObjectName(object) {
+        if (void 0 === object) return "";
+        if (null === object) return "Object";
+        if ("object" == typeof object && !object.constructor) return "Object";
+        var funcNameRegex = /function ([^(]*)/, results = funcNameRegex.exec(object.constructor.toString());
+        return results && results.length > 1 ? results[1] : "";
+    }
+    function getType(object) {
+        return null === object ? "null" : typeof object;
+    }
+    function getValuePreview(object, value) {
+        var type = getType(object);
+        return "null" === type || "undefined" === type ? type : ("string" === type && (value = '"' + escapeString(value) + '"'), 
+        "function" === type ? object.toString().replace(/[\r\n]/g, "").replace(/\{.*\}/, "") + "{…}" : value);
+    }
+    function getPreview(object) {
+        var value = "";
+        return isObject(object) ? (value = getObjectName(object), Array.isArray(object) && (value += "[" + object.length + "]")) : value = getValuePreview(object, object), 
+        value;
+    }
+    function cssClass(className) {
+        return "json-formatter-" + className;
+    }
+    function createElement(type, className, content) {
+        var el = document.createElement(type);
+        return className && el.classList.add(cssClass(className)), void 0 !== content && (content instanceof Node ? el.appendChild(content) : el.appendChild(document.createTextNode(String(content)))), 
+        el;
+    }
+    __webpack_exports__.a = isObject, __webpack_exports__.b = getObjectName, __webpack_exports__.c = getType, 
+    __webpack_exports__.g = getValuePreview, __webpack_exports__.e = getPreview, __webpack_exports__.d = cssClass, 
+    __webpack_exports__.f = createElement;
+}, function(module, exports, __webpack_require__) {
+    module.exports = __webpack_require__(0);
+} ]);
+//# sourceMappingURL=json-formatter.js.map
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["b"] = convertXOf;
+/* harmony export (immutable) */ __webpack_exports__["a"] = _if;
+
+/*
+ * Converts anyOf, allOf and oneOf to human readable string
+*/
+
+function convertXOf(type) {
+  return type.substring(0, 3) + ' of';
+}
+
+/*
+ * if condition for ES6 template strings
+ * to be used only in template string
+ *
+ * @example mystr = `Random is ${_if(Math.random() > 0.5)`greater than 0.5``
+ *
+ * @param {boolean} condition
+ *
+ * @returns {function} the template function
+*/
+function _if(condition) {
+  return condition ? normal : empty;
+}
+function empty() {
+  return '';
+}
+function normal(template) {
+  for (var _len = arguments.length, expressions = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    expressions[_key - 1] = arguments[_key];
+  }
+
+  return template.slice(1).reduce(function (accumulator, part, i) {
+    return accumulator + expressions[i] + part;
+  }, template[0]);
+}
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
+/******/ ]);
+});
+//# sourceMappingURL=bundle.js.map
 
-/******/ });
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(40);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(12)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../css-loader/index.js!./style.css", function() {
+			var newContent = require("!!../../css-loader/index.js!./style.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".json-schema-view,\njson-schema-view {\n  font-family: monospace;\n  font-size: 0;\n  display: table-cell;\n}\n.json-schema-view > *,\njson-schema-view > * {\n  font-size: 14px;\n}\n.json-schema-view .toggle-handle,\njson-schema-view .toggle-handle {\n  cursor: pointer;\n  margin: auto .3em;\n  font-size: 10px;\n  display: inline-block;\n  transform-origin: 50% 40%;\n  transition: transform 150ms ease-in;\n}\n.json-schema-view .toggle-handle:after,\njson-schema-view .toggle-handle:after {\n  content: \"\\25BC\";\n}\n.json-schema-view .toggle-handle,\njson-schema-view .toggle-handle,\n.json-schema-view .toggle-handle:hover,\njson-schema-view .toggle-handle:hover {\n  text-decoration: none;\n  color: #333;\n}\n.json-schema-view .description,\njson-schema-view .description {\n  color: gray;\n  font-style: italic;\n}\n.json-schema-view .title,\njson-schema-view .title {\n  font-weight: bold;\n  cursor: pointer;\n}\n.json-schema-view .title,\njson-schema-view .title,\n.json-schema-view .title:hover,\njson-schema-view .title:hover {\n  text-decoration: none;\n  color: #333;\n}\n.json-schema-view .title,\njson-schema-view .title,\n.json-schema-view .brace,\njson-schema-view .brace,\n.json-schema-view .bracket,\njson-schema-view .bracket {\n  color: #333;\n}\n.json-schema-view .property,\njson-schema-view .property {\n  font-size: 0;\n  display: table-row;\n}\n.json-schema-view .property > *,\njson-schema-view .property > * {\n  font-size: 14px;\n  padding: .2em;\n}\n.json-schema-view .name,\njson-schema-view .name {\n  color: blue;\n  display: table-cell;\n  vertical-align: top;\n}\n.json-schema-view .type,\njson-schema-view .type {\n  color: green;\n}\n.json-schema-view .type-any,\njson-schema-view .type-any {\n  color: #3333ff;\n}\n.json-schema-view .required,\njson-schema-view .required {\n  color: #F00;\n}\n.json-schema-view .format,\njson-schema-view .format,\n.json-schema-view .enums,\njson-schema-view .enums {\n  color: #000;\n}\n.json-schema-view .inner,\njson-schema-view .inner {\n  padding-left: 18px;\n}\n.json-schema-view.collapsed .description,\njson-schema-view.collapsed .description {\n  display: none;\n}\n.json-schema-view.collapsed .property,\njson-schema-view.collapsed .property {\n  display: none;\n}\n.json-schema-view.collapsed .closeing.brace,\njson-schema-view.collapsed .closeing.brace {\n  display: inline-block;\n}\n.json-schema-view.collapsed .toggle-handle,\njson-schema-view.collapsed .toggle-handle {\n  transform: rotate(-90deg);\n}\n.json-schema-view.json-schema-view-dark,\njson-schema-view[json-schema-view-dark] {\n  font-family: monospace;\n  font-size: 0;\n  display: table-cell;\n}\n.json-schema-view.json-schema-view-dark > *,\njson-schema-view[json-schema-view-dark] > * {\n  font-size: 14px;\n}\n.json-schema-view.json-schema-view-dark .toggle-handle,\njson-schema-view[json-schema-view-dark] .toggle-handle {\n  cursor: pointer;\n  margin: auto .3em;\n  font-size: 10px;\n  display: inline-block;\n  transform-origin: 50% 40%;\n  transition: transform 150ms ease-in;\n}\n.json-schema-view.json-schema-view-dark .toggle-handle:after,\njson-schema-view[json-schema-view-dark] .toggle-handle:after {\n  content: \"\\25BC\";\n}\n.json-schema-view.json-schema-view-dark .toggle-handle,\njson-schema-view[json-schema-view-dark] .toggle-handle,\n.json-schema-view.json-schema-view-dark .toggle-handle:hover,\njson-schema-view[json-schema-view-dark] .toggle-handle:hover {\n  text-decoration: none;\n  color: #eee;\n}\n.json-schema-view.json-schema-view-dark .description,\njson-schema-view[json-schema-view-dark] .description {\n  color: gray;\n  font-style: italic;\n}\n.json-schema-view.json-schema-view-dark .title,\njson-schema-view[json-schema-view-dark] .title {\n  font-weight: bold;\n  cursor: pointer;\n}\n.json-schema-view.json-schema-view-dark .title,\njson-schema-view[json-schema-view-dark] .title,\n.json-schema-view.json-schema-view-dark .title:hover,\njson-schema-view[json-schema-view-dark] .title:hover {\n  text-decoration: none;\n  color: #eee;\n}\n.json-schema-view.json-schema-view-dark .title,\njson-schema-view[json-schema-view-dark] .title,\n.json-schema-view.json-schema-view-dark .brace,\njson-schema-view[json-schema-view-dark] .brace,\n.json-schema-view.json-schema-view-dark .bracket,\njson-schema-view[json-schema-view-dark] .bracket {\n  color: #eee;\n}\n.json-schema-view.json-schema-view-dark .property,\njson-schema-view[json-schema-view-dark] .property {\n  font-size: 0;\n  display: table-row;\n}\n.json-schema-view.json-schema-view-dark .property > *,\njson-schema-view[json-schema-view-dark] .property > * {\n  font-size: 14px;\n  padding: .2em;\n}\n.json-schema-view.json-schema-view-dark .name,\njson-schema-view[json-schema-view-dark] .name {\n  color: lightblue;\n  display: table-cell;\n  vertical-align: top;\n}\n.json-schema-view.json-schema-view-dark .type,\njson-schema-view[json-schema-view-dark] .type {\n  color: lightgreen;\n}\n.json-schema-view.json-schema-view-dark .type-any,\njson-schema-view[json-schema-view-dark] .type-any {\n  color: #d4ebf2;\n}\n.json-schema-view.json-schema-view-dark .required,\njson-schema-view[json-schema-view-dark] .required {\n  color: #fe0000;\n}\n.json-schema-view.json-schema-view-dark .format,\njson-schema-view[json-schema-view-dark] .format,\n.json-schema-view.json-schema-view-dark .enums,\njson-schema-view[json-schema-view-dark] .enums {\n  color: #fff;\n}\n.json-schema-view.json-schema-view-dark .inner,\njson-schema-view[json-schema-view-dark] .inner {\n  padding-left: 18px;\n}\n.json-schema-view.json-schema-view-dark.collapsed .description,\njson-schema-view[json-schema-view-dark].collapsed .description {\n  display: none;\n}\n.json-schema-view.json-schema-view-dark.collapsed .property,\njson-schema-view[json-schema-view-dark].collapsed .property {\n  display: none;\n}\n.json-schema-view.json-schema-view-dark.collapsed .closeing.brace,\njson-schema-view[json-schema-view-dark].collapsed .closeing.brace {\n  display: inline-block;\n}\n.json-schema-view.json-schema-view-dark.collapsed .toggle-handle,\njson-schema-view[json-schema-view-dark].collapsed .toggle-handle {\n  transform: rotate(-90deg);\n}", ""]);
+
+// exports
+
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div")
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-2be6e273", module.exports)
+  }
+}
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports.Collapse = __webpack_require__(43)
+exports.Item = __webpack_require__(48)
+
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(44)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(46)
+/* template */
+var __vue_template__ = __webpack_require__(47)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "node_modules/vue-bulma-collapse/src/Collapse.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-476e3a88", Component.options)
+  } else {
+    hotAPI.reload("data-v-476e3a88", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(45);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(3)("7a01e36c", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../css-loader/index.js!../../vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-476e3a88\",\"scoped\":false,\"hasInlineConfig\":true}!../../vue-loader/lib/selector.js?type=styles&index=0!./Collapse.vue", function() {
+     var newContent = require("!!../../css-loader/index.js!../../vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-476e3a88\",\"scoped\":false,\"hasInlineConfig\":true}!../../vue-loader/lib/selector.js?type=styles&index=0!./Collapse.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.collapse.is-fullwidth {\n  width: 100%;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    isFullwidth: Boolean,
+    accordion: Boolean
+  },
+
+  computed: {
+    $collapseItems: function $collapseItems() {
+      return this.$children.filter(function (child) {
+        return child._isCollapseItem;
+      });
+    }
+  },
+
+  methods: {
+    openByIndex: function openByIndex(index) {
+      if (this.accordion) {
+        this.$collapseItems.forEach(function (item, i) {
+          if (i !== index) {
+            item.isActived = false;
+          }
+        });
+      }
+    }
+  }
+
+});
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "collapse is-fullwidth" },
+    [_vm._t("default")],
+    2
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-476e3a88", module.exports)
+  }
+}
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(49)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(51)
+/* template */
+var __vue_template__ = __webpack_require__(53)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "node_modules/vue-bulma-collapse/src/Item.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-28c32aa2", Component.options)
+  } else {
+    hotAPI.reload("data-v-28c32aa2", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(50);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(3)("166bccb4", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../css-loader/index.js!../../vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-28c32aa2\",\"scoped\":false,\"hasInlineConfig\":true}!../../sass-loader/lib/loader.js!../../vue-loader/lib/selector.js?type=styles&index=0!./Item.vue", function() {
+     var newContent = require("!!../../css-loader/index.js!../../vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-28c32aa2\",\"scoped\":false,\"hasInlineConfig\":true}!../../sass-loader/lib/loader.js!../../vue-loader/lib/selector.js?type=styles&index=0!./Item.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.collapse-item .card-header {\n  cursor: pointer;\n}\n.collapse-item .card-header-icon {\n  -webkit-transition: -webkit-transform .377s ease;\n  transition: -webkit-transform .377s ease;\n  transition: transform .377s ease;\n  transition: transform .377s ease, -webkit-transform .377s ease;\n}\n.collapse-item .card-content {\n  padding-top: 0;\n  padding-bottom: 0;\n  overflow: hidden;\n}\n.collapse-item .card-content-box {\n  padding-top: 20px;\n  padding-bottom: 20px;\n}\n.collapse-item.is-active > .card-header > .card-header-icon {\n  -webkit-transform: rotate(90deg);\n          transform: rotate(90deg);\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 51 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_animejs__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_animejs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_animejs__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    selected: Boolean,
+    title: {
+      type: String,
+      required: true
+    }
+  },
+
+  data: function data() {
+    return {
+      isActived: this.selected
+    };
+  },
+  created: function created() {
+    this._isCollapseItem = true;
+  },
+  mounted: function mounted() {
+    this.$on('open', this.$parent.openByIndex);
+    if (this.isActived) {
+      this.$emit('open', this.index);
+    }
+  },
+  beforeDestroy: function beforeDestroy() {
+    if (this.anime && this.targets) {
+      __WEBPACK_IMPORTED_MODULE_0_animejs___default.a.remove(this.targets);
+    }
+    this.$off('open', this.$parent.openByIndex);
+  },
+
+
+  computed: {
+    index: function index() {
+      return this.$parent.$collapseItems.indexOf(this);
+    }
+  },
+
+  methods: {
+    toggle: function toggle() {
+      if (this.isActived = !this.isActived) {
+        this.$emit('open', this.index);
+      }
+    },
+    getAnime: function getAnime(targets) {
+      if (this.anime) return this.anime;
+      return this.anime = __WEBPACK_IMPORTED_MODULE_0_animejs___default()({ targets: targets });
+    },
+    cancel: function cancel() {
+      this.anime.pause();
+    },
+    before: function before(targets) {
+      if (!this.targets) this.targets = targets;
+      targets.removeAttribute('style');
+    },
+    enter: function enter(targets, done) {
+      var height = targets.scrollHeight;
+      targets.style.height = 0;
+      targets.style.opacity = 0;
+      this.getAnime(targets).play({
+        targets: targets,
+        duration: 377,
+        easing: 'easeOutExpo',
+        opacity: [0, 1],
+        height: height,
+        complete: function complete() {
+          targets.removeAttribute('style');
+          done();
+        }
+      });
+    },
+    leave: function leave(targets, complete) {
+      this.getAnime(targets).play({
+        targets: targets,
+        duration: 377,
+        easing: 'easeOutExpo',
+        opacity: [1, 0],
+        height: 0,
+        complete: complete
+      });
+    }
+  }
+});
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
+ * Anime v1.1.3
+ * http://anime-js.com
+ * JavaScript animation engine
+ * Copyright (c) 2016 Julian Garnier
+ * http://juliangarnier.com
+ * Released under the MIT license
+ */
+
+(function (root, factory) {
+  if (true) {
+    // AMD. Register as an anonymous module.
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if (typeof module === 'object' && module.exports) {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory();
+  } else {
+    // Browser globals (root is window)
+    root.anime = factory();
+  }
+}(this, function () {
+
+  var version = '1.1.3';
+
+  // Defaults
+
+  var defaultSettings = {
+    duration: 1000,
+    delay: 0,
+    loop: false,
+    autoplay: true,
+    direction: 'normal',
+    easing: 'easeOutElastic',
+    elasticity: 400,
+    round: false,
+    begin: undefined,
+    update: undefined,
+    complete: undefined
+  }
+
+  // Transforms
+
+  var validTransforms = ['translateX', 'translateY', 'translateZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 'scale', 'scaleX', 'scaleY', 'scaleZ', 'skewX', 'skewY'];
+  var transform, transformStr = 'transform';
+
+  // Utils
+
+  var is = {
+    arr: function(a) { return Array.isArray(a) },
+    obj: function(a) { return Object.prototype.toString.call(a).indexOf('Object') > -1 },
+    svg: function(a) { return a instanceof SVGElement },
+    dom: function(a) { return a.nodeType || is.svg(a) },
+    num: function(a) { return !isNaN(parseInt(a)) },
+    str: function(a) { return typeof a === 'string' },
+    fnc: function(a) { return typeof a === 'function' },
+    und: function(a) { return typeof a === 'undefined' },
+    nul: function(a) { return typeof a === 'null' },
+    hex: function(a) { return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(a) },
+    rgb: function(a) { return /^rgb/.test(a) },
+    hsl: function(a) { return /^hsl/.test(a) },
+    col: function(a) { return (is.hex(a) || is.rgb(a) || is.hsl(a)) }
+  }
+
+  // Easings functions adapted from http://jqueryui.com/
+
+  var easings = (function() {
+    var eases = {};
+    var names = ['Quad', 'Cubic', 'Quart', 'Quint', 'Expo'];
+    var functions = {
+      Sine: function(t) { return 1 + Math.sin(Math.PI / 2 * t - Math.PI / 2); },
+      Circ: function(t) { return 1 - Math.sqrt( 1 - t * t ); },
+      Elastic: function(t, m) {
+        if( t === 0 || t === 1 ) return t;
+        var p = (1 - Math.min(m, 998) / 1000), st = t / 1, st1 = st - 1, s = p / ( 2 * Math.PI ) * Math.asin( 1 );
+        return -( Math.pow( 2, 10 * st1 ) * Math.sin( ( st1 - s ) * ( 2 * Math.PI ) / p ) );
+      },
+      Back: function(t) { return t * t * ( 3 * t - 2 ); },
+      Bounce: function(t) {
+        var pow2, bounce = 4;
+        while ( t < ( ( pow2 = Math.pow( 2, --bounce ) ) - 1 ) / 11 ) {}
+        return 1 / Math.pow( 4, 3 - bounce ) - 7.5625 * Math.pow( ( pow2 * 3 - 2 ) / 22 - t, 2 );
+      }
+    }
+    names.forEach(function(name, i) {
+      functions[name] = function(t) {
+        return Math.pow( t, i + 2 );
+      }
+    });
+    Object.keys(functions).forEach(function(name) {
+      var easeIn = functions[name];
+      eases['easeIn' + name] = easeIn;
+      eases['easeOut' + name] = function(t, m) { return 1 - easeIn(1 - t, m); };
+      eases['easeInOut' + name] = function(t, m) { return t < 0.5 ? easeIn(t * 2, m) / 2 : 1 - easeIn(t * -2 + 2, m) / 2; };
+      eases['easeOutIn' + name] = function(t, m) { return t < 0.5 ? (1 - easeIn(1 - 2 * t, m)) / 2 : (easeIn(t * 2 - 1, m) + 1) / 2; };
+    });
+    eases.linear = function(t) { return t; };
+    return eases;
+  })();
+
+  // Strings
+
+  var numberToString = function(val) {
+    return (is.str(val)) ? val : val + '';
+  }
+
+  var stringToHyphens = function(str) {
+    return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+  }
+
+  var selectString = function(str) {
+    if (is.col(str)) return false;
+    try {
+      var nodes = document.querySelectorAll(str);
+      return nodes;
+    } catch(e) {
+      return false;
+    }
+  }
+
+  // Numbers
+
+  var random = function(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // Arrays
+
+  var flattenArray = function(arr) {
+    return arr.reduce(function(a, b) {
+      return a.concat(is.arr(b) ? flattenArray(b) : b);
+    }, []);
+  }
+
+  var toArray = function(o) {
+    if (is.arr(o)) return o;
+    if (is.str(o)) o = selectString(o) || o;
+    if (o instanceof NodeList || o instanceof HTMLCollection) return [].slice.call(o);
+    return [o];
+  }
+
+  var arrayContains = function(arr, val) {
+    return arr.some(function(a) { return a === val; });
+  }
+
+  var groupArrayByProps = function(arr, propsArr) {
+    var groups = {};
+    arr.forEach(function(o) {
+      var group = JSON.stringify(propsArr.map(function(p) { return o[p]; }));
+      groups[group] = groups[group] || [];
+      groups[group].push(o);
+    });
+    return Object.keys(groups).map(function(group) {
+      return groups[group];
+    });
+  }
+
+  var removeArrayDuplicates = function(arr) {
+    return arr.filter(function(item, pos, self) {
+      return self.indexOf(item) === pos;
+    });
+  }
+
+  // Objects
+
+  var cloneObject = function(o) {
+    var newObject = {};
+    for (var p in o) newObject[p] = o[p];
+    return newObject;
+  }
+
+  var mergeObjects = function(o1, o2) {
+    for (var p in o2) o1[p] = !is.und(o1[p]) ? o1[p] : o2[p];
+    return o1;
+  }
+
+  // Colors
+
+  var hexToRgb = function(hex) {
+    var rgx = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    var hex = hex.replace(rgx, function(m, r, g, b) { return r + r + g + g + b + b; });
+    var rgb = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    var r = parseInt(rgb[1], 16);
+    var g = parseInt(rgb[2], 16);
+    var b = parseInt(rgb[3], 16);
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+
+  var hslToRgb = function(hsl) {
+    var hsl = /hsl\((\d+),\s*([\d.]+)%,\s*([\d.]+)%\)/g.exec(hsl);
+    var h = parseInt(hsl[1]) / 360;
+    var s = parseInt(hsl[2]) / 100;
+    var l = parseInt(hsl[3]) / 100;
+    var hue2rgb = function(p, q, t) {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    }
+    var r, g, b;
+    if (s == 0) {
+      r = g = b = l;
+    } else {
+      var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      var p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1/3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1/3);
+    }
+    return 'rgb(' + r * 255 + ',' + g * 255 + ',' + b * 255 + ')';
+  }
+
+  var colorToRgb = function(val) {
+    if (is.rgb(val)) return val;
+    if (is.hex(val)) return hexToRgb(val);
+    if (is.hsl(val)) return hslToRgb(val);
+  }
+
+  // Units
+
+  var getUnit = function(val) {
+    return /([\+\-]?[0-9|auto\.]+)(%|px|pt|em|rem|in|cm|mm|ex|pc|vw|vh|deg)?/.exec(val)[2];
+  }
+
+  var addDefaultTransformUnit = function(prop, val, intialVal) {
+    if (getUnit(val)) return val;
+    if (prop.indexOf('translate') > -1) return getUnit(intialVal) ? val + getUnit(intialVal) : val + 'px';
+    if (prop.indexOf('rotate') > -1 || prop.indexOf('skew') > -1) return val + 'deg';
+    return val;
+  }
+
+  // Values
+
+  var getCSSValue = function(el, prop) {
+    // First check if prop is a valid CSS property
+    if (prop in el.style) {
+      // Then return the property value or fallback to '0' when getPropertyValue fails
+      return getComputedStyle(el).getPropertyValue(stringToHyphens(prop)) || '0';
+    }
+  }
+
+  var getTransformValue = function(el, prop) {
+    var defaultVal = prop.indexOf('scale') > -1 ? 1 : 0;
+    var str = el.style.transform;
+    if (!str) return defaultVal;
+    var rgx = /(\w+)\((.+?)\)/g;
+    var match = [];
+    var props = [];
+    var values = [];
+    while (match = rgx.exec(str)) {
+      props.push(match[1]);
+      values.push(match[2]);
+    }
+    var val = values.filter(function(f, i) { return props[i] === prop; });
+    return val.length ? val[0] : defaultVal;
+  }
+
+  var getAnimationType = function(el, prop) {
+    if ( is.dom(el) && arrayContains(validTransforms, prop)) return 'transform';
+    if ( is.dom(el) && (el.getAttribute(prop) || (is.svg(el) && el[prop]))) return 'attribute';
+    if ( is.dom(el) && (prop !== 'transform' && getCSSValue(el, prop))) return 'css';
+    if (!is.nul(el[prop]) && !is.und(el[prop])) return 'object';
+  }
+
+  var getInitialTargetValue = function(target, prop) {
+    switch (getAnimationType(target, prop)) {
+      case 'transform': return getTransformValue(target, prop);
+      case 'css': return getCSSValue(target, prop);
+      case 'attribute': return target.getAttribute(prop);
+    }
+    return target[prop] || 0;
+  }
+
+  var getValidValue = function(values, val, originalCSS) {
+    if (is.col(val)) return colorToRgb(val);
+    if (getUnit(val)) return val;
+    var unit = getUnit(values.to) ? getUnit(values.to) : getUnit(values.from);
+    if (!unit && originalCSS) unit = getUnit(originalCSS);
+    return unit ? val + unit : val;
+  }
+
+  var decomposeValue = function(val) {
+    var rgx = /-?\d*\.?\d+/g;
+    return {
+      original: val,
+      numbers: numberToString(val).match(rgx) ? numberToString(val).match(rgx).map(Number) : [0],
+      strings: numberToString(val).split(rgx)
+    }
+  }
+
+  var recomposeValue = function(numbers, strings, initialStrings) {
+    return strings.reduce(function(a, b, i) {
+      var b = (b ? b : initialStrings[i - 1]);
+      return a + numbers[i - 1] + b;
+    });
+  }
+
+  // Animatables
+
+  var getAnimatables = function(targets) {
+    var targets = targets ? (flattenArray(is.arr(targets) ? targets.map(toArray) : toArray(targets))) : [];
+    return targets.map(function(t, i) {
+      return { target: t, id: i };
+    });
+  }
+
+  // Properties
+
+  var getProperties = function(params, settings) {
+    var props = [];
+    for (var p in params) {
+      if (!defaultSettings.hasOwnProperty(p) && p !== 'targets') {
+        var prop = is.obj(params[p]) ? cloneObject(params[p]) : {value: params[p]};
+        prop.name = p;
+        props.push(mergeObjects(prop, settings));
+      }
+    }
+    return props;
+  }
+
+  var getPropertiesValues = function(target, prop, value, i) {
+    var values = toArray( is.fnc(value) ? value(target, i) : value);
+    return {
+      from: (values.length > 1) ? values[0] : getInitialTargetValue(target, prop),
+      to: (values.length > 1) ? values[1] : values[0]
+    }
+  }
+
+  // Tweens
+
+  var getTweenValues = function(prop, values, type, target) {
+    var valid = {};
+    if (type === 'transform') {
+      valid.from = prop + '(' + addDefaultTransformUnit(prop, values.from, values.to) + ')';
+      valid.to = prop + '(' + addDefaultTransformUnit(prop, values.to) + ')';
+    } else {
+      var originalCSS = (type === 'css') ? getCSSValue(target, prop) : undefined;
+      valid.from = getValidValue(values, values.from, originalCSS);
+      valid.to = getValidValue(values, values.to, originalCSS);
+    }
+    return { from: decomposeValue(valid.from), to: decomposeValue(valid.to) };
+  }
+
+  var getTweensProps = function(animatables, props) {
+    var tweensProps = [];
+    animatables.forEach(function(animatable, i) {
+      var target = animatable.target;
+      return props.forEach(function(prop) {
+        var animType = getAnimationType(target, prop.name);
+        if (animType) {
+          var values = getPropertiesValues(target, prop.name, prop.value, i);
+          var tween = cloneObject(prop);
+          tween.animatables = animatable;
+          tween.type = animType;
+          tween.from = getTweenValues(prop.name, values, tween.type, target).from;
+          tween.to = getTweenValues(prop.name, values, tween.type, target).to;
+          tween.round = (is.col(values.from) || tween.round) ? 1 : 0;
+          tween.delay = (is.fnc(tween.delay) ? tween.delay(target, i, animatables.length) : tween.delay) / animation.speed;
+          tween.duration = (is.fnc(tween.duration) ? tween.duration(target, i, animatables.length) : tween.duration) / animation.speed;
+          tweensProps.push(tween);
+        }
+      });
+    });
+    return tweensProps;
+  }
+
+  var getTweens = function(animatables, props) {
+    var tweensProps = getTweensProps(animatables, props);
+    var splittedProps = groupArrayByProps(tweensProps, ['name', 'from', 'to', 'delay', 'duration']);
+    return splittedProps.map(function(tweenProps) {
+      var tween = cloneObject(tweenProps[0]);
+      tween.animatables = tweenProps.map(function(p) { return p.animatables });
+      tween.totalDuration = tween.delay + tween.duration;
+      return tween;
+    });
+  }
+
+  var reverseTweens = function(anim, delays) {
+    anim.tweens.forEach(function(tween) {
+      var toVal = tween.to;
+      var fromVal = tween.from;
+      var delayVal = anim.duration - (tween.delay + tween.duration);
+      tween.from = toVal;
+      tween.to = fromVal;
+      if (delays) tween.delay = delayVal;
+    });
+    anim.reversed = anim.reversed ? false : true;
+  }
+
+  var getTweensDuration = function(tweens) {
+    return Math.max.apply(Math, tweens.map(function(tween){ return tween.totalDuration; }));
+  }
+
+  var getTweensDelay = function(tweens) {
+    return Math.min.apply(Math, tweens.map(function(tween){ return tween.delay; }));
+  }
+
+  // will-change
+
+  var getWillChange = function(anim) {
+    var props = [];
+    var els = [];
+    anim.tweens.forEach(function(tween) {
+      if (tween.type === 'css' || tween.type === 'transform' ) {
+        props.push(tween.type === 'css' ? stringToHyphens(tween.name) : 'transform');
+        tween.animatables.forEach(function(animatable) { els.push(animatable.target); });
+      }
+    });
+    return {
+      properties: removeArrayDuplicates(props).join(', '),
+      elements: removeArrayDuplicates(els)
+    }
+  }
+
+  var setWillChange = function(anim) {
+    var willChange = getWillChange(anim);
+    willChange.elements.forEach(function(element) {
+      element.style.willChange = willChange.properties;
+    });
+  }
+
+  var removeWillChange = function(anim) {
+    var willChange = getWillChange(anim);
+    willChange.elements.forEach(function(element) {
+      element.style.removeProperty('will-change');
+    });
+  }
+
+  /* Svg path */
+
+  var getPathProps = function(path) {
+    var el = is.str(path) ? selectString(path)[0] : path;
+    return {
+      path: el,
+      value: el.getTotalLength()
+    }
+  }
+
+  var snapProgressToPath = function(tween, progress) {
+    var pathEl = tween.path;
+    var pathProgress = tween.value * progress;
+    var point = function(offset) {
+      var o = offset || 0;
+      var p = progress > 1 ? tween.value + o : pathProgress + o;
+      return pathEl.getPointAtLength(p);
+    }
+    var p = point();
+    var p0 = point(-1);
+    var p1 = point(+1);
+    switch (tween.name) {
+      case 'translateX': return p.x;
+      case 'translateY': return p.y;
+      case 'rotate': return Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
+    }
+  }
+
+  // Progress
+
+  var getTweenProgress = function(tween, time) {
+    var elapsed = Math.min(Math.max(time - tween.delay, 0), tween.duration);
+    var percent = elapsed / tween.duration;
+    var progress = tween.to.numbers.map(function(number, p) {
+      var start = tween.from.numbers[p];
+      var eased = easings[tween.easing](percent, tween.elasticity);
+      var val = tween.path ? snapProgressToPath(tween, eased) : start + eased * (number - start);
+      val = tween.round ? Math.round(val * tween.round) / tween.round : val;
+      return val;
+    });
+    return recomposeValue(progress, tween.to.strings, tween.from.strings);
+  }
+
+  var setAnimationProgress = function(anim, time) {
+    var transforms;
+    anim.currentTime = time;
+    anim.progress = (time / anim.duration) * 100;
+    for (var t = 0; t < anim.tweens.length; t++) {
+      var tween = anim.tweens[t];
+      tween.currentValue = getTweenProgress(tween, time);
+      var progress = tween.currentValue;
+      for (var a = 0; a < tween.animatables.length; a++) {
+        var animatable = tween.animatables[a];
+        var id = animatable.id;
+        var target = animatable.target;
+        var name = tween.name;
+        switch (tween.type) {
+          case 'css': target.style[name] = progress; break;
+          case 'attribute': target.setAttribute(name, progress); break;
+          case 'object': target[name] = progress; break;
+          case 'transform':
+          if (!transforms) transforms = {};
+          if (!transforms[id]) transforms[id] = [];
+          transforms[id].push(progress);
+          break;
+        }
+      }
+    }
+    if (transforms) {
+      if (!transform) transform = (getCSSValue(document.body, transformStr) ? '' : '-webkit-') + transformStr;
+      for (var t in transforms) {
+        anim.animatables[t].target.style[transform] = transforms[t].join(' ');
+      }
+    }
+  }
+
+  // Animation
+
+  var createAnimation = function(params) {
+    var anim = {};
+    anim.animatables = getAnimatables(params.targets);
+    anim.settings = mergeObjects(params, defaultSettings);
+    anim.properties = getProperties(params, anim.settings);
+    anim.tweens = getTweens(anim.animatables, anim.properties);
+    anim.duration = anim.tweens.length ? getTweensDuration(anim.tweens) : params.duration;
+    anim.delay = anim.tweens.length ? getTweensDelay(anim.tweens) : params.delay;
+    anim.currentTime = 0;
+    anim.progress = 0;
+    anim.ended = false;
+    return anim;
+  }
+
+  // Public
+
+  var animations = [];
+  var raf = 0;
+
+  var engine = (function() {
+    var play = function() { raf = requestAnimationFrame(step); };
+    var step = function(t) {
+      if (animations.length) {
+        for (var i = 0; i < animations.length; i++) animations[i].tick(t);
+        play();
+      } else {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+    }
+    return play;
+  })();
+
+  var animation = function(params) {
+
+    var anim = createAnimation(params);
+    var time = {};
+
+    anim.tick = function(now) {
+      anim.ended = false;
+      if (!time.start) time.start = now;
+      time.current = Math.min(Math.max(time.last + now - time.start, 0), anim.duration);
+      setAnimationProgress(anim, time.current);
+      var s = anim.settings;
+      if (time.current >= anim.delay) {
+        if (s.begin) s.begin(anim); s.begin = undefined;
+        if (s.update) s.update(anim);
+      }
+      if (time.current >= anim.duration) {
+        if (s.loop) {
+          time.start = now;
+          if (s.direction === 'alternate') reverseTweens(anim, true);
+          if (is.num(s.loop)) s.loop--;
+        } else {
+          anim.ended = true;
+          anim.pause();
+          if (s.complete) s.complete(anim);
+        }
+        time.last = 0;
+      }
+    }
+
+    anim.seek = function(progress) {
+      setAnimationProgress(anim, (progress / 100) * anim.duration);
+    }
+
+    anim.pause = function() {
+      removeWillChange(anim);
+      var i = animations.indexOf(anim);
+      if (i > -1) animations.splice(i, 1);
+    }
+
+    anim.play = function(params) {
+      anim.pause();
+      if (params) anim = mergeObjects(createAnimation(mergeObjects(params, anim.settings)), anim);
+      time.start = 0;
+      time.last = anim.ended ? 0 : anim.currentTime;
+      var s = anim.settings;
+      if (s.direction === 'reverse') reverseTweens(anim);
+      if (s.direction === 'alternate' && !s.loop) s.loop = 1;
+      setWillChange(anim);
+      animations.push(anim);
+      if (!raf) engine();
+    }
+
+    anim.restart = function() {
+      if (anim.reversed) reverseTweens(anim);
+      anim.pause();
+      anim.seek(0);
+      anim.play();
+    }
+
+    if (anim.settings.autoplay) anim.play();
+
+    return anim;
+
+  }
+
+  // Remove one or multiple targets from all active animations.
+
+  var remove = function(elements) {
+    var targets = flattenArray(is.arr(elements) ? elements.map(toArray) : toArray(elements));
+    for (var i = animations.length-1; i >= 0; i--) {
+      var animation = animations[i];
+      var tweens = animation.tweens;
+      for (var t = tweens.length-1; t >= 0; t--) {
+        var animatables = tweens[t].animatables;
+        for (var a = animatables.length-1; a >= 0; a--) {
+          if (arrayContains(targets, animatables[a].target)) {
+            animatables.splice(a, 1);
+            if (!animatables.length) tweens.splice(t, 1);
+            if (!tweens.length) animation.pause();
+          }
+        }
+      }
+    }
+  }
+
+  animation.version = version;
+  animation.speed = 1;
+  animation.list = animations;
+  animation.remove = remove;
+  animation.easings = easings;
+  animation.getValue = getInitialTargetValue;
+  animation.path = getPathProps;
+  animation.random = random;
+
+  return animation;
+
+}));
+
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "card collapse-item",
+      class: {
+        "is-fullwidth": _vm.$parent.isFullwidth,
+        "is-active": _vm.isActived
+      }
+    },
+    [
+      _c(
+        "header",
+        {
+          staticClass: "card-header touchable",
+          attrs: {
+            role: "tab",
+            "aria-expanded": _vm.selected ? "true" : "fase"
+          },
+          on: { click: _vm.toggle }
+        },
+        [
+          _c("h3", { staticClass: "card-header-title" }, [
+            _vm._v(_vm._s(_vm.title))
+          ]),
+          _vm._v(" "),
+          _vm._m(0)
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "transition",
+        {
+          attrs: { name: "collapsed-fade", css: false, appear: "" },
+          on: {
+            "before-appear": _vm.before,
+            appear: _vm.enter,
+            "appear-cancel": _vm.cancel,
+            "before-enter": _vm.before,
+            enter: _vm.enter,
+            "enter-cancel": _vm.cancel,
+            leave: _vm.leave,
+            "leave-cancel": _vm.cancel
+          }
+        },
+        [
+          _c(
+            "div",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.isActived,
+                  expression: "isActived"
+                }
+              ],
+              staticClass: "card-content"
+            },
+            [
+              _c(
+                "div",
+                { staticClass: "card-content-box" },
+                [_vm._t("default")],
+                2
+              )
+            ]
+          )
+        ]
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", { staticClass: "card-header-icon" }, [
+      _c("i", { staticClass: "fa fa-angle-right" })
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-28c32aa2", module.exports)
+  }
+}
+
+/***/ }),
+/* 54 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Tabs__ = __webpack_require__(55);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Tabs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Tabs__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TabList__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TabList___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__TabList__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TabPane__ = __webpack_require__(62);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TabPane___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__TabPane__);
+/* harmony reexport (default from non-hamory) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_0__Tabs___default.a; });
+/* unused harmony reexport TabList */
+/* harmony reexport (default from non-hamory) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_2__TabPane___default.a; });
+
+
+
+
+
+
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(56)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(58)
+/* template */
+var __vue_template__ = __webpack_require__(61)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "node_modules/vue-bulma-tabs/src/Tabs.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-93a23348", Component.options)
+  } else {
+    hotAPI.reload("data-v-93a23348", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(57);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(3)("439468ee", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../css-loader/index.js!../../vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-93a23348\",\"scoped\":false,\"hasInlineConfig\":true}!../../sass-loader/lib/loader.js!../../vue-loader/lib/selector.js?type=styles&index=0!./Tabs.vue", function() {
+     var newContent = require("!!../../css-loader/index.js!../../vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-93a23348\",\"scoped\":false,\"hasInlineConfig\":true}!../../sass-loader/lib/loader.js!../../vue-loader/lib/selector.js?type=styles&index=0!./Tabs.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.vue-bulma-tabs {\n  position: relative;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n}\n.vue-bulma-tabs.is-layout-top {\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: column;\n            flex-direction: column;\n}\n.vue-bulma-tabs.is-layout-bottom {\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: reverse;\n        -ms-flex-direction: column-reverse;\n            flex-direction: column-reverse;\n}\n.vue-bulma-tabs.is-layout-left {\n    -webkit-box-orient: horizontal;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: row;\n            flex-direction: row;\n    overflow-x: hidden;\n    overflow-y: auto;\n}\n.vue-bulma-tabs.is-layout-left .tab-list {\n      -webkit-box-orient: vertical;\n      -webkit-box-direction: normal;\n          -ms-flex-direction: column;\n              flex-direction: column;\n      -webkit-box-align: start;\n          -ms-flex-align: start;\n              align-items: flex-start;\n      border-bottom: none;\n      border-right: 1px solid #b5b5b5;\n}\n.vue-bulma-tabs.is-layout-left li {\n      width: 100%;\n}\n.vue-bulma-tabs.is-layout-left li a {\n        border-bottom: none;\n        border-right: 1px solid #b5b5b5;\n        margin-bottom: 0;\n        margin-right: -1px;\n        -webkit-box-pack: end;\n            -ms-flex-pack: end;\n                justify-content: flex-end;\n}\n.vue-bulma-tabs.is-layout-left li a:hover {\n          border-right-color: #363636;\n}\n.vue-bulma-tabs.is-layout-left li.is-active a {\n        border-right-color: #00d1b2;\n}\n.vue-bulma-tabs.is-layout-left .tab-content {\n      margin: 30px 10px;\n}\n.vue-bulma-tabs.is-layout-right {\n    -webkit-box-orient: horizontal;\n    -webkit-box-direction: reverse;\n        -ms-flex-direction: row-reverse;\n            flex-direction: row-reverse;\n    overflow-x: hidden;\n    overflow-y: auto;\n}\n.vue-bulma-tabs.is-layout-right .tab-list {\n      -webkit-box-orient: vertical;\n      -webkit-box-direction: normal;\n          -ms-flex-direction: column;\n              flex-direction: column;\n      -webkit-box-align: end;\n          -ms-flex-align: end;\n              align-items: flex-end;\n      -webkit-box-pack: start;\n          -ms-flex-pack: start;\n              justify-content: flex-start;\n      border-bottom: none;\n      border-left: 1px solid #b5b5b5;\n}\n.vue-bulma-tabs.is-layout-right .tab-list li {\n        width: 100%;\n}\n.vue-bulma-tabs.is-layout-right .tab-list li a {\n          border-bottom: none;\n          border-left: 1px solid #b5b5b5;\n          margin-bottom: 0;\n          margin-left: -1px;\n          -webkit-box-pack: start;\n              -ms-flex-pack: start;\n                  justify-content: flex-start;\n}\n.vue-bulma-tabs.is-layout-right .tab-list li a:hover {\n            border-left-color: #363636;\n}\n.vue-bulma-tabs.is-layout-right .tab-list li.is-active a {\n          border-left-color: #00d1b2;\n}\n.vue-bulma-tabs.is-layout-right .tab-content {\n      margin: 30px 10px;\n}\n.vue-bulma-tabs .tab-content {\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: column;\n            flex-direction: column;\n    overflow: hidden;\n    position: relative;\n    margin: 10px 30px;\n    -webkit-box-flex: 1;\n        -ms-flex: 1 1;\n            flex: 1 1;\n}\n.vue-bulma-tabs .tab-pane {\n    width: 100%;\n    -webkit-box-flex: 1;\n        -ms-flex: 1 1;\n            flex: 1 1;\n}\n.vue-bulma-tabs .tab-pane.is-active {\n      -webkit-transform: translateZ(0);\n              transform: translateZ(0);\n}\n.vue-bulma-tabs .tab-pane[class*=\"Out\"] {\n      overflow: hidden;\n      position: absolute;\n      top: 0;\n      left: 0;\n      right: 0;\n      bottom: 0;\n      -webkit-transform: translateX(0);\n              transform: translateX(0);\n      -webkit-transform: translateY(0);\n              transform: translateY(0);\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 58 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TabList__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TabList___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__TabList__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    TabList: __WEBPACK_IMPORTED_MODULE_0__TabList___default.a
+  },
+
+  props: {
+    isFullwidth: Boolean,
+    layout: {
+      type: String,
+      default: 'top',
+      validator: function validator(val) {
+        return ['top', 'bottom', 'left', 'right'].indexOf(val) > -1;
+      }
+    },
+    type: {
+      type: String,
+      default: ''
+    },
+    size: {
+      type: String,
+      default: ''
+    },
+    alignment: {
+      type: String,
+      default: ''
+    },
+    selectedIndex: {
+      type: Number,
+      default: -1
+    },
+    animation: {
+      type: String,
+      default: 'fade'
+    },
+    onlyFade: {
+      type: Boolean,
+      default: true
+    }
+  },
+
+  data: function data() {
+    return {
+      realSelectedIndex: this.selectedIndex,
+      tabPanes: []
+    };
+  },
+  mounted: function mounted() {
+    this.update();
+    if (this.realSelectedIndex === -1) {
+      this.select(0);
+    }
+  },
+
+
+  methods: {
+    update: function update() {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.tabPanes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var tabPane = _step.value;
+
+          if (!tabPane.disabled && tabPane.realSelected) {
+            this.select(tabPane.index);
+            break;
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    },
+    isActived: function isActived(index) {
+      return index === this.realSelectedIndex;
+    },
+    select: function select(index) {
+      this.$emit('tab-selected', index);
+      this.realSelectedIndex = index;
+    }
+  },
+  watch: {
+    selectedIndex: function selectedIndex(newIndex) {
+      this.select(newIndex);
+    }
+  }
+});
+
+/***/ }),
+/* 59 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    alignment: {
+      type: String,
+      default: ''
+    }
+  },
+
+  computed: {
+    classObject: function classObject() {
+      var alignment = this.alignment;
+
+      return _defineProperty({
+        'tab-list': true,
+        'is-flex': true
+      }, 'is-' + alignment, alignment);
+    }
+  }
+});
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "ul",
+    { class: _vm.classObject, attrs: { role: "tablist" } },
+    [_vm._t("default")],
+    2
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-344725e5", module.exports)
+  }
+}
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      class: ((_obj = { "vue-bulma-tabs": true }),
+      (_obj["is-layout-" + _vm.layout] = true),
+      _obj)
+    },
+    [
+      _c(
+        "div",
+        {
+          class: ((_obj$1 = { tabs: true, "is-fullwidth": _vm.isFullwidth }),
+          (_obj$1["is-" + _vm.size] = _vm.size),
+          (_obj$1["is-" + _vm.alignment] = _vm.alignment),
+          (_obj$1["is-" + _vm.type] = _vm.type),
+          _obj$1)
+        },
+        [
+          _vm._t("left-tab-list"),
+          _vm._v(" "),
+          _c(
+            "tab-list",
+            _vm._l(_vm.tabPanes, function(tab, index) {
+              return _c(
+                "li",
+                {
+                  class: {
+                    "is-active": _vm.isActived(index),
+                    "is-disabled": tab.disabled,
+                    "is-flex": true
+                  },
+                  attrs: {
+                    role: "tab",
+                    "aria-selected": _vm.isActived(index) ? "true" : "false",
+                    "aria-expanded": _vm.isActived(index) ? "true" : "false",
+                    "aria-disabled": tab.disabled ? "true" : "false",
+                    selected: _vm.isActived(index),
+                    disabled: tab.disabled
+                  },
+                  on: {
+                    click: function($event) {
+                      _vm.select(index)
+                    }
+                  }
+                },
+                [
+                  _c("a", { staticClass: "is-unselectable" }, [
+                    tab.icon
+                      ? _c(
+                          "span",
+                          {
+                            class: [
+                              "icon",
+                              { "is-small": _vm.size !== "large" }
+                            ]
+                          },
+                          [_c("i", { class: tab.icon })]
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("span", [_vm._v(_vm._s(tab.label))])
+                  ])
+                ]
+              )
+            })
+          ),
+          _vm._v(" "),
+          _vm._t("right-tab-list")
+        ],
+        2
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "tab-content is-flex" }, [_vm._t("default")], 2)
+    ]
+  )
+  var _obj
+  var _obj$1
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-93a23348", module.exports)
+  }
+}
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(63)
+/* template */
+var __vue_template__ = __webpack_require__(64)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "node_modules/vue-bulma-tabs/src/TabPane.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-233e63af", Component.options)
+  } else {
+    hotAPI.reload("data-v-233e63af", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 63 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+var TS = {
+  'fade': {
+    enterClass: 'fadeIn',
+    leaveClass: 'fadeOut'
+  },
+  'fade-horizontal-rtl': {
+    enterClass: 'fadeInRight',
+    leaveClass: 'fadeOutLeft'
+  },
+  'fade-horizontal-ltr': {
+    enterClass: 'fadeInLeft',
+    leaveClass: 'fadeOutRight'
+  },
+  'slide-horizontal-rtl': {
+    enterClass: 'slideInRight',
+    leaveClass: 'slideOutLeft'
+  },
+  'slide-horizontal-ltr': {
+    enterClass: 'slideInLeft',
+    leaveClass: 'slideOutRight'
+  },
+  'fade-vertical-dtu': {
+    enterClass: 'fadeInUp',
+    leaveClass: 'fadeOutUp'
+  },
+  'fade-vertical-utd': {
+    enterClass: 'fadeInDown',
+    leaveClass: 'fadeOutDown'
+  },
+  'slide-vertical-dtu': {
+    enterClass: 'slideInUp',
+    leaveClass: 'slideOutUp'
+  },
+  'slide-vertical-utd': {
+    enterClass: 'slideInDown',
+    leaveClass: 'slideOutDown'
+  }
+};
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    icon: String,
+    selected: Boolean,
+    disabled: Boolean,
+    label: {
+      type: String,
+      required: true
+    },
+    mode: {
+      type: String,
+      default: 'out-in'
+    }
+  },
+
+  data: function data() {
+    return {
+      realSelected: this.selected,
+      transition: TS['fade']
+    };
+  },
+  created: function created() {
+    this.$parent.tabPanes.push(this);
+  },
+  beforeDestroy: function beforeDestroy() {
+    this.$parent.tabPanes.splice(this.index, 1);
+  },
+
+
+  computed: {
+    classObject: function classObject() {
+      var realSelected = this.realSelected;
+
+      return {
+        'tab-pane': true,
+        'animated': true,
+        'is-active': realSelected,
+        'is-deactive': !realSelected
+      };
+    },
+    layout: function layout() {
+      return this.$parent.layout;
+    },
+    direction: function direction() {
+      if (this.layout === 'top' || this.layout === 'bottom') {
+        return 'horizontal';
+      } else if (this.layout === 'left' || this.layout === 'right') {
+        return 'vertical';
+      }
+      return '';
+    },
+    animation: function animation() {
+      return this.$parent.animation;
+    },
+    onlyFade: function onlyFade() {
+      return this.$parent.onlyFade;
+    },
+    gte: function gte() {
+      if (this.direction === 'vertical') {
+        return 'utd';
+      } else if (this.direction === 'horizontal') {
+        return 'ltr';
+      }
+      return '';
+    },
+    lt: function lt() {
+      if (this.direction === 'vertical') {
+        return 'dtu';
+      } else if (this.direction === 'horizontal') {
+        return 'rtl';
+      }
+      return '';
+    },
+    hidden: function hidden() {
+      return this.realSelected ? 'false' : 'true';
+    },
+    index: function index() {
+      return this.$parent.tabPanes.indexOf(this);
+    }
+  },
+
+  watch: {
+    '$parent.realSelectedIndex': function $parentRealSelectedIndex(index, prevIndex) {
+      if (!this.onlyFade) {
+        var transition = void 0;
+        if (prevIndex === -1 || prevIndex > index) {
+          transition = '' + this.animation + (this.layout ? '-' + this.direction : '') + (this.gte ? '-' + this.gte : '');
+        } else {
+          transition = '' + this.animation + (this.layout ? '-' + this.direction : '') + (this.lt ? '-' + this.lt : '');
+        }
+        this.transition = TS[transition] || TS['fade'];
+      }
+      this.realSelected = this.index === index;
+    }
+  }
+});
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "transition",
+    {
+      attrs: {
+        name: _vm.animation,
+        mode: "out-in",
+        appear: "",
+        "appear-active-class": _vm.transition.enterClass,
+        "enter-active-class": _vm.transition.enterClass,
+        "leave-active-class": _vm.transition.leaveClass
+      }
+    },
+    [
+      _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.realSelected,
+              expression: "realSelected"
+            }
+          ],
+          class: _vm.classObject,
+          attrs: {
+            role: "tabpanel",
+            "aria-labelledby": _vm.label,
+            "aria-hidden": _vm.hidden
+          }
+        },
+        [_vm._t("default")],
+        2
+      )
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-233e63af", module.exports)
+  }
+}
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var utils = __webpack_require__(66);
+var traverse = __webpack_require__(69);
+
+function getRefSchema(parent, refObj) {
+  var refType = utils.getRefType(refObj);
+  var refVal = utils.getRefValue(refObj);
+
+  if (refType === 'local') {
+    return utils.getRefPathValue(parent, refVal);
+  }
+}
+
+function derefSchema(schema) {
+  return traverse(schema).map(function (node) {
+    if (node && node['$ref'] && typeof node['$ref'] === 'string') {
+      var newValue = getRefSchema(schema, node);
+      if (newValue) {
+        var value = derefSchema(newValue);
+        if (value || newValue) {
+          this.update(value || newValue);
+        }
+      }
+    }
+  });
+}
+
+/**
+ * Derefs `$ref`'s in json schema to actual resolved values.
+ * Supports local, file and web refs.
+ * @param schema The json schema
+ * @param options
+ *          baseFolder - the base folder to get relative path files from. Default is `process.cwd()`
+ * @returns {*}
+ */
+function deref(schema) {
+  return derefSchema(schema);
+}
+
+deref.prototype.getRefPathValue = utils.getRefPathValue;
+
+module.exports = deref;
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var mpath = __webpack_require__(67);
+
+/**
+ * Gets the ref value of a search result from prop-search or ref object
+ * @param ref The search result object from prop-search
+ * @returns {*} The value of $ref or undefined if not present in search object
+ */
+exports.getRefValue = function (ref) {
+  var thing = ref ? (ref.value ? ref.value : ref) : null;
+  if (thing && thing.$ref && typeof thing.$ref === 'string') {
+    return thing.$ref;
+  }
+};
+
+/**
+ * Gets the type of $ref from search result object.
+ * @param ref The search result object from prop-search or a ref object
+ * @returns {string}  `local` if it's a link to local schema.
+ *                    undefined otherwise
+ */
+exports.getRefType = function (ref) {
+  var val = exports.getRefValue(ref);
+  if (val && (val.charAt(0) === '#')) {
+    return 'local'
+  }
+};
+
+/**
+ * Determines if object is a $ref object. That is { $ref: <something> }
+ * @param thing object to test
+ * @returns {boolean} true if passes the test. false otherwise.
+ */
+exports.isRefObject = function (thing) {
+  if (thing && typeof thing === 'object' && !Array.isArray(thing)) {
+    var keys = Object.keys(thing);
+    return keys.length === 1 && keys[0] === '$ref' && typeof thing['$ref'] === 'string';
+  }
+  return false;
+};
+
+/**
+ * Gets the value at the ref path within schema
+ * @param schema the (root) json schema to search
+ * @param refPath string ref path to get within the schema. Ex. `#/definitions/id`
+ * @returns {*} Returns the value at the path location or undefined if not found within the given schema
+ */
+exports.getRefPathValue = function (schema, refPath) {
+  var rpath = refPath;
+  var hashIndex = refPath.indexOf('#');
+  if (hashIndex >= 0) {
+    rpath = refPath.substring(hashIndex);
+    if (rpath.length > 1) {
+      rpath = refPath.substring(1);
+    }
+    else {
+      rpath = '';
+    }
+  }
+
+  if(rpath.charAt(0) === '/') {
+    rpath = rpath.substring(1);
+  }
+
+  if (rpath.indexOf('/') >= 0) {
+    rpath = rpath.replace(/\//gi, '.');
+  }
+
+  if(rpath) {
+    return mpath.get(rpath, schema);
+  }
+};
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = exports = __webpack_require__(68);
+
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports) {
+
+/**
+ * Returns the value of object `o` at the given `path`.
+ *
+ * ####Example:
+ *
+ *     var obj = {
+ *         comments: [
+ *             { title: 'exciting!', _doc: { title: 'great!' }}
+ *           , { title: 'number dos' }
+ *         ]
+ *     }
+ *
+ *     mpath.get('comments.0.title', o)         // 'exciting!'
+ *     mpath.get('comments.0.title', o, '_doc') // 'great!'
+ *     mpath.get('comments.title', o)           // ['exciting!', 'number dos']
+ *
+ *     // summary
+ *     mpath.get(path, o)
+ *     mpath.get(path, o, special)
+ *     mpath.get(path, o, map)
+ *     mpath.get(path, o, special, map)
+ *
+ * @param {String} path
+ * @param {Object} o
+ * @param {String} [special] When this property name is present on any object in the path, walking will continue on the value of this property.
+ * @param {Function} [map] Optional function which receives each individual found value. The value returned from `map` is used in the original values place.
+ */
+
+exports.get = function (path, o, special, map) {
+  var lookup;
+
+  if ('function' == typeof special) {
+    if (special.length < 2) {
+      map = special;
+      special = undefined;
+    } else {
+      lookup = special;
+      special = undefined;
+    }
+  }
+
+  map || (map = K);
+
+  var parts = 'string' == typeof path
+    ? path.split('.')
+    : path
+
+  if (!Array.isArray(parts)) {
+    throw new TypeError('Invalid `path`. Must be either string or array');
+  }
+
+  var obj = o
+    , part;
+
+  for (var i = 0; i < parts.length; ++i) {
+    part = parts[i];
+
+    if (Array.isArray(obj) && !/^\d+$/.test(part)) {
+      // reading a property from the array items
+      var paths = parts.slice(i);
+
+      return obj.map(function (item) {
+        return item
+          ? exports.get(paths, item, special || lookup, map)
+          : map(undefined);
+      });
+    }
+
+    if (lookup) {
+      obj = lookup(obj, part);
+    } else {
+      obj = special && obj[special]
+        ? obj[special][part]
+        : obj[part];
+    }
+
+    if (!obj) return map(obj);
+  }
+
+  return map(obj);
+}
+
+/**
+ * Sets the `val` at the given `path` of object `o`.
+ *
+ * @param {String} path
+ * @param {Anything} val
+ * @param {Object} o
+ * @param {String} [special] When this property name is present on any object in the path, walking will continue on the value of this property.
+ * @param {Function} [map] Optional function which is passed each individual value before setting it. The value returned from `map` is used in the original values place.
+ */
+
+exports.set = function (path, val, o, special, map, _copying) {
+  var lookup;
+
+  if ('function' == typeof special) {
+    if (special.length < 2) {
+      map = special;
+      special = undefined;
+    } else {
+      lookup = special;
+      special = undefined;
+    }
+  }
+
+  map || (map = K);
+
+  var parts = 'string' == typeof path
+    ? path.split('.')
+    : path
+
+  if (!Array.isArray(parts)) {
+    throw new TypeError('Invalid `path`. Must be either string or array');
+  }
+
+  if (null == o) return;
+
+  // the existance of $ in a path tells us if the user desires
+  // the copying of an array instead of setting each value of
+  // the array to the one by one to matching positions of the
+  // current array.
+  var copy = _copying || /\$/.test(path)
+    , obj = o
+    , part
+
+  for (var i = 0, len = parts.length - 1; i < len; ++i) {
+    part = parts[i];
+
+    if ('$' == part) {
+      if (i == len - 1) {
+        break;
+      } else {
+        continue;
+      }
+    }
+
+    if (Array.isArray(obj) && !/^\d+$/.test(part)) {
+      var paths = parts.slice(i);
+      if (!copy && Array.isArray(val)) {
+        for (var j = 0; j < obj.length && j < val.length; ++j) {
+          // assignment of single values of array
+          exports.set(paths, val[j], obj[j], special || lookup, map, copy);
+        }
+      } else {
+        for (var j = 0; j < obj.length; ++j) {
+          // assignment of entire value
+          exports.set(paths, val, obj[j], special || lookup, map, copy);
+        }
+      }
+      return;
+    }
+
+    if (lookup) {
+      obj = lookup(obj, part);
+    } else {
+      obj = special && obj[special]
+        ? obj[special][part]
+        : obj[part];
+    }
+
+    if (!obj) return;
+  }
+
+  // process the last property of the path
+
+  part = parts[len];
+
+  // use the special property if exists
+  if (special && obj[special]) {
+    obj = obj[special];
+  }
+
+  // set the value on the last branch
+  if (Array.isArray(obj) && !/^\d+$/.test(part)) {
+    if (!copy && Array.isArray(val)) {
+      for (var item, j = 0; j < obj.length && j < val.length; ++j) {
+        item = obj[j];
+        if (item) {
+          if (lookup) {
+            lookup(item, part, map(val[j]));
+          } else {
+            if (item[special]) item = item[special];
+            item[part] = map(val[j]);
+          }
+        }
+      }
+    } else {
+      for (var j = 0; j < obj.length; ++j) {
+        item = obj[j];
+        if (item) {
+          if (lookup) {
+            lookup(item, part, map(val));
+          } else {
+            if (item[special]) item = item[special];
+            item[part] = map(val);
+          }
+        }
+      }
+    }
+  } else {
+    if (lookup) {
+      lookup(obj, part, map(val));
+    } else {
+      obj[part] = map(val);
+    }
+  }
+}
+
+/*!
+ * Returns the value passed to it.
+ */
+
+function K (v) {
+  return v;
+}
+
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports) {
+
+var traverse = module.exports = function (obj) {
+    return new Traverse(obj);
+};
+
+function Traverse (obj) {
+    this.value = obj;
+}
+
+Traverse.prototype.get = function (ps) {
+    var node = this.value;
+    for (var i = 0; i < ps.length; i ++) {
+        var key = ps[i];
+        if (!node || !hasOwnProperty.call(node, key)) {
+            node = undefined;
+            break;
+        }
+        node = node[key];
+    }
+    return node;
+};
+
+Traverse.prototype.has = function (ps) {
+    var node = this.value;
+    for (var i = 0; i < ps.length; i ++) {
+        var key = ps[i];
+        if (!node || !hasOwnProperty.call(node, key)) {
+            return false;
+        }
+        node = node[key];
+    }
+    return true;
+};
+
+Traverse.prototype.set = function (ps, value) {
+    var node = this.value;
+    for (var i = 0; i < ps.length - 1; i ++) {
+        var key = ps[i];
+        if (!hasOwnProperty.call(node, key)) node[key] = {};
+        node = node[key];
+    }
+    node[ps[i]] = value;
+    return value;
+};
+
+Traverse.prototype.map = function (cb) {
+    return walk(this.value, cb, true);
+};
+
+Traverse.prototype.forEach = function (cb) {
+    this.value = walk(this.value, cb, false);
+    return this.value;
+};
+
+Traverse.prototype.reduce = function (cb, init) {
+    var skip = arguments.length === 1;
+    var acc = skip ? this.value : init;
+    this.forEach(function (x) {
+        if (!this.isRoot || !skip) {
+            acc = cb.call(this, acc, x);
+        }
+    });
+    return acc;
+};
+
+Traverse.prototype.paths = function () {
+    var acc = [];
+    this.forEach(function (x) {
+        acc.push(this.path); 
+    });
+    return acc;
+};
+
+Traverse.prototype.nodes = function () {
+    var acc = [];
+    this.forEach(function (x) {
+        acc.push(this.node);
+    });
+    return acc;
+};
+
+Traverse.prototype.clone = function () {
+    var parents = [], nodes = [];
+    
+    return (function clone (src) {
+        for (var i = 0; i < parents.length; i++) {
+            if (parents[i] === src) {
+                return nodes[i];
+            }
+        }
+        
+        if (typeof src === 'object' && src !== null) {
+            var dst = copy(src);
+            
+            parents.push(src);
+            nodes.push(dst);
+            
+            forEach(objectKeys(src), function (key) {
+                dst[key] = clone(src[key]);
+            });
+            
+            parents.pop();
+            nodes.pop();
+            return dst;
+        }
+        else {
+            return src;
+        }
+    })(this.value);
+};
+
+function walk (root, cb, immutable) {
+    var path = [];
+    var parents = [];
+    var alive = true;
+    
+    return (function walker (node_) {
+        var node = immutable ? copy(node_) : node_;
+        var modifiers = {};
+        
+        var keepGoing = true;
+        
+        var state = {
+            node : node,
+            node_ : node_,
+            path : [].concat(path),
+            parent : parents[parents.length - 1],
+            parents : parents,
+            key : path.slice(-1)[0],
+            isRoot : path.length === 0,
+            level : path.length,
+            circular : null,
+            update : function (x, stopHere) {
+                if (!state.isRoot) {
+                    state.parent.node[state.key] = x;
+                }
+                state.node = x;
+                if (stopHere) keepGoing = false;
+            },
+            'delete' : function (stopHere) {
+                delete state.parent.node[state.key];
+                if (stopHere) keepGoing = false;
+            },
+            remove : function (stopHere) {
+                if (isArray(state.parent.node)) {
+                    state.parent.node.splice(state.key, 1);
+                }
+                else {
+                    delete state.parent.node[state.key];
+                }
+                if (stopHere) keepGoing = false;
+            },
+            keys : null,
+            before : function (f) { modifiers.before = f },
+            after : function (f) { modifiers.after = f },
+            pre : function (f) { modifiers.pre = f },
+            post : function (f) { modifiers.post = f },
+            stop : function () { alive = false },
+            block : function () { keepGoing = false }
+        };
+        
+        if (!alive) return state;
+        
+        function updateState() {
+            if (typeof state.node === 'object' && state.node !== null) {
+                if (!state.keys || state.node_ !== state.node) {
+                    state.keys = objectKeys(state.node)
+                }
+                
+                state.isLeaf = state.keys.length == 0;
+                
+                for (var i = 0; i < parents.length; i++) {
+                    if (parents[i].node_ === node_) {
+                        state.circular = parents[i];
+                        break;
+                    }
+                }
+            }
+            else {
+                state.isLeaf = true;
+                state.keys = null;
+            }
+            
+            state.notLeaf = !state.isLeaf;
+            state.notRoot = !state.isRoot;
+        }
+        
+        updateState();
+        
+        // use return values to update if defined
+        var ret = cb.call(state, state.node);
+        if (ret !== undefined && state.update) state.update(ret);
+        
+        if (modifiers.before) modifiers.before.call(state, state.node);
+        
+        if (!keepGoing) return state;
+        
+        if (typeof state.node == 'object'
+        && state.node !== null && !state.circular) {
+            parents.push(state);
+            
+            updateState();
+            
+            forEach(state.keys, function (key, i) {
+                path.push(key);
+                
+                if (modifiers.pre) modifiers.pre.call(state, state.node[key], key);
+                
+                var child = walker(state.node[key]);
+                if (immutable && hasOwnProperty.call(state.node, key)) {
+                    state.node[key] = child.node;
+                }
+                
+                child.isLast = i == state.keys.length - 1;
+                child.isFirst = i == 0;
+                
+                if (modifiers.post) modifiers.post.call(state, child);
+                
+                path.pop();
+            });
+            parents.pop();
+        }
+        
+        if (modifiers.after) modifiers.after.call(state, state.node);
+        
+        return state;
+    })(root).node;
+}
+
+function copy (src) {
+    if (typeof src === 'object' && src !== null) {
+        var dst;
+        
+        if (isArray(src)) {
+            dst = [];
+        }
+        else if (isDate(src)) {
+            dst = new Date(src.getTime ? src.getTime() : src);
+        }
+        else if (isRegExp(src)) {
+            dst = new RegExp(src);
+        }
+        else if (isError(src)) {
+            dst = { message: src.message };
+        }
+        else if (isBoolean(src)) {
+            dst = new Boolean(src);
+        }
+        else if (isNumber(src)) {
+            dst = new Number(src);
+        }
+        else if (isString(src)) {
+            dst = new String(src);
+        }
+        else if (Object.create && Object.getPrototypeOf) {
+            dst = Object.create(Object.getPrototypeOf(src));
+        }
+        else if (src.constructor === Object) {
+            dst = {};
+        }
+        else {
+            var proto =
+                (src.constructor && src.constructor.prototype)
+                || src.__proto__
+                || {}
+            ;
+            var T = function () {};
+            T.prototype = proto;
+            dst = new T;
+        }
+        
+        forEach(objectKeys(src), function (key) {
+            dst[key] = src[key];
+        });
+        return dst;
+    }
+    else return src;
+}
+
+var objectKeys = Object.keys || function keys (obj) {
+    var res = [];
+    for (var key in obj) res.push(key)
+    return res;
+};
+
+function toS (obj) { return Object.prototype.toString.call(obj) }
+function isDate (obj) { return toS(obj) === '[object Date]' }
+function isRegExp (obj) { return toS(obj) === '[object RegExp]' }
+function isError (obj) { return toS(obj) === '[object Error]' }
+function isBoolean (obj) { return toS(obj) === '[object Boolean]' }
+function isNumber (obj) { return toS(obj) === '[object Number]' }
+function isString (obj) { return toS(obj) === '[object String]' }
+
+var isArray = Array.isArray || function isArray (xs) {
+    return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+var forEach = function (xs, fn) {
+    if (xs.forEach) return xs.forEach(fn)
+    else for (var i = 0; i < xs.length; i++) {
+        fn(xs[i], i, xs);
+    }
+};
+
+forEach(objectKeys(Traverse.prototype), function (key) {
+    traverse[key] = function (obj) {
+        var args = [].slice.call(arguments, 1);
+        var t = new Traverse(obj);
+        return t[key].apply(t, args);
+    };
+});
+
+var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
+    return key in obj;
+};
+
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "openapi" }, [
+    _c("section", { staticClass: "hero is-primary" }, [
+      _c("div", { staticClass: "hero-body" }, [
+        _c("div", { staticClass: "container" }, [
+          _c("h1", { staticClass: "title" }, [
+            _vm._v(_vm._s(_vm.api.info.title))
+          ]),
+          _vm._v(" "),
+          _vm.api.info.version
+            ? _c("small", [_vm._v(_vm._s(_vm.api.info.version))])
+            : _vm._e()
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "container box" }, [
+      _c("div", { staticClass: "columns" }, [
+        _c("div", { staticClass: "column is-one-quarter" }, [
+          _c(
+            "aside",
+            { staticClass: "menu" },
+            _vm._l(_vm.tags, function(entries, tag) {
+              return _c("div", { key: tag }, [
+                _c("p", { staticClass: "menu-label" }, [_vm._v(_vm._s(tag))]),
+                _vm._v(" "),
+                _c("ul", { staticClass: "menu-list" }, [
+                  _c(
+                    "li",
+                    _vm._l(entries, function(entry, i) {
+                      return _c(
+                        "a",
+                        {
+                          key: i,
+                          staticStyle: { display: "block" },
+                          on: {
+                            click: function($event) {
+                              _vm.select(entry)
+                            }
+                          }
+                        },
+                        [
+                          _c("span", { class: { entry: entry.method } }, [
+                            _vm._v(_vm._s(entry.method))
+                          ]),
+                          _vm._v(" "),
+                          _c("b", {
+                            staticClass: "md-title",
+                            class: { "md-accent": _vm.selectedEntry === entry },
+                            domProps: {
+                              innerHTML: _vm._s(
+                                entry.path.replace(/\//g, "<b>/</b>")
+                              )
+                            }
+                          })
+                        ]
+                      )
+                    })
+                  )
+                ])
+              ])
+            })
+          )
+        ]),
+        _vm._v(" "),
+        !_vm.selectedEntry
+          ? _c("div", { staticClass: "column" }, [
+              _c("p", [
+                _vm._v(
+                  "Select an entry on the left to see detailed information..."
+                )
+              ])
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.selectedEntry
+          ? _c(
+              "div",
+              { staticClass: "column is-three-quarters" },
+              [
+                _c("h2", { staticClass: "is-size-3 has-text-centered" }, [
+                  _vm._v(
+                    _vm._s(_vm.selectedEntry.title || _vm.selectedEntry.summary)
+                  )
+                ]),
+                _vm._v(" "),
+                _vm.selectedEntry.description
+                  ? _c("p", {
+                      staticClass: "has-text-centered",
+                      domProps: {
+                        innerHTML: _vm._s(
+                          _vm.marked(_vm.selectedEntry.description)
+                        )
+                      }
+                    })
+                  : _vm._e(),
+                _vm._v(" "),
+                _c("h3", { staticClass: "has-text-centered" }, [
+                  _c("b", { staticClass: "has-text-primary" }, [
+                    _vm._v(_vm._s(_vm.selectedEntry.method.toUpperCase()))
+                  ]),
+                  _vm._v(
+                    " " +
+                      _vm._s(_vm.api.servers[0].url + _vm.selectedEntry.path)
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "tabs",
+                  { attrs: { animation: "slide", "only-fade": false } },
+                  [
+                    _c(
+                      "tab-pane",
+                      { attrs: { label: "Responses" } },
+                      [
+                        (_vm.selectedEntry.parameters &&
+                          _vm.selectedEntry.parameters.length) ||
+                        _vm.selectedEntry.requestBody
+                          ? _c("h4", [_vm._v("Parameters")])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c("parameters-table", {
+                          attrs: {
+                            selectedEntry: _vm.selectedEntry,
+                            openSchemaDialog: _vm.openSchemaDialog,
+                            openExamplesDialog: _vm.openExamplesDialog
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("responses-table", {
+                          attrs: {
+                            selectedEntry: _vm.selectedEntry,
+                            openSchemaDialog: _vm.openSchemaDialog,
+                            openExamplesDialog: _vm.openExamplesDialog
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "tab-pane",
+                      { attrs: { label: "Request" } },
+                      [
+                        _c("request-form", {
+                          attrs: {
+                            selectedEntry: _vm.selectedEntry,
+                            currentRequest: _vm.currentRequest
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "button",
+                          { staticClass: "button", on: { click: _vm.request } },
+                          [_vm._v("Execute")]
+                        ),
+                        _vm._v(" "),
+                        _vm.currentResponse
+                          ? _c("response-display", {
+                              attrs: {
+                                entry: _vm.selectedEntry,
+                                response: _vm.currentResponse
+                              }
+                            })
+                          : _vm._e()
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          : _vm._e()
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { ref: "schemaDialog", staticClass: "schema-dialog" }, [
+      _c("h4", [_vm._v("Schema")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "content" }, [
+        _c("div", { staticClass: "tabs" }, [
+          _c(
+            "div",
+            { attrs: { id: "tree", "md-label": "Tree" } },
+            [_c("schema-view", { attrs: { schema: _vm.currentSchema } })],
+            1
+          ),
+          _vm._v(" "),
+          _c("div", { attrs: { id: "raw", "md-label": "Raw" } }, [
+            _c("pre", [
+              _vm._v(_vm._s(JSON.stringify(_vm.currentSchema, null, 2)))
+            ])
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          on: {
+            click: function($event) {
+              _vm.$refs.schemaDialog.close()
+            }
+          }
+        },
+        [_vm._v("ok")]
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", {
+      ref: "examplesDialog",
+      attrs: {
+        "md-content-html":
+          _vm.currentExamples
+            .map(function(example) {
+              return "<pre>" + JSON.stringify(example, null, 2) + "</pre>"
+            })
+            .join("<br>") + " ",
+        "md-title": "Examples"
+      }
+    })
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-28473f33", module.exports)
+  }
+}
+
+/***/ }),
+/* 71 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export Url */
+/* unused harmony export Http */
+/* unused harmony export Resource */
+/*!
+ * vue-resource v1.5.1
+ * https://github.com/pagekit/vue-resource
+ * Released under the MIT License.
+ */
+
+/**
+ * Promises/A+ polyfill v1.1.4 (https://github.com/bramstein/promis)
+ */
+
+var RESOLVED = 0;
+var REJECTED = 1;
+var PENDING = 2;
+
+function Promise$1(executor) {
+
+    this.state = PENDING;
+    this.value = undefined;
+    this.deferred = [];
+
+    var promise = this;
+
+    try {
+        executor(function (x) {
+            promise.resolve(x);
+        }, function (r) {
+            promise.reject(r);
+        });
+    } catch (e) {
+        promise.reject(e);
+    }
+}
+
+Promise$1.reject = function (r) {
+    return new Promise$1(function (resolve, reject) {
+        reject(r);
+    });
+};
+
+Promise$1.resolve = function (x) {
+    return new Promise$1(function (resolve, reject) {
+        resolve(x);
+    });
+};
+
+Promise$1.all = function all(iterable) {
+    return new Promise$1(function (resolve, reject) {
+        var count = 0, result = [];
+
+        if (iterable.length === 0) {
+            resolve(result);
+        }
+
+        function resolver(i) {
+            return function (x) {
+                result[i] = x;
+                count += 1;
+
+                if (count === iterable.length) {
+                    resolve(result);
+                }
+            };
+        }
+
+        for (var i = 0; i < iterable.length; i += 1) {
+            Promise$1.resolve(iterable[i]).then(resolver(i), reject);
+        }
+    });
+};
+
+Promise$1.race = function race(iterable) {
+    return new Promise$1(function (resolve, reject) {
+        for (var i = 0; i < iterable.length; i += 1) {
+            Promise$1.resolve(iterable[i]).then(resolve, reject);
+        }
+    });
+};
+
+var p = Promise$1.prototype;
+
+p.resolve = function resolve(x) {
+    var promise = this;
+
+    if (promise.state === PENDING) {
+        if (x === promise) {
+            throw new TypeError('Promise settled with itself.');
+        }
+
+        var called = false;
+
+        try {
+            var then = x && x['then'];
+
+            if (x !== null && typeof x === 'object' && typeof then === 'function') {
+                then.call(x, function (x) {
+                    if (!called) {
+                        promise.resolve(x);
+                    }
+                    called = true;
+
+                }, function (r) {
+                    if (!called) {
+                        promise.reject(r);
+                    }
+                    called = true;
+                });
+                return;
+            }
+        } catch (e) {
+            if (!called) {
+                promise.reject(e);
+            }
+            return;
+        }
+
+        promise.state = RESOLVED;
+        promise.value = x;
+        promise.notify();
+    }
+};
+
+p.reject = function reject(reason) {
+    var promise = this;
+
+    if (promise.state === PENDING) {
+        if (reason === promise) {
+            throw new TypeError('Promise settled with itself.');
+        }
+
+        promise.state = REJECTED;
+        promise.value = reason;
+        promise.notify();
+    }
+};
+
+p.notify = function notify() {
+    var promise = this;
+
+    nextTick(function () {
+        if (promise.state !== PENDING) {
+            while (promise.deferred.length) {
+                var deferred = promise.deferred.shift(),
+                    onResolved = deferred[0],
+                    onRejected = deferred[1],
+                    resolve = deferred[2],
+                    reject = deferred[3];
+
+                try {
+                    if (promise.state === RESOLVED) {
+                        if (typeof onResolved === 'function') {
+                            resolve(onResolved.call(undefined, promise.value));
+                        } else {
+                            resolve(promise.value);
+                        }
+                    } else if (promise.state === REJECTED) {
+                        if (typeof onRejected === 'function') {
+                            resolve(onRejected.call(undefined, promise.value));
+                        } else {
+                            reject(promise.value);
+                        }
+                    }
+                } catch (e) {
+                    reject(e);
+                }
+            }
+        }
+    });
+};
+
+p.then = function then(onResolved, onRejected) {
+    var promise = this;
+
+    return new Promise$1(function (resolve, reject) {
+        promise.deferred.push([onResolved, onRejected, resolve, reject]);
+        promise.notify();
+    });
+};
+
+p.catch = function (onRejected) {
+    return this.then(undefined, onRejected);
+};
+
+/**
+ * Promise adapter.
+ */
+
+if (typeof Promise === 'undefined') {
+    window.Promise = Promise$1;
+}
+
+function PromiseObj(executor, context) {
+
+    if (executor instanceof Promise) {
+        this.promise = executor;
+    } else {
+        this.promise = new Promise(executor.bind(context));
+    }
+
+    this.context = context;
+}
+
+PromiseObj.all = function (iterable, context) {
+    return new PromiseObj(Promise.all(iterable), context);
+};
+
+PromiseObj.resolve = function (value, context) {
+    return new PromiseObj(Promise.resolve(value), context);
+};
+
+PromiseObj.reject = function (reason, context) {
+    return new PromiseObj(Promise.reject(reason), context);
+};
+
+PromiseObj.race = function (iterable, context) {
+    return new PromiseObj(Promise.race(iterable), context);
+};
+
+var p$1 = PromiseObj.prototype;
+
+p$1.bind = function (context) {
+    this.context = context;
+    return this;
+};
+
+p$1.then = function (fulfilled, rejected) {
+
+    if (fulfilled && fulfilled.bind && this.context) {
+        fulfilled = fulfilled.bind(this.context);
+    }
+
+    if (rejected && rejected.bind && this.context) {
+        rejected = rejected.bind(this.context);
+    }
+
+    return new PromiseObj(this.promise.then(fulfilled, rejected), this.context);
+};
+
+p$1.catch = function (rejected) {
+
+    if (rejected && rejected.bind && this.context) {
+        rejected = rejected.bind(this.context);
+    }
+
+    return new PromiseObj(this.promise.catch(rejected), this.context);
+};
+
+p$1.finally = function (callback) {
+
+    return this.then(function (value) {
+        callback.call(this);
+        return value;
+    }, function (reason) {
+        callback.call(this);
+        return Promise.reject(reason);
+    }
+    );
+};
+
+/**
+ * Utility functions.
+ */
+
+var ref = {};
+var hasOwnProperty = ref.hasOwnProperty;
+var ref$1 = [];
+var slice = ref$1.slice;
+var debug = false, ntick;
+
+var inBrowser = typeof window !== 'undefined';
+
+function Util (ref) {
+    var config = ref.config;
+    var nextTick = ref.nextTick;
+
+    ntick = nextTick;
+    debug = config.debug || !config.silent;
+}
+
+function warn(msg) {
+    if (typeof console !== 'undefined' && debug) {
+        console.warn('[VueResource warn]: ' + msg);
+    }
+}
+
+function error(msg) {
+    if (typeof console !== 'undefined') {
+        console.error(msg);
+    }
+}
+
+function nextTick(cb, ctx) {
+    return ntick(cb, ctx);
+}
+
+function trim(str) {
+    return str ? str.replace(/^\s*|\s*$/g, '') : '';
+}
+
+function trimEnd(str, chars) {
+
+    if (str && chars === undefined) {
+        return str.replace(/\s+$/, '');
+    }
+
+    if (!str || !chars) {
+        return str;
+    }
+
+    return str.replace(new RegExp(("[" + chars + "]+$")), '');
+}
+
+function toLower(str) {
+    return str ? str.toLowerCase() : '';
+}
+
+function toUpper(str) {
+    return str ? str.toUpperCase() : '';
+}
+
+var isArray = Array.isArray;
+
+function isString(val) {
+    return typeof val === 'string';
+}
+
+function isFunction(val) {
+    return typeof val === 'function';
+}
+
+function isObject(obj) {
+    return obj !== null && typeof obj === 'object';
+}
+
+function isPlainObject(obj) {
+    return isObject(obj) && Object.getPrototypeOf(obj) == Object.prototype;
+}
+
+function isBlob(obj) {
+    return typeof Blob !== 'undefined' && obj instanceof Blob;
+}
+
+function isFormData(obj) {
+    return typeof FormData !== 'undefined' && obj instanceof FormData;
+}
+
+function when(value, fulfilled, rejected) {
+
+    var promise = PromiseObj.resolve(value);
+
+    if (arguments.length < 2) {
+        return promise;
+    }
+
+    return promise.then(fulfilled, rejected);
+}
+
+function options(fn, obj, opts) {
+
+    opts = opts || {};
+
+    if (isFunction(opts)) {
+        opts = opts.call(obj);
+    }
+
+    return merge(fn.bind({$vm: obj, $options: opts}), fn, {$options: opts});
+}
+
+function each(obj, iterator) {
+
+    var i, key;
+
+    if (isArray(obj)) {
+        for (i = 0; i < obj.length; i++) {
+            iterator.call(obj[i], obj[i], i);
+        }
+    } else if (isObject(obj)) {
+        for (key in obj) {
+            if (hasOwnProperty.call(obj, key)) {
+                iterator.call(obj[key], obj[key], key);
+            }
+        }
+    }
+
+    return obj;
+}
+
+var assign = Object.assign || _assign;
+
+function merge(target) {
+
+    var args = slice.call(arguments, 1);
+
+    args.forEach(function (source) {
+        _merge(target, source, true);
+    });
+
+    return target;
+}
+
+function defaults(target) {
+
+    var args = slice.call(arguments, 1);
+
+    args.forEach(function (source) {
+
+        for (var key in source) {
+            if (target[key] === undefined) {
+                target[key] = source[key];
+            }
+        }
+
+    });
+
+    return target;
+}
+
+function _assign(target) {
+
+    var args = slice.call(arguments, 1);
+
+    args.forEach(function (source) {
+        _merge(target, source);
+    });
+
+    return target;
+}
+
+function _merge(target, source, deep) {
+    for (var key in source) {
+        if (deep && (isPlainObject(source[key]) || isArray(source[key]))) {
+            if (isPlainObject(source[key]) && !isPlainObject(target[key])) {
+                target[key] = {};
+            }
+            if (isArray(source[key]) && !isArray(target[key])) {
+                target[key] = [];
+            }
+            _merge(target[key], source[key], deep);
+        } else if (source[key] !== undefined) {
+            target[key] = source[key];
+        }
+    }
+}
+
+/**
+ * Root Prefix Transform.
+ */
+
+function root (options$$1, next) {
+
+    var url = next(options$$1);
+
+    if (isString(options$$1.root) && !/^(https?:)?\//.test(url)) {
+        url = trimEnd(options$$1.root, '/') + '/' + url;
+    }
+
+    return url;
+}
+
+/**
+ * Query Parameter Transform.
+ */
+
+function query (options$$1, next) {
+
+    var urlParams = Object.keys(Url.options.params), query = {}, url = next(options$$1);
+
+    each(options$$1.params, function (value, key) {
+        if (urlParams.indexOf(key) === -1) {
+            query[key] = value;
+        }
+    });
+
+    query = Url.params(query);
+
+    if (query) {
+        url += (url.indexOf('?') == -1 ? '?' : '&') + query;
+    }
+
+    return url;
+}
+
+/**
+ * URL Template v2.0.6 (https://github.com/bramstein/url-template)
+ */
+
+function expand(url, params, variables) {
+
+    var tmpl = parse(url), expanded = tmpl.expand(params);
+
+    if (variables) {
+        variables.push.apply(variables, tmpl.vars);
+    }
+
+    return expanded;
+}
+
+function parse(template) {
+
+    var operators = ['+', '#', '.', '/', ';', '?', '&'], variables = [];
+
+    return {
+        vars: variables,
+        expand: function expand(context) {
+            return template.replace(/\{([^{}]+)\}|([^{}]+)/g, function (_, expression, literal) {
+                if (expression) {
+
+                    var operator = null, values = [];
+
+                    if (operators.indexOf(expression.charAt(0)) !== -1) {
+                        operator = expression.charAt(0);
+                        expression = expression.substr(1);
+                    }
+
+                    expression.split(/,/g).forEach(function (variable) {
+                        var tmp = /([^:*]*)(?::(\d+)|(\*))?/.exec(variable);
+                        values.push.apply(values, getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
+                        variables.push(tmp[1]);
+                    });
+
+                    if (operator && operator !== '+') {
+
+                        var separator = ',';
+
+                        if (operator === '?') {
+                            separator = '&';
+                        } else if (operator !== '#') {
+                            separator = operator;
+                        }
+
+                        return (values.length !== 0 ? operator : '') + values.join(separator);
+                    } else {
+                        return values.join(',');
+                    }
+
+                } else {
+                    return encodeReserved(literal);
+                }
+            });
+        }
+    };
+}
+
+function getValues(context, operator, key, modifier) {
+
+    var value = context[key], result = [];
+
+    if (isDefined(value) && value !== '') {
+        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+            value = value.toString();
+
+            if (modifier && modifier !== '*') {
+                value = value.substring(0, parseInt(modifier, 10));
+            }
+
+            result.push(encodeValue(operator, value, isKeyOperator(operator) ? key : null));
+        } else {
+            if (modifier === '*') {
+                if (Array.isArray(value)) {
+                    value.filter(isDefined).forEach(function (value) {
+                        result.push(encodeValue(operator, value, isKeyOperator(operator) ? key : null));
+                    });
+                } else {
+                    Object.keys(value).forEach(function (k) {
+                        if (isDefined(value[k])) {
+                            result.push(encodeValue(operator, value[k], k));
+                        }
+                    });
+                }
+            } else {
+                var tmp = [];
+
+                if (Array.isArray(value)) {
+                    value.filter(isDefined).forEach(function (value) {
+                        tmp.push(encodeValue(operator, value));
+                    });
+                } else {
+                    Object.keys(value).forEach(function (k) {
+                        if (isDefined(value[k])) {
+                            tmp.push(encodeURIComponent(k));
+                            tmp.push(encodeValue(operator, value[k].toString()));
+                        }
+                    });
+                }
+
+                if (isKeyOperator(operator)) {
+                    result.push(encodeURIComponent(key) + '=' + tmp.join(','));
+                } else if (tmp.length !== 0) {
+                    result.push(tmp.join(','));
+                }
+            }
+        }
+    } else {
+        if (operator === ';') {
+            result.push(encodeURIComponent(key));
+        } else if (value === '' && (operator === '&' || operator === '?')) {
+            result.push(encodeURIComponent(key) + '=');
+        } else if (value === '') {
+            result.push('');
+        }
+    }
+
+    return result;
+}
+
+function isDefined(value) {
+    return value !== undefined && value !== null;
+}
+
+function isKeyOperator(operator) {
+    return operator === ';' || operator === '&' || operator === '?';
+}
+
+function encodeValue(operator, value, key) {
+
+    value = (operator === '+' || operator === '#') ? encodeReserved(value) : encodeURIComponent(value);
+
+    if (key) {
+        return encodeURIComponent(key) + '=' + value;
+    } else {
+        return value;
+    }
+}
+
+function encodeReserved(str) {
+    return str.split(/(%[0-9A-Fa-f]{2})/g).map(function (part) {
+        if (!/%[0-9A-Fa-f]/.test(part)) {
+            part = encodeURI(part);
+        }
+        return part;
+    }).join('');
+}
+
+/**
+ * URL Template (RFC 6570) Transform.
+ */
+
+function template (options) {
+
+    var variables = [], url = expand(options.url, options.params, variables);
+
+    variables.forEach(function (key) {
+        delete options.params[key];
+    });
+
+    return url;
+}
+
+/**
+ * Service for URL templating.
+ */
+
+function Url(url, params) {
+
+    var self = this || {}, options$$1 = url, transform;
+
+    if (isString(url)) {
+        options$$1 = {url: url, params: params};
+    }
+
+    options$$1 = merge({}, Url.options, self.$options, options$$1);
+
+    Url.transforms.forEach(function (handler) {
+
+        if (isString(handler)) {
+            handler = Url.transform[handler];
+        }
+
+        if (isFunction(handler)) {
+            transform = factory(handler, transform, self.$vm);
+        }
+
+    });
+
+    return transform(options$$1);
+}
+
+/**
+ * Url options.
+ */
+
+Url.options = {
+    url: '',
+    root: null,
+    params: {}
+};
+
+/**
+ * Url transforms.
+ */
+
+Url.transform = {template: template, query: query, root: root};
+Url.transforms = ['template', 'query', 'root'];
+
+/**
+ * Encodes a Url parameter string.
+ *
+ * @param {Object} obj
+ */
+
+Url.params = function (obj) {
+
+    var params = [], escape = encodeURIComponent;
+
+    params.add = function (key, value) {
+
+        if (isFunction(value)) {
+            value = value();
+        }
+
+        if (value === null) {
+            value = '';
+        }
+
+        this.push(escape(key) + '=' + escape(value));
+    };
+
+    serialize(params, obj);
+
+    return params.join('&').replace(/%20/g, '+');
+};
+
+/**
+ * Parse a URL and return its components.
+ *
+ * @param {String} url
+ */
+
+Url.parse = function (url) {
+
+    var el = document.createElement('a');
+
+    if (document.documentMode) {
+        el.href = url;
+        url = el.href;
+    }
+
+    el.href = url;
+
+    return {
+        href: el.href,
+        protocol: el.protocol ? el.protocol.replace(/:$/, '') : '',
+        port: el.port,
+        host: el.host,
+        hostname: el.hostname,
+        pathname: el.pathname.charAt(0) === '/' ? el.pathname : '/' + el.pathname,
+        search: el.search ? el.search.replace(/^\?/, '') : '',
+        hash: el.hash ? el.hash.replace(/^#/, '') : ''
+    };
+};
+
+function factory(handler, next, vm) {
+    return function (options$$1) {
+        return handler.call(vm, options$$1, next);
+    };
+}
+
+function serialize(params, obj, scope) {
+
+    var array = isArray(obj), plain = isPlainObject(obj), hash;
+
+    each(obj, function (value, key) {
+
+        hash = isObject(value) || isArray(value);
+
+        if (scope) {
+            key = scope + '[' + (plain || hash ? key : '') + ']';
+        }
+
+        if (!scope && array) {
+            params.add(value.name, value.value);
+        } else if (hash) {
+            serialize(params, value, key);
+        } else {
+            params.add(key, value);
+        }
+    });
+}
+
+/**
+ * XDomain client (Internet Explorer).
+ */
+
+function xdrClient (request) {
+    return new PromiseObj(function (resolve) {
+
+        var xdr = new XDomainRequest(), handler = function (ref) {
+                var type = ref.type;
+
+
+                var status = 0;
+
+                if (type === 'load') {
+                    status = 200;
+                } else if (type === 'error') {
+                    status = 500;
+                }
+
+                resolve(request.respondWith(xdr.responseText, {status: status}));
+            };
+
+        request.abort = function () { return xdr.abort(); };
+
+        xdr.open(request.method, request.getUrl());
+
+        if (request.timeout) {
+            xdr.timeout = request.timeout;
+        }
+
+        xdr.onload = handler;
+        xdr.onabort = handler;
+        xdr.onerror = handler;
+        xdr.ontimeout = handler;
+        xdr.onprogress = function () {};
+        xdr.send(request.getBody());
+    });
+}
+
+/**
+ * CORS Interceptor.
+ */
+
+var SUPPORTS_CORS = inBrowser && 'withCredentials' in new XMLHttpRequest();
+
+function cors (request) {
+
+    if (inBrowser) {
+
+        var orgUrl = Url.parse(location.href);
+        var reqUrl = Url.parse(request.getUrl());
+
+        if (reqUrl.protocol !== orgUrl.protocol || reqUrl.host !== orgUrl.host) {
+
+            request.crossOrigin = true;
+            request.emulateHTTP = false;
+
+            if (!SUPPORTS_CORS) {
+                request.client = xdrClient;
+            }
+        }
+    }
+
+}
+
+/**
+ * Form data Interceptor.
+ */
+
+function form (request) {
+
+    if (isFormData(request.body)) {
+        request.headers.delete('Content-Type');
+    } else if (isObject(request.body) && request.emulateJSON) {
+        request.body = Url.params(request.body);
+        request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
+    }
+
+}
+
+/**
+ * JSON Interceptor.
+ */
+
+function json (request) {
+
+    var type = request.headers.get('Content-Type') || '';
+
+    if (isObject(request.body) && type.indexOf('application/json') === 0) {
+        request.body = JSON.stringify(request.body);
+    }
+
+    return function (response) {
+
+        return response.bodyText ? when(response.text(), function (text) {
+
+            var type = response.headers.get('Content-Type') || '';
+
+            if (type.indexOf('application/json') === 0 || isJson(text)) {
+
+                try {
+                    response.body = JSON.parse(text);
+                } catch (e) {
+                    response.body = null;
+                }
+
+            } else {
+                response.body = text;
+            }
+
+            return response;
+
+        }) : response;
+
+    };
+}
+
+function isJson(str) {
+
+    var start = str.match(/^\s*(\[|\{)/);
+    var end = {'[': /]\s*$/, '{': /}\s*$/};
+
+    return start && end[start[1]].test(str);
+}
+
+/**
+ * JSONP client (Browser).
+ */
+
+function jsonpClient (request) {
+    return new PromiseObj(function (resolve) {
+
+        var name = request.jsonp || 'callback', callback = request.jsonpCallback || '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
+
+        handler = function (ref) {
+            var type = ref.type;
+
+
+            var status = 0;
+
+            if (type === 'load' && body !== null) {
+                status = 200;
+            } else if (type === 'error') {
+                status = 500;
+            }
+
+            if (status && window[callback]) {
+                delete window[callback];
+                document.body.removeChild(script);
+            }
+
+            resolve(request.respondWith(body, {status: status}));
+        };
+
+        window[callback] = function (result) {
+            body = JSON.stringify(result);
+        };
+
+        request.abort = function () {
+            handler({type: 'abort'});
+        };
+
+        request.params[name] = callback;
+
+        if (request.timeout) {
+            setTimeout(request.abort, request.timeout);
+        }
+
+        script = document.createElement('script');
+        script.src = request.getUrl();
+        script.type = 'text/javascript';
+        script.async = true;
+        script.onload = handler;
+        script.onerror = handler;
+
+        document.body.appendChild(script);
+    });
+}
+
+/**
+ * JSONP Interceptor.
+ */
+
+function jsonp (request) {
+
+    if (request.method == 'JSONP') {
+        request.client = jsonpClient;
+    }
+
+}
+
+/**
+ * Before Interceptor.
+ */
+
+function before (request) {
+
+    if (isFunction(request.before)) {
+        request.before.call(this, request);
+    }
+
+}
+
+/**
+ * HTTP method override Interceptor.
+ */
+
+function method (request) {
+
+    if (request.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
+        request.headers.set('X-HTTP-Method-Override', request.method);
+        request.method = 'POST';
+    }
+
+}
+
+/**
+ * Header Interceptor.
+ */
+
+function header (request) {
+
+    var headers = assign({}, Http.headers.common,
+        !request.crossOrigin ? Http.headers.custom : {},
+        Http.headers[toLower(request.method)]
+    );
+
+    each(headers, function (value, name) {
+        if (!request.headers.has(name)) {
+            request.headers.set(name, value);
+        }
+    });
+
+}
+
+/**
+ * XMLHttp client (Browser).
+ */
+
+function xhrClient (request) {
+    return new PromiseObj(function (resolve) {
+
+        var xhr = new XMLHttpRequest(), handler = function (event) {
+
+                var response = request.respondWith(
+                'response' in xhr ? xhr.response : xhr.responseText, {
+                    status: xhr.status === 1223 ? 204 : xhr.status, // IE9 status bug
+                    statusText: xhr.status === 1223 ? 'No Content' : trim(xhr.statusText)
+                });
+
+                each(trim(xhr.getAllResponseHeaders()).split('\n'), function (row) {
+                    response.headers.append(row.slice(0, row.indexOf(':')), row.slice(row.indexOf(':') + 1));
+                });
+
+                resolve(response);
+            };
+
+        request.abort = function () { return xhr.abort(); };
+
+        xhr.open(request.method, request.getUrl(), true);
+
+        if (request.timeout) {
+            xhr.timeout = request.timeout;
+        }
+
+        if (request.responseType && 'responseType' in xhr) {
+            xhr.responseType = request.responseType;
+        }
+
+        if (request.withCredentials || request.credentials) {
+            xhr.withCredentials = true;
+        }
+
+        if (!request.crossOrigin) {
+            request.headers.set('X-Requested-With', 'XMLHttpRequest');
+        }
+
+        // deprecated use downloadProgress
+        if (isFunction(request.progress) && request.method === 'GET') {
+            xhr.addEventListener('progress', request.progress);
+        }
+
+        if (isFunction(request.downloadProgress)) {
+            xhr.addEventListener('progress', request.downloadProgress);
+        }
+
+        // deprecated use uploadProgress
+        if (isFunction(request.progress) && /^(POST|PUT)$/i.test(request.method)) {
+            xhr.upload.addEventListener('progress', request.progress);
+        }
+
+        if (isFunction(request.uploadProgress) && xhr.upload) {
+            xhr.upload.addEventListener('progress', request.uploadProgress);
+        }
+
+        request.headers.forEach(function (value, name) {
+            xhr.setRequestHeader(name, value);
+        });
+
+        xhr.onload = handler;
+        xhr.onabort = handler;
+        xhr.onerror = handler;
+        xhr.ontimeout = handler;
+        xhr.send(request.getBody());
+    });
+}
+
+/**
+ * Http client (Node).
+ */
+
+function nodeClient (request) {
+
+    var client = __webpack_require__(72);
+
+    return new PromiseObj(function (resolve) {
+
+        var url = request.getUrl();
+        var body = request.getBody();
+        var method = request.method;
+        var headers = {}, handler;
+
+        request.headers.forEach(function (value, name) {
+            headers[name] = value;
+        });
+
+        client(url, {body: body, method: method, headers: headers}).then(handler = function (resp) {
+
+            var response = request.respondWith(resp.body, {
+                status: resp.statusCode,
+                statusText: trim(resp.statusMessage)
+            });
+
+            each(resp.headers, function (value, name) {
+                response.headers.set(name, value);
+            });
+
+            resolve(response);
+
+        }, function (error$$1) { return handler(error$$1.response); });
+    });
+}
+
+/**
+ * Base client.
+ */
+
+function Client (context) {
+
+    var reqHandlers = [sendRequest], resHandlers = [];
+
+    if (!isObject(context)) {
+        context = null;
+    }
+
+    function Client(request) {
+        while (reqHandlers.length) {
+
+            var handler = reqHandlers.pop();
+
+            if (isFunction(handler)) {
+
+                var response = (void 0), next = (void 0);
+
+                response = handler.call(context, request, function (val) { return next = val; }) || next;
+
+                if (isObject(response)) {
+                    return new PromiseObj(function (resolve, reject) {
+
+                        resHandlers.forEach(function (handler) {
+                            response = when(response, function (response) {
+                                return handler.call(context, response) || response;
+                            }, reject);
+                        });
+
+                        when(response, resolve, reject);
+
+                    }, context);
+                }
+
+                if (isFunction(response)) {
+                    resHandlers.unshift(response);
+                }
+
+            } else {
+                warn(("Invalid interceptor of type " + (typeof handler) + ", must be a function"));
+            }
+        }
+    }
+
+    Client.use = function (handler) {
+        reqHandlers.push(handler);
+    };
+
+    return Client;
+}
+
+function sendRequest(request) {
+
+    var client = request.client || (inBrowser ? xhrClient : nodeClient);
+
+    return client(request);
+}
+
+/**
+ * HTTP Headers.
+ */
+
+var Headers = function Headers(headers) {
+    var this$1 = this;
+
+
+    this.map = {};
+
+    each(headers, function (value, name) { return this$1.append(name, value); });
+};
+
+Headers.prototype.has = function has (name) {
+    return getName(this.map, name) !== null;
+};
+
+Headers.prototype.get = function get (name) {
+
+    var list = this.map[getName(this.map, name)];
+
+    return list ? list.join() : null;
+};
+
+Headers.prototype.getAll = function getAll (name) {
+    return this.map[getName(this.map, name)] || [];
+};
+
+Headers.prototype.set = function set (name, value) {
+    this.map[normalizeName(getName(this.map, name) || name)] = [trim(value)];
+};
+
+Headers.prototype.append = function append (name, value) {
+
+    var list = this.map[getName(this.map, name)];
+
+    if (list) {
+        list.push(trim(value));
+    } else {
+        this.set(name, value);
+    }
+};
+
+Headers.prototype.delete = function delete$1 (name) {
+    delete this.map[getName(this.map, name)];
+};
+
+Headers.prototype.deleteAll = function deleteAll () {
+    this.map = {};
+};
+
+Headers.prototype.forEach = function forEach (callback, thisArg) {
+        var this$1 = this;
+
+    each(this.map, function (list, name) {
+        each(list, function (value) { return callback.call(thisArg, value, name, this$1); });
+    });
+};
+
+function getName(map, name) {
+    return Object.keys(map).reduce(function (prev, curr) {
+        return toLower(name) === toLower(curr) ? curr : prev;
+    }, null);
+}
+
+function normalizeName(name) {
+
+    if (/[^a-z0-9\-#$%&'*+.^_`|~]/i.test(name)) {
+        throw new TypeError('Invalid character in header field name');
+    }
+
+    return trim(name);
+}
+
+/**
+ * HTTP Response.
+ */
+
+var Response = function Response(body, ref) {
+    var url = ref.url;
+    var headers = ref.headers;
+    var status = ref.status;
+    var statusText = ref.statusText;
+
+
+    this.url = url;
+    this.ok = status >= 200 && status < 300;
+    this.status = status || 0;
+    this.statusText = statusText || '';
+    this.headers = new Headers(headers);
+    this.body = body;
+
+    if (isString(body)) {
+
+        this.bodyText = body;
+
+    } else if (isBlob(body)) {
+
+        this.bodyBlob = body;
+
+        if (isBlobText(body)) {
+            this.bodyText = blobText(body);
+        }
+    }
+};
+
+Response.prototype.blob = function blob () {
+    return when(this.bodyBlob);
+};
+
+Response.prototype.text = function text () {
+    return when(this.bodyText);
+};
+
+Response.prototype.json = function json () {
+    return when(this.text(), function (text) { return JSON.parse(text); });
+};
+
+Object.defineProperty(Response.prototype, 'data', {
+
+    get: function get() {
+        return this.body;
+    },
+
+    set: function set(body) {
+        this.body = body;
+    }
+
+});
+
+function blobText(body) {
+    return new PromiseObj(function (resolve) {
+
+        var reader = new FileReader();
+
+        reader.readAsText(body);
+        reader.onload = function () {
+            resolve(reader.result);
+        };
+
+    });
+}
+
+function isBlobText(body) {
+    return body.type.indexOf('text') === 0 || body.type.indexOf('json') !== -1;
+}
+
+/**
+ * HTTP Request.
+ */
+
+var Request = function Request(options$$1) {
+
+    this.body = null;
+    this.params = {};
+
+    assign(this, options$$1, {
+        method: toUpper(options$$1.method || 'GET')
+    });
+
+    if (!(this.headers instanceof Headers)) {
+        this.headers = new Headers(this.headers);
+    }
+};
+
+Request.prototype.getUrl = function getUrl () {
+    return Url(this);
+};
+
+Request.prototype.getBody = function getBody () {
+    return this.body;
+};
+
+Request.prototype.respondWith = function respondWith (body, options$$1) {
+    return new Response(body, assign(options$$1 || {}, {url: this.getUrl()}));
+};
+
+/**
+ * Service for sending network requests.
+ */
+
+var COMMON_HEADERS = {'Accept': 'application/json, text/plain, */*'};
+var JSON_CONTENT_TYPE = {'Content-Type': 'application/json;charset=utf-8'};
+
+function Http(options$$1) {
+
+    var self = this || {}, client = Client(self.$vm);
+
+    defaults(options$$1 || {}, self.$options, Http.options);
+
+    Http.interceptors.forEach(function (handler) {
+
+        if (isString(handler)) {
+            handler = Http.interceptor[handler];
+        }
+
+        if (isFunction(handler)) {
+            client.use(handler);
+        }
+
+    });
+
+    return client(new Request(options$$1)).then(function (response) {
+
+        return response.ok ? response : PromiseObj.reject(response);
+
+    }, function (response) {
+
+        if (response instanceof Error) {
+            error(response);
+        }
+
+        return PromiseObj.reject(response);
+    });
+}
+
+Http.options = {};
+
+Http.headers = {
+    put: JSON_CONTENT_TYPE,
+    post: JSON_CONTENT_TYPE,
+    patch: JSON_CONTENT_TYPE,
+    delete: JSON_CONTENT_TYPE,
+    common: COMMON_HEADERS,
+    custom: {}
+};
+
+Http.interceptor = {before: before, method: method, jsonp: jsonp, json: json, form: form, header: header, cors: cors};
+Http.interceptors = ['before', 'method', 'jsonp', 'json', 'form', 'header', 'cors'];
+
+['get', 'delete', 'head', 'jsonp'].forEach(function (method$$1) {
+
+    Http[method$$1] = function (url, options$$1) {
+        return this(assign(options$$1 || {}, {url: url, method: method$$1}));
+    };
+
+});
+
+['post', 'put', 'patch'].forEach(function (method$$1) {
+
+    Http[method$$1] = function (url, body, options$$1) {
+        return this(assign(options$$1 || {}, {url: url, method: method$$1, body: body}));
+    };
+
+});
+
+/**
+ * Service for interacting with RESTful services.
+ */
+
+function Resource(url, params, actions, options$$1) {
+
+    var self = this || {}, resource = {};
+
+    actions = assign({},
+        Resource.actions,
+        actions
+    );
+
+    each(actions, function (action, name) {
+
+        action = merge({url: url, params: assign({}, params)}, options$$1, action);
+
+        resource[name] = function () {
+            return (self.$http || Http)(opts(action, arguments));
+        };
+    });
+
+    return resource;
+}
+
+function opts(action, args) {
+
+    var options$$1 = assign({}, action), params = {}, body;
+
+    switch (args.length) {
+
+        case 2:
+
+            params = args[0];
+            body = args[1];
+
+            break;
+
+        case 1:
+
+            if (/^(POST|PUT|PATCH)$/i.test(options$$1.method)) {
+                body = args[0];
+            } else {
+                params = args[0];
+            }
+
+            break;
+
+        case 0:
+
+            break;
+
+        default:
+
+            throw 'Expected up to 2 arguments [params, body], got ' + args.length + ' arguments';
+    }
+
+    options$$1.body = body;
+    options$$1.params = assign({}, options$$1.params, params);
+
+    return options$$1;
+}
+
+Resource.actions = {
+
+    get: {method: 'GET'},
+    save: {method: 'POST'},
+    query: {method: 'GET'},
+    update: {method: 'PUT'},
+    remove: {method: 'DELETE'},
+    delete: {method: 'DELETE'}
+
+};
+
+/**
+ * Install plugin.
+ */
+
+function plugin(Vue) {
+
+    if (plugin.installed) {
+        return;
+    }
+
+    Util(Vue);
+
+    Vue.url = Url;
+    Vue.http = Http;
+    Vue.resource = Resource;
+    Vue.Promise = PromiseObj;
+
+    Object.defineProperties(Vue.prototype, {
+
+        $url: {
+            get: function get() {
+                return options(Vue.url, this, this.$options.url);
+            }
+        },
+
+        $http: {
+            get: function get() {
+                return options(Vue.http, this, this.$options.http);
+            }
+        },
+
+        $resource: {
+            get: function get() {
+                return Vue.resource.bind(this);
+            }
+        },
+
+        $promise: {
+            get: function get() {
+                var this$1 = this;
+
+                return function (executor) { return new Vue.Promise(executor, this$1); };
+            }
+        }
+
+    });
+}
+
+if (typeof window !== 'undefined' && window.Vue) {
+    window.Vue.use(plugin);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (plugin);
+
+
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports) {
+
+/* (ignored) */
+
+/***/ }),
+/* 73 */,
+/* 74 */,
+/* 75 */,
+/* 76 */,
+/* 77 */,
+/* 78 */,
+/* 79 */,
+/* 80 */,
+/* 81 */,
+/* 82 */,
+/* 83 */,
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */,
+/* 88 */,
+/* 89 */,
+/* 90 */,
+/* 91 */,
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
+/* 105 */,
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(111);
+
+
+/***/ }),
+/* 111 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Docs_OpenApi_vue__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Docs_OpenApi_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_Docs_OpenApi_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_resource__ = __webpack_require__(71);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__swagger_v4_json__ = __webpack_require__(112);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__swagger_v4_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__swagger_v4_json__);
+
+
+
+
+
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_2_vue_resource__["a" /* default */]);
+
+new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
+	el: '#app',
+	template: '<open-api v-if="jsonApi" :api="jsonApi" :query-params="queryParams" :headers="headers"></open-api>',
+	data: function data() {
+		return {
+			jsonApi: __WEBPACK_IMPORTED_MODULE_3__swagger_v4_json___default.a
+		};
+	},
+	components: {
+		OpenApi: __WEBPACK_IMPORTED_MODULE_1__components_Docs_OpenApi_vue___default.a
+	}
+});
+
+/***/ }),
+/* 112 */
+/***/ (function(module, exports) {
+
+module.exports = {"openapi":"3.0.0","info":{"title":"Digital Bible Platform","description":"A Bible API","termsOfService":"http://bible.build/terms/","contact":{"email":"jon@dbs.org"},"license":{"name":"Apache 2.0","url":"http://www.apache.org/licenses/LICENSE-2.0.html"},"version":"4.0.0"},"servers":[{"url":"https://api.bible.build","description":"Live Server","variables":{"schema":{"enum":["https"],"default":"https"}}},{"url":"https://api.dbp.localhost","description":"Development server","variables":{"schema":{"enum":["https"],"default":"https"}}}],"paths":{"/timestamps":{"get":{"tags":["Bibles"],"summary":"Returns Bible Filesets which have Audio timestamps","description":"","operationId":"v4_timestamps","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/BibleFileset/properties/hash_id"}}}}}}},"/timestamps/{id}":{"get":{"tags":["Bibles"],"summary":"Returns audio timestamps for a specific word","description":"This route will search the text for a specific word or phrase and return the timestamps associated with the references where that search term occurs.","operationId":"v4_timestamps.tag","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"id","in":"path","description":"The specific fileset to return references for","required":true,"schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"name":"query","in":"query","description":"The tag for which to return timestamps","required":true,"schema":{"$ref":"#/components/schemas/Book/properties/id"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_timestamps_tag"}}}}}}},"/bibles/filesets/{id}/permissions/":{"get":{"tags":["Bibles"],"summary":"Returns a list of permissions for a specific Fileset","description":"Returns filtered permissions for a fileset dependent upon your authorization level and API key","operationId":"v4_bible_filesets_permissions.index","parameters":[{"name":"id","in":"path","description":"The fileset ID","required":true,"schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_bible_filesets_permissions.index"}}}}}}},"/bibles/filesets/{id}":{"get":{"tags":["Bibles"],"summary":"Returns Bibles Filesets","description":"Returns a list of bible filesets","operationId":"v4_bible_filesets.show","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"id","in":"path","description":"The fileset ID","required":true,"schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"name":"versification","in":"path","description":"The versification system","schema":{"$ref":"#/components/schemas/Bible/properties/versification"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/BibleFileset"}}}}}}},"/bibles/filesets/{id}/download":{"get":{"tags":["Bibles"],"summary":"Download a Fileset","description":"Returns a an entire fileset or a selected portion of a fileset for download","operationId":"v4_bible_filesets.download","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"id","in":"path","description":"The fileset ID","required":true,"schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}}],"responses":{"200":{"description":"The requested fileset as a zipped download","content":{"application/zip":{}}}}}},"/bibles/filesets/{id}/podcast":{"get":{"tags":["Bibles"],"summary":"Audio Filesets as Podcasts","description":"An audio Fileset in an RSS format suitable for consumption by iTunes","operationId":"v4_bible_filesets.podcast","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"id","in":"path","description":"The fileset ID","required":true,"schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}}],"responses":{"200":{"description":"The requested fileset as a rss compatible xml podcast","content":{"application/xml":{}}}}}},"/bibles/filesets/{id}/copyright":{"get":{"tags":["Bibles"],"summary":"Fileset Copyright information","description":"A fileset's copyright information and organizational connections","operationId":"v4_bible_filesets.copyright","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"id","in":"path","description":"The fileset ID","required":true,"schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"name":"bucket_id","in":"path","description":"The bucket id","required":true,"schema":{"$ref":"#/components/schemas/BibleFileset/properties/bucket_id"}},{"name":"type","in":"path","description":"The set type code","required":true,"schema":{"$ref":"#/components/schemas/BibleFileset/properties/set_type_code"}},{"name":"id","in":"query","description":"The fileset ID","required":true,"schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}}],"responses":{"200":{"description":"The requested fileset copyright","content":{"application/json":{"schema":{"$ref":"#/components/schemas/BibleFileset"}}}}}}},"/bibles/filesets/":{"post":{"tags":["Bibles"],"summary":"Create a brand new Fileset","description":"Create a new Bible Fileset","operationId":"v4_bible_filesets.store","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Fields for Bible Fileset Creation","required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/BibleFileset"}},"application/x-www-form-urlencoded":{"schema":{"$ref":"#/components/schemas/BibleFileset"}}}},"responses":{"200":{"description":"The completed fileset","content":{"application/json":{"schema":{"$ref":"#/components/schemas/BibleFileset"}}}}}}},"/bibles/filesets/media/types":{"get":{"tags":["Bibles"],"summary":"Available fileset types","description":"A list of all the file types that exist within the filesets","operationId":"v4_bible_filesets.types","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"The fileset types","content":{"application/json":{"schema":{"type":"object","example":{"audio_drama":"Dramatized Audio","audio":"Audio","text_plain":"Plain Text","text_format":"Formatted Text","video":"Video","app":"Application"}}},"application/xml":{"schema":{"type":"object","example":{"audio_drama":"Dramatized Audio","audio":"Audio","text_plain":"Plain Text","text_format":"Formatted Text","video":"Video","app":"Application"}}}}}}}},"/bibles/filesets/{fileset_id}":{"put":{"tags":["Bibles"],"summary":"Available fileset","description":"A list of all the file types that exist within the filesets","operationId":"v4_bible_filesets.update","parameters":[{"name":"fileset_id","in":"path","description":"The fileset ID","required":true,"schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"The fileset just edited","content":{"application/json":{"schema":{"$ref":"#/components/schemas/BibleFileset"}}}}}}},"/bibles":{"get":{"tags":["Bibles"],"summary":"","description":"","operationId":"v4_bible.all","parameters":[{"name":"bible_id","in":"query","description":"The Bible Id","$ref":"#/components/schemas/Bible/properties/id"},{"name":"fcbh_id","in":"query","description":"An alternative query name for the bible id","schema":{"type":"string"}},{"name":"media","in":"query","description":"If set, will filter results by the type of media for which filesets are available. For a complete list of available media types please see the `/bibles/filesets/media/types` route","schema":{"type":"string","externalDocs":{"description":"For a complete list of available media types please see the v4_bible_filesets.types route","url":"/docs/swagger/v4#/Bibles/v4_bible_filesets_types"}}},{"name":"language","in":"query","description":"The language to filter results by","schema":{"$ref":"#/components/schemas/Language/properties/name"}},{"name":"language_name","in":"query","description":"The language name to filter results by. For a complete list see the `/languages` route","schema":{"$ref":"#/components/schemas/Language/properties/name"}},{"name":"language_code","in":"query","description":"The iso code to filter results by. This will return results only in the language specified. For a complete list see the `iso` field in the `/languages` route","schema":{"$ref":"#/components/schemas/Language/properties/iso"}},{"name":"language_family_code","in":"query","description":"The iso code of the trade language to filter results by. This will also return all dialects of a language. For a complete list see the `iso` field in the `/languages` route","schema":{"type":"string"}},{"name":"updated","in":"query","description":"The last time updated","schema":{"type":"string"}},{"name":"organization_id","in":"query","description":"The owning organization to return bibles for. For a complete list of ids see the `/organizations` route","schema":{"type":"string"}},{"name":"sort_by","in":"query","description":"The any field to within the bible model may be selected as the value for this `sort_by` param.","schema":{"type":"string"}},{"name":"sort_dir","in":"query","description":"The direction to sort by the field specified in `sort_by`. Either `asc` or `desc`","schema":{"type":"string"}},{"name":"bucket_id","in":"query","description":"The bucket_id to filter results by. At the moment there are two buckets provided `dbp-dev` & `dbs-web`","schema":{"type":"string"}},{"name":"filter_by_fileset","in":"query","description":"This field defaults to true but when set to false will return all Bible entries regardless of whether or not the API has content for that biblical text.","schema":{"type":"string"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_bible.one"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_bible.one"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_bible.one"}}}}}}},"/bibles/{id}":{"get":{"tags":["Bibles"],"summary":"","description":"","operationId":"v4_bible.one","parameters":[{"name":"id","in":"path","description":"The Bible id","required":true,"schema":{"$ref":"#/components/schemas/Bible/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_bible.one"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_bible.one"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_bible.one"}}}}}}},"/bibles/{id}/book/":{"get":{"tags":["Bibles"],"summary":"","description":"","operationId":"v4_bible.books","parameters":[{"name":"id","in":"path","description":"The Bible id","required":true,"schema":{"$ref":"#/components/schemas/Bible/properties/id"}},{"name":"book_id","in":"query","description":"The Books id","schema":{"$ref":"#/components/schemas/Book/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_bible.books"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_bible.books"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_bible.books"}}}}}}},"/bibles/books/":{"get":{"tags":["Bibles"],"summary":"Returns the books of the Bible","description":"Returns all of the books of the Bible both canonical and deuterocanonical","operationId":"v4_bible.allBooks","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_bible.allBooks"}}}}}}},"/bibles/filesets/{fileset_id}/books/":{"get":{"tags":["Bibles"],"summary":"Returns the books of the Bible","description":"Returns the books and chapters for a specific fileset","operationId":"v4_bible.filesets.books","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"fileset_id","in":"path","$ref":"#/components/schemas/BibleFileset/properties/id"},{"name":"testament","in":"query","description":"The testament to filter books by","schema":{"type":"string"}},{"name":"bucket","in":"query","description":"The bucket to select the fileset by","schema":{"type":"string"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_bible.allBooks"}}}}}}},"/bibles/{id}/{book}/{chapter}":{"get":{"tags":["Bibles"],"summary":"Returns Signed URLs or Text","description":"V4's base fileset route","operationId":"v4_bible_filesets.chapter","parameters":[{"name":"id","in":"path","description":"The Bible fileset ID","required":true,"schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"name":"book","in":"path","description":"The Book ID","required":true,"schema":{"$ref":"#/components/schemas/Book/properties/id"}},{"name":"chapter","in":"path","description":"The chapter number","required":true,"schema":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_bible_filesets_chapter"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_bible_filesets_chapter"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_bible_filesets_chapter"}}}}}}},"/search":{"get":{"tags":["Bibles"],"summary":"Run a text search on a specific fileset","description":"","operationId":"v4_text_search","parameters":[{"name":"fileset_id","in":"query","description":"The Bible fileset ID","required":true,"schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"name":"limit","in":"query","description":"The number of search results to return","schema":{"type":"integer","default":15,"example":15}},{"name":"books","in":"query","description":"The Books to search through","schema":{"type":"string","example":"GEN,EXO,MAT"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_bible_filesets_chapter"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_bible_filesets_chapter"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_bible_filesets_chapter"}}}}}}},"/api/buckets":{"get":{"tags":["Bibles"],"summary":"Returns aws buckets currently being used by the api","description":"","operationId":"v4_api.buckets","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_api_buckets"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_api_buckets"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_api_buckets"}}}}}}},"/projects/{project_id}/oauth-providers/":{"get":{"tags":["Users"],"summary":"Returns the oAuth providers being used by a project","description":"","operationId":"v4_projects_oAuthProvider.index","parameters":[{"name":"id","in":"path","description":"The Project id","required":true,"schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}},"application/xml":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}}}}}},"post":{"tags":["Users"],"summary":"Add a new oAuth provider to a project","description":"","operationId":"v4_projects_oAuthProvider.store","parameters":[{"name":"id","in":"path","description":"The Project id","required":true,"schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Information supplied for oAuth Provider creation","required":true,"content":{"application/json":{"schema":{"properties":{"project_id":{"$ref":"#/components/schemas/ProjectOauthProvider/properties/project_id"},"name":{"$ref":"#/components/schemas/ProjectOauthProvider/properties/name"},"client_id":{"$ref":"#/components/schemas/ProjectOauthProvider/properties/client_id"},"client_secret":{"$ref":"#/components/schemas/ProjectOauthProvider/properties/client_secret"},"callback_url":{"$ref":"#/components/schemas/ProjectOauthProvider/properties/callback_url"},"callback_url_alt":{"$ref":"#/components/schemas/ProjectOauthProvider/properties/callback_url_alt"},"description":{"$ref":"#/components/schemas/ProjectOauthProvider/properties/description"}},"type":"object"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}},"application/xml":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}}}}}}},"/projects/{project_id}/oauth-providers/{provider_id}":{"get":{"tags":["Users"],"summary":"Return a specific oAuth provider","description":"","operationId":"v4_projects_oAuthProvider.show","parameters":[{"name":"id","in":"path","description":"The Project id","required":true,"schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"name":"id","in":"path","description":"The Provider id","required":true,"schema":{"$ref":"#/components/schemas/ProjectOauthProvider/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}},"application/xml":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}}}}}},"put":{"tags":["Users"],"summary":"Update a specific oAuth provider","description":"","operationId":"v4_projects_oAuthProvider.update","parameters":[{"name":"id","in":"path","description":"The Project id","required":true,"schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"name":"id","in":"path","description":"The Provider id","required":true,"schema":{"$ref":"#/components/schemas/ProjectOauthProvider/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}},"application/xml":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}}}}}},"delete":{"tags":["Users"],"summary":"Delete a specific oAuth provider","description":"","operationId":"v4_projects_oAuthProvider.destroy","parameters":[{"name":"id","in":"path","description":"The Project id","required":true,"schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"name":"id","in":"path","description":"The Provider id","required":true,"schema":{"$ref":"#/components/schemas/ProjectOauthProvider/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}},"application/xml":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/ProjectOauthProvider"}}}}}}},"/projects":{"get":{"tags":["Users"],"summary":"Returns the projects currently using the DBP","description":"Returns a list of all your projects currently registered as using the DBP","operationId":"v4_projects.index","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}}}}}},"post":{"tags":["Users"],"summary":"Apply for a project_id","description":"It is recommended that you create a distinct project_id for each app using the API","operationId":"v4_projects.store","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Information supplied for user creation","required":true,"content":{"application/json":{"schema":{"properties":{"name":{"$ref":"#/components/schemas/Project/properties/name"},"url_avatar":{"$ref":"#/components/schemas/Project/properties/url_avatar"},"url_avatar_icon":{"$ref":"#/components/schemas/Project/properties/url_avatar_icon"},"url_site":{"$ref":"#/components/schemas/Project/properties/url_site"},"description":{"$ref":"#/components/schemas/Project/properties/description"}},"type":"object"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}}}}}}},"/projects/{project_id}":{"get":{"tags":["Users"],"summary":"Get the details for a project","description":"","operationId":"v4_projects.show","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}}}}}},"put":{"tags":["Users"],"summary":"Update the details for a project","description":"","operationId":"v4_projects.update","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}}}}}},"delete":{"tags":["Users"],"summary":"Remove a project","description":"","operationId":"v4_projects.update","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_projects_index"}}}}}}},"/access/groups/":{"get":{"tags":["Admin"],"summary":"Update the specified Access group","description":"","operationId":"v4_access_groups.index","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AccessGroup"}},"application/xml":{"schema":{"$ref":"#/components/schemas/AccessGroup"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/AccessGroup"}}}}}},"post":{"tags":["Admin"],"summary":"Create the specified Access group","description":"","operationId":"v4_access_groups.show","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"access_group_id","in":"path","required":true,"schema":{"$ref":"#/components/schemas/AccessGroup/properties/id"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AccessGroup"}},"application/xml":{"schema":{"$ref":"#/components/schemas/AccessGroup"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/AccessGroup"}}}}}}},"/access/groups/{group_id}":{"get":{"tags":["Admin"],"summary":"Update the specified Access group","description":"","operationId":"v4_access_groups.show","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"access_group_id","in":"path","required":true,"schema":{"$ref":"#/components/schemas/AccessGroup/properties/id"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AccessGroup"}},"application/xml":{"schema":{"$ref":"#/components/schemas/AccessGroup"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/AccessGroup"}}}}}},"put":{"tags":["Admin"],"summary":"Update the specified Access group","description":"","operationId":"v4_access_groups.update","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"access_group_id","in":"path","required":true,"schema":{"$ref":"#/components/schemas/AccessGroup/properties/id"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AccessGroup"}},"application/xml":{"schema":{"$ref":"#/components/schemas/AccessGroup"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/AccessGroup"}}}}}},"delete":{"tags":["Admin"],"summary":"Remove the specified Access group","description":"","operationId":"v4_access_groups.destroy","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"access_group_id","in":"path","required":true,"schema":{"$ref":"#/components/schemas/AccessGroup/properties/id"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AccessGroup"}},"application/xml":{"schema":{"$ref":"#/components/schemas/AccessGroup"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/AccessGroup"}}}}}}},"/accounts":{"get":{"tags":["Users"],"summary":"List the Accounts","description":"","operationId":"v4_user_accounts.index","parameters":[{"name":"project_id","in":"query","description":"The Project ID","required":true,"schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"name":"user_id","in":"query","description":"The User ID","required":true,"schema":{"$ref":"#/components/schemas/User/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Account"}},"application/xml":{"schema":{"$ref":"#/components/schemas/Account"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/Account"}}}}}},"post":{"tags":["Users"],"summary":"Create a new Account","description":"Associate a social media account with a different user.","operationId":"v4_user_accounts.store","parameters":[{"name":"project_id","in":"query","description":"The Project ID","required":true,"schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"name":"user_id","in":"query","description":"The User ID","required":true,"schema":{"$ref":"#/components/schemas/User/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Information supplied for user account creation","required":true,"content":{"application/json":{"schema":{"properties":{"provider_id":{"description":"Store a newly created resource in storage.","type":"string"},"provider_user_id":{"description":"Store a newly created resource in storage.","type":"string"}},"type":"object"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Account"}},"application/xml":{"schema":{"$ref":"#/components/schemas/Account"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/Account"}}}}}}},"/accounts/{account_id}":{"get":{"tags":["Users"],"summary":"List the Accounts","description":"","operationId":"v4_user_accounts.show","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"project_id","in":"query","description":"The Project ID","required":true,"schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"name":"user_id","in":"query","description":"The User ID","required":true,"schema":{"$ref":"#/components/schemas/User/properties/id"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Account"}},"application/xml":{"schema":{"$ref":"#/components/schemas/Account"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/Account"}}}}}},"put":{"tags":["Users"],"summary":"Update a specific Account","description":"","operationId":"v4_user_accounts.update","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"project_id","in":"query","description":"The Project ID","required":true,"schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"name":"user_id","in":"query","description":"The User ID","required":true,"schema":{"$ref":"#/components/schemas/User/properties/id"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Account"}},"application/xml":{"schema":{"$ref":"#/components/schemas/Account"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/Account"}}}}}},"delete":{"tags":["Users"],"summary":"Delete an account","description":"","operationId":"v4_user_accounts.delete","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"project_id","in":"query","description":"The Project ID","required":true,"schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"name":"user_id","in":"query","description":"The User ID","required":true,"schema":{"$ref":"#/components/schemas/User/properties/id"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Account"}},"application/xml":{"schema":{"$ref":"#/components/schemas/Account"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/Account"}}}}}}},"/users/{user_id}/highlights":{"get":{"tags":["Users"],"summary":"Get a list of highlights for a user/project combination","description":"","operationId":"v4_highlights.index","parameters":[{"name":"bible_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"name":"book_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Book/properties/id"}},{"name":"chapter","in":"query","description":"","schema":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"}},{"name":"paginate","in":"query","description":"","schema":{"type":"integer","default":15,"example":15}},{"name":"project_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}}}}}},"post":{"tags":["Users"],"summary":"Create a user highlight","description":"","operationId":"v4_highlights.store","parameters":[{"name":"bible_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"name":"book_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Book/properties/id"}},{"name":"chapter","in":"query","description":"","schema":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"}},{"name":"paginate","in":"query","description":"","schema":{"type":"integer","default":15,"example":15}},{"name":"project_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Fields for User Highlight Creation","required":true,"content":{"application/json":{"schema":{"properties":{"bible_id":{"$ref":"#/components/schemas/Bible/properties/id"},"user_id":{"$ref":"#/components/schemas/User/properties/id"},"book_id":{"$ref":"#/components/schemas/Book/properties/id"},"project_id":{"$ref":"#/components/schemas/Project/properties/id"},"chapter":{"$ref":"#/components/schemas/Highlight/properties/chapter"},"verse_start":{"$ref":"#/components/schemas/Highlight/properties/verse_start"},"reference":{"$ref":"#/components/schemas/Highlight/properties/reference"},"highlight_start":{"$ref":"#/components/schemas/Highlight/properties/highlight_start"},"highlighted_words":{"$ref":"#/components/schemas/Highlight/properties/highlighted_words"},"highlighted_color":{"$ref":"#/components/schemas/Highlight/properties/highlighted_color"}},"type":"object"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}}}}}}},"/users/{user_id}/highlights/{highlight_id}":{"get":{"tags":["Users"],"summary":"Show a user highlight","description":"","operationId":"v4_highlights.show","parameters":[{"name":"project_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}}}}}},"put":{"tags":["Users"],"summary":"Show a user highlight","description":"","operationId":"v4_highlights.update","parameters":[{"name":"project_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}}}}}},"delete":{"tags":["Users"],"summary":"Show a user highlight","description":"","operationId":"v4_highlights.delete","parameters":[{"name":"project_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}}}}}}},"/users/{user_id}/notes":{"get":{"tags":["Users"],"summary":"Get a list of Notes for a user/project combination","description":"In order to query information about a user's notes you must provide the project_id","operationId":"v4_notes.index","parameters":[{"name":"bible_id","in":"query","description":"If provided the fileset_id will filter results to only those related to the Bible","schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"name":"book_id","in":"query","description":"If provided the USFM 2.4 book id will filter results to only those related to the book","schema":{"$ref":"#/components/schemas/Book/properties/id"}},{"name":"chapter_id","in":"query","description":"The starting chapter","schema":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"}},{"name":"project_id","in":"query","description":"The secret id assigned to your project","required":true,"schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"name":"limit","in":"query","description":"The number of highlights to return","schema":{"type":"integer","example":15}},{"name":"paginate","in":"query","description":"When set to false will disable pagination","schema":{"type":"boolean","example":false}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"$ref":"#/components/parameters/sort_by"},{"$ref":"#/components/parameters/sort_dir"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}}}}}}},"/users/{user_id}/notes/{note_id}":{"get":{"tags":["Users"],"summary":"Get a single Note","description":"","operationId":"v4_notes.show","parameters":[{"name":"bible_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"name":"book_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Book/properties/id"}},{"name":"chapter_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"}},{"name":"project_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"name":"limit","in":"query","description":"","schema":{"type":"integer","example":15}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}}}}}},"put":{"tags":["Users"],"summary":"Update a Note","description":"","operationId":"v4_notes.update","parameters":[{"name":"bible_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"name":"book_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Book/properties/id"}},{"name":"chapter_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"}},{"name":"project_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"name":"limit","in":"query","description":"","schema":{"type":"integer","example":15}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}}}}}},"delete":{"tags":["Users"],"summary":"Delete a Note","description":"","operationId":"v4_notes.destroy","parameters":[{"name":"project_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}}}}}}},"/users/{user_id}/notes/":{"post":{"tags":["Users"],"summary":"Store a Note","description":"","operationId":"v4_notes.store","parameters":[{"name":"bible_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"name":"book_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Book/properties/id"}},{"name":"chapter_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"}},{"name":"project_id","in":"query","description":"","schema":{"$ref":"#/components/schemas/Project/properties/id"}},{"name":"limit","in":"query","description":"","schema":{"type":"integer","example":15}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Fields for Note Creation","required":true,"content":{"application/json":{"schema":{"properties":{"bible_id":{"$ref":"#/components/schemas/Bible/properties/id"},"user_id":{"$ref":"#/components/schemas/User/properties/id"},"book_id":{"$ref":"#/components/schemas/Book/properties/id"},"project_id":{"$ref":"#/components/schemas/Project/properties/id"},"chapter":{"$ref":"#/components/schemas/Note/properties/chapter"},"verse_start":{"$ref":"#/components/schemas/Note/properties/verse_start"},"notes":{"$ref":"#/components/schemas/Note/properties/notes"},"bookmark":{"$ref":"#/components/schemas/Note/properties/bookmark"}},"type":"object"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_highlights_index"}}}}}}},"/users/reset/email":{"post":{"tags":["Users"],"summary":"Trigger a reset email","description":"","operationId":"v4_user.reset","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Information supplied for password reset","required":true,"content":{"application/json":{"schema":{"required":["email","project_id"],"properties":{"email":{"$ref":"#/components/schemas/User/properties/email"},"project_id":{"$ref":"#/components/schemas/Project/properties/id"},"iso":{"$ref":"#/components/schemas/Language/properties/iso"},"password":{"$ref":"#/components/schemas/User/properties/password"},"new_password":{"$ref":"#/components/schemas/User/properties/password"}},"type":"object"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}}}}}}},"/users/reset/password":{"post":{"tags":["Users"],"summary":"Reset the password for a user","description":"This route handles resetting the password for a user that is a member of the project id provided.\n\tIf the password is known to the your users you can reset their passwords without sending them a verification email by\n\tsetting the optional fields `password` and `new_password` fields within the request.","operationId":"v4_user.reset","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Information supplied for password reset","required":true,"content":{"application/json":{"schema":{"required":["email","project_id","token_id","new_password","new_password_confirmed"],"properties":{"email":{"$ref":"#/components/schemas/User/properties/email"},"project_id":{"$ref":"#/components/schemas/Project/properties/id"},"token_id":{"description":"The token sent to the user's email","type":"string"},"old_password":{"$ref":"#/components/schemas/User/properties/password"},"new_password":{"$ref":"#/components/schemas/User/properties/password"},"new_password_confirmed":{"$ref":"#/components/schemas/User/properties/password"}},"type":"object"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}}}}}}},"/users":{"get":{"tags":["Users"],"summary":"","description":"","operationId":"v4_user.index","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}}}}}},"post":{"tags":["Users"],"summary":"Create a new user","description":"","operationId":"v4_user.store","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Information supplied for user creation","required":true,"content":{"application/json":{"schema":{"properties":{"nickname":{"$ref":"#/components/schemas/User/properties/nickname"},"avatar":{"$ref":"#/components/schemas/User/properties/avatar"},"email":{"$ref":"#/components/schemas/User/properties/email"},"name":{"$ref":"#/components/schemas/User/properties/name"},"password":{"$ref":"#/components/schemas/User/properties/password"},"project_id":{"$ref":"#/components/schemas/ProjectMember/properties/project_id"},"user_role":{"$ref":"#/components/schemas/ProjectMember/properties/role"},"subscribed":{"$ref":"#/components/schemas/ProjectMember/properties/subscribed"},"social_provider_id":{"$ref":"#/components/schemas/Account/properties/provider_id"},"social_provider_user_id":{"$ref":"#/components/schemas/Account/properties/provider_user_id"}},"type":"object"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}}}}}}},"/users/{id}":{"get":{"tags":["Users"],"summary":"Returns a single user","description":"","operationId":"v4_user.show","parameters":[{"name":"id","in":"path","description":"The user ID for which to retrieve info.","required":true,"schema":{"$ref":"#/components/schemas/User/properties/id"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}}}}}},"put":{"tags":["Users"],"summary":"Create a new user","description":"","operationId":"v4_user.store","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Information supplied for updating an existing user","required":true,"content":{"application/json":{"schema":{"properties":{"nickname":{"$ref":"#/components/schemas/User/properties/nickname"},"avatar":{"$ref":"#/components/schemas/User/properties/avatar"},"email":{"$ref":"#/components/schemas/User/properties/email"},"name":{"$ref":"#/components/schemas/User/properties/name"},"password":{"$ref":"#/components/schemas/User/properties/password"},"project_id":{"$ref":"#/components/schemas/ProjectMember/properties/project_id"},"user_role":{"$ref":"#/components/schemas/ProjectMember/properties/role"},"subscribed":{"$ref":"#/components/schemas/ProjectMember/properties/subscribed"},"social_provider_id":{"$ref":"#/components/schemas/Account/properties/provider_id"},"social_provider_user_id":{"$ref":"#/components/schemas/Account/properties/provider_user_id"}},"type":"object"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}}}}}}},"/users/login":{"post":{"tags":["Users"],"summary":"Login a user","description":"","operationId":"v4_user.login","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Either the `email` & `password` or the `social_provider_user_id` & `social_provider_id` are required for user Login","required":true,"content":{"application/json":{"schema":{"properties":{"email":{"$ref":"#/components/schemas/User/properties/email"},"password":{"$ref":"#/components/schemas/User/properties/password"},"social_provider_user_id":{"$ref":"#/components/schemas/Account/properties/provider_user_id"},"social_provider_id":{"$ref":"#/components/schemas/Account/properties/provider_id"}},"type":"object"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_user_index"}}}}}}},"/users/geolocate":{"get":{"tags":["Users"],"summary":"Geolocate a user by their Ip address","description":"","operationId":"v4_user.geolocate","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"type":"object"}},"application/xml":{"schema":{"type":"object"}},"text/x-yaml":{"schema":{"type":"object"}}}}}}},"/alphabets":{"get":{"tags":["Languages"],"summary":"Returns Alphabets","description":"Returns a list of the world's known scripts. This route will be useful to you if you'd like to query information about fonts, alphabets, and the world's writing systems. Some `BibleFileset` models may not display correctly without a font delivered by these via the `alphabets/{id}` route.","operationId":"v4_alphabets.all","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_alphabets_all_response"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_alphabets_all_response"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_alphabets_all_response"}}}}}}},"/alphabets/{id}":{"get":{"tags":["Languages"],"summary":"Return a single Alphabets","description":"Returns a single alphabet along with whatever bibles are written with it and languages using it ","operationId":"v4_alphabets.one","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"id","in":"path","description":"The alphabet ID","required":true,"schema":{"$ref":"#/components/schemas/Alphabet/properties/script"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_alphabets_one_response"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_alphabets_one_response"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_alphabets_one_response"}}}}}},"put":{"tags":["Languages"],"summary":"Store a single Alphabet","description":"Store a single alphabet","operationId":"v4_alphabets.update","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"id","in":"path","description":"The alphabet ID","required":true,"schema":{"$ref":"#/components/schemas/Alphabet/properties/script"}}],"requestBody":{"description":"Fields for Alphabet Update","required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Alphabet"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_alphabets_one_response"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_alphabets_one_response"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_alphabets_one_response"}}}}}}},"/alphabets/":{"post":{"tags":["Languages"],"summary":"Store a single Alphabet","description":"Store a single alphabet","operationId":"v4_alphabets.store","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Fields for Alphabet Creation","required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Alphabet"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_alphabets_one_response"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_alphabets_one_response"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_alphabets_one_response"}}}}}}},"/countries/":{"get":{"tags":["Countries"],"summary":"Returns Countries","description":"Returns the List of Countries","operationId":"v4_countries.all","parameters":[{"name":"l10n","in":"query","description":"When set to a valid three letter language iso, the returning results will be localized in the language matching that iso. (If an applicable translation exists).","schema":{"$ref":"#/components/schemas/Language/properties/iso"}},{"name":"has_filesets","in":"query","description":"Filter the returned countries to only those containing filesets for languages spoken within the country","schema":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},{"name":"bucket_id","in":"query","description":"Filter the returned countries to only those containing filesets for a specific bucket","schema":{"$ref":"#/components/schemas/Bucket/properties/id"}},{"name":"include_languages","in":"query","description":"When set to true, the return will include the major languages used in each country. You may optionally also include the names for those languages by setting it to `with_names`","schema":{"type":"string"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_countries.all"}}}}}},"post":{"tags":["Countries"],"summary":"Create a new Country","description":"Create a new Country","operationId":"v4_countries.store","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Information supplied for Country creation","required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Country"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_countries.one"}}}}}}},"/countries/{id}":{"get":{"tags":["Countries"],"summary":"Returns a single Country","description":"Returns a single Country","operationId":"v4_countries.one","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"id","in":"path","description":"The country ID","required":true,"schema":{"$ref":"#/components/schemas/Country/properties/id"}},{"name":"communications","in":"query","description":"","schema":{"$ref":"#/components/schemas/CountryCommunication"}},{"name":"economy","in":"query","description":"","schema":{"$ref":"#/components/schemas/CountryEconomy"}},{"name":"energy","in":"query","description":"","schema":{"$ref":"#/components/schemas/CountryEnergy"}},{"name":"geography","in":"query","description":"","schema":{"$ref":"#/components/schemas/CountryGeography"}},{"name":"government","in":"query","description":"","schema":{"$ref":"#/components/schemas/CountryGovernment"}},{"name":"government","in":"query","description":"","schema":{"$ref":"#/components/schemas/CountryGovernment"}},{"name":"issues","in":"query","description":"","schema":{"$ref":"#/components/schemas/CountryIssues"}},{"name":"people","in":"query","description":"","schema":{"$ref":"#/components/schemas/CountryPeople"}},{"name":"ethnicities","in":"query","description":"","schema":{"$ref":"#/components/schemas/CountryEthnicity"}},{"name":"regions","in":"query","description":"","schema":{"$ref":"#/components/schemas/CountryRegion"}},{"name":"religions","in":"query","description":"","schema":{"$ref":"#/components/schemas/CountryReligion"}},{"name":"transportation","in":"query","description":"","schema":{"$ref":"#/components/schemas/CountryTransportation"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_countries.one"}}}}}},"put":{"tags":["Countries"],"summary":"Update a new Country","description":"Update a new Country","operationId":"v4_countries.update","parameters":[{"name":"id","in":"path","description":"The country ID","required":true,"schema":{"$ref":"#/components/schemas/Country/properties/id"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_countries.one"}}}}}}},"/languages/":{"get":{"tags":["Languages"],"summary":"Returns Languages","description":"Returns the List of Languages","operationId":"v4_languages.all","parameters":[{"name":"country","in":"query","description":"The country","schema":{"$ref":"#/components/schemas/Country/properties/id"}},{"name":"iso","in":"query","description":"The iso code to filter languages by","schema":{"$ref":"#/components/schemas/Language/properties/iso"}},{"name":"language_name","in":"query","description":"The language_name field will filter results by a specific language name","schema":{"type":"object"}},{"name":"sort_by","in":"query","description":"The sort_by field will order results by a specific field","schema":{"type":"object"}},{"name":"has_bibles","in":"query","description":"When set to true will filter language results depending whether or not they have bibles.","schema":{"type":"object"}},{"name":"has_filesets","in":"query","description":"When set to true will filter language results depending whether or not they have filesets. Will add new filesets_count field to the return.","schema":{"type":"object","default":null,"example":true}},{"name":"bucket_id","in":"query","description":"The bucket_id","schema":{"$ref":"#/components/schemas/Bucket/properties/id"}},{"name":"include_alt_names","in":"query","description":"The include_alt_names","schema":{"$ref":"#/components/schemas/Language/properties/name"}},{"$ref":"#/components/parameters/l10n"},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Language"}}}}}},"post":{"tags":["Languages"],"summary":"Create a new Language","description":"Create a new Language","operationId":"v4_languages.store","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"requestBody":{"description":"Fields for User Highlight Creation","required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Language"}}}},"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Language"}}}}}}},"/languages/{id}":{"get":{"tags":["Languages"],"summary":"Return a single Languages","description":"Returns a single Language","operationId":"v4_languages.one","parameters":[{"name":"id","in":"path","description":"The languages ID","required":true,"schema":{"$ref":"#/components/schemas/Language/properties/id"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Language"}}}}}},"put":{"tags":["Languages"],"summary":"Return a single Languages","description":"Returns a single Language","operationId":"v4_languages.update","parameters":[{"name":"id","in":"path","description":"The languages ID","required":true,"schema":{"$ref":"#/components/schemas/Language/properties/id"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Language"}}}}}}},"/numbers/range":{"get":{"tags":["Languages"],"summary":"Return a range of numbers","description":"This route returns the vernacular numbers for a set range.\n\tThe range for a single call is limited to 2000 numbers.","operationId":"v4_numbers.range","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"},{"name":"iso","in":"query","required":true,"schema":{"$ref":"#/components/schemas/Language/properties/iso"}},{"name":"start","in":"query","required":true,"schema":{"type":"object"}},{"name":"end","in":"query","required":true,"schema":{"type":"object"}}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_numbers_range"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_numbers_range"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_numbers_range"}}}}}}},"/numbers":{"get":{"tags":["Languages"],"summary":"Return a all Alphabets that have a custom number sets","description":"Returns a range of numbers","operationId":"v4_numbers.index","parameters":[{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_alphabets_all_response"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_alphabets_all_response"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_alphabets_all_response"}}}}}}},"/numbers/{id}":{"get":{"tags":["Languages"],"summary":"Return a single custom number set","description":"Returns a range of numbers","operationId":"v4_numbers.show","parameters":[{"name":"id","in":"path","description":"The Alphabet id","required":true,"schema":{"$ref":"#/components/schemas/Alphabet/properties/script"}},{"$ref":"#/components/parameters/version_number"},{"$ref":"#/components/parameters/key"},{"$ref":"#/components/parameters/pretty"},{"$ref":"#/components/parameters/format"}],"responses":{"200":{"description":"successful operation","content":{"application/json":{"schema":{"$ref":"#/components/schemas/v4_alphabets_one_response"}},"application/xml":{"schema":{"$ref":"#/components/schemas/v4_alphabets_one_response"}},"text/x-yaml":{"schema":{"$ref":"#/components/schemas/v4_alphabets_one_response"}}}}}}}},"components":{"schemas":{"v4_api_buckets":{"title":"The buckets response","description":"The aws buckets currently being used by the api","required":["id","organization_id"],"properties":{"id":{"$ref":"#/components/schemas/Bucket/properties/id"},"organization_id":{"$ref":"#/components/schemas/Bucket/properties/organization_id"}},"type":"object","xml":{"name":"v4_api_buckets"}},"v2_video_location":{"title":"The single alphabet response","description":"","properties":{"server":{"description":"Video Location"},"root_path":{"description":"Video Location"},"protocol":{"description":"Video Location"},"CDN":{"description":"Video Location"},"priority":{"description":"Video Location"}},"type":"object","xml":{"name":"v2_video_location"}},"v4_numbers_range":{"title":"The numbers range return","description":"The numbers range return","properties":{"numeral":{"type":"string"},"numeral_vernacular":{"type":"string"}},"type":"object","xml":{"name":"v4_numbers_range"}},"Bible":{"title":"Bible","description":"Bible","properties":{"id":{"title":"id","description":"The Archivist created Bible ID string. This will be between six and twelve letters usually starting with the iso639-3 code and ending with the acronym for the Bible","type":"string","maxLength":12,"minLength":6,"example":"ENGESV"},"language_id":{"$ref":"#/components/schemas/Language/properties/id"},"date":{"title":"date","description":"The year the Bible was originally published","type":"integer","maximum":2030,"minimum":1},"scope":{"$ref":"#/components/schemas/BibleFilesetSize/properties/set_size_code"},"script":{"$ref":"#/components/schemas/Alphabet/properties/script"},"derived":{"title":"derived","description":"This field indicates the `bible_id` of the Scriptures that the current Scriptures being described are derived. For example, because the NIrV (New International Reader's Version) was created from / inspired by the NIV (New International Version). If this model was describing ENGNIRV the derived field would be ENGNIV.","type":"string","nullable":true},"copyright":{"title":"copyright","description":"A short copyright description for the bible text.","type":"string","maxLength":191},"in_progress":{"title":"in_progress","description":"If the Bible being described is currently in progress.","type":"string"},"versification":{"title":"versification","description":"The versification system for ordering books and chapters","type":"string","enum":["protestant","luther","synodal","german","kjva","vulgate","lxx","orthodox","nrsva","catholic","finnish"]},"created_at":{"title":"created_at","description":"The timestamp at which the bible was originally created","type":"string"},"updated_at":{"title":"updated_at","description":"The timestamp at which the bible was last updated","type":"string"}},"type":"object","xml":{"name":"Bible"}},"BibleBook":{"title":"Bible Book","description":"The Bible Book Model stores the vernacular book titles and chapters","properties":{"bible_id":{"$ref":"#/components/schemas/Bible/properties/id"},"book_id":{"$ref":"#/components/schemas/Book/properties/id"},"name":{"title":"name","description":"The name of the book in the language of the bible","type":"string","maxLength":191},"name_short":{"title":"name_short","description":"If the vernacular name has an abbreviated form, it will be stored hre","type":"string","maxLength":191},"chapters":{"title":"chapters","description":"A string of the chapters in the book separated by a comma","type":"string","maxLength":491}},"type":"object","xml":{"name":"BibleBook"}},"BibleEquivalent":{"title":"BibleEquivalent","description":"The Bible Equivalent Model stores the connections between the bible IDs and external organizations","properties":{"bible_id":{"$ref":"#/components/schemas/Bible/properties/id"},"equivalent_id":{"title":"equivalent_id","description":"The equivalent_id","type":"string","maxLength":191,"example":"FreGeneve1669"},"organization_id":{"$ref":"#/components/schemas/Organization/properties/id"},"type":{"title":"type","description":"The type of connection that the equivalent id refers to","type":"string","maxLength":191,"example":"desktop-app"},"site":{"title":"site","description":"The name of the site/organization/app where the equivalent id is based","type":"string","maxLength":191,"example":"eSword"},"suffix":{"title":"site","description":"Additional metadata affecting the type of equivalent connection","type":"string","maxLength":191,"example":"Authorized Version with Strong's"}},"type":"object","xml":{"name":"BibleEquivalent"}},"BibleFile":{"title":"BibleFile","description":"The Bible File Model communicates information about biblical files stored in S3","required":["filename"],"properties":{"id":{"title":"id","description":"The id","type":"integer","minimum":0,"example":4},"hash_id":{"title":"hash_id","description":"The hash_id","type":"string"},"book_id":{"title":"book_id","description":"The book_id","type":"string"},"chapter_start":{"title":"chapter_start","description":"The chapter_start","type":"integer","maximum":150,"minimum":0,"example":4},"chapter_end":{"title":"chapter_end","description":"If the Bible File spans multiple chapters this field indicates the last chapter of the selection","type":"integer","maximum":150,"minimum":0,"example":5,"nullable":true},"verse_start":{"title":"verse_start","description":"The starting verse at which the BibleFile reference begins","type":"integer","maximum":176,"minimum":1,"example":5},"verse_end":{"title":"verse_end","description":"If the Bible File spans multiple verses this value will indicate the last verse in that reference. This value is inclusive, so for the reference John 1:1-4. The value would be 4 and the reference would contain verse 4.","type":"string","maximum":176,"minimum":1,"example":5,"nullable":true},"verse_text":{"title":"verse_text","description":"If the BibleFile model returns text instead of a file_name this field will contain it.","type":"string","example":"And God said unto Abraham, And as for thee, thou shalt keep my covenant, thou, and thy seed after thee throughout their generations."},"file_name":{"title":"file_name","description":"The file_name","type":"string","maxLength":191},"file_size":{"title":"file_size","description":"The file size in kilobytes","type":"integer"},"duration":{"title":"duration","description":"If the file has a set length of time, this field indicates that time in milliseconds","type":"integer","minimum":0,"nullable":true}},"type":"object","xml":{"name":"BibleFile"}},"BibleFileTimestamp":{"title":"Bible File Timestamp","description":"The Bible File Timestamp tag model partitions the file into verse by verse sections","properties":{"id":{"title":"file_id","description":"The incrementing id of the file timestamp","type":"integer","minimum":1},"verse_start":{"title":"verse_start","description":"The starting verse for the file timestamp","type":"integer","minimum":1},"verse_end":{"title":"verse_end","description":"The ending verse for the file timestamp","type":"integer","minimum":1},"timestamp":{"title":"timestamp","description":"The ending verse for the file timestamp","type":"integer","minimum":1}},"type":"object","xml":{"name":"BibleFileTimestamp"}},"BibleFileTitle":{"title":"BibleFileTitle","description":"The Bible File Title model communicates information about generalized fileset sizes","properties":{"file_id":{"title":"file_id","description":"The incrementing id of the file timestamp","type":"integer"},"iso":{"title":"iso","description":"The translation language of the title","type":"string"},"title":{"title":"title","description":"The title of the file","type":"string"},"description":{"title":"description","description":"The description of the file title","type":"string"},"key_words":{"title":"key_words","description":"The words","type":"string"}},"type":"object","xml":{"name":"BibleFileTitle"}},"BibleFileset":{"title":"Bible Fileset","description":"BibleFileset","properties":{"id":{"title":"id","description":"The fileset id","type":"string","maxLength":16,"minLength":6},"hash_id":{"title":"hash_id","description":"The hash_id generated from the `bucket_id`, `set_type_code`, and `id`","type":"string","maxLength":12,"minLength":12},"bucket_id":{"title":"bucket_id","description":"The bucket id of the AWS Bucket","type":"string","maxLength":64},"set_type_code":{"title":"set_type_code","description":"The set_type_code indicating the type of the fileset","type":"string","maxLength":3},"set_size_code":{"title":"set_size_code","description":"The set_size_code indicating the size of the fileset","type":"string","maxLength":3}},"type":"object","xml":{"name":"BibleFileset"}},"BibleFilesetConnection":{"title":"BibleFileset Connection","description":"BibleFilesetConnection","properties":{"hash_id":{"$ref":"#/components/schemas/BibleFileset/properties/hash_id"},"bible_id":{"$ref":"#/components/schemas/Bible/properties/id"}},"type":"object","xml":{"name":"BibleFilesetConnection"}},"BibleFilesetCopyright":{"title":"Bible Fileset Copyright","description":"BibleFilesetCopyright","properties":{"hash_id":{"title":"hash id","description":"The hash value for the created fileset","type":"string","maxLength":12,"minLength":12,"example":"ENGESV"},"copyright_date":{"title":"copyright_date","description":"The copyright date created copyright","type":"string","example":"ENGESV"},"copyright":{"title":"copyright","description":"The copyright","type":"string"},"copyright_description":{"title":"copyright_description","description":"The copyright description","type":"string"},"open_access":{"title":"open_access","description":"The open_access description","type":"string"}},"type":"object","xml":{"name":"BibleFilesetCopyright"}},"BibleFilesetSize":{"title":"BibleFilesetSize","description":"The Bible fileset size model communicates information about generalized fileset sizes","required":["filename"],"properties":{"id":{"title":"id","description":"The id","type":"integer","minimum":0,"example":4},"set_size_code":{"title":"set_size_code","description":"The id","type":"string","maxLength":9,"example":"NTPOTP"},"name":{"title":"name","description":"The name","type":"string","maxLength":191,"example":"New Testament & Old Testament Portions"}},"type":"object","xml":{"name":"BibleFilesetSize"}},"BibleFilesetTag":{"title":"BibleFilesetSize","description":"The Bible fileset tag model communicates general metadata about the filesets","required":["filename"],"properties":{"hash_id":{"$ref":"#/components/schemas/BibleFileset/properties/hash_id"},"name":{"title":"name","description":"The name of the tag, serves as the key/category","type":"string","maxLength":191},"description":{"title":"description","description":"The content of the tag, serves as the value of the key value pair of name/description","type":"string"},"admin_only":{"title":"admin_only","description":"If the tag is only to be visible to admin / archivist users","type":"boolean"},"notes":{"title":"notes","description":"Any notes about the tag","type":"string"},"iso":{"$ref":"#/components/schemas/Language/properties/iso"}},"type":"object","xml":{"name":"BibleFilesetSize"}},"BibleFilesetType":{"title":"BibleFilesetType","description":"The Bible Fileset Type model communicates general metadata about the bible_filesets.set_size_code","required":["filename"],"properties":{"id":{"title":"id","description":"","type":"string"},"set_type_code":{"title":"set_type_code","description":"","type":"string"},"name":{"title":"name","description":"","type":"string"},"created_at":{"title":"created_at","description":"","type":"string"},"updated_at":{"title":"updated_at","description":"","type":"string"}},"type":"object","xml":{"name":"BibleFilesetType"}},"BibleLink":{"title":"BibleLink","description":"BibleLink","properties":{"id":{"title":"id","description":"","type":"string"},"bible_id":{"title":"bible_id","description":"","type":"string"},"type":{"title":"type","description":"","type":"string"},"url":{"title":"url","description":"","type":"string"},"title":{"title":"title","description":"","type":"string"},"organization_id":{"title":"organization_id","description":"","type":"string"},"created_at":{"title":"created_at","description":"","type":"string"},"updated_at":{"title":"updated_at","description":"","type":"string"},"provider":{"title":"provider","description":"","type":"string"}},"type":"object","xml":{"name":"BibleLink"}},"BibleTranslation":{"title":"BibleTranslation","description":"BibleTranslation","properties":{"id":{"title":"id","description":"","type":"string"},"iso":{"title":"iso","description":"","type":"string"},"bible_id":{"title":"iso","description":"","type":"string"},"vernacular":{"title":"bible_id","description":"","type":"string"},"vernacular_trade":{"title":"bible_id","description":"","type":"string"},"name":{"title":"vernacular","description":"","type":"string"},"type":{"title":"vernacular_trade","description":"","type":"string"},"features":{"title":"name","description":"","type":"string"},"description":{"title":"type","description":"","type":"string"},"notes":{"title":"features","description":"","type":"string"}},"type":"object","xml":{"name":"BibleTranslation"}},"Book":{"title":"Book","description":"The Book model communicates information about the canonical books of the Bible","properties":{"id":{"title":"id","description":"The USFM 2.4 id for the books of the Bible","type":"string","maxLength":3,"minLength":3},"id_usfx":{"title":"id_usfx","description":"The usfx id for the books of the Bible","type":"string","maxLength":2,"minLength":2},"id_osis":{"title":"id_osis","description":"The OSIS id for the books of the Bible","type":"string","maxLength":2,"minLength":2},"protestant_order":{"title":"protestant_order","description":"The standard book order for the `protestant_order` in ascending order from Genesis onwards","type":"integer","minimum":0},"luther_order":{"title":"luther_order","description":"The standard book order for the `luther_order` in ascending order from Genesis onwards","type":"integer","minimum":0},"synodal_order":{"title":"synodal_order","description":"The standard book order for the `synodal_order` in ascending order from Genesis onwards","type":"integer","minimum":0},"german_order":{"title":"german_order","description":"The standard book order for the `german_order` in ascending order from Genesis onwards","type":"integer","minimum":0},"kjva_order":{"title":"kjva_order","description":"The standard book order for the `kjva_order` in ascending order from Genesis onwards","type":"integer","minimum":0},"vulgate_order":{"title":"vulgate_order","description":"The standard book order for the `vulgate_order` in ascending order from Genesis onwards","type":"integer","minimum":0},"lxx_order":{"title":"lxx_order","description":"The standard book order for the `lxx_order` in ascending order from Genesis onwards","type":"integer","minimum":0},"orthodox_order":{"title":"orthodox_order","description":"The standard book order for the `orthodox_order` in ascending order from Genesis onwards","type":"integer","minimum":0},"nrsva_order":{"title":"nrsva_order","description":"The standard book order for the `nrsva_order` in ascending order from Genesis onwards","type":"integer","minimum":0},"catholic_order":{"title":"catholic_order","description":"The standard book order for the `catholic_order` in ascending order from Genesis onwards","type":"integer","minimum":0},"finnish_order":{"title":"finnish_order","description":"The standard book order for the `finnish_order` in ascending order from Genesis onwards","type":"integer","minimum":0},"testament_order":{"title":"testament_order","description":"The standard book order within a testament in ascending order from Genesis to Malachi, and Matthew to Revelations","type":"integer","minimum":0},"book_testament":{"title":"book_testament","description":"A short code identifying the testament containing the book","type":"string","maxLength":2,"minLength":2,"enum":["OT","NT","AP"]},"book_group":{"title":"book_group","description":"An english name for the section of books that current book can be categorized in","type":"string","enum":["Historical Books","Pauline Epistles","General Epistles","Apostolic History","Minor Prophets","Major Prophets","The Law","Wisdom Books","Gospels","Apocalypse"]},"chapters":{"title":"chapters","description":"The book's number of chapters","type":"integer","nullable":true},"verses":{"title":"verses","description":"The book's number of verses","type":"integer","nullable":true},"name":{"title":"name","description":"The English name of the book","type":"string"},"notes":{"title":"notes","description":"Any archivist notes about the book","type":"string"},"description":{"title":"description","description":"The book's description","type":"string"},"created_at":{"title":"created_at","description":"The timestamp for the books creation","type":"string"},"updated_at":{"title":"updated_at","description":"The timestamp for the last update of the book","type":"string"}},"type":"object","xml":{"name":"Book"}},"BookTranslation":{"title":"BookTranslation","description":"The Book Translation's model","properties":{"iso":{"$ref":"#/components/schemas/Language/properties/iso"},"book_id":{"$ref":"#/components/schemas/Book/properties/id"},"name":{"title":"name","description":"The translated name of the biblical book","type":"string"},"name_long":{"title":"name_long","description":"The long form of the translated name","type":"string"},"name_short":{"title":"name_short","description":"The short form of the translated name","type":"string"},"name_abbreviation":{"title":"name_abbreviation","description":"The abbreviated form of the translated name","type":"string"},"created_at":{"title":"created_at","description":"The timestamp that the translated name was originally created","type":"string"},"updated_at":{"title":"updated_at","description":"The timestamp that the translated name was last updated","type":"string"}},"type":"object","xml":{"name":"BookTranslation"}},"BookName":{"title":"BookName","description":"The Book Name model","properties":{"AL":{"title":"Alternative","description":"","type":"string","example":""},"ON":{"title":"Old and New Testament","description":"The translated string for the combined testaments of the bible","type":"string","example":""},"OT":{"title":"Old Testament","description":"The translated string for the old testament of the bible","type":"string","example":"Vieux Testament"},"NT":{"title":"New Testament","description":"The translated string for the new testament of the bible","type":"string","example":"Nouveau Testament"},"AP":{"title":"Apocrypha","description":"The translated string for the collected apocryphal books","type":"string","example":""},"VU":{"title":"Vulgate","description":"The translation string for the Vulgate","type":"string","example":""},"ET":{"title":"Ethiopian Orthodox Canon/Geez Translation Additions","description":"The translation string for the Ethiopian Orthodox order for books of the bible","type":"string","example":""},"CO":{"title":"Coptic Orthodox Canon Additions","description":"The translation string for the Coptic Orthodox order for books of the bible","type":"string","example":""},"AO":{"title":"Armenian Orthodox Canon Additions","description":"The translation string for the Armenian Orthodox order for books of the bible","type":"string","example":""},"PE":{"title":"Peshitta","description":"The translation string for Peshitta","type":"string","example":""},"CS":{"title":"Codex Sinaiticus","description":"The translation string for Codex Sinaiticus","type":"string","example":""},"Gen":{"title":"Genesis","description":"The translation string for the book Genesis","type":"string","example":"Genèse"},"Exod":{"title":"Exodus","type":"string","example":"Exode"},"Lev":{"title":"Leviticus","type":"string","example":"Lévitique"},"Num":{"title":"Numbers","type":"string","example":"Nombres"},"Deut":{"title":"Deuteronomy","type":"string","example":"Deutéronome"},"Josh":{"title":"Joshua","type":"string","example":"Josué"},"Judg":{"title":"Judges","type":"string","example":"Juges"},"Ruth":{"title":"Ruth","type":"string","example":"Ruth"},"1Sam":{"title":"1 Samuel","type":"string","example":"Iier Samuel"},"2Sam":{"title":"2 Samuel","type":"string","example":"IIième Samuel"},"1Kgs":{"title":"1 Kings","type":"string","example":"Iier Rois"},"2Kgs":{"title":"2 Kings","type":"string","example":"IIième Rois"},"1Chr":{"title":"1 Chronicles","type":"string","example":"Iier Chroniques"},"2Chr":{"title":"2 Chronicles","type":"string","example":"IIième Chroniques"},"Ezra":{"title":"Ezra","type":"string","example":"Esdras"},"Neh":{"title":"Nehemiah","type":"string","example":"Néhémie"},"Esth":{"title":"Esther","type":"string","example":"Esther"},"Job":{"title":"Job","type":"string","example":"Job"},"Ps":{"title":"Psalm","type":"string","example":"Psaumes"},"Prov":{"title":"Proverbs","type":"string","example":"Proverbes"},"Eccl":{"title":"Ecclesiastes","type":"string","example":"Ecclésiaste"},"Song":{"title":"Song of Solomon","type":"string","example":"Cantique des Cantiques"},"Isa":{"title":"Isaiah","type":"string","example":"Esaïe"},"Jer":{"title":"Jeremiah","type":"string","example":"Jérémie"},"Lam":{"title":"Lamentations","type":"string","example":"Lamentation"},"Ezek":{"title":"Ezekiel","type":"string","example":"Ezékiel"},"Dan":{"title":"Daniel","type":"string","example":"Daniel"},"Hos":{"title":"Hosea","type":"string","example":"Osée"},"Joel":{"title":"Joel","type":"string","example":"Joël"},"Amos":{"title":"Amos","type":"string","example":"Amos"},"Obad":{"title":"Obadiah","type":"string","example":"Abdias"},"Jonah":{"title":"Jonah","type":"string","example":"Jonas"},"Mic":{"title":"Micah","type":"string","example":"Michée"},"Nah":{"title":"Nahum","type":"string","example":"Nahum"},"Hab":{"title":"Habakkuk","type":"string","example":"Habacuc"},"Zeph":{"title":"Zephaniah","type":"string","example":"Sophonie"},"Hag":{"title":"Haggai","type":"string","example":"Aggée"},"Zech":{"title":"Zechariah","type":"string","example":"Zacharie"},"Mal":{"title":"Malachi","type":"string","example":"Malachie"},"Matt":{"title":"Matthew","type":"string","example":"Matthieu"},"Mark":{"title":"Mark","type":"string","example":"Marc"},"Luke":{"title":"Luke","type":"string","example":"Luc"},"John":{"title":"John","type":"string","example":"Jean"},"Acts":{"title":"Acts","type":"string","example":"Actes"},"Rom":{"title":"Romans","type":"string","example":"Romains"},"1Cor":{"title":"1 Corinthians","type":"string","example":"Iier Corinthiens"},"2Cor":{"title":"2 Corinthians","type":"string","example":"IIième Corinthiens"},"Gal":{"title":"Galatians","type":"string","example":"Galates"},"Eph":{"title":"Ephesians","type":"string","example":"Ephésiens"},"Phil":{"title":"Philippians","type":"string","example":"Philippiens"},"Col":{"title":"Colossians","type":"string","example":"Colossiens"},"1Thess":{"title":"1 Thessalonians","type":"string","example":"Iier Thessaloniciens"},"2Thess":{"title":"2 Thessalonians","type":"string","example":"IIième Thessaloniciens"},"1Tim":{"title":"1 Timothy","type":"string","example":"Iier Timothée"},"2Tim":{"title":"2 Timothy","type":"string","example":"IIième Timothée"},"Titus":{"title":"Titus","type":"string","example":"Tite"},"Phlm":{"title":"Philemon","type":"string","example":"Philémon"},"Heb":{"title":"Hebrews","type":"string","example":"Hébreux"},"Jas":{"title":"James","type":"string","example":"Jacques"},"1Pet":{"title":"1 Peter","type":"string","example":"Iier Pierre"},"2Pet":{"title":"2 Peter","type":"string","example":"IIième Pierre"},"1John":{"title":"1 John","type":"string","example":"Iier Jean"},"2John":{"title":"2 John","type":"string","example":"IIième Jean"},"3John":{"title":"3 John","type":"string","example":"IIIième Jean"},"Jude":{"title":"Jude","type":"string","example":""},"Rev":{"title":"Revelation","type":"string","example":"Apocalypse"},"Tob":{"title":"Tobit","type":"string","example":""},"Jdt":{"title":"Judith","type":"string","example":""},"Sir":{"title":"Sirach","type":"string","example":"Siracide"},"Bar":{"title":"Baruch","type":"string","example":"Baruc"},"PrAzar":{"title":"Prayer of Azariah","type":"string","example":""},"Sus":{"title":"Susanna","type":"string","example":""},"Bel":{"title":"Bel and the Dragon","type":"string","example":""},"1Macc":{"title":"1 Maccabees","type":"string","example":"1 Maccabées"},"2Macc":{"title":"2 Maccabees","type":"string","example":"2 Maccabées"},"3Macc":{"title":"3 Maccabees","type":"string","example":""},"4Macc":{"title":"4 Maccabees","type":"string","example":""},"PrMan":{"title":"Prayer of Manasseh","type":"string","example":""},"1Esd":{"title":"1 Esdras","type":"string","example":""},"2Esd":{"title":"2 Esdras","type":"string","example":""},"DanGr":{"title":"Greek Daniel","type":"string","example":""}},"type":"object","xml":{"name":"BookName"}},"Video":{"title":"VideoTranslations","description":"The Video model holds information about biblical films. It serves as a wrapper for all Video{Value} Models including VideoTags and VideoTranslations.","properties":{"id":{"title":"id","description":"","type":"string"},"language_id":{"title":"language_id","description":"","type":"string"},"bible_id":{"title":"bible_id","description":"","type":"string"},"series":{"title":"series","description":"","type":"string"},"episode":{"title":"episode","description":"","type":"string"},"section":{"title":"section","description":"","type":"string"},"url":{"title":"url","description":"","type":"string"},"url_download":{"title":"url_download","description":"","type":"string"},"picture":{"title":"picture","description":"","type":"string"},"duration":{"title":"duration","description":"","type":"string"},"created_at":{"title":"created_at","description":"","type":"string"},"updated_at":{"title":"updated_at","description":"","type":"string"}},"type":"object","xml":{"name":"VideoTranslations"}},"VideoTag":{"title":"VideoTags","description":"The VideoTags model holds miscellaneous information about the video model.","properties":{"id":{"title":"id","description":"The incrementing id of the video tag","type":"integer"},"video_id":{"title":"video_id","description":"The video id","type":"integer"},"category":{"title":"category","description":"The category","type":"integer"},"tag_type":{"title":"category","description":"The category","type":"integer"},"tag":{"title":"tag","description":"The tag","type":"string"},"language_id":{"title":"tag","description":"The language_id","type":"integer","nullable":true},"organization_id":{"title":"organization_id","description":"The language_id","type":"integer","nullable":true},"book_id":{"title":"book_id","description":"The book id","type":"string","nullable":true},"chapter_start":{"title":"chapter_start","description":"The starting chapter","type":"integer","nullable":true},"chapter_end":{"title":"chapter_end","description":"The ending chapter","type":"integer","nullable":true},"verse_start":{"title":"verse_start","description":"The verse_start","type":"integer","nullable":true},"verse_end":{"title":"verse_end","description":"The verse_end","type":"integer","nullable":true},"time_begin":{"title":"time_begin","description":"The time_begin","type":"integer","nullable":true},"time_end":{"title":"time_end","description":"The time_end","type":"integer","nullable":true},"created_at":{"title":"created_at","description":"The created_at","type":"string","nullable":true},"updated_at":{"title":"updated_at","description":"The updated_at","type":"string","nullable":true}},"type":"object","xml":{"name":"VideoTags"}},"Country":{"title":"Country","description":"Country","properties":{"id":{"title":"Country Iso 3166-1","description":"The Country ID for the country aligning with the ISO 3166-1 standard","type":"string","maxLength":2,"minLength":2,"externalDocs":{"description":"For more info please refer to the Iso Registration Authority","url":"https://www.iso.org/iso-3166-country-codes.html"},"example":"AD"},"iso_a3":{"title":"Country Iso 3166-3","description":"The Country iso for the country aligning with the ISO 3166-3 standard","type":"string","maxLength":3,"minLength":3,"externalDocs":{"description":"For more info please refer to the Iso Wiki","url":"https://en.wikipedia.org/wiki/ISO_3166-3"},"example":"AND"},"fips":{"title":"FIPS ID","description":"The Country id for the country aligning with the FIPS standard of the United Nations","type":"string","maxLength":2,"minLength":2,"externalDocs":{"description":"For more info please refer to the FIPS Wiki","url":"https://en.wikipedia.org/wiki/List_of_FIPS_country_codes"},"example":"AN"},"continent":{"title":"continent ID","description":"The continent code for the country","type":"string","maxLength":2,"minLength":2,"example":"EU"},"name":{"title":"Country Name","description":"The name for the country in English","type":"string","maxLength":191,"example":"Andorra"},"introduction":{"title":"Country introduction","description":"A brief description of the country in English","type":"string","example":"The landlocked Principality of Andorra is one of the smallest states in Europe, nestled high in the Pyrenees..."}},"type":"object","xml":{"name":"Country"}},"CountryLanguage":{"title":"Country Language","description":"Country Language","properties":{"country_id":{"title":"continent ID","description":"The continent code for the country","type":"string","maxLength":2,"minLength":2,"example":"EU"},"language_id":{"title":"language_id","description":"The language_id for the speakers","type":"integer"},"population":{"title":"population","description":"The population of the speakers","type":"integer","example":20699}},"type":"object","xml":{"name":"CountryLanguage"}},"CountryRegion":{"title":"Country Region","description":"Country Region","properties":{"country_id":{"title":"country_id","description":"The ID of the ","type":"string"}},"type":"object","xml":{"name":"CountryRegion"}},"CountryCommunication":{"title":"Country Communication","description":"The Country Communication Model stores information about the communication infrastructure of a country as reported by the CIA's World Factbook","properties":{"country_id":{"$ref":"#/components/schemas/Country/properties/id"},"fixed_phones_total":{"title":"fixed_phones_total","description":"The `fixed_phones_total` field indicates the approximate number of phones utilizing landlines within a country","type":"string","example":"9.08 million"},"fixed_phones_subs_per_100":{"title":"fixed_phones_subs_per_100","description":"The `fixed_phones_subs_per_100` field describes the approximate number of landline phone subscriptions per 100 people. This gives a sense of the prevalence of landline phone use within a population.","type":"string","example":"40 (July 2015 est.)"},"mobile_phones_total":{"title":"mobile_phones_total","description":"The `mobile_phones_total` field describes the total approximate number of cellphones within a country","type":"string","example":"31.77 million"},"mobile_phones_subs_per_100":{"title":"mobile_phones_subs_per_100","description":"The `mobile_phones_subs_per_100` field describes the total approximate number of cellphone subscriptions within the country per 100 people. This gives a sense of the prevalence of cellphone use within a population.","type":"string","example":"310 (July 2015 est.)"},"phone_system_general_assessment":{"title":"phone_system_general_assessment","description":"The `phone_system_general_assessment` field describes the general state of the telephone system within the country.","type":"string","example":"Sparse system of open-wire, radiotelephone communications, and low-capacity microwave radio relays"},"phone_system_international":{"title":"phone_system_international","description":"The `phone_system_international` field indicates the international phone code and satellite position for a country.","type":"string","externalDocs":{"description":"For a full list of country phone codes please refer to Wikipedia","url":"https://en.wikipedia.org/wiki/List_of_country_calling_codes"},"example":"country code - 257; satellite earth station - 1 Intelsat (Indian Ocean) (2015)"},"phone_system_domestic":{"title":"phone_system_domestic","description":"This field gives a general assessment of the status of the domestic phone system.","type":"string","example":"Fixed-line teledensity of only about 6 per 100 persons; mobile-cellular teledensity approaching 50 per 100 persons"},"broadcast_media":{"title":"broadcast_media","description":"This field indicates the independence and connections between the different companies that operate within the country","type":"string","example":"4 state-controlled national TV channels; Polish and Russian TV broadcasts are available in some areas..."},"internet_country_code":{"title":"internet_country_code","description":"The TLD extension, Top Level Domain, for the country","type":"string","format":"alpha","maxLength":2,"minLength":2,"externalDocs":{"description":"For a full list of top level domains","url":"https://en.wikipedia.org/wiki/List_of_Internet_top-level_domains"},"example":"af"},"internet_total_users":{"title":"internet_total_users","description":"The number of people who have access to the internet.","type":"string","example":"1.259 million"},"internet_population_percent":{"title":"internet_population_percent","description":"The percent of the populace who have access to the internet","type":"number","format":"float","example":"93.0"},"created_at":{"title":"created_at","description":"The created_at timestamp for the Communications Model","type":"string","format":"date-time","example":"2018-02-12 19:35:57"},"updated_at":{"title":"updated_at","description":"The updated_at timestamp for the Communications Model","type":"string","format":"date-time","example":"2018-02-12 19:35:57"}},"type":"object","xml":{"name":"CountryCommunication"}},"CountryEconomy":{"title":"Country Economy","description":"The Country Economy Model stores information about the economic status of a country as reported by the CIA's World Factbook","properties":{"country_id":{"$ref":"#/components/schemas/Country/properties/id"},"overview":{"title":"Overview","description":"A general overview of the countries economic status.","type":"string","example":"Afghanistan's economy is recovering from decades of conflict. The economy has improved significantly since the fall of the Taliban regime in 2001 largely because of the infusion of international assistance, the recovery of the agricultural sector, and service sector growth..."},"gdp_power_parity":{"title":"GDP (purchasing power parity)","description":"The GDP (PPP) of the country","type":"string","externalDocs":{"description":"For a detailed list of countries and their PPP GDP see:","url":"https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(PPP)_per_capita"},"example":"$64.08 billion (2016 est.) ++ $62.82 billion (2015 est.) ++ $62.35 billion (2014 est.)"},"gdp_real_growth":{"title":"GDP real growth rate","description":"The GDP (RGR) of the country","type":"string","externalDocs":{"description":"For a detailed list of countries and their RGR GDP see:","url":"https://en.wikipedia.org/wiki/List_of_countries_by_real_GDP_growth_rate"}},"gdp_per_capita":{"title":"GDP - per capita (PPP)","description":"The GDP (PPP) of the country","type":"string"},"gdp_household_consumption":{"title":"GDP - composition, by end use; household consumption","description":"","type":"string"},"gdp_consumption":{"title":"gdp_consumption","description":"GDP - composition, by end use; government consumption","type":"string"},"gdp_investment_in_fixed_capital":{"title":"gdp_investment_in_fixed_capital","description":"GDP - composition, by end use; investment in fixed capital","type":"string"},"gdp_investment_in_inventories":{"title":"gdp_investment_in_inventories","description":"GDP - composition, by end use; investment in inventories","type":"string"},"gdp_exports":{"title":"gdp_exports","description":"GDP - composition, by end use; exports of goods and services","type":"string"},"gdp_imports":{"title":"gdp_imports","description":"GDP - composition, by end use; imports of goods and services","type":"string"},"gdp_sector_agriculture":{"title":"gdp_sector_agriculture","description":"GDP - composition, by sector of origin; agriculture","type":"string"},"gdp_sector_industry":{"title":"gdp_sector_industry","description":"GDP - composition, by sector of origin; industry","type":"string"},"gdp_sector_services":{"title":"gdp_sector_services","description":"GDP - composition, by sector of origin; services","type":"string"},"agriculture_products":{"title":"agriculture_products","description":"Agriculture - products","type":"string"},"industries":{"title":"industries","description":"Industries","type":"string"},"industrial_growth_rate":{"title":"industrial_growth_rate","description":"Industrial production growth rate","type":"string"},"labor_force":{"title":"labor_force","description":"Labor force","type":"string"},"labor_force_notes":{"title":"labor_force_notes","description":"Labor force; note","type":"string"},"labor_force_services":{"title":"labor_force_services","description":"Labor force - by occupation; services","type":"string"},"labor_force_industry":{"title":"labor_force_industry","description":"Labor force - by occupation; industry","type":"string"},"labor_force_agriculture":{"title":"labor_force_agriculture","description":"Labor force - by occupation; agriculture","type":"string"},"labor_force_occupation_notes":{"title":"labor_force_occupation_notes","description":"Labor force - by occupation; note","type":"string"},"unemployment_rate":{"title":"unemployment_rate","description":"Unemployment rate","type":"string"},"population_below_poverty":{"title":"population_below_poverty","description":"Population below poverty line","type":"string"},"household_income_lowest_10":{"title":"household_income_lowest_10","description":"Household income or consumption by percentage share; lowest 10%","type":"string"},"household_income_highest_10":{"title":"household_income_highest_10","description":"Household income or consumption by percentage share; highest 10%","type":"string"},"budget_revenues":{"title":"budget_revenues","description":"Budget","type":"string"},"taxes_revenues":{"title":"taxes_revenues","description":"Taxes and other revenues","type":"string"},"budget_net":{"title":"budget_net","description":"Budget surplus (+) or deficit (-)","type":"string"},"public_debt":{"title":"public_debt","description":"Public debt","type":"string"},"external_debt":{"title":"external_debt","description":"Debt - external","type":"string"},"fiscal_year":{"title":"fiscal_year","description":"Fiscal year","type":"string"},"inflation_rate":{"title":"inflation_rate","description":"Inflation rate (consumer prices)","type":"string"},"central_bank_discount_rate":{"title":"central_bank_discount_rate","description":"Central bank discount rate","type":"string"},"commercial_bank_prime_lending_rate":{"title":"commercial_bank_prime_lending_rate","description":"Commercial bank prime lending rate","type":"string"},"stock_money_narrow":{"title":"stock_money_narrow","description":"Stock of narrow money","type":"string"},"stock_money_broad":{"title":"stock_money_broad","description":"Stock of broad money","type":"string"},"stock_domestic_credit":{"title":"stock_domestic_credit","description":"Stock of domestic credit","type":"string"},"exports":{"title":"exports","description":"Exports","type":"string"},"exports_commodities":{"title":"exports_commodities","description":"Exports - commodities","type":"string"},"exports_partners":{"title":"exports_partners","description":"Exports - partners","type":"string"},"imports":{"title":"imports","description":"Imports","type":"string"},"imports_commodities":{"title":"imports_commodities","description":"Imports - commodities","type":"string"},"imports_partners":{"title":"imports_partners","description":"Imports - partners","type":"string"},"exchange_rates":{"title":"exchange_rates","description":"Exchange rates","type":"string"}},"type":"object","xml":{"name":"CountryEconomy"}},"CountryEnergy":{"title":"Country Energy","description":"The Country Energy Model stores information about the electric grid of a country as reported by the CIA's World Factbook","properties":{"country_id":{"$ref":"#/components/schemas/Country/properties/id"},"electricity_production":{"title":"Electric Production","description":"The total kilowatt production for the country.","type":"string","example":"103 billion kWh (2014 est.)"},"electricity_consumption":{"title":"electricity_consumption","description":"The total kilowatt consumption for the country.","type":"string","example":"96 billion kWh (2014 est.)"},"electricity_exports":{"title":"electricity_exports","description":"The amount of kilowatts of electricity exported out of the country being described.","type":"string","example":"0 kWh (2013 est.)"},"electricity_imports":{"title":"electricity_imports","description":"The amount of kilowatts of electricity imported into the country being described.","type":"string","example":"700 million kWh (2014 est.)"},"electricity_generating_capacity":{"title":"electricity_generating_capacity","description":"The total generating capacity in KiloWatts of the current electric systems.","type":"string","example":"600,000 kW (2014 est.)"},"electricity_fossil_fuels":{"title":"electricity_fossil_fuels","description":"The total generating percentage of the current electric systems that are fossil fuel based.","type":"string","example":"35.4% of total installed capacity (2012 est.)"},"electricity_nuclear":{"title":"electricity_nuclear","description":"The total generating percentage of the current electric systems that is nuclear.","type":"string","example":"34.3% of total installed capacity (2011 est.)"},"electricity_hydroelectric":{"title":"electricity_hydroelectric","description":"The total generating percentage of the current electric systems that are based on hydroelectric systems.","type":"string","example":"33.5% of total installed capacity (2011 est.)"},"electricity_renewable":{"title":"electricity_renewable","description":"The total generating percentage of the current electric systems that is renewable.","type":"string","example":"0.2% of total installed capacity (2012 est.)"},"crude_oil_production":{"title":"crude_oil_production","description":"The total amount of crude oil generated by a country","type":"string","example":"2.82 million bbl/day (2015 est.)"},"crude_oil_exports":{"title":"crude_oil_exports","description":"The total amount of crude oil exported by a country","type":"string","example":"2.637 million bbl/day (2013 est.)"},"crude_oil_imports":{"title":"crude_oil_imports","description":"The total amount of crude oil imported by a country","type":"string","example":"0 bbl/day (2013 est.)"},"crude_oil_reserves":{"title":"crude_oil_reserves","description":"The total amount of crude oil stored by a country","type":"string","example":"98 billion bbl (1 January 2016 es)"},"petrol_production":{"title":"petrol_production","description":"The total amount of petrol produced by a country","type":"string","example":"503,200 bbl/day (2013 est.)"},"petrol_consumption":{"title":"petrol_consumption","description":"The total amount of petrol consumed by a country","type":"string","example":"744,000 bbl/day (2014 est.)"},"petrol_exports":{"title":"petrol_exports","description":"The total amount of petrol exported by a country","type":"string","example":"744,000 bbl/day (2014 est.)"},"petrol_imports":{"title":"petrol_imports","description":"The total amount of petrol imported by a country","type":"string","example":"74,000 bbl/day (2014 est.)"},"natural_gas_production":{"title":"natural_gas_production","description":"The total amount of natural gas produced by a country","type":"string","example":"54.24 billion cu m (2014 est.)"},"natural_gas_consumption":{"title":"natural_gas_consumption","description":"The total amount of natural gas consumed by a country","type":"string","example":"66.32 billion cu m (2014 est.)"},"natural_gas_exports":{"title":"natural_gas_exports","description":"The total amount of natural gas exported by a country","type":"string","example":"8.066 billion cu m (2014 est.)"},"natural_gas_imports":{"title":"natural_gas_imports","description":"The total amount of natural gas imported by a country","type":"string","example":"3.064 billion cu m (2014 est.)"},"natural_gas_reserves":{"title":"natural_gas_reserves","description":"The total amount of natural gas stored by a country","type":"string","example":"6.091 trillion cu m (1 January 2016 es)"},"co2_output":{"title":"co2_output","description":"The total size of the carbon footprint of a country.","type":"string","example":"245 million Mt (2013 est.)"},"created_at":{"title":"created_at","description":"The created_at timestamp for the Communications Energy Model","type":"string","format":"date-time","example":"2018-02-12 19:35:57"},"updated_at":{"title":"updated_at","description":"The updated_at timestamp for the Communications Energy Model","type":"string","format":"date-time","example":"2018-02-12 19:35:57"}},"type":"object","xml":{"name":"CountryEnergy"}},"CountryEthnicity":{"title":"Country Ethnicity","description":"","properties":{"country_id":{"$ref":"#/components/schemas/Country/properties/id"},"name":{"title":"name","description":"The name of the people group within the country","type":"string"},"population_percentage":{"title":"population_percentage","description":"The percentage of the people group compared to the total population of the country","type":"number","format":"float","example":"19.10"},"date":{"title":"date","description":"The date the data was archived","type":"integer","nullable":true}},"type":"object","xml":{"name":"CountryEthnicity"}},"CountryGeography":{"title":"CountryGeography","description":"CountryGeography","properties":{"country_id":{"$ref":"#/components/schemas/Country/properties/id"},"location_description":{"title":"Location Description","description":"A description of where the country is located on a geo-political map of the world.","type":"string"},"latitude":{"title":"latitude","description":"A point of latitude that falls within the borders of the country being described","type":"number","example":"17.0608160"},"longitude":{"title":"longitude","description":"A point of longitude that falls within the borders of the country being described","type":"number","example":"-61.7964280"},"mapReferences":{"title":"Map References","description":"The name of the general continent or region where the country is located.","type":"string"},"area_sqkm_total":{"title":"Total Area in square kilometers","description":"area_sqkm_total","type":"integer"},"area_sqkm_land":{"title":"area_sqkm_land","description":"area_sqkm_land","type":"integer"},"area_sqkm_water":{"title":"area_sqkm_water","description":"area_sqkm_water","type":"integer"},"area_km_coastline":{"title":"The country's coastline length","description":"The length of the country's coastline in Kilometers","type":"integer"},"area_note":{"title":"area_note","description":"area_note","type":"string"},"climate":{"title":"climate","description":"climate","type":"string"},"terrain":{"title":"terrain","description":"terrain","type":"string"},"hazards":{"title":"hazards","description":"hazards","type":"string"},"notes":{"title":"notes","description":"notes","type":"string"}},"type":"object","xml":{"name":"CountryGeography"}},"CountryGovernment":{"title":"CountryGovernment","description":"CountryGovernment","properties":{"country_id":{"$ref":"#/components/schemas/Country/properties/id"},"name":{"title":"name","description":"","type":"string"},"name_etymology":{"title":"name_etymology","description":"","type":"string"},"conventional_long_form":{"title":"conventional_long_form","description":"","type":"string"},"conventional_short_form":{"title":"conventional_short_form","description":"","type":"string"},"dependency_status":{"title":"dependency_status","description":"","type":"string"},"government_type":{"title":"government_type","description":"","type":"string"},"capital":{"title":"capital","description":"","type":"string"},"capital_coordinates":{"title":"capital_coordinates","description":"","type":"string"},"capital_time_zone":{"title":"capital_time_zone","description":"","type":"string"},"administrative_divisions":{"title":"administrative_divisions","description":"","type":"string"},"administrative_divisions_note":{"title":"administrative_divisions_note","description":"","type":"string"},"independence":{"title":"independence","description":"","type":"string"},"national_holiday":{"title":"national_holiday","description":"","type":"string"},"constitution":{"title":"constitution","description":"","type":"string"},"legal_system":{"title":"legal_system","description":"","type":"string"},"citizenship":{"title":"citizenship","description":"","type":"string"},"suffrage":{"title":"suffrage","description":"","type":"string"},"executive_chief_of_state":{"title":"executive_chief_of_state","description":"","type":"string"},"executive_head_of_government":{"title":"executive_head_of_government","description":"","type":"string"},"executive_cabinet":{"title":"executive_cabinet","description":"","type":"string"},"executive_elections":{"title":"executive_elections","description":"","type":"string"},"executive_election_results":{"title":"executive_election_results","description":"","type":"string"},"legislative_description":{"title":"legislative_description","description":"","type":"string"},"legislative_elections":{"title":"legislative_elections","description":"","type":"string"},"legislative_election_results":{"title":"legislative_election_results","description":"","type":"string"},"legislative_highest_courts":{"title":"legislative_highest_courts","description":"","type":"string"},"legislative_judge_selection":{"title":"legislative_judge_selection","description":"","type":"string"},"legislative_subordinate_courts":{"title":"legislative_subordinate_courts","description":"","type":"string"},"political_parties":{"title":"political_parties","description":"","type":"string"},"political_pressure":{"title":"political_pressure","description":"","type":"string"},"international_organization_participation":{"title":"international_organization_participation","description":"","type":"string"},"diplomatic_representation_in_usa":{"title":"diplomatic_representation_in_usa","description":"","type":"string"},"diplomatic_representation_from_usa":{"title":"diplomatic_representation_from_usa","description":"","type":"string"},"flag_description":{"title":"flag_description","description":"","type":"string"},"national_symbols":{"title":"national_symbols","description":"","type":"string"},"national_anthem":{"title":"national_anthem","description":"","type":"string"},"created_at":{"title":"created_at","description":"","type":"string"},"updated_at":{"title":"updated_at","description":"","type":"string"}},"type":"object","xml":{"name":"CountryGovernment"}},"CountryIssues":{"title":"CountryIssues","description":"CountryIssues","properties":{"country_id":{"$ref":"#/components/schemas/Country/properties/id"},"international_disputes":{"title":"international_disputes","description":"","type":"string"},"illicit_drugs":{"title":"illicit_drugs","description":"","type":"string"},"refugees":{"title":"refugees","description":"","type":"string"},"created_at":{"title":"created_at","description":"","type":"string"},"updated_at":{"title":"updated_at","description":"","type":"string"}},"type":"object","xml":{"name":"CountryIssues"}},"CountryPeople":{"title":"CountryPeople","description":"CountryPeople","properties":{"country_id":{"$ref":"#/components/schemas/Country/properties/id"},"languages":{"title":"languages","description":"languages","type":"string"},"religions":{"title":"religions","description":"religions","type":"string"},"population":{"title":"population","description":"population","type":"string"},"population_date":{"title":"population_date","description":"population_date","type":"string"},"nationality_noun":{"title":"nationality_noun","description":"nationality_noun","type":"string"},"nationality_adjective":{"title":"nationality_adjective","description":"nationality_adjective","type":"string"},"age_structure_14":{"title":"age_structure_14","description":"age_structure_14","type":"string"},"age_structure_24":{"title":"age_structure_24","description":"age_structure_24","type":"string"},"age_structure_54":{"title":"age_structure_54","description":"age_structure_54","type":"string"},"age_structure_64":{"title":"age_structure_64","description":"age_structure_64","type":"string"},"age_structure_65":{"title":"age_structure_65","description":"age_structure_65","type":"string"},"dependency_total":{"title":"dependency_total","description":"dependency_total","type":"string"},"dependency_youth":{"title":"dependency_youth","description":"dependency_youth","type":"string"},"dependency_elder":{"title":"dependency_elder","description":"dependency_elder","type":"string"},"dependency_potential":{"title":"dependency_potential","description":"dependency_potential","type":"string"},"median_age_total":{"title":"median_age_total","description":"median_age_total","type":"string"},"median_age_male":{"title":"median_age_male","description":"median_age_male","type":"string"},"median_age_female":{"title":"median_age_female","description":"median_age_female","type":"string"},"population_growth_rate_percentage":{"title":"population_growth_rate_percentage","description":"population_growth_rate_percentage","type":"string"},"birth_rate_per_1k":{"title":"birth_rate_per_1k","description":"birth_rate_per_1k","type":"string"},"death_rate_per_1k":{"title":"death_rate_per_1k","description":"death_rate_per_1k","type":"string"},"net_migration_per_1k":{"title":"net_migration_per_1k","description":"net_migration_per_1k","type":"string"},"population_distribution":{"title":"population_distribution","description":"population_distribution","type":"string"},"urban_population_percentage":{"title":"urban_population_percentage","description":"urban_population_percentage","type":"string"},"urbanization_rate":{"title":"urbanization_rate","description":"urbanization_rate","type":"string"},"major_urban_areas_population":{"title":"major_urban_areas_population","description":"major_urban_areas_population","type":"string"},"sex_ratio_birth":{"title":"sex_ratio_birth","description":"sex_ratio_birth","type":"string"},"sex_ratio_14":{"title":"sex_ratio_14","description":"sex_ratio_14","type":"string"},"sex_ratio_24":{"title":"sex_ratio_24","description":"sex_ratio_24","type":"string"},"sex_ratio_54":{"title":"sex_ratio_54","description":"sex_ratio_54","type":"string"},"sex_ratio_64":{"title":"sex_ratio_64","description":"sex_ratio_64","type":"string"},"sex_ratio_65":{"title":"sex_ratio_65","description":"sex_ratio_65","type":"string"},"sex_ratio_total":{"title":"sex_ratio_total","description":"sex_ratio_total","type":"string"},"mother_age_first_birth":{"title":"mother_age_first_birth","description":"mother_age_first_birth","type":"string"},"maternal_mortality_rate":{"title":"maternal_mortality_rate","description":"maternal_mortality_rate","type":"string"},"infant_mortality_per_1k_total":{"title":"infant_mortality_per_1k_total","description":"infant_mortality_per_1k_total","type":"string"},"infant_mortality_per_1k_male":{"title":"infant_mortality_per_1k_male","description":"infant_mortality_per_1k_male","type":"string"},"infant_mortality_per_1k_female":{"title":"infant_mortality_per_1k_female","description":"infant_mortality_per_1k_female","type":"string"},"life_expectancy_at_birth_total":{"title":"life_expectancy_at_birth_total","description":"life_expectancy_at_birth_total","type":"string"},"life_expectancy_at_birth_male":{"title":"life_expectancy_at_birth_male","description":"life_expectancy_at_birth_male","type":"string"},"life_expectancy_at_birth_female":{"title":"life_expectancy_at_birth_female","description":"life_expectancy_at_birth_female","type":"string"},"total_fertility_rate":{"title":"total_fertility_rate","description":"total_fertility_rate","type":"string"},"contraceptive_prevalence":{"title":"contraceptive_prevalence","description":"contraceptive_prevalence","type":"string"},"health_expenditures":{"title":"health_expenditures","description":"health_expenditures","type":"string"},"physicians":{"title":"physicians","description":"physicians","type":"string"},"hospital_beds":{"title":"hospital_beds","description":"hospital_beds","type":"string"},"drinking_water_source_urban_improved":{"title":"drinking_water_source_urban_improved","description":"drinking_water_source_urban_improved","type":"string"},"drinking_water_source_rural_improved":{"title":"drinking_water_source_rural_improved","description":"drinking_water_source_rural_improved","type":"string"},"sanitation_facility_access_urban_improved":{"title":"sanitation_facility_access_urban_improved","description":"sanitation_facility_access_urban_improved","type":"string"},"sanitation_facility_access_rural_improved":{"title":"sanitation_facility_access_rural_improved","description":"","type":"string"},"hiv_infection_rate":{"title":"hiv_infection_rate","description":"hiv_infection_rate","type":"string"},"hiv_infected":{"title":"hiv_infected","description":"hiv_infected","type":"string"},"hiv_deaths":{"title":"hiv_deaths","description":"hiv_deaths","type":"string"},"obesity_rate":{"title":"obesity_rate","description":"obesity_rate","type":"string"},"underweight_children":{"title":"underweight_children","description":"underweight_children","type":"string"},"education_expenditures":{"title":"education_expenditures","description":"education_expenditures","type":"string"},"literacy_definition":{"title":"literacy_definition","description":"literacy_definition","type":"string"},"literacy_total":{"title":"literacy_total","description":"literacy_total","type":"string"},"literacy_male":{"title":"literacy_male","description":"literacy_male","type":"string"},"literacy_female":{"title":"literacy_female","description":"literacy_female","type":"string"},"school_years_total":{"title":"school_years_total","description":"school_years_total","type":"string"},"school_years_male":{"title":"school_years_male","description":"school_years_male","type":"string"},"school_years_female":{"title":"school_years_female","description":"school_years_female","type":"string"},"child_labor":{"title":"child_labor","description":"child_labor","type":"string"},"child_labor_percentage":{"title":"child_labor_percentage","description":"child_labor_percentage","type":"string"},"unemployment_youth_total":{"title":"unemployment_youth_total","description":"unemployment_youth_total","type":"string"},"unemployment_youth_male":{"title":"unemployment_youth_male","description":"unemployment_youth_male","type":"string"},"unemployment_youth_female":{"title":"unemployment_youth_female","description":"unemployment_youth_female","type":"string"}},"type":"object","xml":{"name":"CountryPeople"}},"CountryReligion":{"title":"CountryReligion","description":"CountryReligion","properties":{"country_id":{"$ref":"#/components/schemas/Country/properties/id"},"name":{"title":"name","description":"The name of the religion that makes up part of the countries populace","type":"string"},"population_percentage":{"title":"population_percentage","description":"The percentage of the countries populace that adhere to the religion being described","type":"string"},"date":{"title":"date","description":"The date that this data was recorded","type":"string"}},"type":"object","xml":{"name":"CountryReligion"}},"CountryTransportation":{"title":"CountryTransportation","description":"CountryTransportation","properties":{"country_id":{"$ref":"#/components/schemas/Country/properties/id"},"air_carriers":{"title":"air_carriers","description":"National air transport system; number of registered air carriers","type":"string"},"aircraft":{"title":"aircraft","description":"National air transport system; inventory of registered aircraft operated by air carriers","type":"string"},"aircraft_passengers":{"title":"aircraft_passengers","description":"annual passenger traffic on registered air carriers","type":"string"},"aircraft_freight":{"title":"aircraft_freight","description":"annual freight traffic on registered air carriers","type":"string"},"aircraft_code_prefix":{"title":"aircraft_code_prefix","description":"Civil aircraft registration country code prefix","type":"string"},"airports":{"title":"airports","description":"Airports","type":"string"},"airports_paved":{"title":"airports_paved","description":"Airports - with paved runways; total","type":"string"},"airports_info_date":{"title":"airports_info_date","description":"Airports; sub_field","type":"string"},"major_seaports":{"title":"major_seaports","description":"Ports and terminals","type":"string"},"oil_terminals":{"title":"oil_terminals","description":"oil terminal(s)","type":"string"},"cruise_ports":{"title":"cruise_ports","description":"cruise port(s)","type":"string"}},"type":"object","xml":{"name":"CountryTransportation"}},"Alphabet":{"title":"Alphabet","description":"Alphabet","properties":{"script":{"title":"Alphabet Script","description":"The Script ID for the alphabet aligning with the iso 15924 standard","type":"string","maxLength":4,"minLength":4,"externalDocs":{"description":"For more info please refer to the Unicode Consortium","url":"https://http://www.unicode.org/iso15924/"},"example":"Cans"},"name":{"title":"Alphabet Name","description":"The name of the alphabet in English","type":"string","maxLength":191,"example":"Unified Canadian Aboriginal"},"unicode_pdf":{"title":"Unicode PDF","description":"A url to a reference PDF for the alphabet","type":"string","maxLength":191,"example":"https://unicode.org/charts/PDF/U1400.pdf","nullable":true},"family":{"title":"Family","description":"The linguistic family the alphabet can be categorized within","type":"string","example":"American"},"type":{"title":"Type","description":"The type of alphabet be described","type":"string","example":"abugida"},"white_space":{"title":"White Space","description":"The usage white space within the alphabet","type":"string","example":"between words"},"open_type_tag":{"title":"Open Type Tag","description":"The open type tag of the alphabet","type":"string","example":"cans"},"complex_positioning":{"title":"Open Type Tag","description":"The open type tag of the alphabet","type":"string","example":"no"},"requires_font":{"title":"Requires Font","description":"If the Alphabet generally requires the use of a font to display correctly online","type":"boolean","example":false},"unicode":{"title":"Unicode","description":"If the Alphabet is fully supported by the unicode spec","type":"boolean","example":true},"diacritics":{"title":"Diacritics","description":"If the Alphabet contains diacritics","type":"boolean","example":true},"contextual_forms":{"title":"Contextual Forms","description":"If the Alphabet contains contextual forms","type":"boolean","example":false},"reordering":{"title":"Reordering","description":"If the Alphabet contains reordering","type":"boolean","example":false,"nullable":true},"case":{"title":"Case","description":"If the Alphabet utilizes different cases","type":"boolean","example":false,"nullable":true},"split_graphs":{"title":"Split Graphs","description":"If the Alphabet contains letters that are written using two separate distinct elements.","type":"boolean","externalDocs":{"description":"For more info please refer to the Script Source Feature Definitions","url":"http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#50d6cb6e"},"example":false},"status":{"title":"Status","description":"The status of the alphabet","type":"string","enum":["Current","Historical","Fictional","Unclear"],"externalDocs":{"description":"For more info please refer to the Script Source Feature Definitions","url":"http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#71259eae"},"example":"Current"},"baseline":{"title":"Baseline","description":"The alignment of the text within the alphabet","type":"string","enum":["Hanging","Centered","Bottom","Vertical"],"externalDocs":{"description":"For more info please refer to the Script Source Feature Definitions","url":"http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#a4a32c47"},"example":"Bottom"},"ligatures":{"title":"Ligatures","description":"Indicates on if letters may be or are required to be joined as a single glyph","type":"string","enum":["required","optional","none"],"externalDocs":{"description":"For more information please refer to the Script Source Feature Definitions","url":"http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#3e655409"},"example":"none"},"direction":{"title":"Direction","description":"The direction that the alphabet is read","type":"string","enum":["rtl","ltr"],"externalDocs":{"description":"For more information please refer to the Script Source Feature Definitions","url":"http://scriptsource.org/cms/scripts/page.php?item_id=entry_detail&uid=cq3q4pwuah#02674a4e"},"example":"ltr"},"sample":{"title":"Sample Image","description":"A sample section of text for the alphabet","type":"string"},"sample_img":{"title":"Sample Image","description":"A url to an image of the sample section of text for the alphabet","type":"string"}},"type":"object","xml":{"name":"Alphabet"}},"AlphabetFont":{"title":"Alphabet Font","description":"Alphabet Font","properties":{"id":{"title":"Alphabet Font ID","description":"The incrementing numeric id for the alphabet fonts","type":"integer","example":7},"fontName":{"title":"Alphabet Font Name","description":"The Font Name","type":"string","maxLength":191,"example":"Noto Naskh Arabic"},"fontFileName":{"title":"Alphabet Font File Name","description":"The File name for the font","type":"string","maxLength":191,"example":"NotoNaskhArabic-Regular"},"fontWeight":{"title":"Alphabet Font Weight","description":"The boldness of the font","type":"integer","minimum":100,"example":400,"nullable":true},"copyright":{"title":"Alphabet copyright","description":"The copyright of the font if any","type":"string","maxLength":191,"example":"Creative Commons","nullable":true},"url":{"title":"Alphabet URL","description":"The url to the font file","type":"string","example":"https://cdn.example.com/resources/fonts/NotoNaskhArabic-Regular.ttf"},"notes":{"title":"Notes","description":"Any notes for the font file name","type":"string","nullable":true},"italic":{"title":"Italic","description":"Determines if the font file contains or supports italics","type":"boolean","example":false,"nullable":true}},"type":"object","xml":{"name":"AlphabetFont"}},"AlphabetNumber":{"title":"Alphabet Number","description":"Alphabet Number","properties":{"id":{"title":"Incrementing Alphabet Number Id","description":"The url to the font file","type":"string","maxLength":191},"script_id":{"title":"Alphabet Script Id","description":"The url to the font file","type":"string","maxLength":191},"iso":{"title":"Alphabet Script Variant Iso","description":"The url to the font file","type":"string","maxLength":3},"numeral":{"title":"Alphabet Numeral","description":"The url to the font file","type":"integer"},"numeral_vernacular":{"title":"Alphabet Numeral Vernacular","description":"The numeral written out the vernacular translations","type":"string","maxLength":12},"numeral_written":{"title":"Alphabet Numeral Written","description":"The word for the numeral written out within the vernacular of the language","type":"string","maxLength":24}},"type":"object","xml":{"name":"AlphabetNumber"}},"Language":{"title":"Language","description":"Language","properties":{"id":{"title":"id","description":"The incrementing ID for the language","type":"integer"},"glotto_id":{"title":"glotto_id","description":"The glottolog ID for the language","type":"string","externalDocs":{"description":"For more info please refer to the Glottolog","url":"http://glottolog.org/"}},"iso":{"title":"iso","description":"The iso 639-3 for the language","type":"string","externalDocs":{"description":"For more info","url":"https://en.wikipedia.org/wiki/ISO_639-3"}},"iso2B":{"title":"iso 2b","description":"The iso 639-2, B variant for the language","type":"integer"},"iso2T":{"title":"iso 2t","description":"The iso 639-2, T variant for the language","type":"integer"},"iso1":{"title":"iso1","description":"The iso 639-1 for the language","type":"integer"},"name":{"title":"Name","description":"The name of the language","type":"string"},"autonym":{"title":"Name","description":"The name of the language in the vernacular of that language","type":"string"},"maps":{"title":"Maps","description":"The general area where the language can be found","type":"string"},"development":{"title":"Development","description":"The development of the growth of the language","type":"string"},"use":{"title":"use","description":"The use of the language","type":"string"},"location":{"title":"Location","description":"The location of the language","type":"string"},"area":{"title":"Area","description":"The area of the language","type":"string"},"population":{"title":"Population","description":"The estimated number of people that speak the language","type":"string"},"population_notes":{"title":"Population","description":"Any notes regarding the estimated number of people","type":"string"},"notes":{"title":"Notes","description":"Any notes regarding the language","type":"string"},"typology":{"title":"Typology","description":"The language's Typology","type":"string"},"writing":{"title":"Typology","description":"The language's script","type":"string"},"description":{"title":"Typology","description":"The description of the language","type":"string"},"latitude":{"title":"Latitude","description":"A generalized latitude for the location of the language","type":"string"},"longitude":{"title":"Longitude","description":"A generalized longitude for the location of the language","type":"string"},"status":{"title":"Status","description":"A status of the language","type":"string"},"country_id":{"title":"country_id","description":"The primary country where the language is spoken","type":"string"}},"type":"object","xml":{"name":"Language"}},"LanguageBibleInfo":{"title":"Language Bible Info","description":"Information regarding the publication of bibles in the various languages around the world","properties":{"language_id":{"title":"language_id","description":"The foreign key matching the incrementing language ID","type":"integer","minimum":0},"bible_status":{"title":"bible_status","description":"The numeral written out the vernacular translations","type":"integer","minimum":0,"nullable":true},"bible_translation_need":{"title":"bible_translation_need","description":"The numeral written out the vernacular translations","type":"integer","minimum":0,"nullable":true},"bible_year":{"title":"bible_year","description":"The year a full Bible was published","type":"integer","minimum":0,"nullable":true},"bible_year_newTestament":{"title":"bible_year_newTestament","description":"The year a new testament Bible was published","type":"integer","minimum":0,"nullable":true},"bible_year_portions":{"title":"bible_year_portions","description":"The year portions of a Bible were published","type":"integer","minimum":0,"nullable":true},"bible_sample_text":{"title":"bible_sample_text","description":"A selection of sample text","type":"string","maxLength":191,"nullable":true},"bible_sample_img":{"title":"bible_sample_img","description":"A sample image of the bible text for comparison","type":"string","maxLength":191,"nullable":true},"created_at":{"title":"created_at","description":"The timestamp for the creation of the language bible information model","type":"string","maxLength":191,"nullable":true},"updated_at":{"title":"updated_at","description":"The timestamp of the last update for the language bible information model","type":"string","maxLength":191,"nullable":true}},"type":"object","xml":{"name":"LanguageBibleInfo"}},"LanguageClassification":{"title":"Language Codes","description":"Information regarding alternative language classification systems","properties":{"id":{"title":"id","description":"Incrementing ID for the Language Classification","type":"integer","minimum":0},"language_id":{"title":"language_id","description":"The foreign key matching the incrementing language ID","type":"integer","minimum":0},"classification_id":{"title":"classification_id","description":"The foreign key matching the incrementing language ID","type":"integer","minimum":0},"order":{"title":"order","description":"Creates an increasing level of specificity for the classification of the language dialect","type":"integer","minimum":0},"name":{"title":"name","description":"The name of the classification for the language","type":"string","example":"Afro-Asiatic"}},"type":"object","xml":{"name":"LanguageClassification"}},"LanguageCode":{"title":"Language Codes","description":"Information regarding alternative language coding systems","properties":{"id":{"title":"id","description":"The incrementing id of the language Code","type":"integer","minimum":0},"language_id":{"title":"language_id","description":"The foreign key pointing to the incrementing id of the language","type":"integer","minimum":0},"source":{"title":"source","description":"The source pointing to the incrementing id of the language","type":"string"}},"type":"object","xml":{"name":"LanguageCode"}},"LanguageDialect":{"title":"Language Dialect","description":"Information regarding alternative language dialects","properties":{"id":{"title":"id","description":"The incrementing id of the language","type":"integer","minimum":0},"language_id":{"title":"language_id","description":"The foreign key pointing at the language id, indicating the parent language","type":"integer","minimum":0},"dialect_id":{"title":"dialect_id","description":"The foreign key pointing at the language id, indicating the dialect","type":"integer","minimum":0},"name":{"title":"name","description":"The name of the language dialect","type":"string"},"created_at":{"title":"created_at","description":"The timestamp for which the language created at","type":"string"},"updated_at":{"title":"updated_at","description":"The timestamp for which the language updated at","type":"string"}},"type":"object","xml":{"name":"LanguageDialect"}},"LanguageTranslation":{"title":"Language Translation","description":"Information regarding language translations","properties":{"id":{"title":"id","description":"The incrementing id of the language","type":"integer","minimum":0},"language_source_id":{"title":"language_source_id","description":"The incrementing id of the language_source","type":"integer","minimum":0},"language_translation_id":{"title":"language_translation_id","description":"The incrementing id of the language_translation","type":"integer","minimum":0},"name":{"title":"name","description":"The incrementing id of the name","type":"integer","minimum":0},"vernacular":{"title":"vernacular","description":"The vernacular","type":"integer","minimum":0},"priority":{"title":"Priority","description":"The priority of the language translation","type":"integer","format":"int32","maximum":255,"minimum":0},"description":{"title":"description","description":"The description of the language translation","type":"string"},"created_at":{"title":"created_at","description":"The timestamp at which the translation was created at","type":"string"},"updated_at":{"title":"updated_at","description":"The timestamp at which the translation was last updated at","type":"string"}},"type":"object","xml":{"name":"LanguageTranslation"}},"Bucket":{"title":"Bucket","description":"Bucket","properties":{"id":{"title":"id","description":"The id of the Bucket","type":"string","maxLength":64,"minLength":24},"organization_id":{"$ref":"#/components/schemas/Organization/properties/id"},"created_at":{"title":"created_at","description":"The timestamp at which the bucket was created","type":"string"},"updated_at":{"title":"updated_at","description":"The timestamp at which the bucket was last updated","type":"string"}},"type":"object","xml":{"name":"Bucket"}},"Organization":{"title":"Organization","description":"Organization","properties":{"id":{"title":"id","description":"The Organization's incrementing id","type":"integer","minimum":0},"slug":{"title":"slug","description":"The Organization's slug","type":"string","maxLength":191},"abbreviation":{"title":"abbreviation","description":"The Organization's abbreviation","type":"string","maxLength":6,"nullable":true},"notes":{"title":"notes","description":"Archivist notes about the organization being described","type":"string","nullable":true},"primaryColor":{"title":"primaryColor","description":"The Organization's primary color derived from their logo","type":"string","maxLength":7,"minLength":7,"nullable":true},"secondaryColor":{"title":"secondaryColor","description":"The Organization's secondary color derived from their logo","type":"string","maxLength":7,"minLength":7,"nullable":true},"inactive":{"title":"inactive","description":"If the organization has not responded to several attempts to contact this value will be set to true","type":"boolean","nullable":true},"url_facebook":{"title":"url_facebook","description":"The URL to the organization's facebook page","type":"string","maxLength":191},"url_website":{"title":"url_website","description":"The url to the Organization's website","type":"string","maxLength":191},"url_donate":{"title":"url_donate","description":"The url to the organization's donation page","type":"string","maxLength":191},"url_twitter":{"title":"url_twitter","description":"The url to the organization's twitter page","type":"string","maxLength":191},"address":{"title":"address","description":"The Organization's address","type":"string","maxLength":191},"address2":{"title":"address2","description":"The Organization's second line of the address","type":"string","maxLength":191},"city":{"title":"city","description":"The organization's city","type":"string","maxLength":191},"state":{"title":"state","description":"The Organization's state","type":"string","maxLength":191},"country":{"title":"country","description":"ThThe Organization's country","type":"string","maxLength":191},"zip":{"title":"zip","description":"The Organization's zip","type":"string","maxLength":191},"phone":{"title":"phone","description":"The Organization's phone number","type":"string","maxLength":191},"email":{"title":"email","description":"The Organization's email address","type":"string","maxLength":191}},"type":"object","xml":{"name":"Organization"}},"OrganizationLogo":{"title":"Organization Logo","description":"The Logo for the Organization","properties":{"organization_id":{"title":"id","description":"The Organization's id","type":"integer","minimum":0},"language_iso":{"title":"language_iso","description":"If the organization's logo contains words, this iso field indicates what language they are.","type":"string","maxLength":3,"minLength":3,"example":"eng","nullable":true},"url":{"title":"url","description":"The url to this organization's logo","type":"string","maxLength":191},"icon":{"title":"url","description":"If true the url is pointed at a logo suitable for use as an icon","type":"boolean"}},"type":"object","xml":{"name":"OrganizationLogo"}},"OrganizationRelationship":{"title":"Organization Relationship","description":"The Relationships for the Organization","properties":{"organization_parent_id":{"title":"organization_parent_id","description":"The Organization's id","type":"integer","minimum":0},"organization_child_id":{"title":"organization_child_id","description":"The Organization's id","type":"integer","minimum":0},"type":{"title":"type","description":"The Organization's type","type":"string","maxLength":191},"relationship_id":{"title":"relationship_id","description":"The Organization's relationship_id","type":"string","maxLength":191}},"type":"object","xml":{"name":"OrganizationRelationship"}},"OrganizationTranslation":{"title":"Organization Translation","description":"The alternative names in different languages for an organization","properties":{"language_iso":{"title":"language_iso","description":"The iso code for the translation language","type":"string","minLength":3},"organization_id":{"title":"id","description":"The Organization's incrementing id","type":"integer","minimum":0},"vernacular":{"title":"id","description":"If the current translation is the primary/vernacular translation","type":"boolean"},"alt":{"title":"alt","description":"If the current name is a secondary title for the organization","type":"boolean"},"name":{"title":"name","description":"The current translated name for the organization","type":"string","maxLength":191},"description":{"title":"description","description":"The current translated description for the organization","type":"string"},"description_short":{"title":"description_short","description":"The current translated shortened description for the organization","type":"string"}},"type":"object","xml":{"name":"OrganizationTranslation"}},"Resource":{"title":"Resource","description":"Resource","properties":{"id":{"title":"id","description":"The Resource's incrementing id","type":"integer","minimum":0},"iso":{"title":"iso","description":"The Resource's iso","type":"string","minLength":3},"organization_id":{"$ref":"#/components/schemas/Organization/properties/id"},"source_id":{"title":"source_id","description":"The owning organization's tracking id for the resource","type":"string","nullable":true},"cover":{"title":"cover","description":"The url to the main cover art for the resource","type":"string","nullable":true},"cover_thumbnail":{"title":"cover_thumbnail","description":"The url to the thumbnail cover art for the resource","type":"string","nullable":true},"date":{"title":"date","description":"The date the resource was originally published","type":"string","nullable":true},"type":{"title":"type","description":"The type of media the resource can be categorized as","type":"string","nullable":true}},"type":"object","xml":{"name":"Resource"}},"ResourceLink":{"title":"Resource Link","description":"ResourceLink","properties":{"resource_id":{"$ref":"#/components/schemas/Resource/properties/id"},"title":{"title":"type","description":"The type of media the resource can be categorized as","type":"string","nullable":true},"size":{"title":"size","description":"The size of the resource measured in kilobytes","type":"string","nullable":true},"type":{"title":"type","description":"The destination type for the url","type":"string","nullable":true},"url":{"title":"url","description":"The link for the url","type":"string"}},"type":"object","xml":{"name":"ResourceLink"}},"ResourceTranslation":{"title":"Resource Translation","description":"Resource Translation","properties":{"iso":{"title":"iso","description":"The iso code for the resource's translations","type":"string"},"resource_id":{"title":"resource_id","description":"The id for the resource that the translations describe","type":"string"},"vernacular":{"title":"vernacular","description":"Determines if the current translations being described is in the vernacular of the resource","type":"boolean"},"tag":{"title":"tag","description":"Determines if the current translation being described is an ancillary bit of meta data rather than a title of the resource","type":"boolean"},"title":{"title":"title","description":"Serves as the title of the current translation or the name of the tag","type":"string","maxLength":191,"example":"Understanding Biblical Hebrew Verb Forms"},"description":{"title":"description","description":"Serves as the description of the current translation","type":"string","maxLength":191,"example":"Understanding Biblical Hebrew Verb Forms"}},"type":"object","xml":{"name":"ResourceTranslation"}},"AccessGroup":{"title":"AccessGroup","description":"The Access Group","properties":{"id":{"title":"id","description":"The incrementing id for each access group","type":"integer"},"name":{"title":"name","description":"The name for each access group","type":"string"},"description":{"title":"description","description":"The description for each access group","type":"string"}},"type":"object","xml":{"name":"AccessGroup"}},"AccessGroupFileset":{"title":"AccessGroupFileset","description":"The Access Group Fileset","properties":{"access_group_id":{"$ref":"#/components/schemas/AccessGroup/properties/id"},"hash_id":{"$ref":"#/components/schemas/BibleFileset/properties/id"}},"type":"object","xml":{"name":"AccessGroupFileset"}},"AccessGroupKey":{"title":"AccessGroupKey","description":"The Access Group Key","properties":{"access_group_id":{"title":"name","description":"The name for each access group","type":"string"},"key_id":{"title":"name","description":"The name for each access group","type":"string"}},"type":"object","xml":{"name":"AccessGroupKey"}},"AccessType":{"title":"AccessType","description":"The Access Type","properties":{"id":{"title":"id","description":"The incrementing id for each Access Type","type":"integer"},"name":{"title":"name","description":"The name for each access type","type":"string"},"country_id":{"$ref":"#/components/schemas/Country/properties/id"},"continent":{"$ref":"#/components/schemas/Country/properties/continent"},"allowed":{"title":"allowed","description":"If set to false, allowed will change the permission function from a whitelist to a blacklist.","type":"boolean","minimum":0}},"type":"object","xml":{"name":"AccessType"}},"AccessTypeTranslation":{"title":"AccessTypeTranslation","description":"The AccessTypeTranslation","properties":{"access_function_translation_id":{"$ref":"#/components/schemas/AccessType/properties/id"},"iso":{"$ref":"#/components/schemas/Language/properties/iso"},"name":{"title":"name","description":"The translated name for each access type","type":"string"},"description":{"title":"description","description":"The translated description for each access type","type":"string"}},"type":"object","xml":{"name":"AccessTypeTranslation"}},"Account":{"title":"Account","description":"The Account Model describes the connections between Users and their social accounts","properties":{"id":{"title":"id","description":"The incrementing ID for the account","type":"integer","minimum":0,"example":"4"},"user_id":{"title":"user_id","description":"The user id for the user who has the account being described","type":"string"},"provider_id":{"title":"provider_id","description":"The social account provider that the user has logged in with","type":"string","example":"facebook"},"provider_user_id":{"title":"provider_user_id","description":"The key of the provider for the account being described","type":"string","example":""},"created_at":{"title":"created_at","description":"The time the social account was originally connected to the user","type":"string"},"updated_at":{"title":"updated_at","description":"The time the social account was last updated","type":"string"}},"type":"object","xml":{"name":"Account"}},"Highlight":{"title":"Highlight","description":"The Highlight model","properties":{"id":{"title":"id","description":"The highlight id","type":"integer","minimum":0},"user_id":{"title":"user_id","description":"The user that created the highlight","type":"string"},"bible_id":{"$ref":"#/components/schemas/BibleFileset/properties/id"},"book_id":{"$ref":"#/components/schemas/Book/properties/id"},"chapter":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"},"highlighted_color":{"title":"highlighted_color","description":"The highlight's highlighted color in hexadecimal notation.","type":"string","maxLength":7,"minLength":3,"example":"#4488bb"},"verse_start":{"$ref":"#/components/schemas/BibleFile/properties/verse_start"},"reference":{"type":"string"},"project_id":{"$ref":"#/components/schemas/Project/properties/id"},"highlight_start":{"title":"highlight_start","description":"The number of words from the beginning of the verse to start the highlight at. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.","type":"integer","minimum":0},"highlighted_words":{"title":"highlighted_words","description":"The number of words being highlighted. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.","type":"string"},"created_at":{"title":"created_at","description":"The highlight's created_at timestamp","type":"string"},"updated_at":{"title":"updated_at","description":"The highlight's updated_at timestamp","type":"string"}},"type":"object","xml":{"name":"Highlight"}},"Key":{"title":"Key","description":"The Key's model","properties":{"user_id":{"$ref":"#/components/schemas/User/properties/id"},"key":{"title":"key","description":"The unique generated api key for Key model","type":"string","maxLength":64},"name":{"title":"name","description":"The user provided distinctive name to differentiate different keys provided to the same user.","type":"string","maxLength":191},"description":{"title":"description","description":"Any additional identifying information about the key provided and it's use can be stored here","type":"string"},"created_at":{"title":"created_at","description":"The timestamp at which the key was created at","type":"string"},"updated_at":{"title":"updated_at","description":"The timestamp at which the key was last updated at","type":"string"}},"type":"object","xml":{"name":"Key"}},"Note":{"title":"Note","description":"The Note's model","properties":{"id":{"title":"id","description":"The unique incrementing id for each NoteTag","type":"integer","minimum":0},"chapter":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"},"verse_start":{"$ref":"#/components/schemas/BibleFile/properties/verse_start"},"verse_end":{"$ref":"#/components/schemas/BibleFile/properties/verse_end"},"bookmark":{"title":"bookmark","description":"The unique incrementing id for each NoteTag","type":"integer"},"user_id":{"$ref":"#/components/schemas/User/properties/id"},"bible_id":{"$ref":"#/components/schemas/Bible/properties/id"},"reference_id":{"title":"reference_id","description":"The unique incrementing id for each NoteTag","type":"string"},"notes":{"title":"notes","description":"The body of the notes","type":"string","nullable":true},"created_at":{"title":"created_at","description":"The timestamp the note was created at","type":"string"},"updated_at":{"title":"updated_at","description":"The timestamp the Note was last updated at","type":"string","nullable":true}},"type":"object","xml":{"name":"Note"}},"NoteTag":{"title":"NoteTag","description":"The NoteTag's model","properties":{"id":{"title":"id","description":"The unique incrementing id for each NoteTag","type":"integer","minimum":0},"note_id":{"title":"note_id","description":"The id for the note which the NoteTag is attached to","type":"integer","minimum":0},"type":{"title":"type","description":"The type of tag that this NoteTag is categorized within.","type":"string"},"value":{"title":"value","description":"The value to the type of NoteTag for this note.","type":"string"},"created_at":{"title":"created_at","description":"The timestamp the NoteTag was first created at","type":"string"},"updated_at":{"title":"updated_at","description":"The timestamp the NoteTag was last updated","type":"string"}},"type":"object","xml":{"name":"NoteTag"}},"PasswordReset":{"title":"PasswordReset","description":"The Password Reset Model","properties":{"email":{"title":"email","description":"The email of the user who requested the password reset","type":"string","format":"email","maxLength":191},"token":{"title":"token","description":"The generated token for the password reset","type":"string","maxLength":191},"reset_path":{"title":"reset_path","description":"The url to redirect the user to create a new password","type":"string","maxLength":191}},"type":"object","xml":{"name":"PasswordReset"}},"Project":{"title":"Project","description":"The Project's model","properties":{"id":{"title":"id","description":"The unique id for the project","type":"string","maxLength":24},"name":{"title":"name","description":"The name of the project","type":"string","maxLength":191},"url_avatar":{"title":"url_avatar","description":"The url to the logo / main identifying image for the project","type":"string","maxLength":191},"url_avatar_icon":{"title":"url_avatar_icon","description":"The url to the logo / main identifying image for the project in a form that is suitable for small images (less than 100 pixels)","type":"string","maxLength":191},"url_site":{"title":"url_site","description":"The url to the site that is currently making use of the API","type":"string","maxLength":191},"reset_path":{"title":"reset_path","description":"The url to the location that contains the password reset form. Note this should end with a / and expect the final url path item to be a token. Example: https://example.com/password/reset/ with the expectation of receiving https://example.com/password/reset/{TOKEN_ID}","type":"string","maxLength":191,"example":"https://example.com/password/reset/"},"description":{"title":"description","description":"The description of the project and it's goals","type":"string"},"created_at":{"title":"description","description":"The day the project was added to the api","type":"string"},"updated_at":{"title":"updated_at","description":"The day the project was last updated","type":"string"}},"type":"object","xml":{"name":"Project"}},"ProjectMember":{"title":"ProjectMember","description":"The Project member's model","properties":{"user_id":{"title":"user_id","description":"The incrementing ID for the account","type":"integer","minimum":0,"example":"4"},"project_id":{"title":"project_id","description":"The incrementing ID for the account","type":"integer","minimum":0,"example":"4"},"role":{"title":"role","description":"The incrementing ID for the account","type":"integer","minimum":0,"example":"4"},"subscribed":{"title":"subscribed","description":"The incrementing ID for the account","type":"integer","minimum":0,"example":"4"}},"type":"object","xml":{"name":"ProjectMember"}},"ProjectOauthProvider":{"title":"ProjectOauthProvider","description":"The Project's oAuth provider model","properties":{"id":{"title":"id","description":"The human readable id for an oauth provider","type":"string","maxLength":8},"project_id":{"$ref":"#/components/schemas/Project/properties/id"},"name":{"title":"name","description":"The name for an oauth provider","type":"string","maxLength":191},"client_id":{"title":"id","description":"The id for an oauth provider","type":"string","maxLength":191},"client_secret":{"title":"secret","description":"The secret for an oauth provider","type":"string","maxLength":191},"callback_url":{"title":"callback_url","description":"The callback_url for an oauth provider","type":"string","maxLength":191},"callback_url_alt":{"title":"callback_url_alt","description":"An alternative callback_url for an oauth provider","type":"string","maxLength":191},"description":{"title":"description","description":"The description for an oauth provider","type":"string","maxLength":191}},"type":"object","xml":{"name":"ProjectOauthProvider"}},"Role":{"title":"Role","description":"The User's Role model","properties":{"user_id":{"$ref":"#/components/schemas/User/properties/id"},"role":{"title":"role","description":"The user's role","type":"string","maxLength":191},"organization_id":{"$ref":"#/components/schemas/Organization/properties/id"},"updated_at":{"title":"updated_at","description":"The timestamp the user was last updated at","type":"string","minimum":0}},"type":"object","xml":{"name":"Role"}},"User":{"title":"User","description":"The User model communicates information about everyone involved with the project","properties":{"id":{"title":"id","description":"The unique id for the user","type":"string","maxLength":64,"example":"4E7Fk8AWGvZCCV7"},"name":{"title":"name","description":"The name of the user","type":"string","maxLength":191,"example":"Elu Thingol"},"password":{"title":"password","description":"The password for the user's account","type":"string","format":"password","maxLength":191},"nickname":{"title":"nickname","description":"The preferred name for the user or an informal means of addressing them","type":"string","example":"Elwë","nullable":"true"},"avatar":{"title":"avatar","description":"The url to the user's profile picture","type":"string","example":"https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png","nullable":"true"},"email":{"title":"email","description":"The user's email address","type":"string","format":"email","example":"thingol@valinor.org"},"verified":{"title":"verified","description":"If the user has verified the email address they've provided or if they're connected via a social account","type":"boolean","example":true},"email_token":{"title":"email_token","description":"The token sent to the user to verify that user's email","type":"string","example":"B95p56KqHrz8D3w"}},"type":"object","xml":{"name":"User"}},"v4_alphabets_all_response":{"title":"The all alphabets response","description":"The minimized alphabet return for the all alphabets route","type":"array","items":{"properties":{"name":{"$ref":"#/components/schemas/Alphabet/properties/name"},"script":{"$ref":"#/components/schemas/Alphabet/properties/script"},"family":{"$ref":"#/components/schemas/Alphabet/properties/family"},"type":{"$ref":"#/components/schemas/Alphabet/properties/type"},"direction":{"$ref":"#/components/schemas/Alphabet/properties/direction"}},"type":"object"},"xml":{"name":"v4_alphabets_all_response"}},"v4_alphabets_one_response":{"title":"The single alphabet response","description":"The full alphabet return for the single alphabet route","properties":{"name":{"$ref":"#/components/schemas/Alphabet/properties/name"},"script":{"$ref":"#/components/schemas/Alphabet/properties/script"},"family":{"$ref":"#/components/schemas/Alphabet/properties/family"},"type":{"$ref":"#/components/schemas/Alphabet/properties/type"},"direction":{"$ref":"#/components/schemas/Alphabet/properties/direction"},"fonts":{"type":"array","items":{"$ref":"#/components/schemas/AlphabetFont"}},"languages":{"type":"array","items":{"$ref":"#/components/schemas/Language"}},"bibles":{"type":"array","items":{"$ref":"#/components/schemas/Bible"}}},"type":"object","xml":{"name":"v4_alphabets_one_response"}},"v4_timestamps_tag":{"title":"v4_timestamps_tag","description":"The v4 timestamps tag","type":"array","items":{"properties":{"book_id":{"$ref":"#/components/schemas/Book/properties/id"},"book_name":{"$ref":"#/components/schemas/Book/properties/name"},"chapter_start":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"},"chapter_end":{"$ref":"#/components/schemas/BibleFile/properties/chapter_end"},"verse_start":{"$ref":"#/components/schemas/BibleFile/properties/verse_start"},"verse_end":{"$ref":"#/components/schemas/BibleFile/properties/verse_end"},"timestamp":{"$ref":"#/components/schemas/BibleFileTimestamp/properties/timestamp"},"path":{"$ref":"#/components/schemas/BibleFile/properties/file_name"}},"type":"object"},"xml":{"name":"v4_timestamps_tag"}},"v4_bible_filesets_permissions.index":{"title":"v4_bible_filesets_permissions.index","description":"The permissions for a specific bible fileset","type":"array","items":{"properties":{"fileset_id":{"$ref":"#/components/schemas/BibleFileset/properties/hash_id"}},"type":"object"},"xml":{"name":"v4_bible_filesets_permissions.index"}},"v4_bible.all":{"title":"v4_bible.all","description":"The bibles being returned","type":"array","items":{"properties":{"abbr":{"$ref":"#/components/schemas/Bible/properties/id"},"name":{"$ref":"#/components/schemas/BibleTranslation/properties/name"},"vname":{"$ref":"#/components/schemas/BibleTranslation/properties/name"},"language":{"$ref":"#/components/schemas/Language/properties/name"},"language_autonym":{"$ref":"#/components/schemas/LanguageTranslation/properties/name"},"language_altNames":{"$ref":"#/components/schemas/LanguageTranslation/properties/name"},"iso":{"$ref":"#/components/schemas/Language/properties/iso"},"date":{"$ref":"#/components/schemas/Bible/properties/date"},"filesets":{"$ref":"#/components/schemas/BibleFileset"}},"type":"object"},"xml":{"name":"v4_bible.all"}},"v4_bible.one":{"title":"v4_bible.one","description":"The bible being returned","type":"array","items":{"properties":{"abbr":{"$ref":"#/components/schemas/Bible/properties/id"},"alphabet":{"$ref":"#/components/schemas/Alphabet/properties/script"},"mark":{"$ref":"#/components/schemas/Bible/properties/copyright"},"name":{"$ref":"#/components/schemas/BibleTranslation/properties/name"},"description":{"$ref":"#/components/schemas/BibleTranslation/properties/description"},"vname":{"$ref":"#/components/schemas/BibleTranslation/properties/name"},"vdescription":{"$ref":"#/components/schemas/BibleTranslation/properties/description"},"publishers":{"$ref":"#/components/schemas/Organization"},"providers":{"$ref":"#/components/schemas/Organization"},"language":{"$ref":"#/components/schemas/Language/properties/name"},"iso":{"$ref":"#/components/schemas/Language/properties/iso"},"date":{"$ref":"#/components/schemas/Bible/properties/date"},"country":{"$ref":"#/components/schemas/Country/properties/name"},"books":{"$ref":"#/components/schemas/Book/properties/id"},"links":{"$ref":"#/components/schemas/BibleLink"},"filesets":{"$ref":"#/components/schemas/BibleFileset"}},"type":"object"},"xml":{"name":"v4_bible.one"}},"v4_bible.allBooks":{"title":"v4_bible.allBooks","description":"The books of the bible with codes","type":"array","items":{"properties":{"id":{"$ref":"#/components/schemas/Book/properties/id"},"id_usfx":{"$ref":"#/components/schemas/Book/properties/id_usfx"},"id_osis":{"$ref":"#/components/schemas/Book/properties/id_osis"},"book_order":{"$ref":"#/components/schemas/Book/properties/protestant_order"},"testament_order":{"$ref":"#/components/schemas/Book/properties/testament_order"},"book_testament":{"$ref":"#/components/schemas/Book/properties/book_testament"},"book_group":{"$ref":"#/components/schemas/Book/properties/book_group"},"chapters":{"$ref":"#/components/schemas/Book/properties/chapters"},"verses":{"$ref":"#/components/schemas/Book/properties/verses"},"name":{"$ref":"#/components/schemas/Book/properties/name"}},"type":"object"},"xml":{"name":"v4_bible.allBooks"}},"v4_bible.books":{"title":"v4_bible.books","description":"The books of the bible with codes","type":"array","items":{"properties":{"id":{"$ref":"#/components/schemas/Book/properties/id"},"id_usfx":{"$ref":"#/components/schemas/Book/properties/id_usfx"},"id_osis":{"$ref":"#/components/schemas/Book/properties/id_osis"},"book_order":{"$ref":"#/components/schemas/Book/properties/protestant_order"},"testament_order":{"$ref":"#/components/schemas/Book/properties/testament_order"},"book_testament":{"$ref":"#/components/schemas/Book/properties/book_testament"},"book_group":{"$ref":"#/components/schemas/Book/properties/book_group"},"chapters":{"$ref":"#/components/schemas/Book/properties/chapters"},"verses":{"$ref":"#/components/schemas/Book/properties/verses"},"name":{"$ref":"#/components/schemas/Book/properties/name"}},"type":"object"},"xml":{"name":"v4_bible.books"}},"v4_countries.all":{"title":"v4_countries.all","description":"The minimized country return for the all countries route","type":"array","items":{"properties":{"name":{"$ref":"#/components/schemas/Country/properties/name"},"continent_code":{"$ref":"#/components/schemas/Country/properties/continent"},"languages":{}},"type":"object"},"xml":{"name":"v4_countries.all"}},"v4_countries.one":{"title":"v4_countries.one","description":"The minimized country return for the all countries route","type":"array","items":{"properties":{"name":{"$ref":"#/components/schemas/Country/properties/name"},"continent_code":{"$ref":"#/components/schemas/Country/properties/continent"},"languages":{}},"type":"object"},"xml":{"name":"v4_countries.one"}},"v4_bible_filesets.show":{"title":"v4_bible_filesets.show","description":"The minimized alphabet return for the all alphabets route","type":"array","items":{"properties":{"book_id":{"$ref":"#/components/schemas/BibleFile/properties/book_id"},"book_name":{"$ref":"#/components/schemas/BookTranslation/properties/name"},"chapter_start":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"},"chapter_end":{"$ref":"#/components/schemas/BibleFile/properties/chapter_end"},"verse_start":{"$ref":"#/components/schemas/BibleFile/properties/verse_start"},"verse_end":{"$ref":"#/components/schemas/BibleFile/properties/verse_end"},"timestamp":{"$ref":"#/components/schemas/BibleFileTimestamp/properties/timestamp"},"path":{"$ref":"#/components/schemas/BibleFile/properties/file_name"}},"type":"object"},"xml":{"name":"v4_bible_filesets.show"}},"font_response":{"title":"The single alphabet response","description":"The full alphabet return for the single alphabet route","properties":{"id":{"$ref":"#/components/schemas/AlphabetFont/properties/id"},"name":{"$ref":"#/components/schemas/AlphabetFont/properties/fontFileName"},"base_url":{"description":"A Fractal transformer.","items":{"type":"string"}},"files":{"description":"A Fractal transformer.","items":{"type":"object"}}},"type":"object","xml":{"name":"v4_alphabets_one_response"}},"v4_projects_index":{"title":"v4_projects_index","description":"The minimized alphabet return for the all alphabets route","type":"array","items":{"properties":{"id":{"$ref":"#/components/schemas/Project/properties/id"},"name":{"$ref":"#/components/schemas/Project/properties/name"},"url_avatar":{"$ref":"#/components/schemas/Project/properties/url_avatar"},"url_avatar_icon":{"$ref":"#/components/schemas/Project/properties/url_avatar_icon"},"url_site":{"$ref":"#/components/schemas/Project/properties/url_site"},"description":{"$ref":"#/components/schemas/Project/properties/description"},"created_at":{"$ref":"#/components/schemas/Project/properties/created_at"},"updated_at":{"$ref":"#/components/schemas/Project/properties/updated_at"},"members":{}},"type":"object"},"xml":{"name":"v4_projects_index"}},"v4_bible_filesets_chapter":{"title":"v4_bible_filesets_chapter","description":"The bible chapter response","type":"array","items":{"required":["name","script","family","type","direction"],"properties":{"book_id":{"$ref":"#/components/schemas/Book/properties/id"},"book_name":{"$ref":"#/components/schemas/Book/properties/name"},"book_name_alt":{"$ref":"#/components/schemas/BookTranslation/properties/name"},"chapter":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"},"chapter_alt":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"},"verse_start":{"$ref":"#/components/schemas/BibleFile/properties/verse_start"},"verse_start_alt":{"$ref":"#/components/schemas/BibleFile/properties/verse_start"},"verse_end":{"$ref":"#/components/schemas/BibleFile/properties/verse_end"},"verse_end_alt":{"$ref":"#/components/schemas/BibleFile/properties/verse_end"},"verse_text":{"type":"string"}},"type":"object"},"xml":{"name":"v4_bible_filesets_chapter"}},"v4_highlights_index":{"title":"v4_highlights_index","description":"The v4 highlights index response","type":"array","items":{"properties":{"book_id":{"$ref":"#/components/schemas/Book/properties/id"},"book_name":{"$ref":"#/components/schemas/Book/properties/name"},"chapter_start":{"$ref":"#/components/schemas/BibleFile/properties/chapter_start"},"chapter_end":{"$ref":"#/components/schemas/BibleFile/properties/chapter_end"},"verse_start":{"$ref":"#/components/schemas/BibleFile/properties/verse_start"},"reference":{"$ref":"#/components/schemas/Highlight/properties/reference"},"verse_end":{"$ref":"#/components/schemas/BibleFile/properties/verse_end"},"timestamp":{"$ref":"#/components/schemas/BibleFileTimestamp/properties/timestamp"},"path":{"$ref":"#/components/schemas/BibleFile/properties/file_name"}},"type":"object"},"xml":{"name":"v4_highlights_index"}},"v4_user_index":{"title":"v4_user_index","description":"The v4 user index response","type":"array","items":{"properties":{"id":{"$ref":"#/components/schemas/User/properties/id"},"name":{"$ref":"#/components/schemas/User/properties/name"},"nickname":{"$ref":"#/components/schemas/User/properties/nickname"},"avatar":{"$ref":"#/components/schemas/User/properties/avatar"},"email":{"$ref":"#/components/schemas/User/properties/email"}},"type":"object"},"xml":{"name":"v4_user_index"}}},"responses":{},"parameters":{"version_number":{"name":"v","in":"query","description":"The Version Number","required":true,"schema":{"type":"integer","enum":[2,4],"example":4}},"key":{"name":"key","in":"query","description":"The Key granted to the api user upon sign up","required":true,"schema":{"type":"string","example":"ar45g3h4ae644"}},"pretty":{"name":"pretty","in":"query","description":"Setting this param to true will add human readable whitespace to the return","schema":{"type":"boolean"}},"format":{"name":"format","in":"query","description":"Setting this param to true will add format the return as a specific file type. The currently supported return types are `xml`, `csv`, `json`, and `yaml`","schema":{"type":"string","enum":["xml","csv","json","yaml"]}},"sort_by":{"name":"sort_by","in":"query","description":"The field to sort by","schema":{"type":"string"}},"sort_dir":{"name":"sort_dir","in":"query","description":"The direction to sort by","schema":{"type":"string","enum":["asc","desc"]}},"l10n":{"name":"l10n","in":"query","description":"When set to a valid three letter language iso, the returning results will be localized in the language matching that iso. (If an applicable translation exists).","schema":{"$ref":"#/components/schemas/Language/properties/iso"}}}},"tags":{"7":{"name":"Languages","description":" "},"8":{"name":"Countries","description":" "},"9":{"name":"Bibles","description":" "},"10":{"name":"Users","description":" "}}}
+
+/***/ })
+/******/ ]);

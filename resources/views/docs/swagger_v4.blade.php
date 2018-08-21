@@ -1,17 +1,7 @@
 @extends('layouts.app')
 
 @section('head')
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <style>
-        html, body {height: 100%}
-        .openapi {
-            width:90%;
-            margin:0 auto;
-        }
-    </style>
-@endsection
-
-@section('content')
+    <style>html, body {height: 100%}</style>
 @endsection
 
 @section('footer')

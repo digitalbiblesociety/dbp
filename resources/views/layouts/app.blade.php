@@ -19,6 +19,7 @@
 </main>
 
 <script src="{{ mix('js/app.js') }}"></script>
+<script src="{{ mix('js/bulma.js') }}"></script>
 @yield('footer')
 </body>
 </html>

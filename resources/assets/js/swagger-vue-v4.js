@@ -1,17 +1,13 @@
 import Vue from 'vue'
-import VueMaterial from 'vue-material'
-import OpenApi from './docs/OpenApi.vue'
-import '../sass/components/vue-material.css'
+import OpenApi from './components/Docs/OpenApi.vue'
 import VueResource from 'vue-resource'
-
 import jsonApi from './swagger_v4.json'
 
-Vue.use(VueMaterial)
 Vue.use(VueResource)
 
 new Vue({
 	el: '#app',
-	template: '<open-api v-if="jsonApi" :api="jsonApi" md-theme="\'default\'" :query-params="queryParams" :headers="headers"></open-api>',
+	template: '<open-api v-if="jsonApi" :api="jsonApi" :query-params="queryParams" :headers="headers"></open-api>',
 	data: () => ({
 		jsonApi: jsonApi
 	}),

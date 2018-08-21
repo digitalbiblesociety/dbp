@@ -71,23 +71,22 @@ class DocsController extends APIController
 
 
 			if (isset($path->get->operationId)) {
-				/*
-								$path->get->summary = trans("api.docs.paths.".$path->get->operationId.'.summary');
-								$path->get->description = trans("api.docs.paths.".$path->get->operationId.'.description');
-								foreach($path->get->parameters as $key => $parameter) {
 
-									if(isset($parameter->ref)) {
-										$path = $parameter->ref;
-										$path = str_replace('#/components/','',$path);
-										$path = str_replace('/','.',$path);
-									}
-									$ref = basename($parameter->ref);
-									$path->get->parameters[$key]->name =  trans("api.".$path->get->operationId.'.'.$ref.'.description');
-									$path->get->parameters[$key]->description =  trans("api.".$path->get->operationId.'.'.$ref.'.description');
-								}
-
-								$this->fetchTranslations($path->get->operationId);
-								*/
+/*
+				$path->get->summary = trans("api.docs.paths.".$path->get->operationId.'.summary');
+				$path->get->description = trans("api.docs.paths.".$path->get->operationId.'.description');
+				foreach($path->get->parameters as $key => $parameter) {
+					if(isset($parameter->ref)) {
+						$path = $parameter->ref;
+						$path = str_replace('#/components/','',$path);
+						$path = str_replace('/','.',$path);
+					}
+					$ref = basename($parameter->ref);
+					$path->get->parameters[$key]->name =  trans("api.".$path->get->operationId.'.'.$ref.'.description');
+					$path->get->parameters[$key]->description =  trans("api.".$path->get->operationId.'.'.$ref.'.description');
+				}
+				$this->fetchTranslations($path->get->operationId);
+*/
 				if (substr($path->get->operationId, 0, 2) != $version) {
 					unset($swagger->paths[$key]);
 				}
