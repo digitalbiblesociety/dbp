@@ -397,6 +397,11 @@ class Book extends Model
         return $this->HasMany(BookTranslation::class, 'book_id');
     }
 
+	public function translation($language_id)
+	{
+		return $this->HasMany(BookTranslation::class, 'book_id')->where('language_id',$language_id);
+	}
+
     public function currentTranslation()
     {
         return $this->HasOne(BookTranslation::class, 'book_id')->where('language_id',$GLOBALS['i18n_id']);
