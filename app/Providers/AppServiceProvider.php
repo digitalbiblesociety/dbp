@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\User\Article;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     {
         //Paginator::useBootstrapThree();
         Schema::defaultStringLength(191);
+        View::share('last_articles', Article::with('currentTranslation')->orderBy('created_at')->take(3)->get());
     }
 
     /**

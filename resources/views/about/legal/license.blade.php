@@ -11,7 +11,17 @@
         ]
     ])
 
-    <div class="column is-8-desktop is-offset-2-desktop">
+    <div class="container">
+
+        <div class="tabs is-centered">
+            <ul>
+                <li><a href="{{ route('legal') }}">{{ trans('about.legal_overview') }}</a></li>
+                <li><a href="{{ route('eula') }}">{{ trans('about.eula_title') }}</a></li>
+                <li class="is-active"><a href="{{ route('license') }}">{{ trans('about.license_title') }}</a></li>
+                <li><a href="{{ route('privacy_policy') }}">{{ trans('about.privacy_policy_title') }}</a></li>
+            </ul>
+        </div>
+
     <div class="box columns">
         <div class="column is-6 has-text-centered">
             <svg class="icon is-size-3"><use xlink:href="/images/icons.svg#scales"></use></svg>

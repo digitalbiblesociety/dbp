@@ -6,6 +6,31 @@ use App\Http\Middleware\CheckIsUserActivated;
 use App\Http\Middleware\Cors;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
+// Middleware
+use \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode;
+use \Illuminate\Foundation\Http\Middleware\ValidatePostSize;
+use \App\Http\Middleware\TrimStrings;
+use \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
+use \App\Http\Middleware\TrustProxies;
+use \App\Http\Middleware\EncryptCookies;
+use \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use \Illuminate\Session\Middleware\StartSession;
+use \Illuminate\View\Middleware\ShareErrorsFromSession;
+use \Illuminate\Routing\Middleware\SubstituteBindings;
+use \App\Http\Middleware\VerifyCsrfToken;
+use \App\Http\Middleware\Laravel2step;
+use \Illuminate\Auth\Middleware\Authenticate;
+use \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
+use \Illuminate\Http\Middleware\SetCacheHeaders;
+use \Illuminate\Auth\Middleware\Authorize;
+use \App\Http\Middleware\RedirectIfAuthenticated;
+use \Illuminate\Routing\Middleware\ThrottleRequests;
+use \jeremykenedy\LaravelRoles\Middleware\VerifyRole;
+use \jeremykenedy\LaravelRoles\Middleware\VerifyPermission;
+use \jeremykenedy\LaravelRoles\Middleware\VerifyLevel;
+use \App\Http\Middleware\CheckCurrentUser;
+use \Lunaweb\Localization\Middleware\LocalizationHandler;
+
 class Kernel extends HttpKernel
 {
     /**
@@ -16,11 +41,11 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
-        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
-        \App\Http\Middleware\TrimStrings::class,
-        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        \App\Http\Middleware\TrustProxies::class,
+        CheckForMaintenanceMode::class,
+        ValidatePostSize::class,
+        TrimStrings::class,
+        ConvertEmptyStringsToNull::class,
+        TrustProxies::class,
     ];
 
     /**
@@ -30,14 +55,14 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            \App\Http\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class,
-            // \Illuminate\Session\Middleware\AuthenticateSession::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-	        \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\VerifyCsrfToken::class,
-	        \App\Http\Middleware\Laravel2step::class
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
+            ShareErrorsFromSession::class,
+	        SubstituteBindings::class,
+            VerifyCsrfToken::class,
+	        Laravel2step::class,
+	        LocalizationHandler::class,
         ],
         'api' => [
             'throttle:120,1',
@@ -57,18 +82,17 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth'          => \Illuminate\Auth\Middleware\Authenticate::class,
-        'auth.basic'    => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'bindings'      => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-        'can'           => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest'         => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'throttle'      => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'auth'          => Authenticate::class,
+        'auth.basic'    => AuthenticateWithBasicAuth::class,
+        'bindings'      => SubstituteBindings::class,
+        'cache.headers' => SetCacheHeaders::class,
+        'can'           => Authorize::class,
+        'guest'         => RedirectIfAuthenticated::class,
+        'throttle'      => ThrottleRequests::class,
+        'role'          => VerifyRole::class,
+        'permission'    => VerifyPermission::class,
+        'level'         => VerifyLevel::class,
+        'currentUser'   => CheckCurrentUser::class,
         'activated'     => CheckIsUserActivated::class,
-        'role'          => \jeremykenedy\LaravelRoles\Middleware\VerifyRole::class,
-        'permission'    => \jeremykenedy\LaravelRoles\Middleware\VerifyPermission::class,
-        'level'         => \jeremykenedy\LaravelRoles\Middleware\VerifyLevel::class,
-        'currentUser'   => \App\Http\Middleware\CheckCurrentUser::class,
-        'localize'      => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRoutes::class,
     ];
 }

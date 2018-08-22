@@ -11,7 +11,6 @@
         i {
             font-size:1.5rem;
         }
-
     </style>
 
 @endsection
@@ -23,7 +22,7 @@
             <h1 class="title">The Open Bible API</h1>
             <h2 class="subtitle">A collection of thousands of Bibles and resources brought to you by Faith Comes By Hearing<br> with the partnership of the Forum of Bible Agencies and Digital Bible Society.</h2>
             <div class="field is-grouped columns is-mobile is-centered">
-                <p class="control"><a href="/docs/" class="button is-link">Get Started</a></p>
+                <p class="control"><a href="/docs/swagger/v4/" class="button is-link">Get Started</a></p>
                 {{-- <p class="control"><a href="https://github.com/digitalbiblesociety/dbp" class="button">Github</a></p> --}}
             </div>
         </div>

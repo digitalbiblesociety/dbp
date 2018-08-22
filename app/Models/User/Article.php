@@ -36,4 +36,9 @@ class Article extends Model
     	return $this->hasMany(ArticleTranslation::class);
     }
 
+    public function currentTranslation()
+    {
+    	return $this->hasOne(ArticleTranslation::class)->where('iso',\App::getLocale());
+    }
+
 }

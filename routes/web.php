@@ -13,9 +13,29 @@
 |
 */
 
+
+Localization::localizedRoutesGroup(function() {
+
 // Homepage Route
 Route::get('/',                      'WelcomeController@welcome')->name('welcome');
+
+// Overview Page
+Route::get('/about/legal',           'WelcomeController@legal')->name('legal');
+Route::get('/acerca-de/legal',       'WelcomeController@legal')->name('es.legal')->localization('es');
+
+// Eula Page
+Route::get('/about/eula',            'WelcomeController@eula')->name('eula');
+Route::get('/acerca-de/eula',        'WelcomeController@eula')->name('es.eula')->localization('es');
+
+// License Page
 Route::get('/about/license',         'WelcomeController@license')->name('license');
+Route::get('/acerca-de/licencia',    'WelcomeController@license')->name('es.license')->localization('es');
+
+// Privacy Policy
+Route::get('/about/privacy-policy',                'WelcomeController@privacy_policy')->name('privacy_policy');
+Route::get('/acerca-de/politica-de-privacidad',    'WelcomeController@privacy_policy')->name('es.privacy_policy')->localization('es');
+
+
 Route::get('/about/contact',         'User\UserContactController@create')->name('contact.create');
 Route::post('/about/contact',        'User\UserContactController@store')->name('contact.store');
 
@@ -122,4 +142,6 @@ Route::group(['middleware' => ['auth', 'activated', 'role:admin', 'activity']], 
     Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
     Route::get('routes', 'User\Dashboard\AdminDetailsController@listRoutes');
     Route::get('active-users', 'User\Dashboard\AdminDetailsController@activeUsers');
+});
+
 });

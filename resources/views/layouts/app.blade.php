@@ -7,9 +7,28 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,900" rel="stylesheet">
     <link rel="stylesheet" href="{{ mix('css/app.css') }}" />
 
+    @if(Localization::isLocalizedRoute())
+        @foreach(Localization::getLocales() as $localeCode => $properties)
+            <link rel="alternate" hreflang="{{ $localeCode }}" href="{{ Localization::getLocaleUrl($localeCode) }}">
+        @endforeach
+    @endif
+
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @yield('head')
+    <style>
+        #translation-dropdown .navbar-link {
+            text-align: center;
+            font-size: 20px;
+            margin:0 auto;
+            display: block;
+            padding: 10px 20px;
+        }
+
+        #translation-dropdown .navbar-link:after {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 @include('layouts.partials.nav')
