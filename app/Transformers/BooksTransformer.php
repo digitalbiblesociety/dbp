@@ -107,9 +107,9 @@ class BooksTransformer extends BaseTransformer
 	 */
 	public function transformForV4($book) {
 		return [
-			"id"              => $book->book_id,
-			"id_usfx"         => $book->book->id_usfx,
-			"id_osis"         => $book->book->id_osis,
+			"book_id"         => $book->book_id,
+			"book_id_usfx"    => $book->book->id_usfx,
+			"book_id_osis"    => $book->book->id_osis,
 			"name"            => $book->name,
 			"testament"       => $book->book->book_testament,
 			"testament_order" => $book->book->testament_order,
