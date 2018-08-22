@@ -38,6 +38,14 @@
 										<h4 v-if="(selectedEntry.parameters && selectedEntry.parameters.length) || selectedEntry.requestBody">Parameters</h4>
 										<parameters-table :selectedEntry="selectedEntry" :openSchemaDialog="openSchemaDialog" :openExamplesDialog="openExamplesDialog"></parameters-table>
 										<responses-table :selectedEntry="selectedEntry" :openSchemaDialog="openSchemaDialog" :openExamplesDialog="openExamplesDialog"></responses-table>
+										<modal ref="schemaDialog" :visible="false" :closable="true" transition="zoom">
+											<schema-view :schema="currentSchema"></schema-view>
+											<pre>{{ JSON.stringify(currentSchema, null, 2)}}</pre>
+										</modal>
+										<modal ref="examplesDialog" :visible="false" :closable="true" transition="zoom">
+											<schema-view :schema="currentExamples"></schema-view>
+											<pre>{{ JSON.stringify(currentExamples, null, 2)}}</pre>
+										</modal>
 									</tab-pane>
 									<tab-pane label="Request">
 										<request-form :selectedEntry="selectedEntry" :currentRequest="currentRequest"></request-form>
@@ -50,21 +58,6 @@
 
 						</div>
 			</div>
-
-		<card-modal ref="schemaDialog" :visible="true" :title="title" transition="zoom">
-			<div class="content has-text-centered">
-				<h4>Schema</h4>
-
-				<div id="tree" md-label="Tree">
-					<schema-view :schema="currentSchema"></schema-view>
-				</div>
-				<div id="raw" md-label="Raw">
-					<pre>{{ JSON.stringify(currentSchema, null, 2)}}</pre>
-				</div>
-				<div :md-content-html="currentExamples.map(example => `<pre>${JSON.stringify(example, null, 2)}</pre>`).join('<br>') + ' '" md-title="Examples" ref="examplesDialog"></div>
-				<button v-on:click="$refs.schemaDialog.close()">ok</button>
-			</div>
-		</card-modal>
 	</div>
 </template>
 
@@ -78,7 +71,7 @@
 
 	import { Collapse, Item as CollapseItem } from 'vue-bulma-collapse'
 	import { Tabs, TabPane } from 'vue-bulma-tabs'
-	import { CardModal } from 'vue-bulma-modal'
+	import { Modal } from 'vue-bulma-modal'
 
 	export default {
 		name: 'open-api',
@@ -92,7 +85,7 @@
 			CollapseItem,
 			Tabs,
 			TabPane,
-			CardModal
+			Modal
 		},
 		props: ['api', 'headers', 'queryParams'],
 		data: () => ({
@@ -142,11 +135,11 @@
 			},
 			openSchemaDialog(schema) {
 				this.currentSchema = schema
-				this.$refs.schemaDialog.open()
+				this.$refs.schemaDialog.show = true;
 			},
 			openExamplesDialog(examples) {
 				this.currentExamples = examples
-				this.$refs.examplesDialog.open()
+				this.$refs.examplesDialog.show = true
 			},
 			request() {
 				this.currentResponse = null
@@ -221,7 +214,7 @@
 
 	function getTag(api) {
 		const derefAPI = deref(api)
-		console.log(derefAPI)
+
 		var tags = {}
 		Object.keys(derefAPI.paths).forEach(function(path) {
 			Object.keys(derefAPI.paths[path])

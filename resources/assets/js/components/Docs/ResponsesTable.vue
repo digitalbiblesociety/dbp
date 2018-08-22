@@ -1,5 +1,5 @@
 <template lang="html">
-  <table class="table">
+  <table class="table" style="width: 100%">
     <thead>
       <tr>
         <th>HTTP Code</th>
