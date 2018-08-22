@@ -40,7 +40,7 @@ class Kernel extends HttpKernel
 	        \App\Http\Middleware\Laravel2step::class
         ],
         'api' => [
-            'throttle:60,1',
+            'throttle:120,1',
             'bindings',
 	        Cors::class
         ],
@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'permission'    => \jeremykenedy\LaravelRoles\Middleware\VerifyPermission::class,
         'level'         => \jeremykenedy\LaravelRoles\Middleware\VerifyLevel::class,
         'currentUser'   => \App\Http\Middleware\CheckCurrentUser::class,
+        'localize'      => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRoutes::class,
     ];
 }
