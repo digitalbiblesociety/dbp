@@ -104,7 +104,7 @@ function fetchBible($bible_id)
 function fetchVernacularNumbers($number_id,$start_number,$end_number)
 {
 	// Alphabet Numbers
-	$numbers = \App\Models\Language\NumberValues::where('number_id',$number_id)->get()->keyBy('value')->ToArray();
+	$numbers = \App\Models\Language\NumberValues::where('value',$number_id)->get()->keyBy('value')->ToArray();
 
 	// Run through the numbers and return the vernaculars
 	$current_number = $start_number;
