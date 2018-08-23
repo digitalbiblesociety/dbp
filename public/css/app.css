@@ -11521,6 +11521,10 @@ label.panel-block:hover {
   overflow: hidden;
 }
 
+small {
+  display: block;
+}
+
 .hero.is-primary {
   margin-bottom: 25px;
 }
