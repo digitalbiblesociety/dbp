@@ -20,21 +20,23 @@ Localization::localizedRoutesGroup(function() {
 Route::get('/',                      'WelcomeController@welcome')->name('welcome');
 
 // Overview Page
+Route::get('/about/',                'WelcomeController@overview')->name('overview');
+
+// Legal Overview
 Route::get('/about/legal',           'WelcomeController@legal')->name('legal');
 Route::get('/acerca-de/legal',       'WelcomeController@legal')->name('es.legal')->localization('es');
 
-// Eula Page
+// Legal | Eula Page
 Route::get('/about/eula',            'WelcomeController@eula')->name('eula');
 Route::get('/acerca-de/eula',        'WelcomeController@eula')->name('es.eula')->localization('es');
 
-// License Page
+// Legal | License Page
 Route::get('/about/license',         'WelcomeController@license')->name('license');
 Route::get('/acerca-de/licencia',    'WelcomeController@license')->name('es.license')->localization('es');
 
-// Privacy Policy
+// Legal | Privacy Policy
 Route::get('/about/privacy-policy',                'WelcomeController@privacy_policy')->name('privacy_policy');
 Route::get('/acerca-de/politica-de-privacidad',    'WelcomeController@privacy_policy')->name('es.privacy_policy')->localization('es');
-
 
 Route::get('/about/contact',         'User\UserContactController@create')->name('contact.create');
 Route::post('/about/contact',        'User\UserContactController@store')->name('contact.store');
