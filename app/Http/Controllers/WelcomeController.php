@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\CallsBucketsTrait;
-
 class WelcomeController extends APIController
 {
-
-	use CallsBucketsTrait;
 
     public function welcome()
     {
