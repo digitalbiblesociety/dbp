@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Bible;
 
+use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\Book;
 use App\Models\Bible\Text;
@@ -75,6 +76,7 @@ class BooksController extends APIController
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OA\Parameter(ref="#/components/parameters/format"),
 	 *     @OA\Parameter(name="fileset_id", in="path", ref="#/components/schemas/BibleFileset/properties/id"),
+	 *     @OA\Parameter(name="fileset_type", in="query", description="The type of fileset being queried", @OA\Schema(type="string")),
 	 *     @OA\Parameter(name="testament", in="query", description="The testament to filter books by", @OA\Schema(type="string")),
 	 *     @OA\Parameter(name="bucket", in="query", description="The bucket to select the fileset by", @OA\Schema(type="string")),
 	 *     @OA\Response(
@@ -91,10 +93,14 @@ class BooksController extends APIController
 	 */
 	public function show($id)
 	{
+		$fileset_type = checkParam('fileset_type');
 		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$testament = checkParam('testament', null, 'optional');
 
-		$fileset   = BibleFileset::with('bible')->where('id', $id)->orWhere('id',substr($id,0,-4))->orWhere('id',substr($id,0,-2))->where('bucket_id', $bucket_id)->first();
+		$fileset   = BibleFileset::with('bible')
+		                         ->where('id', $id)->orWhere('id',substr($id,0,-4))
+		                         ->orWhere('id',substr($id,0,-2))->where('bucket_id', $bucket_id)
+		                         ->where('set_type_code',$fileset_type)->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
 
 		$bible = $fileset->bible->first();
@@ -106,9 +112,11 @@ class BooksController extends APIController
 			if(is_a($sophiaTable,JsonResponse::class)) return $sophiaTable;
 			$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
 			$general_books = Book::whereIn('id_usfx',$booksChapters->pluck('book')->unique()->toArray())->get();
-			$books = BookTranslation::with('book')->whereIn('book_id', $general_books->pluck('id'))->where('language_id',$bible->language_id)
+			$books = BibleBook::with('book')
+			            ->whereIn('book_id', $general_books->pluck('id'))
+			            ->where('bible_id',$bible->id)
 						->when($testament, function ($q) use ($testament) {
-						    $q->where('book_testament',$testament);
+							$q->where('book_testament',$testament);
 						})->get();
 
 			// Append Chapters to book object
@@ -117,7 +125,12 @@ class BooksController extends APIController
 		} else {
 			// Otherwise select from bible_files table
 			$bible_files = BibleFile::where('hash_id',$fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
-			$books = BookTranslation::with('book')->whereIn('book_id',$bible_files->pluck('book_id')->unique())->where('language_id',$bible->language_id)->get();
+			$books = BibleBook::with('book')
+			                  ->whereIn('book_id', $bible_files->pluck('book_id')->unique())
+			                  ->where('bible_id',$bible->id)
+			                  ->when($testament, function ($q) use ($testament) {
+				                  $q->where('book_testament',$testament);
+			                  })->get();
 
 			// Append Chapters to book object
 			foreach ($books as $book) $book->chapters = $bible_files->where('book_id',$book->book_id)->pluck('chapter_start')->unique();
