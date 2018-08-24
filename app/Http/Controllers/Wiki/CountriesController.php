@@ -59,8 +59,8 @@ class CountriesController extends APIController
 		$bucket_id         = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$include_languages = checkParam('include_languages', null, 'optional');
 
-		\Cache::forget("countries" . $l10n . $has_filesets . $bucket_id . $include_languages . \i18n::getCurrentLocale());
-		return \Cache::remember("countries" . $l10n . $has_filesets . $bucket_id . $include_languages . \i18n::getCurrentLocale(),
+		\Cache::forget("countries" . $l10n . $has_filesets . $bucket_id . $include_languages);
+		return \Cache::remember("countries" . $l10n . $has_filesets . $bucket_id . $include_languages,
 			1600, function () use ($l10n, $has_filesets, $bucket_id, $include_languages) {
 				if ($l10n) {
 					$language = Language::where('iso', $l10n)->first();
