@@ -10,7 +10,7 @@ class Bucket {
 	{
 		$expiry = $expiry * 60;
 
-		return self::aws_s3_link(env('AWS_KEY'),env('AWS_SECRET'),$bucket,'/'.$file,$expiry * 600,'us-west-1');
+		return self::aws_s3_link(env('AWS_KEY'),env('AWS_SECRET'),$bucket,'/'.$file,$expiry * 600,'us-west-2');
 	}
 
 	public static function aws_s3_link($access_key, $secret_key, $bucket, $canonical_uri, $expires = 3000, $region = 'us-east-1', $extra_headers = array()) {
