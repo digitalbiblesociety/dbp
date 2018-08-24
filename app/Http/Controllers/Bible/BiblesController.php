@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Bible;
 
+use App\Helpers\AWS\Bucket;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleLink;
 use App\Models\Bible\Book;
+use App\Models\Bible\BookTranslation;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
@@ -437,30 +439,23 @@ class BiblesController extends APIController
 		}
 
 		$book_id = checkParam('book_id', $book_id, 'optional');
+		$testament = checkParam('testament',null,'optional');
 
 		$translation_languages = checkParam('language_codes', null, 'optional');
 		if ($translation_languages) {
 			$translation_languages = explode('|', $translation_languages);
 		}
-
-		$bible_books = BibleBook::where('bible_id', $bible_id)->first();
-		$books       = Book::when($translation_languages, function ($q) use ($translation_languages) {
-			$q->with(['translations' => function ($query) use ($translation_languages) {
-				$query->whereIn('iso', $translation_languages);
-			}]);
-		})->when($bible_id, function ($q) use ($bible_id, $bible_books) {
-			if (isset($bible_books)) {
-				$q->whereHas('bible', function ($query) use ($bible_id) {
-					$query->where('bible_id', $bible_id);
-				});
-			}
-			$q->with(['bible' => function ($query) use ($bible_id) {
-				$query->where('bible_id', $bible_id)->select('id');
-			}]);
-		})->when($book_id, function ($q) use ($book_id) {
-			$q->where('id', $book_id);
-		})->orderBy('protestant_order')->get();
-
+		$bible = Bible::find($bible_id);
+		//BookTranslation::all()
+		$bible_books = BibleBook::where('bible_id', $bible_id)->select('book_id')->distinct()->get()->pluck('book_id');
+		$books = BookTranslation::with('book')->where('language_id',$bible->language_id)
+					->when($testament, function ($q) use ($testament) {
+					    $q->where('book_testament',$testament);
+					})
+					->when($book_id, function ($q) use ($book_id) {
+						$q->where('id', $book_id);
+					})->whereIn('book_id',$bible_books)->get();
+		$books = $books->sortBy('book.'.$bible->versification.'_order');
 		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer)->toArray());
 	}
 
