@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Bucket {
 
-	public static function signedUrl(string $file, string $bucket = 'dbp-dev', int $expiry = 5)
+	public static function signedUrl(string $file, string $bucket = 'dbp-prod', int $expiry = 5)
 	{
 		$prefix = 'DBS_';
 		$bucket = 'dbs-web';
@@ -71,7 +71,7 @@ class Bucket {
 		]);
 
 		try {
-			$stream->bucket('dbp-dev')->prefix("audio/$bible_id/$fileset_id")->send($fileset_id."_".$books->implode("_").".zip",$books->toArray());
+			$stream->bucket('dbp-prod')->prefix("audio/$bible_id/$fileset_id")->send($fileset_id."_".$books->implode("_").".zip",$books->toArray());
 		} catch (InvalidParameterException $e) {
 			echo $e->getMessage();
 		} catch (S3Exception $e) {
