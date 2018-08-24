@@ -8,19 +8,15 @@ class Bucket {
 
 	public static function signedUrl(string $file, string $bucket = 'dbp-prod', int $expiry = 5)
 	{
-		$prefix = 'DBS_';
-		$bucket = 'dbs-web';
 		$expiry = $expiry * 60;
 
-		return self::aws_s3_link(env($prefix.'AWS_KEY'),env($prefix.'AWS_SECRET'),$bucket,'/'.$file,$expiry * 600,env($prefix.'AWS_REGION'));
+		return self::aws_s3_link(env('AWS_KEY'),env('AWS_SECRET'),$bucket,'/'.$file,$expiry * 600,'us-west-1');
 	}
 
 	public static function aws_s3_link($access_key, $secret_key, $bucket, $canonical_uri, $expires = 3000, $region = 'us-east-1', $extra_headers = array()) {
 		$encoded_uri = str_replace('%2F', '/', rawurlencode($canonical_uri));
 		$signed_headers = array();
-		foreach ($extra_headers as $key => $value) {
-			$signed_headers[strtolower($key)] = $value;
-		}
+		foreach ($extra_headers as $key => $value) $signed_headers[strtolower($key)] = $value;
 		if (!array_key_exists('host', $signed_headers)) {
 			$signed_headers['host'] = ($region == 'us-east-1') ? "$bucket.s3.amazonaws.com" : "$bucket.s3-$region.amazonaws.com";
 		}
@@ -36,10 +32,10 @@ class Bucket {
 		$algorithm = 'AWS4-HMAC-SHA256';
 		$scope = "$date_text/$region/s3/aws4_request";
 		$x_amz_params = array(
-			'X-Amz-Algorithm' => $algorithm,
-			'X-Amz-Credential' => $access_key . '/' . $scope,
-			'X-Amz-Date' => $time_text,
-			'X-Amz-Transaction' => rand(0,10000000),
+			'X-Amz-Algorithm'     => $algorithm,
+			'X-Amz-Credential'    => $access_key . '/' . $scope,
+			'X-Amz-Date'          => $time_text,
+			'X-Amz-Transaction'   => rand(0,10000000),
 			'X-Amz-SignedHeaders' => $signed_headers_string
 		);
 		if ($expires > 0) $x_amz_params['X-Amz-Expires'] = $expires;
@@ -59,7 +55,7 @@ class Bucket {
 
 	// public static function signedUrl(string $file, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5)
 
-	public static function download($files, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5, $books = null)
+	public static function download($files, string $name = 's3_fcbh', string $bucket = 'dbp-prod', int $expiry = 5, $books = null)
 	{
 		$fileset_id = $files->first()->fileset->id;
 		$bible_id = $files->first()->fileset->bible->id;
