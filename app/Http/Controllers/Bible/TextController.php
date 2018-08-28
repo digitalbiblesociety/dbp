@@ -9,6 +9,7 @@ use App\Models\Bible\Book;
 use App\Models\Bible\BibleEquivalent;
 use App\Models\Language\AlphabetFont;
 use App\Traits\AccessControlAPI;
+use App\Traits\CallsBucketsTrait;
 use App\Transformers\FontsTransformer;
 use App\Transformers\TextTransformer;
 use DB;
@@ -17,7 +18,7 @@ use App\Http\Controllers\APIController;
 
 class TextController extends APIController
 {
-
+	use CallsBucketsTrait;
 	use AccessControlAPI;
 
 	/**
@@ -99,9 +100,10 @@ class TextController extends APIController
 		if ($formatted) {
 			$path   = 'text/' . $bible->id . '/' . $fileset->id . '/' . $book_id . $chapter . '.html';
 			$exists = Storage::disk($formatted)->exists($path);
+
 			if (!$exists) return $this->replyWithError("The path: $path did not result in a file");
 
-			return $this->reply(["path" => Bucket::signedUrl($path)], [], true);
+			return $this->reply(["path" => $this->signedUrl($path)], [], true);
 		}
 
 		// Fetch Verses
@@ -128,7 +130,7 @@ class TextController extends APIController
 		$book_id  = checkParam('book_id');
 		$chapter  = checkParam('chapter_id');
 
-		$url     = "https://s3-us-west-2.amazonaws.com/dbp-dev/text/" . $bible_id . "/" . $bible_id . "/" . $book_id . $chapter . ".html";
+		$url     = "https://s3-us-west-2.amazonaws.com/dbp-prod/text/" . $bible_id . "/" . $bible_id . "/" . $book_id . $chapter . ".html";
 		$chapter = Bucket::get($url);
 	}
 

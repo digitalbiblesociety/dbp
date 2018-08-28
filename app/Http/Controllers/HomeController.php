@@ -11,11 +11,14 @@ use App\Models\Organization\Organization;
 use App\Models\Bible\Bible;
 use App\Helpers\AWS\Bucket;
 use App\Models\Resource\Resource;
+use App\Traits\CallsBucketsTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class HomeController extends APIController
 {
+
+	use CallsBucketsTrait;
 
 	/**
 	 * Show the application dashboard.
@@ -307,7 +310,7 @@ class HomeController extends APIController
 		foreach ($filenames as $filename) {
 			$filename                                      = ltrim($filename, "/");
 			$paths                                         = explode("/", $filename);
-			$urls["urls"][$paths[0]][$paths[1]][$paths[2]] = Bucket::signedUrl($filename, $signer, $bucket, $expiry);
+			$urls["urls"][$paths[0]][$paths[1]][$paths[2]] = $this->signedUrl($filename, $signer, $bucket, $expiry);
 		}
 
 		return $this->reply($urls);

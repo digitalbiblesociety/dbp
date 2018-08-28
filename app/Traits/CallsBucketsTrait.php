@@ -4,9 +4,9 @@ namespace App\Traits;
 
 use Carbon\Carbon;
 use Curl\Curl;
-use Aws\S3\S3Client;
 use Cache;
 use SimpleXMLElement;
+
 trait CallsBucketsTrait {
 
 	function __construct() {
@@ -15,72 +15,39 @@ trait CallsBucketsTrait {
 		$this->arnRole = env('AWS_ARN_ROLE');
 	}
 
-	public function signedUrl(string $file, string $bucket = 'dbp-dev', int $expiry = 5)
+	public function signedUrl(string $file, string $bucket = 'dbp-prod')
 	{
-		$prefix = 'DBS_';
-		$bucket = 'dbs-web';
-		$expiry = $expiry * 60;
-
 		$security_token = Cache::remember('iam_assumed_role', 1200, function () {
 			$role_call  = $this->assumeRole();
 			if($role_call) {
 				$response_xml   = simplexml_load_string($role_call->response,'SimpleXMLElement',LIBXML_NOCDATA);
 				$response       = json_decode(json_encode($response_xml));
-				$ar_token       = $response->AssumeRoleResult->Credentials->SessionToken;
-				return $ar_token;
+				return $response;
 			}
 		});
 
-		return $this->aws_s3_link($security_token,$bucket,'/'.$file,$expiry * 600,$region = 'us-west-2');
+		return $this->aws_s3_link($security_token,$bucket,'/'.$file);
 	}
 
-	public function aws_s3_link($security_token, $bucket, $canonical_uri, $expires = 3000, $region = 'us-east-1', $extra_headers = array()) {
-		$encoded_uri = str_replace('%2F', '/', rawurlencode($canonical_uri));
-		$signed_headers = array();
-		foreach ($extra_headers as $key => $value) {
-			$signed_headers[strtolower($key)] = $value;
-		}
-		if (!array_key_exists('host', $signed_headers)) {
-			$signed_headers['host'] = ($region == 'us-east-1') ? "$bucket.s3.amazonaws.com" : "$bucket.s3-$region.amazonaws.com";
-		}
-		ksort($signed_headers);
-		$header_string = '';
-		foreach ($signed_headers as $key => $value) {
-			$header_string .= $key . ':' . trim($value) . "\n";
-		}
-		$signed_headers_string = implode(';', array_keys($signed_headers));
-		$timestamp = time();
-		$date_text = gmdate('Ymd', $timestamp);
-		$time_text = $date_text . 'T000000Z';
-		$algorithm = 'AWS4-HMAC-SHA256';
-		$scope = "$date_text/$region/s3/aws4_request";
-		$x_amz_params = array(
-			'X-Amz-Algorithm' => $algorithm,
-			'X-Amz-Credential' => $this->key . '/' . $scope,
-			'X-Amz-Date' => $time_text,
-			'X-Amz-Transaction' => rand(0,10000000),
-			'X-Amz-Security-Token' => $security_token,
-			'X-Amz-SignedHeaders' => $signed_headers_string
-		);
-		if ($expires > 0) $x_amz_params['X-Amz-Expires'] = $expires;
-		ksort($x_amz_params);
-		$query_string_items = array();
-		foreach ($x_amz_params as $key => $value) {
-			$query_string_items[] = rawurlencode($key) . '=' . rawurlencode($value);
-		}
-		$query_string = implode('&', $query_string_items);
-		$canonical_request = "GET\n\n$timestamp\n\nx-amz-security-token:$security_token\n";
-		dd($canonical_request);
+	public function aws_s3_link($security_token, $bucket, $canonical_uri, $region = 'us-west-2', $extra_headers = array()) {
+		$timestamp = Carbon::now()->addDay()->timestamp;
 
-		$string_to_sign = "$algorithm\n\n$timestamp\n$scope\n" . hash('sha256', $canonical_request, false);
+		$temp_session_token = $security_token->AssumeRoleResult->Credentials->SessionToken;
+		$temp_secret_key    = $security_token->AssumeRoleResult->Credentials->SecretAccessKey;
+		$temp_access_key    = $security_token->AssumeRoleResult->Credentials->AccessKeyId;
 
-		$signature = $this->encryptValues($string_to_sign,'s3',$region);
-		$url = 'https://' . $signed_headers['host'] . $encoded_uri . '?' . $query_string . '&X-Amz-Signature=' . $signature;
-		return $url;
+		$random_int = rand(0,10000000);
+		$data = "GET\n\n\n$timestamp\nx-amz-security-token:$temp_session_token\nx-amz-transaction:$random_int\n/$bucket$canonical_uri";
+		$hmac = hash_hmac("sha1", $data, $temp_secret_key, TRUE);
+		$signature = base64_encode($hmac);
+
+
+		return "https://$bucket.s3.amazonaws.com$canonical_uri?AWSAccessKeyId=".$temp_access_key."&Signature=".urlencode($signature)."&x-amz-security-token=".urlencode($temp_session_token)."&x-amz-transaction=$random_int&Expires=$timestamp";
 	}
 
 	private function assumeRole()
 	{
+		// Initialize timestamps
 		$date        = date('Ymd');
 		$timestamp   = str_replace([':','-'],'', Carbon::now()->toIso8601ZuluString());
 
@@ -124,11 +91,9 @@ trait CallsBucketsTrait {
 		$request_body = rtrim($request_body,'&');
 		$encrypt_body = hash('sha256',$request_body);
 
-
 		$request        = "POST\n$canonical_uri\n\ncontent-type:application/x-www-form-urlencoded; charset=utf-8\nhost:sts.amazonaws.com\nx-amz-date:".$current_time."\n\ncontent-type;host;x-amz-date\n$encrypt_body";
 		$string_to_sign = "$algorithm\n$current_time\n$scope\n" . hash('sha256', $request);
 		$signature      = $this->encryptValues($string_to_sign, 'sts');
-
 		return $signature;
 	}
 

@@ -10,6 +10,7 @@ use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFileTimestamp;
 
+use App\Traits\CallsBucketsTrait;
 use App\Transformers\AudioTransformer;
 
 use App\Helpers\AWS\Bucket;
@@ -17,6 +18,8 @@ use App\Helpers\AWS\Bucket;
 
 class AudioController extends APIController
 {
+
+	use CallsBucketsTrait;
 
 	/**
 	 *
@@ -81,7 +84,7 @@ class AudioController extends APIController
 			})->orderBy('file_name')->get();
 
 		foreach ($audioChapters as $key => $audio_chapter) {
-			$audioChapters[$key]->file_name = Bucket::signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name,$bucket_id,$limit);
+			$audioChapters[$key]->file_name = $this->signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name,$bucket_id,$limit);
 		}
 
 		return $this->reply(fractal($audioChapters, new AudioTransformer())->serializeWith($this->serializer), [], true);
