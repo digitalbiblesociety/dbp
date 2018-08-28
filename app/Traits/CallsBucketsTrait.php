@@ -9,12 +9,6 @@ use SimpleXMLElement;
 
 trait CallsBucketsTrait {
 
-	function __construct() {
-		$this->key     = env('AWS_KEY');
-		$this->secret  = env('AWS_SECRET');
-		$this->arnRole = env('AWS_ARN_ROLE');
-	}
-
 	public function signedUrl(string $file, string $bucket = 'dbp-prod')
 	{
 		$security_token = Cache::remember('iam_assumed_role', 1200, function () {
