@@ -41,6 +41,9 @@ Route::get('/acerca-de/politica-de-privacidad',    'WelcomeController@privacy_po
 Route::get('/about/contact',         'User\UserContactController@create')->name('contact.create');
 Route::post('/about/contact',        'User\UserContactController@store')->name('contact.store');
 
+// About
+Route::get('/about/relations',         'WelcomeController@relations')->name('relations');
+
 // Authentication Routes | Passwords
 Auth::routes();
 
@@ -98,7 +101,7 @@ Route::group(['middleware' => ['auth', 'activated', 'activity']], function () {
     Route::name('logout')->get('/logout',                               'Auth\LoginController@logout');
 
     Route::name('public.home')->get('/home',                           'User\UserController@index');       //  Homepage Route - Redirect based on user role is in controller.
-    Route::name('profiles.show')->get('profile/{username}',               'User\Dashboard\ProfilesController@show');    // Show users profile - viewable by other users.
+    Route::name('profiles.show')->get('profile/{username}',            'User\Dashboard\ProfilesController@show');    // Show users profile - viewable by other users.
 });
 
 // Registered, activated, and is current user routes.
@@ -116,14 +119,26 @@ Route::group(['middleware' => ['auth', 'activated', 'currentUser', 'activity']],
 // Registered, activated, and is admin routes.
 Route::group(['middleware' => ['auth', 'activated', 'role:admin', 'activity']], function () {
 
+	// Dashboards
+	Route::get('/activity',                         'User\Dashboard\LaravelLoggerController@showAccessLog')->name('activity');
+	Route::get('/activity/cleared',                 'User\Dashboard\LaravelLoggerController@showClearedActivityLog')->name('cleared');
+	Route::get('/activity/log/{id}',                'User\Dashboard\LaravelLoggerController@showAccessLogEntry');
+	Route::get('/activity/cleared/log/{id}',        'User\Dashboard\LaravelLoggerController@showClearedAccessLogEntry');
+	Route::delete('/activity/clear-activity',       'User\Dashboard\LaravelLoggerController@clearActivityLog')->name('clear-activity');
+	Route::delete('/activity/destroy-activity',     'User\Dashboard\LaravelLoggerController@destroyActivityLog')->name('destroy-activity');
+	Route::post('/activity/restore-log',            'User\Dashboard\LaravelLoggerController@restoreClearedActivityLog')->name('restore-activity');
 
+
+	Route::get('/php-info',           'User\Dashboard\AdminDetailsController@phpinfo')->name('phpinfo');
 	Route::get('/messages',           'User\UserContactController@index')->name('messages.index');
     Route::resource('/users/deleted', 'User\Dashboard\SoftDeletesController', ['only' => ['index', 'show', 'update', 'destroy']]);
 
 	Route::resource('bibles', 'Bible\BiblesManagementController', [
 		'names' => [
 			'index'   => 'dashboard.bibles',
-			'destroy' => 'dashboard.bible.destroy',
+			'create'  => 'dashboard.bibles.create',
+			'store'   => 'dashboard.bibles.store',
+			'delete'  => 'dashboard.bible.delete',
 		],
 		'except' => [
 			'deleted',
@@ -141,7 +156,7 @@ Route::group(['middleware' => ['auth', 'activated', 'role:admin', 'activity']], 
     ]);
     Route::post('search-users', 'User\Dashboard\UsersManagementController@search')->name('search-users');
 
-    Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+    Route::get('logs/{log?}', 'User\Dashboard\LogViewerController@index');
     Route::get('routes', 'User\Dashboard\AdminDetailsController@listRoutes');
     Route::get('active-users', 'User\Dashboard\AdminDetailsController@activeUsers');
 });

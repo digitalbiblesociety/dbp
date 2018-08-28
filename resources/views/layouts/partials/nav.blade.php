@@ -30,7 +30,7 @@
                                 <a disabled class="navbar-item has-text-grey-light">Demos (Coming Soon)</a>
                                 <a class="navbar-item" href="{{ route('docs.sdk') }}">{{ trans('about.sdk_title') }}</a>
                                 <a class="navbar-item" href="https://github.com/digitalbiblesociety/dbp/issues">{{ trans('about.issues_title') }}</a>
-                                <a class="navbar-item" href="{{ route('contact.create') }}">{{ trans('about.help_title') }}</a>
+                                <a class="navbar-item" href="{{ route('contact.create') }}">{{ trans('about.contact_title') }}</a>
                             </div>
 
                             <div class="column">
@@ -74,7 +74,7 @@
                     <a class="navbar-item" href="{{ url('/users/create') }}">@lang('titles.adminNewUser')</a>
                     <a class="navbar-item" href="{{ url('/logs') }}">@lang('titles.adminLogs')</a>
                     <a class="navbar-item" href="{{ url('/activity') }}">@lang('titles.adminActivity')</a>
-                    <a class="navbar-item" href="{{ url('/phpinfo') }}">@lang('titles.adminPHP')</a>
+                    <a class="navbar-item" href="{{ url('/php-info') }}">@lang('titles.adminPHP')</a>
                     <a class="navbar-item" href="{{ url('/routes') }}">@lang('titles.adminRoutes')</a>
                     <a class="navbar-item" href="{{ url('/active-users') }}">@lang('titles.activeUsers')</a>
                 </div>
@@ -93,7 +93,7 @@
                         <a class="navbar-item" rel="alternate" hreflang="{{ $localeCode }}" href="{{ Localization::getLocaleUrl($localeCode, true) }}">{{ $properties['native'] }} </a>
                     @endforeach
                 </div>
-
+            </div>
             <div class="navbar-item">
                  @guest <a class="button is-primary" href="{{ route('login') }}">Login</a> @else
                     <div class="navbar-item has-dropdown is-hoverable">
@@ -113,6 +113,5 @@
                  @endguest
                 </div>
             </div>
-        </div>
     </div>
 </nav>

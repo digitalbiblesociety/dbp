@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "68736567c70321239b17321a745f5b08",
+    "content-hash": "5724c927154ab07b117d7857e0a38941",
     "packages": [
         {
             "name": "albertcht/invisible-recaptcha",
@@ -67,16 +67,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.65.2",
+            "version": "3.66.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "357ba2a06d2cf6e82a240f98a2292f5cd8bee15a"
+                "reference": "42d71e9c05e6a46981706d51c7d32b542ad4ff04"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/357ba2a06d2cf6e82a240f98a2292f5cd8bee15a",
-                "reference": "357ba2a06d2cf6e82a240f98a2292f5cd8bee15a",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/42d71e9c05e6a46981706d51c7d32b542ad4ff04",
+                "reference": "42d71e9c05e6a46981706d51c7d32b542ad4ff04",
                 "shasum": ""
             },
             "require": {
@@ -143,7 +143,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2018-08-22T20:21:17+00:00"
+            "time": "2018-08-24T17:52:51+00:00"
         },
         {
             "name": "aws/aws-sdk-php-laravel",
@@ -436,16 +436,16 @@
         },
         {
             "name": "darkaonline/l5-swagger",
-            "version": "5.6.8",
+            "version": "5.6.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DarkaOnLine/L5-Swagger.git",
-                "reference": "691b393085015434bd43e4768812d5937564c145"
+                "reference": "3eaba4d034c719f8b1250eb1a8dbb3f41504cb4f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DarkaOnLine/L5-Swagger/zipball/691b393085015434bd43e4768812d5937564c145",
-                "reference": "691b393085015434bd43e4768812d5937564c145",
+                "url": "https://api.github.com/repos/DarkaOnLine/L5-Swagger/zipball/3eaba4d034c719f8b1250eb1a8dbb3f41504cb4f",
+                "reference": "3eaba4d034c719f8b1250eb1a8dbb3f41504cb4f",
                 "shasum": ""
             },
             "require": {
@@ -460,6 +460,9 @@
                 "orchestra/testbench": "3.6.*",
                 "php-coveralls/php-coveralls": "^2.0",
                 "phpunit/phpunit": "7.*"
+            },
+            "suggest": {
+                "zircote/swagger-php:~2.0": "!!! Require Swagger-PHP ~2.0 for @SWG annotations support !!!"
             },
             "type": "library",
             "extra": {
@@ -493,7 +496,7 @@
                 "laravel",
                 "swagger"
             ],
-            "time": "2018-07-25T20:30:06+00:00"
+            "time": "2018-08-23T07:42:58+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1587,6 +1590,64 @@
             "time": "2014-08-18T12:08:45+00:00"
         },
         {
+            "name": "itsgoingd/clockwork",
+            "version": "v3.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/itsgoingd/clockwork.git",
+                "reference": "6632a54a273e74fa6c7f1ffa5a87925716a83b0e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/itsgoingd/clockwork/zipball/6632a54a273e74fa6c7f1ffa5a87925716a83b0e",
+                "reference": "6632a54a273e74fa6c7f1ffa5a87925716a83b0e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5",
+                "psr/log": "1.*"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Clockwork\\Support\\Laravel\\ClockworkServiceProvider"
+                    ],
+                    "aliases": {
+                        "Clockwork": "Clockwork\\Support\\Laravel\\Facade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Clockwork\\": "Clockwork/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "itsgoingd",
+                    "email": "itsgoingd@luzer.sk",
+                    "homepage": "https://twitter.com/itsgoingd"
+                }
+            ],
+            "description": "php dev tools integrated to your browser",
+            "homepage": "https://underground.works/clockwork",
+            "keywords": [
+                "Devtools",
+                "debugging",
+                "laravel",
+                "logging",
+                "lumen",
+                "profiling",
+                "slim"
+            ],
+            "time": "2018-08-01T14:38:23+00:00"
+        },
+        {
             "name": "jakub-onderka/php-console-color",
             "version": "0.1",
             "source": {
@@ -1993,54 +2054,6 @@
                 "laravel logger"
             ],
             "time": "2018-05-04T06:21:38+00:00"
-        },
-        {
-            "name": "jeremykenedy/laravel-phpinfo",
-            "version": "v1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jeremykenedy/laravel-phpinfo.git",
-                "reference": "ca0b73c3415730b6ec771ce1f43848623df1b431"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jeremykenedy/laravel-phpinfo/zipball/ca0b73c3415730b6ec771ce1f43848623df1b431",
-                "reference": "ca0b73c3415730b6ec771ce1f43848623df1b431",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "jeremykenedy\\LaravelPhpInfo\\LaravelPhpInfoServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "jeremykenedy\\LaravelPhpInfo\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jeremy Kenedy",
-                    "email": "jeremykenedy@gmail.com"
-                }
-            ],
-            "description": "phpinfo() in a pretty Laravel blade template",
-            "keywords": [
-                "Laravel php indo",
-                "Laravel phpinfo",
-                "phpinfo"
-            ],
-            "time": "2018-03-15T04:53:38+00:00"
         },
         {
             "name": "jeremykenedy/laravel-roles",
@@ -4091,61 +4104,6 @@
             "time": "2018-07-19T23:38:55+00:00"
         },
         {
-            "name": "rap2hpoutre/laravel-log-viewer",
-            "version": "v0.10.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/rap2hpoutre/laravel-log-viewer.git",
-                "reference": "499263bc8459d3a9ac3950130ca169ce327f40d7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/rap2hpoutre/laravel-log-viewer/zipball/499263bc8459d3a9ac3950130ca169ce327f40d7",
-                "reference": "499263bc8459d3a9ac3950130ca169ce327f40d7",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "4.2.*|5.*",
-                "php": ">=5.4.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Rap2hpoutre\\LaravelLogViewer\\LaravelLogViewerServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "src/controllers"
-                ],
-                "psr-0": {
-                    "Rap2hpoutre\\LaravelLogViewer\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "rap2hpoutre",
-                    "email": "raphaelht@gmail.com"
-                }
-            ],
-            "description": "A Laravel log reader",
-            "keywords": [
-                "laravel",
-                "log",
-                "log-reader",
-                "log-viewer",
-                "logging",
-                "lumen"
-            ],
-            "time": "2017-06-29T11:18:01+00:00"
-        },
-        {
             "name": "soapbox/laravel-formatter",
             "version": "2.0",
             "source": {
@@ -4611,26 +4569,25 @@
         },
         {
             "name": "spatie/laravel-fractal",
-            "version": "5.4.0",
+            "version": "5.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-fractal.git",
-                "reference": "9d1752ec5c48db2e968db10129ee692f4a3ffc81"
+                "reference": "0f18df001833fc82e6502229565347290cecda85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-fractal/zipball/9d1752ec5c48db2e968db10129ee692f4a3ffc81",
-                "reference": "9d1752ec5c48db2e968db10129ee692f4a3ffc81",
+                "url": "https://api.github.com/repos/spatie/laravel-fractal/zipball/0f18df001833fc82e6502229565347290cecda85",
+                "reference": "0f18df001833fc82e6502229565347290cecda85",
                 "shasum": ""
             },
             "require": {
-                "illuminate/contracts": "~5.5.0|~5.6.0",
-                "illuminate/support": "~5.5.0|~5.6.0",
+                "laravel/framework": "~5.5.0|~5.6.0|~5.7.0",
                 "php": "^7.0",
                 "spatie/fractalistic": "^2.5"
             },
             "require-dev": {
-                "orchestra/testbench": "~3.5.0|~3.6.0",
+                "orchestra/testbench": "~3.5.0|~3.6.0|~3.7.0",
                 "phpunit/phpunit": "^6.2|^7.0"
             },
             "type": "library",
@@ -4675,7 +4632,7 @@
                 "spatie",
                 "transform"
             ],
-            "time": "2018-07-19T16:40:01+00:00"
+            "time": "2018-08-24T09:21:38+00:00"
         },
         {
             "name": "spatie/laravel-server-side-rendering",
