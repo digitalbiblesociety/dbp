@@ -45,7 +45,7 @@ class User extends Authenticatable {
 	protected $connection = 'dbp_users';
 	protected $table      = 'users';
 	protected $fillable   = ['name', 'first_name', 'last_name', 'email', 'password', 'activated', 'token', 'signup_ip_address', 'signup_confirmation_ip_address', 'signup_sm_ip_address', 'admin_ip_address', 'updated_ip_address', 'deleted_ip_address'];
-	protected $hidden     = ['password', 'remember_token', 'activated', 'token'];
+	protected $hidden     = ['password', 'remember_token', 'activated', 'token','signup_ip_address','signup_confirmation_ip_address','signup_sm_ip_address','admin_ip_address','updated_ip_address','deleted_ip_address','notes'];
 	protected $dates      = ['deleted_at'];
 
 	/**
@@ -239,21 +239,6 @@ class User extends Authenticatable {
 
 	// Roles
 
-	public function admin()
-	{
-		return $this->hasOne(Role::class)->where('role','admin');
-	}
-
-	public function canAlterUsers()
-	{
-		return $this->hasOne(Role::class)->where('role','admin')->OrWhere('role','user_creator');
-	}
-
-	public function archivist()
-	{
-		return $this->hasOne(Role::class)->where('role','archivist');
-	}
-
 	public function authorizedArchivist($id = null)
 	{
 		return $this->hasOne(Role::class)->where('role','archivist')->where('organization_id',$id);
@@ -261,7 +246,7 @@ class User extends Authenticatable {
 
 	public function role($role = null,$organization = null)
 	{
-		return $this->HasOne(Role::class)->where('role',$role)->when($organization, function($q) use ($organization) {
+		return $this->HasOne(Role::class)->where('role_id',$role)->when($organization, function($q) use ($organization) {
 			$q->where('organization_id', '=', $organization);
 		});
 	}

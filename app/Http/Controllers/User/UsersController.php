@@ -165,6 +165,7 @@ class UsersController extends APIController
 	 */
 	public function login(Request $request)
 	{
+
 		if (isset($request->social_provider_id)) {
 			$account = Account::where('provider_user_id', $request->social_provider_user_id)->where('provider_id', $request->social_provider_id)->first();
 			if ($account) return $this->reply($account->user);
@@ -175,7 +176,7 @@ class UsersController extends APIController
 			return redirect()->back()->withErrors(['errors' => 'No user found for the email provided']);
 		}
 
-		//dd(Hash::check($request->password, $user->password));
+		if($user->password == "needs_resetting") return $this->setStatusCode(428)->replyWithError(trans('api.users_errors_428_password'));
 
 		if (Hash::check($request->password, $user->password)) {
 			Auth::guard()->login($user, true);
@@ -186,10 +187,9 @@ class UsersController extends APIController
 			return view('dashboard.home');
 		}
 
-		//$this->incrementLoginAttempts($request);
-		//if($this->api) return $this->setStatusCode(401)->replyWithError(trans('auth.failed', [], $GLOBALS['i18n_iso']));
-		//return $this->sendFailedLoginResponse($request);
-		dd("didn't match");
+		$this->incrementLoginAttempts($request);
+		if($this->api) return $this->setStatusCode(401)->replyWithError(trans('auth.failed', [], $GLOBALS['i18n_iso']));
+		return $this->sendFailedLoginResponse($request);
 	}
 
 	public function authenticated()
