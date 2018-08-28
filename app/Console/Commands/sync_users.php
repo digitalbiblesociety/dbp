@@ -78,51 +78,64 @@ class sync_users extends Command
     	$note_count_v2 = \DB::connection('dbp_users_v2')->table('note')->count();
 
     	if($note_count != $note_count_v2) {
-    		$last_note_timestamp = Note::orderBy('created_at')->first()->created_at;
-    		$new_notes = \DB::connection('dbp_users_v2')->table('note')->where('created', '>=', $last_note_timestamp->toDateTimeString())->get();
-
-    		foreach ($new_notes as $note) {
-    			//dd(Carbon::createFromTimeString($note->created)->toDateString());
-    			$bible_id = false;
-    			if(isset($bibles[$note->dam_id])) $bible_id = $bibles[$note->dam_id];
-    			if(isset($bibles[substr($note->dam_id,0,-4)])) if(!$bible_id) $bible_id = $bibles[substr($note->dam_id,0,-4)];
-			    if(isset($bibles[substr($note->dam_id,0,6)])) if(!$bible_id) $bible_id = $bibles[substr($note->dam_id,0,6)];
-
-			    if(!$bible_id) {
-				    $missing_ids = $note->dam_id;
-				    continue;
-			    }
-
-			    if(!isset($books[$note->book_id])) {
-			    	$missing_books[] = $note->book_id;
-			    	continue;
-			    }
-
-			    $userExists = User::where('id','dbp2import_'.$note->user_id)->exists();
-			    if(!$userExists) {
-			    	$missing_users[] = $note->user_id;
-			    	continue;
-			    }
-
-    			Note::create([
-    				'user_id'     => 'dbp2import_'.$note->user_id,
-				    'bible_id'    => $bible_id,
-				    'book_id'     => $books[$note->book_id],
-				    'chapter'     => $note->chapter_id,
-				    'verse_start' => $note->verse_id,
-				    'notes'       => bcrypt($note->note),
-				    'created_at'  => Carbon::createFromTimeString($note->created)->toDateString(),
-				    'updated_at'  => Carbon::createFromTimeString($note->updated)->toDateString(),
-			    ]);
+    		$last_note_timestamp = Note::orderBy('created_at','asc')->first();
+    		if(!$last_note_timestamp) {
+			    $last_note_timestamp = Carbon::create(1980,1,1);
+		    } else {
+    			$last_note_timestamp = $last_note_timestamp->created_at;
 		    }
+
+    		\DB::connection('dbp_users_v2')->table('note')->orderBy('created','asc')
+		                                   ->where('created', '>=', $last_note_timestamp->toDateTimeString())
+		                                   ->chunk(1000, function($new_notes) use ($books,$bibles)
+		    {
+			    foreach ($new_notes as $note) {
+				    $bible_id = false;
+				    if(isset($bibles[$note->dam_id])) $bible_id = $bibles[$note->dam_id];
+				    if(isset($bibles[substr($note->dam_id,0,-4)])) if(!$bible_id) $bible_id = $bibles[substr($note->dam_id,0,-4)];
+				    if(isset($bibles[substr($note->dam_id,0,6)])) if(!$bible_id) $bible_id = $bibles[substr($note->dam_id,0,6)];
+
+				    if(!$bible_id) {
+					    //echo "\n Missing Bible_ID";
+					    $missing_ids = $note->dam_id;
+					    continue;
+				    }
+
+				    if(!isset($books[$note->book_id])) {
+					    //echo "\n Missing Books";
+					    $missing_books[] = $note->book_id;
+					    continue;
+				    }
+
+				    $user = User::where('notes',$note->user_id)->first();
+				    if(!$user) {
+				    	//echo "\n Missing User";
+					    $missing_users[] = $note->user_id;
+					    continue;
+				    }
+
+				    Note::create([
+					    'user_id'     => $user->id,
+					    'bible_id'    => $bible_id,
+					    'book_id'     => $books[$note->book_id],
+					    'chapter'     => $note->chapter_id,
+					    'verse_start' => $note->verse_id,
+					    'notes'       => bcrypt($note->note),
+					    'created_at'  => Carbon::createFromTimeString($note->created)->toDateString(),
+					    'updated_at'  => Carbon::createFromTimeString($note->updated)->toDateString(),
+				    ]);
+			    }
+		    });
+
 		    echo "Missing Ids:\n";
 		    echo $missing_ids;
 
 		    echo "Missing Books:\n";
-    		echo $missing_books;
+		    echo $missing_books;
 
 		    echo "Missing Users:\n";
 		    echo $missing_users;
+
 	    }
 
     }

@@ -26,7 +26,8 @@ class Kernel extends ConsoleKernel
 	    Commands\fetchLanguageDescriptions::class,
 	    Commands\generate_worldFactbook::class,
 	    Commands\compare_ebible::class,
-	    Commands\sync_users::class
+	    Commands\sync_users::class,
+	    Commands\dbl_sync::class
     ];
 
     /**
