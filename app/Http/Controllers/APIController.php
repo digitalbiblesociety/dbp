@@ -86,10 +86,10 @@ class APIController extends Controller
 	protected $v;
 	protected $key;
 
-	public function __construct(Request $request)
+	public function __construct()
 	{
 		$url           = explode(".", url()->current());
-		$this->request = $request;
+
 		if (substr(array_shift($url), -3, 3) == "api") {
 			$this->api = true;
 			$this->v   = checkParam('v');
@@ -170,9 +170,9 @@ class APIController extends Controller
 						parse_str($url_string,$output);
 						$out_string .= $output['X-Amz-Signature'].'|';
 					}
-					sendLogsToS3($this->request, $this->getStatusCode(), $out_string);
+					sendLogsToS3(request(), $this->getStatusCode(), $out_string);
 				} else {
-					sendLogsToS3($this->request, $this->getStatusCode());
+					sendLogsToS3(request(), $this->getStatusCode());
 				}
 			} catch (Exception $e) {
 				//    //echo 'Caught exception: ',  $e->getMessage(), "\n";
@@ -219,7 +219,7 @@ class APIController extends Controller
 	public function replyWithError($message)
 	{
 		$status = $this->getStatusCode();
-		sendLogsToS3($this->request, $status);
+		if((env('APP_ENV') != 'local') AND (env('APP_ENV') != 'testing')) sendLogsToS3(request(), $status);
 
 		if ((!$this->api AND !isset($status)) OR isset($_GET['local'])) redirect()->route('error')->with(['message' => $message, 'status' => $status]);
 		if (!$this->api OR isset($_GET['local'])) return redirect()->route("errors.$status", compact('message'))->with(['message' => $message]);
