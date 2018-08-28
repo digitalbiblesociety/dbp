@@ -48,6 +48,11 @@ return [
 			'root' => storage_path('s3'),
 		],
 
+		'logs' => [
+			'driver' => 'local',
+			'root' => storage_path('logs'),
+		],
+
 		'public' => [
 			'driver' => 'local',
 			'root' => public_path('img/users'),
@@ -59,6 +64,14 @@ return [
 			'root' => storage_path('data'),
 			'url' => env('APP_URL').'/storage/data',
 			'visibility' => 'public',
+		],
+
+		's3' => [
+			'driver' => 's3',
+			'key'    => env('AWS_KEY'),
+			'secret' => env('AWS_SECRET'),
+			'region' => env('AWS_REGION') ?? 'us-west-2',
+			'bucket' => env('AWS_BUCKET') ?? 'dbp-prod',
 		],
 
 		's3_dbs' => [
@@ -79,10 +92,10 @@ return [
 
 		's3_dbs_log' => [
 			'driver' => 's3',
-			'key'    => env('DBS_AWS_KEY'),
-			'secret' => env('DBS_AWS_SECRET'),
-			'region' => env('DBS_AWS_REGION') ?? 'us-west-2',
-			'bucket' => env('DBS_AWS_BUCKET_LOG'),
+			'key'    => env('AWS_KEY'),
+			'secret' => env('AWS_SECRET'),
+			'region' => env('AWS_REGION') ?? 'us-west-2',
+			'bucket' => env('AWS_BUCKET_LOG'),
 		],
 
 		's3_fcbh' => [
