@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 /**
  *
  * @OA\Schema (
@@ -21,7 +22,7 @@ class PasswordReset extends Model
 	public $incrementing = false;
 	public $keyType = 'string';
 	public $primaryKey = 'token';
-
+	public $timestamps = false;
 
 	/**
 	 *
