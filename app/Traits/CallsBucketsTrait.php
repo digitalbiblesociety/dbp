@@ -48,7 +48,7 @@ trait CallsBucketsTrait {
 		$form_params = [
 			'Action'          => 'AssumeRole',
 			'Version'         => '2011-06-15',
-			'RoleArn'         => $this->arnRole,
+			'RoleArn'         => env('AWS_ARN_ROLE'),
 			'DurationSeconds' => 43200,
 			'RoleSessionName' => env('APP_SERVER_NAME').$timestamp,
 		];
@@ -57,7 +57,7 @@ trait CallsBucketsTrait {
 		$client = new Curl();
 		$client->setHeader('Content-Type','application/x-www-form-urlencoded; charset=utf-8');
 		$client->setHeader('X-Amz-Date',$timestamp);
-		$client->setHeader('Authorization',"AWS4-HMAC-SHA256 Credential=$this->key/$date/us-east-1/sts/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=$credentials");
+		$client->setHeader('Authorization',"AWS4-HMAC-SHA256 Credential=".env('AWS_KEY')."/$date/us-east-1/sts/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=$credentials");
 		$client->setHeader('Accept','');
 		$client->setHeader('Accept-Encoding','identity');
 		$response = $client->post('https://sts.amazonaws.com/', $form_params);
@@ -93,7 +93,7 @@ trait CallsBucketsTrait {
 
 	private function encryptValues($string_to_sign, $service, $region = 'us-east-1')
 	{
-		$layer_1   = hash_hmac('sha256', date('Ymd'), 'AWS4'.$this->secret, true);
+		$layer_1   = hash_hmac('sha256', date('Ymd'), 'AWS4'.env('AWS_SECRET'), true);
 		$layer_2   = hash_hmac('sha256', $region, $layer_1, true);
 		$layer_3   = hash_hmac('sha256', $service, $layer_2, true);
 		$layer_4   = hash_hmac('sha256', 'aws4_request', $layer_3, true);
