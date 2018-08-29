@@ -34,18 +34,6 @@
                             </div>
 
                             <div class="column">
-                                <h1 class="title is-6 is-mega-menu-title">News</h1>
-                                @foreach($last_articles as $article)
-                                <a class="navbar-item" href="/articles/{{ $article->id }}">
-                                    <div class="navbar-content">
-                                        <p><small class="has-text-info">{{ $article->created_at }}</small></p>
-                                        <p>{{ $article->currentTranslation->name ?? 'New Article' }}</p>
-                                    </div>
-                                </a>
-                                @endforeach
-                            </div>
-
-                            <div class="column">
                                 <h1 class="title is-6 is-mega-menu-title">Legal</h1>
                                 <a class="navbar-item" href="{{ route('license') }}">License</a>
                                 <a class="navbar-item" href="{{ route('privacy_policy') }}">Privacy Policy</a>

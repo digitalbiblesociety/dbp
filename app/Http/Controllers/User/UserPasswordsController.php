@@ -133,6 +133,7 @@ class UserPasswordsController extends APIController
 		if($validated != "valid") return $validated;
 
 		$user = User::where('email', $request->email)->first();
+		if(!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email',['email' => $request->email],$GLOBALS['i18n_iso']));
 
 		$user->password = (\Hash::needsRehash($request->new_password)) ? \Hash::make($request->new_password) : $request->new_password;
 		$user->save();
@@ -154,8 +155,8 @@ class UserPasswordsController extends APIController
 	private function validatePassword(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'new_password'     => 'confirmed|required|min:8|regex:/^(?=.*[a-z])(?=.*\d).+$/',
-			'email'            => 'required|exists:users,email',
+			'new_password'     => 'confirmed|required|min:8',
+			'email'            => 'required|email',
 			'project_id'       => 'exists:projects,id',
 			'token_id'         => ['required',
 				Rule::exists('password_resets', 'token')
