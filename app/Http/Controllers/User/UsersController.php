@@ -61,8 +61,6 @@ class UsersController extends APIController
 	 */
 	public function index()
 	{
-		$unauthorized_user = $this->unauthorizedToAlterUsers();
-		if($unauthorized_user) return $unauthorized_user;
 		if(!$this->api) return view('dashboard.users.index');
 
 		$users = User::with('organizations.currentTranslation')->when($this->project_limited, function ($q) {
@@ -260,15 +258,15 @@ class UsersController extends APIController
 			'social_provider_user_id' => 'required_with:social_provider_id',
 		]);
 
-		if ($validator->fails()) {
-			return $this->replyWithError($validator->errors());
-		}
+		if ($validator->fails()) return $this->replyWithError($validator->errors());
 		$user = User::create([
 			'id'       => unique_random('users', 'id', 32),
 			'nickname' => $request->nickname,
 			'avatar'   => $request->avatar,
 			'email'    => $request->email,
 			'name'     => $request->name,
+			'token'    => unique_random('dbp_users.users','token'),
+			'notes'    => $request->notes,
 			'password' => Hash::make($request->password),
 		]);
 		if ($request->project_id) {
