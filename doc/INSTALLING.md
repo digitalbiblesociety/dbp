@@ -11,7 +11,7 @@
 - XML PHP Extension
 - Composer
 
-### Running on OSX
+### Running on OSX (Local)
 Setting up the API takes approximately 30 minutes. If you don't already have [git]('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git') or [homebrew]('https://brew.sh/') installed. You will want install those now.
 
 ##### Install and/or update Homebrew to the latest version using brew update
@@ -32,7 +32,15 @@ Setting up the API takes approximately 30 minutes. If you don't already have [gi
 `valet install && mkdir ~/Sites && cd ~/Sites && valet park`
 
 ##### Install Repo
-`git clone git@bitbucket.org:confirmed/dbp.git && cd dbp && mv "env-sample.txt" ".env" && composer install`
+` git clone https://github.com/digitalbiblesociety/dbp.git `
+
+cd down into the directory
+
+`cd dbp`
+
+and Run composer install
+
+`composer install`
 
 ##### Need to set up a valid .env file rename the sample and fill out the fields.
 `cp env-sample.txt .env`
@@ -45,5 +53,49 @@ Setting up the API takes approximately 30 minutes. If you don't already have [gi
 ### Running on Windows
 ##### (Coming soon)
 
-### Running on Linux
-##### (Coming soon)
+#### Installing on Ubuntu 16
+
+##### Install Packages
+```bash
+apt-get install software-properties-common
+add-apt-repository -y 'ppa:ondrej/php'
+add-apt-repository -y 'ppa:ondrej/nginx'
+apt-get update
+apt-get -y install gcc curl gzip git tar software-properties-common nginx php7.2-fpm php7.2-xml php7.2-bz2 php7.2-zip php7.2-mysql php7.2-intl php7.2-gd php7.2-curl php7.2-soap php7.2-mbstring composer
+```
+##### Configure PHP
+```bash
+sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 20M/g' /etc/php/7.2/fpm/php.ini
+sed -i 's/max_execution_time = 30/max_execution_time = 300/g' /etc/php/7.2/fpm/php.ini
+sed -i 's/max_input_time = 60/max_input_time = 300/g' /etc/php/7.2/fpm/php.ini
+sed -i 's/post_max_size = 8M/post_max_size = 28M/g' /etc/php/7.2/fpm/php.ini
+sed -i 's/memory_limit = 128M/memory_limit = 512M/g' /etc/php/7.2/fpm/php.ini
+service php7.2-fpm restart
+```
+##### Create a Site
+```bash
+git clone https://github.com/AfzalH/lara-server.git && cd lara-server
+echo 'Enter Site Domain [dbp4.org]:' && read site_com
+cp nginx/srizon.com /etc/nginx/sites-available/$site_com
+sed -i "s/srizon.com/${site_com}/g" /etc/nginx/sites-available/$site_com
+mkdir /var/www/$site_com
+mkdir /var/www/$site_com/public
+touch /var/www/$site_com/public/index.php
+ln -s /etc/nginx/sites-available/$site_com /etc/nginx/sites-enabled/$site_com
+service nginx reload
+```
+##### Edit to test
+```bash
+nano /var/www/$site_com/public/index.php
+```
+##### Remove test
+```bash
+rm -rf /var/www/$site_com/public
+```
+##### Clone Repo
+```bash
+git clone https://github.com/digitalbiblesociety/dbp.git /var/www/$site_com
+cd /var/www/$site_com
+composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+npm install
+```
