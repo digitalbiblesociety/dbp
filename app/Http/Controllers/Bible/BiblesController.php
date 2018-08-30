@@ -213,15 +213,16 @@ class BiblesController extends APIController
         $include_linkedBibles = checkParam('include_linked_bibles', null, 'optional');
         $dialects             = checkParam('include_dialects', null, 'optional');
 	    $language             = null;
+	    $bucket               = checkParam('bucket|bucket_id', null, 'optional');
 
         if($iso) {
             $language = Language::where('iso',$iso)->with('dialects')->first();
             if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for provided iso");
         }
 
-        $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles;
+        $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$bucket;
 		if(env('APP_ENV')) Cache::forget($cache_string);
-        $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects,$include_linkedBibles) {
+        $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects,$include_linkedBibles,$bucket) {
             $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {
@@ -233,6 +234,11 @@ class BiblesController extends APIController
                    $q->where('language_id', $language->id);
                    if($dialects) $q->orWhereIn('language_id',$language->dialects->pluck('dialect_id'));
                 })
+	            ->when($bucket, function ($q) use($bucket) {
+		            $q->whereHas('filesets', function ($q) use ($bucket) {
+			            $q->where('bucket_id', $bucket);
+		            })->get();
+	            })
                 ->when($organization_id, function ($q) use ($organization_id) {
                     $q->whereHas('organizations', function ($q) use ($organization_id) {
                         $q->whereIn('organization_id', $organization_id);
