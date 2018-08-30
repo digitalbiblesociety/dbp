@@ -35,11 +35,12 @@ trait AccessControlAPI {
 				})->where('access_type_id', $access_type->id);
 			})->whereHas('keys', function ($query) use ($api_key) {
 				$query->where('key_id', $api_key);
-			})->get();
+			})->where('name','!=','RESTRICTED')->get();
 
 		$access['hashes'] = $accessGroups->map(function ($item, $key) use($user_location) {
 			return collect($item->filesets)->pluck('hash_id');
 		})->unique()->flatten()->toArray();
+
 		$access['string'] = $accessGroups->pluck('name')->implode('_');
 		return (object) $access;
 	}
