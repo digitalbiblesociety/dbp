@@ -97,9 +97,7 @@ class BooksController extends APIController
 		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$testament = checkParam('testament', null, 'optional');
 
-		$fileset   = BibleFileset::with('bible')
-		                         ->where('id', $id)->orWhere('id',substr($id,0,-4))
-		                         ->orWhere('id',substr($id,0,-2))->where('bucket_id', $bucket_id)
+		$fileset   = BibleFileset::with('bible')->where('id', $id)->where('bucket_id', $bucket_id)
 		                         ->where('set_type_code',$fileset_type)->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
 
