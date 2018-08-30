@@ -54,39 +54,23 @@ class CountriesController extends APIController
 		if (!$this->api) return view('wiki.countries.index');
 		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 
-		$l10n              = checkParam('l10n', null, 'optional') ?? "eng";
 		$has_filesets      = checkParam('has_filesets', null, 'optional') ?? true;
 		$bucket_id         = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$include_languages = checkParam('include_languages', null, 'optional');
 
-		\Cache::forget("countries" . $l10n . $has_filesets . $bucket_id . $include_languages);
-		return \Cache::remember("countries" . $l10n . $has_filesets . $bucket_id . $include_languages, 1600, function () use ($l10n, $has_filesets, $bucket_id, $include_languages) {
-				if ($l10n) {
-					$language = Language::where('iso', $l10n)->first();
-					if (!$language) return $this->setStatusCode(404)->replyWithError(trans('api.language_errors_404'));
-				}
-				$countries = Country::exclude('introduction')->
-				when($has_filesets, function ($query) use ($bucket_id) {
+		$cache_string = "countries" . $GLOBALS['i18n_iso'] . $has_filesets . $bucket_id . $include_languages;
+		if(env('APP_DEBUG')) \Cache::forget($cache_string);
+		return \Cache::remember($cache_string, 1600, function () use ($has_filesets, $bucket_id, $include_languages) {
+				$countries = Country::exclude('introduction')->with('currentTranslation')->when($has_filesets, function ($query) use ($bucket_id) {
 					$query->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
-						if ($bucket_id) $query->where('bucket_id', $bucket_id);
+						if($bucket_id) $query->where('bucket_id', $bucket_id);
 					});
 				})->get();
-				if ($l10n != "eng") {
-					$countries->load([
-						'translation' => function ($query) use ($language) {
-							$query->where('language_id', $language->id);
-						},
-					]);
-				}
 				if (isset($include_languages)) {
 					$countries->load([
-						'languagesFiltered' => function ($query) use ($language, $include_languages) {
+						'languagesFiltered' => function ($query) use ($include_languages) {
 							if ($include_languages == "with_titles") {
-								$query->with([
-									'translation' => function ($query) use ($language) {
-										$query->where('language_translation_id', $language->id);
-									},
-								]);
+								$query->with(['translation' => function ($query) {$query->where('language_translation_id', $GLOBALS['i18n_id']);}]);
 							}
 						},
 					]);
@@ -112,14 +96,14 @@ class CountriesController extends APIController
 	public function joshuaProjectIndex()
 	{
 		$l10n = (isset($_GET['iso'])) ? $_GET['iso'] : 'eng';
-		\Cache::forget("countries_jp_" . $l10n);
+		if(env('APP_DEBUG')) \Cache::forget("countries_jp_" . $l10n);
 		$joshua_project_countries = \Cache::remember("countries_jp_" . $l10n, 1600, function () use ($l10n) {
 			$language  = Language::where('iso', $l10n)->first();
-			$countries = JoshuaProject::with([
+			$countries = JoshuaProject::with(['country',
 				'translations' => function ($query) use ($language) {
 					$query->where('language_id', $language->id);
 				},
-			],'country')->get();
+			])->get();
 
 			return fractal()->collection($countries)->transformWith(CountryTransformer::class);
 		});
@@ -175,11 +159,16 @@ class CountriesController extends APIController
 	 */
 	public function show($id)
 	{
-		$country  = Country::with('languagesFiltered.bibles.currentTranslation', 'geography','maps')->find($id);
-		$includes = $this->loadWorldFacts($country);
-		if (!$country) return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['l10n' => $id]));
+		$cache_string = "countries_". $id . $GLOBALS['i18n_iso'];
+		if(env('APP_DEBUG')) \Cache::forget($cache_string);
+		$country = \Cache::remember($cache_string, 1600, function () use ($id) {
+			$country = Country::with('languagesFiltered.bibles.translations')->find($id);
+			if(!$country) return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', [], $GLOBALS['i18n_iso']));
+			return $country;
+		});
 
-		if ($this->api) return $this->reply(fractal($country, new CountryTransformer())->serializeWith(ArraySerializer::class)->parseIncludes($includes)->ToArray());
+		$includes = $this->loadWorldFacts($country);
+		if($this->api) return $this->reply(fractal($country, new CountryTransformer())->serializeWith($this->serializer)->parseIncludes($includes));
 		return view('wiki.countries.show', compact('country'));
 	}
 

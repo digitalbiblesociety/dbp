@@ -82,11 +82,7 @@ class CountryTransformer extends BaseTransformer
 			 * )
 			 */
 			case "v4_countries.all": {
-				if($country->relationLoaded('translation')) {
-					$output['name'] = (isset($country->translation->name)) ? $country->translation->name : $country->name;
-				} else {
-					$output['name'] = $country->name;
-				}
+				$output['name'] = $country->currentTranslation->name ?? $country->name;
 				$output['continent_code'] = $country->continent;
 				$output['codes'] = [
 					'fips'       => $country->fips,
@@ -150,7 +146,11 @@ class CountryTransformer extends BaseTransformer
 						return [
 							'name'   => $language->name,
 							'iso'    => $language->iso,
-							'bibles' => $language->bibles->pluck('currentTranslation.name','id')
+							'bibles' => $language->bibles->mapWithKeys(function ($bible) {
+								if($bible->translations->where('vernacular',1)->first()) return [$bible->id => $bible->translations->first()->name];
+								if($bible->translations->first()) return [$bible->id => $bible->translations->first()->name];
+								return [];
+							})
 						];
 					}),
 					'codes' => [

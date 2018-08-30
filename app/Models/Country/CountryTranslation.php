@@ -30,9 +30,9 @@ class CountryTranslation extends Model
     public $keyType = "string";
     public $primaryKey = "country_id";
 
-    public function language()
+    public function country()
     {
-        return $this->belongsTo('App\Models\Country\Country');
+        return $this->belongsTo(Country::class);
     }
 
 }

@@ -46,7 +46,7 @@ class JoshuaProject extends Model
 	protected $connection = 'dbp';
     public $table = "country_joshua_project";
 
-	public function Country()
+	public function country()
 	{
 		return $this->belongsTo(Country::class,'country_id','id');
 	}
