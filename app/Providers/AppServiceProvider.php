@@ -19,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
     {
         //Paginator::useBootstrapThree();
         Schema::defaultStringLength(191);
-        View::share('last_articles', Article::with('currentTranslation')->orderBy('created_at')->take(3)->get());
+        //View::share('last_articles', Article::with('currentTranslation')->orderBy('created_at')->take(3)->get());
     }
 
     /**
