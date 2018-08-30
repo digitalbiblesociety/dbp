@@ -157,7 +157,7 @@ class UserHighlightsController extends APIController
 			'reference'         => $request->reference,
 			'highlight_start'   => $request->highlight_start,
 			'highlighted_words' => $request->highlighted_words,
-			'highlighted_color' => $request->highlighted_color ?? '238,238,0,.25',
+			'highlighted_color' => $request->highlighted_color ?? '80,165,220,.5',
 		]);
 
 		return $this->reply(["success" => "Highlight created"]);
