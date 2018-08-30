@@ -222,8 +222,8 @@ class NumbersController extends APIController
 	private function validateNumericSystem(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'script'              => ($request->method() == "POST") ? 'required|unique:alphabets,script|max:4|min:4' : 'required|exists:alphabets,script|max:4|min:4',
-			'iso'                 => 'exists:languages,iso',
+			'script'              => ($request->method() == "POST") ? 'required|unique:dbp.alphabets,script|max:4|min:4' : 'required|exists:dbp.alphabets,script|max:4|min:4',
+			'iso'                 => 'exists:dbp.languages,iso',
 			'unicode_pdf'         => 'url|nullable',
 			'family'              => 'string|max:191|nullable',
 			'type'                => 'string|max:191|nullable',

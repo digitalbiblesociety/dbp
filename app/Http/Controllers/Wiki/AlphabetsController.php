@@ -267,8 +267,8 @@ class AlphabetsController extends APIController
 	private function validateAlphabet(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'script'              => ($request->method() == "POST") ? 'required|unique:alphabets,script|max:4|min:4' : 'required|exists:alphabets,script|max:4|min:4',
-			'name'                => ($request->method() == "POST") ? 'required|unique:alphabets,name|max:191' : 'required|exists:alphabets,name|max:191',
+			'script'              => ($request->method() == "POST") ? 'required|unique:dbp.alphabets,script|max:4|min:4' : 'required|exists:dbp.alphabets,script|max:4|min:4',
+			'name'                => ($request->method() == "POST") ? 'required|unique:dbp.alphabets,name|max:191' : 'required|exists:dbp.alphabets,name|max:191',
 			'unicode_pdf'         => 'url|nullable',
 			'family'              => 'string|max:191|nullable',
 			'type'                => 'string|max:191|nullable',

@@ -316,11 +316,11 @@ class LanguagesController extends APIController
 	{
 		$latLongRegex = '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$';
 		$validator    = Validator::make($request->all(), [
-			'glotto_id'  => ($request->method() == "POST") ? 'alpha_num|unique:languages,glotto_id|max:8|required_if:iso,null|nullable' : 'alpha_num|exists:languages,glotto_id|max:8|required_if:iso,null|nullable',
-			'iso'        => ($request->method() == "POST") ? 'alpha|unique:languages,iso|max:3|required_if:glotto_code,null|nullable' : 'alpha|exists:languages,iso|max:3|required_if:glotto_code,null|nullable',
-			'iso2B'      => ($request->method() == "POST") ? 'alpha|max:3|unique:languages,iso2B' : 'alpha|max:3',
-			'iso2T'      => ($request->method() == "POST") ? 'alpha|max:3|unique:languages,iso2T' : 'alpha|max:3',
-			'iso1'       => ($request->method() == "POST") ? 'alpha|max:2|unique:languages,iso1' : 'alpha|max:2',
+			'glotto_id'  => ($request->method() == "POST") ? 'alpha_num|unique:dbp.languages,glotto_id|max:8|required_if:iso,null|nullable' : 'alpha_num|exists:dbp.languages,glotto_id|max:8|required_if:iso,null|nullable',
+			'iso'        => ($request->method() == "POST") ? 'alpha|unique:dbp.languages,iso|max:3|required_if:glotto_code,null|nullable' : 'alpha|exists:dbp.languages,iso|max:3|required_if:glotto_code,null|nullable',
+			'iso2B'      => ($request->method() == "POST") ? 'alpha|max:3|unique:dbp.languages,iso2B' : 'alpha|max:3',
+			'iso2T'      => ($request->method() == "POST") ? 'alpha|max:3|unique:dbp.languages,iso2T' : 'alpha|max:3',
+			'iso1'       => ($request->method() == "POST") ? 'alpha|max:2|unique:dbp.languages,iso1' : 'alpha|max:2',
 			'name'       => 'required|string|max:191',
 			'autonym'    => 'required|string|max:191',
 			'level'      => 'string|max:191|nullable',
@@ -328,7 +328,7 @@ class LanguagesController extends APIController
 			'population' => 'integer',
 			'latitude'   => 'regex:' . $latLongRegex,
 			'longitude'  => 'regex:' . $latLongRegex,
-			'country_id' => 'alpha|max:2|exists:countries,id',
+			'country_id' => 'alpha|max:2|exists:dbp.countries,id',
 		]);
 
 		if ($validator->fails()) {

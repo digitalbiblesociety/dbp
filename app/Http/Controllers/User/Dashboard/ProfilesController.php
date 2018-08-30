@@ -132,7 +132,7 @@ class ProfilesController extends APIController
 
         if ($user->name != $request->input('name')) {
             $usernameRules = [
-                'name' => 'required|max:255|unique:users',
+                'name' => 'required|max:255|unique:dbp_users.users',
             ];
         } else {
             $usernameRules = [
@@ -141,7 +141,7 @@ class ProfilesController extends APIController
         }
         if ($emailCheck) {
             $emailRules = [
-                'email' => 'email|max:255|unique:users',
+                'email' => 'email|max:255|unique:dbp_users.users',
             ];
         } else {
             $emailRules = [

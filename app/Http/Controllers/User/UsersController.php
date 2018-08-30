@@ -250,10 +250,10 @@ class UsersController extends APIController
 		if($unauthorized_user) return $unauthorized_user;
 
 		$validator = Validator::make($request->all(), [
-			'email'                   => 'required|unique:users,email|max:255|email',
+			'email'                   => 'required|unique:dbp_users.users,email|max:255|email',
 			'name'                    => 'required|string',
 			'nickname'                => 'string|different:name',
-			'project_id'              => 'required|exists:projects,id',
+			'project_id'              => 'required|exists:dbp_users.projects,id',
 			'social_provider_id'      => 'required_with:social_provider_user_id',
 			'social_provider_user_id' => 'required_with:social_provider_id',
 		]);
@@ -427,7 +427,7 @@ class UsersController extends APIController
 	private function validateUserAlterationRequest($request)
 	{
 		$validator = Validator::make($request->all(), [
-			'id'              => 'exists:users,id',
+			'id'              => 'exists:dbp_users.users,id',
 			'email'           => 'max:191|email',
 			'name'            => 'string|max:191',
 			'nickname'        => 'string|max:191',

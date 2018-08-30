@@ -205,9 +205,9 @@ class AccessGroupController extends APIController
 		$validator = \Validator::make($request->all(), [
 			'name'               => 'required|max:64|alpha_dash',
 			'description'        => 'string',
-			'filesets.*'         => 'exists:bible_filesets,hash_id',
-			'keys.*'             => 'exists:user_keys,key',
-			'types.*'            => 'exists:access_types,id',
+			'filesets.*'         => 'exists:dbp.bible_filesets,hash_id',
+			'keys.*'             => 'exists:dbp_users.user_keys,key',
+			'types.*'            => 'exists:dbp.access_types,id',
 		]);
 
 		if ($validator->fails()) {

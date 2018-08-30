@@ -69,10 +69,10 @@ class UsersManagementController extends APIController
     {
         $validator = Validator::make($request->all(),
             [
-                'name'                  => 'required|max:255|unique:users',
+                'name'                  => 'required|max:255|unique:dbp_users.users',
                 'first_name'            => '',
                 'last_name'             => '',
-                'email'                 => 'required|email|max:255|unique:users',
+                'email'                 => 'required|email|max:255|unique:dbp_users.users',
                 'password'              => 'required|min:6|max:20|confirmed',
                 'password_confirmation' => 'required|same:password',
                 'role'                  => 'required',
@@ -172,13 +172,13 @@ class UsersManagementController extends APIController
 
         if ($emailCheck) {
             $validator = Validator::make($request->all(), [
-                'name'     => 'required|max:255|unique:users',
-                'email'    => 'email|max:255|unique:users',
+                'name'     => 'required|max:255|unique:dbp_users.users',
+                'email'    => 'email|max:255|unique:dbp_users.users',
                 'password' => 'present|confirmed|min:6',
             ]);
         } else {
             $validator = Validator::make($request->all(), [
-                'name'     => 'required|max:255|unique:users',
+                'name'     => 'required|max:255|unique:dbp_users.users',
                 'password' => 'nullable|confirmed|min:6',
             ]);
         }

@@ -336,10 +336,10 @@ class BiblesController extends APIController
 	{
 
 		request()->validate([
-			'id'                  => 'required|unique:bibles,id|max:24',
-			'iso'                 => 'required|exists:languages,iso',
+			'id'                  => 'required|unique:dbp.bibles,id|max:24',
+			'iso'                 => 'required|exists:dbp.languages,iso',
 			'translations.*.name' => 'required',
-			'translations.*.iso'  => 'required|exists:languages,iso',
+			'translations.*.iso'  => 'required|exists:dbp.languages,iso',
 			'date'                => 'integer',
 		]);
 
@@ -500,9 +500,9 @@ class BiblesController extends APIController
 
 		request()->validate([
 			'id'                  => 'required|max:24',
-			'iso'                 => 'required|exists:languages,iso',
+			'iso'                 => 'required|exists:dbp.languages,iso',
 			'translations.*.name' => 'required',
-			'translations.*.iso'  => 'required|exists:languages,iso',
+			'translations.*.iso'  => 'required|exists:dbp.languages,iso',
 			'date'                => 'integer',
 		]);
 

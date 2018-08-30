@@ -165,9 +165,9 @@ class ArticlesController extends APIController
 	private function validateArticle(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'iso'             => 'required|exists:languages,iso',
-			'organization_id' => 'required|exists:organizations,id',
-			'user_id'         => 'required|exists:users,id',
+			'iso'             => 'required|exists:dbp.languages,iso',
+			'organization_id' => 'required|exists:dbp.organizations,id',
+			'user_id'         => 'required|exists:dbp_users.users,id',
 			'cover'           => 'required',
 			'cover_thumbnail' => 'required',
 		]);

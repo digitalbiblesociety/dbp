@@ -108,7 +108,7 @@ class ProjectsController extends APIController
 		}
 
 		$validator = Validator::make($request->all(), [
-			'id'   => 'required|unique:projects,id|max:24',
+			'id'   => 'required|unique:dbp_users.projects,id|max:24',
 			'name' => 'required',
 		]);
 

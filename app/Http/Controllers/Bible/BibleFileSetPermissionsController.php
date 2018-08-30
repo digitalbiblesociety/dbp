@@ -198,8 +198,8 @@ class BibleFileSetPermissionsController extends APIController
 	private function validateBibleFilesetPermission(Request $request)
 	{
 		$validator = \Validator::make($request->all(), [
-			'hash_id' => 'required|exists:filesets,hash_id',
-			'key_id'  => 'required|exists:user_keys,key',
+			'hash_id' => 'required|exists:dbp.filesets,hash_id',
+			'key_id'  => 'required|exists:dbp_users.user_keys,key',
 		]);
 
 		if ($validator->fails()) {

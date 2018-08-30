@@ -157,7 +157,7 @@ class UserPasswordsController extends APIController
 		$validator = Validator::make($request->all(), [
 			'new_password'     => 'confirmed|required|min:8',
 			'email'            => 'required|email',
-			'project_id'       => 'exists:projects,id',
+			'project_id'       => 'exists:dbp_users.projects,id',
 			'token_id'         => ['required',
 				Rule::exists('password_resets', 'token')
 				    ->where(function ($query) use ($request) {

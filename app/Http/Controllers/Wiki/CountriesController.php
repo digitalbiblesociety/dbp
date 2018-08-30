@@ -60,8 +60,7 @@ class CountriesController extends APIController
 		$include_languages = checkParam('include_languages', null, 'optional');
 
 		\Cache::forget("countries" . $l10n . $has_filesets . $bucket_id . $include_languages);
-		return \Cache::remember("countries" . $l10n . $has_filesets . $bucket_id . $include_languages,
-			1600, function () use ($l10n, $has_filesets, $bucket_id, $include_languages) {
+		return \Cache::remember("countries" . $l10n . $has_filesets . $bucket_id . $include_languages, 1600, function () use ($l10n, $has_filesets, $bucket_id, $include_languages) {
 				if ($l10n) {
 					$language = Language::where('iso', $l10n)->first();
 					if (!$language) return $this->setStatusCode(404)->replyWithError(trans('api.language_errors_404'));
@@ -357,9 +356,9 @@ class CountriesController extends APIController
 	private function validateCountry(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'id'        => ($request->method() == "POST") ? 'required|unique:countries,id|max:2|min:2|alpha' : 'required|exists:countries,id|max:2|min:2|alpha',
-			'iso_a3'    => ($request->method() == "POST") ? 'required|unique:countries,iso_a3|max:3|min:3|alpha' : 'required|exists:countries,iso_a3|max:3|min:3|alpha',
-			'fips'      => ($request->method() == "POST") ? 'required|unique:countries,fips|max:2|min:2|alpha' : 'required|exists:countries,fips|max:2|min:2|alpha',
+			'id'        => ($request->method() == "POST") ? 'required|unique:dbp.countries,id|max:2|min:2|alpha' : 'required|exists:dbp.countries,id|max:2|min:2|alpha',
+			'iso_a3'    => ($request->method() == "POST") ? 'required|unique:dbp.countries,iso_a3|max:3|min:3|alpha' : 'required|exists:dbp.countries,iso_a3|max:3|min:3|alpha',
+			'fips'      => ($request->method() == "POST") ? 'required|unique:dbp.countries,fips|max:2|min:2|alpha' : 'required|exists:dbp.countries,fips|max:2|min:2|alpha',
 			'continent' => 'required|max:2|min:2|alpha',
 			'name'      => 'required|max:191',
 		]);

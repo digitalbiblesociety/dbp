@@ -189,10 +189,10 @@ class UserNotesController extends APIController
 	public function store(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'bible_id'    => 'required|exists:bibles,id',
-			'user_id'     => 'required|exists:users,id',
-			'book_id'     => 'required|exists:books,id',
-			'project_id'  => 'required|exists:projects,id',
+			'bible_id'    => 'required|exists:dbp.bibles,id',
+			'user_id'     => 'required|exists:dbp_users.users,id',
+			'book_id'     => 'required|exists:dbp.books,id',
+			'project_id'  => 'required|exists:dbp_users.projects,id',
 			'chapter'     => 'required|max:150|min:1',
 			'verse_start' => 'required|max:177|min:1',
 			'notes'       => 'required_without:bookmark',
