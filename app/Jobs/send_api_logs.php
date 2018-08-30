@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
+use Mockery\Exception;
 use Storage;
 
 class send_api_logs implements ShouldQueue
@@ -59,7 +60,17 @@ class send_api_logs implements ShouldQueue
 	    // Push to S3 every couple minutes, delete the latest file and create a new one
 	    if($current_time->diffInMinutes($current_file_time) > 2) {
 			$log_contents = Storage::disk('data')->get($current_file);
-			Storage::disk('s3_dbs_log')->put($current_file, $log_contents);
+
+		    try
+		    {
+			    Storage::disk('s3_dbs_log')->put($current_file, $log_contents);
+		    }
+		    catch (\Exception $e)
+		    {
+			    Log::error('s3 log PUT operation failed');
+		    }
+
+
 		    Storage::disk('data')->delete($current_file);
 	    }
     }

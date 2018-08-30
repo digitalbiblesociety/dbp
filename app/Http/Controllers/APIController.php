@@ -159,24 +159,10 @@ class APIController extends Controller
 
 		// Status Code, Headers, Params, Body, Time
 
-		if((env('APP_ENV') != 'local') AND (env('APP_ENV') != 'testing')) {
-			try {
-				if($s3response) {
-					$response_object = collect($object->toarray());
 
-					$url_strings = (isset($response_object['data'])) ? collect($response_object['data'])->pluck('path') : collect($response_object)->pluck('path');
-					$out_string = '';
-					foreach($url_strings as $url_string) {
-						parse_str($url_string,$output);
-						$out_string .= $output['X-Amz-Signature'].'|';
-					}
-					sendLogsToS3(request(), $this->getStatusCode(), $out_string);
-				} else {
-					sendLogsToS3(request(), $this->getStatusCode());
-				}
-			} catch (Exception $e) {
-				//    //echo 'Caught exception: ',  $e->getMessage(), "\n";
-			}
+		if($s3response) {
+			$response_object = collect($object->toarray());
+			sendLogsToS3(request(), $this->getStatusCode());
 		}
 
 		switch ($format) {
