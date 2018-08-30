@@ -53,7 +53,8 @@
         "symfony/psr-http-message-bridge": "^1.0",
         "symfony/yaml": "^4.1",
         "torann/geoip": "^1.0",
-        "zircote/swagger-php": "^3.0@dev"
+        "zircote/swagger-php": "^3.0@dev",
+		"tom-lingham/searchy" : "2.*"
     },
     "require-dev": {
         "filp/whoops": "^2.0",

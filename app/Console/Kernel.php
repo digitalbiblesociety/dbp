@@ -27,7 +27,8 @@ class Kernel extends ConsoleKernel
 	    Commands\generate_worldFactbook::class,
 	    Commands\compare_ebible::class,
 	    Commands\sync_users::class,
-	    Commands\dbl_sync::class
+	    Commands\dbl_sync::class,
+	    Commands\update_bible_links::class
     ];
 
     /**
