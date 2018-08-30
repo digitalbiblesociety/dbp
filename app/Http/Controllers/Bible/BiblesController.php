@@ -204,7 +204,7 @@ class BiblesController extends APIController
         $organization_id    = checkParam('organization_id', null, 'optional');
         $organization = '';
         if($organization_id) {
-	        $organization   = Organization::with('relationships')->where('id',$organization_id)->orWhere('slug',$organization_id)->first();
+		    $organization = (!is_numeric($organization_id)) ? Organization::with('relationships')->orWhere('slug',$organization_id)->first() : Organization::with('relationships')->where('id',$organization_id)->first();
 	        $organization_id = $organization->relationships->where('type','member')->pluck('organization_child_id');
 	        $organization_id->push($organization->id);
         }
@@ -220,7 +220,7 @@ class BiblesController extends APIController
         }
 
         $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles;
-		Cache::forget($cache_string);
+		if(env('APP_ENV')) Cache::forget($cache_string);
         $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects,$include_linkedBibles) {
             $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
