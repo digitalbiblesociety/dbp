@@ -12,11 +12,11 @@ return [
     |
     */
    
-    'supportsCredentials' => false,
+    'supportsCredentials' => true,
     'allowedOrigins' => ['*'],
     'allowedOriginsPatterns' => [],
     'allowedHeaders' => ['*'],
-    'allowedMethods' => ['*'],
+    'allowedMethods' => ['GET','POST','PUT','DELETE','OPTIONS'],
     'exposedHeaders' => [],
     'maxAge' => 0,
 
