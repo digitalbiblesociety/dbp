@@ -132,10 +132,10 @@ class UserHighlightsController extends APIController
 	public function store(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'bible_id'          => 'required|exists:bibles,id',
-			'user_id'           => 'required|exists:users,id',
-			'book_id'           => 'required|exists:books,id',
-			'project_id'        => 'required|exists:projects,id',
+			'bible_id'          => 'required|exists:dbp.bibles,id',
+			'user_id'           => 'required|exists:dbp_users.users,id',
+			'book_id'           => 'required|exists:dbp.books,id',
+			'project_id'        => 'required|exists:dbp_users.projects,id',
 			'chapter'           => 'required|max:150|min:1|integer',
 			'verse_start'       => 'required|max:177|min:1|integer',
 			'reference'         => 'string',
@@ -157,7 +157,7 @@ class UserHighlightsController extends APIController
 			'reference'         => $request->reference,
 			'highlight_start'   => $request->highlight_start,
 			'highlighted_words' => $request->highlighted_words,
-			'highlighted_color' => $request->highlighted_color,
+			'highlighted_color' => $request->highlighted_color ?? '238,238,0,.25',
 		]);
 
 		return $this->reply(["success" => "Highlight created"]);
