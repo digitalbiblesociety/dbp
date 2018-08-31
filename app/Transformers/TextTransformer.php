@@ -145,7 +145,7 @@ class TextTransformer extends BaseTransformer
 	public function transformforV4($text)
 	{
 		return [
-			"book_id"          => $text->usfm_id,
+			"book_id"          => $text->book_id,
 			"book_name"        => $text->book_name,
 			"book_name_alt"    => $text->book_vernacular_name,
 			"chapter"          => $text->chapter,

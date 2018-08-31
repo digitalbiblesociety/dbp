@@ -100,22 +100,52 @@ class TextController extends APIController
 		if ($formatted) {
 			$path   = 'text/' . $bible->id . '/' . $fileset->id . '/' . $book_id . $chapter . '.html';
 			$exists = Storage::disk($formatted)->exists($path);
-
 			if (!$exists) return $this->replyWithError("The path: $path did not result in a file");
-
 			return $this->reply(["path" => $this->signedUrl($path)], [], true);
 		}
 
 		// Fetch Verses
-		$verses = DB::connection('sophia')->table(strtoupper($fileset->id) . '_vpl')
+		$table = strtoupper($fileset->id) . '_vpl';
+		$verses = DB::connection('sophia')->table($table)
 		            ->where([['book', $book->id_usfx], ['chapter', $chapter]])
 		            ->when($verse_start, function ($query) use ($verse_start) {
 			            return $query->where('verse_end', '>=', $verse_start);
 		            })
 		            ->when($verse_end, function ($query) use ($verse_end) {
 			            return $query->where('verse_end', '<=', $verse_end);
-		            })->get();
-		$this->addMetaDataToVerses($verses, $bible->id);
+		            })
+					->join('dbp.books as books', function($join) use($book) {
+						$join->where('books.id', '=', $book->id);
+					})
+					->join('dbp.bible_books as bb', function($join) use($bible,$book) {
+						$join->where('bb.book_id', '=', $book->id)
+						     ->where('bb.bible_id', '=', $bible->id);
+					})
+					->join('dbp.numeral_system_glyphs as glyph_chapter', function ($join) use ($table,$bible) {
+						$join->on("$table.chapter",'=','glyph_chapter.value')
+						     ->where('glyph_chapter.numeral_system_id', '=', $bible->numeral_system_id);
+					})
+					->join('dbp.numeral_system_glyphs as glyph_start', function ($join) use ($table,$bible) {
+						$join->on("$table.verse_start",'=','glyph_start.value')
+						     ->where('glyph_start.numeral_system_id', '=', $bible->numeral_system_id);
+					})
+					->join('dbp.numeral_system_glyphs as glyph_end', function ($join) use ($table,$bible) {
+						$join->on("$table.verse_end",'=','glyph_end.value')
+						     ->where('glyph_end.numeral_system_id', '=', $bible->numeral_system_id);
+					})
+					->select([
+						"canon_order",
+						'books.name as book_name',
+						'bb.name as book_vernacular_name',
+                        "book as book_id",
+                        "chapter",
+                        "verse_start",
+                        "verse_end",
+                        'verse_text',
+						'glyph_chapter.glyph as chapter_vernacular',
+						'glyph_start.glyph as verse_start_vernacular',
+						'glyph_end.glyph as verse_end_vernacular',
+					])->get();
 
 		if (count($verses) == 0) {
 			return $this->setStatusCode(404)->replyWithError("No Verses Were found with the provided params");
@@ -308,50 +338,5 @@ class TextController extends APIController
 			fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer),
 		]);
 	}
-
-	public function addMetaDataToVerses($verses, $bible_id)
-	{
-		$usfm  = false;
-		$books = Book::whereIn('id_usfx', $verses->pluck('book'))->get();
-		if ($books->isEmpty()) {
-			$usfm  = true;
-			$books = Book::whereIn('id', $verses->pluck('book'))->get();
-		}
-
-		$vernacular_numbers = null;
-
-		// Fetch Bible for Book Translations
-		$bible = Bible::find($bible_id);
-		if (!isset($bible)) $bibleEquivalent = BibleEquivalent::where('equivalent_id', $bible_id)->orWhere('equivalent_id', substr($bible_id, 0, 7))->first();
-		if (isset($bibleEquivalent) AND !isset($bible)) $bible = $bibleEquivalent->bible;
-		if ($bible) {
-				$vernacular_numbers[] = $verses->pluck('verse_start')->ToArray();
-				$vernacular_numbers[] = $verses->pluck('verse_end')->ToArray();
-				$vernacular_numbers[] = $verses->first()->chapter;
-				$vernacular_numbers   = array_unique(array_flatten($vernacular_numbers));
-				$vernacular_numbers   = fetchVernacularNumbers($bible->number_id, min($vernacular_numbers),
-					max($vernacular_numbers));
-		}
-
-		// Fetch Vernacular Number
-		$verses->map(function ($verse) use ($books, $bible_id, $vernacular_numbers) {
-			$currentBook = $books->where('id_usfx', $verse->book)->first();
-
-			$verse->bible_id               = $bible_id;
-			$verse->usfm_id                = @$currentBook->id;
-			$verse->osis_id                = $currentBook->id_osis;
-			$verse->protestant_order       = $currentBook->protestant_order;
-			$verse->book_vernacular_name   = @$currentBook->name;
-			$verse->book_name              = @$currentBook->name;
-			$verse->chapter_vernacular     = isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->chapter] : $verse->chapter;
-			$verse->verse_start_vernacular = isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->verse_start] : $verse->verse_start;
-			$verse->verse_end_vernacular   = isset($vernacular_numbers[$verse->chapter]) ? $vernacular_numbers[$verse->verse_end] : $verse->verse_end;
-
-			return $verse;
-		});
-
-		return $verses;
-	}
-
 
 }

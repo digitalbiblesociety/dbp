@@ -4,7 +4,7 @@ namespace App\Models\Bible;
 
 use App\Models\Country\Country;
 use App\Models\Language\Alphabet;
-use App\Models\Language\NumberValues;
+use App\Models\Language\NumeralSystem;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\Model;
@@ -366,7 +366,7 @@ class Bible extends Model
 
 	public function numbers()
 	{
-		return $this->hasOne(NumberValues::class,'number_id','number_id');
+		return $this->hasOne(NumeralSystem::class,'number_id','number_id');
 	}
 
 

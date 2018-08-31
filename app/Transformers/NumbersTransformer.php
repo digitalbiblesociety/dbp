@@ -3,6 +3,7 @@
 namespace App\Transformers;
 
 use App\Models\Language\AlphabetNumber;
+use App\Models\Language\AlphabetNumeralSystem;
 use League\Fractal\TransformerAbstract;
 
 class NumbersTransformer extends BaseTransformer
@@ -12,26 +13,41 @@ class NumbersTransformer extends BaseTransformer
      *
      * @return array
      */
-    public function transform(AlphabetNumber $alphabet_number)
+    public function transform($numeral_system)
     {
 		switch ($this->version) {
 			case "2":
-			case "3": return $this->transformForV2($alphabet_number);
+			case "3": return $this->transformForV2($numeral_system);
 		    case "4":
-		    default: return $this->transformForV4($alphabet_number);
+		    default: return $this->transformForV4($numeral_system);
 		}
     }
 
-    public function transformForDataTables($alphabet_number) {
-	    return $alphabet_number->toArray();
+    public function transformForV2($numeral_system) {
+    	return $numeral_system->toArray();
     }
 
-    public function transformForV2($alphabet_number) {
-    	return $alphabet_number->toArray();
-    }
+    public function transformForV4($numeral_system) {
+    	switch ($this->route) {
+		    case "v4_numbers.all": {
+			    return [
+				    'id'          => $numeral_system->id,
+				    'description' => $numeral_system->description,
+				    'notes'       => $numeral_system->notes,
+				    'alphabets'   => $numeral_system->alphabets->pluck('name','script')
+			    ];
+		    }
+		    case "v4_numbers.one": {
+			    return [
+				    'id'          => $numeral_system->id,
+				    'description' => $numeral_system->description,
+				    'notes'       => $numeral_system->notes,
+				    'alphabets'   => $numeral_system->alphabets->pluck('name','script'),
+				    'numerals'    => $numeral_system->numerals
+			    ];
+		    }
+	    }
 
-    public function transformForV4($alphabet_number) {
-	    return $alphabet_number->toArray();
     }
 
 }

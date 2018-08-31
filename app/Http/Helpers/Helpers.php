@@ -101,33 +101,6 @@ function fetchBible($bible_id)
 	if(!$bible) return [];
 }
 
-function fetchVernacularNumbers($number_id,$start_number,$end_number)
-{
-	// Alphabet Numbers
-	$numbers = \App\Models\Language\NumberValues::where('value',$number_id)->get()->keyBy('value')->ToArray();
-
-	// Run through the numbers and return the vernaculars
-	$current_number = $start_number;
-	while($end_number >= $current_number) {
-		$number_vernacular = "";
-		// If it's not supported by the system return "normal" numbers
-		if(empty($numbers)) {
-			$number_vernacular = $current_number;
-		} else {
-			foreach(str_split($current_number) as $i) {
-				if(isset($numbers[$i]['glyph'])) $number_vernacular .= $numbers[$i]['glyph'];
-			}
-		}
-		$out_numbers[] = [
-			"numeral"            => intval($current_number),
-			"numeral_vernacular" => $number_vernacular
-		];
-		$current_number++;
-	}
-
-	return collect($out_numbers)->pluck('numeral_vernacular','numeral');
-}
-
 function sendLogsToS3($request, $status_code, $s3_string = false)
 {
 	$log_string = time().':::'.env('APP_SERVER_NAME').':::'.$status_code.":::".$request->path().":::";

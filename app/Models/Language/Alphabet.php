@@ -36,7 +36,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bibles
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\AlphabetFont[] $fonts
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\Language[] $languages
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\AlphabetNumber[] $numerals
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\NumeralSystem[] $numerals
  * @property-read \App\Models\Language\AlphabetFont $primaryFont
  * @property-read \App\Models\Language\AlphabetFont $regular
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereBaseline($value)
@@ -412,7 +412,7 @@ class Alphabet extends Model
 
 	public function numerals()
 	{
-		return $this->HasMany(AlphabetNumber::class,'script_id');
+		return $this->HasManyThrough(NumeralSystemGlyph::class, AlphabetNumeralSystem::class);
 	}
 
 }

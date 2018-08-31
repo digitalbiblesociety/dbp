@@ -50,6 +50,7 @@ class AlphabetsController extends APIController
 	{
 		if (!$this->api) return view('wiki.languages.alphabets.index');
 
+		if(env('APP_DEBUG') == 'true') \Cache::forget('alphabets');
 		$alphabets = \Cache::remember('alphabets', 1600, function () {
 			$alphabets = Alphabet::select(['name', 'script', 'family', 'direction', 'type'])->get();
 			return fractal($alphabets, new AlphabetTransformer())->serializeWith($this->serializer);
@@ -93,11 +94,14 @@ class AlphabetsController extends APIController
 	 */
 	public function show($id)
 	{
+
+		if(env('APP_DEBUG') == 'true') \Cache::forget('alphabet_' . $id);
 		$alphabet = \Cache::remember('alphabet_' . $id, 1600, function () use ($id) {
 			return Alphabet::with('fonts', 'languages', 'bibles.currentTranslation')->where('script', $id)->first();
 		});
-		if (!isset($alphabet)) return $this->setStatusCode(404)->replyWithError(trans('languages.alphabets_errors_404'));
-		if (!$this->api) return view('wiki.languages.alphabets.show', compact('alphabet'));
+
+		if(!$alphabet)  return $this->setStatusCode(404)->replyWithError(trans('api.alphabets_errors_404', ['id' => $id], $GLOBALS['i18n_iso']));
+		if(!$this->api) return view('wiki.languages.alphabets.show', compact('alphabet'));
 
 		return $this->reply(fractal()->item($alphabet)->transformWith(AlphabetTransformer::class)->serializeWith($this->serializer));
 	}
