@@ -4,9 +4,8 @@ return [
 
     // Add any language you want to support
     'locales' => [
-        'en' => ['iso' => 'eng', 'script' => 'Latn','regional' => 'en_GB','language_id' => 6414,'name' => 'English','native' => 'English'],
-        'es' => ['iso' => 'spa', 'script' => 'Latn','regional' => 'es_MX','language_id' => 6415,'name' => 'Spanish', 'native' => 'Español'],
-        'de' => ['iso' => 'deu', 'script' => 'Latn','regional' => 'de_DE','language_id' => 6415,'name' => 'German', 'native' => 'Deutsch'],
+        'eng' => ['iso' => 'eng', 'script' => 'Latn','regional' => 'en_GB','language_id' => 6414,'name' => 'English','native' => 'English'],
+        'spa' => ['iso' => 'spa', 'script' => 'Latn','regional' => 'es_MX','language_id' => 6415,'name' => 'Spanish', 'native' => 'Español']
     ],
 
     // Default locale will not be shown in the url.
