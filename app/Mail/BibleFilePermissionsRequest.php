@@ -35,6 +35,6 @@ class BibleFilePermissionsRequest extends Mailable
      */
     public function build()
     {
-        return $this->from("info@dbs.org")->markdown('emails.bibleFilePermissionsRequest');
+        return $this->from("info@dbp4.org")->markdown('emails.bibleFilePermissionsRequest');
     }
 }
