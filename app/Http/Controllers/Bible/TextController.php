@@ -114,22 +114,22 @@ class TextController extends APIController
 		            ->when($verse_end, function ($query) use ($verse_end) {
 			            return $query->where('verse_end', '<=', $verse_end);
 		            })
-					->join('dbp.books as books', function($join) use($book) {
+					->join(env('DBP_DATABASE').'books as books', function($join) use($book) {
 						$join->where('books.id', '=', $book->id);
 					})
-					->join('dbp.bible_books as bb', function($join) use($bible,$book) {
+					->join(env('DBP_DATABASE').'bible_books as bb', function($join) use($bible,$book) {
 						$join->where('bb.book_id', '=', $book->id)
 						     ->where('bb.bible_id', '=', $bible->id);
 					})
-					->join('dbp.numeral_system_glyphs as glyph_chapter', function ($join) use ($table,$bible) {
+					->join(env('DBP_DATABASE').'numeral_system_glyphs as glyph_chapter', function ($join) use ($table,$bible) {
 						$join->on("$table.chapter",'=','glyph_chapter.value')
 						     ->where('glyph_chapter.numeral_system_id', '=', $bible->numeral_system_id);
 					})
-					->join('dbp.numeral_system_glyphs as glyph_start', function ($join) use ($table,$bible) {
+					->join(env('DBP_DATABASE').'numeral_system_glyphs as glyph_start', function ($join) use ($table,$bible) {
 						$join->on("$table.verse_start",'=','glyph_start.value')
 						     ->where('glyph_start.numeral_system_id', '=', $bible->numeral_system_id);
 					})
-					->join('dbp.numeral_system_glyphs as glyph_end', function ($join) use ($table,$bible) {
+					->join(env('DBP_DATABASE').'numeral_system_glyphs as glyph_end', function ($join) use ($table,$bible) {
 						$join->on("$table.verse_end",'=','glyph_end.value')
 						     ->where('glyph_end.numeral_system_id', '=', $bible->numeral_system_id);
 					})

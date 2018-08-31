@@ -25,6 +25,7 @@ return [
 
 	// Wiki Routes
 	'wiki_authorization_failed'              => 'Your account does not have Archivist level permissions',
+	'alphabets_errors_404'                   => 'Ningún alfabeto tiene la identificación `:id`',
 	'languages_errors_404'                   => 'Unable to locate language',
 	'countries_errors_404'                   => 'No language for the provided iso: :l10n could be found.',
 	'numerals_errors_404'                    => 'Alphabet Numbering System for the provided script `:script` could not be found',
@@ -33,7 +34,6 @@ return [
 	// Community Routes
 	'users_errors_404_email'                 => 'No user with the email `:email` could be found',
 	'users_errors_401_project'               => 'The user given is not a user of the project_id provided.',
-	'users_errors_428_password'              => 'Please reset your password',
 
 	'user_creation_permission_failed'        => 'You do not have permission to create users',
 	'user_notes_store_200'                   => 'Note successfully created',
