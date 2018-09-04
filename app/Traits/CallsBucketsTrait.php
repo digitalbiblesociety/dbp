@@ -11,7 +11,7 @@ trait CallsBucketsTrait {
 
 	public function signedUrl(string $file, string $bucket = 'dbp-prod')
 	{
-		$security_token = Cache::remember('iam_assumed_role', 1200, function () {
+		$security_token = Cache::remember('iam_assumed_role', 60, function () {
 			$role_call  = $this->assumeRole();
 			if($role_call) {
 				$response_xml   = simplexml_load_string($role_call->response,'SimpleXMLElement',LIBXML_NOCDATA);
