@@ -3,18 +3,22 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
-use App\Models\User\Account;
-use App\Models\User\Key;
+use App\Mail\ProjectVerificationEmail;
+use App\Models\User\Project;
 use App\Models\User\ProjectMember;
+use App\Models\User\Account;
 use App\Models\User\User;
+
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Input;
+
 use Laravel\Socialite\Facades\Socialite;
-use Validator;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+
+use Validator;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class UsersController extends APIController
@@ -190,21 +194,6 @@ class UsersController extends APIController
 		return $this->sendFailedLoginResponse($request);
 	}
 
-	public function authenticated()
-	{
-		if(auth()->user()->admin)
-		{
-			return redirect('/admin/dashboard');
-		}
-
-		return redirect('/user/dashboard');
-	}
-
-	public function showLoginForm()
-	{
-		return view('auth.login');
-	}
-
 	/**
 	 *
 	 * @OA\Post(
@@ -249,16 +238,9 @@ class UsersController extends APIController
 		$unauthorized_user = $this->unauthorizedToAlterUsers();
 		if($unauthorized_user) return $unauthorized_user;
 
-		$validator = Validator::make($request->all(), [
-			'email'                   => 'required|unique:dbp_users.users,email|max:255|email',
-			'name'                    => 'required|string',
-			'nickname'                => 'string|different:name',
-			'project_id'              => 'required|exists:dbp_users.projects,id',
-			'social_provider_id'      => 'required_with:social_provider_user_id',
-			'social_provider_user_id' => 'required_with:social_provider_id',
-		]);
+		$invalid = $this->validateUser();
+		if($invalid) return $invalid;
 
-		if ($validator->fails()) return $this->replyWithError($validator->errors());
 		$user = User::create([
 			'id'       => unique_random('users', 'id', 32),
 			'nickname' => $request->nickname,
@@ -328,7 +310,7 @@ class UsersController extends APIController
 	public function update(Request $request, $id)
 	{
 		// Validate Request
-		$invalidRequest = $this->validateUserAlterationRequest($request);
+		$invalidRequest = $this->validateUser();
 		if($invalidRequest) return $invalidRequest;
 
 		// Validate User
@@ -336,12 +318,28 @@ class UsersController extends APIController
 		if($unauthorized_user) return $unauthorized_user;
 
 		// Retrieve User
-		$user = User::where('id', $id)->when($this->project_limited, function ($q) {
-			$q->whereHas('projects', function ($query) {
-				$query->whereIn('project_members.project_id', $this->user->developer->pluck('id'));
-			});
-		})->first();
-		if(!$user) return $this->setStatusCode(404)->replyWithError("User not found");
+		$user = User::with('projects')->where('email', request()->email)->first();
+		if(!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => request()->email], $GLOBALS['i18n_iso']));
+
+		// If the request does not originate from an admin
+		if($this->project_limited) {
+			$user_projects = $user->projects->pluck('id');
+			$developer_projects = $this->user->developer->pluck('id');
+			if(!$developer_projects->contains(request()->project_id)) return $this->setStatusCode(401)->replyWithError(trans('api.projects_developer_not_a_member', [], $GLOBALS['i18n_iso']));
+
+			if($developer_projects->intersect($user_projects)->count() == 0) {
+				$project = Project::where('id',request()->project_id)->first();
+				$connection = $user->projectMembers()->create([
+					'user_id'       => $user->id,
+					'project_id'    => $project->id,
+					'role'          => 'user',
+					'token'         => unique_random(env('DBP_USERS_DATABASE').'.project_members','token'),
+					'subscribed'    => false
+				]);
+				Mail::to($user->email)->send(new ProjectVerificationEmail($connection,$project));
+				return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_needs_to_connect', [], $GLOBALS['i18n_iso']));
+			}
+		}
 
 		// Fetch Data
 		$input = $request->all();
@@ -356,14 +354,10 @@ class UsersController extends APIController
 			}
 			$image->resize(300, 300);
 			\Storage::disk('public')->put($id.'.'.$request->avatar->extension(), $image->save());
+			$input['avatar'] = \URL::to('/storage/'.$id.'.'.$request->avatar->extension());
 		}
-		$input['avatar'] = \URL::to('/storage/'.$id.'.'.$request->avatar->extension());
-		$user->fill($input)->save();
-		// $user->project_role         = $user->projects->first()->pivot->role;
-		// $user->project_subscription = $user->projects->first()->pivot->subscribed;
-		// unset($user->projects);
 
-		// Return Updated Model
+		$user->fill($input)->save();
 		if($this->api) return $this->reply(["success" => "User updated", "user" => $user]);
 		return view('dashboard.users.show', $id);
 	}
@@ -424,27 +418,143 @@ class UsersController extends APIController
 		]);
 	}
 
-	private function validateUserAlterationRequest($request)
-	{
-		$validator = Validator::make($request->all(), [
-			'id'              => 'exists:dbp_users.users,id',
-			'email'           => 'max:191|email',
-			'name'            => 'string|max:191',
-			'nickname'        => 'string|max:191',
-			'remember_token'  => 'max:100',
-			'verified'        => 'boolean',
-			'avatar'          => 'image',
-		]);
 
-		if ($validator->fails()) return $this->replyWithError($validator->errors());
-		return false;
+	/**
+	 *
+	 * @OAS\Get(
+	 *     path="/users/login/{driver}",
+	 *     tags={"Users"},
+	 *     summary="Add a new oAuth provider to a project",
+	 *     description="",
+	 *     operationId="v4_projects_oAuthProvider.store",
+	 *     @OAS\Parameter(name="driver", in="path", required=true, description="The Provider name, the currently supported providers are: facebook, bitbucket, github, twitter, & google", @OAS\Schema(ref="#/components/schemas/ProjectOauthProvider/properties/name")),
+	 *     @OAS\Parameter(name="project_id", in="query", required=true, description="The Project id", @OAS\Schema(ref="#/components/schemas/Project/properties/id")),
+	 *     @OAS\Parameter(name="alt_url", in="query", description="When this parameter is set, the return will use the alternative callback url", @OAS\Schema(ref="#/components/schemas/ProjectOauthProvider/properties/callback_url_alt")),
+	 *     @OAS\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OAS\Parameter(ref="#/components/parameters/key"),
+	 *     @OAS\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OAS\Parameter(ref="#/components/parameters/format"),
+	 *     @OAS\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(type="string")),
+	 *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(type="string")),
+	 *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(type="string"))
+	 *     )
+	 * )
+	 *
+	 * @param $provider
+	 *
+	 * @return mixed
+	 *
+	 */
+	public function redirectToProvider($provider)
+	{
+		if ($this->api) {
+			if ($provider == "twitter") return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
+			$project_id = checkParam('project_id');
+			$provider   = checkParam('name', $provider);
+			$alt_url    = checkParam('alt_url', null, 'optional');
+			if($provider == "twitter") return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
+			$driverData = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
+			$driver     = [
+				'client_id'     => $driverData->client_id,
+				'client_secret' => $driverData->client_secret,
+				'redirect'      => (!isset($alt_url)) ? $driverData->callback_url : $driverData->callback_url_alt,
+			];
+			switch ($provider) {
+				case "bitbucket": {$providerClass = BitbucketProvider::class; break; }
+				case "facebook":  {$providerClass = FacebookProvider::class; break; }
+				case "twitter":   {$providerClass = TwitterProvider::class; break; }
+				case "github":    {$providerClass = GithubProvider::class; break; }
+				case "google":    {$providerClass = GoogleProvider::class; break; }
+			}
+			return $this->reply(Socialite::buildProvider($providerClass, $driver)->stateless()->redirect()->getTargetUrl());
+		}
+		return Socialite::driver($provider)->redirect();
 	}
 
+	public function handleProviderCallback($provider)
+	{
+		$user = \Socialite::driver($provider)->stateless()->user();
+		$user = $this->createOrGetUser($user, $provider);
+		\Auth::login($user);
+		$this->guard()->login($user);
+		if ($this->api) return $user;
+		if ($user->admin) return redirect()->route('admin');
+		return view('home',compact('user'));
+	}
+
+	public function createOrGetUser($providerUser, $provider)
+	{
+		$account = Account::where('provider_id', $provider)->where('provider_user_id', $providerUser->getId())->first();
+		if (!$account) {
+			$account = new Account(['provider_user_id' => $providerUser->getId(), 'provider_id' => $provider]);
+			$user    = User::where('email', $providerUser->getEmail())->first();
+			if (!$user) {
+				$user = User::create([
+					'id'       => str_random(24),
+					'nickname' => $providerUser->getNickname(),
+					'email'    => $providerUser->getEmail(),
+					'name'     => $providerUser->getName(),
+					'verified' => 1,
+				]);
+			}
+			$account->user()->associate($user);
+			$account->save();
+			return $user;
+		}
+		return $account->user;
+	}
+
+	public function verify($token)
+	{
+		$user           = User::where('email_token', $token)->first();
+		$user->verified = 1;
+		$user->save();
+		\Auth::login($user);
+		$this->guard()->login($user);
+		return redirect()->route('home');
+	}
+
+	public function authenticated()
+	{
+		if(auth()->user()->admin) return redirect('/admin/dashboard');
+		return redirect('/user/dashboard');
+	}
+
+	/**
+	 * @return bool
+	 */
 	private function unauthorizedToAlterUsers()
 	{
 		if(!isset($this->user)) return $this->setStatusCode(401)->replyWithError(trans('api.auth_key_validation_failed'));
 		if(!isset($this->user->canAlterUsers) AND !isset($this->user->developer)) return $this->setStatusCode(401)->replyWithError(trans('api.auth_user_validation_failed'));
 		return false;
 	}
+
+	/**
+	 * Return Validate User
+	 * If the user is invalid return the errors, otherwise return false.
+	 *
+	 * @return Validator|bool
+	 */
+	private function validateUser()
+	{
+		$validator = Validator::make(request()->all(), [
+			'email'                   => (request()->method() == "POST") ? 'required|unique:dbp_users.users,email' : 'required|exists:dbp_users.users,email',
+			'project_id'              => 'required|exists:dbp_users.projects,id',
+			'social_provider_id'      => 'required_with:social_provider_user_id',
+			'social_provider_user_id' => 'required_with:social_provider_id',
+			'name'                    => 'string|max:191',
+			'nickname'                => 'string|max:191',
+			'remember_token'          => 'max:100',
+			'verified'                => 'boolean'
+		]);
+
+		if ($validator->fails()) return $this->replyWithError($validator->errors());
+		return false;
+	}
+
 
 }

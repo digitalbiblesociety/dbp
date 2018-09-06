@@ -8,6 +8,7 @@ use App\Models\Bible\BibleLink;
 use App\Models\Language\Language;
 use App\Models\Resource\Resource;
 use App\Models\Bible\Bible;
+use App\Models\User\Role;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Organization\OrganizationTranslation;
@@ -353,7 +354,7 @@ class Organization extends Model
 
 	public function members()
 	{
-		return $this->BelongsToMany(User::class, 'role_user');
+		return $this->HasMany(Role::class);
 	}
 
 	public function relationships()

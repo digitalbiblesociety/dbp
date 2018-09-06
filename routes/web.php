@@ -84,10 +84,11 @@ Route::group(['middleware' => ['web', 'activity']], function () {
 	Route::name('swagger_database_model')->get('docs/swagger/database/{id}', 'User\DocsController@swagger_database_model');
 
     // Activation Routes
-    Route::name('activate')->get('/activate',                           'Auth\ActivateController@initial');
-    Route::name('authenticated.activate')->get('/activate/{token}',     'Auth\ActivateController@activate');
-    Route::name('authenticated.activation-resend')->get('/activation',  'Auth\ActivateController@resend');
-    Route::name('exceeded')->get('/exceeded',                           'Auth\ActivateController@exceeded');
+	Route::name('projects.connect')->get('/connect/{token}',            'Organization\ProjectsController@connect');
+	Route::name('activate')->get('/activate',                           'Auth\ActivateController@initial');
+	Route::name('authenticated.activate')->get('/activate/{token}',     'Auth\ActivateController@activate');
+	Route::name('authenticated.activation-resend')->get('/activation',  'Auth\ActivateController@resend');
+	Route::name('exceeded')->get('/exceeded',                           'Auth\ActivateController@exceeded');
 
     // Socialite Register Routes
     Route::name('social.redirect')->get('/social/redirect/{provider}',  'Auth\SocialController@getSocialRedirect');

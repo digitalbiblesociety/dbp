@@ -229,7 +229,7 @@ class User extends Authenticatable {
 
 	public function projects()
 	{
-		return $this->BelongsToMany(Project::class, 'project_members')->withPivot('role','subscribed');
+		return $this->BelongsToMany(Project::class, 'project_members')->wherePivot('subscribed',true)->withPivot('role','subscribed');
 	}
 
 	public function projectMembers()

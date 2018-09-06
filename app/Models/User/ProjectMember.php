@@ -19,7 +19,8 @@ use Illuminate\Database\Eloquent\Model;
 class ProjectMember extends Model
 {
 	protected $connection = 'dbp_users';
-    protected $fillable = ['project_id','role','subscribed'];
+	protected $table = 'project_members';
+    protected $fillable = ['project_id','role','subscribed','token'];
     public $incrementing = false;
     public $keyType = 'string';
     public $primaryKey = 'user_id';
@@ -78,4 +79,10 @@ class ProjectMember extends Model
 	{
 		return $this->hasOne(User::class,'id','user_id');
 	}
+
+	public function project()
+	{
+		return $this->belongsTo(Project::class);
+	}
+
 }

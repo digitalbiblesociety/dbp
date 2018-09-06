@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Organization;
 use App\Http\Controllers\APIController;
 use App\Models\User\Key;
 use App\Models\User\Project;
+use App\Models\User\ProjectMember;
 use Illuminate\Http\Request;
 use App\Transformers\ProjectTransformer;
 
@@ -133,9 +134,7 @@ class ProjectsController extends APIController
 			return $project;
 		});
 
-		if (!$this->api) {
-			return view('dashboard.projects.show', compact('user', 'project'));
-		}
+		if (!$this->api) return view('dashboard.projects.show', compact('user', 'project'));
 
 		return fractal()->transformWith(ProjectTransformer::class)->item($project)->addMeta(['message' => 'Project Creation Successful']);
 	}
@@ -281,22 +280,35 @@ class ProjectsController extends APIController
 	public function destroy($id)
 	{
 		$user = \Auth::user() ?? Key::find($this->key)->user;
-		if (!$user) {
-			return $this->setStatusCode(401)->replyWithError("you're not logged in");
-		}
+		if (!$user) return $this->setStatusCode(401)->replyWithError("you're not logged in");
 
 		$project = Project::find($id);
-		if (!$project) {
-			return $this->setStatusCode(404)->replyWithError("Project Not found");
-		}
+		if (!$project) return $this->setStatusCode(404)->replyWithError("Project Not found");
 
 		$access_allowed = $project->admins->contains($user->id);
-		if (!$access_allowed) {
-			return $this->setStatusCode(404)->replyWithError("You must be an admin to delete a project");
-		}
+		if (!$access_allowed) return $this->setStatusCode(404)->replyWithError("You must be an admin to delete a project");
 
 		$project->delete();
 
 		return $this->reply("project deleted");
+	}
+
+
+	/**
+	 * Validate Requests to Connect Users to Projects
+	 *
+	 * @param $token
+	 *
+	 * @return \Illuminate\Http\RedirectResponse|mixed
+	 */
+	public function connect($token)
+	{
+		$project_member = ProjectMember::with('project')->where('token',$token)->first();
+		if(!$project_member) return $this->replyWithError("404");
+
+		$project_member->subscribed = true;
+		$project_member->save();
+
+		return redirect()->away($project_member->project->url_site);
 	}
 }
