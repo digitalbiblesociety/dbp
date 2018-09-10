@@ -11,7 +11,7 @@
         "barryvdh/laravel-debugbar": "^3.0",
         "creativeorange/gravatar": "~1.0",
         "curl/curl": "^1.9",
-        "darkaonline/l5-swagger": "5.6.*",
+        "darkaonline/l5-swagger": "5.7.*",
         "doctrine/dbal": "^2.5",
         "fideloper/proxy": "^4.0",
         "geoip2/geoip2": "^2.9",
@@ -28,7 +28,8 @@
         "jeremykenedy/laravel-roles": "^1.2",
         "jeremykenedy/uuid": "^3.1",
         "josiasmontag/laravel-localization": "^0.4.2",
-        "laravel/framework": "5.6.*",
+        "laravel/framework": "5.7.*",
+        "laravel/horizon": "^1.4",
         "laravel/socialite": "^3.0",
         "laravel/tinker": "^1.0",
         "laravelcollective/html": "^5.5",
@@ -52,9 +53,9 @@
         "sunra/php-simple-html-dom-parser": "^1.5",
         "symfony/psr-http-message-bridge": "^1.0",
         "symfony/yaml": "^4.1",
+        "tom-lingham/searchy": "2.*",
         "torann/geoip": "^1.0",
-        "zircote/swagger-php": "^3.0@dev",
-		"tom-lingham/searchy" : "2.*"
+        "zircote/swagger-php": "^3.0@dev"
     },
     "require-dev": {
         "filp/whoops": "^2.0",
