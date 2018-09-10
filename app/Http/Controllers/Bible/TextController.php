@@ -256,10 +256,8 @@ class TextController extends APIController
 		            ->when($books, function ($q) use ($books) {
 			            $q->whereIn('book', explode(',', $books));
 		            })->get();
+
 		if($verses->count() == 0) return $this->setStatusCode(404)->replyWithError("No results found");
-
-		$this->addMetaDataToVerses($verses, $bible_id);
-
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
 	}
 
