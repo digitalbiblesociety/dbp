@@ -124,7 +124,19 @@ class BibleFileSetsController extends APIController
 			$fileSetChapters[$key]->file_name = $this->signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name, $bucket_id, $lifespan);
 		}
 
-		return $this->reply(fractal($fileSetChapters, new FileSetTransformer())->serializeWith($this->serializer), [], true);
+		// Prep Transaction Value
+		$transaction_code = '';
+		$sample_url = $fileSetChapters->pluck('file_name')->first();
+		$parts = parse_url($sample_url);
+		$queryParams = explode('&',$parts['query']);
+		foreach ($queryParams as $param) {
+			if(str_contains($param,'x-amz-transaction')) {
+				$param = explode('=',$param);
+				if(isset($param[1])) $transaction_code = $param[1];
+			}
+		}
+
+		return $this->reply(fractal($fileSetChapters, new FileSetTransformer())->serializeWith($this->serializer), [], $transaction_code);
 	}
 
 	/**
