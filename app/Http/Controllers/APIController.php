@@ -158,12 +158,7 @@ class APIController extends Controller
 		$format = checkParam('reply|format', null, 'optional');
 
 		// Status Code, Headers, Params, Body, Time
-
-
-		if($s3response) {
-			$response_object = collect($object->toarray());
-			sendLogsToS3(request(), $this->getStatusCode());
-		}
+		sendLogsToS3(request(), $this->getStatusCode());
 
 		switch ($format) {
 			case 'xml':
@@ -202,7 +197,7 @@ class APIController extends Controller
 	 *
 	 * @return mixed
 	 */
-	public function replyWithError($message)
+	public function replyWithError($message, $action = null)
 	{
 		$status = $this->getStatusCode();
 		if((env('APP_ENV') != 'local') AND (env('APP_ENV') != 'testing')) sendLogsToS3(request(), $status);
@@ -216,15 +211,15 @@ class APIController extends Controller
 			return [];
 		}
 
-		return response()->json([
-			'error' => [
+		$error = [
 				'message'     => $message,
 				'status code' => $status,
 				'status'      => "Fail",
-				'face'        => array_random($faces),
-			],
-		], $this->getStatusCode(), [],
-			JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'text/json');
+				'face'        => array_random($faces)
+		];
+		if($action) $error['action'] = $action;
+
+		return response()->json(['error' => $error], $this->getStatusCode(), [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'text/json');
 	}
 
 	function utf8_for_xml($string)
