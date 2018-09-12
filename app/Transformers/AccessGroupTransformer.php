@@ -18,7 +18,7 @@ class AccessGroupTransformer extends TransformerAbstract
             'name'        => $access_group->name,
             'description' => $access_group->description,
 	        'filesets'    => $access_group->filesets->pluck('hash_id'),
-	        'keys'        => $access_group->filesets->pluck('key_id'),
+	        'users'       => $access_group->users->pluck('user_id'),
 	        'types'       => $access_group->types->mapToGroups(function ($item, $key) {
 		        return [$item->name => [
 			        'country_id'   => $item->country_id,
