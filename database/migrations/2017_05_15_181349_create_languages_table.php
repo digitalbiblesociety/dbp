@@ -25,7 +25,8 @@ class CreateLanguagesTable extends Migration
 				$table->string('name');
 				$table->text('introduction')->nullable();
 				$table->text('overview')->nullable();
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
         }
 
@@ -55,7 +56,8 @@ class CreateLanguagesTable extends Migration
 				$table->float('longitude', 11, 7)->nullable();
 				$table->text('status')->nullable();
 				$table->char('country_id', 2)->nullable();
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 	        DB::connection('dbp')->statement('ALTER TABLE languages ADD CONSTRAINT CHECK (iso IS NOT NULL OR glotto_id IS NOT NULL)');
         }
@@ -72,7 +74,9 @@ class CreateLanguagesTable extends Migration
 				    $table->boolean('autonym')->default(0);
 				    $table->tinyInteger('priority')->nullable();
 				    //$table->unique(['language_source_id', 'language_translation_id', 'name'], 'unq_language_translations');
-				    $table->timestamps();
+				    $table->timestamp('created_at')->useCurrent();
+
+				    $table->timestamp('updated_at')->useCurrent();
 		        });
             }
 
@@ -87,7 +91,9 @@ class CreateLanguagesTable extends Migration
 			    $table->integer('bible_year_portions')->nullable();
 			    $table->text('bible_sample_text')->nullable();
 			    $table->string('bible_sample_img')->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
             }
 
@@ -98,7 +104,8 @@ class CreateLanguagesTable extends Migration
 			    $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
 			    $table->char('dialect_id', 8)->index()->nullable()->default(null);
 			    $table->text('name');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 		}
 
@@ -110,7 +117,8 @@ class CreateLanguagesTable extends Migration
 			    $table->char('classification_id', 8);
 			    $table->tinyInteger('order')->unsigned();
 			    $table->string('name');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
         }
 
@@ -121,7 +129,8 @@ class CreateLanguagesTable extends Migration
 			    $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
 			    $table->string('source');
 			    $table->string('code');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
         }
 
@@ -150,7 +159,8 @@ class CreateLanguagesTable extends Migration
 			    $table->text('sample')->nullable();
 			    $table->string('sample_img')->nullable();
 			    $table->text('description')->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
         }
 
@@ -159,7 +169,8 @@ class CreateLanguagesTable extends Migration
 		        $table->string('id', 20)->primary();
 		        $table->text('description')->nullable();
 		        $table->text('notes')->nullable();
-		        $table->timestamps();
+		        $table->timestamp('created_at')->useCurrent();
+		        $table->timestamp('updated_at')->useCurrent();
 	        });
         }
 
@@ -169,7 +180,8 @@ class CreateLanguagesTable extends Migration
 			    $table->foreign('numeral_system_id')->references('id')->on('numeral_systems')->onUpdate('cascade');
 			    $table->char('script_id', 4)->nullable();
 			    $table->foreign('script_id')->references('script')->on('alphabets')->onUpdate('cascade');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
         }
 
@@ -180,7 +192,8 @@ class CreateLanguagesTable extends Migration
 		        $table->tinyInteger('value')->unsigned();
 		        $table->string('glyph', 8);
 		        $table->string('numeral_written', 8)->nullable();
-		        $table->timestamps();
+		        $table->timestamp('created_at')->useCurrent();
+		        $table->timestamp('updated_at')->useCurrent();
 	        });
 			DB::connection('dbp')->statement('ALTER TABLE numeral_system_glyphs ADD CONSTRAINT uq_numeral_system_glyph UNIQUE(`numeral_system_id`, `value`, `glyph`)');
         }
@@ -192,7 +205,8 @@ class CreateLanguagesTable extends Migration
 			    $table->foreign('script_id')->references('script')->on('alphabets')->onUpdate('cascade');
 			    $table->integer('language_id')->unsigned();
 			    $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
         }
 
@@ -208,7 +222,8 @@ class CreateLanguagesTable extends Migration
 			    $table->string('url')->nullable()->default(null);
 			    $table->text('notes')->nullable()->default(null);
 			    $table->boolean('italic')->default(0);
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
         }
 
@@ -219,7 +234,8 @@ class CreateLanguagesTable extends Migration
 			    $table->integer('language_id')->unsigned();
 			    $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
 			    $table->string('name');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
         }
 
@@ -230,7 +246,8 @@ class CreateLanguagesTable extends Migration
 			    $table->integer('language_id')->unsigned();
 			    $table->foreign('language_id')->references('id')->on('languages')->onUpdate('cascade');
 			    $table->string('name');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
         }
 

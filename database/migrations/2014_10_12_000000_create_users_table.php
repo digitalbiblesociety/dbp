@@ -31,7 +31,8 @@ class CreateUsersTable extends Migration
 			    $table->ipAddress('deleted_ip_address')->nullable();
 		        $table->text('notes');
 			    $table->rememberToken();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 			    $table->softDeletes();
 	        });
         }
@@ -43,7 +44,8 @@ class CreateUsersTable extends Migration
 			    $table->string('key',64)->unique();
 			    $table->string('name')->nullable();
 			    $table->text('description')->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 	        });
         }
 
@@ -55,7 +57,8 @@ class CreateUsersTable extends Migration
 			    $table->string('role');
 			    $table->integer('organization_id')->unsigned();
 			    //$table->foreign('organization_id')->references('id')->on(new \Illuminate\Database\Query\Expression($db . '.organizations'));
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 	        });
 	    }
 
@@ -65,7 +68,7 @@ class CreateUsersTable extends Migration
 			    $table->string('email')->index();
 			    $table->string('token')->index();
 			    $table->string('reset_path')->nullable();
-			    $table->timestamp('created_at')->nullable();
+			    $table->timestamp('created_at')->useCurrent();
 	        });
 	    }
 
@@ -76,7 +79,8 @@ class CreateUsersTable extends Migration
 			    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 			    $table->string('provider', 50);
 			    $table->text('social_id');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 	        });
 	    }
 
@@ -87,7 +91,8 @@ class CreateUsersTable extends Migration
 			    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 			    $table->string('token');
 			    $table->ipAddress('ip_address');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 	        });
 	    }
 
@@ -102,7 +107,8 @@ class CreateUsersTable extends Migration
 		        $table->string('github_username')->nullable();
 		        $table->string('avatar')->nullable();
 		        $table->boolean('avatar_status')->default(0);
-		        $table->timestamps();
+		        $table->timestamp('created_at')->useCurrent();
+		        $table->timestamp('updated_at')->useCurrent();
 	        });
 	    }
 

@@ -31,7 +31,8 @@ class CreateCountriesTables extends Migration
 			    $table->text('terrain')->nullable();
 			    $table->text('hazards')->nullable();
 			    $table->text('notes')->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -42,7 +43,8 @@ class CreateCountriesTables extends Migration
 			    $table->string('name');
 			    $table->string('thumbnail_url');
 			    $table->string('map_url');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -118,7 +120,8 @@ class CreateCountriesTables extends Migration
 			    $table->decimal('unemployment_youth_total', 4, 2)->unsigned()->nullable();          // "Unemployment, youth ages 15-24" | "total"
 			    $table->decimal('unemployment_youth_male', 4, 2)->unsigned()->nullable();           // "Unemployment, youth ages 15-24" | "male"
 			    $table->decimal('unemployment_youth_female', 4, 2)->unsigned()->nullable();         // "Unemployment, youth ages 15-24" | "female"
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -129,7 +132,8 @@ class CreateCountriesTables extends Migration
 			    $table->string('name');
 			    $table->decimal('population_percentage', 5, 2)->unsigned();
 			    $table->tinyInteger('date')->unsigned()->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -140,7 +144,8 @@ class CreateCountriesTables extends Migration
 			    $table->string('name');
 			    $table->decimal('population_percentage', 5, 2)->unsigned()->nullable();
 			    $table->tinyInteger('date')->unsigned()->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -184,7 +189,8 @@ class CreateCountriesTables extends Migration
 			    $table->text('flag_description');                             // "Flag description"
 			    $table->text('national_symbols');                             // "National symbol(s)"
 			    $table->string('national_anthem');                            // "National anthem"
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -237,7 +243,8 @@ class CreateCountriesTables extends Migration
 			    $table->text('imports_commodities');                  // "Imports - commodities"
 			    $table->string('imports_partners');                   // "Imports - partners"
 			    $table->string('exchange_rates');                     // "Exchange rates"
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -268,7 +275,8 @@ class CreateCountriesTables extends Migration
 			    $table->string('natural_gas_imports');              // "Natural gas - imports"
 			    $table->string('natural_gas_reserves');             // "Natural gas - proved reserves"
 			    $table->string('co2_output');                       // "Carbon dioxide emissions from consumption of energy"
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -288,7 +296,8 @@ class CreateCountriesTables extends Migration
 			    $table->string('internet_total_users');                         // "Internet users" | "total"
 			    $table->decimal('internet_population_percent', 4,
 				    1)->unsigned(); // "Internet users" | "percent of population"
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -307,7 +316,8 @@ class CreateCountriesTables extends Migration
 			    $table->string('major_seaports')->nullable();                       // "Ports and terminals"
 			    $table->string('oil_terminals')->nullable();                        // "oil terminal(s)"
 			    $table->string('cruise_ports')->nullable();                         // "cruise port(s)"
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -319,7 +329,8 @@ class CreateCountriesTables extends Migration
 			    $table->text('international_disputes');   // "Disputes - international"
 			    $table->text('illicit_drugs');            // "Illicit drugs"
 			    $table->text('refugees');                 // "Refugees and internally displaced persons" | "refugees (country of origin)"
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -339,7 +350,8 @@ class CreateCountriesTables extends Migration
 			    $table->float('percent_christian')->nullable();
 			    $table->boolean('resistant_belt')->default(0);
 			    $table->float('percent_literate')->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 

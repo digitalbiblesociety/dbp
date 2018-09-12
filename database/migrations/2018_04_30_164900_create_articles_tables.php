@@ -25,7 +25,8 @@ class CreateArticlesTables extends Migration
 			    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
 			    $table->string('cover')->nullable();
 			    $table->string('cover_thumbnail')->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -39,7 +40,8 @@ class CreateArticlesTables extends Migration
 			    $table->text('description')->nullable();
 			    $table->boolean('vernacular')->default(0);
 			    $table->unique(['article_id', 'iso'], 'unq_article_translations');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -53,7 +55,8 @@ class CreateArticlesTables extends Migration
 			    $table->string('name');
 			    $table->text('description')->nullable();
 			    $table->unique(['article_id', 'iso'], 'unq_article_tags');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 

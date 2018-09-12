@@ -33,7 +33,8 @@ class CreateBiblesTable extends Migration
 		        $table->string('copyright')->nullable();
 		        $table->string('in_progress')->nullable();
 		        $table->tinyInteger('priority')->default(0)->unsigned();
-		        $table->timestamps();
+		        $table->timestamp('created_at')->useCurrent();
+		        $table->timestamp('updated_at')->useCurrent();
 	        });
         }
 
@@ -53,7 +54,8 @@ class CreateBiblesTable extends Migration
 		        $table->string('features')->nullable();
 		        $table->text('description')->nullable();
 		        $table->text('notes')->nullable();
-		        $table->timestamps();
+		        $table->timestamp('created_at')->useCurrent();
+		        $table->timestamp('updated_at')->useCurrent();
 	        });
         }
 
@@ -67,7 +69,8 @@ class CreateBiblesTable extends Migration
 		        $table->string('type')->nullable();
 		        $table->string('site')->nullable();
 		        $table->string('suffix')->default(null);
-		        $table->timestamps();
+		        $table->timestamp('created_at')->useCurrent();
+		        $table->timestamp('updated_at')->useCurrent();
 	        });
         }
 
@@ -78,7 +81,8 @@ class CreateBiblesTable extends Migration
 		        $table->integer('organization_id')->unsigned()->nullable();
 		        $table->foreign('organization_id')->references('id')->on('organizations');
 		        $table->string('relationship_type');
-		        $table->timestamps();
+		        $table->timestamp('created_at')->useCurrent();
+		        $table->timestamp('updated_at')->useCurrent();
 	        });
         }
 
@@ -95,6 +99,7 @@ class CreateBiblesTable extends Migration
 			    $table->integer('organization_id')->unsigned()->nullable();
 			    $table->foreign('organization_id')->references('id')->on('organizations');
 			    $table->timestamp('created_at')->useCurrent();
+
 			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
@@ -123,7 +128,8 @@ class CreateBiblesTable extends Migration
 		        $table->tinyInteger('nrsva_order')->unsigned()->nullable();
 		        $table->tinyInteger('catholic_order')->unsigned()->nullable();
 		        $table->tinyInteger('finnish_order')->unsigned()->nullable();
-		        $table->timestamps();
+		        $table->timestamp('created_at')->useCurrent();
+		        $table->timestamp('updated_at')->useCurrent();
 	        });
         }
 
@@ -136,7 +142,8 @@ class CreateBiblesTable extends Migration
 		        $table->string('name')->nullable();
 		        $table->string('name_short')->nullable();
 		        $table->string('chapters', 491)->nullable();
-		        $table->timestamps();
+		        $table->timestamp('created_at')->useCurrent();
+		        $table->timestamp('updated_at')->useCurrent();
 	        });
         }
 
@@ -152,7 +159,8 @@ class CreateBiblesTable extends Migration
 		        $table->text('name_long');
 		        $table->string('name_short');
 		        $table->string('name_abbreviation');
-		        $table->timestamps();
+		        $table->timestamp('created_at')->useCurrent();
+		        $table->timestamp('updated_at')->useCurrent();
 	        });
         }
 
@@ -162,7 +170,8 @@ class CreateBiblesTable extends Migration
 			    $table->integer('organization_id')->unsigned();
 			    $table->foreign('organization_id')->references('id')->on('organizations')->onUpdate('cascade')->onDelete('cascade');
 			    $table->boolean('hidden')->default(0);
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -171,7 +180,8 @@ class CreateBiblesTable extends Migration
 			    $table->tinyIncrements('id');
 			    $table->char('set_size_code', 9)->unique();
 			    $table->string('name')->unique();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -183,7 +193,8 @@ class CreateBiblesTable extends Migration
 			    $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
 			    $table->string('name');
 			    $table->string('description');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -192,7 +203,8 @@ class CreateBiblesTable extends Migration
 			    $table->tinyIncrements('id');
 			    $table->string('set_type_code', 16)->unique();
 			    $table->string('name')->unique();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -208,7 +220,8 @@ class CreateBiblesTable extends Migration
 			    $table->foreign('set_size_code')->references('set_size_code')->on('bible_fileset_sizes')->onUpdate('cascade')->onDelete('cascade');
 			    $table->boolean('hidden')->default(0);
 			    $table->unique(['id', 'bucket_id', 'set_type_code'], 'unique_prefix_for_s3');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -220,7 +233,8 @@ class CreateBiblesTable extends Migration
 			    $table->char('child_hash_id', 12)->index();
 			    $table->foreign('child_hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
 			    $table->string('relationship', 64);
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -234,7 +248,8 @@ class CreateBiblesTable extends Migration
 			    $table->text('notes');
 			    $table->char('iso', 3)->index();
 			    $table->foreign('iso')->references('iso')->on('languages');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -244,7 +259,8 @@ class CreateBiblesTable extends Migration
 			    $table->foreign('hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
 			    $table->string('bible_id', 12)->index();
 			    $table->foreign('bible_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -264,7 +280,8 @@ class CreateBiblesTable extends Migration
 			    $table->integer('duration')->unsigned()->nullable();
 			    $table->unique(['hash_id', 'book_id', 'chapter_start', 'verse_start'],
 				    'unique_bible_file_by_reference');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -277,7 +294,8 @@ class CreateBiblesTable extends Migration
 			    $table->text('title');
 			    $table->text('description')->nullable();
 			    $table->text('key_words')->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -288,7 +306,8 @@ class CreateBiblesTable extends Migration
 			    $table->tinyInteger('verse_start')->unsigned()->nullable();
 			    $table->tinyInteger('verse_end')->unsigned()->nullable();
 			    $table->float('timestamp');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -300,7 +319,8 @@ class CreateBiblesTable extends Migration
 			    $table->string('date');
 			    $table->text('copyright');
 			    $table->text('description');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -309,7 +329,8 @@ class CreateBiblesTable extends Migration
 		    	$table->increments('id');
 			    $table->string('name');
 			    $table->text('description');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -322,7 +343,8 @@ class CreateBiblesTable extends Migration
 			    $table->foreign('organization_id')->references('id')->on('organizations');
 			    $table->integer('organization_role')->unsigned();
 			    $table->foreign('organization_role')->references('id')->on('bible_fileset_copyright_roles');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 

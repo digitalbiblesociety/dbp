@@ -60,6 +60,7 @@ class organizations_dbl_status extends Command
 	        }
 			file_put_contents(storage_path('logs/organizations_dbl_missing.json'), json_encode($missing));
         }
+		    'Bible Society of El Salvador'     => "535",
 
     }
 }

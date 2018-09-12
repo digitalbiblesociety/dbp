@@ -28,7 +28,8 @@ class CreateResourcesTable extends Migration
 		        $table->string('cover_thumbnail')->nullable();
 		        $table->string('date')->nullable();
 		        $table->string('type');
-		        $table->timestamps();
+		        $table->timestamp('created_at')->useCurrent();
+		        $table->timestamp('updated_at')->useCurrent();
 	        });
         }
 
@@ -40,7 +41,8 @@ class CreateResourcesTable extends Migration
 			    $table->string('size')->nullable();
 			    $table->string('type');
 			    $table->string('url');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -56,7 +58,8 @@ class CreateResourcesTable extends Migration
 			    $table->boolean('tag');
 			    $table->string('title');
 			    $table->text('description')->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -70,7 +73,8 @@ class CreateResourcesTable extends Migration
 			    $table->string('cover_thumbnail')->nullable();
 			    $table->string('date')->nullable();
 			    $table->string('type');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -86,14 +90,16 @@ class CreateResourcesTable extends Migration
 			    $table->boolean('tag');
 			    $table->string('title');
 			    $table->text('description')->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
 	    if(!Schema::connection('dbp')->hasTable('resource_connections')) {
 		    Schema::connection('dbp')->create('resource_connections', function (Blueprint $table) {
 
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 

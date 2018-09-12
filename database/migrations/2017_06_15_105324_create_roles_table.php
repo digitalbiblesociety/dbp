@@ -19,7 +19,8 @@ class CreateRolesTable extends Migration
 			    $table->string('slug')->unique();
 			    $table->string('description')->nullable();
 			    $table->integer('level')->default(1);
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -32,7 +33,8 @@ class CreateRolesTable extends Migration
 		        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 		        $table->integer('organization_id')->unsigned();
 		        $table->foreign('organization_id')->references('id')->on('dbp.organizations');
-		        $table->timestamps();
+		        $table->timestamp('created_at')->useCurrent();
+		        $table->timestamp('updated_at')->useCurrent();
 	        });
         }
 
@@ -43,7 +45,8 @@ class CreateRolesTable extends Migration
 			    $table->string('slug')->unique();
 			    $table->string('description')->nullable();
 			    $table->string('model')->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -54,7 +57,8 @@ class CreateRolesTable extends Migration
 			    $table->foreign('permission_id')->references('id')->on('permissions')->onDelete('cascade');
 			    $table->integer('role_id')->unsigned()->index();
 			    $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -65,7 +69,8 @@ class CreateRolesTable extends Migration
 			    $table->foreign('permission_id')->references('id')->on('permissions')->onDelete('cascade');
 			    $table->integer('user_id')->unsigned()->index();
 			    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
     }

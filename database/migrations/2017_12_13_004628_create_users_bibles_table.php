@@ -22,7 +22,8 @@ class CreateUsersBiblesTable extends Migration
 			    $table->string('url_site')->nullable();
 			    $table->text('description')->nullable();
 			    $table->boolean('sensitive')->default(false);
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 		if(!Schema::connection('dbp_users')->hasTable('project_oauth_providers')) {
@@ -36,7 +37,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->string('callback_url');
 				$table->string('callback_url_alt')->nullable();
 				$table->text('description');
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 		if(!Schema::connection('dbp_users')->hasTable('project_members')) {
@@ -47,7 +49,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
 				$table->string('role');
 				$table->boolean('subscribed')->default(false)->nullable();
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 		if(!Schema::connection('dbp_users')->hasTable('user_accounts')) {
@@ -58,7 +61,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->string('provider_id');
 				$table->string('provider_user_id');
 				$table->unique(['user_id', 'provider_id']);
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 		if(!Schema::connection('dbp_users')->hasTable('user_notes')) {
@@ -77,9 +81,28 @@ class CreateUsersBiblesTable extends Migration
 				$table->boolean('bookmark')->default(false);
 				$table->string('project_id', 24)->nullable();
 				$table->foreign('project_id')->references('id')->on('projects')->onUpdate('cascade')->onDelete('cascade');
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
+
+	    if(!Schema::connection('dbp_users')->hasTable('user_bookmarks')) {
+		    Schema::connection('dbp_users')->create('user_bookmarks', function (Blueprint $table) {
+			    $table->increments('id');
+			    $table->integer('user_id')->unsigned();
+			    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+			    $table->string('bible_id', 12);
+			    $table->foreign('bible_id')->references('id')->on('dbp.bibles')->onDelete('cascade')->onUpdate('cascade');
+			    $table->char('book_id', 3);
+			    $table->foreign('book_id')->references('id')->on('dbp.books')->onUpdate('cascade')->onDelete('cascade');
+			    $table->tinyInteger('chapter')->unsigned();
+			    $table->tinyInteger('verse_start')->unsigned();
+			    $table->timestamp('created_at')->useCurrent();
+
+			    $table->timestamp('updated_at')->useCurrent();
+		    });
+	    }
+
 		if(!Schema::connection('dbp_users')->hasTable('user_highlights')) {
 			Schema::connection('dbp_users')->create('user_highlights', function (Blueprint $table) {
 				$table->increments('id');
@@ -98,7 +121,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->integer('highlight_start')->unsigned();
 				$table->integer('highlighted_words')->unsigned();
 				$table->string('highlighted_color', 24);
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 		if(!Schema::connection('dbp_users')->hasTable('user_note_tags')) {
@@ -108,7 +132,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->foreign('note_id')->references('id')->on('user_notes')->onUpdate('cascade')->onDelete('cascade');
 				$table->string('type', 64);
 				$table->string('value', 64);
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 		if(!Schema::connection('dbp')->hasTable('access_groups')) {
@@ -116,7 +141,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->increments('id');
 				$table->string('name', 64);
 				$table->text('description');
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 		if(!Schema::connection('dbp')->hasTable('access_types')) {
@@ -128,7 +154,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->char('continent_id', 2)->nullable();
 				//$table->foreign('continent_id')->references('continent')->on('countries')->onUpdate('cascade');
 				$table->boolean('allowed');
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 		if(!Schema::connection('dbp')->hasTable('access_type_translations')) {
@@ -140,7 +167,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->foreign('iso')->references('iso')->on('dbp.languages')->onDelete('cascade')->onUpdate('cascade');
 				$table->string('name', 64);
 				$table->string('description');
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 		if(!Schema::connection('dbp')->hasTable('access_group_types')) {
@@ -150,7 +178,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->foreign('access_group_id')->references('id')->on('access_groups')->onUpdate('cascade')->onDelete('cascade');
 				$table->integer('access_type_id')->unsigned();
 				$table->foreign('access_type_id')->references('id')->on('access_types')->onUpdate('cascade')->onDelete('cascade');
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 		if(!Schema::connection('dbp')->hasTable('access_group_filesets')) {
@@ -159,7 +188,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->foreign('access_group_id')->references('id')->on('access_groups')->onUpdate('cascade')->onDelete('cascade');
 				$table->char('hash_id', 12)->index();
 				$table->foreign('hash_id')->references('hash_id')->on('dbp.bible_filesets')->onUpdate('cascade')->onDelete('cascade');
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 		if(!Schema::connection('dbp_users')->hasTable('access_group_keys')) {
@@ -168,7 +198,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->foreign('access_group_id')->references('id')->on('dbp.access_groups')->onUpdate('cascade')->onDelete('cascade');
 				$table->string('key_id', 64);
 				$table->foreign('key_id')->references('key')->on('user_keys')->onUpdate('cascade')->onDelete('cascade');
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
     }

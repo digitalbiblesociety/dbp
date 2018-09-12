@@ -21,7 +21,8 @@ class BibleTranslatorsTable extends Migration
 				$table->string('born')->nullable();
 				$table->string('died')->nullable();
 				$table->text('description');
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 
@@ -31,7 +32,8 @@ class BibleTranslatorsTable extends Migration
 				$table->foreign('bible_id')->references('id')->on('bibles')->onUpdate('cascade')->onDelete('cascade');
 				$table->string('translator_id', 191);
 				$table->foreign('translator_id')->references('id')->on('translators')->onDelete('cascade')->onUpdate('cascade');
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 
@@ -46,7 +48,8 @@ class BibleTranslatorsTable extends Migration
 				$table->string('type');
 				$table->string('description');
 				$table->string('notes');
-				$table->timestamps();
+				$table->timestamp('created_at')->useCurrent();
+				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 

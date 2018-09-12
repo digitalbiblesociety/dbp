@@ -18,7 +18,7 @@ class CreateOrganizationsTable extends Migration
 		    Schema::connection('dbp')->create('organizations', function (Blueprint $table) {
 			    $table->increments('id');
 			    $table->string('slug', 191)->unique()->index();
-			    $table->char('abbreviation', 6)->unique()->index()->nullable();
+			    $table->string('abbreviation', 24)->unique()->index()->nullable();
 			    $table->text('notes')->nullable();
 			    $table->string('primaryColor', 7)->nullable();
 			    $table->string('secondaryColor', 7)->nullable();
@@ -36,9 +36,11 @@ class CreateOrganizationsTable extends Migration
 			    $table->integer('zip')->nullable()->unsigned();
 			    $table->string('phone')->nullable();
 			    $table->string('email')->nullable();
+			    $table->string('email_director')->nullable();
 			    $table->float('latitude', 11, 7)->nullable();
 			    $table->float('longitude', 11, 7)->nullable();
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -55,7 +57,8 @@ class CreateOrganizationsTable extends Migration
 		            $table->string('name');
 		            $table->text('description')->nullable();
 		            $table->string('description_short')->nullable();
-		            $table->timestamps();
+		            $table->timestamp('created_at')->useCurrent();
+		            $table->timestamp('updated_at')->useCurrent();
 	            });
             }
 
@@ -67,7 +70,8 @@ class CreateOrganizationsTable extends Migration
 				    $table->foreign('organization_child_id')->references('id')->on('organizations');
 				    $table->string('type');
 				    $table->string('relationship_id');
-				    $table->timestamps();
+				    $table->timestamp('created_at')->useCurrent();
+				    $table->timestamp('updated_at')->useCurrent();
 			    });
 		    }
 
@@ -81,7 +85,8 @@ class CreateOrganizationsTable extends Migration
 				    $table->foreign('language_iso')->references('iso')->on('languages');
 				    $table->string('url')->nullable();
 				    $table->boolean('icon')->default(false);
-				    $table->timestamps();
+				    $table->timestamp('created_at')->useCurrent();
+				    $table->timestamp('updated_at')->useCurrent();
 			    });
 		    }
 

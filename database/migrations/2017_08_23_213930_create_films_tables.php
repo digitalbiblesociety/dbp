@@ -25,7 +25,8 @@ class CreateFilmsTables extends Migration
 			    $table->string('section')->nullable();
 			    $table->string('picture')->nullable();
 			    $table->integer('duration');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -39,7 +40,8 @@ class CreateFilmsTables extends Migration
 			    $table->string('resolution');
 			    $table->integer('size');
 			    $table->string('url_type');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -71,7 +73,8 @@ class CreateFilmsTables extends Migration
 			    $table->float('time_end')->unsigned()->nullable();
 
 			    // Timestamps
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
@@ -83,7 +86,8 @@ class CreateFilmsTables extends Migration
 			    $table->foreign('video_id')->references('id')->on('videos')->onDelete('cascade')->onUpdate('cascade');
 			    $table->string('title');
 			    $table->text('description');
-			    $table->timestamps();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
     }
