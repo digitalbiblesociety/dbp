@@ -3,7 +3,6 @@
 namespace App\Models\Bible;
 
 use Illuminate\Database\Eloquent\Model;
-
 use App\Models\Organization\Organization;
 
 /**
@@ -23,7 +22,7 @@ class BibleEquivalent extends Model
 	protected $connection = 'dbp';
     protected $table = "bible_equivalents";
     protected $primaryKey = 'equivalent_id';
-    protected $hidden = ['created_at','updated_at','bible_id'];
+    protected $hidden = ['created_at','updated_at'];
     protected $fillable = ['bible_id','equivalent_id','organization_id','type','suffix'];
     public $incrementing = false;
 
@@ -42,7 +41,6 @@ class BibleEquivalent extends Model
 	 *   title="equivalent_id",
 	 *   type="string",
 	 *   description="The equivalent_id",
-
 	 *   maxLength=191,
 	 *   example="FreGeneve1669"
 	 * )
@@ -67,7 +65,6 @@ class BibleEquivalent extends Model
 	 *   title="type",
 	 *   type="string",
 	 *   description="The type of connection that the equivalent id refers to",
-
 	 *   maxLength=191,
 	 *   example="desktop-app"
 	 * )
@@ -83,7 +80,6 @@ class BibleEquivalent extends Model
 	 *   title="site",
 	 *   type="string",
 	 *   description="The name of the site/organization/app where the equivalent id is based",
-
 	 *   maxLength=191,
 	 *   example="eSword"
 	 * )
@@ -99,7 +95,6 @@ class BibleEquivalent extends Model
 	 *   title="site",
 	 *   type="string",
 	 *   description="Additional metadata affecting the type of equivalent connection",
-
 	 *   maxLength=191,
 	 *   example="Authorized Version with Strong's"
 	 * )
