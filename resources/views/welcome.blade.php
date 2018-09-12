@@ -3,6 +3,10 @@
 @section('head')
 
     <style>
+        .card {
+            height: 100%!important;
+        }
+
         .card .image {
             padding-top:10px;
             margin: 0 auto;
@@ -30,9 +34,9 @@
 </section>
 
 <section class="container">
-    <div class="columns features">
+    <div class="columns features level">
 
-        <div class="column is-4">
+        <div class="column is-4 level-item">
             <div class="card is-shady">
                 <div class="card-content">
                     <div class="content">
@@ -46,7 +50,7 @@
             </div>
         </div>
 
-        <div class="column is-4">
+        <div class="column is-4 level-item">
             <div class="card is-shady">
                 <div class="card-content">
                     <div class="content">
@@ -62,7 +66,7 @@
             </div>
         </div>
 
-        <div class="column is-4">
+        <div class="column is-4 level-item">
             <div class="card is-shady">
                 <div class="card-content">
                     <div class="content">

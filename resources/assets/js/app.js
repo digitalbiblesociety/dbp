@@ -29,17 +29,25 @@ if (token) {
 	console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
 
+// Site
+import VueHotkey from 'v-hotkey'
+Vue.use(VueHotkey)
 
-// Select box improvements
-vSelect = require('vue-select');
 
-//Vue.component('example-component', require('./components/ExampleComponent.vue'));
-Vue.component('v-select', vSelect.VueSelect)
-Vue.component('users-count', require('./components/UsersCount.vue'));
-Vue.component('form-bible-links', require('./components/FormBibleLinks.vue'));
-Vue.component('form-bible-translations', require('./components/FormBibleTranslations.vue'));
-Vue.component('form-bible-organizations', require('./components/FormBibleOrganizations.vue'));
+Vue.component('tabs', require('./components/bulma/Tabs.vue'))
+Vue.component('tab-pane', require('./components/bulma/TabPane.vue'))
+
+import vSelect from 'vue-select'
+Vue.component('v-select', vSelect)
+//Vue.component('language-select', require('./components/languageSelect.vue'))
+
+Vue.component('form-bible-links', require('./components/FormBibleLinks.vue'))
+Vue.component('form-bible-translations', require('./components/FormBibleTranslations.vue'))
+Vue.component('form-bible-organizations', require('./components/FormBibleOrganizations.vue'))
+Vue.component('form-bible-books',require('./components/FormBibleBooks.vue'))
+
 //Vue.component('messages', require('./components/Messages.vue'));
+//Vue.component('open-api', require('./components/OpenApi.vue'));
 
 const app = new Vue({
     el: '#app'

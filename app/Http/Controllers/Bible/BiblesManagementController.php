@@ -7,6 +7,7 @@ use App\Models\Bible\Bible;
 use App\Models\Bible\Book;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
+use App\Models\Organization\Organization;
 use App\Models\Profile;
 use App\Models\User;
 
@@ -56,8 +57,14 @@ class BiblesManagementController extends APIController
     public function create()
     {
         $roles = Role::all();
+        $bibles = Bible::all();
+		$bible = new Bible();
+	    $alphabets = Alphabet::select(['script','name'])->get();
+	    $languages = Language::select(['id','name'])->get();
+	    $books = Book::orderBy('protestant_order','asc')->get()->groupBy('book_group');
+	    $organizations = Organization::all();
 
-        return view('bibles.management.create-user',compact('roles'));
+        return view('bibles.management.create-bible',compact('roles','bible','bibles','alphabets','organizations','languages','books'));
     }
 
     /**
@@ -71,10 +78,10 @@ class BiblesManagementController extends APIController
     {
         $validator = Validator::make($request->all(),
             [
-                'name'                  => 'required|max:255|unique:bibles',
+                'name'                  => 'required|max:255|unique:dbp.bibles',
                 'first_name'            => '',
                 'last_name'             => '',
-                'email'                 => 'required|email|max:255|unique:bibles',
+                'email'                 => 'required|email|max:255|unique:dbp.bibles',
                 'password'              => 'required|min:6|max:20|confirmed',
                 'password_confirmation' => 'required|same:password',
                 'role'                  => 'required',
@@ -141,11 +148,14 @@ class BiblesManagementController extends APIController
     public function edit($id)
     {
         $bible = Bible::with('links','translations')->findOrFail($id);
+        $bibles = Bible::all();
         $alphabets = Alphabet::select(['script','name'])->get();
         $languages = Language::select(['id','name'])->get();
         $books = Book::orderBy('protestant_order','asc')->get()->groupBy('book_group');
+	    $roles = Role::all();
+	    $organizations = Organization::all();
 
-        return view('bibles.management.edit-bible', compact('bible','alphabets','languages','books'));
+        return view('bibles.management.edit-bible', compact('roles','bible','bibles','alphabets','organizations','languages','books'));
     }
 
     /**
@@ -165,13 +175,13 @@ class BiblesManagementController extends APIController
 
         if ($emailCheck) {
             $validator = Validator::make($request->all(), [
-                'name'     => 'required|max:255|unique:bibles',
-                'email'    => 'email|max:255|unique:bibles',
+                'name'     => 'required|max:255|unique:dbp.bibles',
+                'email'    => 'email|max:255|unique:dbp.bibles',
                 'password' => 'present|confirmed|min:6',
             ]);
         } else {
             $validator = Validator::make($request->all(), [
-                'name'     => 'required|max:255|unique:bibles',
+                'name'     => 'required|max:255|unique:dbp.bibles',
                 'password' => 'nullable|confirmed|min:6',
             ]);
         }
@@ -222,7 +232,7 @@ class BiblesManagementController extends APIController
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function delete($id)
     {
         $currentUser = Auth::user();
         $bible = User::findOrFail($id);

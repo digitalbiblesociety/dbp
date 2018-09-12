@@ -43,6 +43,7 @@ Route::post('/about/contact',        'User\UserContactController@store')->name('
 
 // About
 Route::get('/about/relations',         'WelcomeController@relations')->name('relations');
+Route::get('/organizations',           'Organization\OrganizationsController@index')->name('organizations.index');
 
 // Authentication Routes | Passwords
 Auth::routes();
@@ -139,6 +140,7 @@ Route::group(['middleware' => ['auth', 'activated', 'role:admin', 'activity']], 
 			'index'   => 'dashboard.bibles',
 			'create'  => 'dashboard.bibles.create',
 			'store'   => 'dashboard.bibles.store',
+			'update'  => 'dashboard.bibles.update',
 			'delete'  => 'dashboard.bible.delete',
 		],
 		'except' => [

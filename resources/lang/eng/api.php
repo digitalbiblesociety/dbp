@@ -33,6 +33,8 @@ return [
 
 	// Community Routes
 	'users_errors_404_email'                 => 'No user with the email `:email` could be found',
+	'users_errors_422_email_disposable'      => 'Email is disposable',
+	'users_errors_422_email_nonexistent_host'=> 'The provided email host does not exist',
 	'users_errors_401_project'               => 'The user given is not a user of the project_id provided.',
 	'users_errors_428_password'              => 'Please reset your password',
 
@@ -41,6 +43,8 @@ return [
 
 	'project_users_404'                      => 'The specified user is not a member of the project_id provided.',
 	'projects_destroy_200'                   => 'Projects',
+	'projects_developer_not_a_member'        => 'The project ID provided is not associated with your developer key',
+	'projects_users_needs_to_connect'        => 'This user needs to be connected with this project. A verification email has been sent to them',
 
 	'organizations_relationship_members_404' => 'No membership connection found.',
 	'organizations_errors_404'               => 'No record for the organization id found',

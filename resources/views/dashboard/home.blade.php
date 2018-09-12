@@ -6,7 +6,7 @@
 
 @section('content')
 
-    @include('layouts.partials.banner', ['title' => 'Dashboard'])
+    @include('layouts.partials.banner', ['title' => 'Dashboard Admin'])
 
     <div class="container box">
         <div class="row">
@@ -17,6 +17,10 @@
                     <li><a href="{{ route('profile.show', $user->id) }}">Profile</a></li>
                     <li><a href="">Accounts</a></li>
                     <li><a href="#">Donate</a></li>
+                </ul>
+                <p class="menu-label">Messages</p>
+                <ul class="menu-list">
+                    <li><a href="{{ route('messages.index') }}">Messages</a></li>
                 </ul>
                 <p class="menu-label">Notes</p>
                 <ul class="menu-list">

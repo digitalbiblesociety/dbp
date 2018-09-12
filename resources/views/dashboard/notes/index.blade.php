@@ -102,24 +102,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js" integrity="sha256-4PIvl58L9q7iwjT654TQJM+C/acEyoG738iL8B8nhXg=" crossorigin="anonymous"></script>
 <script>
 	$(document).ready(function() {
-		window.inbox = {};
-		window.paginate = {
-			total: Math.random() * (54236 - 100) + 3
-		}
-		for (var i = 0; i <= 10; i++) {
-			window.inbox[i] = {
-				from: faker.name.findName(),
-				timestamp: null,
-				subject: faker.lorem.sentence().substring(0, 40),
-				snippet: faker.lorem.lines(),
-				fullMail: window.faker.lorem.paragraphs(faker.random.number(40)),
-				email: faker.internet.email()
-			};
-		}
+
 		var inboxVue = new Vue({
 			el: '#mail-app',
 			data: {
-				messages: window.inbox,
+				messages: [],
 				paginate: {
 					pointer: {
 						start: 1,
@@ -130,8 +117,8 @@
 			},
 			mounted () {
 				axios
-					.get('https://api.coindesk.com/v1/bpi/currentprice.json')
-					.then(response => (this.info = response))
+					.get('https://api.dbp.test/users/{{ \Auth::user()->id }}/notes?key=1234&v=4')
+					.then(response => (this.messages = response))
 			},
 			methods: {
 				showMessage: function(msg, index) {

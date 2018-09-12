@@ -7,6 +7,9 @@
         'title'     => 'Welcome '. $user->name,
         'subtitle'  => 'Admin Access'
     ])
+
+    @include('dashboard.organizations.partials.sync-dbl-message',$user)
+
     <div class="container">
         {{--
         <div class="field is-grouped is-grouped-multiline columns">
@@ -73,7 +76,7 @@
         </div>
         <footer class="card-footer">
             <a href="{{ route('dashboard.bibles') }}" class="card-footer-item">All</a>
-            <a href="{{ route('dashboard.bibles') }}" class="card-footer-item">Create</a>
+            <a href="{{ route('dashboard.bibles.create') }}" class="card-footer-item">Create</a>
             <div class="card-footer-item"><input type="text"></div>
         </footer>
     </div>

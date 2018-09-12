@@ -11513,6 +11513,13 @@ label.panel-block:hover {
   padding: 3rem 1.5rem 6rem;
 }
 
+.select,
+.select select,
+.v-select,
+.dropdown-toggle {
+  width: 100%;
+}
+
 .icon {
   width: 1em;
   height: 1em;

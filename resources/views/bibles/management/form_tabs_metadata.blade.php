@@ -1,58 +1,83 @@
-@php $fields = ['id','scope','derived','copyright','in_progress'] @endphp
-@foreach($fields as $field)
-    @include('layouts.partials.form-input', ['type' => 'text','object' => $bible,'errors' => $errors,'name' => $field])
-@endforeach
 
-<div class="form-group has-feedback row {{ $errors->has('date') ? ' has-error ' : '' }}">
-    <label class="col-md-3 control-label" for="{{ 'date' }}">{{ trans('forms.create_label_'.'date') }}</label>
-    <div class="col-md-9">
-        <div class="input-group">
-            {!! Form::number('date', $bible['date'], ['id' => 'priority', 'class' => 'form-control', 'placeholder' => trans('fields.'.'date'), 'min'=>1000,'aria-describedby' => 'dateHelpBlock']) !!}
-            <div class="input-group-append">
-                <label class="input-group-text" for="{{ 'date' }}"><i class="fa fa-fw fa-calendar" aria-hidden="true"></i></label>
-            </div>
-        </div>
-        <small id="dateHelpBlock" class="form-text text-muted">
-            The Year the Bible was Originally Published (Any scope sets the default).
-        </small>
+<div class="columns is-multiline">
+
+    <div class="column is-4-desktop">
+        <label class="label" for="id">{{ trans('dashboard.bibles_id') }}</label>
+        <input class="input" type="text" name="id" value="{{ $bible->id ?? old('id') }}" required>
+        @if($errors->has('id')) <span class="help-block"><strong>{{ $errors->first('id') }}</strong></span> @endif
+    </div>
+
+    <div class="column is-4-desktop">
+        <label class="label" for="iso">{{ trans('dashboard.bibles_language') }}</label>
+        <v-select name="iso" label="name" :options='{!! str_replace("'","", $languages->toJson()) !!}'></v-select>
+        @if($errors->has('iso')) <span class="help-block"><strong>{{ $errors->first('iso') }}</strong></span> @endif
+    </div>
+
+    <div class="column is-4-desktop">
+        <label class="label" for="copyright">{{ trans('dashboard.bibles_copyright') }}</label>
+        <input class="input" type="text" name="copyright" value="{{ $bible->copyright ?? old('copyright') }}">
+        @if($errors->has('copyright')) <span class="help-block"><strong>{{ $errors->first('copyright') }}</strong></span> @endif
+    </div>
+
+    <div class="column is-4-desktop">
+        <label class="label" for="date">{{ trans('dashboard.bibles_date') }}</label>
+        <input class="input" type="number" min="1000" max="{{ date('Y') }}" name="date" value="{{ $bible->date ?? old('date') }}">
         @if($errors->has('date')) <span class="help-block"><strong>{{ $errors->first('date') }}</strong></span> @endif
     </div>
-</div>
 
-<div class="form-group has-feedback row {{ $errors->has('priority') ? ' has-error ' : '' }}">
-    <label class="col-md-3 control-label" for="{{ 'priority' }}">{{ trans('forms.create_label_'.'priority') }}</label>
-    <div class="col-md-9">
-        <div class="input-group">
-            {!! Form::number('priority', $bible['priority'], ['id' => 'priority', 'class' => 'form-control', 'placeholder' => trans('fields.'.'priority'), 'min'=>0,'max'=>10,'aria-describedby' => 'priorityHelpBlock']) !!}
-            <div class="input-group-append">
-                <label class="input-group-text" for="{{ 'priority' }}"><i class="fa fa-fw fa-sort-amount-desc" aria-hidden="true"></i></label>
-            </div>
+    <div class="column is-4-desktop">
+        <label class="label" for="derived">{{ trans('dashboard.bibles_derived') }}</label>
+        <v-select name="derived" :options='{!! str_replace("'","", $bibles->pluck('id')->toJson()) !!}'></v-select>
+        @if($errors->has('derived')) <span class="help-block"><strong>{{ $errors->first('derived') }}</strong></span> @endif
+    </div>
+
+    <div class="column is-4-desktop">
+        <label class="label" for="numeral_system_id">{{ trans('dashboard.bibles_numeral_system_id') }}</label>
+        <v-select name="numeral_system_id" :options='{!! str_replace("'","", $bibles->pluck('numeral_system_id')->unique()->toJson()) !!}'></v-select>
+        @if($errors->has('numeral_system_id')) <span class="help-block"><strong>{{ $errors->first('numeral_system_id') }}</strong></span> @endif
+    </div>
+
+    <div class="column is-4-desktop">
+        <label class="label" for="scope">{{ trans('dashboard.bibles_scope') }}</label>
+        <div class="select">
+        <select name="scope">
+            <option value="C">Complete</option>
+            <option value="NT">New Testament</option>
+            <option value="NTOTP">New Testament, Old Testament Portion</option>
+            <option value="NTP">New Testament Portion</option>
+            <option value="NTPOTP">new Testament Portion, Old Testament Portion</option>
+            <option value="OT">Old Testament</option>
+            <option value="OTNTP">Old Testament, New Testament Portion</option>
+            <option value="OTP">Old Testament Portion</option>
+            <option value="P">Portion</option>
+            <option value="S">Stories</option>
+        </select>
         </div>
-        <small id="priorityHelpBlock" class="form-text text-muted">
+    </div>
+
+    <div class="column is-4-desktop">
+        <label class="label" for="date">{{ trans('dashboard.bibles_versification') }}</label>
+        <div class="select">
+            <select name="versification">
+                @foreach($bibles->pluck('versification')->unique() as $versification)
+                    @if($versification != '')
+                    <option @if(($bible->$versification == $versification) ?? (old('versification') == $versification)) selected @endif value="{{ $versification }}">{{ $versification }}</option>
+                    @endif
+                @endforeach
+            </select>
+        </div>
+        @if($errors->has('versification')) <span class="help-block"><strong>{{ $errors->first('versification') }}</strong></span> @endif
+    </div>
+
+    <div class="column is-4-desktop">
+        <label class="label" for="priority">{{ trans('forms.create_label_'.'priority') }}</label>
+        <input class="input" type="number" name="priority" value="{{ $bible->priority ?? old('priority') }}">
+        <small id="priorityHelpBlock" class="has-text-grey">
             Determines on some systems the sort order of Bibles within the same language group.
             A higher `priority` will result in that Bible appearing nearer the top of the list.
             The scale runs 0-10, ties will be ordered alphabetically by the bible title.
         </small>
         @if($errors->has('priority')) <span class="help-block"><strong>{{ $errors->first('priority') }}</strong></span> @endif
     </div>
-</div>
 
-<div class="form-group has-feedback row {{ $errors->has('script') ? ' has-error ' : '' }}">
-    <label class="col-md-3 control-label" for="script">{{ trans('forms.create_label_script') }}</label>
-    <div class="col-md-9">
-        <v-select label="name" :value='{!! str_replace("'","", $alphabets->where('script',$bible->script)->first()->toJson()) !!}' :options='{!! str_replace("'","", $alphabets->toJson()) !!}'></v-select>
-        @if($errors->has('script')) <span class="help-block"><strong>{{ $errors->first('script') }}</strong></span> @endif
-    </div>
-</div>
-
-<div class="form-group has-feedback row {{ $errors->has('language_id') ? ' has-error ' : '' }}">
-    <label class="col-md-3 control-label" for="language_id">{{ trans('forms.create_label_language_id') }}</label>
-    <div class="col-md-9">
-		<?php
-		    $currentLanguage = $languages->where('id',$bible->language_id)->first();
-		    if($currentLanguage) $currentLanguage = str_replace("'","", $currentLanguage->toJson());
-		?>
-        <v-select label="name" @if($currentLanguage) :value='{!! $currentLanguage !!}' @endif :options='{!! str_replace("'","", $languages->toJson()) !!}'></v-select>
-        @if($errors->has('language_id')) <span class="help-block"><strong>{{ $errors->first('language_id') }}</strong></span> @endif
-    </div>
 </div>
