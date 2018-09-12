@@ -37,4 +37,11 @@ class WelcomeController extends APIController
     	return view('about.legal.eula');
     }
 
+    // about
+
+	public function relations()
+	{
+		return view('about.relations');
+	}
+
 }
