@@ -91,4 +91,9 @@ class AccessGroup extends Model
     	return $this->hasMany(AccessGroupKey::class);
     }
 
+	public function user()
+	{
+		return $this->BelongsTo(Key::class);
+	}
+
 }

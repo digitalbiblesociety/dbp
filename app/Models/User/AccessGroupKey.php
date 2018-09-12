@@ -58,4 +58,9 @@ class AccessGroupKey extends Model
 		return $this->hasManyThrough(AccessType::class, AccessGroupType::class,'id','id','key_id','access_type_id');
 	}
 
+	public function user()
+	{
+		return $this->BelongsTo(Key::class);
+	}
+
 }
