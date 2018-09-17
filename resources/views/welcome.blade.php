@@ -1,37 +1,16 @@
 @extends('layouts.app')
 
-@section('head')
-
-    <style>
-        .card {
-            height: 100%!important;
-        }
-
-        .card .image {
-            padding-top:10px;
-            margin: 0 auto;
-        }
-
-        i {
-            font-size:1.5rem;
-        }
-    </style>
-
-@endsection
-
 @section('content')
-<section class="hero is-primary is-medium is-bold">
-    <div class="hero-body">
-        <div class="container has-text-centered">
-            <h1 class="title">The Open Bible API</h1>
-            <h2 class="subtitle">A collection of thousands of Bibles and resources brought to you by Faith Comes By Hearing<br> with the partnership of the Forum of Bible Agencies and Digital Bible Society.</h2>
-            <div class="field is-grouped columns is-mobile is-centered">
-                <p class="control"><a href="/docs/swagger/v4/" class="button is-link">Get Started</a></p>
-                {{-- <p class="control"><a href="https://github.com/digitalbiblesociety/dbp" class="button">Github</a></p> --}}
-            </div>
-        </div>
-    </div>
-</section>
+
+    @include('layouts.partials.banner', [
+        'title'     => trans('app.site_name'),
+        'subtitle'  => trans('app.site_description'),
+        'size'      => 'medium',
+        'image'     => '/images/dbp_icon.svg',
+        'actions'   => [
+            '/docs/swagger/v4/' => trans('app.site_getting_started')
+        ]
+    ])
 
 <section class="container">
     <div class="columns features level">
