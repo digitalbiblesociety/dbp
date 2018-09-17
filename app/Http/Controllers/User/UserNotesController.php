@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
-use App\Models\User\Note;
+use App\Models\User\Study\Note;
 use App\Models\User\User;
 use App\Models\Bible\Bible;
 use Illuminate\Http\Request;
@@ -285,9 +285,12 @@ class UserNotesController extends APIController
 	 *     )
 	 * )
 	 *
+	 * @param int $user_id
+	 * @param int $note_id
+	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroy($user_id, $note_id)
+	public function destroy(integer $user_id, integer $note_id)
 	{
 		$project_id = checkParam('project_id');
 		$note       = Note::where('project_id', $project_id)->where('user_id', $user_id)->where('id',

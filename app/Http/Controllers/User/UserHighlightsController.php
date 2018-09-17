@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
-use App\Models\User\Highlight;
+use App\Models\User\Study\Highlight;
 use Illuminate\Http\Request;
 use Validator;
 use App\Transformers\UserHighlightsTransformer;

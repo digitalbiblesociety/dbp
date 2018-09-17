@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\User;
+namespace App\Models\User\Study;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,7 +21,7 @@ class Note extends Model
 	protected $connection = 'dbp_users';
     protected $table = "user_notes";
     protected $hidden = ['user_id','project_id'];
-    protected $fillable = ['user_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','bookmark','notes','created_at','updated_at'];
+    protected $fillable = ['id','user_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','bookmark','notes','created_at','updated_at'];
 
 	/**
 	 *
@@ -39,7 +39,7 @@ class Note extends Model
 
 	/**
 	 *
-	 '
+	 * @OA\Property(ref="#/components/schemas/Book/properties/id")
 	 * @method static Note whereBookId($value)
 	 * @property string $book_id
 	 */
