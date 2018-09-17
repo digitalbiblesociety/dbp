@@ -7,9 +7,27 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,900" rel="stylesheet">
     <link rel="stylesheet" href="{{ mix('css/app.css') }}" />
 
+
+    <meta property="og:site_name" content="{{ trans('app.site_name') }}" />
+
+    @if(env('APP_DEBUG') == 'true')
+        <link rel="shortcut icon" href="/favicon_test.ico" type="image/x-icon">
+        <link rel="icon" href="/favicon_test.ico" type="image/x-icon">
+    @else
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    @endif
+
     @if(Localization::isLocalizedRoute())
         @foreach(Localization::getLocales() as $localeCode => $properties)
-            <link rel="alternate" hreflang="{{ $localeCode }}" href="{{ Localization::getLocaleUrl($localeCode) }}">
+
+            @if(Route::current()->getLocalization() == $localeCode)
+                <meta property="og:locale" content="{{ $localeCode }}" />
+            @else
+                <meta property="og:locale:alternate" content="{{ $localeCode }}" />
+                <link rel="alternate" hreflang="{{ $localeCode }}" href="{{ Localization::getLocaleUrl($localeCode) }}">
+            @endif
+
         @endforeach
     @endif
 
