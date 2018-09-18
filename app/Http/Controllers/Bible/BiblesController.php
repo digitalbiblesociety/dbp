@@ -121,7 +121,7 @@ class BiblesController extends APIController
 		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $filter, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $bucket, $include_alt_names, $include_regionInfo, $access_control, $paginate) {
 			$bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($bucket, $access_control, $hide_restricted) {
 				if($bucket) $query->where('bucket_id', $bucket);
-				if(!$hide_restricted) $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
+				if($hide_restricted) $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
 			}])
 			->has('translations')->has('language')
 			->when($filter, function ($q) use($filter) {
