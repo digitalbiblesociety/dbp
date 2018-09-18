@@ -214,9 +214,9 @@ class LibraryVolumeController extends APIController
 			// Filter by media
 			->when($media, function ($q) use ($media) {
 				switch ($media) {
-					case "video": {$q->has('filesetFilm');break;}
-					case "audio": {$q->has('filesetAudio');break;}
-					case "text":  {$q->has('filesetText');break;}
+					case "video": {break;}
+					case "audio": {$q->where('set_type_code', 'audio_drama')->orWhere('set_type_code','audio');break;}
+					case "text":  {$q->where('set_type_code', 'text_format')->orWhere('set_type_code','text_plain');break;}
 				}
 			})->when($updated, function ($q) use ($updated) {
 				$q->where('updated_at', '>', $updated);

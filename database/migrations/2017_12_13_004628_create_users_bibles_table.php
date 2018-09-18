@@ -103,24 +103,33 @@ class CreateUsersBiblesTable extends Migration
 		    });
 	    }
 
+	    if(!Schema::connection('dbp_users')->hasTable('user_highlight_colors')) {
+		    Schema::connection('dbp_users')->create('user_highlight_colors', function (Blueprint $table) {
+			    $table->increments('id');
+			    $table->string('color');
+			    $table->char('hex', 6);
+			    $table->integer('red')->unsigned();
+			    $table->integer('green')->unsigned();
+			    $table->integer('blue')->unsigned();
+			    $table->float('opacity',2,1);
+		    });
+	    }
+
 		if(!Schema::connection('dbp_users')->hasTable('user_highlights')) {
 			Schema::connection('dbp_users')->create('user_highlights', function (Blueprint $table) {
 				$table->increments('id');
 				$table->integer('user_id')->unsigned();
 				$table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-				$table->string('bible_id', 12);
-				$table->foreign('bible_id')->references('id')->on('dbp.bibles')->onDelete('cascade')->onUpdate('cascade');
+				$table->string('fileset_id', 16);
+				$table->foreign('fileset_id')->references('id')->on('dbp.bible_filesets')->onDelete('cascade')->onUpdate('cascade');
 				$table->char('book_id', 3);
 				$table->foreign('book_id')->references('id')->on('dbp.books');
 				$table->tinyInteger('chapter')->unsigned();
 				$table->tinyInteger('verse_start')->unsigned();
-				$table->tinyInteger('verse_end')->unsigned()->nullable();
-				$table->string('reference')->nullable();
-				$table->string('project_id', 24)->nullable();
-				$table->foreign('project_id')->references('id')->on('projects')->onUpdate('cascade')->onDelete('cascade');
 				$table->integer('highlight_start')->unsigned();
 				$table->integer('highlighted_words')->unsigned();
-				$table->string('highlighted_color', 24);
+				$table->integer('highlighted_color')->unsigned();
+				$table->foreign('highlighted_color')->references('id')->on('user_highlight_colors')->onDelete('cascade')->onUpdate('cascade');
 				$table->timestamp('created_at')->useCurrent();
 				$table->timestamp('updated_at')->useCurrent();
 			});
