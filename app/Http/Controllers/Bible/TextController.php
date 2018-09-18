@@ -283,7 +283,7 @@ class TextController extends APIController
 				"canon_order",
 				'books.name as book_name',
 				'bb.name as book_vernacular_name',
-				"book as book_id",
+				"books.id as book_id",
 				"chapter",
 				"verse_start",
 				"verse_end",
