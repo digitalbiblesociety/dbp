@@ -48,6 +48,9 @@ Route::get('/organizations',           'Organization\OrganizationsController@ind
 // Authentication Routes | Passwords
 Auth::routes();
 
+Route::get('/wiki/bibles/{id}',              'Bible\BiblesController@show');
+Route::get('/wiki/bibles',                   'Bible\BiblesController@index');
+
 Route::group(['prefix' => 'verification','as' => 'laravel2step::','middleware' => ['web']], function() {
 
 	Route::name('verificationNeeded')->get('/needed',           'User\UserTwoStepController@showVerification');
@@ -92,8 +95,8 @@ Route::group(['middleware' => ['web', 'activity']], function () {
 	Route::name('exceeded')->get('/exceeded',                           'Auth\ActivateController@exceeded');
 
     // Socialite Register Routes
-    Route::name('social.redirect')->get('/social/redirect/{provider}',  'Auth\SocialController@getSocialRedirect');
-    Route::name('social.handle')->get('/social/handle/{provider}',      'Auth\SocialController@getSocialHandle');
+    Route::name('social.redirect')->get('/login/redirect/{provider}',   'User\UsersController@redirectToProvider');
+    Route::name('social.handle')->get('/login/{provider}/callback',     'User\UsersController@handleProviderCallback');
     Route::name('user.reactivate')->get('/re-activate/{token}',         'User\Dashboard\RestoreUserController@userReActivate');    // Route to for user to reactivate their user deleted account.
 });
 
