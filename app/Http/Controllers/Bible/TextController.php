@@ -248,14 +248,48 @@ class TextController extends APIController
 		if ($exclude) $exclude = ' -' . $exclude;
 		$bible_id = checkParam('dam_id');
 		$limit    = checkParam('limit', null, 'optional') ?? 15;
-		$books    = checkParam('books', null, 'optional');
+		$book_id  = checkParam('book', null, 'optional');
 
+		$book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
+
+		$fileset = BibleFileset::with('bible')->where('id', $bible_id)->orWhere('id',substr($bible_id,0,-4))->orWhere('id',substr($bible_id,0,-2))->first();
+		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
+		$bible = $fileset->bible->first();
+
+		$table = strtoupper($fileset->id) . '_vpl';
 		$query  = DB::connection('sophia')->getPdo()->quote('+' . str_replace(' ', ' +', $query) . $exclude);
-		$verses = DB::connection('sophia')->table(strtoupper($bible_id) . '_vpl')
-		            ->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)
-		            ->when($books, function ($q) use ($books) {
-			            $q->whereIn('book', explode(',', $books));
-		            })->get();
+		$verses = DB::connection('sophia')->table($table)
+			->join(env('DBP_DATABASE').'.books', 'books.id_usfx', 'book')
+			->join(env('DBP_DATABASE').'.bible_books as bb', 'bb.book_id', 'books.id')
+			->join(env('DBP_DATABASE').'.numeral_system_glyphs as glyph_chapter', function ($join) use ($table,$bible) {
+				$join->on("$table.chapter",'=','glyph_chapter.value')
+				     ->where('glyph_chapter.numeral_system_id', '=', $bible->numeral_system_id);
+			})
+			->join(env('DBP_DATABASE').'.numeral_system_glyphs as glyph_start', function ($join) use ($table,$bible) {
+				$join->on("$table.verse_start",'=','glyph_start.value')
+				     ->where('glyph_start.numeral_system_id', '=', $bible->numeral_system_id);
+			})
+			->join(env('DBP_DATABASE').'.numeral_system_glyphs as glyph_end', function ($join) use ($table,$bible) {
+				$join->on("$table.verse_end",'=','glyph_end.value')
+				     ->where('glyph_end.numeral_system_id', '=', $bible->numeral_system_id);
+			})
+			->when($book, function ($q) use($book) {
+				$q->whereIn('book',$book->id_usfx);
+			})
+			->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)
+			->select([
+				"canon_order",
+				'books.name as book_name',
+				'bb.name as book_vernacular_name',
+				"book as book_id",
+				"chapter",
+				"verse_start",
+				"verse_end",
+				'verse_text',
+				'glyph_chapter.glyph as chapter_vernacular',
+				'glyph_start.glyph as verse_start_vernacular',
+				'glyph_end.glyph as verse_end_vernacular',
+			])->get();
 
 		if($verses->count() == 0) return $this->setStatusCode(404)->replyWithError("No results found");
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
