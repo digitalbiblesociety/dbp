@@ -260,7 +260,9 @@ class TextController extends APIController
 		$query  = DB::connection('sophia')->getPdo()->quote('+' . str_replace(' ', ' +', $query) . $exclude);
 		$verses = DB::connection('sophia')->table($table)
 			->join(env('DBP_DATABASE').'.books', 'books.id_usfx', 'book')
-			->join(env('DBP_DATABASE').'.bible_books as bb', 'bb.book_id', 'books.id')
+			->join(env('DBP_DATABASE').'.bible_books as bb', function ($join) use ($table,$bible) {
+				$join->on('bb.book_id', 'books.id')->where('bible_id',$bible->id);
+			})
 			->join(env('DBP_DATABASE').'.numeral_system_glyphs as glyph_chapter', function ($join) use ($table,$bible) {
 				$join->on("$table.chapter",'=','glyph_chapter.value')
 				     ->where('glyph_chapter.numeral_system_id', '=', $bible->numeral_system_id);
