@@ -47,7 +47,7 @@ class LoginController extends Controller
 	{
 		$user = User::where('email',$request->email)->first();
 		if($user) {
-			if($user->password == "needs_resetting") {
+			if(substr($user->password,0,2) == "s_") {
 				throw ValidationException::withMessages([
 					'password' => ["You need to reset your password to use the new version"],
 				]);
