@@ -46,21 +46,20 @@ class LanguageController extends APIController
 
 		// Caching Logic
 		$cache_string = 'v' . $this->v . '_languages_' . $code.$full_word.$name.$sort_by;
+		\Cache::forget($cache_string);
 		$cached_languages = \Cache::remember($cache_string, 1600, function () use ($code, $full_word, $name, $sort_by) {
-
 			$languages = Language::select(['id', 'iso2B', 'iso', 'name'])->orderBy($sort_by)
-				// Filter results by iso code when set
-				                 ->when($code, function ($query) use ($code) {
+				->when($code, function ($query) use ($code) {
 					return $query->where('iso', $code);
 				})
+				->has('filesets')
 				// Filter results by language name when set
-				                 ->when($name, function ($query) use ($name, $full_word) {
+				->when($name, function ($query) use ($name, $full_word) {
 					return $query->whereHas('translations', function ($query) use ($name, $full_word) {
 						$added_space = ($full_word == "true") ? " ": "";
 						$query->where('name', 'like', '%' . $name . $added_space . '%')->orWhere('name', $name);
 					});
 				})->get();
-
 			return fractal($languages,new LanguageListingTransformer())->serializeWith($this->serializer);
 		});
 		return $this->reply($cached_languages);
@@ -290,21 +289,15 @@ class LanguageController extends APIController
 	 */
 	public function volumeLanguageFamily()
 	{
-		return json_decode(file_get_contents(public_path('/data/volumelanguagefamily.json')));
-		if (!$this->api) return view('languages.volumes');
-
-		// $full_word =  checkParam('full_word', null, 'optional');
-		// $status =  checkParam('status', null, 'optional');
-		// $resolution =  checkParam('resolution', null, 'optional');
 		$iso             = checkParam('language_code', null, 'optional');
 		$root            = checkParam('root', null, 'optional');
 		$media           = checkParam('media', null, 'optional');
 		$delivery        = checkParam('delivery', null, 'optional');
 		$organization_id = checkParam('organization_id', null, 'optional');
 
-		\Cache::forget('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id);
-		$languages = \Cache::remember('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id,
-			2400, function () use ($root, $iso, $media, $delivery, $organization_id) {
+		//\Cache::forget('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id);
+		//$languages = \Cache::remember('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id,
+			//2400, function () use ($root, $iso, $media, $delivery, $organization_id) {
 				$languages = Language::with('bibles')->with('dialects')
 					->with(['dialects.childLanguage' => function ($query) {
 					    $query->select(['id', 'iso']);
@@ -317,7 +310,7 @@ class LanguageController extends APIController
 						return $query->where('name', 'LIKE', '%' . $root . '%');
 					})->get();
 				return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer);
-			});
+			//});
 		return $this->reply($languages);
 	}
 

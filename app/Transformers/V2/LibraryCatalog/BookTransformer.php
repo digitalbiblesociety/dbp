@@ -72,7 +72,7 @@ class BookTransformer extends BaseTransformer
 		     */
 		    case "v2_library_book": {
 			    return [
-				    "dam_id"             => $book->source_id,
+			    	"dam_id_root"        => $book->source_id,
 				    "book_id"            => $book->id_osis,
 				    "book_name"          => $book->name,
 				    "book_order"         => (string) $book->protestant_order,

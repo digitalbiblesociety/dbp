@@ -3,7 +3,16 @@
 namespace App\Models\Language;
 
 use Illuminate\Database\Eloquent\Model;
-
+/**
+ *
+ * @OA\Schema (
+ *     type="object",
+ *     description="NumeralSystem",
+ *     title="Numeral System",
+ *     @OA\Xml(name="NumeralSystem")
+ * )
+ *
+ */
 class NumeralSystem extends Model
 {
 	protected $connection = 'dbp';

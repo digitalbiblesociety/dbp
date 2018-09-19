@@ -18,6 +18,74 @@ class NumbersController extends APIController
 
 	/**
 	 *
+	 *
+	 * @OA\Get(
+	 *     path="/numbers/range",
+	 *     tags={"Languages"},
+	 *     summary="Return a range of numbers",
+	 *     description="This route returns the vernacular numbers for a set range.
+	The range for a single call is limited to 2000 numbers.",
+	 *     operationId="v4_numbers.range",
+	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OA\Parameter(ref="#/components/parameters/key"),
+	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OA\Parameter(ref="#/components/parameters/format"),
+	 *     @OA\Parameter(name="iso", in="query", required=true,
+	 *          @OA\Schema(ref="#/components/schemas/Language/properties/iso")),
+	 *     @OA\Parameter(name="start", in="query", required=true,
+	 *          @OA\Schema(type="object")),
+	 *     @OA\Parameter(name="end", in="query", required=true,
+	 *          @OA\Schema(type="object")),
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_numbers_range")),
+	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_numbers_range")),
+	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_numbers_range"))
+	 *     )
+	 * )
+	 *
+	 * @return mixed
+	 *
+	 * @OA\Schema (
+	 *     type="object",
+	 *     schema="v4_numbers_range",
+	 *     description="The numbers range return",
+	 *     title="The numbers range return",
+	 *     @OA\Xml(name="v4_numbers_range"),
+	 *     @OA\Property(property="numeral", type="string"),
+	 *     @OA\Property(property="numeral_vernacular", type="string")
+	 * )
+	 *
+	 */
+	public function customRange()
+	{
+		$iso    = checkParam('iso');
+		$script = checkParam('script');
+		$start  = checkParam('start');
+		$end    = checkParam('end');
+		if (($end - $start) > 2000) return $this->replyWithError(trans('api.numerals_range_error_maxsize', ['num' => $end]));
+		$out_numbers = [];
+		// Fetch Numbers By Iso Or Script Code
+		$numbers = AlphabetNumber::where('script_id', $script)->where('iso', $iso)->get()->keyBy('numeral')->ToArray();
+		// Run through the numbers and return the vernaculars
+		$current_number = $start;
+		while ($end >= $current_number) {
+			$number_vernacular = "";
+			foreach (str_split($current_number) as $i) {
+				$number_vernacular .= (isset($numbers[$i]['numeral_vernacular'])) ? $numbers[$i]['numeral_vernacular'] : $i;
+			}
+			$out_numbers[] = [
+				"numeral"            => intval($current_number),
+				"numeral_vernacular" => !empty($numbers) ? $number_vernacular : $current_number,
+			];
+			$current_number++;
+		}
+		return $this->reply($out_numbers);
+	}
+
+	/**
+	 *
 	 * @OA\Get(
 	 *     path="/numbers",
 	 *     tags={"Languages"},

@@ -246,13 +246,13 @@ class TextController extends APIController
 		$query   = checkParam('query');
 		$exclude = checkParam('exclude', null, 'optional') ?? false;
 		if ($exclude) $exclude = ' -' . $exclude;
-		$bible_id = checkParam('dam_id');
+		$fileset_id = checkParam('dam_id|fileset_id');
 		$limit    = checkParam('limit', null, 'optional') ?? 15;
 		$book_id  = checkParam('book', null, 'optional');
 
 		$book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
 
-		$fileset = BibleFileset::with('bible')->where('id', $bible_id)->orWhere('id',substr($bible_id,0,-4))->orWhere('id',substr($bible_id,0,-2))->first();
+		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id',substr($fileset_id,0,-4))->orWhere('id',substr($fileset_id,0,-2))->first();
 		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
 		$bible = $fileset->bible->first();
 

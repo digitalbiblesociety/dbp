@@ -98,15 +98,15 @@ class LanguageListingTransformer extends BaseTransformer
 
 		    default: {
 			    return [
-				    'language_code'        => (string) strtoupper($language->iso),
-				    'language_name'        => (string) @$language->autonym->name,
-				    'english_name'         => (string) $language->name,
-				    'language_iso'         => (string) $language->iso,
-				    "language_iso_2B"      => (string) $language->iso2B,
-				    "language_iso_2T"      => (string) $language->iso2T,
-				    "language_iso_1"       => (string) $language->iso1,
-				    'language_iso_name'    => (string) $language->name,
-				    'language_family_code' => (string) $language->iso
+				    'language_code'        => (string) @strtoupper($language->iso),
+				    'language_name'        => (string) @$language->name,
+				    'english_name'         => (string) @$language->name,
+				    'language_iso'         => (string) @$language->iso,
+				    "language_iso_2B"      => (string) @$language->iso2B,
+				    "language_iso_2T"      => (string) @$language->iso2B,
+				    "language_iso_1"       => (string) @$language->iso2B,
+				    'language_iso_name'    => (string) @$language->name,
+				    'language_family_code' => (string) @$language->iso
 			    ];
 		    }
 	    }

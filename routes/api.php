@@ -1,10 +1,11 @@
 <?php
 
 	// VERSION 2
-	Route::name('v2_pass_through')->match(['get','options'],'pass-through/{path1?}/{path2?}',                 'HomeController@passThrough');
-	Route::name('v2_library_asset')->match(['get','options'],'library/asset',                                 'HomeController@libraryAsset');
-	Route::name('v2_library_version')->match(['get','options'],'library/version',                             'Bible\BiblesController@libraryVersion');
-
+	Route::name('v2_pass_through')->match(['get','options'],'pass-through/{path1?}/{path2?}',                 'Connections\V2Controllers\ApiMetadataController@passThrough');
+	Route::name('v2_library_asset')->match(['get','options'],'library/asset',                                 'Connections\V2Controllers\ApiMetadataController@libraryAsset');
+	Route::name('v2_api_versionLatest')->match(['get','options'],'api/apiversion',                            'Connections\V2Controllers\ApiMetadataController@versionLatest');
+	Route::name('v2_api_apiReply')->match(['get','options'],'api/reply',                                      'Connections\V2Controllers\ApiMetadataController@versionReplyTypes');
+	Route::name('v2_library_version')->match(['get','options'],'library/version',                             'Connections\V2Controllers\LibraryCatalog\LibraryVersionController@libraryVersion');
 	Route::name('v2_library_book')->match(['get','options'],'library/book',                                   'Connections\V2Controllers\LibraryCatalog\BooksController@book');
 	Route::name('v2_library_bookOrder')->match(['get','options'],'library/bookorder',                         'Connections\V2Controllers\LibraryCatalog\BooksController@bookOrder');
 	Route::name('v2_library_bookName')->match(['get','options'],'library/bookname',                           'Connections\V2Controllers\LibraryCatalog\BooksController@bookNames');
@@ -14,15 +15,12 @@
 	Route::name('v2_library_volumeLanguage')->match(['get','options'],'library/volumelanguage',               'Connections\V2Controllers\LibraryCatalog\LanguageController@volumeLanguage');
 	Route::name('v2_library_volumeLanguageFamily')->match(['get','options'],'library/volumelanguagefamily',   'Connections\V2Controllers\LibraryCatalog\LanguageController@volumeLanguageFamily');
 	Route::name('v2_country_lang')->match(['get','options'],'country/countrylang',                            'Connections\V2Controllers\LibraryCatalog\LanguageController@CountryLang');
-
-	Route::name('v2_library_verseInfo')->match(['get','options'],'library/verseinfo',                         'Bible\VerseController@info');
-	Route::name('v2_library_numbers')->match(['get','options'],'library/numbers',                             'Wiki\NumbersController@customRange');
 	Route::name('v2_library_metadata')->match(['get','options'],'library/metadata',                           'Connections\V2Controllers\LibraryCatalog\LibraryMetadataController@index');
 	Route::name('v2_library_volume')->match(['get','options'],'library/volume',                               'Connections\V2Controllers\LibraryCatalog\LibraryVolumeController@libraryVolume');
-
 	Route::name('v2_volume_organization_list')->match(['get','options'],'library/volumeorganization',         'Organization\OrganizationsController@index');
+	Route::name('v2_library_verseInfo')->match(['get','options'],'library/verseinfo',                         'Bible\VerseController@info');
+	Route::name('v2_library_numbers')->match(['get','options'],'library/numbers',                             'Wiki\NumbersController@customRange');
 
-	// TODO: Cache below Routes
 	Route::name('v2_library_organization')->match(['get','options'],'library/organization',                   'Organization\OrganizationsController@index');
 	Route::name('v2_audio_location')->match(['get','options'],'audio/location',                               'Bible\AudioController@location');
 	Route::name('v2_audio_path')->match(['get','options'],'audio/path',                                       'Bible\AudioController@index');
@@ -33,8 +31,6 @@
 	Route::name('v2_text_search_group')->match(['get','options'],'text/searchgroup',                          'Bible\TextController@searchGroup');
 	Route::name('v2_video_location')->match(['get','options'],'video/location',                               'Organization\FilmsController@location');
 	Route::name('v2_video_path')->match(['get','options'],'video/path',                                       'Organization\FilmsController@videoPath');
-	Route::name('v2_api_versionLatest')->match(['get','options'],'api/apiversion',                            'HomeController@versionLatest');
-	Route::name('v2_api_apiReply')->match(['get','options'],'api/reply',                                      'HomeController@versionReplyTypes');
 	Route::name('v2_api_jesusFilms')->match(['get','options'],'library/jesusfilm',                            'Organization\ResourcesController@jesusFilmListing');
 
 	// VERSION 3
@@ -96,8 +92,8 @@
 	Route::name('v4_user.destroy')->delete('users/{user_id}',                             'User\UsersController@destroy');
 	Route::name('v4_user.login')->post('users/login',                                     'User\UsersController@login');
 	Route::name('v4_user.geolocate')->match(['get','options'],'users/geolocate',                              'User\UsersController@geoLocate');
-	Route::name('v4_user.oAuth')->match(['get','options'],'users/login/{driver}',                             'Auth\SocialController@getSocialRedirect');
-	Route::name('v4_user.oAuthCallback')->match(['get','options'],'users/login/{driver}/callback',            'Auth\SocialController@getSocialHandle');
+	Route::name('v4_user.oAuth')->match(['get','options'],'users/login/{driver}',                             'User\UsersController@getSocialRedirect');
+	Route::name('v4_user.oAuthCallback')->match(['get','options'],'users/login/{driver}/callback',            'User\UsersController@getSocialHandle');
 
 	// VERSION 4 | USER PASSWORDS
 	Route::name('v4_user.password_reset')->post('users/password/reset',                   'User\UserPasswordsController@validatePasswordReset');

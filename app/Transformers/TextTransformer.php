@@ -41,13 +41,13 @@ class TextTransformer extends BaseTransformer
 		    */
 		    case "v2_text_search": {
 		    	return [
-			        "dam_id"           => $text->bible_id,
+			        "dam_id"           => $_GET['dam_id'],
                     "book_name"        => $text->book_name,
-                    "book_id"          => $text->osis_id,
+                    "book_id"          => $text->book_id,
                     "chapter_id"       => "$text->chapter",
                     "verse_id"         => "$text->verse_start",
                     "verse_text"       => "$text->verse_text",
-                    "book_order"       => "$text->protestant_order"
+                    "book_order"       => @"$text->protestant_order" ?? ''
 				];
 		    }
 
