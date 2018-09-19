@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
 @section('head')
-    <title>	{{ trans('titles.activation') }}</title>
+    <title>	{{ trans('app.activation') }}</title>
 @endsection
 
 @section('content')
 
-    @include('layouts.partials.banner', ['title' => trans('titles.activation')])
+    @include('layouts.partials.banner', ['title' => trans('app.activation')])
 
 	<div class="container">
 
         <div class="card">
-        	<div class="card-header">{{ trans('titles.activation') }}</div>
+        	<div class="card-header">{{ trans('app.activation') }}</div>
         	<div class="card-content">
         		<p>{{ trans('auth.regThanks') }}</p>
         		<p>{{ trans('auth.anEmailWasSent',['email' => $email, 'date' => $date ] ) }}</p>

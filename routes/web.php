@@ -48,8 +48,8 @@ Route::get('/organizations',           'Organization\OrganizationsController@ind
 // Authentication Routes | Passwords
 Auth::routes();
 
-Route::get('/wiki/bibles/{id}',              'Bible\BiblesController@show');
-Route::get('/wiki/bibles',                   'Bible\BiblesController@index');
+Route::name('wiki_bibles.one')->get('/wiki/bibles/{id}',              'Bible\BiblesController@show');
+Route::name('wiki_bibles.all')->get('/wiki/bibles',                   'Bible\BiblesController@index');
 
 Route::group(['prefix' => 'verification','as' => 'laravel2step::','middleware' => ['web']], function() {
 

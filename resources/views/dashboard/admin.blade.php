@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('head')
+    <style>
+        .card-header-title {flex-direction: column;align-items:left;-webkit-box-align:left}
+    </style>
+@endsection
+
 
 @section('content')
 
@@ -9,140 +15,43 @@
     ])
 
     @include('dashboard.organizations.partials.sync-dbl-message',$user)
-
     <div class="container">
-        {{--
-        <div class="field is-grouped is-grouped-multiline columns">
-            @level(1)
-            <div class="control column">
-                <div class="tags has-addons">
-                    <span class="tag is-dark">Level 1</span>
-                    <span class="tag is-info">User Notes and & Highlights</span>
-                </div>
-            </div>
-            @endlevel
 
-            @level(2)
-            <div class="control column">
-                <div class="tags has-addons">
-                    <span class="tag is-dark">Level 2</span>
-                    <span class="tag is-info">User Beta Program</span>
-                </div>
-            </div>
-            @endlevel
+        <div class="columns">
 
-            @level(3)
-            <div class="control column">
-                <div class="tags has-addons">
-                    <span class="tag is-dark">Level 3</span>
-                    <span class="tag is-info">Content Owner / Contributor</span>
-                </div>
+            <div class="column is-half is-offset-one-quarter">
+                <label>Search
+                <input class="input" type="search" placeholder="Bibles, Languages, Audio, Filesets..."></label>
             </div>
-            @endlevel
 
-            @level(4)
-            <div class="control column">
-                <div class="tags has-addons">
-                    <span class="tag is-dark">Level 4</span>
-                    <span class="tag is-info">Content Owner / Contributor</span>
-                </div>
-            </div>
-            @endlevel
-
-            @level(5)
-            <div class="control column">
-                <div class="tags has-addons">
-                    <span class="tag is-dark">Level 5</span>
-                    <span class="tag is-info">Archivist Level</span>
-                </div>
-            </div>
-            @endlevel
-        </div>
-        --}}
-    <div class="columns">
-        <div class="column">
-    <div class="card">
-        <header class="card-header">
-            <p class="card-header-title">Bibles</p>
-            <a href="#" class="card-header-icon" aria-label="more options">Options</a>
-        </header>
-        <div class="card-content">
-            <div class="content">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
-                <br>
-                <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-            </div>
-        </div>
-        <footer class="card-footer">
-            <a href="{{ route('dashboard.bibles') }}" class="card-footer-item">All</a>
-            <a href="{{ route('dashboard.bibles.create') }}" class="card-footer-item">Create</a>
-            <div class="card-footer-item"><input type="text"></div>
-        </footer>
-    </div>
         </div>
 
-        <div class="column">
+
         <div class="card">
             <header class="card-header">
-                <p class="card-header-title">Filesets</p>
-                <a href="#" class="card-header-icon" aria-label="more options">Options</a>
+                <p class="card-header-title">Arifama-Miniafia 2009 Edition <span class="has-text-grey">Tur Gewasin O Baibasit Boubun</span></p>
+                <a href="#" class="card-header-icon is-size-7 has-text-grey-light" aria-label="more options">AAIWBT</a>
             </header>
             <div class="card-content">
                 <div class="content">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                    <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
+                    <ul>
+                        <li><a href="#">c0ba31fc8eb6 <small>text_plain</small> <b>NT</b></a></li>
+                        <li><a href="#">aea24f4d65f1 <small>text_format</small> <b>NT</b></a></li>
+                        <li><a href="#">1c6bb3218588 <small>text_plain</small> <b>NT</b></a></li>
+                    </ul>
                     <br>
-                    <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+                    <time datetime="2016-1-1">Last Updated Jan 1st 2016 @11:09 PM</time>
                 </div>
             </div>
-            <footer class="card-footer">
-                <a href="{{ route('dashboard.bibles') }}" class="card-footer-item">All</a>
-                <a href="{{ route('dashboard.bibles') }}" class="card-footer-item">Create</a>
-                <div class="card-footer-item"><input type="text"></div>
-            </footer>
-        </div>
         </div>
 
-    </div>
+</div>
+
+@endsection
 
 
-            @role('admin')
+@section('footer')
+    <script>
 
-            <hr>
-
-            <p>
-                You have permissions:
-                @permission('view.users')
-                <span class="badge badge-primary margin-half margin-left-0">
-                        {{ trans('permsandroles.permissionView') }}
-                    </span>
-                @endpermission
-
-                @permission('create.users')
-                <span class="badge badge-info margin-half margin-left-0">
-                        {{ trans('permsandroles.permissionCreate') }}
-                    </span>
-                @endpermission
-
-                @permission('edit.users')
-                <span class="badge badge-warning margin-half margin-left-0">
-                        {{ trans('permsandroles.permissionEdit') }}
-                    </span>
-                @endpermission
-
-                @permission('delete.users')
-                <span class="badge badge-danger margin-half margin-left-0">
-                        {{ trans('permsandroles.permissionDelete') }}
-                    </span>
-                @endpermission
-
-            </p>
-
-            @endrole
-
-        </div>
-    </div>
-    </div>
-
+    </script>
 @endsection

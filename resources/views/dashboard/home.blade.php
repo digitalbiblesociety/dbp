@@ -6,7 +6,7 @@
 
 @section('content')
 
-    @include('layouts.partials.banner', ['title' => 'Dashboard Admin'])
+    @include('layouts.partials.banner', ['title' => 'Dashboard'])
 
     <div class="container box">
         <div class="row">

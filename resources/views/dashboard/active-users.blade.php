@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    {{ trans('titles.activeUsers') }}
+    {{ trans('app.activeUsers') }}
 @endsection
 
 @section('content')

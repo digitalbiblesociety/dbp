@@ -5,8 +5,8 @@
     @include('layouts.partials.banner', [
         'title' => trans('about.contact_title'),
         'breadcrumbs' => [
-            '/'     => trans('about.home'),
-            '#'     => trans('about.contact_title')
+            '/' => trans('about.home'),
+            '#' => trans('about.contact_title')
         ]
     ])
 

@@ -1,6 +1,6 @@
 <nav class="navbar ">
     <div class="navbar-brand">
-        <a class="navbar-item" href="{{ url('/') }}">{!! config('app.name', trans('titles.app')) !!}</a>
+        <a class="navbar-item" href="{{ url('/') }}">{!! config('app.name', trans('app.app')) !!}</a>
         <a class="navbar-item is-hidden-desktop" href="https://github.com/digitalbiblesociety/dbp" target="_blank"><span class="icon" style="color: #333;"><i class="fa fa-github"></i></span></a>
         <a class="navbar-item is-hidden-desktop" href="https://twitter.com/dbp" target="_blank"><span class="icon" style="color: #55acee;"><i class="fa fa-twitter"></i></span></a>
 
@@ -23,6 +23,7 @@
                                 <h1 class="title is-6 is-mega-menu-title">Documentation</h1>
                                 <a class="navbar-item" href="{{ route('swagger_v4') }}">{{ trans('about.api_v4_title') }}</a>
                                 <a class="navbar-item" href="{{ route('swagger_v2') }}">{{ trans('about.api_v2_title') }}</a>
+                                <a class="navbar-item" href="">{{ trans('about.docs_v4') }}</a>
                             </div>
 
                             <div class="column">
@@ -54,18 +55,20 @@
                     <a class="navbar-item has-text-grey-light" disabled>How DBP relates to...</a> {{-- route('relations') --}}
                 </div>
             </div>
+            <a class="navbar-item" href="{{ route('wiki_bibles.all') }}">Bibles</a>
+            <a class="navbar-item has-text-grey-light" disabled>Resources</a>
 
             @role('admin')
             <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link" href="{{ route('public.home') }}">{!! trans('titles.adminDropdownNav') !!}</a>
+                <a class="navbar-link" href="{{ route('public.home') }}">{!! trans('app.adminDropdownNav') !!}</a>
                 <div class="navbar-dropdown">
-                    <a class="navbar-item" href="{{ url('/users') }}">@lang('titles.adminUserList')</a>
-                    <a class="navbar-item" href="{{ url('/users/create') }}">@lang('titles.adminNewUser')</a>
-                    <a class="navbar-item" href="{{ url('/logs') }}">@lang('titles.adminLogs')</a>
-                    <a class="navbar-item" href="{{ url('/activity') }}">@lang('titles.adminActivity')</a>
-                    <a class="navbar-item" href="{{ url('/php-info') }}">@lang('titles.adminPHP')</a>
-                    <a class="navbar-item" href="{{ url('/routes') }}">@lang('titles.adminRoutes')</a>
-                    <a class="navbar-item" href="{{ url('/active-users') }}">@lang('titles.activeUsers')</a>
+                    <a class="navbar-item" href="{{ url('/users') }}">@lang('app.adminUserList')</a>
+                    <a class="navbar-item" href="{{ url('/users/create') }}">@lang('app.adminNewUser')</a>
+                    <a class="navbar-item" href="{{ url('/logs') }}">@lang('app.adminLogs')</a>
+                    <a class="navbar-item" href="{{ url('/activity') }}">@lang('app.adminActivity')</a>
+                    <a class="navbar-item" href="{{ url('/php-info') }}">@lang('app.adminPHP')</a>
+                    <a class="navbar-item" href="{{ url('/routes') }}">@lang('app.adminRoutes')</a>
+                    <a class="navbar-item" href="{{ url('/active-users') }}">@lang('app.activeUsers')</a>
                 </div>
             </div>
             @endrole
@@ -93,7 +96,7 @@
                             {{ Auth::user()->name }}
                         </a>
                         <div class="navbar-dropdown">
-                            <a class="navbar-item" href="{{ url('/profile/'.Auth::user()->name) }}">@lang('titles.profile')</a>
+                            <a class="navbar-item" href="{{ url('/profile/'.Auth::user()->name) }}">@lang('app.profile')</a>
                             <a class="navbar-item" href="{{ route('logout') }}"
                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> {{ __('Logout') }}</a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;"> @csrf </form>
