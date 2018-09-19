@@ -155,6 +155,11 @@
 	Route::name('v4_api.stats')->match(['get','options'],'/stats',                                            'HomeController@stats');
 	Route::name('v4_api.logs')->match(['get','options'],'sign',                                               'HomeController@signedUrls');
 
+	// VERSION 4 | ALGOLIA
+	Route::name('v4_algolia.bibles')->match(['get','options'],'/algolia/bibles',                              'Connections\AlgoliaOutputController@bibles');
+	Route::name('v4_algolia.languages')->match(['get','options'],'algolia/languages',                         'Connections\AlgoliaOutputController@languages');
+
+
 	// VERSION 4 | CONNECTIONS
 	Route::name('v4_connections_jfm.sync')->match(['get','options'],'connections/jesus-film/sync',           'Connections\ArclightController@sync');
 	Route::name('v4_connections_jfm.index')->match(['get','options'],'connections/jesus-film/{iso}',         'Connections\ArclightController@index');

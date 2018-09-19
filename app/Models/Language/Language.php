@@ -4,6 +4,7 @@ namespace App\Models\Language;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleFilesetConnection;
 use App\Models\Bible\Video;
 use App\Models\Country\CountryLanguage;
 use App\Models\Country\CountryRegion;
@@ -404,6 +405,11 @@ class Language extends Model
     {
         return $this->HasMany(Bible::class);
     }
+
+	public function filesets()
+	{
+		return $this->HasManyThrough(BibleFilesetConnection::class,Bible::class,'language_id','bible_id','id','id');
+	}
 
     public function bibleCount()
     {

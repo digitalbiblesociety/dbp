@@ -10,6 +10,8 @@ use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
 
+use Laravel\Scout\Searchable;
+
 /**
  * App\Models\Bible\Bible
  * @mixin \Eloquent
@@ -50,6 +52,101 @@ use App\Models\Language\Language;
  *     @OA\Xml(name="Bible")
  * )
  *
+ * @OA\Property(
+ *   title="id",
+ *   type="string",
+ *   description="The Archivist created Bible ID string. This will be between six and twelve letters usually starting with the iso639-3 code and ending with the acronym for the Bible",
+ *   minLength=6,
+ *   maxLength=12,
+ *   example="ENGESV"
+ * )
+ *
+ * @method static Bible whereId($value)
+ * @property string $id
+ *
+ * @OA\Property(ref="#/components/schemas/Language/properties/id")
+ *
+ * @method static Bible whereLanguageId($value)
+ * @property integer $language_id
+
+ *
+ * @OA\Property(
+ *   title="date",
+ *   type="integer",
+ *   description="The year the Bible was originally published",
+ *   minimum=1,
+ *   maximum=2030
+ * )
+ *
+ * @method static Bible whereDate($value)
+ * @property integer $date
+ *
+ * @OA\Property(ref="#/components/schemas/BibleFilesetSize/properties/set_size_code")
+ *
+ * @method static Bible whereScope($value)
+ * @property string|null $scope
+ *
+ * @OA\Property(ref="#/components/schemas/Alphabet/properties/script")
+ *
+ * @method static Bible whereScript($value)
+ * @property string|null $script
+ *
+ * @OA\Property(
+ *   title="derived",
+ *   type="string",
+ *   nullable=true,
+ *   description="This field indicates the `bible_id` of the Scriptures that the current Scriptures being described are derived. For example, because the NIrV (New International Reader's Version) was created from / inspired by the NIV (New International Version). If this model was describing ENGNIRV the derived field would be ENGNIV.",
+ * )
+ *
+ * @method static Bible whereDerived($value)
+ * @property string|null $derived
+ *
+ * @OA\Property(
+ *   title="copyright",
+ *   type="string",
+ *   description="A short copyright description for the bible text.",
+ *   maxLength=191
+ * )
+ *
+ * @method static Bible whereCopyright($value)
+ * @property string|null $copyright
+ *
+ * @OA\Property(
+ *   title="in_progress",
+ *   type="string",
+ *   description="If the Bible being described is currently in progress.",
+ * )
+ *
+ * @method static Bible whereInProgress($value)
+ * @property string|null $in_progress
+ *
+ * @OA\Property(
+ *   title="versification",
+ *   type="string",
+ *   description="The versification system for ordering books and chapters",
+ *   enum={"protestant","luther","synodal","german","kjva","vulgate","lxx","orthodox","nrsva","catholic","finnish"}
+ * )
+ *
+ * @method static Bible whereVersification($value)
+ * @property string|null $versification
+ *
+ * @OA\Property(
+ *   title="created_at",
+ *   type="string",
+ *   description="The timestamp at which the bible was originally created"
+ * )
+ *
+ * @method static Bible whereCreatedAt($value)
+ * @property \Carbon\Carbon|null $created_at
+ *
+ * @OA\Property(
+ *   title="updated_at",
+ *   type="string",
+ *   description="The timestamp at which the bible was last updated"
+ * )
+ *
+ * @method static Bible whereUpdatedAt($value)
+ * @property \Carbon\Carbon|null $updated_at
  */
 class Bible extends Model
 {
@@ -59,7 +156,33 @@ class Bible extends Model
     protected $connection = 'dbp';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
-    //protected $dates = ['date'];
+
+	use Searchable;
+
+	public function searchableAs()
+	{
+		return 'bibles_index';
+	}
+
+	public function toSearchableArray()
+	{
+		return [
+			'id'                 => $this->id,
+			'iso'                => $this->iso,
+            'language_id'        => $this->language_id,
+            'versification'      => $this->versification,
+            'numeral_system_id'  => $this->numeral_system_id,
+            'date'               => $this->date,
+            'scope'              => $this->scope,
+            'script'             => $this->script,
+            'derived'            => $this->derived,
+			'name'               => $this->translations->where('iso','eng')->first()->name ?? '',
+			'vname'              => $this->translations->where('vernacular',1)->first()->name ?? '',
+			'publisher_slug'     => $this->publishers->first()->slug,
+			'publisher_name'     => $this->publishers->first()->translations->where('iso','eng')->first()->name ?? '',
+			'publisher_vname'    => $this->publishers->first()->translations->where('vernacular',1)->first()->name ?? ''
+		];
+	}
 
     /**
      * Hides values from json return for api
@@ -68,143 +191,6 @@ class Bible extends Model
      * @var array
      */
     protected $hidden = ['created_at', 'updated_at', 'pivot', 'priority', 'in_progress'];
-
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="id",
-	 *   type="string",
-	 *   description="The Archivist created Bible ID string. This will be between six and twelve letters usually starting with the iso639-3 code and ending with the acronym for the Bible",
-	 *   minLength=6,
-	 *   maxLength=12,
-	 *   example="ENGESV"
-	 * )
-	 *
-	 * @method static Bible whereId($value)
-	 * @property string $id
-	 */
-	protected $id;
-
-	/**
-	 *
-	 * @OA\Property(ref="#/components/schemas/Language/properties/id")
-	 *
-	 * @method static Bible whereLanguageId($value)
-	 * @property integer $language_id
-	 */
-	protected $language_id;
-
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="date",
-	 *   type="integer",
-	 *   description="The year the Bible was originally published",
-     *   minimum=1,
-     *   maximum=2030
-	 * )
-	 *
-	 * @method static Bible whereDate($value)
-	 * @property integer $date
-	 */
-	protected $date;
-	/**
-	 *
-	 * @OA\Property(ref="#/components/schemas/BibleFilesetSize/properties/set_size_code")
-	 *
-	 * @method static Bible whereScope($value)
-	 * @property string|null $scope
-	 */
-	protected $scope;
-
-	/**
-	 *
-     * @OA\Property(ref="#/components/schemas/Alphabet/properties/script")
-	 *
-	 * @method static Bible whereScript($value)
-	 * @property string|null $script
-	 */
-	protected $script;
-
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="derived",
-	 *   type="string",
-     *   nullable=true,
-	 *   description="This field indicates the `bible_id` of the Scriptures that the current Scriptures being described are derived. For example, because the NIrV (New International Reader's Version) was created from / inspired by the NIV (New International Version). If this model was describing ENGNIRV the derived field would be ENGNIV.",
-	 * )
-	 *
-	 * @method static Bible whereDerived($value)
-	 * @property string|null $derived
-	 */
-	protected $derived;
-
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="copyright",
-	 *   type="string",
-	 *   description="A short copyright description for the bible text.",
-     *   maxLength=191
-	 * )
-	 *
-	 * @method static Bible whereCopyright($value)
-	 * @property string|null $copyright
-	 */
-	protected $copyright;
-
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="in_progress",
-	 *   type="string",
-	 *   description="If the Bible being described is currently in progress.",
-	 * )
-	 *
-	 * @method static Bible whereInProgress($value)
-	 * @property string|null $in_progress
-	 */
-	protected $in_progress;
-
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="versification",
-	 *   type="string",
-	 *   description="The versification system for ordering books and chapters",
-	 *   enum={"protestant","luther","synodal","german","kjva","vulgate","lxx","orthodox","nrsva","catholic","finnish"}
-	 * )
-	 *
-	 * @method static Bible whereVersification($value)
-	 * @property string|null $versification
-	 */
-	protected $versification;
-
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="created_at",
-	 *   type="string",
-	 *   description="The timestamp at which the bible was originally created"
-	 * )
-	 *
-	 * @method static Bible whereCreatedAt($value)
-	 * @property \Carbon\Carbon|null $created_at
-	 */
-	protected $created_at;
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="updated_at",
-	 *   type="string",
-     *   description="The timestamp at which the bible was last updated"
-	 * )
-	 *
-	 * @method static Bible whereUpdatedAt($value)
-	 * @property \Carbon\Carbon|null $updated_at
-	 */
-	protected $updated_at;
 
     /**
      * @var array
@@ -331,6 +317,11 @@ class Bible extends Model
     {
         return $this->BelongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type']);
     }
+
+	public function publishers()
+	{
+		return $this->BelongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type'])->wherePivot('relationship_type','publisher');
+	}
 
 
     /**

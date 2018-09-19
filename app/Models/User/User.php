@@ -2,7 +2,8 @@
 
 namespace App\Models\User;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Profile;
+use App\Models\Social;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -37,16 +38,17 @@ use jeremykenedy\LaravelRoles\Traits\HasRoleAndPermission;
  * )
  *
  */
-class User extends Authenticatable {
-
+class User extends Authenticatable
+{
 	use HasRoleAndPermission;
 	use Notifiable;
 	use SoftDeletes;
+
 	protected $connection = 'dbp_users';
-	protected $table      = 'dbp_users.users';
-	protected $fillable   = ['name', 'first_name', 'last_name', 'email', 'password', 'activated', 'token', 'signup_ip_address', 'signup_confirmation_ip_address', 'signup_sm_ip_address', 'admin_ip_address', 'updated_ip_address', 'deleted_ip_address'];
-	protected $hidden     = ['password', 'remember_token', 'activated', 'token','signup_ip_address','signup_confirmation_ip_address','signup_sm_ip_address','admin_ip_address','updated_ip_address','deleted_ip_address','notes'];
-	protected $dates      = ['deleted_at'];
+	protected $table     = 'users';
+	protected $fillable  = ['name', 'first_name', 'last_name', 'email', 'password', 'activated', 'token', 'signup_ip_address', 'signup_confirmation_ip_address', 'signup_sm_ip_address', 'admin_ip_address', 'updated_ip_address', 'deleted_ip_address'];
+	protected $hidden    = ['password', 'remember_token', 'activated', 'token'];
+	protected $dates     = ['deleted_at'];
 
 	/**
 	 *
@@ -261,31 +263,19 @@ class User extends Authenticatable {
 		return $this->hasMany(AccessGroup::class);
 	}
 
-	/**
-	 * Build Social Relationships.
-	 *
-	 * @var array
-	 */
 	public function social()
 	{
-		return $this->hasMany('App\Models\Social');
+		return $this->hasMany(Social::class);
 	}
 
-	/**
-	 * User Profile Relationships.
-	 *
-	 * @var array
-	 */
 	public function profile()
 	{
-		return $this->hasOne('App\Models\Profile');
+		return $this->hasOne(Profile::class);
 	}
-
-	// User Profile Setup - SHould move these to a trait or interface...
 
 	public function profiles()
 	{
-		return $this->belongsToMany('App\Models\Profile')->withTimestamps();
+		return $this->belongsToMany(Profile::class)->withTimestamps();
 	}
 
 	public function hasProfile($name)

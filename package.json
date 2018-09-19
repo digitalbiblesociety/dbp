@@ -43,6 +43,7 @@
         "v-hotkey": "^0.2.3",
         "vue-bulma-modal": "^2.0.0-alpha.2",
         "vue-bulma-tabs": "^1.1.3",
+        "vue-instantsearch": "^1.7.0",
         "vue-material": "^0.8.1"
     }
 }

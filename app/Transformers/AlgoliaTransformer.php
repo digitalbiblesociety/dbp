@@ -21,17 +21,8 @@ class AlgoliaTransformer extends BaseTransformer
 
     private function transformBibles($bible)
     {
-	    $types = $bible->links->pluck('type')->merge($bible->filesets->pluck('set_type_code'))->flatten()->map(function ($item, $key) {
-		    $item = strtolower($item);
-		    if(str_contains($item, '_')) {
-			    $item = explode('_',$item);
-			    $item = $item[0];
-		    }
-		    if($item == "pdf" | $item == "mobi" | $item == "epub") return "ebook";
-		    if($item == "text" | $item == "web" | $item == "app" | $item == "cat") return "web";
-		    return $item;
-	    });
     	return [
+		    'id'            => $bible->id,
 		    'name'          => $bible->translations->where('iso','eng')->first()->name ?? "",
 			'vname'         => $bible->translations->where('iso',$bible->iso)->first()->name ?? "",
 		    'iso'           => $bible->language->first()->iso,
@@ -40,11 +31,9 @@ class AlgoliaTransformer extends BaseTransformer
 			'country_id'    => $bible->country->first()->id ?? "",
 		    'country_name'  => $bible->country->first()->name ?? "",
 			'continent_id'  => $bible->country->first()->continent_id ?? "",
-			'abbr'          => $bible->abbr,
 			'script'        => $bible->script,
-			'autonym'       => "",
-			'organizations' => "",
-			'types'         => array_flatten($bible->types),
+		    'filesets'      => $bible->filesets,
+		    'links_count'   => $bible->links_count,
 	    ];
     }
 

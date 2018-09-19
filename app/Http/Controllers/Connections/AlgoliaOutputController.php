@@ -11,9 +11,7 @@ class AlgoliaOutputController extends APIController
 {
     public function bibles()
     {
-	    if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
-    	$bibles = Bible::with(['filesets','translations','language','country','links','organization'])->withCount(['links','filesets'])->get();
-
+    	$bibles = Bible::with(['filesets','translations','language','country','links'])->withCount(['links','filesets'])->get();
     	return $this->reply(fractal($bibles,new AlgoliaTransformer()));
     }
 

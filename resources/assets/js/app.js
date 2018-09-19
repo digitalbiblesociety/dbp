@@ -46,6 +46,9 @@ Vue.component('form-bible-translations', require('./components/FormBibleTranslat
 Vue.component('form-bible-organizations', require('./components/FormBibleOrganizations.vue'))
 Vue.component('form-bible-books',require('./components/FormBibleBooks.vue'))
 
+import InstantSearch from 'vue-instantsearch';
+Vue.use(InstantSearch);
+Vue.component('algolia-bible-search', require('./components/Search/AlgoliaBibleSearch.vue'))
 //Vue.component('messages', require('./components/Messages.vue'));
 //Vue.component('open-api', require('./components/OpenApi.vue'));
 

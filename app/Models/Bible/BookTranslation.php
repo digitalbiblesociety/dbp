@@ -124,7 +124,7 @@ class BookTranslation extends Model
 	 */
     public function book()
     {
-        return $this->BelongsTo(Book::class);
+        return $this->BelongsTo(Book::class,'book_id','id');
     }
 
 }
