@@ -8,6 +8,7 @@ use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 
 use App\Models\Language\NumeralSystem;
+use App\Models\Language\NumeralSystemGlyph;
 use App\Transformers\AlphabetTransformer;
 use App\Transformers\NumbersTransformer;
 
@@ -48,40 +49,28 @@ class NumbersController extends APIController
 	 * @return mixed
 	 *
 	 * @OA\Schema (
-	 *     type="object",
+	 *     type="array",
 	 *     schema="v4_numbers_range",
 	 *     description="The numbers range return",
 	 *     title="The numbers range return",
 	 *     @OA\Xml(name="v4_numbers_range"),
-	 *     @OA\Property(property="numeral", type="string"),
-	 *     @OA\Property(property="numeral_vernacular", type="string")
+	 *     @OA\Items(
+	 *        @OA\Property(property="numeral", type="string"),
+	 *        @OA\Property(property="numeral_vernacular", type="string")
+	 *     )
 	 * )
 	 *
 	 */
 	public function customRange()
 	{
-		$iso    = checkParam('iso');
 		$script = checkParam('script');
-		$start  = checkParam('start');
-		$end    = checkParam('end');
+		$start  = checkParam('start',null,'optional');
+		$end    = checkParam('end',null,'optional');
 		if (($end - $start) > 2000) return $this->replyWithError(trans('api.numerals_range_error_maxsize', ['num' => $end]));
-		$out_numbers = [];
+
 		// Fetch Numbers By Iso Or Script Code
-		$numbers = AlphabetNumber::where('script_id', $script)->where('iso', $iso)->get()->keyBy('numeral')->ToArray();
-		// Run through the numbers and return the vernaculars
-		$current_number = $start;
-		while ($end >= $current_number) {
-			$number_vernacular = "";
-			foreach (str_split($current_number) as $i) {
-				$number_vernacular .= (isset($numbers[$i]['numeral_vernacular'])) ? $numbers[$i]['numeral_vernacular'] : $i;
-			}
-			$out_numbers[] = [
-				"numeral"            => intval($current_number),
-				"numeral_vernacular" => !empty($numbers) ? $number_vernacular : $current_number,
-			];
-			$current_number++;
-		}
-		return $this->reply($out_numbers);
+		$numbers = NumeralSystemGlyph::where('numeral_system_id', $script)->select('value as numeral','glyph as numeral_vernacular')->get();
+		return $this->reply($numbers);
 	}
 
 	/**

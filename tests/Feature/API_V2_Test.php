@@ -132,7 +132,7 @@ class API_V2_Test extends TestCase
 
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
-		$response->assertJsonStructure($this->getSchemaKeys('v2_library_bookOrder'));
+		$response->assertJsonStructure([$this->getSchemaKeys('v2_library_bookOrder')]);
 		$this->compareToOriginal(route('v2_library_bookOrder',$this->params,false),[$this->withHeaders($this->params)->getSchemaKeys('v2_library_bookOrder')]);
 	}
 
@@ -156,7 +156,7 @@ class API_V2_Test extends TestCase
 		$response = $this->withHeaders($this->params)->get(route('v2_library_book'), $this->params);
 		$response->assertSuccessful();
 		$response->assertJsonStructure([$this->getSchemaKeys('v2_library_book')]);
-		$this->compareToOriginal($path,$this->withHeaders($this->params)->getSchemaKeys('v2_library_book'));
+		$this->compareToOriginal($path,[$this->withHeaders($this->params)->getSchemaKeys('v2_library_book')]);
 	}
 
 	/**
@@ -174,7 +174,7 @@ class API_V2_Test extends TestCase
 		$this->params['language_code'] = 'eng';
 
 		echo "\nTesting: " . route('v2_library_bookName', $this->params);
-		$response = $this->get($path);
+		$response = $this->withHeaders($this->params)->get($path);
 
 		$response->assertSuccessful();
 		$response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('BookName')]);
@@ -268,13 +268,12 @@ class API_V2_Test extends TestCase
 	 * @see NumbersController::customRange()
 	 * @category Swagger ID: Number
 	 * @category Route Name: v2_library_numbers
-	 * @link Route Path: https://api.dbp.test/library/numbers?v=2&pretty&iso=arb&start=1&end=50&key=1234
+	 * @link Route Path: https://api.dbp.test/library/numbers?v=2&pretty&iso=arb&start=1&end=50&key=1234&script=Arab
 	 *
 	 */
 	public function test_library_numbers()              {
 
-		$this->params['iso'] = 'arb';
-		$this->params['script'] = 'Arab';
+		$this->params['script'] = 'Arabic';
 		$this->params['start'] = 1;
 		$this->params['end'] = 100;
 
@@ -284,7 +283,7 @@ class API_V2_Test extends TestCase
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
 		$response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v4_numbers_range')]);
-		// TODO: Test Custom Range on DBP
+		// DBT.io version is broken
 		// $this->compareToOriginal($path,[$this->withHeaders($this->params)->getSchemaKeys('v4_numbers_range')]);
 	}
 
@@ -522,7 +521,7 @@ class API_V2_Test extends TestCase
 	 * Tests the Text Search
 	 *
 	 * @category V2_Text
-	 * @see \app\Http\Controllers\TextController::search()
+	 * @see \App\Http\Controllers\Bible\TextController::search()
 	 * @category Swagger ID: TextSearch
 	 * @category Route Name: v2_text_search
 	 * @link Route Path: https://api.dbp.test/text/search?v=2&query=God&dam_id=ENGESV&limit=5&pretty&key=1234

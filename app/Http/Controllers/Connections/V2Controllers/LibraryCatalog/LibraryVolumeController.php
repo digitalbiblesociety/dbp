@@ -159,9 +159,9 @@ class LibraryVolumeController extends APIController
 	 *         response=200,
 	 *         description="successful operation",
 	 *         @OA\MediaType(mediaType="application/json",
-	 *          @OA\Schema(ref="#/components/schemas/v4_bible.one")),
-	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible.one")),
-	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible.one"))
+	 *          @OA\Schema(ref="#/components/schemas/v2_library_volume")),
+	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_library_volume")),
+	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v2_library_volume"))
 	 *     )
 	 * )
 	 *

@@ -66,8 +66,8 @@ class FileSetTransformer extends BaseTransformer
 				$meta['channel']['managingEditor'] = 'adhooker@fcbhmail.org';
 				$meta['channel']['webMaster'] = 'charles@faithcomesbyhearing.com';
 				$meta['channel']['copyright'] = $bible->copyright;
-				// $meta['channel']['lastBuildDate'] = ($bible->last_updated) ? $bible->last_updated->toRfc2822String() : "";
-				// $meta['channel']['pubDate'] = ($bible->date) ? $bible->date->toRfc2822String() : "";
+				$meta['channel']['lastBuildDate'] = ($bible->last_updated) ? $fileset->last_updated->toRfc2822String() : "";
+				//$meta['channel']['pubDate'] = ($bible->date) ? $fileset->date->toRfc2822String() : "";
 				$meta['channel']['docs'] = 'http://blogs.law.harvard.edu/tech/rss';
 				$meta['channel']['webMaster'] = env('APP_SITE_CONTACT') ?? "";
 				$meta['channel']['itunes:keywords'] = 'Bible, Testament, Jesus, Scripture, Holy, God, Heaven, Hell, Gospel, Christian, Bible.is, Church';
@@ -75,7 +75,7 @@ class FileSetTransformer extends BaseTransformer
 				$meta['channel']['itunes:subtitle'] = 'Online Audio Bible Recorded by Faith Comes By Hearing';
 				$meta['channel']['itunes:explicit'] = 'no';
 				$meta['channel']['itunes:owner']['itunes:name'] = 'Faith Comes By Hearing';
-				$meta['channel']['itunes:owner']['itunes:email'] = 'jon@dbs.org';
+				$meta['channel']['itunes:owner']['itunes:email'] = 'adhooker@fcbhmail.org';
 				$meta['channel']['itunes:image'] = ['href' => 'http://bible.is/ImageSize300X300.jpg'];
 				$meta['channel']['itunes:category'] = [
 					'_attributes' => ['text' => 'Religion & Spirituality']
@@ -84,7 +84,7 @@ class FileSetTransformer extends BaseTransformer
 				$meta['channel']['managingEditor'] = env('APP_SITE_CONTACT') ?? "";
 				$meta['channel']['image']['_attributes'] = [
 					'url'   => 'http://bible.is/'.$fileset->id.'.jpg',
-					'title' => 'Title or description of your logo',
+					'title' => 'Faith Comes by Hearing',
 					'link'  => 'http://bible.is',
 				];
 				$meta['channel']['atom:link'] = [
@@ -92,34 +92,32 @@ class FileSetTransformer extends BaseTransformer
 					'rel'  => 'self',
 					'type' => 'application/rss+xml'
 				];
-				$meta['channel']['pubDate'] = 'Sun, 01 Jan 2012 00:00:00 EST';
-
-				$meta['channel']['itunes:summary'] = 'Duplicate of above verbose description.';
-				$meta['channel']['itunes:subtitle'] = 'Short description of the podcast - 255 character max.';
+				//$meta['channel']['pubDate'] = 'Sun, 01 Jan 2012 00:00:00 EST';
+				//$meta['channel']['itunes:summary'] = 'Duplicate of above verbose description.';
+				//$meta['channel']['itunes:subtitle'] = 'Short description of the podcast - 255 character max.';
 
 				$items = [];
 				$xml_safe_expression = '/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u';
 				foreach($fileset->files as $file) {
-					$bookName = ($file->book->translation($bible->iso)->first()) ? $file->book->translation($bible->iso)->first()->name : $file->book->translation("eng")->first()->name;
 					$items[] = [
-						'title'       => $bookName.' '.$file->chapter_start,
-						'link'        => 'http://podcastdownload.faithcomesbyhearing.com/mp3.php/'.$file->set_id.'/'.$file->file_name,
-						'guid'        => 'http://podcastdownload.faithcomesbyhearing.com/mp3.php/'.$file->set_id.'/'.$file->file_name,
+						'title'       => @$fileset->bible->first()->books->where('book_id',$file->book_id)->first()->name.' '.$file->chapter_start,
+						'link'        => "http://podcastdownload.faithcomesbyhearing.com/mp3.php/$fileset->id/$file->file_name",
+						'guid'        => "http://podcastdownload.faithcomesbyhearing.com/mp3.php/$fileset->id/$file->file_name",
 						//'description' => ($file->currentTitle) ? htmlspecialchars($file->currentTitle->title) : "",
 						'enclosure'   => [
-							'name'   => "name",
+							'name'   => @$file->currentTitle->title ?? '',
 							'_attributes' => [
-								'url'    => 'http://podcastdownload.faithcomesbyhearing.com/mp3.php/ENGESVC2DA/'. $file->file_name .'.mp3',
-								'length' => '1703936',
+								'url'    => "http://podcastdownload.faithcomesbyhearing.com/mp3.php/$fileset->id/$file->file_name.mp3",
+								'length' => $file->duration ?? 0,
 								'type'   => 'audio/mpeg'
 							],
 						],
-						'pubDate'              => 'Wed, 30 Dec 2009 22:22:16 -0700',
+						'pubDate'              => $fileset->created_at->toRfc2822String() ?? '',
 						'itunes:author'        => 'Faith Comes By Hearing',
 						'itunes:explicit'      => 'no',
-						'itunes:subtitle'      =>  ($file->currentTitle) ? preg_replace ($xml_safe_expression, ' ', $file->currentTitle->title) : "",
-						'itunes:summary'       =>  ($file->currentTitle) ? preg_replace ($xml_safe_expression, ' ', $file->currentTitle->title) : "",
-						'itunes:duration'      => '3:15',
+						'itunes:subtitle'      => ($file->currentTitle) ? preg_replace ($xml_safe_expression, ' ', $file->currentTitle->title) : "",
+						'itunes:summary'       => ($file->currentTitle) ? preg_replace ($xml_safe_expression, ' ', $file->currentTitle->title) : "",
+						'itunes:duration'      => $file->duration ?? '0:00',
 						'itunes:keywords'      => 'Bible, Testament, Jesus, Scripture, Holy, God, Heaven, Hell, Gospel, Christian, Bible.is, Church'
 					];
 				}

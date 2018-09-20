@@ -51,7 +51,58 @@ class LibraryVolumeTransformer extends BaseTransformer
 			    } else {
 				    $collection_code = (substr($fileset->id,6,1) == "O") ? "OT" : "NT";
 			    }
-
+			    /**
+			     * @OA\Schema (
+			     *	type="array",
+			     *	schema="v2_library_volume",
+			     *	description="",
+			     *	title="v2_library_volume",
+			     *	@OA\Xml(name="v2_library_volume"),
+			     *	@OA\Items(
+			     *      @OA\Property(property="dam_id",                  ref="#/components/schemas/BibleFileset/properties/id"),
+			     *      @OA\Property(property="fcbh_id",                 ref="#/components/schemas/BibleFileset/properties/id"),
+			     *      @OA\Property(property="volume_name",             ref="#/components/schemas/BibleTranslation/properties/name"),
+			     *      @OA\Property(property="status",                  @OA\Schema(type="string",example="live")),
+			     *      @OA\Property(property="dbp_agreement",           @OA\Schema(type="string",example="true")),
+			     *      @OA\Property(property="expiration",              @OA\Schema(type="string",example="0000-00-00")),
+			     *      @OA\Property(property="language_code",           ref="#/components/schemas/Language/properties/iso"),
+			     *      @OA\Property(property="language_name",           ref="#/components/schemas/LanguageTranslation/properties/name"),
+			     *      @OA\Property(property="language_english",        ref="#/components/schemas/Language/properties/name"),
+			     *      @OA\Property(property="language_iso",            ref="#/components/schemas/Language/properties/iso"),
+			     *      @OA\Property(property="language_iso_2B",         ref="#/components/schemas/Language/properties/iso2B"),
+			     *      @OA\Property(property="language_iso_2T",         ref="#/components/schemas/Language/properties/iso2T"),
+			     *      @OA\Property(property="language_iso_1",          ref="#/components/schemas/Language/properties/iso1"),
+			     *      @OA\Property(property="language_iso_name",       ref="#/components/schemas/Language/properties/name"),
+			     *      @OA\Property(property="language_family_code",    ref="#/components/schemas/Language/properties/iso"),
+			     *      @OA\Property(property="language_family_name",    ref="#/components/schemas/LanguageTranslation/properties/name"),
+			     *      @OA\Property(property="language_family_english", ref="#/components/schemas/Language/properties/name"),
+			     *      @OA\Property(property="language_family_iso",     ref="#/components/schemas/Language/properties/iso"),
+			     *      @OA\Property(property="language_family_iso_2B",  ref="#/components/schemas/Language/properties/iso2B"),
+			     *      @OA\Property(property="language_family_iso_2T",  ref="#/components/schemas/Language/properties/iso2T"),
+			     *      @OA\Property(property="language_family_iso_1",   ref="#/components/schemas/Language/properties/iso1"),
+			     *      @OA\Property(property="version_code",            ref="#/components/schemas/BibleFileset/properties/id"),
+			     *      @OA\Property(property="version_name",            ref="#/components/schemas/BibleTranslation/properties/name"),
+			     *      @OA\Property(property="version_english",         ref="#/components/schemas/BibleTranslation/properties/name"),
+			     *      @OA\Property(property="collection_code",         @OA\Schema(type="string", example="NT",enum={"OT", "NT"})),
+			     *      @OA\Property(property="rich",                    @OA\Schema(type="integer",example=1,enum={1, 0})),
+			     *      @OA\Property(property="collection_name",         @OA\Schema(type="string",example="New Testament",enum={"Old Testament", "New Testament"})),
+			     *      @OA\Property(property="updated_on",              ref="#/components/schemas/BibleFileset/properties/updated_at"),
+			     *      @OA\Property(property="created_on",              ref="#/components/schemas/BibleFileset/properties/created_at"),
+			     *      @OA\Property(property="right_to_left",           @OA\Schema(type="string", example="rtl",enum={"rtl", "ltr"})),
+			     *      @OA\Property(property="num_art",                 @OA\Schema(type="integer",example=0)),
+			     *      @OA\Property(property="num_sample_audio",        @OA\Schema(type="integer",example=0)),
+			     *      @OA\Property(property="sku",                     ref="#/components/schemas/BibleEquivalent/properties/equivalent_id"),
+			     *      @OA\Property(property="audio_zip_path",          @OA\Schema(type="string")),
+			     *      @OA\Property(property="font",                    ref="#/components/schemas/AlphabetFont"),
+			     *      @OA\Property(property="arclight_language_id",    ref="#/components/schemas/LanguageCode/properties/code"),
+			     *      @OA\Property(property="media",                   @OA\Schema(type="string",example="Audio",enum={"Audio", "Text"})),
+			     *      @OA\Property(property="media_type",              @OA\Schema(type="string",example="Drama",enum={"Drama", "Non-Drama"})),
+			     *      @OA\Property(property="delivery",                @OA\Schema(type="string")),
+			     *      @OA\Property(property="resolution",              @OA\Schema(type="array"))
+			     *     )
+			     *   )
+			     * )
+			     */
 			    return [
 				    "dam_id"                    => (string) $fileset->generated_id,
 				    "fcbh_id"                   => (string) $fileset->generated_id,

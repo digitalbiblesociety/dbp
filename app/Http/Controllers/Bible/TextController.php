@@ -246,7 +246,7 @@ class TextController extends APIController
 		$query   = checkParam('query');
 		$exclude = checkParam('exclude', null, 'optional') ?? false;
 		if ($exclude) $exclude = ' -' . $exclude;
-		$fileset_id = checkParam('dam_id|fileset_id');
+		$fileset_id = checkParam('fileset_id|dam_id');
 		$limit    = checkParam('limit', null, 'optional') ?? 15;
 		$book_id  = checkParam('book', null, 'optional');
 

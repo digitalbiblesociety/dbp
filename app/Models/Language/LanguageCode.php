@@ -69,6 +69,12 @@ class LanguageCode extends Model
 	protected $source;
 	/**
 	 *
+	 * @OA\Property(
+	 *   title="code",
+	 *   type="string",
+	 *   description="The foreign code for the language"
+	 * )
+	 *
 	 * @property string $code
 	 * @method static LanguageCode whereCode($value)
 	 *

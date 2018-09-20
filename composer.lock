@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "128ea9f8f50198de14c65b6ee7ec300f",
+    "content-hash": "3b4451cf4341cebe29647df23164c9d4",
     "packages": [
         {
             "name": "albertcht/invisible-recaptcha",
@@ -118,16 +118,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.67.8",
+            "version": "3.67.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "b74a9e68b44f25215093b3fd480ee6cf3657e9df"
+                "reference": "527f7e6105ccfc27fd6d27aacdcaa293e66a4a96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/b74a9e68b44f25215093b3fd480ee6cf3657e9df",
-                "reference": "b74a9e68b44f25215093b3fd480ee6cf3657e9df",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/527f7e6105ccfc27fd6d27aacdcaa293e66a4a96",
+                "reference": "527f7e6105ccfc27fd6d27aacdcaa293e66a4a96",
                 "shasum": ""
             },
             "require": {
@@ -194,7 +194,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2018-09-07T20:09:11+00:00"
+            "time": "2018-09-19T18:53:48+00:00"
         },
         {
             "name": "aws/aws-sdk-php-laravel",
@@ -1698,64 +1698,6 @@
             "time": "2014-08-18T12:08:45+00:00"
         },
         {
-            "name": "itsgoingd/clockwork",
-            "version": "v3.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/itsgoingd/clockwork.git",
-                "reference": "156e1c725d2c156f167471b4caa1dd4ac0da3d7c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/itsgoingd/clockwork/zipball/156e1c725d2c156f167471b4caa1dd4ac0da3d7c",
-                "reference": "156e1c725d2c156f167471b4caa1dd4ac0da3d7c",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.5",
-                "psr/log": "1.*"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Clockwork\\Support\\Laravel\\ClockworkServiceProvider"
-                    ],
-                    "aliases": {
-                        "Clockwork": "Clockwork\\Support\\Laravel\\Facade"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Clockwork\\": "Clockwork/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "itsgoingd",
-                    "email": "itsgoingd@luzer.sk",
-                    "homepage": "https://twitter.com/itsgoingd"
-                }
-            ],
-            "description": "php dev tools integrated to your browser",
-            "homepage": "https://underground.works/clockwork",
-            "keywords": [
-                "Devtools",
-                "debugging",
-                "laravel",
-                "logging",
-                "lumen",
-                "profiling",
-                "slim"
-            ],
-            "time": "2018-08-30T18:35:57+00:00"
-        },
-        {
             "name": "jakub-onderka/php-console-color",
             "version": "0.1",
             "source": {
@@ -2340,16 +2282,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.7.2",
+            "version": "v5.7.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "86e1f98a6d2aab018e0257a7cb2ef2110d64a873"
+                "reference": "f6e8f6562120e0063313e81716666cfcd362569b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/86e1f98a6d2aab018e0257a7cb2ef2110d64a873",
-                "reference": "86e1f98a6d2aab018e0257a7cb2ef2110d64a873",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/f6e8f6562120e0063313e81716666cfcd362569b",
+                "reference": "f6e8f6562120e0063313e81716666cfcd362569b",
                 "shasum": ""
             },
             "require": {
@@ -2477,7 +2419,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2018-09-06T14:01:05+00:00"
+            "time": "2018-09-18T13:34:05+00:00"
         },
         {
             "name": "laravel/horizon",
@@ -2863,26 +2805,26 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.46",
+            "version": "1.0.47",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "f3e0d925c18b92cf3ce84ea5cc58d62a1762a2b2"
+                "reference": "a11e4a75f256bdacf99d20780ce42d3b8272975c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/f3e0d925c18b92cf3ce84ea5cc58d62a1762a2b2",
-                "reference": "f3e0d925c18b92cf3ce84ea5cc58d62a1762a2b2",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/a11e4a75f256bdacf99d20780ce42d3b8272975c",
+                "reference": "a11e4a75f256bdacf99d20780ce42d3b8272975c",
                 "shasum": ""
             },
             "require": {
+                "ext-fileinfo": "*",
                 "php": ">=5.5.9"
             },
             "conflict": {
                 "league/flysystem-sftp": "<1.0.6"
             },
             "require-dev": {
-                "ext-fileinfo": "*",
                 "phpspec/phpspec": "^3.4",
                 "phpunit/phpunit": "^5.7.10"
             },
@@ -2943,7 +2885,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2018-08-22T07:45:22+00:00"
+            "time": "2018-09-14T15:30:29+00:00"
         },
         {
             "name": "league/flysystem-aws-s3-v3",
@@ -3616,16 +3558,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.0.3",
+            "version": "v4.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "bd088dc940a418f09cda079a9b5c7c478890fb8d"
+                "reference": "fa6ee28600d21d49b2b4e1006b48426cec8e579c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/bd088dc940a418f09cda079a9b5c7c478890fb8d",
-                "reference": "bd088dc940a418f09cda079a9b5c7c478890fb8d",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/fa6ee28600d21d49b2b4e1006b48426cec8e579c",
+                "reference": "fa6ee28600d21d49b2b4e1006b48426cec8e579c",
                 "shasum": ""
             },
             "require": {
@@ -3663,7 +3605,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2018-07-15T17:25:16+00:00"
+            "time": "2018-09-18T07:03:24+00:00"
         },
         {
             "name": "paquettg/php-html-parser",
@@ -3807,16 +3749,16 @@
         },
         {
             "name": "paragonie/sodium_compat",
-            "version": "v1.6.4",
+            "version": "v1.6.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/sodium_compat.git",
-                "reference": "3f2fd07977541b4d630ea0365ad0eceddee5179c"
+                "reference": "aaaf71f3f7713248703c23cfbd1189ce1215f57f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/3f2fd07977541b4d630ea0365ad0eceddee5179c",
-                "reference": "3f2fd07977541b4d630ea0365ad0eceddee5179c",
+                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/aaaf71f3f7713248703c23cfbd1189ce1215f57f",
+                "reference": "aaaf71f3f7713248703c23cfbd1189ce1215f57f",
                 "shasum": ""
             },
             "require": {
@@ -3885,7 +3827,7 @@
                 "secret-key cryptography",
                 "side-channel resistant"
             ],
-            "time": "2018-08-29T22:02:48+00:00"
+            "time": "2018-09-14T00:17:10+00:00"
         },
         {
             "name": "parsedown/laravel",
@@ -4764,16 +4706,16 @@
         },
         {
             "name": "spatie/array-to-xml",
-            "version": "2.7.1",
+            "version": "2.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/array-to-xml.git",
-                "reference": "cb8befcd0c58ccf8baa5491e61a5c1d02a3acbba"
+                "reference": "2b01cb1a04b4b65f0db03cd8a78df4b978fe5cd7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/array-to-xml/zipball/cb8befcd0c58ccf8baa5491e61a5c1d02a3acbba",
-                "reference": "cb8befcd0c58ccf8baa5491e61a5c1d02a3acbba",
+                "url": "https://api.github.com/repos/spatie/array-to-xml/zipball/2b01cb1a04b4b65f0db03cd8a78df4b978fe5cd7",
+                "reference": "2b01cb1a04b4b65f0db03cd8a78df4b978fe5cd7",
                 "shasum": ""
             },
             "require": {
@@ -4809,7 +4751,7 @@
                 "convert",
                 "xml"
             ],
-            "time": "2018-02-20T15:21:24+00:00"
+            "time": "2018-09-17T11:45:05+00:00"
         },
         {
             "name": "spatie/fractalistic",
@@ -5145,16 +5087,16 @@
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v3.18.3",
+            "version": "v3.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "1c52a9c77bc927ab3f1ab20c04929ab8d2efd70f"
+                "reference": "6f43bf11e939d06acafdc2f5ffe495a37f70f247"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/1c52a9c77bc927ab3f1ab20c04929ab8d2efd70f",
-                "reference": "1c52a9c77bc927ab3f1ab20c04929ab8d2efd70f",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/6f43bf11e939d06acafdc2f5ffe495a37f70f247",
+                "reference": "6f43bf11e939d06acafdc2f5ffe495a37f70f247",
                 "shasum": ""
             },
             "type": "library",
@@ -5198,20 +5140,20 @@
                 "swagger",
                 "ui"
             ],
-            "time": "2018-09-08T04:06:27+00:00"
+            "time": "2018-09-15T05:49:16+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
-            "version": "v6.1.2",
+            "version": "v6.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "7d760881d266d63c5e7a1155cbcf2ac656a31ca8"
+                "reference": "8ddcb66ac10c392d3beb54829eef8ac1438595f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/7d760881d266d63c5e7a1155cbcf2ac656a31ca8",
-                "reference": "7d760881d266d63c5e7a1155cbcf2ac656a31ca8",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/8ddcb66ac10c392d3beb54829eef8ac1438595f4",
+                "reference": "8ddcb66ac10c392d3beb54829eef8ac1438595f4",
                 "shasum": ""
             },
             "require": {
@@ -5257,7 +5199,7 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2018-07-13T07:04:35+00:00"
+            "time": "2018-09-11T07:12:52+00:00"
         },
         {
             "name": "symfony/console",
@@ -7317,20 +7259,23 @@
         },
         {
             "name": "phpunit/php-file-iterator",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-file-iterator.git",
-                "reference": "cecbc684605bb0cc288828eb5d65d93d5c676d3c"
+                "reference": "050bedf145a257b1ff02746c31894800e5122946"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/cecbc684605bb0cc288828eb5d65d93d5c676d3c",
-                "reference": "cecbc684605bb0cc288828eb5d65d93d5c676d3c",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/050bedf145a257b1ff02746c31894800e5122946",
+                "reference": "050bedf145a257b1ff02746c31894800e5122946",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.1"
             },
             "type": "library",
             "extra": {
@@ -7360,7 +7305,7 @@
                 "filesystem",
                 "iterator"
             ],
-            "time": "2018-06-11T11:44:00+00:00"
+            "time": "2018-09-13T20:33:42+00:00"
         },
         {
             "name": "phpunit/php-text-template",

@@ -211,15 +211,12 @@ class BibleFileSetsController extends APIController
 	public function podcast($id)
 	{
 		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-		$fileset   = BibleFileset::with('files.currentTitle', 'bible')->where('id', $id)->where('bucket_id',
-			$bucket_id)->first();
-		if (!$fileset) {
-			return $this->replyWithError("No Fileset exists for this ID");
-		}
+		$fileset   = BibleFileset::with('files.currentTitle', 'bible.books')->where('id', $id)->where('bucket_id', $bucket_id)->first();
+		if (!$fileset) return $this->replyWithError("No Fileset exists for this ID");
 
 		$rootElementName = 'rss';
 		$rootAttributes  = ['xmlns:itunes' => "http://www.itunes.com/dtds/podcast-1.0.dtd", 'xmlns:atom' => "http://www.w3.org/2005/Atom", 'xmlns:media' => "http://search.yahoo.com/mrss/", 'version' => "2.0"];
-		$podcast         = fractal()->item($fileset)->serializeWith($this->serializer)->transformWith(new FileSetTransformer())->ToArray();
+		$podcast         = fractal($fileset,new FileSetTransformer())->serializeWith($this->serializer);
 		return $this->reply($podcast, ['rootElementName' => $rootElementName, 'rootAttributes' => $rootAttributes]);
 	}
 

@@ -102,14 +102,29 @@ class BibleFileset extends Model
 	 */
 	protected $set_size_code;
 
-
 	/**
 	 *
-	 * @property Carbon $created_at
-	 * @property Carbon $updated_at
+	 * @OA\Property(
+	 *   title="created_at",
+	 *   type="string",
+	 *   description="The timestamp at which the fileset was originally created"
+	 * )
 	 *
+	 * @method static Bible whereCreatedAt($value)
+	 * @property \Carbon\Carbon|null $created_at
 	 */
 	protected $created_at;
+	/**
+	 *
+	 * @OA\Property(
+	 *   title="updated_at",
+	 *   type="string",
+	 *   description="The timestamp at which the fileset was last updated"
+	 * )
+	 *
+	 * @method static Bible whereUpdatedAt($value)
+	 * @property \Carbon\Carbon|null $updated_at
+	 */
 	protected $updated_at;
 
 	public function copyright()
