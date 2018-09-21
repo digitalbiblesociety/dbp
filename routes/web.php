@@ -45,6 +45,11 @@ Route::post('/about/contact',        'User\UserContactController@store')->name('
 Route::get('/about/relations',         'WelcomeController@relations')->name('relations');
 Route::get('/organizations',           'Organization\OrganizationsController@index')->name('organizations.index');
 
+// About | Joining
+Route::get('/about/join',               'WelcomeController@join')->name('about.join');
+Route::get('/about/partnering',         'WelcomeController@partnering')->name('about.partnering');
+
+
 // Authentication Routes | Passwords
 Auth::routes();
 

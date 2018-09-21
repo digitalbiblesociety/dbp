@@ -50,8 +50,8 @@
                 <div class="navbar-dropdown">
                     <a class="navbar-item has-text-grey-light" disabled>Who are we</a>
                     <a class="navbar-item has-text-grey-light" disabled>Why build this</a>
-                    <a class="navbar-item has-text-grey-light" disabled>Joining as a User</a>
-                    <a class="navbar-item has-text-grey-light" disabled>Partnering as an Organization</a>
+                    <a class="navbar-item" href="{{ route('about.join') }}">Joining as a User</a>
+                    <a class="navbar-item" href="{{ route('about.partnering') }}">Partnering as an Organization</a>
                     <a class="navbar-item has-text-grey-light" disabled>How DBP relates to...</a> {{-- route('relations') --}}
                 </div>
             </div>

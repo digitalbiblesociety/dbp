@@ -46,13 +46,7 @@ class LoginController extends Controller
 	public function login(Request $request)
 	{
 		$user = User::where('email',$request->email)->first();
-		if($user) {
-			if(substr($user->password,0,2) == "s_") {
-				throw ValidationException::withMessages([
-					'password' => ["You need to reset your password to use the new version"],
-				]);
-			}
-		}
+		$request->password = md5($request->password);
 
 		$this->validateLogin($request);
 
@@ -62,10 +56,10 @@ class LoginController extends Controller
 			return $this->sendLockoutResponse($request);
 		}
 
-		if ($this->attemptLogin($request)) {
-			return $this->sendLoginResponse($request);
-		}
+		$loginSuccessful = $this->guard()->attempt(['email' =>$user->email, 'password' => $request->password], $request->filled('remember'));
+		if(!$loginSuccessful) $loginSuccessful =  $this->guard()->attempt(['email' =>$user->email, 'password' => md5($request->password)], $request->filled('remember'));
 
+		if($loginSuccessful) return $this->sendLoginResponse($request);
 
 		$this->incrementLoginAttempts($request);
 
