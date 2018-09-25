@@ -211,8 +211,7 @@ class Bible extends Model
     /**
      * @var array
      */
-    protected $fillable = ['id', 'iso', 'language_id', 'versification', 'numeral_system_id', 'date', 'scope', 'script', 'derived', 'copyright', 'in_progress', 'priority'];
-
+    protected $fillable = ['id', 'iso', 'date', 'script', 'derived', 'copyright'];
     /**
      * @var bool
      */

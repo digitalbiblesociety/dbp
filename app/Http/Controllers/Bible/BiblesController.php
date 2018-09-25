@@ -94,12 +94,7 @@ class BiblesController extends APIController
 	{
 		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 		// Return the documentation if it's not an API request
-		if (!$this->api) {
-			$ids = checkParam('ids', null, 'optional');
-			$ids = explode(',',$ids);
-			$bibles = Bible::with('translations')->whereIn('id',$ids)->get();
-			return view('bibles.index', compact('bibles'));
-		}
+		if (!$this->api) return view('bibles.index');
 
 		$dam_id             = checkParam('dam_id|fcbh_id|bible_id', null, 'optional');
 		$media              = checkParam('media', null, 'optional');

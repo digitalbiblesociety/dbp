@@ -5,7 +5,7 @@ use Illuminate\Database\Seeder;
 use App\Models\User\Note;
 use App\Models\Bible\Book;
 use App\Models\Bible\BibleFileset;
-use App\Models\User\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Bible\Bible;
 use Carbon\Carbon;

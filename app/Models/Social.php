@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Social extends Model
@@ -16,6 +15,6 @@ class Social extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo('App\Models\User');
     }
 }
