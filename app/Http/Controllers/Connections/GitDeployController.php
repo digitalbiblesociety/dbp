@@ -20,6 +20,7 @@ class GitDeployController extends APIController
 				echo $buffer;
 			});
 		}
+		return $this->reply('deployment begun');
 	}
 
 }

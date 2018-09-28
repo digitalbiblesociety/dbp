@@ -182,4 +182,4 @@
 	Route::name('v4_articles.destroy')->delete('articles/{article_id}',                    'User\ArticlesController@destroy');
 
 	// VERSION 4 | DEPLOYMENT
-	Route::post('/deploy/github',                                                          'DeployController@deploy');
+	Route::name('deployments.github')->post('/deploy/github',                              'Connections\GitDeployController@deploy');
