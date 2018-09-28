@@ -81,3 +81,15 @@ small {
 .mb40		{margin-bottom:40px}
 .mb50		{margin-bottom:50px}
 .mb60		{margin-bottom:60px}
+
+
+// search
+
+.hit                          {height:150px;position:relative}
+.hit:hover                    {box-shadow: none}
+.active-link .pagination-link {background:$primary}
+.hit .subtitle, .hit .title   {text-align: center}
+.hit .subtitle .ais-highlight {text-overflow: ellipsis;overflow: hidden;white-space: nowrap;display: block}
+.hit time                     {position: absolute;bottom:5px;right:5px}
+.hit .iso                     {position: absolute;bottom:5px;left:5px}
+.hit em                       {font-style: normal;background:$primary;color:#FFF}

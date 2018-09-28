@@ -9,6 +9,9 @@ window.apiURL = global.apiURL = ((window.location.hostname == "dbp.test") || (wi
 window.apiParams = {'key': '1234', 'v': '4'}
 window.Vue = require('vue');
 
+// Lodash
+var _ = require('lodash');
+
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the
@@ -36,6 +39,7 @@ Vue.use(VueHotkey)
 
 Vue.component('tabs', require('./components/bulma/Tabs.vue'))
 Vue.component('tab-pane', require('./components/bulma/TabPane.vue'))
+Vue.component('pagination', require('./components/bulma/Pagination.vue'))
 
 import vSelect from 'vue-select'
 Vue.component('v-select', vSelect)
@@ -44,7 +48,9 @@ Vue.component('v-select', vSelect)
 Vue.component('form-bible-links', require('./components/FormBibleLinks.vue'))
 Vue.component('form-bible-translations', require('./components/FormBibleTranslations.vue'))
 Vue.component('form-bible-organizations', require('./components/FormBibleOrganizations.vue'))
+Vue.component('form-bible-equivalents', require('./components/FormBibleEquivalents.vue'))
 Vue.component('form-bible-books',require('./components/FormBibleBooks.vue'))
+Vue.component('task-bible-equivalents', require('./components/Tasks/TaskBibleEquivalents.vue'))
 
 import InstantSearch from 'vue-instantsearch';
 Vue.use(InstantSearch);

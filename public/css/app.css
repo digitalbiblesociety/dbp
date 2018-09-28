@@ -11607,3 +11607,47 @@ small {
   margin-bottom: 60px;
 }
 
+.hit {
+  height: 150px;
+  position: relative;
+}
+
+.hit:hover {
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.active-link .pagination-link {
+  background: #c83c64;
+}
+
+.hit .subtitle,
+.hit .title {
+  text-align: center;
+}
+
+.hit .subtitle .ais-highlight {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+}
+
+.hit time {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+.hit .iso {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+}
+
+.hit em {
+  font-style: normal;
+  background: #c83c64;
+  color: #FFF;
+}
+
