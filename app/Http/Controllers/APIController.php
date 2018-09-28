@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Language\Language;
 use App\Models\User\Key;
 
+use Illuminate\Support\Facades\Route;
 use SoapBox\Formatter\Formatter;
 use League\Fractal\Serializer\DataArraySerializer;
 
@@ -89,8 +90,9 @@ class APIController extends Controller
 	public function __construct()
 	{
 		$url           = explode(".", url()->current());
+		$subdomain     = array_shift($url);
 
-		if (substr(array_shift($url), -3, 3) == "api") {
+		if (str_contains($subdomain,'api')) {
 			$this->api = true;
 			$this->v   = checkParam('v');
 			$this->key = checkParam('key');
