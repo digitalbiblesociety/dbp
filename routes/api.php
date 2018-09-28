@@ -180,6 +180,3 @@
 	Route::name('v4_articles.update')->put('articles/{article_id}',                        'User\ArticlesController@update');
 	Route::name('v4_articles.store')->post('articles',                                     'User\ArticlesController@store');
 	Route::name('v4_articles.destroy')->delete('articles/{article_id}',                    'User\ArticlesController@destroy');
-
-	// VERSION 4 | DEPLOYMENT
-	Route::name('deployments.github')->post('/deploy/github',                              'Connections\GitDeployController@deploy');

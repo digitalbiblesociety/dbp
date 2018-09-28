@@ -49,7 +49,6 @@ Route::get('/organizations',           'Organization\OrganizationsController@ind
 Route::get('/about/join',               'WelcomeController@join')->name('about.join');
 Route::get('/about/partnering',         'WelcomeController@partnering')->name('about.partnering');
 
-
 // Authentication Routes | Passwords
 Auth::routes();
 
@@ -173,3 +172,6 @@ Route::group(['middleware' => ['auth', 'activated', 'role:admin', 'activity']], 
 });
 
 });
+
+// VERSION 4 | DEPLOYMENT
+Route::name('deployments.github')->post('/deploy/github',                              'Connections\GitDeployController@deploy');
