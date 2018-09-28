@@ -28,7 +28,9 @@ class Kernel extends ConsoleKernel
 	    Commands\compare_ebible::class,
 	    Commands\sync_users::class,
 	    Commands\dbl_sync::class,
-	    Commands\update_bible_links::class
+	    Commands\update_bible_links::class,
+	    Commands\sync_scriptureEarth::class,
+	    Commands\SyncBibleEquivalents\syncEBible::class,
     ];
 
     /**
