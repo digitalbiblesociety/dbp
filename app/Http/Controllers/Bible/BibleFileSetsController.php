@@ -95,6 +95,7 @@ class BibleFileSetsController extends APIController
 				$fileset_type = "text";
 				break;
 			}
+			case "video_stream":
 			case "video": {
 				$fileset_type = "video";
 				break;
