@@ -6,7 +6,6 @@ use App\Http\Controllers\APIController;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
 use App\Traits\CallsBucketsTrait;
-use Carbon\Carbon;
 
 class VideoStreamController extends APIController
 {
@@ -24,8 +23,10 @@ class VideoStreamController extends APIController
 	 */
 	public function index($fileset_id = null,$file_id = null)
 	{
-		$fileset = BibleFileset::whereId($fileset_id)->select(['id','hash_id'])->first();
+		$fileset = BibleFileset::where('id',$fileset_id)->select(['id','hash_id'])->first();
+		if(!$fileset) return $this->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $fileset_id]));
 		$file = BibleFile::with('videoResolution')->where('hash_id', $fileset->hash_id)->where('id',$file_id)->first();
+		if(!$file) return $this->replyWithError(trans('api.bible_file_errors_404', ['id'=> $file_id]));
 
 		$current_file = '#EXTM3U';
 		foreach($file->videoResolution as $resolution) {
@@ -47,7 +48,9 @@ class VideoStreamController extends APIController
 	public function transportStream($fileset_id = null,$file_id = null,$file_name = null)
 	{
 		$fileset = BibleFileset::with('bible')->where('id',$fileset_id)->select(['id','hash_id','bucket_id'])->first();
+		if(!$fileset) return $this->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $fileset_id]));
 		$file    = BibleFile::with('videoResolution.transportStream')->where('hash_id', $fileset->hash_id)->where('id',$file_id)->first();
+		if(!$file) return $this->replyWithError(trans('api.bible_file_errors_404', ['id'=> $file_id]));
 
 		$bible_path    = $fileset->bible->first() !== null ? $fileset->bible->first()->id . '/' : '';
 		$current_file = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-ALLOW-CACHE:YES\n#EXT-X-TARGETDURATION:4";
