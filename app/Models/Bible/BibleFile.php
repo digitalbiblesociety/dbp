@@ -241,4 +241,9 @@ class BibleFile extends Model
 		return $this->hasOne(BibleFileTitle::class,'file_id', 'id');
 	}
 
+	public function videoResolution()
+	{
+		return $this->hasMany(VideoResolution::class);
+	}
+
 }

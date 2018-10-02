@@ -49,7 +49,9 @@
 	Route::name('v4_access_groups.update')->put('access/groups/{group_id}',                                             'User\AccessGroupController@update');
 	Route::name('v4_access_groups.destroy')->delete('access/groups/{group_id}',                                         'User\AccessGroupController@destroy');
 
-	Route::name('v4_bible_filesets.types')->match(['get','options'],'bibles/filesets/media/types',                      'Bible\BibleFileSetsController@mediaTypes');
+	Route::name('v4_bible_filesets.types')->match(['get','options'],'bibles/filesets/media/types',                          'Bible\BibleFileSetsController@mediaTypes');
+	Route::name('v4_video_stream')->match(['get','options'], 'bible/filesets/{fileset_id}/stream/{file_id}',                'Bible\VideoStreamController@index');
+	Route::name('v4_video_stream_ts')->match(['get','options'], 'bible/filesets/{fileset_id}/stream/{file_id}/{file_name}', 'Bible\VideoStreamController@transportStream');
 	Route::name('v4_bible_filesets.podcast')->match(['get','options'],'bibles/filesets/{fileset_id}/podcast',           'Bible\BibleFileSetsController@podcast');
 	Route::name('v4_bible_filesets.download')->match(['get','options'],'bibles/filesets/{fileset_id}/download',         'Bible\BibleFileSetsController@download');
 	Route::name('v4_bible_filesets.copyright')->match(['get','options'],'bibles/filesets/{fileset_id}/copyright',       'Bible\BibleFileSetsController@copyright');
@@ -180,3 +182,4 @@
 	Route::name('v4_articles.update')->put('articles/{article_id}',                        'User\ArticlesController@update');
 	Route::name('v4_articles.store')->post('articles',                                     'User\ArticlesController@store');
 	Route::name('v4_articles.destroy')->delete('articles/{article_id}',                    'User\ArticlesController@destroy');
+

@@ -11513,6 +11513,17 @@ label.panel-block:hover {
   padding: 3rem 1.5rem 6rem;
 }
 
+#docs-nav .menu-list a {
+  position: relative;
+}
+
+#docs-nav .menu-list a .entry {
+  position: absolute;
+  left: -18px;
+  top: 8px;
+  display: inline-block;
+}
+
 .select,
 .select select,
 .v-select,
