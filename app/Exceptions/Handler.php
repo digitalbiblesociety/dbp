@@ -81,7 +81,7 @@ class Handler extends ExceptionHandler
 	    if(env('APP_ENV') == 'local') return parent::render($request, $exception);
 
 		$message = $exception->getMessage();
-        $code = $exception->getCode();
+        $code = $exception->getCode() ?? 500;
         if($message == "") $message = "Something has gone wrong";
 		if(is_object($message)) $message = $message->toArray();
 	    return response()->json([
