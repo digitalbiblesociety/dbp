@@ -4,10 +4,15 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
 use App\Models\User\Study\Bookmark;
+use App\Traits\CheckProjectMembership;
+use App\Transformers\UserBookmarksTransformer;
 use Illuminate\Support\Facades\Validator;
 
 class UserBookmarksController extends APIController
 {
+
+	use CheckProjectMembership;
+
 	/**
 	 * Display a listing of the bookmarks.
 	 *
@@ -37,6 +42,9 @@ class UserBookmarksController extends APIController
 	 */
     public function index($user_id)
     {
+	    $user_is_member = $this->compareProjects($user_id);
+	    if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+
     	$book_id = checkParam('book_id', null, 'optional');
 	    $chapter = checkParam('chapter', null, 'optional');
 
@@ -47,7 +55,7 @@ class UserBookmarksController extends APIController
 			    $q->where('chapter',$chapter);
 		    })->get();
 
-		return $this->reply($bookmarks);
+		return $this->reply(fractal($bookmarks, UserBookmarksTransformer::class)->serializeWith($this->serializer));
     }
 
     /**
@@ -78,6 +86,9 @@ class UserBookmarksController extends APIController
      */
     public function store()
     {
+	    $user_is_member = $this->compareProjects(request()->user_id);
+	    if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+
         $invalidBookmark = $this->validateBookmark();
         if($invalidBookmark) return $this->setStatusCode(422)->replyWithError($invalidBookmark);
 
@@ -93,6 +104,9 @@ class UserBookmarksController extends APIController
      */
     public function update($user_id,$id)
     {
+	    $user_is_member = $this->compareProjects($user_id);
+	    if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+
 	    $invalidBookmark = $this->validateBookmark();
 	    if($invalidBookmark) return $this->setStatusCode(422)->replyWithError($invalidBookmark);
 
@@ -112,6 +126,9 @@ class UserBookmarksController extends APIController
      */
     public function destroy($user_id, $id)
     {
+	    $user_is_member = $this->compareProjects($user_id);
+	    if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+
 	    $bookmark = Bookmark::where('id',$id)->where('user_id',$user_id)->first();
 	    $bookmark->delete();
 

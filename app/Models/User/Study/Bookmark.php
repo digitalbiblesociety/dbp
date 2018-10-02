@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @OA\Schema (
  *     type="object",
- *     description="The user created Bookmark",
+ *     description="The User created Bookmark",
  *     title="Bookmark",
  *     @OA\Xml(name="Bookmark")
  * )

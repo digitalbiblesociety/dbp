@@ -4,8 +4,10 @@ namespace App\Models\User;
 
 use App\Models\Profile;
 use App\Models\Social;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Auth\Authenticatable as AuthenticableTrait;
 
 use App\Models\Organization\Organization;
 
@@ -38,11 +40,12 @@ use jeremykenedy\LaravelRoles\Traits\HasRoleAndPermission;
  * )
  *
  */
-class User extends Authenticatable
+class User extends Model implements Authenticatable
 {
 	use HasRoleAndPermission;
 	use Notifiable;
 	use SoftDeletes;
+	use AuthenticableTrait;
 
 	protected $connection = 'dbp_users';
 	protected $table     = 'users';
@@ -224,9 +227,14 @@ class User extends Authenticatable
 		return $this->HasMany(Note::class);
 	}
 
-	public function developer()
+	public function projectDeveloper()
 	{
-		return $this->BelongsToMany(Project::class, 'project_members')->where('role','developer')->orWhere('role','admin')->withPivot('role','subscribed');
+		return $this->hasMany(ProjectMember::class)->where('role','developer');
+	}
+
+	public function projectAdmin()
+	{
+		return $this->BelongsToMany(Project::class, 'project_members')->where('role','admin')->withPivot('role','subscribed');
 	}
 
 	public function projects()

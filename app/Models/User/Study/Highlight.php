@@ -2,6 +2,8 @@
 
 namespace App\Models\User\Study;
 
+use App\Models\Bible\BibleBook;
+use App\Models\Bible\BibleFileset;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -74,10 +76,8 @@ class Highlight extends Model
 	  * @OA\Property(
 	  *   title="highlighted_color",
 	  *   type="string",
-	  *   description="The highlight's highlighted color in hexadecimal notation.",
-      *   example="#4488bb",
-      *   minLength=3,
-      *   maxLength=7
+	  *   description="The highlight's highlighted color in either hex, rgb, or rgba notation.",
+      *   example="#4488bb"
 	  * )
       *
       * @method static Highlight whereHighlightedColor($value)
@@ -156,5 +156,21 @@ class Highlight extends Model
       * @property \Carbon\Carbon|null $updated_at
       */
      protected $updated_at;
+
+
+     public function color()
+     {
+     	return $this->belongsTo(HighlightColor::class,'highlighted_color','id');
+     }
+
+     public function fileset()
+     {
+     	return $this->belongsTo(BibleFileset::class);
+     }
+
+     public function book()
+     {
+     	return $this->hasOne(BibleBook::class,'book_id','book_id');
+     }
 
 }

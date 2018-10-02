@@ -4,6 +4,8 @@ import VueResource from 'vue-resource'
 import jsonApi from './swagger_v4.json'
 
 Vue.use(VueResource)
+Vue.component('bulma-accordion', require('./components/bulma/Accordion.vue'))
+Vue.component('bulma-accordion-item', require('./components/bulma/AccordionItem.vue'))
 
 new Vue({
 	el: '#app',

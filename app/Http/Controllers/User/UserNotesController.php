@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
+use App\Models\User\Key;
 use App\Models\User\Study\Note;
 use App\Models\User\User;
-use App\Models\Bible\Bible;
+use App\Transformers\UserNotesTransformer;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Route;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Validator;
+use Auth;
+use App\Traits\CheckProjectMembership;
 
 class UserNotesController extends APIController
 {
+
+	use CheckProjectMembership;
 
 	/**
 	 * Display a listing of the resource.
@@ -20,12 +25,11 @@ class UserNotesController extends APIController
 	 *     path="/users/{user_id}/notes",
 	 *     tags={"Users"},
 	 *     summary="Get a list of Notes for a user/project combination",
-	 *     description="In order to query information about a user's notes you must provide the project_id",
+	 *     description="Query information about a user's notes",
 	 *     operationId="v4_notes.index",
 	 *     @OA\Parameter(name="bible_id",    in="query", description="If provided the fileset_id will filter results to only those related to the Bible", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OA\Parameter(name="book_id",     in="query", description="If provided the USFM 2.4 book id will filter results to only those related to the book", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OA\Parameter(name="chapter_id",  in="query", description="The starting chapter", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
-	 *     @OA\Parameter(name="project_id",  in="query", required=true, description="The secret id assigned to your project", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
 	 *     @OA\Parameter(name="limit",       in="query", description="The number of highlights to return", @OA\Schema(type="integer",example=15)),
 	 *     @OA\Parameter(name="paginate",    in="query", description="When set to false will disable pagination", @OA\Schema(type="boolean",example=false)),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
@@ -37,65 +41,46 @@ class UserNotesController extends APIController
 	 *     @OA\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
-	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
-	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_highlights_index"))
+	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_notes_index")),
+	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_notes_index")),
+	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_notes_index"))
 	 *     )
 	 * )
 	 *
+	 * @param null|int $user_id
 	 * @return \Illuminate\Http\Response
 	 */
-	public function index($user_id = null)
+	public function index($user_id)
 	{
+		$user_is_member = $this->compareProjects($user_id);
+		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+
 		if (!$this->api) {
-			$authorized_user = \Auth::user();
-			if (!$authorized_user) {
-				return $this->setStatusCode(401)->replyWithError('You must be logged in to access this page');
-			}
-
-			$notes['most_popular_bible'] = Bible::find(Note::selectRaw('count(*) AS count, bible_id')->groupBy('bible_id')->orderBy('count',
-				'DESC')->limit(1)->first()->bible_id)->currentTranslation->name;
-			$notes['count']              = Note::count();
-			$notes['most_prolific_user'] = User::find(Note::selectRaw('count(*) AS count, user_id')->groupBy('user_id')->orderBy('count',
-					'DESC')->limit(1)->first()->user_id)->name ?? "";
-
+			if(!Auth::user()) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
 			return view('dashboard.notes.index', compact('notes'));
 		}
+
 
 		$bible_id   = checkParam('bible_id', null, 'optional');
 		$book_id    = checkParam('book_id', null, 'optional');
 		$chapter_id = checkParam('chapter_id', null, 'optional');
-		$project_id = checkParam('project_id', null, 'optional');
-		$bookmark   = explode('.', \Request::route()->getName());
-		$bookmark   = ($bookmark[0] == "v4_bookmarks") ? true : false;
 		$limit      = intval(checkParam('limit', null, 'optional') ?? 25);
-		$paginate   = checkParam('paginate', null, 'optional');
 		$sort_by    = checkParam('sort_by', null, 'optional');
 		$sort_dir   = checkParam('sort_dir', null, 'optional') ?? "asc";
 
-		$notes = Note::with('tags')->where('user_id', $user_id)->where('project_id', $project_id)
-		             ->when($bible_id, function ($q) use ($bible_id) {
-			             $q->where('bible_id', '=', $bible_id);
-		             })->when($book_id, function ($q) use ($book_id) {
-				$q->where('book_id', '=', $book_id);
-			})->when($bookmark, function ($q) {
-				$q->where('bookmark', true);
-			}, function ($q) {
-				$q->where('bookmark', false);
+		$notes = Note::with('tags')->where('user_id', $user_id)
+			->when($bible_id, function ($q) use ($bible_id) {
+				$q->where('bible_id', $bible_id);
+		    })->when($book_id, function ($q) use ($book_id) {
+				$q->where('book_id', $book_id);
 			})->when($sort_by, function ($q) use ($sort_by, $sort_dir) {
 				$q->orderBy($sort_by, $sort_dir);
-			});
+			})->when($chapter_id, function ($q) use ($chapter_id) {
+				$q->where('chapter_id', $chapter_id);
+			})->paginate($limit);
 
-		$notes = ($paginate == false) ? $notes->paginate($limit) : $notes->get();
-
-		foreach ($notes as $key => $note) {
-			$notes[$key]->notes = decrypt($note->notes);
-		}
-		if (!$notes) {
-			return $this->setStatusCode(404)->replyWithError("No User found for the specified ID");
-		}
-
-		return $this->reply($notes);
+		if (!$notes) return $this->setStatusCode(404)->replyWithError("No User found for the specified ID");
+		return $this->reply(fractal($notes->getCollection(), UserNotesTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($notes)));
 	}
 
 	/**
@@ -134,13 +119,11 @@ class UserNotesController extends APIController
 			return view('dashboard.notes.index');
 		}
 
-		$project_id  = checkParam('project_id');
-		$note        = Note::where('project_id', $project_id)->where('user_id', $user_id)->where('id',
-			$note_id)->first();
-		$note->notes = decrypt($note->notes);
-		if (!$note) {
-			return $this->setStatusCode(404)->replyWithError("No Note found for the specified ID");
-		}
+		$user_is_member = $this->compareProjects($user_id);
+		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+
+		$note        = Note::where('user_id', $user_id)->where('id', $note_id)->first();
+		if (!$note) return $this->setStatusCode(404)->replyWithError("No Note found for the specified ID");
 
 		return $this->reply($note);
 	}
@@ -188,11 +171,13 @@ class UserNotesController extends APIController
 	 */
 	public function store(Request $request)
 	{
+		$user_is_member = $this->compareProjects($request->user_id);
+		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+
 		$validator = Validator::make($request->all(), [
 			'bible_id'    => 'required|exists:dbp.bibles,id',
 			'user_id'     => 'required|exists:dbp_users.users,id',
 			'book_id'     => 'required|exists:dbp.books,id',
-			'project_id'  => 'required|exists:dbp_users.projects,id',
 			'chapter'     => 'required|max:150|min:1',
 			'verse_start' => 'required|max:177|min:1',
 			'notes'       => 'required_without:bookmark',
@@ -205,7 +190,6 @@ class UserNotesController extends APIController
 			'user_id'     => $request->user_id,
 			'bible_id'    => $request->bible_id,
 			'book_id'     => $request->book_id,
-			'project_id'  => $request->project_id,
 			'chapter'     => $request->chapter,
 			'verse_start' => $request->verse_start,
 			'verse_end'   => $request->verse_end ?? $request->verse_start,
@@ -230,7 +214,6 @@ class UserNotesController extends APIController
 	 *     @OA\Parameter(name="bible_id",    in="query", description="", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OA\Parameter(name="book_id",     in="query", description="", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OA\Parameter(name="chapter_id",  in="query", description="", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
-	 *     @OA\Parameter(name="project_id",  in="query", description="", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
 	 *     @OA\Parameter(name="limit",       in="query", description="", @OA\Schema(type="integer",example=15)),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -249,7 +232,10 @@ class UserNotesController extends APIController
 	 */
 	public function update(Request $request, $user_id, $note_id)
 	{
-		$note = Note::where('project_id', $request->project_id)->where('user_id', $user_id)->where('id',
+		$user_is_member = $this->compareProjects($user_id);
+		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+
+		$note = Note::where('user_id', $user_id)->where('id',
 			$note_id)->first();
 		$note->fill($request->all());
 		if (isset($request->notes)) {
@@ -271,7 +257,6 @@ class UserNotesController extends APIController
 	 *     summary="Delete a Note",
 	 *     description="",
 	 *     operationId="v4_notes.destroy",
-	 *     @OA\Parameter(name="project_id",  in="query", description="", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -292,18 +277,17 @@ class UserNotesController extends APIController
 	 */
 	public function destroy(integer $user_id, integer $note_id)
 	{
-		$project_id = checkParam('project_id');
-		$note       = Note::where('project_id', $project_id)->where('user_id', $user_id)->where('id',
-			$note_id)->first();
-		if (!$note) {
-			$this->setStatusCode(404)->replyWithError("Note Not Found");
-		}
+		$user_is_member = $this->compareProjects($user_id);
+		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+
+		$note = Note::where('user_id', $user_id)->where('id', $note_id)->first();
+		if (!$note) $this->setStatusCode(404)->replyWithError("Note Not Found");
 		$note->delete();
 
 		return $this->reply(["success" => "Note Deleted"]);
 	}
 
-	public function handleTags(Request $request, $note)
+	private function handleTags(Request $request, $note)
 	{
 		$tags = collect(explode(',', $request->tags))->map(function ($tag) {
 			if (strpos($tag, ':::') !== false) {

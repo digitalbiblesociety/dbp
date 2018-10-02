@@ -152,6 +152,11 @@ class Note extends Model
 	 */
 	protected $updated_at;
 
+	public function getNotesAttribute($note)
+	{
+		return decrypt($note);
+	}
+
 	/**
 	 *
 	 * @property-read User $user

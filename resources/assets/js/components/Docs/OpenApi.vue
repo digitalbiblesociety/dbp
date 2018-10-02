@@ -13,17 +13,23 @@
 			<div class="container box">
 						<div class="columns">
 							<div class="column is-one-quarter">
-								<aside class="menu">
+
+								<bulma-accordion :dropdown="true" :icon="'caret'">
 									<div v-for="(entries, tag) in tags" :key="tag">
-										<p class="menu-label">{{ tag }}</p>
-										<ul class="menu-list">
-											<li><a v-for="(entry, i) in entries" :key="i" v-on:click="select(entry)" style="display: block">
-												<span v-bind:class="{entry: entry.method}">{{entry.method}}</span>
-												<b class="md-title" :class="{'md-accent':selectedEntry === entry}" v-html="entry.path.replace(/\//g,'<b>/</b>')"></b>
-											</a></li>
-										</ul>
+
+										<bulma-accordion-item>
+											<h4 slot="title">{{ tag }}</h4>
+											<div slot="content">
+												<ul class="menu-list">
+													<li><a v-for="(entry, i) in entries" :key="i" v-on:click="select(entry)" style="display: block">
+														<span v-bind:class="{entry: entry.method}">{{entry.method}}</span>
+														<b class="md-title" :class="{'md-accent':selectedEntry === entry}" v-html="entry.path.replace(/\//g,'<b>/</b>')"></b>
+													</a></li>
+												</ul>
+											</div>
+										</bulma-accordion-item>
 									</div>
-								</aside>
+								</bulma-accordion>
 							</div>
 							<div class="column" v-if="!selectedEntry">
 								<p>Select an entry on the left to see detailed information...</p>
