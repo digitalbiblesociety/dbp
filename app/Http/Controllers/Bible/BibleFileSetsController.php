@@ -107,11 +107,11 @@ class BibleFileSetsController extends APIController
 			}
 		}
 		$fileSetChapters = BibleFile::where('hash_id',$fileset->hash_id)
-			->join('dbp.bible_books', function($q) use($bible) {
+			->join(env('DBP_DATABASE').'.bible_books', function($q) use($bible) {
 				$q->on('bible_books.book_id', '=', 'bible_files.book_id')
 				  ->where('bible_id',$bible->id);
 			})
-			->join('dbp.books','books.id', '=', 'bible_files.book_id')
+			->join(env('DBP_DATABASE').'.books','books.id', '=', 'bible_files.book_id')
 			->when($chapter_id, function ($query) use ($chapter_id) {
 				return $query->where('bible_files.chapter_start', $chapter_id);
 			})->when($book_id, function ($query) use ($book_id) {
