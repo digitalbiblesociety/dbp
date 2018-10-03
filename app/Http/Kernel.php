@@ -61,16 +61,15 @@ class Kernel extends HttpKernel
             ShareErrorsFromSession::class,
 	        SubstituteBindings::class,
             VerifyCsrfToken::class,
-	        Laravel2step::class,
+	        //Laravel2step::class,
 	        LocalizationHandler::class,
         ],
         'api' => [
             //'throttle:120,1',
-            'bindings'
+            'bindings',
+	        Cors::class
         ],
-        'activated' => [
-            CheckIsUserActivated::class,
-        ],
+        //'activated' => [CheckIsUserActivated::class,],
     ];
 
     /**

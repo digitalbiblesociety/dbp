@@ -15,8 +15,13 @@ class Cors
      */
     public function handle($request, Closure $next)
     {
-	    if ($request->isMethod('OPTIONS')) {
-		    app()->options($request->path(), function() { return response('', 200); });
+	    if ($request->getMethod() == "OPTIONS") {
+		    return response(['OK'], 200)->withHeaders([
+			    'Access-Control-Allow-Origin' => '*',
+			    'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE',
+			    'Access-Control-Allow-Credentials' => true,
+			    'Access-Control-Allow-Headers' => '*',
+		    ]);
 	    }
 
 	    $response = $next($request);
