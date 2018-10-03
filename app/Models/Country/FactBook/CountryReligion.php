@@ -20,7 +20,7 @@ class CountryReligion extends Model
 {
 	protected $connection = 'dbp';
 	public $incrementing = false;
-	public $table = "country_religions";
+	public $table = 'country_religions';
 
 	/**
 	 *

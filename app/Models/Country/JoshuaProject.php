@@ -2,7 +2,6 @@
 
 namespace App\Models\Country;
 
-use App\Models\Language\LanguageTranslation;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -22,20 +21,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property float|null $percent_literate
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject whereCountryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject whereJoshuaProjectScale($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject whereLanguageOfficialIso($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject whereLanguageOfficialName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject wherePeopleGroups($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject wherePeopleGroupsUnreached($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject wherePercentChristian($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject wherePercentLiterate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject wherePopulation($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject wherePopulationUnreached($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject wherePrimaryReligion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject whereResistantBelt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Country\JoshuaProject whereUpdatedAt($value)
+ * @method static JoshuaProject whereCountryId($value)
+ * @method static JoshuaProject whereCreatedAt($value)
+ * @method static JoshuaProject whereJoshuaProjectScale($value)
+ * @method static JoshuaProject whereLanguageOfficialIso($value)
+ * @method static JoshuaProject whereLanguageOfficialName($value)
+ * @method static JoshuaProject wherePeopleGroups($value)
+ * @method static JoshuaProject wherePeopleGroupsUnreached($value)
+ * @method static JoshuaProject wherePercentChristian($value)
+ * @method static JoshuaProject wherePercentLiterate($value)
+ * @method static JoshuaProject wherePopulation($value)
+ * @method static JoshuaProject wherePopulationUnreached($value)
+ * @method static JoshuaProject wherePrimaryReligion($value)
+ * @method static JoshuaProject whereResistantBelt($value)
+ * @method static JoshuaProject whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read \App\Models\Country\Country $Country
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\LanguageTranslation[] $languageTranslations
@@ -44,7 +43,7 @@ use Illuminate\Database\Eloquent\Model;
 class JoshuaProject extends Model
 {
 	protected $connection = 'dbp';
-    public $table = "country_joshua_project";
+    public $table = 'country_joshua_project';
 
 	public function country()
 	{
@@ -53,12 +52,7 @@ class JoshuaProject extends Model
 
 	public function translations()
 	{
-		return $this->HasMany(CountryTranslation::class,'country_id','country_id');
-	}
-
-	public function languageTranslations()
-	{
-		return $this->HasMany(LanguageTranslation::class,'iso','iso');
+		return $this->hasMany(CountryTranslation::class,'country_id','country_id');
 	}
 
 }

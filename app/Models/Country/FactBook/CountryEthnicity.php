@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 class CountryEthnicity extends Model
 {
 	protected $connection = 'dbp';
-	public $table = "country_people_ethnicities";
+	public $table = 'country_people_ethnicities';
 	public $incrementing = false;
 
 

@@ -2,24 +2,18 @@
 
 namespace App\Models\Country;
 
-use App\Models\Bible\Bible;
-use App\Models\Country\FactBook\CountryEthnicity;
-use App\Models\Language\LanguageTranslation;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Language\Language;
 
+use App\Models\Language\Language;
+use App\Models\Country\FactBook\CountryEthnicity;
 use App\Models\Country\FactBook\CountryCommunication;
 use App\Models\Country\FactBook\CountryEconomy;
 use App\Models\Country\FactBook\CountryEnergy;
 use App\Models\Country\FactBook\CountryGeography;
 use App\Models\Country\FactBook\CountryGovernment;
 use App\Models\Country\FactBook\CountryIssues;
-use App\Models\Country\FactBook\CountryLanguage;
 use App\Models\Country\FactBook\CountryPeople;
-use App\Models\Country\FactBook\CountryEthnicities;
-use App\Models\Country\FactBook\CountryRegions;
 use App\Models\Country\FactBook\CountryReligion;
-use App\Models\Country\FactBook\CountryTranslations;
 use App\Models\Country\FactBook\CountryTransportation;
 
 /**
@@ -49,11 +43,9 @@ class Country extends Model
     public $incrementing = false;
     public $keyType = 'string';
 
-	protected $columns = ['id', 'iso_a3', 'continent', 'name', 'introduction','fips']; // add all columns from you table
-
-	public function scopeExclude($query,$value = [])
+	public function scopeExclude($query,array $value)
 	{
-		return $query->select( array_diff( $this->columns, (array) $value) );
+		return $query->select( array_diff(['id', 'iso_a3', 'continent', 'name', 'introduction','fips'], $value) );
 	}
 
 	/**
@@ -174,12 +166,12 @@ class Country extends Model
 
     public function translations()
     {
-    	return $this->HasMany(CountryTranslation::class);
+    	return $this->hasMany(CountryTranslation::class);
     }
 
     public function currentTranslation()
     {
-	    return $this->HasOne(CountryTranslation::class,'country_id','id')->where('language_id',$GLOBALS['i18n_id']);
+	    return $this->hasOne(CountryTranslation::class,'country_id','id')->where('language_id',$GLOBALS['i18n_id']);
     }
 /*
  *	public function vernacularTranslation()
@@ -189,17 +181,17 @@ class Country extends Model
  */
     public function languages()
     {
-        return $this->BelongsToMany(Language::class)->distinct();
+        return $this->belongsToMany(Language::class)->distinct();
     }
 
 	public function languagesFiltered()
 	{
-		return $this->BelongsToMany(Language::class)->distinct()->select(['id','iso','name']);
+		return $this->belongsToMany(Language::class)->distinct()->select(['id','iso','name']);
 	}
 
     public function regions()
     {
-    	return $this->HasMany(CountryRegion::class);
+    	return $this->hasMany(CountryRegion::class);
     }
 
     public function maps()

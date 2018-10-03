@@ -21,7 +21,7 @@ use App\Models\Language\Language;
 class CountryLanguage extends Model
 {
 	protected $connection = 'dbp';
-    protected $table = "country_language";
+    protected $table = 'country_language';
 	public $timestamps = false;
 	public $incrementing = false;
 

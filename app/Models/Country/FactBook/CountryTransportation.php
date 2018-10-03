@@ -20,7 +20,7 @@ class CountryTransportation extends Model
 {
 	protected $connection = 'dbp';
 	public $incrementing = false;
-	public $table = "country_transportation";
+	public $table = 'country_transportation';
 
 
 	/**

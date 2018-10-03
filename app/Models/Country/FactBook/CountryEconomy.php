@@ -20,7 +20,7 @@ class CountryEconomy extends Model
 {
 	protected $connection = 'dbp';
 	public $incrementing = false;
-	public $table = "country_economy";
+	public $table = 'country_economy';
 
 
 	/**

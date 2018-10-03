@@ -20,7 +20,7 @@ class CountryGovernment extends Model
 {
 	protected $connection = 'dbp';
 	public $incrementing = false;
-	public $table = "country_government";
+	public $table = 'country_government';
 
  /**
   *

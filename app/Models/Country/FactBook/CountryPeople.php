@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
 class CountryPeople extends Model {
 	protected $connection = 'dbp';
 	public $incrementing = false;
-	public $table = "country_people";
+	public $table = 'country_people';
 
 
 	/**
