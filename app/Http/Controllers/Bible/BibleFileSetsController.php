@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Bible;
 
-use App\Models\Language\Language;
 use App\Traits\AccessControlAPI;
 use App\Traits\CallsBucketsTrait;
 use Validator;
@@ -15,22 +14,18 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFilesetType;
 use App\Models\Bible\Book;
+use App\Models\Language\Language;
 use App\Helpers\AWS\Bucket;
 use App\Models\User\Key;
-use Illuminate\Support\Facades\Storage;
-use ZipArchive;
 
 use App\Transformers\FileSetTransformer;
-
-// for download
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class BibleFileSetsController extends APIController
 {
 
 	use AccessControlAPI;
 	use CallsBucketsTrait;
+
 	/**
 	 *
 	 * @OA\Get(
@@ -55,86 +50,102 @@ class BibleFileSetsController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 * @param null $id
 	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
 	public function show($id = null)
 	{
 		//if (!$this->api) return view('bibles.filesets.index');
-		$fileset_id    = CheckParam('dam_id|fileset_id', $id);
-		$chapter_id    = CheckParam('chapter_id', null, 'optional');
-		$book_id       = CheckParam('book_id', null, 'optional');
+		$fileset_id    = checkParam('dam_id|fileset_id', $id);
+		$chapter_id    = checkParam('chapter_id', null, 'optional');
+		$book_id       = checkParam('book_id', null, 'optional');
 		$bucket_id     = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-		$lifespan      = CheckParam('lifespan', null, 'optional') ?? 5;
+		$lifespan      = checkParam('lifespan', null, 'optional') ?? 5;
 		$type          = checkParam('type');
 		$versification = checkParam('versification', null, 'optional');
 
-		if ($book_id) $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
-		if (isset($book)) $book_id = $book->id;
+		if($book_id) $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
+		if($book !== null) $book_id = $book->id;
 		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->when($bucket_id,
 			function ($query) use ($bucket_id) {
 				return $query->where('bucket_id', $bucket_id);
 			})->where('set_type_code', $type)->first();
-		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No Fileset Found in the `" . $bucket_id . "` Bucket for the provided params");
+		if (!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404_bucket', ['bucket_id' => $fileset->bucket_id]));
 
 		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? "download" : "api";
 		$access_control = $this->accessControl($this->key, $access_control_type);
-		if(!in_array($fileset->hash_id, $access_control->hashes)) return $this->setStatusCode(403)->replyWithError("Your API Key does not have access to this fileset");
+		if(!\in_array($fileset->hash_id, $access_control->hashes, true)) return $this->setStatusCode(403)->replyWithError(trans('api.bible_fileset_errors_401'));
 
-		$bible         = ($fileset->bible->first()) ? $fileset->bible->first() : false;
-		$bible_path    = ($bible->id) ? $bible->id . "/" : "";
-		$versification = (!$versification) ? $bible->versification : "protestant";
+		$bible         = $fileset->bible->first() ?: false;
+		$bible_path    = $bible->id ? $bible->id . '/' : '';
+		$versification = (!$versification) ? $bible->versification : 'protestant';
 
 		switch ($fileset->set_type_code) {
-			case "audio_drama":
-			case "audio": {
-				$fileset_type = "audio";
+			case 'audio_drama':
+			case 'audio': {
+				$fileset_type = 'audio';
 				break;
 			}
-			case "text_plain":
-			case "text_format": {
-				$fileset_type = "text";
+			case 'text_plain':
+			case 'text_format': {
+				$fileset_type = 'text';
 				break;
 			}
-			case "video_stream":
-			case "video": {
-				$fileset_type = "video";
+			case 'video_stream':
+			case 'video': {
+				$fileset_type = 'video';
 				break;
 			}
-			case "app": {
-				$fileset_type = "app";
+			case 'app': {
+				$fileset_type = 'app';
 				break;
 			}
 			default: {
-				$fileset_type = "text";
+				$fileset_type = 'text';
 				break;
 			}
 		}
 
-		$fileSetChapters = BibleFile::with('book', 'bible.books')
-		                            ->join('books', 'books.id', '=', 'bible_files.book_id')
+		$fileSetChapters = BibleFile::join('books', 'books.id', '=', 'bible_files.book_id')
+		                            ->join('bible_books', 'bible_books.book_id', '=', 'bible_files.book_id')
 		                            ->where('hash_id', $fileset->hash_id)
 		                            ->when($chapter_id, function ($query) use ($chapter_id) {
 			                            return $query->where('chapter_start', $chapter_id);
 		                            })->when($book_id, function ($query) use ($book_id) {
-				return $query->where('book_id', $book_id);
-			})->orderBy('books.' . $versification . '_order')->orderBy('chapter_start')->get();
+				return $query->where('bible_files.book_id', $book_id);
+			})->orderBy('chapter_start')->select([
+				'bible_files.id',
+				'bible_files.book_id',
+				'bible_files.chapter_start',
+				'bible_files.chapter_end',
+				'bible_files.verse_start',
+				'bible_files.verse_end',
+				'bible_files.file_name',
+				'bible_books.name',
+				'books.' . $versification . '_order as book_order'
+			])->orderBy('book_order')->get();
 
-		if (count($fileSetChapters) == 0) return $this->setStatusCode(404)->replyWithError("No Fileset Chapters Found for the provided params");
+		if (count($fileSetChapters) == 0) return $this->setStatusCode(404)->replyWithError('No Fileset Chapters Found for the provided params');
 
-		foreach ($fileSetChapters as $key => $fileSet_chapter) {
-			$fileSetChapters[$key]->file_name = $this->signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name, $bucket_id, $lifespan);
-		}
-
-		// Prep Transaction Value
 		$transaction_code = '';
-		$sample_url = $fileSetChapters->pluck('file_name')->first();
-		$parts = parse_url($sample_url);
-		$queryParams = explode('&',$parts['query']);
-		foreach ($queryParams as $param) {
-			if(str_contains($param,'x-amz-transaction')) {
-				$param = explode('=',$param);
-				if(isset($param[1])) $transaction_code = $param[1];
+		if($fileset->set_type_code != 'video_stream') {
+			foreach ($fileSetChapters as $key => $fileSet_chapter) {
+				$fileSetChapters[$key]->file_name = $this->signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name, $bucket_id, $lifespan);
+				// Prep Transaction Value
+				$sample_url = $fileSetChapters->pluck('file_name')->first();
+				$parts = parse_url($sample_url);
+				$queryParams = explode('&',$parts['query']);
+				foreach ($queryParams as $param) {
+					if(str_contains($param,'x-amz-transaction')) {
+						$param = explode('=',$param);
+						if(isset($param[1])) $transaction_code = $param[1];
+					}
+				}
+			}
+		} else {
+			foreach ($fileSetChapters as $key => $fileSet_chapter) {
+				$fileSetChapters[$key]->file_name = route('v4_video_stream', ['fileset_id' => $fileset->id,'file_id' => $fileSet_chapter->id]);
 			}
 		}
 

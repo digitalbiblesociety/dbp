@@ -19,8 +19,6 @@ use App\Models\Language\Language;
  * @property-read \App\Models\Bible\BibleFileTitle $title
  * @method static BibleFile whereHashId($value)
  * @property-read \App\Models\Bible\BibleFileTitle $currentTitle
- * @property int|null $file_size
- * @property int|null $duration
  * @property-read \App\Models\Bible\BibleFilesetConnection $connections
  *
  * @OA\Schema (
@@ -35,8 +33,8 @@ use App\Models\Language\Language;
 class BibleFile extends Model
 {
 	protected $connection = 'dbp';
-	protected $table = "bible_files";
-	protected $hidden = ["created_at","updated_at"];
+	protected $table = 'bible_files';
+	protected $hidden = ['created_at','updated_at'];
 
 	/**
 	 *
@@ -203,12 +201,12 @@ class BibleFile extends Model
 
 	public function fileset()
 	{
-		return $this->BelongsTo(BibleFileset::class,'set_id');
+		return $this->belongsTo(BibleFileset::class,'set_id');
 	}
 
 	public function connections()
 	{
-		return $this->BelongsTo(BibleFilesetConnection::class);
+		return $this->belongsTo(BibleFilesetConnection::class);
 	}
 
 	public function bible()
@@ -218,12 +216,12 @@ class BibleFile extends Model
 
 	public function book()
 	{
-		return $this->BelongsTo(Book::class,'book_id','id')->orderBy('protestant_order');
+		return $this->belongsTo(Book::class,'book_id','id')->orderBy('protestant_order');
 	}
 
 	public function testament()
 	{
-		return $this->BelongsTo(Book::class,'book_id','id')->select(['book_testament','id']);
+		return $this->belongsTo(Book::class,'book_id','id')->select(['book_testament','id']);
 	}
 
 	public function timestamps()

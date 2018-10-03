@@ -14,20 +14,20 @@ class FileSetTransformer extends BaseTransformer
      */
 	public function transform($audio)
 	{
-		switch ($this->version) {
-			case "2":
-			case "3": return $this->transformForV2($audio);
-			case "4":
+		switch ((int) $this->version) {
+			case 2:
+			case 3: return $this->transformForV2($audio);
+			case 4:
 			default: return $this->transformForV4($audio);
 		}
 	}
 
 	public function transformForV2($audio) {
 		switch($this->route) {
-			case "v2_audio_timestamps": {
+			case 'v2_audio_timestamps': {
 				return [
-					"verse_id"    => (string) $audio->verse_start,
-					"verse_start" => $audio->timestamp
+					'verse_id'    => (string) $audio->verse_start,
+					'verse_start' => $audio->timestamp
 				];
 			}
 
@@ -133,7 +133,8 @@ class FileSetTransformer extends BaseTransformer
                  *	description="The minimized alphabet return for the all alphabets route",
                  *	title="v4_bible_filesets.show",
                  *	@OA\Xml(name="v4_bible_filesets.show"),
-                 *	@OA\Items(          @OA\Property(property="book_id",        ref="#/components/schemas/BibleFile/properties/book_id"),
+                 *	@OA\Items(
+                 *          @OA\Property(property="book_id",        ref="#/components/schemas/BibleFile/properties/book_id"),
                  *          @OA\Property(property="book_name",      ref="#/components/schemas/BookTranslation/properties/name"),
                  *          @OA\Property(property="chapter_start",  ref="#/components/schemas/BibleFile/properties/chapter_start"),
                  *          @OA\Property(property="chapter_end",    ref="#/components/schemas/BibleFile/properties/chapter_end"),
@@ -147,14 +148,14 @@ class FileSetTransformer extends BaseTransformer
                  */
 
                 return [
-                    "book_id"       => $fileset->book_id,
-                    "book_name"     => @$fileset->book->name,
-                    "chapter_start" => $fileset->chapter_start,
-                    "chapter_end"   => $fileset->chapter_end,
-                    "verse_start"   => $fileset->verse_start,
-                    "verse_end"     => $fileset->verse_end,
-                    "timestamp"     => $fileset->timestamp,
-                    "path"          => $fileset->file_name,
+                    'book_id'       => $fileset->book_id,
+                    'book_name'     => $fileset->book->name,
+                    'chapter_start' => $fileset->chapter_start,
+                    'chapter_end'   => $fileset->chapter_end,
+                    'verse_start'   => $fileset->verse_start,
+                    'verse_end'     => $fileset->verse_end,
+                    'timestamp'     => $fileset->timestamp,
+                    'path'          => $fileset->file_name,
                 ];
             }
 
