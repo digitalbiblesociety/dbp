@@ -15,8 +15,8 @@ class OrganizationTransformer extends BaseTransformer
 	 */
     public function transform(Organization $organization)
     {
-    	$translation = $organization->translations->where('language_iso',$GLOBALS['i18n_iso'])->first();
-	    $organization->name = $translation->name ?? str_replace('-',' ', $organization->slug);
+    	$translation = $organization->translations->where('language_id',$GLOBALS['i18n_id'])->first();
+	    $organization->name = $translation->name ?? ucwords(str_replace('-',' ', $organization->slug));
 	    $organization->description = $translation->description ?? '';
 	    $organization->tagline = $translation->description_short ?? '';
 
