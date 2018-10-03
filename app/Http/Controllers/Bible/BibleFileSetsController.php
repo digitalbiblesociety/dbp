@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Bible;
 
+use App\Models\Language\Language;
 use App\Traits\AccessControlAPI;
 use App\Traits\CallsBucketsTrait;
 use Validator;
@@ -262,8 +263,9 @@ class BibleFileSetsController extends APIController
 		$type = checkParam('type', null, 'optional');
 		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? 'dbp-dev';
 
-		$fileset = BibleFileset::with(['copyright.organizations.logos', 'copyright.organizations.translations' => function ($q) use ($iso) {
-			$q->where('language_iso', $iso);
+		$language = Language::where('iso',$iso)->first();
+		$fileset = BibleFileset::with(['copyright.organizations.logos', 'copyright.organizations.translations' => function ($q) use ($language) {
+			$q->where('language_id', $language->id);
 		}])
 		->when($bucket_id, function ($q) use($bucket_id) {
 			$q->where('bucket_id', $bucket_id);
