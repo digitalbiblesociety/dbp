@@ -3,15 +3,11 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
-use App\Models\Bible\BibleFileset;
+use App\Transformers\UserHighlightsTransformer;
 use App\Models\User\Study\Highlight;
 use App\Traits\CheckProjectMembership;
-use Illuminate\Http\Request;
-use Validator;
-use App\Transformers\UserHighlightsTransformer;
-
-use League\Fractal\Resource\Collection;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use Validator;
 
 class UserHighlightsController extends APIController
 {
@@ -25,13 +21,13 @@ class UserHighlightsController extends APIController
 	 *     path="/users/{user_id}/highlights",
 	 *     tags={"Users"},
 	 *     summary="Get a list of highlights for a user/project combination",
-	 *     description="",
+	 *     description="The highlights index response: Note the fileset_id is being used to identify the item instead of the bible_id. This is important as different filesets may have different numbers for the highlighted words field depending on their revision.",
 	 *     operationId="v4_highlights.index",
 	 *     @OA\Parameter(name="fileset_id",    in="query", description="The fileset to filter highlights by", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OA\Parameter(name="book_id",       in="query", description="The book to filter highlights by", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OA\Parameter(name="chapter",       in="query", description="The chapter to filter highlights by", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
 	 *     @OA\Parameter(name="limit",         in="query", description="The number of highlights to include in each return", @OA\Schema(type="integer",example=15,default=15)),
-	 *     @OA\Parameter(name="prefer_color",  in="query", description="Choose the format that highlighted colors will be returned in", @OA\Schema(type="string",example="hex",enum={"hex","rgba","rgb","full"}),
+	 *     @OA\Parameter(name="prefer_color",  in="query", description="Choose the format that highlighted colors will be returned in", @OA\Schema(type="string",example="hex",enum={"hex","rgba","rgb","full"})),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -45,17 +41,20 @@ class UserHighlightsController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @param $user_id
+	 *
+	 * @return mixed
 	 */
 	public function index($user_id)
 	{
+		// Validate Project / User Connection
 		$user_is_member = $this->compareProjects($user_id);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		$fileset_id   = checkParam('fileset_id', null, 'optional');
 		$book_id      = checkParam('book_id', null, 'optional');
 		$chapter_id   = checkParam('chapter', null, 'optional');
-		$limit        = intval(checkParam('limit', null, 'optional') ?? 25);
+		$limit        = (int) (checkParam('limit', null, 'optional') ?? 25);
 
 		$highlights = Highlight::with('color')->where('user_id', $user_id)
 			->join(env('DBP_DATABASE').'.bible_filesets as fileset', 'fileset.id', '=', env('DBP_USERS_DATABASE').'.user_highlights.fileset_id')
@@ -81,8 +80,6 @@ class UserHighlightsController extends APIController
 				'user_highlights.highlighted_words',
 				'user_highlights.highlighted_color'
 			])->orderBy('user_highlights.updated_at')->paginate($limit);
-
-		//->paginate($limit)
 
 		return $this->reply(fractal($highlights->getCollection(), UserHighlightsTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($highlights)));
 	}
@@ -136,43 +133,31 @@ class UserHighlightsController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param  \Illuminate\Http\Request $request
-	 *
-	 * @return \Illuminate\Http\Response
+	 * @return \Illuminate\Http\Response|array
 	 */
-	public function store(Request $request)
+	public function store()
 	{
-		$user_is_member = $this->compareProjects($request->user_id);
+		// Validate Project / User Connection
+		$user_is_member = $this->compareProjects(request()->user_id);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
-		$validator = Validator::make($request->all(), [
-			'fileset_id'        => 'required|exists:dbp.bible_filesets,id',
-			'user_id'           => 'required|exists:dbp_users.users,id',
-			'book_id'           => 'required|exists:dbp.books,id',
-			'chapter'           => 'required|max:150|min:1|integer',
-			'verse_start'       => 'required|max:177|min:1|integer',
-			'reference'         => 'string',
-			'highlight_start'   => 'required|min:0|integer',
-			'highlighted_words' => 'required|min:1|integer',
-			'highlighted_color' => 'max:16|min:3',
-		]);
-		if ($validator->fails()) {
-			return ['errors' => $validator->errors()];
-		}
+		// Validate Highlight
+		$highlight_validation = $this->validateHighlight();
+		if(\is_array($highlight_validation)) return $highlight_validation;
 
 		Highlight::create([
-			'user_id'           => $request->user_id,
-			'fileset_id'        => $request->fileset_id,
-			'book_id'           => $request->book_id,
-			'chapter'           => $request->chapter,
-			'verse_start'       => $request->verse_start,
-			'reference'         => $request->reference,
-			'highlight_start'   => $request->highlight_start,
-			'highlighted_words' => $request->highlighted_words,
-			'highlighted_color' => $request->highlighted_color ?? '80,165,220,.5',
+			'user_id'           => request()->user_id,
+			'fileset_id'        => request()->fileset_id,
+			'book_id'           => request()->book_id,
+			'chapter'           => request()->chapter,
+			'verse_start'       => request()->verse_start,
+			'reference'         => request()->reference,
+			'highlight_start'   => request()->highlight_start,
+			'highlighted_words' => request()->highlighted_words,
+			'highlighted_color' => request()->highlighted_color ?? 1,
 		]);
 
-		return $this->reply(["success" => "Highlight created"]);
+		return $this->reply([trans('api.success') => trans('api.users_highlights_create_200')]);
 	}
 
 	/**
@@ -206,25 +191,14 @@ class UserHighlightsController extends APIController
 	 */
 	public function show($user_id,$highlight_id)
 	{
+		// Validate Project / User Connection
 		$user_is_member = $this->compareProjects($user_id);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		$highlight  = Highlight::where('id', $highlight_id)->first();
-		if (!$highlight) return $this->setStatusCode(404)->replyWithError("No Note found for the specified ID");
+		if(!$highlight) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_highlights'));
 
 		return $this->reply($highlight);
-	}
-
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int $id
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function edit($id)
-	{
-		//
 	}
 
 	/**
@@ -249,23 +223,27 @@ class UserHighlightsController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param  \Illuminate\Http\Request $request
 	 * @param                           $user_id
 	 * @param  int                      $id
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update(Request $request, $user_id, $id)
+	public function update($user_id, $id)
 	{
+		// Validate Project / User Connection
 		$user_is_member = $this->compareProjects($user_id);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
+		// Validate Highlight
+		$highlight_validation = $this->validateHighlight();
+		if(\is_array($highlight_validation)) return $highlight_validation;
+
 		$highlight = Highlight::where('user_id', $user_id)->where('id', $id)->first();
-		if (!$highlight) return $this->setStatusCode(404)->replyWithError('Sorry The Highlight was not found');
+		if(!$highlight) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_highlights'));
 
-		$highlight->fill($request->all())->save();
+		$highlight->fill(request()->all())->save();
 
-		return $this->reply(["success" => "Highlight Updated"]);
+		return $this->reply([trans('api.success') => trans('api.users_highlights_update_200')]);
 	}
 
 	/**
@@ -290,19 +268,38 @@ class UserHighlightsController extends APIController
 	 *     )
 	 * )
 	 *
+	 * @param  int $user_id
 	 * @param  int $id
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return array|\Illuminate\Http\Response
 	 */
 	public function destroy($user_id, $id)
 	{
+		// Validate Project / User Connection
 		$user_is_member = $this->compareProjects($user_id);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		$highlight  = Highlight::where('id', $id)->first();
-		if (!$highlight) return $this->setStatusCode(404)->replyWithError("Highlight not found");
+		if(!$highlight) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_highlights'));
 		$highlight->delete();
 
-		return $this->reply(["success" => "Highlight Deleted"]);
+		return $this->reply([trans('api.success') => trans('api.users_highlights_create_200')]);
+	}
+
+	private function validateHighlight()
+	{
+		$validator = Validator::make(request()->all(), [
+			'fileset_id'        => 'required|exists:dbp.bible_filesets,id',
+			'user_id'           => 'required|exists:dbp_users.users,id',
+			'book_id'           => 'required|exists:dbp.books,id',
+			'chapter'           => 'required|max:150|min:1|integer',
+			'verse_start'       => 'required|max:177|min:1|integer',
+			'reference'         => 'string',
+			'highlight_start'   => 'required|min:0|integer',
+			'highlighted_words' => 'required|min:1|integer',
+			'highlighted_color' => 'required|integer|exists:dbp_users.user_highlight_colors,id',
+		]);
+		if($validator->fails()) return ['errors' => $validator->errors()];
+		return true;
 	}
 }
