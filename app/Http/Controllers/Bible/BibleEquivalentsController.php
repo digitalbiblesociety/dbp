@@ -37,13 +37,16 @@ class BibleEquivalentsController extends APIController
 	 */
 	public function index()
 	{
-		$type   = checkParam('type',null,'optional');
-		$org_id = checkParam('organization_id',null,'optional');
+		$type     = checkParam('type',null,'optional');
+		$org_id   = checkParam('organization_id',null,'optional');
+		$bible_id = checkParam('bible_id',null,'optional');
 
 		$bible_equivalents = BibleEquivalent::when($type, function ($q) use ($type) {
 			$q->where('type', $type);
 		})->when($org_id, function ($q) use ($org_id) {
 			$q->where('type', $org_id);
+		})->when($bible_id, function ($q) use ($bible_id) {
+			$q->where('bible_id', $bible_id);
 		})->get();
 
 		return $this->reply($bible_equivalents);
