@@ -59,7 +59,6 @@ class Bible extends Model
      * @var string
      */
     protected $connection = 'dbp';
-    protected $primaryKey = 'id';
     protected $keyType = 'string';
 
     /**
@@ -225,33 +224,33 @@ class Bible extends Model
      */
     public function translations()
     {
-        return $this->HasMany(BibleTranslation::class)->where('name','!=','');
+        return $this->hasMany(BibleTranslation::class)->where('name','!=','');
     }
 
 	public function translatedTitles()
 	{
-		return $this->HasMany(BibleTranslation::class)->where('name','!=','');
+		return $this->hasMany(BibleTranslation::class)->where('name','!=','');
 	}
 
     public function currentTranslation()
     {
-    	$language_id = (isset($GLOBALS['i18n_id'])) ? $GLOBALS['i18n_id'] : Language::where('iso','eng')->first()->id;
-        return $this->HasOne(BibleTranslation::class)->where('language_id', $language_id)->where('name','!=','');
+    	$language_id = $GLOBALS['i18n_id'] ?? Language::where('iso', 'eng')->first()->id;
+        return $this->hasOne(BibleTranslation::class)->where('language_id', $language_id)->where('name','!=','');
     }
 
     public function vernacularTranslation()
     {
-        return $this->HasOne(BibleTranslation::class)->where('vernacular', '=', 1)->where('name','!=','');
+        return $this->hasOne(BibleTranslation::class)->where('vernacular', '=', 1)->where('name','!=','');
     }
 
     public function books()
     {
-	    return $this->HasMany(BibleBook::class);
+	    return $this->hasMany(BibleBook::class);
     }
 
     public function translators()
     {
-        return $this->BelongsToMany(Translator::class);
+        return $this->belongsToMany(Translator::class);
     }
 
     /*
@@ -266,7 +265,7 @@ class Bible extends Model
     */
     public function equivalents()
     {
-        return $this->HasMany(BibleEquivalent::class);
+        return $this->hasMany(BibleEquivalent::class);
     }
 
     public function filesets()
@@ -276,52 +275,52 @@ class Bible extends Model
 
 	public function filesetAudio()
 	{
-		return $this->HasMany(BibleFileset::class)->where('set_type','Audio');
+		return $this->hasMany(BibleFileset::class)->where('set_type','Audio');
 	}
 
 	public function filesetFilm()
 	{
-		return $this->HasMany(BibleFileset::class)->where('set_type','Film');
+		return $this->hasMany(BibleFileset::class)->where('set_type','Film');
 	}
 
 	public function filesetText()
 	{
-		return $this->HasMany(BibleFileset::class)->where('set_type','Text');
+		return $this->hasMany(BibleFileset::class)->where('set_type','Text');
 	}
 
     public function files()
     {
-        return $this->HasMany(BibleFile::class);
+        return $this->hasMany(BibleFile::class);
     }
 
     public function hasType($type = null)
     {
-        return $this->HasMany(BibleEquivalent::class)->where('type',$type);
+        return $this->hasMany(BibleEquivalent::class)->where('type',$type);
     }
 
     public function dbp()
     {
-        return $this->HasMany(BibleEquivalent::class)->where('site','bible.is');
+        return $this->hasMany(BibleEquivalent::class)->where('site','bible.is');
     }
 
 	public function fcbh()
 	{
-		return $this->HasOne(BibleEquivalent::class)->where('site','bible.is');
+		return $this->hasOne(BibleEquivalent::class)->where('site','bible.is');
 	}
 
     public function dbl()
     {
-        return $this->HasMany(BibleEquivalent::class)->where('site', 'Digital Bible Library');
+        return $this->hasMany(BibleEquivalent::class)->where('site', 'Digital Bible Library');
     }
 
     public function eSword()
     {
-        return $this->HasMany(BibleEquivalent::class)->where('type','eSword');
+        return $this->hasMany(BibleEquivalent::class)->where('type','eSword');
     }
 
     public function eBible()
     {
-        return $this->HasMany(BibleEquivalent::class)->where('type','eBible');
+        return $this->hasMany(BibleEquivalent::class)->where('type','eBible');
     }
 
     /**
@@ -331,12 +330,12 @@ class Bible extends Model
      */
     public function organizations()
     {
-        return $this->BelongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type']);
+        return $this->belongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type']);
     }
 
 	public function publisher()
 	{
-		return $this->BelongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type'])->wherePivot('relationship_type','publisher');
+		return $this->belongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type'])->wherePivot('relationship_type','publisher');
 	}
 
 
@@ -347,7 +346,7 @@ class Bible extends Model
      */
     public function links()
     {
-        return $this->HasMany(BibleLink::class)->where('visible',true);
+        return $this->hasMany(BibleLink::class)->where('visible',true);
     }
 
     /**
@@ -355,7 +354,7 @@ class Bible extends Model
      */
     public function language()
     {
-        return $this->BelongsTo(Language::class,'language_id','id')->select('name','id','country_id','iso','iso2T','iso2B','iso1','autonym');
+        return $this->belongsTo(Language::class,'language_id','id')->select('name','id','country_id','iso','iso2T','iso2B','iso1','autonym');
     }
 
     public function country()
@@ -382,7 +381,7 @@ class Bible extends Model
      */
     public function videos()
     {
-        return $this->HasMany(Video::class)->orderBy('order','asc');
+        return $this->hasMany(Video::class)->orderBy('order','asc');
     }
 
 }

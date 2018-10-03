@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
 class BibleBook extends Model
 {
 	protected $connection = 'dbp';
-    protected $table = "bible_books";
+    protected $table = 'bible_books';
     public $incrementing = false;
     public $fillable = ['abbr','book_id', 'name', 'name_short', 'chapters'];
     public $hidden = ['created_at','updated_at','bible_id'];
@@ -92,7 +92,7 @@ class BibleBook extends Model
 	/**
 	 * Remove brackets from uncertain book names
 	 *
-	 * @param  string  $value
+	 * @param  string  $name
 	 * @return void
 	 */
 	public function getNameAttribute($name)

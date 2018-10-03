@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
 class BibleFilesetSize extends Model
 {
 	protected $connection = 'dbp';
-    protected $table = "bible_fileset_sizes";
+    protected $table = 'bible_fileset_sizes';
 
 	/**
 	 *

@@ -48,14 +48,14 @@ class BibleFilesetConnection extends Model
 	/**
 	 *
 	 * @method static BibleFilesetConnection whereCreatedAt($value)
-	 * @property Carbon $created_at
+	 * @property \Carbon\Carbon $created_at
 	 */
 	protected $created_at;
 
 	/**
 	 *
 	 * @method static BibleFilesetConnection whereUpdatedAt($value)
-	 * @property Carbon $updated_at
+	 * @property \Carbon\Carbon $updated_at
 	 */
 	protected $updated_at;
 

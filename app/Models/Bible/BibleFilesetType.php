@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  *     type="object",
  *     required={"filename"},
  *     description="The Bible Fileset Type model communicates general metadata about the bible_filesets.set_size_code",
- *     title="BibleFilesetType",
+ *     title="Bible Fileset Type",
  *     @OA\Xml(name="BibleFilesetType")
  * )
  *
@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
 class BibleFilesetType extends Model
 {
 	protected $connection = 'dbp';
-    public $table = "bible_fileset_types";
+    public $table = 'bible_fileset_types';
 
     protected $hidden = ['updated_at','id'];
 
@@ -71,7 +71,7 @@ class BibleFilesetType extends Model
 	 * )
 	 *
 	 * @method static BibleFilesetType whereCreatedAt($value)
-	 * @property Carbon $created_at
+	 * @property \Carbon\Carbon $created_at
 	 */
 	protected $created_at;
 	/**
@@ -83,7 +83,7 @@ class BibleFilesetType extends Model
 	 * )
 	 *
 	 * @method static BibleFilesetType whereUpdatedAt($value)
-	 * @property Carbon $updated_at
+	 * @property \Carbon\Carbon $updated_at
 	 */
 	protected $updated_at;
 

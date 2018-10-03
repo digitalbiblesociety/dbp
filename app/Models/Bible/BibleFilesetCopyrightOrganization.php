@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BibleFilesetCopyrightOrganization extends Model
 {
 	protected $connection = 'dbp';
-    public $table = "bible_fileset_copyright_organizations";
+    public $table = 'bible_fileset_copyright_organizations';
 	protected $primaryKey = 'hash_id';
 	protected $keyType = 'string';
 	public $incrementing = false;

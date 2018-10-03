@@ -20,10 +20,10 @@ use App\Models\Organization\Organization;
 class BibleEquivalent extends Model
 {
 	protected $connection = 'dbp';
-    protected $table = "bible_equivalents";
+    protected $table = 'bible_equivalents';
     protected $primaryKey = 'equivalent_id';
     protected $hidden = ['created_at','updated_at'];
-    protected $fillable = ['bible_id','equivalent_id','organization_id','type','suffix'];
+    protected $fillable = ['bible_id','equivalent_id','organization_id','type','suffix','needs_review','constructed_url','site'];
     public $incrementing = false;
 
 	/**
@@ -104,14 +104,29 @@ class BibleEquivalent extends Model
 	 */
 	protected $suffix;
 
+	/**
+	 *
+	 * @OA\Property(
+	 *   title="Constructed Url",
+	 *   type="string",
+	 *   description="The full path to the resource which the equivalent describes",
+	 *   maxLength=191,
+	 *   example="https://example.com/bibles/ENGKJV"
+	 * )
+	 * @method static BibleEquivalent whereSuffix($value)
+	 * @property string $suffix
+	 *
+	 */
+	protected $constructed_url;
+
     public function bible()
     {
-        return $this->BelongsTo(Bible::class,'bible_id','id');
+        return $this->belongsTo(Bible::class,'bible_id','id');
     }
 
     public function organization()
     {
-        return $this->HasOne(Organization::class,'id','organization_id');
+        return $this->hasOne(Organization::class,'id','organization_id');
     }
 
 }

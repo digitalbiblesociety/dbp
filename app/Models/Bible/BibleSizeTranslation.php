@@ -13,15 +13,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $iso
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSizeTranslation whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSizeTranslation whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSizeTranslation whereIso($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSizeTranslation whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSizeTranslation whereSizeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSizeTranslation whereUpdatedAt($value)
+ * @method static Builder|BibleSizeTranslation whereCreatedAt($value)
+ * @method static Builder|BibleSizeTranslation whereDescription($value)
+ * @method static Builder|BibleSizeTranslation whereIso($value)
+ * @method static Builder|BibleSizeTranslation whereName($value)
+ * @method static Builder|BibleSizeTranslation whereSizeId($value)
+ * @method static Builder|BibleSizeTranslation whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property string $set_size_code
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleSizeTranslation whereSetSizeCode($value)
+ * @method static Builder|BibleSizeTranslation whereSetSizeCode($value)
  */
 class BibleSizeTranslation extends Model
 {

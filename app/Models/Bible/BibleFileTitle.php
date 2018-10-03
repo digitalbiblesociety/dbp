@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
 class BibleFileTitle extends Model
 {
 	protected $connection = 'dbp';
-    public $table = "bible_file_titles";
+    public $table = 'bible_file_titles';
 
 	 /**
 	  *
@@ -93,7 +93,7 @@ class BibleFileTitle extends Model
 	  */
     public function file()
     {
-    	return $this->BelongsTo(BibleFile::class);
+    	return $this->belongsTo(BibleFile::class);
     }
 
 }

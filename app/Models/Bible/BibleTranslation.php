@@ -23,20 +23,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Bible\Bible $bible
  * @property-read \App\Models\Language\Language $language
  * @mixin \Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereBibleId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereBibleVariationId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereFeatures($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereIso($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereNotes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereVernacular($value)
+ * @method static BibleTranslation whereBibleId($value)
+ * @method static BibleTranslation whereBibleVariationId($value)
+ * @method static BibleTranslation whereCreatedAt($value)
+ * @method static BibleTranslation whereDescription($value)
+ * @method static BibleTranslation whereFeatures($value)
+ * @method static BibleTranslation whereId($value)
+ * @method static BibleTranslation whereIso($value)
+ * @method static BibleTranslation whereName($value)
+ * @method static BibleTranslation whereNotes($value)
+ * @method static BibleTranslation whereType($value)
+ * @method static BibleTranslation whereUpdatedAt($value)
+ * @method static BibleTranslation whereVernacular($value)
  * @property int $vernacular_trade
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereVernacularTrade($value)
+ * @method static BibleTranslation whereVernacularTrade($value)
  *
  * @OA\Schema (
  *     type="object",
@@ -49,7 +49,7 @@ use Illuminate\Database\Eloquent\Model;
 class BibleTranslation extends Model
 {
 	protected $connection = 'dbp';
-    protected $hidden = ["created_at","updated_at","bible_id","id","notes","pivot","language"];
+    protected $hidden = ['created_at','updated_at','bible_id','id','notes','pivot','language'];
     protected $fillable = ['name','description','bible_id','iso'];
 
 	/**

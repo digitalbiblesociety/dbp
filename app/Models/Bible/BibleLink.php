@@ -169,7 +169,7 @@ class BibleLink extends Model
      */
     public function organization()
     {
-        return $this->HasOne(Organization::class, 'id');
+        return $this->hasOne(Organization::class, 'id');
     }
 
     public function bible()

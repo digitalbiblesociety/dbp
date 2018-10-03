@@ -107,7 +107,7 @@ class BibleFilesetCopyright extends Model
 	 */
 	public function organizations()
 	{
-		return $this->HasManyThrough(Organization::class, BibleFilesetCopyrightOrganization::class, 'hash_id', 'id', 'hash_id', 'organization_id');
+		return $this->hasManyThrough(Organization::class, BibleFilesetCopyrightOrganization::class, 'hash_id', 'id', 'hash_id', 'organization_id');
 	}
 
 	public function role()
@@ -122,7 +122,7 @@ class BibleFilesetCopyright extends Model
 
 	public function roles()
 	{
-		return $this->HasManyThrough(BibleFilesetCopyrightRole::class, BibleFilesetCopyrightOrganization::class, 'hash_id', 'hash_id', 'id', 'organizations_id');
+		return $this->hasManyThrough(BibleFilesetCopyrightRole::class, BibleFilesetCopyrightOrganization::class, 'hash_id', 'hash_id', 'id', 'organizations_id');
 	}
 
 }

@@ -23,10 +23,9 @@ use Illuminate\Database\Eloquent\Model;
 class BibleFileset extends Model
 {
 	protected $connection = 'dbp';
-	public $primaryKey = 'id';
 	public $incrementing = false;
-	protected $keyType = "string";
-	protected $hidden = ["created_at","updated_at","response_time","hidden","bible_id","hash_id"];
+	protected $keyType = 'string';
+	protected $hidden = ['created_at','updated_at','response_time','hidden','bible_id','hash_id'];
 	protected $fillable = ['name','set_type','organization_id','variation_id','bible_id','set_copyright'];
 
 
@@ -139,7 +138,7 @@ class BibleFileset extends Model
 
 	public function permissions()
 	{
-		return $this->HasMany(AccessGroupFileset::class,'hash_id','hash_id');
+		return $this->hasMany(AccessGroupFileset::class,'hash_id','hash_id');
 	}
 
 	public function bible()
@@ -154,7 +153,7 @@ class BibleFileset extends Model
 
 	public function connections()
 	{
-		return $this->HasOne(BibleFilesetConnection::class,'hash_id', 'hash_id');
+		return $this->hasOne(BibleFilesetConnection::class,'hash_id', 'hash_id');
 	}
 
 	public function organization()
@@ -164,11 +163,11 @@ class BibleFileset extends Model
 
 	public function files()
 	{
-		return $this->HasMany(BibleFile::class,'hash_id', 'hash_id');
+		return $this->hasMany(BibleFile::class,'hash_id', 'hash_id');
 	}
 
 	public function meta()
 	{
-		return $this->HasMany(BibleFilesetTag::class,'hash_id','hash_id');
+		return $this->hasMany(BibleFilesetTag::class,'hash_id','hash_id');
 	}
 }

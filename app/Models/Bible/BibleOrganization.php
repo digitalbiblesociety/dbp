@@ -15,23 +15,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $updated_at
  * @property-read \App\Models\Bible\Bible|null $bible
  * @mixin \Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleOrganization whereBibleId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleOrganization whereBibleVariationId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleOrganization whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleOrganization whereOrganizationId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleOrganization whereRelationshipType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleOrganization whereUpdatedAt($value)
+ * @method static Builder|BibleOrganization whereBibleId($value)
+ * @method static Builder|BibleOrganization whereBibleVariationId($value)
+ * @method static Builder|BibleOrganization whereCreatedAt($value)
+ * @method static Builder|BibleOrganization whereOrganizationId($value)
+ * @method static Builder|BibleOrganization whereRelationshipType($value)
+ * @method static Builder|BibleOrganization whereUpdatedAt($value)
  */
 class BibleOrganization extends Model
 {
 	protected $connection = 'dbp';
-    protected $table = "bible_organizations";
+    protected $table = 'bible_organizations';
     public $timestamps = false;
     public $incrementing = false;
 
 	public function bible()
 	{
-		return $this->BelongsTo(Bible::class,'bible_id','id');
+		return $this->belongsTo(Bible::class,'bible_id','id');
 	}
 
 }
