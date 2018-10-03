@@ -143,7 +143,8 @@ class BiblesController extends APIController
 			    });
 			})
 			->when($iso, function ($q) use ($iso) {
-			    $q->where('iso', $iso);
+				$language = Language::where('iso',$iso)->first();
+			    $q->where('language_id', $language->id);
 			})
 			->when($organization, function ($q) use ($organization) {
 			    $q->whereHas('organizations', function ($q) use ($organization) {
