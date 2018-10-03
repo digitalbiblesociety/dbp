@@ -106,15 +106,18 @@ class BibleFileSetsController extends APIController
 				break;
 			}
 		}
-
-		$fileSetChapters = BibleFile::join('books', 'books.id', '=', 'bible_files.book_id')
-		                            ->join('bible_books', 'bible_books.book_id', '=', 'bible_files.book_id')
-		                            ->where('hash_id', $fileset->hash_id)
-		                            ->when($chapter_id, function ($query) use ($chapter_id) {
-			                            return $query->where('chapter_start', $chapter_id);
-		                            })->when($book_id, function ($query) use ($book_id) {
+		$fileSetChapters = BibleFile::where('hash_id',$fileset->hash_id)
+			->join('dbp.bible_books', function($q) use($bible) {
+				$q->on('bible_books.book_id', '=', 'bible_files.book_id')
+				  ->where('bible_id',$bible->id);
+			})
+			->join('dbp.books','books.id', '=', 'bible_files.book_id')
+			->when($chapter_id, function ($query) use ($chapter_id) {
+				return $query->where('bible_files.chapter_start', $chapter_id);
+			})->when($book_id, function ($query) use ($book_id) {
 				return $query->where('bible_files.book_id', $book_id);
-			})->orderBy('chapter_start')->select([
+			})->select([
+				'bible_files.hash_id',
 				'bible_files.id',
 				'bible_files.book_id',
 				'bible_files.chapter_start',
@@ -124,8 +127,7 @@ class BibleFileSetsController extends APIController
 				'bible_files.file_name',
 				'bible_books.name',
 				'books.' . $versification . '_order as book_order'
-			])->orderBy('book_order')->get();
-
+			])->get();
 		if (count($fileSetChapters) == 0) return $this->setStatusCode(404)->replyWithError('No Fileset Chapters Found for the provided params');
 
 		$transaction_code = '';
