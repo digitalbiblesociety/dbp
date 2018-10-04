@@ -61,7 +61,7 @@ class CountriesController extends APIController
 		$cache_string = "countries" . $GLOBALS['i18n_iso'] . $has_filesets . $bucket_id . $include_languages;
 		if(env('APP_DEBUG')) \Cache::forget($cache_string);
 		return \Cache::remember($cache_string, 1600, function () use ($has_filesets, $bucket_id, $include_languages) {
-				$countries = Country::exclude('introduction')->with('currentTranslation')->when($has_filesets, function ($query) use ($bucket_id) {
+				$countries = Country::with('currentTranslation')->when($has_filesets, function ($query) use ($bucket_id) {
 					$query->whereHas('languages.bibles.filesets', function ($query) use ($bucket_id) {
 						if($bucket_id) $query->where('bucket_id', $bucket_id);
 					});
