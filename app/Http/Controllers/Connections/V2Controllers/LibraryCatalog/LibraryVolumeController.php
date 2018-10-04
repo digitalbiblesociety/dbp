@@ -176,70 +176,75 @@ class LibraryVolumeController extends APIController
 
 		$dam_id             = checkParam('dam_id|fcbh_id', null, 'optional');
 		$media              = checkParam('media', null, 'optional');
+		$language_name      = checkParam('language', null, 'optional');
 		$full_word          = checkParam('full_word', null, 'optional');
-		$iso                = checkParam('language_code|language_family_code', null, 'optional') ?? 'eng';
+		$iso                = checkParam('language_code|language_family_code', null, 'optional');
 		$updated            = checkParam('updated', null, 'optional');
-		$status             = checkParam('status', null, 'optional');
 		$organization       = checkParam('organization_id', null, 'optional');
-		$sort_by            = checkParam('sort_by', null, 'optional');
-		$sort_dir           = checkParam('sort_dir', null, 'optional') ?? 'asc';
-		$include_regionInfo = checkParam('include_region_info', null, 'optional');
-		$bucket             = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
-		$access_control = $this->accessControl($this->key, "api");
-		$language = Language::where('iso',$iso)->first();
-		$cache_string = 'library_volume' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $iso . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . '_' . $bucket . $access_control->string;
-		//\Cache::forget($cache_string);
-		//$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $bucket, $include_regionInfo, $access_control) {
-			$filesets = \DB::connection('dbp')->table('bible_filesets')
-						// Version 2 does not support delivery via s3
-						->where('set_type_code','!=','text_format')
-						->when($dam_id, function ($q) use ($dam_id) {
-							$q->where('id', $dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2));
-						})
-
-						// Filter by media
-						->when($media, function ($q) use ($media) {
-							switch ($media) {
-								case 'video': {$q->where('set_type_code', 'LIKE', 'video%');break;}
-								case 'audio': {$q->where('set_type_code', 'LIKE', 'audio%');break;}
-								case 'text':  {$q->where('set_type_code', 'LIKE', 'text%');break;}
-							}
-						})
-						->join('bible_fileset_tags', function($q) {
-							$q->on('bible_fileset_tags.hash_id','bible_filesets.hash_id')->where('name','volume');
-						})
-			            ->join('bible_fileset_connections as connection','connection.hash_id','bible_filesets.hash_id')
-						->join('bibles','connection.bible_id','bibles.id')
-						->join('bible_translations',function($q) use($language) {
-							$q->on('bible_translations.bible_id','bibles.id')->where('bible_translations.language_id',$language->id);
-						})
-						->join('alphabets', function($q) {
-							$q->on('bibles.script','alphabets.script');
-						})
-						->join('languages', function($q) use($iso) {
-							$q->on('bibles.language_id','languages.id');
-							if($iso) $q->where('languages.iso',$iso);
-						})->select([
-							'bible_translations.name as version_name',
-							'bibles.id as bible_id',
-							'bible_fileset_tags.description as volume_name',
-							'bible_filesets.created_at',
-							'bible_filesets.updated_at',
-							'bible_filesets.set_type_code',
-							'bible_filesets.set_size_code',
-							'alphabets.direction',
-							'languages.iso',
-							'languages.iso2B',
-							'languages.iso2T',
-							'languages.iso1',
-							'languages.name as language_name',
-							'languages.autonym as autonym',
-						])
-						->get();
-			return $this->reply(fractal($this->generate_v2_style_id($filesets), new LibraryVolumeTransformer())->serializeWith($this->serializer));
-		//});
-		//return $this->reply($bibles);
+		$access_control = $this->accessControl($this->key, 'api');
+		$language = $iso ? Language::where('iso',$iso)->first() : null;
+		$filesets = \DB::connection('dbp')->table('bible_filesets')
+					// Version 2 does not support delivery via s3
+					->where('set_type_code','!=','text_format')
+					->when($dam_id, function ($q) use ($dam_id) {
+						$q->where('id', $dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2));
+					})
+					->when($dam_id, function ($q) use ($access_control) {
+						$q->whereIn('id',$access_control->hashes);
+					})
+					// Filter by media
+					->when($media, function ($q) use ($media) {
+						switch ($media) {
+							case 'video': {$q->where('set_type_code', 'LIKE', 'video%');break;}
+							case 'audio': {$q->where('set_type_code', 'LIKE', 'audio%');break;}
+							case 'text':  {$q->where('set_type_code', 'LIKE', 'text%');break;}
+						}
+					})
+					->join('bible_fileset_tags', function($q) {
+						$q->on('bible_fileset_tags.hash_id','bible_filesets.hash_id')->where('name','volume');
+					})
+		            ->join('bible_fileset_connections as connection','connection.hash_id','bible_filesets.hash_id')
+					->join('bibles','connection.bible_id','bibles.id')
+					->join('bible_translations',function($q) use($language,$language_name,$full_word) {
+						$q->on('bible_translations.bible_id','bibles.id');
+						if($language) {
+							$q->where('bible_translations.language_id',$language->id);
+							if($language_name && $full_word) $q->where('name', $language);
+						}
+						if($language_name) $q->where('name','LIKE','%'.$language_name.'%');
+					})
+					->join('bible_organizations', function($q) use($organization) {
+						$q->on('bibles.id','bible_organizations.bible_id')->where('relationship_type','publisher');
+						if($organization) $q->where('bible_organizations.organization_id',$organization);
+					})
+					->join('alphabets', function($q) {
+						$q->on('bibles.script','alphabets.script');
+					})
+					->join('languages', function($q) use($iso) {
+						$q->on('bibles.language_id','languages.id');
+						if($iso) $q->where('languages.iso',$iso);
+					})->select([
+						'bible_translations.name as version_name',
+						'bibles.id as bible_id',
+						'bible_fileset_tags.description as volume_name',
+						'bible_filesets.created_at',
+						'bible_filesets.updated_at',
+						'bible_filesets.set_type_code',
+						'bible_filesets.set_size_code',
+						'alphabets.direction',
+						'languages.iso',
+						'languages.iso2B',
+						'languages.iso2T',
+						'languages.iso1',
+						'languages.name as language_name',
+						'languages.autonym as autonym',
+					])
+					->when($updated, function($q) use($updated) {
+						$q->where('updated_at','>',$updated);
+					})->orderBy('bibles.id')
+					->get();
+		return $this->reply(fractal($this->generate_v2_style_id($filesets), new LibraryVolumeTransformer())->serializeWith($this->serializer));
 	}
 
 	private function generate_v2_style_id($filesets)
@@ -259,10 +264,13 @@ class LibraryVolumeController extends APIController
 				case "OTNTP":
 				case "NTPOTP": {
 					if($type_code == "ET") {
-						$output[$fileset->bible_id.'O1'.$type_code] = clone $fileset;
-						$output[$fileset->bible_id.'N1'.$type_code] = clone $fileset;
-						$output[$fileset->bible_id.'O2'.$type_code] = clone $fileset;
-						$output[$fileset->bible_id.'N2'.$type_code] = clone $fileset;
+						if(str_contains($fileset->set_type_code,'drama')) {
+							$output[$fileset->bible_id.'O2'.$type_code] = clone $fileset;
+							$output[$fileset->bible_id.'N2'.$type_code] = clone $fileset;
+						} else {
+							$output[$fileset->bible_id.'O1'.$type_code] = clone $fileset;
+							$output[$fileset->bible_id.'N1'.$type_code] = clone $fileset;
+						}
 					} else {
 						$output[$fileset->bible_id.'O'.$type_code] = clone $fileset;
 						$output[$fileset->bible_id.'N'.$type_code] = clone $fileset;
