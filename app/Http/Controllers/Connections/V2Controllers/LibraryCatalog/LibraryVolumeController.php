@@ -191,7 +191,7 @@ class LibraryVolumeController extends APIController
 		$cache_string = 'library_volume' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $iso . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . '_' . $bucket . $access_control->string;
 		//\Cache::forget($cache_string);
 		//$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $media, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $bucket, $include_regionInfo, $access_control) {
-			$filesets = \DB::connection(env('DBP_DATABASE'))->table('bible_filesets')
+			$filesets = \DB::connection('dbp')->table('bible_filesets')
 						// Version 2 does not support delivery via s3
 						->where('set_type_code','!=','text_format')
 						->when($dam_id, function ($q) use ($dam_id) {
