@@ -41,8 +41,8 @@ class LanguageController extends APIController
 		// Params
 		$code                  = checkParam('code', null, 'optional');
 		$name                  = checkParam('name', null, 'optional');
-		$full_word             = checkParam('full_word', null, 'optional') ?? "false";
-		$sort_by               = checkParam('sort_by', null, 'optional') ?? "name";
+		$full_word             = checkParam('full_word', null, 'optional') ?? 'false';
+		$sort_by               = checkParam('sort_by', null, 'optional') ?? 'name';
 
 		// Caching Logic
 		$cache_string = 'v' . $this->v . '_languages_' . $code.$full_word.$name.$sort_by;
@@ -56,12 +56,13 @@ class LanguageController extends APIController
 				// Filter results by language name when set
 				->when($name, function ($query) use ($name, $full_word) {
 					return $query->whereHas('translations', function ($query) use ($name, $full_word) {
-						$added_space = ($full_word == "true") ? " ": "";
+						$added_space = ($full_word == 'true') ? " ": "";
 						$query->where('name', 'like', '%' . $name . $added_space . '%')->orWhere('name', $name);
 					});
 				})->get();
 			return fractal($languages,new LanguageListingTransformer())->serializeWith($this->serializer);
 		});
+
 		return $this->reply($cached_languages);
 	}
 
@@ -214,6 +215,7 @@ class LanguageController extends APIController
 		$languages = \Cache::remember('volumeLanguage' . $root . $iso . $media . $organization_id, 2400,
 			function () use ($root, $iso, $media, $organization_id) {
 				$languages = Language::select(['id', 'iso', 'iso2B', 'iso2T', 'iso1', 'name', 'autonym'])->with('parent')
+					->has('filesets')
 					->when($iso, function ($query) use ($iso) {
 						return $query->where('iso', $iso);
 					})->when($root, function ($query) use ($root) {
@@ -299,6 +301,7 @@ class LanguageController extends APIController
 		//$languages = \Cache::remember('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id,
 			//2400, function () use ($root, $iso, $media, $delivery, $organization_id) {
 				$languages = Language::with('bibles')->with('dialects')
+					->has('filesets')
 					->with(['dialects.childLanguage' => function ($query) {
 					    $query->select(['id', 'iso']);
 					}])
