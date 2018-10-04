@@ -79,8 +79,8 @@ class ApiMetadataController extends APIController
 	 */
 	public function libraryAsset()
 	{
-		$dam_id = checkParam('dam_id|fileset_id', null, 'optional') ?? "";
-		$bucket_id = checkParam('bucket_id', null, 'optional') ?? 'dbp-dev';
+		$dam_id = checkParam('dam_id|fileset_id', null, 'optional') ?? '';
+		$bucket_id = checkParam('bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
 		$fileset = BibleFileset::where('id',$dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2))->where('bucket_id', $bucket_id)->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError("The fileset requested could not be found");
@@ -90,12 +90,12 @@ class ApiMetadataController extends APIController
 
 		$libraryAsset = [
 			[
-				"server"    => $bucket_id.'.'.$client->getEndpoint()->getHost(),
-				"root_path" => "/audio",
-				"protocol"  => $client->getEndpoint()->getScheme(),
-				"CDN"       => "0",
-				"priority"  => "5",
-				"volume_id" => $dam_id,
+				'server'    => $bucket_id.'.'.$client->getEndpoint()->getHost(),
+				'root_path' => "/audio",
+				'protocol'  => $client->getEndpoint()->getScheme(),
+				'CDN'       => "0",
+				'priority'  => "5",
+				'volume_id' => $dam_id,
 			]
 		];
 
