@@ -354,7 +354,7 @@ class Bible extends Model
      */
     public function language()
     {
-        return $this->belongsTo(Language::class,'language_id','id')->select('name','id','country_id','iso','iso2T','iso2B','iso1','autonym');
+        return $this->belongsTo(Language::class);
     }
 
     public function country()
