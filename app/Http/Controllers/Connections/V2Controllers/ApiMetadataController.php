@@ -96,15 +96,7 @@ class ApiMetadataController extends APIController
 				"CDN"       => "0",
 				"priority"  => "5",
 				"volume_id" => $dam_id,
-			],
-			[
-				"server"    => 'ccdn.'.env('APP_URL'),
-				"root_path" => "/audio",
-				"protocol"  => $client->getEndpoint()->getScheme(),
-				"CDN"       => "0",
-				"priority"  => "6",
-				"volume_id" => $dam_id,
-			],
+			]
 		];
 
 		return $this->reply($libraryAsset);
