@@ -43,7 +43,7 @@ class Country extends Model
     public $incrementing = false;
     public $keyType = 'string';
 
-	public function scopeExclude($query,array $value = [])
+	public function scopeExclude($query,$value)
 	{
 		return $query->select( array_diff(['id', 'iso_a3', 'continent', 'name', 'introduction','fips'], $value) );
 	}
