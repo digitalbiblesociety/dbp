@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
+use App\Models\User\Study\HighlightColor;
 use App\Transformers\UserHighlightsTransformer;
 use App\Models\User\Study\Highlight;
 use App\Traits\CheckProjectMembership;
@@ -145,16 +146,17 @@ class UserHighlightsController extends APIController
 		$highlight_validation = $this->validateHighlight();
 		if(\is_array($highlight_validation)) return $highlight_validation;
 
+
+		request()->highlighted_color = $this->selectColor(request()->highlighted_color);
 		Highlight::create([
 			'user_id'           => request()->user_id,
 			'fileset_id'        => request()->fileset_id,
 			'book_id'           => request()->book_id,
 			'chapter'           => request()->chapter,
 			'verse_start'       => request()->verse_start,
-			'reference'         => request()->reference,
 			'highlight_start'   => request()->highlight_start,
 			'highlighted_words' => request()->highlighted_words,
-			'highlighted_color' => request()->highlighted_color ?? 1,
+			'highlighted_color' => request()->highlighted_color,
 		]);
 
 		return $this->reply([trans('api.success') => trans('api.users_highlights_create_200')]);
@@ -241,6 +243,8 @@ class UserHighlightsController extends APIController
 		$highlight = Highlight::where('user_id', $user_id)->where('id', $id)->first();
 		if(!$highlight) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_highlights'));
 
+		if(request()->highlighted_color) request()->highlighted_color = $this->selectColor(request()->highlighted_color);
+
 		$highlight->fill(request()->all())->save();
 
 		return $this->reply([trans('api.success') => trans('api.users_highlights_update_200')]);
@@ -297,9 +301,94 @@ class UserHighlightsController extends APIController
 			'reference'         => 'string',
 			'highlight_start'   => 'required|min:0|integer',
 			'highlighted_words' => 'required|min:1|integer',
-			'highlighted_color' => 'required|integer|exists:dbp_users.user_highlight_colors,id',
+			'highlighted_color' => 'required',
 		]);
 		if($validator->fails()) return ['errors' => $validator->errors()];
 		return true;
 	}
+
+	private function selectColor($color)
+	{
+		$matches = [];
+		$selectedColor = null;
+
+		// Try Hex
+		preg_match_all('/#[a-zA-Z0-9]{6}/i', request()->highlighted_color, $matches, PREG_SET_ORDER);
+		if(isset($matches[0][0])) $selectedColor = $this->hexToRgb($color);
+
+		// Try RGB
+		if(!$selectedColor) {
+			preg_match_all('/rgb\((?:\s*\d+\s*,){2}\s*[\d]+\)|rgba\((\s*\d+\s*,){3}[\d\.]+\)/i', request()->highlighted_color, $matches, PREG_SET_ORDER);
+			if(isset($matches[0][0])) $selectedColor = $this->rgbParse($color);
+		}
+
+		// Try HSL
+		if(!$selectedColor) {
+			preg_match_all('/hsl\(\s*\d+\s*(\s*\,\s*\d+\%){2}\)|hsla\(\s*\d+(\s*,\s*\d+\s*\%){2}\s*\,\s*[\d\.]+\)/i', request()->highlighted_color, $matches, PREG_SET_ORDER);
+			if(isset($matches[0][0])) $selectedColor = $this->hslToRgb($color);
+		}
+
+		$highlightColor = HighlightColor::where($selectedColor)->first();
+		if(!$highlightColor) {
+			$selectedColor['color'] = 'generated_'.unique_random('user_highlight_colors','color','8');
+			$selectedColor['hex'] = dechex($selectedColor['red']).dechex($selectedColor['green']).dechex($selectedColor['blue']);
+			$highlightColor = HighlightColor::create($selectedColor);
+		}
+		return $highlightColor->id;
+	}
+
+	private function rgbParse($rgb) {
+		$removals = ['rgba','rgb','(',')'];
+		$rgb = str_replace($removals,'',$rgb);
+		$rgb = explode(',',$rgb);
+		$rgb = ['red'=>$rgb[0],'green'=>$rgb[1],'blue'=>$rgb[2],'opacity'=>$rgb[3] ?? 1];
+		return $rgb;
+	}
+
+	private function hexToRgb($hex, $alpha = 1) {
+		$hex            = str_replace('#', '', $hex);
+		$length         = \strlen($hex);
+		$rgba['red']     = hexdec($length === 6 ? substr($hex, 0, 2) : ($length === 3 ? str_repeat(substr($hex, 0, 1), 2) : 0));
+		$rgba['green']   = hexdec($length === 6 ? substr($hex, 2, 2) : ($length === 3 ? str_repeat(substr($hex, 1, 1), 2) : 0));
+		$rgba['blue']    = hexdec($length === 6 ? substr($hex, 4, 2) : ($length === 3 ? str_repeat(substr($hex, 2, 1), 2) : 0));
+		$rgba['opacity'] = $alpha;
+		return $rgba;
+	}
+
+	private function hslToRgb( $hue, $saturation, $lightness ){
+		$c = ( 1 - abs( 2 * $lightness - 1 ) ) * $saturation;
+		$x = $c * ( 1 - abs(fmod( $hue / 60, 2 ) - 1 ) );
+		$m = $lightness - ( $c / 2 );
+		if ( $hue < 60 ) {
+			$red = $c;
+			$green = $x;
+			$blue = 0;
+		} else if ( $hue < 120 ) {
+			$red = $x;
+			$green = $c;
+			$blue = 0;
+		} else if ( $hue < 180 ) {
+			$red = 0;
+			$green = $c;
+			$blue = $x;
+		} else if ( $hue < 240 ) {
+			$red = 0;
+			$green = $x;
+			$blue = $c;
+		} else if ( $hue < 300 ) {
+			$red = $x;
+			$green = 0;
+			$blue = $c;
+		} else {
+			$red = $c;
+			$green = 0;
+			$blue = $x;
+		}
+		$red = ( $red + $m ) * 255;
+		$green = ( $green + $m ) * 255;
+		$blue = ( $blue + $m  ) * 255;
+		return ['red' => floor( $red ), 'green' => floor( $green ), 'blue' => floor( $blue ), 'alpha' => 1];
+	}
+
+
 }
