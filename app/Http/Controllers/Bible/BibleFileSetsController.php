@@ -65,15 +65,15 @@ class BibleFileSetsController extends APIController
 		$type          = checkParam('type');
 		$versification = checkParam('versification', null, 'optional');
 
-		if($book_id) $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
+		$book = $book_id ? Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first() : null;
 		if($book !== null) $book_id = $book->id;
 		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->when($bucket_id,
 			function ($query) use ($bucket_id) {
 				return $query->where('bucket_id', $bucket_id);
 			})->where('set_type_code', $type)->first();
-		if (!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404_bucket', ['bucket_id' => $fileset->bucket_id]));
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404_bucket', ['bucket_id' => $bucket_id]));
 
-		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? "download" : "api";
+		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? 'download' : 'api';
 		$access_control = $this->accessControl($this->key, $access_control_type);
 		if(!\in_array($fileset->hash_id, $access_control->hashes, true)) return $this->setStatusCode(403)->replyWithError(trans('api.bible_fileset_errors_401'));
 
@@ -117,6 +117,7 @@ class BibleFileSetsController extends APIController
 			})->when($book_id, function ($query) use ($book_id) {
 				return $query->where('bible_files.book_id', $book_id);
 			})->select([
+				'bible_files.duration',
 				'bible_files.hash_id',
 				'bible_files.id',
 				'bible_files.book_id',
@@ -125,10 +126,10 @@ class BibleFileSetsController extends APIController
 				'bible_files.verse_start',
 				'bible_files.verse_end',
 				'bible_files.file_name',
-				'bible_books.name',
+				'bible_books.name as book_name',
 				'books.' . $versification . '_order as book_order'
 			])->get();
-		if (count($fileSetChapters) == 0) return $this->setStatusCode(404)->replyWithError('No Fileset Chapters Found for the provided params');
+		if ($fileSetChapters->count() === 0) return $this->setStatusCode(404)->replyWithError('No Fileset Chapters Found for the provided params');
 
 		$transaction_code = '';
 		if($fileset->set_type_code != 'video_stream') {

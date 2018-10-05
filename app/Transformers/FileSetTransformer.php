@@ -146,16 +146,16 @@ class FileSetTransformer extends BaseTransformer
                  *   )
                  * )
                  */
-
                 return [
                     'book_id'       => $fileset->book_id,
-                    'book_name'     => $fileset->book->name,
+                    'book_name'     => $fileset->book_name,
                     'chapter_start' => $fileset->chapter_start,
                     'chapter_end'   => $fileset->chapter_end,
                     'verse_start'   => $fileset->verse_start,
                     'verse_end'     => $fileset->verse_end,
                     'timestamp'     => $fileset->timestamp,
                     'path'          => $fileset->file_name,
+	                'duration'      => $fileset->duration
                 ];
             }
 

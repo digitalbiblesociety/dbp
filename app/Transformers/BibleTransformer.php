@@ -34,7 +34,7 @@ class BibleTransformer extends BaseTransformer
 		    $iso = $bible->language->iso ?? null;
 		    $v2id = $iso.substr($bible->id,3,3);
 	    }
-	    
+
     	    switch($this->route) {
 		        case 'v2_library_volume': {
 				        return [
@@ -151,32 +151,28 @@ class BibleTransformer extends BaseTransformer
 	                $output['country_name'] = '';
 	                $output['continent_id'] = '';
                     if(isset($bible->country[0])) {
+
 	                    $output['country_name'] = $bible->country[0]->name;
-                        $output['country_id']   = $bible->country[0]->id;
+                        $output['country_id']   = $bible->country[0]->country_id;
                         $output['continent_id'] = $bible->country[0]->continent;
                     }
                 }
                 return $output;
             }
-			case "v4_bible.all": {
-				$name = $bible->translatedTitles->where('iso','eng')->first();
-				$vname = $bible->language ? $bible->translatedTitles->where('iso',$bible->language->iso)->first() : false;
-
+			case 'v4_bible.all': {
 				$output = [
 					'abbr'              => $bible->id,
-					'name'              => ($name) ? $name->name : null,
-					'vname'             => ($vname) ? $vname->name : null,
-					'language'          => @$bible->language->name ?? null,
-					'autonym'           => @$bible->language->autonym ?? null,
-					'iso'               => @$bible->language->iso,
+					'name'              => null,
+					'vname'             => null,
+					'language'          => $bible->name ?? null,
+					'autonym'           => $bible->autonym ?? null,
+					'iso'               => $bible->iso,
 					'date'              => $bible->date,
 					'filesets'          => $bible->filesets->mapToGroups(function ($item, $key) {
 						return [$item['bucket_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
 					})
 				];
-				if($bible->langauge) {
-					if($bible->langauge->relationLoaded('translations')) $output['language_altNames'] = $bible->language->translations->pluck('name');
-				}
+				if($bible->langauge && $bible->langauge->relationLoaded('translations')) $output['language_altNames'] = $bible->language->translations->pluck('name');
 
 				if($bible->relationLoaded('country')) {
 					$output['country_id']   = '';

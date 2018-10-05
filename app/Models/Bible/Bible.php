@@ -359,7 +359,7 @@ class Bible extends Model
 
     public function country()
     {
-    	return $this->hasManyThrough(Country::class,Language::class,'id','id','language_id','country_id');
+    	return $this->hasManyThrough(Country::class,Language::class,'id','id','language_id','country_id')->select(['countries.id as country_id','countries.continent','countries.name']);
     }
 
     /**
