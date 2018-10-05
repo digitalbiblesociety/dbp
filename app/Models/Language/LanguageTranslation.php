@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
 class LanguageTranslation extends Model
 {
 	protected $connection = 'dbp';
-    protected $hidden = ["language_source_id","created_at","updated_at","priority","description","id"];
+    protected $hidden = ['language_source_id','created_at','updated_at','priority','description','id'];
     protected $table = 'language_translations';
 
 	/**
@@ -151,7 +151,7 @@ class LanguageTranslation extends Model
      */
     public function getIsoTranslationAttribute()
     {
-        return $this->translation_iso->iso ?? "";
+        return $this->translation_iso->iso ?? '';
     }
 
     /**
@@ -161,27 +161,25 @@ class LanguageTranslation extends Model
      */
     public function getIsoSourceAttribute()
     {
-        return $this->source_iso->iso ?? "";
+        return $this->source_iso->iso ?? '';
     }
 
 
     public static function vernacularTranslation($iso)
     {
         $translation = static::where('iso_translation',$iso)->where('iso_language',$iso)->select('name')->first();
-        if(isset($translation)) {
-            return $translation->name;
-        }
+        if($translation !== null) return $translation->name;
         return NULL;
     }
 
     public function translation_iso()
     {
-    	return $this->BelongsTo(Language::class,'language_translation_id','id')->select(['iso','id']);
+    	return $this->belongsTo(Language::class,'language_translation_id','id')->select(['iso','id']);
     }
 
     public function source_iso()
     {
-        return $this->BelongsTo(Language::class,'language_source_id','id')->select(['iso','id']);
+        return $this->belongsTo(Language::class,'language_source_id','id')->select(['iso','id']);
     }
 
 

@@ -3,7 +3,6 @@
 namespace App\Models\Language;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Language\Language;
 
 /**
  * App\Models\Language\LanguageDialect

@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 class NoteTag extends Model
 {
 	protected $connection = 'dbp_users';
-    public $table = "user_note_tags";
+    public $table = 'user_note_tags';
 	protected $fillable = ['type','value'];
 
 	 /**

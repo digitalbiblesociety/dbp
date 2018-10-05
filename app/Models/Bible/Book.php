@@ -28,7 +28,7 @@ use i18n;
 class Book extends Model
 {
 	protected $connection = 'dbp';
-    protected $table = "books";
+    protected $table = 'books';
     public $incrementing = false;
     public $hidden = ['description','created_at','updated_at','notes'];
 

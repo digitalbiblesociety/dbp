@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 class BookTranslation extends Model
 {
 	protected $connection = 'dbp';
-    protected $table = "book_translations";
+    protected $table = 'book_translations';
     public $incrementing = false;
     protected $hidden = ['created_at','updated_at','book_id','description'];
 

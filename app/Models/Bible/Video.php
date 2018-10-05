@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Model;
 class Video extends Model
 {
 	protected $connection = 'dbp';
-	protected $table = "videos";
+	protected $table = 'videos';
 
 	/**
 	 *

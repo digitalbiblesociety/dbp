@@ -23,7 +23,7 @@ class NumeralSystem extends Model
 
 	/**
 	 * @property string id
-	 * @method static Builder|NumeralSystem whereId($value)
+	 * @method static NumeralSystem whereId($value)
 	 *
 	 * @OA\Property(
 	 *     title="Numeral System Id",
@@ -37,7 +37,7 @@ class NumeralSystem extends Model
 
 	/**
 	 * @property string numeral
-	 * @method static Builder|NumeralSystem whereNumeral($value)
+	 * @method static NumeralSystem whereNumeral($value)
 	 *
 	 * @OA\Property(
 	 *     title="The integer value of the glyph",
@@ -49,7 +49,7 @@ class NumeralSystem extends Model
 	protected $value;
 	/**
 	 * @property string numeral_vernacular
-	 * @method static Builder|NumeralSystem whereNumeralVernacular($value)
+	 * @method static NumeralSystem whereNumeralVernacular($value)
 	 *
 	 * @OA\Property(
 	 *     title="The Vernacular Numeral",
@@ -62,7 +62,7 @@ class NumeralSystem extends Model
 	protected $glyph;
 	/**
 	 * @property string numeral_written
-	 * @method static Builder|NumeralSystem whereNumeralWritten($value)
+	 * @method static NumeralSystem whereNumeralWritten($value)
 	 *
 	 * @OA\Property(
 	 *     title="Alphabet Numeral Written",

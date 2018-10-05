@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class VideoSource extends Model
 {
 	protected $connection = 'dbp';
-	protected $table = "video_sources";
+	protected $table = 'video_sources';
 
 	public function video()
 	{

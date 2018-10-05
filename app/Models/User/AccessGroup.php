@@ -93,7 +93,7 @@ class AccessGroup extends Model
 
 	public function user()
 	{
-		return $this->BelongsTo(Key::class);
+		return $this->belongsTo(Key::class);
 	}
 
 }

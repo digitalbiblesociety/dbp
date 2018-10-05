@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProjectOauthProvider extends Model
 {
 	protected $connection = 'dbp_users';
-    protected $table = "project_oauth_providers";
+    protected $table = 'project_oauth_providers';
 	protected $fillable = ['id','project_id','name','client_secret','client_id','callback_url','callback_url_alt','description'];
 	public $incrementing = false;
 	public $keyType = 'string';
@@ -28,7 +28,7 @@ class ProjectOauthProvider extends Model
 	{
 		$length     = 8;
 		$string     = '';
-		$vowels     = array("a","e","i","o","u");
+		$vowels     = array('a', 'e', 'i', 'o', 'u');
 		$consonants = array(
 			'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm',
 			'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'

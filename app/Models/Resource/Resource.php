@@ -27,7 +27,7 @@ class Resource extends Model
 {
 	protected $connection = 'dbp';
 	protected $hidden = ['created_at','updated_at'];
-	public $table = "resources";
+	public $table = 'resources';
 
 	/**
 	 *

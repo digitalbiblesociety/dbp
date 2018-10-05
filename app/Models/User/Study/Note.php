@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 class Note extends Model
 {
 	protected $connection = 'dbp_users';
-    protected $table = "user_notes";
+    protected $table = 'user_notes';
     protected $hidden = ['user_id','project_id'];
     protected $fillable = ['id','user_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','bookmark','notes','created_at','updated_at'];
 
