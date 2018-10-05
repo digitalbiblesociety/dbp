@@ -3,7 +3,6 @@
 namespace App\Models\Language;
 
 use App\Models\Bible\Bible;
-use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFilesetConnection;
 use App\Models\Bible\Video;
 use App\Models\Country\CountryLanguage;
@@ -46,10 +45,8 @@ use App\Models\Resource\Resource;
 class Language extends Model
 {
 	protected $connection = 'dbp';
-	public $table = "languages";
-    public $primaryKey = 'id';
-
-    protected $hidden = ["pivot"];
+	public $table = 'languages';
+    protected $hidden = ['pivot'];
     protected $fillable = ['glotto_id','iso','name','level','maps','development','use','location','area','population','population_notes','notes','typology','writing','description','family_pk','father_pk','child_dialect_count','child_family_count','child_language_count','latitude','longitude','pk','status','country_id','scope'];
 
 	/**
@@ -355,7 +352,7 @@ class Language extends Model
 
     public function alphabets()
     {
-        return $this->BelongsToMany(Alphabet::class,'alphabet_language','script','id')->distinct();
+        return $this->belongsToMany(Alphabet::class,'alphabet_language','script','id')->distinct();
     }
 
     /**
@@ -363,57 +360,57 @@ class Language extends Model
      */
     public function translations()
     {
-        return $this->HasMany(LanguageTranslation::class,'language_source_id','id')->orderBy('priority', 'desc');
+        return $this->hasMany(LanguageTranslation::class,'language_source_id','id')->orderBy('priority', 'desc');
     }
 
 	public function translation()
 	{
-		return $this->HasOne(LanguageTranslation::class,'language_source_id','id')->orderBy('priority', 'desc')->select(['language_source_id','name','priority']);
+		return $this->hasOne(LanguageTranslation::class,'language_source_id','id')->orderBy('priority', 'desc')->select(['language_source_id','name','priority']);
 	}
 
 	public function autonym()
 	{
-		return $this->HasOne(LanguageTranslation::class,'language_source_id')->where('vernacular', 1);
+		return $this->hasOne(LanguageTranslation::class,'language_source_id')->where('vernacular', 1);
 	}
 
     public function currentTranslation()
     {
-        return $this->HasOne(LanguageTranslation::class,'language_source_id')->where('language_translation_id', $GLOBALS['i18n_id']);
+        return $this->hasOne(LanguageTranslation::class,'language_source_id')->where('language_translation_id', $GLOBALS['i18n_id']);
     }
 
     public function countries()
     {
-        return $this->BelongsToMany(Country::class, 'country_language');
+        return $this->belongsToMany(Country::class, 'country_language');
     }
 
     public function primaryCountry()
     {
-        return $this->BelongsTo(Country::class,'country_id','id','countries');
+        return $this->belongsTo(Country::class,'country_id','id','countries');
     }
 
     public function region()
     {
-    	return $this->HasOne(CountryRegion::class,'country_id');
+    	return $this->hasOne(CountryRegion::class,'country_id');
     }
 
     public function fonts()
     {
-        return $this->HasMany(AlphabetFont::class);
+        return $this->hasMany(AlphabetFont::class);
     }
 
     public function bibles()
     {
-        return $this->HasMany(Bible::class);
+        return $this->hasMany(Bible::class);
     }
 
 	public function filesets()
 	{
-		return $this->HasManyThrough(BibleFilesetConnection::class,Bible::class,'language_id','bible_id','id','id');
+		return $this->hasManyThrough(BibleFilesetConnection::class,Bible::class,'language_id','bible_id','id','id');
 	}
 
     public function bibleCount()
     {
-	    return $this->HasMany(Bible::class);
+	    return $this->hasMany(Bible::class);
     }
 
     public function resources()
@@ -423,7 +420,7 @@ class Language extends Model
 
     public function films()
     {
-        return $this->HasMany(Video::class);
+        return $this->hasMany(Video::class);
     }
 
     public function languages()
@@ -433,27 +430,27 @@ class Language extends Model
 
     public function codes()
     {
-        return $this->HasMany(LanguageCode::class, 'language_id','id');
+        return $this->hasMany(LanguageCode::class, 'language_id','id');
     }
 
     public function iso639_2()
     {
-        return $this->HasOne(LanguageCode::class);
+        return $this->hasOne(LanguageCode::class);
     }
 
     public function classifications()
     {
-        return $this->HasMany(LanguageClassification::class);
+        return $this->hasMany(LanguageClassification::class);
     }
 
     public function dialects()
     {
-        return $this->HasMany(LanguageDialect::class,'language_id','id');
+        return $this->hasMany(LanguageDialect::class,'language_id','id');
     }
 
 	public function parent()
 	{
-		return $this->HasOne(LanguageDialect::class,'dialect_id', 'id');
+		return $this->hasOne(LanguageDialect::class,'dialect_id', 'id');
 	}
 
 }

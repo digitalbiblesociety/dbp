@@ -39,31 +39,31 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language\NumeralSystem[] $numerals
  * @property-read \App\Models\Language\AlphabetFont $primaryFont
  * @property-read \App\Models\Language\AlphabetFont $regular
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereBaseline($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereCase($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereComplexPositioning($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereContextualForms($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereDiacritics($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereDirection($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereDirectionNotes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereFamily($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereLigatures($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereOpenTypeTag($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereReordering($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereRequiresFont($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereSample($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereSampleImg($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereScript($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereSplitGraphs($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereUnicode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereUnicodePdf($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Language\Alphabet whereWhiteSpace($value)
+ * @method static Alphabet whereBaseline($value)
+ * @method static Alphabet whereCase($value)
+ * @method static Alphabet whereComplexPositioning($value)
+ * @method static Alphabet whereContextualForms($value)
+ * @method static Alphabet whereCreatedAt($value)
+ * @method static Alphabet whereDescription($value)
+ * @method static Alphabet whereDiacritics($value)
+ * @method static Alphabet whereDirection($value)
+ * @method static Alphabet whereDirectionNotes($value)
+ * @method static Alphabet whereFamily($value)
+ * @method static Alphabet whereLigatures($value)
+ * @method static Alphabet whereName($value)
+ * @method static Alphabet whereOpenTypeTag($value)
+ * @method static Alphabet whereReordering($value)
+ * @method static Alphabet whereRequiresFont($value)
+ * @method static Alphabet whereSample($value)
+ * @method static Alphabet whereSampleImg($value)
+ * @method static Alphabet whereScript($value)
+ * @method static Alphabet whereSplitGraphs($value)
+ * @method static Alphabet whereStatus($value)
+ * @method static Alphabet whereType($value)
+ * @method static Alphabet whereUnicode($value)
+ * @method static Alphabet whereUnicodePdf($value)
+ * @method static Alphabet whereUpdatedAt($value)
+ * @method static Alphabet whereWhiteSpace($value)
  * @mixin \Eloquent
  * 
  * Class Alphabet
@@ -77,7 +77,7 @@ use Illuminate\Database\Eloquent\Model;
 class Alphabet extends Model
 {
 	protected $connection = 'dbp';
-    protected $table = "alphabets";
+    protected $table = 'alphabets';
     protected $primaryKey = 'script';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -93,8 +93,8 @@ class Alphabet extends Model
 		'split_graphs'        => 'boolean',
 	];
 
-    protected $hidden = ["created_at","updated_at","directionNotes","requiresFont"];
-    protected $fillable = [ "script", "name", "unicode_pdf", "family", "type", "white_space", "open_type_tag", "complex_positioning", "requires_font", "unicode", "diacritics", "contextual_forms", "reordering", "case", "split_graphs", "status", "baseline", "ligatures", "direction", "sample", "sample_img"];
+    protected $hidden   = ['created_at','updated_at','directionNotes','requiresFont'];
+    protected $fillable = ['script','name','unicode_pdf','family','type','white_space','open_type_tag','complex_positioning','requires_font','unicode','diacritics','contextual_forms','reordering','case','split_graphs','status','baseline','ligatures','direction','sample','sample_img'];
 
 	/**
 	 * @OA\Property(
@@ -387,32 +387,32 @@ class Alphabet extends Model
 
     public function languages()
     {
-        return $this->BelongsToMany(Language::class,'alphabet_language','script_id');
+        return $this->belongsToMany(Language::class,'alphabet_language','script_id');
     }
 
     public function fonts()
     {
-        return $this->HasMany(AlphabetFont::class,'script_id','script');
+        return $this->hasMany(AlphabetFont::class,'script_id','script');
     }
 
     public function primaryFont()
     {
-        return $this->HasOne(AlphabetFont::class,'script_id','script');
+        return $this->hasOne(AlphabetFont::class,'script_id','script');
     }
 
     public function regular()
     {
-        return $this->HasOne(AlphabetFont::class,'script_id','script')->where('fontWeight',400);
+        return $this->hasOne(AlphabetFont::class,'script_id','script')->where('fontWeight',400);
     }
 
 	public function bibles()
 	{
-		return $this->HasMany(Bible::class,'script','script');
+		return $this->hasMany(Bible::class,'script','script');
 	}
 
 	public function numerals()
 	{
-		return $this->HasManyThrough(NumeralSystemGlyph::class, AlphabetNumeralSystem::class);
+		return $this->hasManyThrough(NumeralSystemGlyph::class, AlphabetNumeralSystem::class);
 	}
 
 }

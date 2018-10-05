@@ -3,7 +3,6 @@
 namespace App\Models\Language;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Language\Alphabet;
 
 /**
  * App\Models\Language\AlphabetFont

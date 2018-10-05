@@ -3,7 +3,6 @@
 namespace App\Models\Language;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Language\Language;
 
 /**
  * App\Models\Language\LanguageCode
@@ -83,7 +82,7 @@ class LanguageCode extends Model
 
 	/**
 	 *
-	 * @property Carbon $created_at
+	 * @property \Carbon\Carbon $created_at
 	 * @method static LanguageCode whereCreatedAt($value)
 	 *
 	 */
@@ -91,7 +90,7 @@ class LanguageCode extends Model
 
 	/**
 	 *
-	 * @property Carbon $updated_at
+	 * @property \Carbon\Carbon $updated_at
 	 * @method static LanguageCode whereUpdatedAt($value)
 	 *
 	 */
