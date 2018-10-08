@@ -183,14 +183,16 @@ class LibraryVolumeController extends APIController
 		$organization       = checkParam('organization_id', null, 'optional');
 
 		$access_control = $this->accessControl($this->key, 'api');
+
 		$language = $iso ? Language::where('iso',$iso)->first() : null;
+
 		$filesets = \DB::connection('dbp')->table('bible_filesets')
 					// Version 2 does not support delivery via s3
 					->where('set_type_code','!=','text_format')
 					->when($dam_id, function ($q) use ($dam_id) {
 						$q->where('id', $dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2));
 					})
-					->when($dam_id, function ($q) use ($access_control) {
+					->when($dam_id, function($q, $access_control) {
 						$q->whereIn('id',$access_control->hashes);
 					})
 					// Filter by media
@@ -208,10 +210,7 @@ class LibraryVolumeController extends APIController
 					->join('bibles','connection.bible_id','bibles.id')
 					->join('bible_translations',function($q) use($language,$language_name,$full_word) {
 						$q->on('bible_translations.bible_id','bibles.id');
-						if($language) {
-							$q->where('bible_translations.language_id',$language->id);
-							if($language_name && $full_word) $q->where('name', $language);
-						}
+						if($language && $language_name && $full_word) $q->where('name', $language);
 						if($language_name) $q->where('name','LIKE','%'.$language_name.'%');
 					})
 					->join('bible_organizations', function($q) use($organization) {
@@ -221,12 +220,14 @@ class LibraryVolumeController extends APIController
 					->join('alphabets', function($q) {
 						$q->on('bibles.script','alphabets.script');
 					})
-					->join('languages', function($q) use($iso) {
-						$q->on('bibles.language_id','languages.id');
-						if($iso) $q->where('languages.iso',$iso);
-					})->select([
+					->join('languages', 'bibles.language_id','languages.id')
+					->when($language, function ($q, $language) {
+						$q->where('languages.iso',$language->iso);
+					})
+					->select([
 						'bible_translations.name as version_name',
 						'bibles.id as bible_id',
+						'bible_filesets.id',
 						'bible_fileset_tags.description as volume_name',
 						'bible_filesets.created_at',
 						'bible_filesets.updated_at',
@@ -244,6 +245,7 @@ class LibraryVolumeController extends APIController
 						$q->where('updated_at','>',$updated);
 					})->orderBy('bibles.id')
 					->get();
+
 		return $this->reply(fractal($this->generate_v2_style_id($filesets), new LibraryVolumeTransformer())->serializeWith($this->serializer));
 	}
 
@@ -258,44 +260,46 @@ class LibraryVolumeController extends APIController
 				case 'text_plain':  { $type_code = 'ET'; break; }
 			}
 
+			$fileset_id = substr($fileset->id,0,6);
+
 			switch ($fileset->set_size_code) {
-				case "C":
-				case "NTOTP":
-				case "OTNTP":
-				case "NTPOTP": {
-					if($type_code == "ET") {
+				case 'C':
+				case 'NTOTP':
+				case 'OTNTP':
+				case 'NTPOTP': {
+					if($type_code == 'ET') {
 						if(str_contains($fileset->set_type_code,'drama')) {
-							$output[$fileset->bible_id.'O2'.$type_code] = clone $fileset;
-							$output[$fileset->bible_id.'N2'.$type_code] = clone $fileset;
+							$output[$fileset_id.'O2'.$type_code] = clone $fileset;
+							$output[$fileset_id.'N2'.$type_code] = clone $fileset;
 						} else {
-							$output[$fileset->bible_id.'O1'.$type_code] = clone $fileset;
-							$output[$fileset->bible_id.'N1'.$type_code] = clone $fileset;
+							$output[$fileset_id.'O1'.$type_code] = clone $fileset;
+							$output[$fileset_id.'N1'.$type_code] = clone $fileset;
 						}
 					} else {
-						$output[$fileset->bible_id.'O'.$type_code] = clone $fileset;
-						$output[$fileset->bible_id.'N'.$type_code] = clone $fileset;
+						$output[$fileset_id.'O'.$type_code] = clone $fileset;
+						$output[$fileset_id.'N'.$type_code] = clone $fileset;
 					}
 					break;
 				}
 
-				case "NT":
-				case "NTP":    {
-					if($type_code == "ET") {
-						$output[$fileset->bible_id.'N1'.$type_code] = clone $fileset;
-						$output[$fileset->bible_id.'N2'.$type_code] = clone $fileset;
+				case 'NT':
+				case 'NTP':    {
+					if($type_code == 'ET') {
+						$output[$fileset_id.'N1'.$type_code] = clone $fileset;
+						$output[$fileset_id.'N2'.$type_code] = clone $fileset;
 					} else {
-						$output[$fileset->bible_id.'N'.$type_code] = clone $fileset;
+						$output[$fileset_id.'N'.$type_code] = clone $fileset;
 					}
 					break;
 				}
 
-				case "OT":
-				case "OTP":    {
-					if($type_code == "ET") {
-						$output[$fileset->bible_id.'O1'.$type_code] = clone $fileset;
-						$output[$fileset->bible_id.'O2'.$type_code] = clone $fileset;
+				case 'OT':
+				case 'OTP':    {
+					if($type_code == 'ET') {
+						$output[$fileset_id.'O1'.$type_code] = clone $fileset;
+						$output[$fileset_id.'O2'.$type_code] = clone $fileset;
 					} else {
-						$output[$fileset->bible_id.'O'.$type_code] = clone $fileset;
+						$output[$fileset_id.'O'.$type_code] = clone $fileset;
 					}
 					break;
 				}
