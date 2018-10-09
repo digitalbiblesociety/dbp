@@ -49,24 +49,26 @@ class LibraryMetadataTransformer extends TransformerAbstract
 	 *          )
 	 *     )
 	 * )
+	 * @param $bible_fileset
 	 *
+	 * @return array
 	 */
     public function transform($bible_fileset)
     {
-	        $output = [
-		        "dam_id"         => $bible_fileset->v2_id,
-		        "fileset_id"     => $bible_fileset->id,
-		        "mark"           => $bible_fileset->copyright->copyright,
-		        "volume_summary" => $bible_fileset->copyright->copyright_description,
-		        "font_copyright" => null,
-		        "font_url"       => null
-	        ];
+    	$output = [
+		    'dam_id'         => $bible_fileset->dam_id,
+		    'mark'           => $bible_fileset->copyright->copyright,
+		    'volume_summary' => $bible_fileset->copyright->copyright_description,
+		    'font_copyright' => null,
+		    'font_url'       => null
+	    ];
+
 	    $organization = @$bible_fileset->copyright->organizations->first();
 	    if($organization) {
-		    $output["organization"] = [
-			    'organization_id'       => $organization->id,
-			    'organization'          => $organization->name,
-			    'organization_english'  => $organization->name,
+		    $output['organization'][] = [
+			    'organization_id'       => (string) $organization->id,
+			    'organization'          => (string) @$organization->translations->where('vernacular',1)->first()->name,
+			    'organization_english'  => @$organization->translations->where('language_id',$GLOBALS['i18n_id'])->first()->name ?? $organization->slug,
 			    'organization_role'     => $bible_fileset->copyright->role->roleTitle->name,
 			    'organization_url'      => $organization->url_website,
 			    'organization_donation' => $organization->url_donate,
