@@ -16,6 +16,7 @@ class BibleLinksController extends APIController
 	    $iso             = checkParam('iso', null, 'optional') ?? 'eng';
 	    $limit           = checkParam('limit', null, 'optional');
 	    $organization    = checkParam('organization_id', null, 'optional');
+	    $type            = checkParam('type', null, 'optional');
 	    $bible_id        = checkParam('bible_id', null, 'optional');
 
 	    if($organization !== null) {
@@ -26,6 +27,9 @@ class BibleLinksController extends APIController
 	    $bibleLinks = \DB::table(env('DBP_DATABASE').'.bible_links')
 		->join(env('DBP_DATABASE').'.bible_translations', function($q) use($language) {
 			$q->on('bible_links.bible_id','bible_translations.bible_id')->where('language_id',$language->id);
+		})
+		->when($type, function ($q) use ($type) {
+		    $q->where('bible_links.type', $type);
 		})
 		->when($organization, function ($q) use ($organization) {
 		    $q->where('bible_links.organization_id', $organization->id);
