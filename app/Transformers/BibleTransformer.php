@@ -166,7 +166,8 @@ class BibleTransformer extends BaseTransformer
 					'vname'             => @$bible->translations->where('language_id',$bible->language_id)->first()->name,
 					'language'          => $bible->language->name ?? null,
 					'autonym'           => $bible->language->autonym ?? null,
-					'iso'               => $bible->iso,
+					'language_id'       => $bible->language->id,
+					'iso'               => $bible->language->iso ?? null,
 					'date'              => $bible->date,
 					'filesets'          => $bible->filesets->mapToGroups(function ($item, $key) {
 						return [$item['bucket_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
@@ -226,6 +227,7 @@ class BibleTransformer extends BaseTransformer
 					'providers'     => $bible->organizations->where('pivot.relationship_type','provider')->all(),
 					'equivalents'   => $bible->equivalents,
 					'language'      => @$bible->language->name ?? '',
+					'language_id'   => $bible->language->id,
 					'iso'           => $bible->language->iso ?? null,
 					'date'          => $bible->date,
 					'country'       => $bible->language->primaryCountry->name ?? '',
