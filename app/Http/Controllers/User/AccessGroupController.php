@@ -127,7 +127,8 @@ class AccessGroupController extends APIController
 	{
 		if(env('APP_DEBUG') == "true") \Cache::forget('access_group_'.$id);
 		$access_group = \Cache::remember('access_group_'.$id, 1800,  function () use($id) {
-			$access_group = AccessGroup::with('filesets','types','users')->find($id);
+			$access_group = AccessGroup::with('filesets','types','keys')->find($id);
+			$access_group->current_key = $this->key;
 			return fractal($access_group, new AccessGroupTransformer());
 		});
 		return $this->reply($access_group);

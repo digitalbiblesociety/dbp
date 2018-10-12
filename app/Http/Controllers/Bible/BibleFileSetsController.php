@@ -273,7 +273,7 @@ class BibleFileSetsController extends APIController
 	 */
 	public function copyright($id)
 	{
-		$iso = checkParam('iso', null, 'optional') ?? "eng";
+		$iso = checkParam('iso', null, 'optional') ?? 'eng';
 		$type = checkParam('type', null, 'optional');
 		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? 'dbp-dev';
 

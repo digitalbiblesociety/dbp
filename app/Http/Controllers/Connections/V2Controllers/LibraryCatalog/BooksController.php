@@ -55,13 +55,13 @@ class BooksController extends APIController
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
 
 		$sophiaTable = $this->checkForSophiaTable($fileset);
-		if(!is_string($sophiaTable)) return $sophiaTable;
+		if(!\is_string($sophiaTable)) return $sophiaTable;
 
 		$testament = false;
 
 		switch (substr($id, -2, 1)) {
-			case "O": { $testament = "OT"; break; }
-			case "N": { $testament = "NT"; }
+			case 'O': { $testament = 'OT'; break; }
+			case 'N': { $testament = 'NT'; }
 		}
 		\Cache::forget('v2_library_book_' . $id . $bucket_id . $fileset . $testament);
 		$libraryBook = \Cache::remember('v2_library_book_' . $id . $bucket_id . $fileset . $testament, 1600,
@@ -77,7 +77,7 @@ class BooksController extends APIController
 					$chapters                     = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
 					$books[$key]->source_id       = $id;
 					$books[$key]->bible_id        = $bible_id;
-					$books[$key]->chapters        = $chapters->implode(",");
+					$books[$key]->chapters        = $chapters->implode(',');
 					$books[$key]->number_chapters = $chapters->count();
 				}
 
@@ -101,8 +101,8 @@ class BooksController extends APIController
 		$testament = false;
 
 		switch (substr($id, -2, 1)) {
-			case "O": { $testament = "OT"; break; }
-			case "N": { $testament = "NT"; }
+			case 'O': { $testament = 'OT'; break; }
+			case 'N': { $testament = 'NT'; }
 		}
 		\Cache::forget('v2_library_bookOrder_' . $id . $bucket_id . $fileset . $testament);
 		$libraryBook = \Cache::remember('v2_library_book_' . $id . $bucket_id . $fileset . $testament, 1600,
@@ -118,7 +118,7 @@ class BooksController extends APIController
 					$chapters                     = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
 					$books[$key]->source_id       = $id;
 					$books[$key]->bible_id        = $bible_id;
-					$books[$key]->chapters        = $chapters->implode(",");
+					$books[$key]->chapters        = $chapters->implode(',');
 					$books[$key]->number_chapters = $chapters->count();
 				}
 
@@ -165,22 +165,22 @@ class BooksController extends APIController
 		if(!$this->api) return view('docs.books.bookNames');
 		$iso = checkParam('language_code');
 		$language = Language::where('iso',$iso)->first();
-		if(!$language) return $this->setStatusCode(404)->replywithError('No langauge could be found for the iso code specified');
+		if(!$language) return $this->setStatusCode(404)->replywithError('No language could be found for the iso code specified');
 
 		\Cache::forget('v2_library_bookName_' . $iso);
 		$libraryBookName = \Cache::remember('v2_library_bookName_' . $iso, 1600, function () use ($language) {
 			$bookTranslations = BookTranslation::where('language_id', $language->id)->with('book')->select('name', 'book_id')->get()->pluck('name','book.id_osis');
-			$bookTranslations["AL"] = "Alternative";
-            $bookTranslations["ON"] = "Old and New Testament";
-            $bookTranslations["OT"] = "Old Testament";
-            $bookTranslations["NT"] = "New Testament";
-            $bookTranslations["AP"] = "Apocrypha";
-            $bookTranslations["VU"] = "Vulgate";
-            $bookTranslations["ET"] = "Ethiopian Orthodox Canon/Geez Translation Additions";
-            $bookTranslations["CO"] = "Coptic Orthodox Canon Additions";
-            $bookTranslations["AO"] = "Armenian Orthodox Canon Additions";
-            $bookTranslations["PE"] = "Peshitta";
-            $bookTranslations["CS"] = "Codex Sinaiticus";
+			$bookTranslations['AL'] = 'Alternative';
+            $bookTranslations['ON'] = 'Old and New Testament';
+            $bookTranslations['OT'] = 'Old Testament';
+            $bookTranslations['NT'] = 'New Testament';
+            $bookTranslations['AP'] = 'Apocrypha';
+            $bookTranslations['VU'] = 'Vulgate';
+            $bookTranslations['ET'] = 'Ethiopian Orthodox Canon/Geez Translation Additions';
+            $bookTranslations['CO'] = 'Coptic Orthodox Canon Additions';
+            $bookTranslations['AO'] = 'Armenian Orthodox Canon Additions';
+            $bookTranslations['PE'] = 'Peshitta';
+            $bookTranslations['CS'] = 'Codex Sinaiticus';
 			return [$bookTranslations];
 		});
 

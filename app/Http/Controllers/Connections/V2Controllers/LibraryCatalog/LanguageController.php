@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Connections\V2Controllers\LibraryCatalog;
 use App\Http\Controllers\APIController;
 use App\Models\Language\Language;
 use App\Models\User\User;
+use App\Traits\AccessControlAPI;
 use App\Transformers\V2\LibraryCatalog\LanguageListingTransformer;
 use Illuminate\Http\Request;
 
 
 class LanguageController extends APIController
 {
+
+	use AccessControlAPI;
 
 	/**
 	 * @OA\Get(
@@ -136,24 +139,21 @@ class LanguageController extends APIController
 		$lang_code          = checkParam('lang_code', null, 'optional');
 		$country_code       = checkParam('country_code', null, 'optional');
 		$country_additional = checkParam('additional', null, 'optional');
-		$cache_string       = "v2_country_lang_" . $sort_by . $lang_code . $country_code . $country_additional;
+		$cache_string       = 'v2_country_lang_' . $sort_by . $lang_code . $country_code . $country_additional;
 
 		$countryLang = \Cache::remember($cache_string, 1600,
 			function () use ($sort_by, $lang_code, $country_code, $country_additional) {
 
 				// Fetch Languages and add conditional sorting / loading depending on params
-				$languages = Language::has('primaryCountry')->has('bibles.filesets')->with('primaryCountry',
-					'countries')
-				                     ->when($sort_by, function ($q) use ($sort_by) {
-					                     return $q->orderBy($sort_by, 'desc');
-				                     })->when($lang_code, function ($q) use ($lang_code) {
+				$languages = Language::has('primaryCountry')->has('bibles.filesets')->with('primaryCountry', 'countries')
+					->when($sort_by, function ($q) use ($sort_by) {
+					    return $q->orderBy($sort_by, 'desc');
+					})->when($lang_code, function ($q) use ($lang_code) {
 						return $q->where('iso', $lang_code);
 					})->when($country_code, function ($q) use ($country_code) {
 						return $q->where('country_id', $country_code);
 					})->get();
-				if ($country_additional) {
-					$languages->load('countries');
-				}
+				if ($country_additional) $languages->load('countries');
 
 				return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer);
 			});
@@ -297,11 +297,15 @@ class LanguageController extends APIController
 		$delivery        = checkParam('delivery', null, 'optional');
 		$organization_id = checkParam('organization_id', null, 'optional');
 
+		$access_control = $this->accessControl($this->key, 'api');
+
 		//\Cache::forget('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id);
 		//$languages = \Cache::remember('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id,
 			//2400, function () use ($root, $iso, $media, $delivery, $organization_id) {
 				$languages = Language::with('bibles')->with('dialects')
-					->has('filesets')
+					->whereHas('filesets', function ($query) use($access_control) {
+						$query->whereIn('hash_id', $access_control->hashes);
+					})
 					->with(['dialects.childLanguage' => function ($query) {
 					    $query->select(['id', 'iso']);
 					}])
