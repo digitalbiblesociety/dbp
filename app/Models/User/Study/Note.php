@@ -2,6 +2,7 @@
 
 namespace App\Models\User\Study;
 
+use App\Models\Bible\Book;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -175,6 +176,11 @@ class Note extends Model
     public function tags()
     {
     	return $this->hasMany(NoteTag::class,'note_id','id');
+    }
+
+    public function book()
+    {
+    	return $this->belongsTo(Book::class);
     }
 
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models\User\Study;
 
+use App\Models\Bible\Bible;
+use App\Models\Bible\Book;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
@@ -87,10 +89,6 @@ class Bookmark extends Model
 	 *
 	 * @method static Note whereCreatedAt($value)
 	 * @property Carbon $created_at
-	 */
-	protected $created_at;
-
-	/**
 	 *
 	 * @OA\Property(
 	 *   title="updated_at",
@@ -102,13 +100,6 @@ class Bookmark extends Model
 	 * @method static Note whereUpdatedAt($value)
 	 * @property Carbon|null $updated_at
 	 */
-	protected $updated_at;
-
-	public function setCreatedAtAttribute()
-	{
-		return Carbon::now()->toDateString();
-	}
-
 
 	/**
 	 *
@@ -117,6 +108,16 @@ class Bookmark extends Model
 	public function user()
 	{
 		return $this->belongsTo(User::class);
+	}
+
+	public function book()
+	{
+		return $this->belongsTo(Book::class);
+	}
+
+	public function bible()
+	{
+		return $this->belongsTo(Bible::class);
 	}
 
 

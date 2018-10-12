@@ -24,45 +24,6 @@ class ProjectOauthProvider extends Model
 	public $incrementing = false;
 	public $keyType = 'string';
 
-	public function setIdAttribute($id)
-	{
-		$length     = 8;
-		$string     = '';
-		$vowels     = array('a', 'e', 'i', 'o', 'u');
-		$consonants = array(
-			'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm',
-			'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'
-		);
-		// Seed it
-		srand((double) microtime() * 1000000);
-		$max = $length/2;
-		for ($i = 1; $i <= $max; $i++)
-		{
-			$string .= $consonants[rand(0,19)];
-			$string .= $vowels[rand(0,4)];
-		}
-		return $this->attributes['id'] = $string;
-	}
-
-
-	/**
-	 * Encrypt Client Secrets as they're stored in the database
-	 *
-	 */
-	public function setClientSecretAttribute($secret)
-	{
-		return $this->attributes['client_secret'] = encrypt($secret);
-	}
-
-	/**
-	 * Decrypt Client Secrets as they're returned to API users
-	 *
-	 */
-	public function getClientSecretAttribute($secret)
-	{
-		return $this->attributes['client_secret'] = decrypt($secret);
-	}
-
 	/**
 	 *
 	 * @OA\Property(

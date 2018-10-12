@@ -7,23 +7,28 @@ function bookCodeConvert($code = null, $source_type = null, $destination_type = 
 
 function checkParam($param, $v4Style = null, $optional = false)
 {
+	$url_param = null;
 	if(strpos($param, '|') !== false) {
 		$url_params = explode('|',$param);
-		foreach($url_params as $param) {
-            if(isset($url_param)) {continue;}
-		    $url_param = (isset($_GET[$param])) ? $_GET[$param] : null;
+		foreach($url_params as $current_param) {
+			if($url_param) {continue;}
+		    $url_param = $_GET[$current_param] ?? null;
 		}
 	} else {
-		$url_param = (isset($_GET[$param])) ? $_GET[$param] : false;
+		$url_param = $_GET[$param] ?? false;
 	}
 
 	$url_header = request()->header($param);
-
 	if($v4Style) return $v4Style;
-	if(!$url_param AND !$url_header) {
-		if($optional != "optional") {
-			\Log::channel('errorlog')->error(["Missing Param '$param", 422]);
-			abort(422, "You need to provide the missing parameter '$param'. Please append it to the url or the request Header.");
+	if(!$url_param && !$url_header) {
+		$body_param = request()->input($param);
+		if(!$body_param) {
+			if($optional != 'optional') {
+				\Log::channel('errorlog')->error(["Missing Param '$param", 422]);
+				abort(422, "You need to provide the missing parameter '$param'. Please append it to the url or the request Header.");
+			}
+		} else {
+			return $body_param;
 		}
 		return null;
 	}

@@ -4,6 +4,7 @@ namespace App\Models\User\Study;
 
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFileset;
+use App\Models\Bible\Book;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -142,9 +143,6 @@ class Highlight extends Model
       *
       * @method static Highlight whereCreatedAt($value)
       * @property \Carbon\Carbon|null $created_at
-      */
-     protected $created_at;
-     /**
       *
 	  * @OA\Property(
 	  *   title="updated_at",
@@ -155,7 +153,6 @@ class Highlight extends Model
       * @method static Highlight whereUpdatedAt($value)
       * @property \Carbon\Carbon|null $updated_at
       */
-     protected $updated_at;
 
 
      public function color()

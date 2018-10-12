@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
 class Project extends Model
 {
 	protected $connection = 'dbp_users';
-	protected $table = 'dbp_users.projects';
+	protected $table = 'projects';
 	protected $fillable = ['id','name','url_avatar','url_avatar_icon','url_site','description','role','reset_path'];
 	public $keyType = 'string';
 	public $incrementing = false;
@@ -179,6 +179,11 @@ class Project extends Model
     public function highlights()
     {
     	return $this->hasMany(Highlight::class);
+    }
+
+    public function oauthProviders()
+    {
+    	return $this->hasMany(ProjectOauthProvider::class,'project_id','id');
     }
 
 }

@@ -4,6 +4,9 @@ namespace App\Models\User;
 
 use App\Models\Profile;
 use App\Models\Social;
+use App\Models\User\Study\Bookmark;
+use App\Models\User\Study\Highlight;
+use App\Models\User\Study\Note;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -204,27 +207,37 @@ class User extends Model implements Authenticatable
 	 */
 	public function accounts()
 	{
-		return $this->HasMany(Account::class);
+		return $this->hasMany(Account::class);
 	}
 
 	public function github()
 	{
-		return $this->HasOne(Account::class)->where('provider','github');
+		return $this->hasOne(Account::class)->where('provider','github');
 	}
 
 	public function google()
 	{
-		return $this->HasOne(Account::class)->where('provider','google');
+		return $this->hasOne(Account::class)->where('provider','google');
 	}
 
 	public function bitbucket()
 	{
-		return $this->HasOne(Account::class)->where('provider','bitbucket');
+		return $this->hasOne(Account::class)->where('provider','bitbucket');
 	}
 
 	public function notes()
 	{
-		return $this->HasMany(Note::class);
+		return $this->hasMany(Note::class);
+	}
+
+	public function bookmarks()
+	{
+		return $this->hasMany(Bookmark::class);
+	}
+
+	public function highlights()
+	{
+		return $this->hasMany(Highlight::class);
 	}
 
 	public function projectDeveloper()
@@ -234,17 +247,17 @@ class User extends Model implements Authenticatable
 
 	public function projectAdmin()
 	{
-		return $this->BelongsToMany(Project::class, 'project_members')->where('role','admin')->withPivot('role','subscribed');
+		return $this->belongsToMany(Project::class, 'project_members')->where('role','admin')->withPivot('role','subscribed');
 	}
 
 	public function projects()
 	{
-		return $this->BelongsToMany(Project::class, 'project_members')->wherePivot('subscribed',true)->withPivot('role','subscribed');
+		return $this->belongsToMany(Project::class, 'project_members')->wherePivot('subscribed',true)->withPivot('role','subscribed');
 	}
 
 	public function projectMembers()
 	{
-		return $this->HasMany(ProjectMember::class);
+		return $this->hasMany(ProjectMember::class);
 	}
 
 	// Roles
@@ -256,14 +269,14 @@ class User extends Model implements Authenticatable
 
 	public function role($role = null,$organization = null)
 	{
-		return $this->HasOne(Role::class)->where('role_id',$role)->when($organization, function($q) use ($organization) {
+		return $this->hasOne(Role::class)->where('role_id',$role)->when($organization, function($q) use ($organization) {
 			$q->where('organization_id', '=', $organization);
 		});
 	}
 
 	public function organizations()
 	{
-		return $this->HasManyThrough(Organization::class, Role::class, 'user_id', 'id', 'id', 'organization_id');
+		return $this->hasManyThrough(Organization::class, Role::class, 'user_id', 'id', 'id', 'organization_id');
 	}
 
 	public function permissions()
@@ -278,12 +291,7 @@ class User extends Model implements Authenticatable
 
 	public function profile()
 	{
-		return $this->hasOne(Profile::class);
-	}
-
-	public function profiles()
-	{
-		return $this->belongsToMany(Profile::class)->withTimestamps();
+		return $this->hasOne(Profile::class,'user_id','id');
 	}
 
 	public function hasProfile($name)
@@ -306,5 +314,6 @@ class User extends Model implements Authenticatable
 	{
 		return $this->profiles()->detach($profile);
 	}
+
 
 }
