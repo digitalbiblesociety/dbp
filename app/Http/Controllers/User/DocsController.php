@@ -19,9 +19,9 @@ class DocsController extends APIController
 		return view('docs.routes.index');
 	}
 
-	public function getting_started()
+	public function start()
 	{
-		return view('docs.getting_started');
+		return view('docs.guide.start');
 	}
 
 	public function swagger_v2()

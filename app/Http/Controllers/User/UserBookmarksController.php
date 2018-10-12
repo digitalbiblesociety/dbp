@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
+use App\Models\Bible\Book;
 use App\Models\User\Study\Bookmark;
 use App\Traits\CheckProjectMembership;
 use App\Transformers\UserBookmarksTransformer;
@@ -89,11 +90,15 @@ class UserBookmarksController extends APIController
 	    $user_is_member = $this->compareProjects(request()->user_id);
 	    if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
+	    $book = Book::where('id',request()->book_id)->orWhere('book_id',request()->book_id)->first();
+	    request()->book_id = $book->id;
+		request()->bible_id = request()->dam_id ?? request()->bible_id;
+
         $invalidBookmark = $this->validateBookmark();
         if($invalidBookmark) return $this->setStatusCode(422)->replyWithError($invalidBookmark);
 
         Bookmark::create(request()->all());
-        return $this->reply("Bookmark Created successfully");
+        return $this->reply('Bookmark Created successfully');
     }
 
     /**
@@ -115,7 +120,7 @@ class UserBookmarksController extends APIController
 	    $bookmark->fill(request()->all());
 	    $bookmark->save();
 
-	    return $this->reply("Bookmark Created successfully");
+	    return $this->reply('Bookmark Created successfully');
     }
 
     /**
@@ -132,7 +137,7 @@ class UserBookmarksController extends APIController
 	    $bookmark = Bookmark::where('id',$id)->where('user_id',$user_id)->first();
 	    $bookmark->delete();
 
-	    return $this->reply("bookmark successfully deleted");
+	    return $this->reply('bookmark successfully deleted');
     }
 
     private function validateBookmark()
@@ -141,8 +146,8 @@ class UserBookmarksController extends APIController
 		    'bible_id'    => 'required|exists:dbp.bibles,id',
 		    'user_id'     => 'required|exists:dbp_users.users,id',
 		    'book_id'     => 'required|exists:dbp.books,id',
-		    'chapter'     => 'required|max:150|min:1|integer',
-		    'verse_start' => 'required|max:177|min:1|integer'
+		    'chapter_id'  => 'required|max:150|min:1|integer',
+		    'verse_id'    => 'required|max:177|min:1|integer'
 		]);
 		if ($validator->fails()) return ['errors' => $validator->errors()];
     }

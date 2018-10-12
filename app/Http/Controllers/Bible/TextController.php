@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bible;
 use App\Helpers\AWS\Bucket;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleFilesetTag;
 use App\Models\Bible\Book;
 use App\Models\Bible\BibleEquivalent;
 use App\Models\Language\AlphabetFont;
@@ -85,12 +86,11 @@ class TextController extends APIController
 		$verse_end   = checkParam('verse_end', null, 'optional');
 		$formatted   = checkParam('bucket|bucket_id', null, 'optional');
 
-		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id',substr($fileset_id,0,-4))->orWhere('id',substr($fileset_id,0,-2))->first();
-		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
-
-		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? "download" : "api";
+		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id',substr($fileset_id,0,6))->first();
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
+		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? 'download' : 'api';
 		$access_control = $this->accessControl($this->key, $access_control_type);
-		if(!in_array($fileset->hash_id, $access_control->hashes)) return $this->setStatusCode(403)->replyWithError("Your API Key does not have access to this fileset");
+		if(!\in_array($fileset->hash_id, $access_control->hashes)) return $this->setStatusCode(403)->replyWithError('Your API Key does not have access to this fileset');
 		$bible = $fileset->bible->first();
 
 		$book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
@@ -101,9 +101,8 @@ class TextController extends APIController
 			$path   = 'text/' . $bible->id . '/' . $fileset->id . '/' . $book_id . $chapter . '.html';
 			$exists = Storage::disk($formatted)->exists($path);
 			if (!$exists) return $this->replyWithError("The path: $path did not result in a file");
-			return $this->reply(["path" => $this->signedUrl($path)], [], true);
+			return $this->reply(['path' => $this->signedUrl($path)], [], true);
 		}
-
 		// Fetch Verses
 		$table = strtoupper($fileset->id) . '_vpl';
 		$verses = DB::connection('sophia')->table($table)
@@ -134,34 +133,24 @@ class TextController extends APIController
 						     ->where('glyph_end.numeral_system_id', '=', $bible->numeral_system_id);
 					})
 					->select([
-						"canon_order",
+						'canon_order',
 						'books.name as book_name',
 						'bb.name as book_vernacular_name',
-                        "book as book_id",
-                        "chapter",
-                        "verse_start",
-                        "verse_end",
+                        'book as book_id',
+                        'books.id_osis as osis_id',
+						'books.protestant_order as protestant_order',
+                        'chapter',
+                        'verse_start',
+                        'verse_end',
                         'verse_text',
 						'glyph_chapter.glyph as chapter_vernacular',
 						'glyph_start.glyph as verse_start_vernacular',
 						'glyph_end.glyph as verse_end_vernacular',
 					])->get();
 
-		if (count($verses) == 0) {
-			return $this->setStatusCode(404)->replyWithError("No Verses Were found with the provided params");
-		}
+		if(\count($verses) === 0) return $this->setStatusCode(404)->replyWithError('No Verses Were found with the provided params');
 
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)->toArray());
-	}
-
-	public function formattedResponse()
-	{
-		$bible_id = checkParam('dam_id|fileset_id');
-		$book_id  = checkParam('book_id');
-		$chapter  = checkParam('chapter_id');
-
-		$url     = "https://s3-us-west-2.amazonaws.com/dbp-prod/text/" . $bible_id . "/" . $bible_id . "/" . $book_id . $chapter . ".html";
-		$chapter = Bucket::get($url);
 	}
 
 	/**
@@ -282,18 +271,19 @@ class TextController extends APIController
 			->select([
 				"canon_order",
 				'books.name as book_name',
+				'books.protestant_order as protestant_order',
 				'bb.name as book_vernacular_name',
-				"books.id as book_id",
-				"chapter",
-				"verse_start",
-				"verse_end",
+				'books.id as book_id',
+				'chapter',
+				'verse_start',
+				'verse_end',
 				'verse_text',
 				'glyph_chapter.glyph as chapter_vernacular',
 				'glyph_start.glyph as verse_start_vernacular',
 				'glyph_end.glyph as verse_end_vernacular',
 			])->get();
 
-		if($verses->count() == 0) return $this->setStatusCode(404)->replyWithError("No results found");
+		if($verses->count() === 0) return $this->setStatusCode(404)->replyWithError('No results found');
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
 	}
 
@@ -332,7 +322,7 @@ class TextController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @return View|JSON
+	 * @return JSON
 	 */
 	public function searchGroup()
 	{
@@ -347,7 +337,7 @@ class TextController extends APIController
 			$bible_id    = substr($bible_id, 0, 6);
 			$tableExists = \Schema::connection('sophia')->hasTable($bible_id . '_vpl');
 		}
-		if (!$tableExists) return $this->setStatusCode(404)->replyWithError("Table does not exist");
+		if (!$tableExists) return $this->setStatusCode(404)->replyWithError('Table does not exist');
 
 		$query  = DB::connection('sophia')->getPdo()->quote('+' . str_replace(' ', ' +', $query));
 		$verses = DB::connection('sophia')->table($bible_id . '_vpl')->select(DB::raw('MIN(verse_text) as verse_text, COUNT(verse_text) as resultsCount, book, chapter, verse_start, canon_order'))

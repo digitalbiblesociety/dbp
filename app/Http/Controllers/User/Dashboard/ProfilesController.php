@@ -8,14 +8,11 @@ use App\Models\User\User;
 use App\Notifications\SendGoodbyeEmail;
 use App\Traits\CaptureIpTrait;
 use File;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Session;
 use Image;
 use jeremykenedy\Uuid\Uuid;
 use Validator;
-use View;
 
 class ProfilesController extends APIController
 {
@@ -29,6 +26,7 @@ class ProfilesController extends APIController
      */
     public function __construct()
     {
+    	parent::__construct();
         $this->middleware('auth');
     }
 
@@ -58,9 +56,10 @@ class ProfilesController extends APIController
      *
      * @return Response
      */
-    public function show($id)
+    public function show()
     {
-		$user = User::with('profile')->where('id',$id)->firstOrFail();
+    	$user = \Auth::user();
+		$user = User::with('profile')->where('id',$user->id)->firstOrFail();
         return view('dashboard.profiles.show', compact('user'));
     }
 
@@ -71,9 +70,11 @@ class ProfilesController extends APIController
      *
      * @return mixed
      */
-    public function edit($username)
+    public function edit()
     {
-	    $user = User::with('profile')->wherename($username)->firstOrFail();
+	    $user = \Auth::user();
+	    $user = User::with('profile')->where('id',$user->id)->firstOrFail();
+
         return view('dashboard.profiles.edit',compact('user'));
     }
 
@@ -82,13 +83,11 @@ class ProfilesController extends APIController
      *
      * @param $username
      *
-     * @throws Laracasts\Validation\FormValidationException
-     *
      * @return mixed
      */
     public function update($username, Request $request)
     {
-	    $user = User::with('profile')->wherename($username)->firstOrFail();
+	    $user = User::with('profile')->where('id',$username)->firstOrFail();
         $input = Input::only('location', 'bio', 'twitter_username', 'github_username', 'avatar_status');
 
         $ipAddress = new CaptureIpTrait();

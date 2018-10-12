@@ -44,4 +44,14 @@ class WelcomeController extends APIController
 		return view('about.relations');
 	}
 
+	public function join()
+	{
+		return view('about.joining_user');
+	}
+
+	public function partnering()
+	{
+		return view('about.partnering');
+	}
+
 }

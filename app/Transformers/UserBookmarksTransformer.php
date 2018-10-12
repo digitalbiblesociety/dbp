@@ -32,13 +32,13 @@ class UserBookmarksTransformer extends TransformerAbstract
 	public function transform(Bookmark $bookmark)
 	{
 		return [
-			"id"			=> (int) $bookmark->id,
-			"bible_id"		=> (string) $bookmark->bible_id,
-			"book_id"		=> (string) $bookmark->book_id,
-			"chapter"		=> (int) $bookmark->chapter,
-			"verse"         => (int) $bookmark->verse_start,
-			"created_at"	=> (string) $bookmark->created_at->toDateTimeString(),
-			"updated_at"	=> (string) $bookmark->updated_at->toDateTimeString()
+			'id'			=> (int) $bookmark->id,
+			'bible_id'		=> (string) $bookmark->bible_id,
+			'book_id'		=> (string) $bookmark->book_id,
+			'chapter'		=> (int) $bookmark->chapter,
+			'verse'         => (int) $bookmark->verse_start,
+			'created_at'	=> (string) $bookmark->created_at->toDateTimeString(),
+			'updated_at'	=> (string) $bookmark->updated_at->toDateTimeString()
 		];
 	}
 }

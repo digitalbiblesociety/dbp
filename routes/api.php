@@ -32,12 +32,26 @@
 	Route::name('v2_video_path')->match(['get','options'],'video/path',                                                     'Organization\FilmsController@videoPath');
 	Route::name('v2_api_jesusFilms')->match(['get','options'],'library/jesusfilm',                                          'Organization\ResourcesController@jesusFilmListing');
 
+	// Bible.is API
+	Route::name('v2_users_banners_banner')->match(['get','options'], '/v2/banners/banner',                                  'Connections\V2Controllers\UsersController@banner');
+	Route::name('v2_users_user')->match(['get','options'], '/v2/users/user',                                                'Connections\V2Controllers\UsersController@user');
+	Route::name('v2_users_profile')->match(['post','options'], '/v2/users/profile',                                         'Connections\V2Controllers\UsersController@profile');
+	Route::name('v2_user_login')->match(['put','post','options'],'/v2/users/login',                                         'Connections\V2Controllers\UsersController@login');
+	Route::name('v2_annotations_list')->match(['get','options'],'/v2/annotations/list',                                     'Connections\V2Controllers\UsersController@annotationList');
+	Route::name('v2_annotations_bookmarks')->match(['get','options'],'/v2/annotations/bookmark',                            'Connections\V2Controllers\UsersController@annotationBookmark');
+	Route::name('v2_annotations_bookmarks_store')->match(['post','options'],'/v2/annotations/bookmark',                     'Connections\V2Controllers\UsersController@annotationBookmarkStore');
+	Route::name('v2_annotations_notes')->match(['get','options'], '/v2/annotations/note',                                   'Connections\V2Controllers\UsersController@annotationNote');
+	Route::name('v2_annotations_notes_store')->match(['post','options'], '/v2/annotations/note',                            'Connections\V2Controllers\UsersController@annotationNoteStore');
+	Route::name('v2_annotations_highlights')->match(['get','options'], '/v2/annotations/highlight',                         'Connections\V2Controllers\UsersController@annotationHighlight');
+	Route::name('v2_annotations_highlights_store')->match(['post','options','delete'], '/v2/annotations/highlight',         'Connections\V2Controllers\UsersController@annotationHighlightAlter');
+
 	// VERSION 3
 	// What can man do against such reckless hate
 	Route::prefix('v3')->group(function () {
 		Route::name('v3_query')->match(['get','options'],'search',                                                          'Connections\V3Controller@search');
 		Route::name('v3_books')->match(['get','options'],'books',                                                           'Connections\V3Controller@books');
 	});
+
 	// VERSION 4 | BIBLE
 	Route::name('v4_access_groups.index')->match(['get','options'],'access/groups',                                         'User\AccessGroupController@index');
 	Route::name('v4_access_groups.store')->post('access/groups/',                                                           'User\AccessGroupController@store');
@@ -122,7 +136,6 @@
 	Route::name('v4_bookmarks.destroy')->delete('users/{user_id}/bookmarks/{bookmark_id}',                                  'User\UserBookmarksController@destroy');
 
 	// VERSION 4 | USER HIGHLIGHTS
-
 	Route::name('v4_highlights.index')->match(['get','options'],'users/{user_id}/highlights',                               'User\UserHighlightsController@index');
 	Route::name('v4_highlights.store')->post('users/{user_id}/highlights',                                                  'User\UserHighlightsController@store');
 	Route::name('v4_highlights.update')->put('users/{user_id}/highlights/{highlight_id}',                                   'User\UserHighlightsController@update');
@@ -167,4 +180,3 @@
 	Route::name('v4_articles.update')->put('articles/{article_id}',                                                         'User\ArticlesController@update');
 	Route::name('v4_articles.store')->post('articles',                                                                      'User\ArticlesController@store');
 	Route::name('v4_articles.destroy')->delete('articles/{article_id}',                                                     'User\ArticlesController@destroy');
-

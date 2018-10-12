@@ -68,8 +68,6 @@ class LanguagesController extends APIController
 
 		$country       = checkParam('country', null, 'optional');
 		$code          = checkParam('code|iso', null, 'optional');
-		$l10n          = checkParam('l10n', null, 'optional') ?? "eng";
-		$l10n_language = Language::where('iso', $l10n)->first();
 
 		$autonym = checkParam('autonym', null, 'optional');
 
@@ -80,18 +78,16 @@ class LanguagesController extends APIController
 		$sort_by               = checkParam('sort_by', null, 'optional') ?? "name";
 		$has_bibles            = checkParam('has_bibles', null, 'optional');
 		$has_filesets          = checkParam('has_filesets', null, 'optional');
-		$bucket_id             = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$include_alt_names     = checkParam('include_alt_names', null, 'optional');
-		$hide_restricted       = checkParam('hide_restricted', null, 'optional') ?? true;
+		$hide_restricted       = checkParam('hide_restricted', null, 'optional');
 
 		$access_control = $this->accessControl($this->key, "api");
 
-		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $l10n . $l10n_language . $language_name_portion . $full_word . $family_only . $possibilities . $sort_by . $has_bibles . $has_filesets . $bucket_id . $include_alt_names;
+		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $language_name_portion . $full_word . $family_only . $possibilities . $sort_by . $has_bibles . $has_filesets . $include_alt_names;
+		\Cache::forget($cache_string);
 		$languages = \Cache::remember($cache_string, 1600, function () use (
 			$country,
 			$code,
-			$l10n,
-			$l10n_language,
 			$language_name_portion,
 			$full_word,
 			$family_only,
@@ -99,62 +95,49 @@ class LanguagesController extends APIController
 			$sort_by,
 			$has_bibles,
 			$has_filesets,
-			$bucket_id,
 			$include_alt_names,
 			$hide_restricted,
 			$access_control
 		) {
-			$languages = Language::select(['id', 'iso2B', 'iso', 'name'])->with('bibles.filesets')
-			->when($has_bibles, function ($query) use ($has_bibles) {
-			    return $query->has('bibles');
-			})
-			->when($has_filesets, function ($q) use ($bucket_id,$access_control,$hide_restricted) {
-			        $q->whereHas('bibles.filesets', function ($query) use ($bucket_id,$access_control,$hide_restricted) {
-			            if($bucket_id) $query->where('bucket_id', $bucket_id);
-				        if($hide_restricted) $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
-			        })->with(['bibles.filesets' => function ($query) use ($access_control, $hide_restricted) {
-						if($hide_restricted) $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
-					}]);
-				}, // if has_filesets is set to false
-			    function ($q) { $q->withCount('bibles');
-			})->when($country, function ($query) use ($country) {
-				return $query->whereHas('countries', function ($query) use ($country) {
-					$query->where('country_id', $country);
-				});
-			})->when($code, function ($query) use ($code) {
-				return $query->where('iso', $code);
-			})->when($include_alt_names, function ($query) use ($has_bibles) {
-				return $query->with('translations.translation_iso');
-			})->when($language_name_portion, function ($query) use ($language_name_portion) {
-				return $query->whereHas('translations', function ($query) use ($language_name_portion) {
-					$query->where('name', $language_name_portion);
-				})->orWhere('name', $language_name_portion);
-			})->when($sort_by, function ($query) use ($sort_by) {
-				return $query->orderBy($sort_by);
-			})->get();
 
-			if ($l10n) {
-				if (!$include_alt_names) {
-					$languages->load([
-						'translation' => function ($query) use ($l10n_language) {
-							$query->where('language_translation_id', $l10n_language->id);
-						},
-					]);
-				}
+			$languages = Language::select(['id', 'iso2B', 'iso', 'name'])
+				->withCount('bibles')
+				->withCount('filesets')
+				->when($has_bibles, function ($query) use ($has_bibles) {
+				    return $query->has('bibles');
+				})
+				->when($has_filesets, function ($query) use ($access_control,$hide_restricted) {
+					return $query->whereHas('filesets', function ($query) use($access_control,$hide_restricted) {
+						if($hide_restricted) $query->whereIn('hash_id', $access_control->hashes);
+					});
+				})->when($country, function ($query) use ($country) {
+					return $query->whereHas('countries', function ($query) use ($country) {
+						$query->where('country_id', $country);
+					});
+				})->when($code, function ($query) use ($code) {
+					return $query->where('iso', $code);
+				})->when($include_alt_names, function ($query) use ($has_bibles) {
+					return $query->with('translations.translation_iso');
+				})->when($language_name_portion, function ($query) use ($language_name_portion) {
+					return $query->whereHas('translations', function ($query) use ($language_name_portion) {
+						$query->where('name', $language_name_portion);
+					})->orWhere('name', $language_name_portion);
+				})->when($sort_by, function ($query) use ($sort_by) {
+					return $query->orderBy($sort_by);
+				})->get();
+
+			if (!$include_alt_names) {
+				$languages->load([
+					'translation' => function ($query) {
+						$query->where('language_translation_id', $GLOBALS['i18n_id']);
+					},
+				]);
 			}
 
-			if ($has_filesets AND $hide_restricted) {
-				foreach ($languages as $key => $language) {
-					foreach ($language->bibles as $bible_key => $bible) {
-						if ($bible->filesets->count() == 0) {
-							unset($languages[$key]->bibles[$bible_key]);
-						}
-					}
-				}
-			}
-
+			return $languages;
 			return fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray();
 		});
+
 		return $this->reply($languages);
 	}
 

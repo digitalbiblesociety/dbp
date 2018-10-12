@@ -190,10 +190,7 @@ class LibraryVolumeController extends APIController
 					// Version 2 does not support delivery via s3
 					->where('set_type_code','!=','text_format')
 					->when($dam_id, function ($q) use ($dam_id) {
-						$q->where('id', $dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2));
-					})
-					->when($dam_id, function($q, $access_control) {
-						$q->whereIn('id',$access_control->hashes);
+						$q->where('bible_filesets.id', $dam_id)->orWhere('bible_filesets.id',substr($dam_id,0,-4))->orWhere('bible_filesets.id',substr($dam_id,0,-2));
 					})
 					// Filter by media
 					->when($media, function ($q) use ($media) {
@@ -224,6 +221,7 @@ class LibraryVolumeController extends APIController
 					->when($language, function ($q, $language) {
 						$q->where('languages.iso',$language->iso);
 					})
+					->whereIn('bible_filesets.hash_id',$access_control->hashes)
 					->select([
 						'bible_translations.name as version_name',
 						'bibles.id as bible_id',
@@ -268,13 +266,8 @@ class LibraryVolumeController extends APIController
 				case 'OTNTP':
 				case 'NTPOTP': {
 					if($type_code == 'ET') {
-						if(str_contains($fileset->set_type_code,'drama')) {
-							$output[$fileset_id.'O2'.$type_code] = clone $fileset;
-							$output[$fileset_id.'N2'.$type_code] = clone $fileset;
-						} else {
-							$output[$fileset_id.'O1'.$type_code] = clone $fileset;
-							$output[$fileset_id.'N1'.$type_code] = clone $fileset;
-						}
+						$output[$fileset_id.'O2'.$type_code] = clone $fileset;
+						$output[$fileset_id.'N2'.$type_code] = clone $fileset;
 					} else {
 						$output[$fileset_id.'O'.$type_code] = clone $fileset;
 						$output[$fileset_id.'N'.$type_code] = clone $fileset;
@@ -285,7 +278,6 @@ class LibraryVolumeController extends APIController
 				case 'NT':
 				case 'NTP':    {
 					if($type_code == 'ET') {
-						$output[$fileset_id.'N1'.$type_code] = clone $fileset;
 						$output[$fileset_id.'N2'.$type_code] = clone $fileset;
 					} else {
 						$output[$fileset_id.'N'.$type_code] = clone $fileset;
@@ -296,7 +288,6 @@ class LibraryVolumeController extends APIController
 				case 'OT':
 				case 'OTP':    {
 					if($type_code == 'ET') {
-						$output[$fileset_id.'O1'.$type_code] = clone $fileset;
 						$output[$fileset_id.'O2'.$type_code] = clone $fileset;
 					} else {
 						$output[$fileset_id.'O'.$type_code] = clone $fileset;

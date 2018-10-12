@@ -2,12 +2,10 @@
 
 namespace App\Transformers;
 
-use App\Models\User\User;
-
 class UserTransformer extends BaseTransformer
 {
 
-	public function transform(User $user)
+	public function transform($user)
 	{
 		switch ($this->version) {
 			case "2":
@@ -37,12 +35,10 @@ class UserTransformer extends BaseTransformer
 			 *   )
 			 * )
 			 */
-			case "v4_user.index": {
+			case 'v4_user.index': {
 				return [
 					'id'        => $user->id,
 					'name'      => $user->name,
-					'nickname'  => $user->nickname,
-					'avatar'    => $user->avatar,
 					'email'     => $user->email
 				];
 			}

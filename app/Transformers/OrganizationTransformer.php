@@ -20,42 +20,42 @@ class OrganizationTransformer extends BaseTransformer
 	    $organization->description = $translation->description ?? '';
 	    $organization->tagline = $translation->description_short ?? '';
 
-	    switch ($this->version) {
-		    case "2":
-		    case "3": return $this->transformForV2($organization);
-		    case "4":
+	    switch ((int) $this->version) {
+		    case 2:
+		    case 3: return $this->transformForV2($organization);
+		    case 4:
 		    default:  return $this->transformForV4($organization);
 	    }
     }
 
 	public function transformForV2(Organization $organization) {
 		switch($this->route) {
-			case "v2_volume_organization_list": {
+			case 'v2_volume_organization_list': {
 				return [
-					"organization_id"   => $organization->id,
-					"organization_name" => $organization->name ?? "",
-					"number_volumes"    => $organization->bibles->count() ?? 0,
+					'organization_id'   => $organization->id,
+					'organization_name' => $organization->name ?? "",
+					'number_volumes'    => $organization->bibles->count() ?? 0,
 				];
 				break;
 			}
 
 			default: {
 				return [
-					"id"                  => $organization->id,
-					"name"                => (isset($organization->vernacularTranslation)) ? $organization->vernacularTranslation->name : '',
-					"english_name"        => $organization->name ?? "",
-					"description"         => (isset($organization->vernacularTranslation)) ? $organization->vernacularTranslation->description : '',
-					"english_description" => $organization->description_short ?? "",
-					"web_url"             => $organization->website,
-					"donation_url"        => "",
-					"enabled"             => "true",
-					"address"             => $organization->address,
-					"address2"            => null,
-					"city"                => null,
-					"state"               => null,
-					"country"             => null,
-					"zip"                 => null,
-					"phone"               => $organization->phone
+					'id'                  => $organization->id,
+					'name'                => $organization->vernacularTranslation ? $organization->vernacularTranslation->name : '',
+					'english_name'        => $organization->name ?? '',
+					'description'         => $organization->vernacularTranslation ? $organization->vernacularTranslation->description : '',
+					'english_description' => $organization->description_short ?? '',
+					'web_url'             => $organization->url_website,
+					'donation_url'        => $organization->url_donate,
+					'enabled'             => 'true',
+					'address'             => $organization->address,
+					'address2'            => null,
+					'city'                => null,
+					'state'               => null,
+					'country'             => null,
+					'zip'                 => null,
+					'phone'               => $organization->phone
 				];
 			}
 

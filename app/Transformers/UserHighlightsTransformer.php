@@ -35,15 +35,15 @@ class UserHighlightsTransformer extends TransformerAbstract
 		$this->checkColorPreference($highlight);
 
         return [
-	        "id"                => (int) $highlight->id,
-            "fileset_id"        => (string) $highlight->fileset_id,
-            "book_id"           => (string) $highlight->book_id,
-	        "book_name"         => (string) $highlight->book->name,
-            "chapter"           => (int) $highlight->chapter,
-            "verse_start"       => (int) $highlight->verse_start,
-            "highlight_start"   => (int) $highlight->highlight_start,
-            "highlighted_words" => (int) $highlight->highlighted_words,
-	        "highlighted_color" => $highlight->color
+	        'id'                => (int) $highlight->id,
+            'fileset_id'        => (string) $highlight->fileset_id,
+            'book_id'           => (string) $highlight->book_id,
+	        'book_name'         => (string) $highlight->book->name,
+            'chapter'           => (int) $highlight->chapter,
+            'verse_start'       => (int) $highlight->verse_start,
+            'highlight_start'   => (int) $highlight->highlight_start,
+            'highlighted_words' => (int) $highlight->highlighted_words,
+	        'highlighted_color' => $highlight->color
         ];
     }
 

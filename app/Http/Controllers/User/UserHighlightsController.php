@@ -146,7 +146,6 @@ class UserHighlightsController extends APIController
 		$highlight_validation = $this->validateHighlight();
 		if(\is_array($highlight_validation)) return $highlight_validation;
 
-
 		request()->highlighted_color = $this->selectColor(request()->highlighted_color);
 		Highlight::create([
 			'user_id'           => request()->user_id,
@@ -307,6 +306,11 @@ class UserHighlightsController extends APIController
 		return true;
 	}
 
+	/**
+	 * @param $color
+	 *
+	 * @return mixed
+	 */
 	private function selectColor($color)
 	{
 		$matches = [];
@@ -337,6 +341,11 @@ class UserHighlightsController extends APIController
 		return $highlightColor->id;
 	}
 
+	/**
+	 * @param $rgb
+	 *
+	 * @return array|mixed
+	 */
 	private function rgbParse($rgb) {
 		$removals = ['rgba','rgb','(',')'];
 		$rgb = str_replace($removals,'',$rgb);
@@ -345,6 +354,12 @@ class UserHighlightsController extends APIController
 		return $rgb;
 	}
 
+	/**
+	 * @param     $hex
+	 * @param int $alpha
+	 *
+	 * @return mixed
+	 */
 	private function hexToRgb($hex, $alpha = 1) {
 		$hex            = str_replace('#', '', $hex);
 		$length         = \strlen($hex);
@@ -355,6 +370,13 @@ class UserHighlightsController extends APIController
 		return $rgba;
 	}
 
+	/**
+	 * @param $hue
+	 * @param $saturation
+	 * @param $lightness
+	 *
+	 * @return array
+	 */
 	private function hslToRgb( $hue, $saturation, $lightness ){
 		$c = ( 1 - abs( 2 * $lightness - 1 ) ) * $saturation;
 		$x = $c * ( 1 - abs(fmod( $hue / 60, 2 ) - 1 ) );

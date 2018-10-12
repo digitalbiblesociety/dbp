@@ -5,9 +5,12 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\APIController;
 use App\Mail\ProjectVerificationEmail;
 use App\Models\User\Project;
+use App\Models\User\ProjectOauthProvider;
 use App\Models\User\ProjectMember;
 use App\Models\User\Account;
 use App\Models\User\User;
+use App\Models\User\Key;
+
 
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
@@ -27,17 +30,6 @@ class UsersController extends APIController
 	use AuthenticatesUsers;
 
 	protected $redirectAfterLogout = '/';
-
-	public function __construct(Request $request)
-	{
-		parent::__construct($request);
-		$this->user = (isset($_GET['key'])) ? \App\Models\User\Key::where('key',$_GET['key'])->first()->user : \Auth::user();
-		if(isset($this->user)) {
-			$this->project_limited = ($this->user->admin or $this->user->archivist) ? false : true;
-		} else {
-			$this->project_limited = true;
-		}
-	}
 
 	/**
 	 * Returns an index of all users within the system
@@ -67,11 +59,9 @@ class UsersController extends APIController
 	{
 		if(!$this->api) return view('dashboard.users.index');
 
-		$users = User::with('organizations.currentTranslation')->when($this->project_limited, function ($q) {
-			$q->whereHas('projects', function ($query) {
-				$query->whereIn('project_members.project_id', $this->user->developer->pluck('id'));
-			});
-		})->get();
+		$users = \DB::table('users')
+			->join('project_members','project_members.user_id','users.id')
+			->select(['users.id','users.name','users.email'])->get();
 
 		return $this->reply(fractal($users,UserTransformer::class));
 	}
@@ -112,7 +102,7 @@ class UsersController extends APIController
 				$query->whereIn('project_members.project_id', $this->user->developer->pluck('id'));
 			});
 		})->where('id', $id)->first();
-		if(!$user) return $this->replyWithError("user not found");
+		if(!$user) return $this->replyWithError('user not found');
 
 		if(!$this->api) return view('dashboard.users.show', compact('user'));
 		return $this->reply(fractal($user, UserTransformer::class));
@@ -167,7 +157,7 @@ class UsersController extends APIController
 	 */
 	public function login(Request $request)
 	{
-
+		return "didn't redirect";
 		if (isset($request->social_provider_id)) {
 			$account = Account::where('provider_user_id', $request->social_provider_user_id)->where('provider_id', $request->social_provider_id)->first();
 			if ($account) return $this->reply($account->user);
@@ -178,15 +168,12 @@ class UsersController extends APIController
 			return redirect()->back()->withErrors(['errors' => 'No user found for the email provided']);
 		}
 
-		if($user->password == "needs_resetting") return $this->setStatusCode(428)->replyWithError(trans('api.users_errors_428_password'));
+		$loginSuccessful =  $this->guard()->attempt(['email' =>$user->email, 'password' => md5($request->password)], $request->filled('remember'));
+		if(!$loginSuccessful) $loginSuccessful = $this->guard()->attempt(['email' =>$user->email, 'password' => $request->password], $request->filled('remember'));
 
-		if (Hash::check($request->password, $user->password)) {
-			Auth::guard()->login($user, true);
-			Auth::guard('administrator')->login($user, true);
-			Auth::guard('user')->login($user, true);
+		if ($loginSuccessful) {
 			if($this->api) return $this->reply($user);
-			//return redirect()->route('public.home');
-			return view('dashboard.home');
+			return $this->sendLoginResponse($request);
 		}
 
 		$this->incrementLoginAttempts($request);
@@ -309,6 +296,9 @@ class UsersController extends APIController
 	 */
 	public function update(Request $request, $id)
 	{
+		if((int) $request->v === 1) {
+			return redirect('http://api.dbp.test/login?reply=json');
+		}
 		// Validate Request
 		$invalidRequest = $this->validateUser();
 		if($invalidRequest) return $invalidRequest;
@@ -448,7 +438,7 @@ class UsersController extends APIController
 	 * @return mixed
 	 *
 	 */
-	public function redirectToProvider($provider)
+	public function redirectToProvider($provider = null)
 	{
 		if ($this->api) {
 			if ($provider == "twitter") return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
@@ -474,8 +464,9 @@ class UsersController extends APIController
 		return Socialite::driver($provider)->redirect();
 	}
 
-	public function handleProviderCallback($provider)
+	public function handleProviderCallback($provider = null)
 	{
+		if(!$provider) $provider = request()->remote_type;
 		$user = \Socialite::driver($provider)->stateless()->user();
 		$user = $this->createOrGetUser($user, $provider);
 		\Auth::login($user);
@@ -531,6 +522,13 @@ class UsersController extends APIController
 		if(!isset($this->user)) return $this->setStatusCode(401)->replyWithError(trans('api.auth_key_validation_failed'));
 		if(!isset($this->user->canAlterUsers) AND !isset($this->user->developer)) return $this->setStatusCode(401)->replyWithError(trans('api.auth_user_validation_failed'));
 		return false;
+	}
+
+	private function project_limited()
+	{
+		$this->user = isset($_GET['key']) ? Key::where('key',$_GET['key'])->first()->user : \Auth::user();
+		if(isset($this->user)) return !($this->user->admin or $this->user->archivist);
+		return true;
 	}
 
 	/**

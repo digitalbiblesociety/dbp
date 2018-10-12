@@ -39,7 +39,7 @@ class UsersManagementController extends APIController
         }
         $roles = Role::all();
 
-        return View('usersmanagement.show-users', compact('users', 'roles'));
+        return view('dashboard.users.show-users', compact('users', 'roles'));
     }
 
     /**
@@ -55,7 +55,7 @@ class UsersManagementController extends APIController
             'roles' => $roles,
         ];
 
-        return view('usersmanagement.create-user')->with($data);
+        return view('dashboard.users.create-user')->with($data);
     }
 
     /**
@@ -127,7 +127,7 @@ class UsersManagementController extends APIController
     {
         $user = User::find($id);
 
-        return view('usersmanagement.show-user')->withUser($user);
+        return view('dashboard.users.show-user')->withUser($user);
     }
 
     /**
@@ -152,7 +152,7 @@ class UsersManagementController extends APIController
             'currentRole' => $currentRole,
         ];
 
-        return view('usersmanagement.edit-user')->with($data);
+        return view('dashboard.users.edit-user')->with($data);
     }
 
     /**
