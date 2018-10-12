@@ -24,13 +24,13 @@ class APIController extends Controller
 	 *     description="A Bible API",
 	 *     version="4.0.0",
 	 *     title="Digital Bible Platform",
-	 *     termsOfService="http://bible.build/terms/",
+	 *     termsOfService="http://dbp4.org/terms/",
 	 *     @OA\Contact(email="jon@dbs.org"),
 	 *     @OA\License(name="Apache 2.0",url="http://www.apache.org/licenses/LICENSE-2.0.html")
 	 * )
 	 *
 	 * @OA\Server(
-	 *     url="https://api.bible.build",
+	 *     url="https://api.dbp4.org",
 	 *     description="Live Server",
 	 *     @OA\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
 	 * )
@@ -89,35 +89,21 @@ class APIController extends Controller
 
 	public function __construct()
 	{
-		$url           = explode(".", url()->current());
+		$url           = explode('.', url()->current());
 		$subdomain     = array_shift($url);
 
 		if (str_contains($subdomain,'api')) {
 			$this->api = true;
-			$this->v   = checkParam('v');
+			$this->v   = (int) checkParam('v');
 			$this->key = checkParam('key');
 			$keyExists = Key::find($this->key);
-			if (!isset($keyExists)) abort(403, "You need to provide a valid API key");
+			if(!$keyExists) abort(403, 'You need to provide a valid API key');
 
 			// i18n
 			$i18n = checkParam('i18n',null,'optional') ?? 'eng';
 			$GLOBALS['i18n_iso'] = $i18n;
 			$GLOBALS['i18n_id'] = Language::where('iso',$i18n)->select('iso','id')->first()->id;
-
-			if (isset($this->v)) {
-				switch ($this->v) {
-					case "2": {
-						$this->serializer = new ArraySerializer();
-						break;
-					}
-					case "3": {
-						$this->serializer = new ArraySerializer();
-						break;
-					}
-					default:
-						$this->serializer = new DataArraySerializer();
-				}
-			}
+			$this->serializer = (($this->v === 1) || ($this->v === 2) || ($this->v === 3)) ? new ArraySerializer() : new DataArraySerializer();
 		}
 	}
 
@@ -209,19 +195,17 @@ class APIController extends Controller
 		$faces = ['⤜(ʘ_ʘ)⤏', '¯\_ツ_/¯', 'ᗒ ͟ʖᗕ', 'ᖗ´• ꔢ •`ᖘ', '|▰╭╮▰|'];
 
 
-		if ($this->v == 2) {
-			return [];
-		}
+		if((int) $this->v === 2 && (env('APP_ENV') != 'local')) return [];
 
 		$error = [
 				'message'     => $message,
 				'status code' => $status,
-				'status'      => "Fail",
+				'status'      => 'Fail',
 				'face'        => array_random($faces)
 		];
 		if($action) $error['action'] = $action;
 
-		return response()->json(['error' => $error], $this->getStatusCode(), [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'text/json');
+		return response()->json(['error' => $error], $this->getStatusCode(), [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 	}
 
 	function utf8_for_xml($string)
