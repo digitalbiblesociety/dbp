@@ -81,7 +81,7 @@ class TextController extends APIController
 		// Fetch and Assign $_GET params
 		$fileset_id  = checkParam('dam_id|fileset_id', $bible_url_param);
 		$book_id     = checkParam('book_id', $book_url_param);
-		$chapter     = checkParam('chapter_id', $chapter_url_param);
+		$chapter     = checkParam('chapter_id', $chapter_url_param, 'optional');
 		$verse_start = checkParam('verse_start', null, 'optional') ?? 1;
 		$verse_end   = checkParam('verse_end', null, 'optional');
 		$formatted   = checkParam('bucket|bucket_id', null, 'optional');
@@ -106,10 +106,13 @@ class TextController extends APIController
 		// Fetch Verses
 		$table = strtoupper($fileset->id) . '_vpl';
 		$verses = DB::connection('sophia')->table($table)
-		            ->where([['book', $book->id_usfx], ['chapter', $chapter]])
+		            ->where('book', $book->id_usfx)
 		            ->when($verse_start, function ($query) use ($verse_start) {
 			            return $query->where('verse_end', '>=', $verse_start);
 		            })
+					->when($chapter, function ($query) use ($chapter) {
+						return $query->where('chapter', $chapter);
+					})
 		            ->when($verse_end, function ($query) use ($verse_end) {
 			            return $query->where('verse_end', '<=', $verse_end);
 		            })
