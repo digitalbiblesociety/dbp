@@ -46,8 +46,6 @@ class LoginController extends Controller
 	public function login(Request $request)
 	{
 		$user = User::where('email',$request->email)->first();
-		$request->password = md5($request->password);
-
 		$this->validateLogin($request);
 
 		if ($this->hasTooManyLoginAttempts($request)) {
@@ -56,8 +54,8 @@ class LoginController extends Controller
 			return $this->sendLockoutResponse($request);
 		}
 
-		$loginSuccessful = $this->guard()->attempt(['email' =>$user->email, 'password' => $request->password], $request->filled('remember'));
-		if(!$loginSuccessful) $loginSuccessful =  $this->guard()->attempt(['email' =>$user->email, 'password' => md5($request->password)], $request->filled('remember'));
+		$loginSuccessful =  $this->guard()->attempt(['email' =>$user->email, 'password' => md5($request->password)], $request->filled('remember'));
+		if(!$loginSuccessful) $loginSuccessful = $this->guard()->attempt(['email' =>$user->email, 'password' => $request->password], $request->filled('remember'));
 
 		if($loginSuccessful) return $this->sendLoginResponse($request);
 
