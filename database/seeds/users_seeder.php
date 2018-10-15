@@ -20,13 +20,12 @@ class users_seeder extends Seeder
      */
     public function run()
     {
-    	$this->seedUsers();
-	    $this->seedBookmarks();
-	    $this->seedAccounts();
-	    $this->seedNotes();
-	    $this->seedHighlights();
+    	//$this->seedUsers();
+	    //$this->seedBookmarks();
+	    //$this->seedAccounts();
+	    //$this->seedNotes();
+	    //$this->seedHighlights();
     }
-
 
     public function seedUsers()
     {
@@ -43,7 +42,7 @@ class users_seeder extends Seeder
 				    'last_name'         => $user->last_name,
 				    'token'             => str_random(24),
 				    'email'             => $user->email,
-				    'activated'         => intval($user->confirmed),
+				    'activated'         => (int) $user->confirmed,
 			    ];
 			    User::create($currentUser);
 		    }
@@ -62,10 +61,11 @@ class users_seeder extends Seeder
 	    $books = Book::select(['id_osis','id_usfx','id'])->get();
 
 	    \DB::connection('dbp_users_v2')
-	       ->table('highlight')->where('id','>',$first_highlight_id)->orderBy('id')->where('status','current')
+	       ->table('highlight')->where('id', '>', $first_highlight_id)->orderBy('id')
 	       ->chunk(500, function ($highlights) use($filesets, $skippedFilesets, $colorEquivalents, $books) {
 		    foreach($highlights as $highlight) {
-			    $fileset = $filesets->where('id', $highlight->dam_id)->first();
+			    $fileset = $filesets->where('id',substr($highlight->dam_id,0, 6))->first();
+			    if(!$fileset) $fileset = $filesets->where('id', $highlight->dam_id)->first();
 			    if(!$fileset) $fileset = $filesets->where('id',substr($highlight->dam_id,0,-4))->first();
 			    if(!$fileset) $fileset = $filesets->where('id',substr($highlight->dam_id,0,-2))->first();
 			    if(!$fileset) {continue;}
@@ -81,6 +81,11 @@ class users_seeder extends Seeder
 			    	continue;
 			    }
 
+			    $tableExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
+			    if(!$tableExists) {
+				    echo "\nMissing table: " . $fileset->id.'_vpl';
+			    	continue;
+			    }
 		    	$verse = \DB::connection('sophia')
 			                ->table($fileset->id.'_vpl')->select(['verse_text','chapter'])->where('book',$book->id_usfx)
 			                ->where('chapter',$highlight->chapter_id)->where('verse_start',$highlight->verse_id)->first();
@@ -136,7 +141,7 @@ class users_seeder extends Seeder
 					"book_id"       => $books[$note->book_id],          //  => "Ezra"
 					"chapter"       => $note->chapter_id,               //  => "1"
 					"verse_start"   => $note->verse_id,                 //  => "1"
-					"notes"         => bcrypt($note->note),             //  => "Note 1"
+					"notes"         => encrypt($note->note),             //  => "Note 1"
 					'created_at'    => Carbon::createFromTimeString($note->created)->toDateString(),
 					'updated_at'    => Carbon::createFromTimeString($note->updated)->toDateString(),
 				]);
