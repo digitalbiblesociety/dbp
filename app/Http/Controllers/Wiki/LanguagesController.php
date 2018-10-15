@@ -63,79 +63,38 @@ class LanguagesController extends APIController
 	 */
 	public function index()
 	{
-		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
+		if (env('APP_ENV') == 'local') ini_set('memory_limit', '700M');
 		if (!$this->api) return view('wiki.languages.index');
 
 		$country       = checkParam('country', null, 'optional');
 		$code          = checkParam('code|iso', null, 'optional');
 
-		$autonym = checkParam('autonym', null, 'optional');
-
-		$language_name_portion = checkParam('name|language_name', null, 'optional');
-		$full_word             = checkParam('full_word', null, 'optional');
-		$family_only           = checkParam('family_only', null, 'optional');
-		$possibilities         = checkParam('possibilities', null, 'optional');
-		$sort_by               = checkParam('sort_by', null, 'optional') ?? "name";
-		$has_bibles            = checkParam('has_bibles', null, 'optional');
-		$has_filesets          = checkParam('has_filesets', null, 'optional');
+		$sort_by               = checkParam('sort_by', null, 'optional') ?? 'name';
 		$include_alt_names     = checkParam('include_alt_names', null, 'optional');
-		$hide_restricted       = checkParam('hide_restricted', null, 'optional');
+		$show_restricted       = checkParam('show_only_restricted', null, 'optional');
 
-		$access_control = $this->accessControl($this->key, "api");
+		$access_control = $this->accessControl($this->key, 'api');
 
-		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $language_name_portion . $full_word . $family_only . $possibilities . $sort_by . $has_bibles . $has_filesets . $include_alt_names;
-		\Cache::forget($cache_string);
-		$languages = \Cache::remember($cache_string, 1600, function () use (
-			$country,
-			$code,
-			$language_name_portion,
-			$full_word,
-			$family_only,
-			$possibilities,
-			$sort_by,
-			$has_bibles,
-			$has_filesets,
-			$include_alt_names,
-			$hide_restricted,
-			$access_control
-		) {
-
-			$languages = Language::select(['id', 'iso2B', 'iso', 'name'])
-				->withCount('bibles')
-				->withCount('filesets')
-				->when($has_bibles, function ($query) use ($has_bibles) {
-				    return $query->has('bibles');
-				})
-				->when($has_filesets, function ($query) use ($access_control,$hide_restricted) {
-					return $query->whereHas('filesets', function ($query) use($access_control,$hide_restricted) {
-						if($hide_restricted) $query->whereIn('hash_id', $access_control->hashes);
+		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $show_restricted . $include_alt_names;
+		if(env('APP_ENV') == 'local') \Cache::forget($cache_string);
+		$languages = \Cache::remember($cache_string, 1600, function () use ($country, $code, $sort_by, $show_restricted, $access_control) {
+			$languages = Language::select(['id', 'glotto_id', 'iso', 'name'])->with('autonym')
+				->when(!$show_restricted, function ($query) use($access_control) {
+					$query->whereHas('filesets', function ($query) use($access_control) {
+						$query->whereIn('hash_id', $access_control->hashes);
 					});
-				})->when($country, function ($query) use ($country) {
+				    $query->has('bibles');
+				})
+				->when($country, function ($query) use ($country) {
 					return $query->whereHas('countries', function ($query) use ($country) {
 						$query->where('country_id', $country);
 					});
 				})->when($code, function ($query) use ($code) {
 					return $query->where('iso', $code);
-				})->when($include_alt_names, function ($query) use ($has_bibles) {
-					return $query->with('translations.translation_iso');
-				})->when($language_name_portion, function ($query) use ($language_name_portion) {
-					return $query->whereHas('translations', function ($query) use ($language_name_portion) {
-						$query->where('name', $language_name_portion);
-					})->orWhere('name', $language_name_portion);
 				})->when($sort_by, function ($query) use ($sort_by) {
 					return $query->orderBy($sort_by);
-				})->get();
-
-			if (!$include_alt_names) {
-				$languages->load([
-					'translation' => function ($query) {
-						$query->where('language_translation_id', $GLOBALS['i18n_id']);
-					},
-				]);
-			}
-
-			return $languages;
-			return fractal()->collection($languages)->serializeWith($this->serializer)->transformWith(new LanguageTransformer())->toArray();
+				})->withCount('bibles')->withCount('filesets')->get();
+			return fractal($languages,new LanguageTransformer(),$this->serializer);
 		});
 
 		return $this->reply($languages);

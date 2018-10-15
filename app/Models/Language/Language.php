@@ -155,18 +155,6 @@ class Language extends Model
 
 	/**
 	 * @OA\Property(
-	 *     title="Name",
-	 *     description="The name of the language in the vernacular of that language",
-	 *     type="string"
-	 * )
-	 *
-	 * @property string $autonym
-	 * @method static whereAutonym($value)
-	 */
-	protected $autonym;
-
-	/**
-	 * @OA\Property(
 	 *     title="Maps",
 	 *     description="The general area where the language can be found",
 	 *     type="string"
