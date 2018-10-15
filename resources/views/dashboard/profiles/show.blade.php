@@ -2,14 +2,43 @@
 
 @section('head')
     <title>{{ $user->name }}'s Profile</title>
+    <style>
+        #profile-banner {
+            background-color:#222;
+            height:200px;
+        }
+
+        .circle {
+            width:150px;
+            height:150px;
+            background-color:#ccc;
+            border-radius: 100%;
+            margin: 15px auto;
+        }
+    </style>
 @endsection
 
 @section('content')
 	<div class="container">
 
+
+        <section id="profile-banner">
+            <div class="columns">
+                <div class="column">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </section>
+
 				<div class="card">
 					<div class="card-header">{{ trans('profile.showProfileTitle', ['username' => $user->name]) }}</div>
 					<div class="card-body">
+
+                        <div class="columns">
+                            <div class="column">
+
+                            </div>
+                        </div>
 
 						<dl class="user-info">
 							<dt>{{ trans('profile.showProfileUsername') }}</dt>
@@ -26,9 +55,9 @@
 							<dt>{{ trans('profile.showProfileEmail') }}</dt>
 							<dd>{{ $user->email }}</dd>
 
-							@if ($user->profile)
+							@if (isset($user->profile))
 
-								@if ($user->profile->location)
+								@if($user->profile->location)
 									<dt>{{ trans('profile.showProfileLocation') }}</dt>
 									<dd>{{ $user->profile->location }} <br />
 
@@ -59,15 +88,11 @@
 
 						@if ($user->profile)
 							@if (Auth::user()->id == $user->id)
-
 								{!! HTML::icon_link(URL::to('/profile/'.Auth::user()->name.'/edit'), 'fa fa-fw fa-cog', trans('app.editProfile'), array('class' => 'btn btn-small btn-info btn-block')) !!}
-
 							@endif
 						@else
-
 							<p>{{ trans('profile.noProfileYet') }}</p>
 							{!! HTML::icon_link(URL::to('/profile/'.Auth::user()->name.'/edit'), 'fa fa-fw fa-plus ', trans('app.createProfile'), array('class' => 'btn btn-small btn-info btn-block')) !!}
-
 						@endif
 
 					</div>

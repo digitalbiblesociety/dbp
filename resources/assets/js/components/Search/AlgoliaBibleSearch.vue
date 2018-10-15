@@ -7,9 +7,9 @@
 					<ais-search-box>
 						<ais-input placeholder="Search product by name or reference..." :classNames="{'ais-input': 'input'}" />
 					</ais-search-box>
-					<div class="columns mt10">
-
-						<ais-stats class="has-text-grey-light is-4 column" />
+					<div class="columns mt5 has-text-centered">
+						<ais-stats class="column is-6 has-text-grey-light" />
+						<span class="column is-6 has-text-grey-light">Powered By Algolia</span>
 					</div>
 				</div>
 			</div>
@@ -35,16 +35,18 @@
 						<template slot-scope="{ result }">
 
 							<div class="column is-6">
+								<a v-bind:href=" '/wiki/bibles/' + result.id">
 								<div class="box hit">
-									<a v-bind:href=" '/wiki/bibles/' + result.id">
+
 										<p class="title is-5"><ais-highlight :result="result" attribute-name="name"/></p>
 										<p class="subtitle is-6"><ais-highlight v-if="result.vname" :result="result" attribute-name="vname"/></p>
-									</a>
+
 									<time>{{result.date}}</time>
 									<span class="iso">{{ result.script }} | {{ result.iso }}</span>
 									{{ result.language }}
 									{{ result.types }}
 								</div>
+								</a>
 							</div>
 
 						</template>

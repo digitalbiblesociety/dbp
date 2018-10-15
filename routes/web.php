@@ -74,7 +74,7 @@ Route::group(['middleware' => ['web', 'activity']], function () {
 	Route::name('swagger_v2')->get('docs/swagger/v2',                        'User\DocsController@swagger_v2');
 	Route::name('history')->get('docs/history',                              'User\DocsController@history');
 	Route::name('docs.sdk')->get('docs/sdk',                                 'User\DocsController@sdk');
-	Route::name('docs_team')->get('docs/getting-started',                    'User\DocsController@getting_started');
+	Route::name('docs.getting_started')->get('guides/getting-started',       'User\DocsController@start');
 	Route::name('docs_team')->get('docs/team',                               'User\DocsController@team');
 	Route::name('docs_bible_equivalents')->get('docs/bibles/equivalents',    'User\DocsController@bibleEquivalents');
 	Route::name('docs_bible_books')->get('docs/bibles/books',                'User\DocsController@books');
@@ -117,16 +117,26 @@ Route::group(['middleware' => ['auth', 'activated', 'activity']], function () {
 Route::group(['middleware' => ['auth', 'activated', 'currentUser', 'activity']], function () {
 
     // User Profile and Account Routes
-    Route::resource('profile', 'User\Dashboard\ProfilesController', ['only' => ['show', 'edit', 'update', 'create']]);
-    Route::name('{username}')->put('profile/{username}/updateUserAccount', 'User\Dashboard\ProfilesController@updateUserAccount');
-    Route::name('{username}')->put('profile/{username}/updateUserPassword', 'User\Dashboard\ProfilesController@updateUserPassword');
-    Route::name('{username}')->delete('profile/{username}/deleteUserAccount', 'User\Dashboard\ProfilesController@deleteUserAccount');
-    Route::get('images/profile/{id}/avatar/{image}', 'User\Dashboard\ProfilesController@userProfileAvatar');   // Route to show user avatar
+    //Route::resource('profile', 'User\Dashboard\ProfilesController', ['only' => ['show', 'edit', 'update', 'create']]);
+	Route::name('profile.home')->get('profile',                                 'User\Dashboard\ProfilesController@edit');
+	Route::name('profile.update')->put('profile',                               'User\Dashboard\ProfilesController@update');
+	//Route::name('profile.update')->put('profile',                               'User\Dashboard\ProfilesController@update');
+
+    Route::name('{username}')->put('profile/{username}/updateUserAccount',      'User\Dashboard\ProfilesController@updateUserAccount');
+    Route::name('{username}')->put('profile/{username}/updateUserPassword',     'User\Dashboard\ProfilesController@updateUserPassword');
+    Route::name('{username}')->delete('profile/{username}/deleteUserAccount',   'User\Dashboard\ProfilesController@deleteUserAccount');
+    Route::get('images/profile/{id}/avatar/{image}',                            'User\Dashboard\ProfilesController@userProfileAvatar');   // Route to show user avatar
     Route::post('avatar/upload', ['as' => 'avatar.upload', 'uses' => 'User\Dashboard\ProfilesController@upload']); // Route to upload user avatar.
 });
 
 // Registered, activated, and is admin routes.
 Route::group(['middleware' => ['auth', 'activated', 'role:admin', 'activity']], function () {
+
+	//
+	Route::name('dashboard.tasks')->get('/dashboard/{role}/tasks' ,            'User\Dashboard\TaskController@index');
+	Route::name('dashboard.dbl.index')->get('/dashboard/dbp/entries' ,         'Connections\DigitalBibleLibraryController@index');
+	Route::name('dashboard.dbl.create')->get('/dashboard/dbp/entry/create' ,   'Connections\DigitalBibleLibraryController@create');
+	Route::name('dashboard.dbl.store')->post('/dashboard/dbp/entry' ,          'Connections\DigitalBibleLibraryController@store');
 
 	// Dashboards
 	Route::get('/activity',                         'User\Dashboard\LaravelLoggerController@showAccessLog')->name('activity');

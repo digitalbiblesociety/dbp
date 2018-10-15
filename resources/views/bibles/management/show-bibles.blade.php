@@ -61,10 +61,6 @@
 
                     <div class="card-body">
 
-                        @if(config('biblesmanagement.enableSearchUsers'))
-                            @include('layouts.partials.search-users-form')
-                        @endif
-
                         <div class="table-responsive users-table">
                             <table class="table table-striped table-sm data-table">
                                 <caption id="user_count">

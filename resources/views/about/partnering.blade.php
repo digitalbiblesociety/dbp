@@ -2,6 +2,7 @@
 
 @section('head')
 
+
 @endsection
 
 @section('content')
@@ -46,10 +47,6 @@
                                 <a class="button" href="{{ route('contact.create') }}">Get in touch</a>
                             </div>
                         </div>
-                    </article>
-
-                    <article>
-
                     </article>
 
     </div>

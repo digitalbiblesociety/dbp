@@ -6,10 +6,7 @@
         'title'     => trans('app.site_name'),
         'subtitle'  => trans('app.site_description'),
         'size'      => 'medium',
-        'image'     => '/images/dbp_icon.svg',
-        'actions'   => [
-            '/docs/swagger/v4/' => trans('app.site_getting_started')
-        ]
+        'image'     => '/images/dbp_icon.svg'
     ])
 
 <section class="container">
@@ -19,12 +16,12 @@
             <div class="card is-shady">
                 <div class="card-content">
                     <div class="content">
-                        <h4>Expansible Architecture</h4>
-                        <p>The OBA API joins together multiple organization's content via Amazon's S3 Buckets and it's easy to add your bucket to the list.</p>
+                        <h4>{{ trans('app.expansible_card_title') }}</h4>
+                        <p>{{ trans('app.expansible_card_description') }}</p>
                     </div>
                 </div>
                 <footer class="card-footer">
-                    <a href="/api/buckets/" class="card-footer-item">Learn More</a>
+                    <a href="{{ route('about.partnering') }}" class="card-footer-item">{{ trans('app.expansible_card_action') }}</a>
                 </footer>
             </div>
         </div>
@@ -33,14 +30,13 @@
             <div class="card is-shady">
                 <div class="card-content">
                     <div class="content">
-                        <h4>Open Source</h4>
-                        <p>Published with an MIT license, the code for the DBP is open to the community of bible developers to build plugins and extensions for.</p>
+                        <h4>{{ trans('app.open_source_card_title') }}</h4>
+                        <p>{{ trans('app.open_source_card_description') }}</p>
                     </div>
                 </div>
                 <footer class="card-footer">
-                    <a href="/about/license" class="card-footer-item">License</a>
+                    <a href="{{ route('license') }}" class="card-footer-item">License</a>
                     <a target="_blank" href="https://github.com/digitalbiblesociety/dbp" class="card-footer-item">Github</a>
-                    <a href="/about/contributing" href="#" class="card-footer-item">Contributing</a>
                 </footer>
             </div>
         </div>
@@ -49,12 +45,12 @@
             <div class="card is-shady">
                 <div class="card-content">
                     <div class="content">
-                        <h4>Open Api 3.0</h4>
-                        <p>Injest the api with any of our SDKs or any system compatible with the OAS 3.0 spec and be up and running in 5 minutes</p>
+                        <h4>{{ trans('app.open_api_card_title') }}</h4>
+                        <p>{{ trans('app.open_api_card_description') }}</p>
                     </div>
                 </div>
                 <footer class="card-footer">
-                    <a href="/docs/" class="card-footer-item">Learn More</a>
+                    <a href="{{ route('docs.getting_started') }}" class="card-footer-item">{{ trans('app.learn_more_action') }}</a>
                 </footer>
             </div>
         </div>

@@ -4,8 +4,8 @@
 		<section class="hero is-primary">
 			<div class="hero-body">
 				<div class="container">
-					<h1 class="title">{{api.info.title}}</h1>
-					<small v-if="api.info.version">{{api.info.version}}</small>
+					<h1 class="title">{{ api.info.title }}</h1>
+					<small v-if="api.info.version">{{ api.info.version }}</small>
 				</div>
 			</div>
 		</section>
@@ -13,17 +13,15 @@
 			<div class="container box">
 						<div class="columns">
 							<div class="column is-one-quarter">
-
-								<bulma-accordion :dropdown="true" :icon="'caret'">
+								<bulma-accordion :dropdown="true" :icon="'caret'" id="docs-nav">
 									<div v-for="(entries, tag) in tags" :key="tag">
-
 										<bulma-accordion-item>
 											<h4 slot="title">{{ tag }}</h4>
 											<div slot="content">
 												<ul class="menu-list">
 													<li><a v-for="(entry, i) in entries" :key="i" v-on:click="select(entry)" style="display: block">
-														<span v-bind:class="{entry: entry.method}">{{entry.method}}</span>
-														<b class="md-title" :class="{'md-accent':selectedEntry === entry}" v-html="entry.path.replace(/\//g,'<b>/</b>')"></b>
+														<b :class="{'has-text-primary':selectedEntry === entry}" v-html="entry.path.replace(/\//g,'<b>/</b>')"></b>
+														<div v-bind:class="{entry: entry.method}">{{ entry.method }}</div>
 													</a></li>
 												</ul>
 											</div>
@@ -117,15 +115,9 @@
 				(entry.parameters || []).forEach(p => {
 					this.currentRequest.params[p.name] = (p.in === 'query' && this.queryParams && this.queryParams[p.name]) || (p.in === 'header' && this.headers && this.headers[p.name]) || null
 					if (!newParams[p.name]) {
-						if (p.schema && p.schema.enum) {
-							newParams[p.name] = p.schema.enum[0]
-						}
-						if (p.schema && p.schema.type === 'array') {
-							newParams[p.name] = []
-						}
-						if (p.example) {
-							newParams[p.name] = p.example
-						}
+						if (p.schema && p.schema.enum) newParams[p.name] = p.schema.enum[0]
+						if (p.schema && p.schema.type === 'array') newParams[p.name] = []
+						if (p.example) newParams[p.name] = p.example
 					}
 				})
 				this.currentRequest.params = newParams

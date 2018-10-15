@@ -33,6 +33,17 @@ $input-shadow: none;
 
 // forms
 
+#docs-nav .menu-list a {
+  position: relative;
+}
+
+#docs-nav .menu-list a .entry {
+  position: absolute;
+  left: -18px;
+  top:8px;
+  display: inline-block;
+}
+
 .select,
 .select select,
 .v-select,

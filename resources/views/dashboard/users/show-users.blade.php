@@ -1,75 +1,39 @@
 @extends('layouts.app')
 
-@section('template_title')
-    @lang('usersmanagement.showing-all-users')
-@endsection
-
-@section('template_linked_css')
-    @if(config('laravelusers.enabledDatatablesJs'))
-        <link rel="stylesheet" type="text/css" href="{{ config('laravelusers.datatablesCssCDN') }}">
-    @endif
-    <style type="text/css" media="screen">
-        .users-table {
-            border: 0;
-        }
-        .users-table tr td:first-child {
-            padding-left: 15px;
-        }
-        .users-table tr td:last-child {
-            padding-right: 15px;
-        }
-        .users-table.table-responsive,
-        .users-table.table-responsive table {
-            margin-bottom: 0;
-        }
-    </style>
-@endsection
-
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header">
 
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
+    @include('layouts.partials.banner', [
+        'title' => 'All Users'
+    ])
 
-                            <span id="card_title">
-                                @lang('usersmanagement.showing-all-users')
-                            </span>
+    <div class="container">
+        <div class="columns">
+            <a href="/users/create"><i class="fa fa-fw fa-user-plus" aria-hidden="true"></i> @lang('usersmanagement.buttons.create-new')</a>
+            <a href="/users/deleted"><i class="fa fa-fw fa-group" aria-hidden="true"></i> @lang('usersmanagement.show-deleted-users')</a>
+            <div class="row">
 
-                            <div class="btn-group pull-right btn-group-xs">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa fa-ellipsis-v fa-fw" aria-hidden="true"></i>
-                                    <span class="sr-only">
-                                        @lang('usersmanagement.users-menu-alt')
-                                    </span>
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="/users/create">
-                                        <i class="fa fa-fw fa-user-plus" aria-hidden="true"></i>
-                                        @lang('usersmanagement.buttons.create-new')
-                                    </a>
-                                    <a class="dropdown-item" href="/users/deleted">
-                                        <i class="fa fa-fw fa-group" aria-hidden="true"></i>
-                                        @lang('usersmanagement.show-deleted-users')
-                                    </a>
-                                </div>
-                            </div>
+                <form method="POST" action="{{ route('search-users') }}" id="search_users">
+                    {!! csrf_field() !!}
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input class="input" type="text" name="user_search_box" placeholder="Find a User">
+                        </div>
+                        <div class="control">
+                            <a class="button is-info">Search</a>
                         </div>
                     </div>
+                </form>
+
+            </div>
+
+        </div>
+
+        <div class="columns">
 
                     <div class="card-body">
 
-                        @if(config('usersmanagement.enableSearchUsers'))
-                            @include('layouts.partials.search-users-form')
-                        @endif
-
                         <div class="table-responsive users-table">
                             <table class="table table-striped table-sm data-table">
-                                <caption id="user_count">
-                                    {{ trans_choice('usersmanagement.users-table.caption', 1, ['userscount' => $users->count()]) }}
-                                </caption>
                                 <thead class="thead">
                                     <tr>
                                         <th>@lang('usersmanagement.users-table.id')</th>
@@ -110,7 +74,13 @@
                                             <td class="hidden-sm hidden-xs hidden-md">{{$user->created_at}}</td>
                                             <td class="hidden-sm hidden-xs hidden-md">{{$user->updated_at}}</td>
                                             <td>
-                                                {!! Form::open(array('url' => 'users/' . $user->id, 'class' => '', 'data-toggle' => 'tooltip', 'title' => 'Delete')) !!}
+                                                <form action="users/{{ $user->id }}" method="POST">
+                                                    {{ method_field('DELETE') }}
+                                                    {{ csrf_field() }}
+                                                    <input type="input">
+                                                </form>
+
+                                                {!! Form::open(array('url' => , 'class' => '', 'data-toggle' => 'tooltip', 'title' => 'Delete')) !!}
                                                     {!! Form::hidden('_method', 'DELETE') !!}
                                                     {!! Form::button(trans('usersmanagement.buttons.delete'), array('class' => 'btn btn-danger btn-sm','type' => 'button', 'style' =>'width: 100%;' ,'data-toggle' => 'modal', 'data-target' => '#confirmDelete', 'data-title' => 'Delete User', 'data-message' => 'Are you sure you want to delete this user ?')) !!}
                                                 {!! Form::close() !!}
@@ -142,7 +112,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+
         </div>
     </div>
 

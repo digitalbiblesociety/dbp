@@ -2,7 +2,7 @@
 
 return [
 
-
+	'success'                                => 'success',
 	'errors_404'                             => '404 Not Found.',
 
 	// Utility Routes
@@ -18,10 +18,12 @@ return [
 	// Bibles Routes
 	'bibles_errors_404'                      => 'The specified bible_id `:bible_id` could not be found',
 	'bible_fileset_errors_404'               => 'The specified fileset id `:id` could not be found.',
+	'bible_fileset_errors_404_bucket'        => 'No Fileset Found in the :bucket_id Bucket for the provided params',
 	'bible_fileset_errors_401'               => 'The Fileset exists, but no Permissions were found for your current key',
 	'bible_filesets_errors_checkback'        => 'The data for this Fileset is still being updated, please check back later',
 	'bible_filesets_delete_200'              => 'The fileset `:id` has been successfully deleted',
 	'bible_books_errors_404'                 => 'No book found for the given ID',
+	'bible_file_errors_404'                  => 'The specified file id `:id` could not be found.',
 
 	// Wiki Routes
 	'wiki_authorization_failed'              => 'Your account does not have Archivist level permissions',
@@ -37,6 +39,10 @@ return [
 	'users_errors_422_email_nonexistent_host'=> 'The provided email host does not exist',
 	'users_errors_401_project'               => 'The user given is not a user of the project_id provided.',
 	'users_errors_428_password'              => 'Please reset your password',
+	'users_errors_404_highlights'            => 'Highlight not found',
+
+	'users_highlights_create_200'            => 'Highlight successfully created',
+	'users_highlights_update_200'            => 'Highlight successfully updated',
 
 	'user_creation_permission_failed'        => 'You do not have permission to create users',
 	'user_notes_store_200'                   => 'Note successfully created',
@@ -44,6 +50,7 @@ return [
 	'project_users_404'                      => 'The specified user is not a member of the project_id provided.',
 	'projects_destroy_200'                   => 'Projects',
 	'projects_developer_not_a_member'        => 'The project ID provided is not associated with your developer key',
+	'projects_users_not_connected'           => 'This user needs to be connected with one of your projects.',
 	'projects_users_needs_to_connect'        => 'This user needs to be connected with this project. A verification email has been sent to them',
 
 	'organizations_relationship_members_404' => 'No membership connection found.',

@@ -17,7 +17,7 @@
             </ul>
         </div>
 
-        <form method="POST" action="{{ route('profile.update', $user->name) }}" class="form-horizontal" role="form">
+        <form method="POST" action="{{ route('profile.update', $user->id) }}" class="form-horizontal" role="form">
             {{ csrf_field() }}
             {{ method_field('PATCH') }}
 
