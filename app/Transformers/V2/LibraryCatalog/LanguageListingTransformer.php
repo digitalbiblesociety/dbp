@@ -89,7 +89,7 @@ class LanguageListingTransformer extends BaseTransformer
 				    'regional_lang_name'   => $language->autonym ?? $language->name,
 				    'family_id'            => strtoupper($language->iso),
 				    'primary_country_name' => (string) $language->primaryCountry->name,
-				    'country_image'        => 'https://dbp-mcdn.s3.us-west-2.amazonaws.com/flags/full/80X60/'.strtolower($language->country_id).'.png',
+				    'country_image'        => 'https://dbp-mcdn.s3.us-west-2.amazonaws.com/flags/full/80x60/'.strtolower($language->country_id).'.png',
 				    'country_additional'   => strtoupper($language->countries->pluck('id')->implode(': '))
 			    ];
 		    }
