@@ -121,6 +121,20 @@ class OrganizationsController extends APIController
 		return $this->reply(fractal()->collection($organization->bibles)->transformWith(new BibleTransformer())->toArray());
 	}
 
+	public function compare($source_organization,$destination_organization)
+	{
+		$source_organization = Organization::with('bibles')->where('slug',$source_organization)->first();
+		if(!$source_organization) return $this->setStatusCode(404)->replyWithError('source_organization not found');
+		$source_bibles = $source_organization->bibles->pluck('id');
+
+		$destination_organization = Organization::with('bibles')->where('slug',$destination_organization)->first();
+		if(!$destination_organization) return $this->setStatusCode(404)->replyWithError('destination_organization not found');
+		$destination_bibles = $destination_organization->bibles->pluck('id');
+
+		return $this->reply($destination_bibles->diff($source_bibles)->flatten());
+
+	}
+
 	/**
 	 * Show the form for editing the specified resource.
 	 *

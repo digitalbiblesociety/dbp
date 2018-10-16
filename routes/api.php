@@ -34,7 +34,7 @@
 
 	// Bible.is API
 	Route::name('v2_users_banners_banner')->match(['get','options'], '/v2/banners/banner',                                  'Connections\V2Controllers\UsersController@banner');
-	Route::name('v2_users_user')->match(['get','options'], '/v2/users/user',                                                'Connections\V2Controllers\UsersController@user');
+	Route::name('v2_users_user')->match(['get','post','options'], '/v2/users/user',                                         'Connections\V2Controllers\UsersController@user');
 	Route::name('v2_users_profile')->match(['post','options'], '/v2/users/profile',                                         'Connections\V2Controllers\UsersController@profile');
 	Route::name('v2_user_login')->match(['put','post','options'],'/v2/users/login',                                         'Connections\V2Controllers\UsersController@login');
 	Route::name('v2_annotations_list')->match(['get','options'],'/v2/annotations/list',                                     'Connections\V2Controllers\UsersController@annotationList');
@@ -142,6 +142,7 @@
 	Route::name('v4_highlights.destroy')->delete('users/{user_id}/highlights/{highlight_id}',                               'User\UserHighlightsController@destroy');
 	Route::name('v4_organizations.all')->match(['get','options'],'organizations/',                                          'Organization\OrganizationsController@index');
 	Route::name('v4_organizations.one')->match(['get','options'],'organizations/{organization_id}',                         'Organization\OrganizationsController@show');
+	Route::name('v4_organizations.compare')->match(['get','options'],'organizations/compare/{org1}/to/{org2}',              'Organization\OrganizationsController@compare');
 	Route::name('v4_api.versions')->match(['get','options'],'/api/versions',                                                'HomeController@versions');
 	Route::name('v4_api.versionLatest')->match(['get','options'],'/api/versions/latest',                                    'HomeController@versionLatest');
 	Route::name('v4_api.replyTypes')->match(['get','options'],'/api/versions/replyTypes',                                   'HomeController@versionReplyTypes');
