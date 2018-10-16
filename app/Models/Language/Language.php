@@ -8,7 +8,6 @@ use App\Models\Bible\Video;
 use App\Models\Country\CountryLanguage;
 use App\Models\Country\CountryRegion;
 use Illuminate\Database\Eloquent\Model;
-
 use App\Models\Country\Country;
 use App\Models\Resource\Resource;
 
@@ -19,11 +18,11 @@ use App\Models\Resource\Resource;
  * @property-read Alphabet[] $alphabets
  * @property-read Bible[] $bibleCount
  * @property-read Bible[] $bibles
- * @property-read LanguageClassification[] $classifications
- * @property-read LanguageCode[] $codes
  * @property-read Country[] $countries
- * @property-read LanguageTranslation $currentTranslation
+ * @property-read LanguageCode[] $codes
  * @property-read LanguageDialect[] $dialects
+ * @property-read LanguageTranslation $currentTranslation
+ * @property-read LanguageClassification[] $classifications
  * @property-read Video[] $films
  * @property-read AlphabetFont[] $fonts
  * @property-read LanguageCode $iso639_2

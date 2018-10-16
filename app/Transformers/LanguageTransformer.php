@@ -114,7 +114,7 @@ class LanguageTransformer extends BaseTransformer
 			 * )
 			 */
 			case 'v4_languages.all': {
-				return [
+				$output = [
 					'id'        => $language->id,
 					'glotto_id' => $language->glotto_id,
 					'iso'       => $language->iso,
@@ -123,6 +123,8 @@ class LanguageTransformer extends BaseTransformer
 					'bibles'    => $language->bibles_count,
 					'filesets'  => $language->filesets_count,
 				];
+				if($language->relationLoaded('translations')) $output['translations'] = $language->translations->pluck('name','id');
+				return $output;
 			}
 
 		}

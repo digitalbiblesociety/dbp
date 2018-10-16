@@ -66,9 +66,8 @@ class LanguagesController extends APIController
 		if (env('APP_ENV') == 'local') ini_set('memory_limit', '700M');
 		if (!$this->api) return view('wiki.languages.index');
 
-		$country       = checkParam('country', null, 'optional');
-		$code          = checkParam('code|iso', null, 'optional');
-
+		$country               = checkParam('country', null, 'optional');
+		$code                  = checkParam('code|iso', null, 'optional');
 		$sort_by               = checkParam('sort_by', null, 'optional') ?? 'name';
 		$include_alt_names     = checkParam('include_alt_names', null, 'optional');
 		$show_restricted       = checkParam('show_only_restricted', null, 'optional');
@@ -77,13 +76,18 @@ class LanguagesController extends APIController
 
 		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $show_restricted . $include_alt_names;
 		if(env('APP_ENV') == 'local') \Cache::forget($cache_string);
-		$languages = \Cache::remember($cache_string, 1600, function () use ($country, $code, $sort_by, $show_restricted, $access_control) {
+		$languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $code, $sort_by, $show_restricted, $access_control) {
+
+			//$include_alt_names
 			$languages = Language::select(['id', 'glotto_id', 'iso', 'name'])->with('autonym')
 				->when(!$show_restricted, function ($query) use($access_control) {
 					$query->whereHas('filesets', function ($query) use($access_control) {
 						$query->whereIn('hash_id', $access_control->hashes);
 					});
 				    $query->has('bibles');
+				})
+				->when($include_alt_names, function ($query) {
+					return $query->with('translations');
 				})
 				->when($country, function ($query) use ($country) {
 					return $query->whereHas('countries', function ($query) use ($country) {
