@@ -30,6 +30,16 @@ class CreateLanguagesTable extends Migration
 			});
         }
 
+	    if(!Schema::connection('dbp')->hasTable('language_status')) {
+		    Schema::connection('dbp')->create('language_status', function (Blueprint $table) {
+			    $table->char('id',2)->primary();
+			    $table->string('title');
+			    $table->text('description')->nullable();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
+		    });
+	    }
+
 		if(!Schema::connection('dbp')->hasTable('languages')) {
 			Schema::connection('dbp')->create('languages', function (Blueprint $table) {
 				$table->increments('id');
@@ -54,13 +64,15 @@ class CreateLanguagesTable extends Migration
 				$table->text('description')->nullable();
 				$table->float('latitude', 11, 7)->nullable();
 				$table->float('longitude', 11, 7)->nullable();
-				$table->text('status')->nullable();
-				$table->char('country_id', 2)->nullable();
+				$table->char('status',2)->nullable()->unsigned();
+				$table->foreign('status')->references('id')->on('language_status')->onUpdate('cascade');
+				$table->text('status_notes')->nullable();
 				$table->timestamp('created_at')->useCurrent();
 				$table->timestamp('updated_at')->useCurrent();
 			});
 	        DB::connection('dbp')->statement('ALTER TABLE languages ADD CONSTRAINT CHECK (iso IS NOT NULL OR glotto_id IS NOT NULL)');
         }
+
 		    if(!Schema::connection('dbp')->hasTable('language_translations') ) {
 		        Schema::connection('dbp')->create('language_translations', function (Blueprint $table) {
 				    $table->increments('id');

@@ -109,11 +109,9 @@ class LanguagesController extends APIController
 	public function create()
 	{
 		$user = \Auth::user();
-		if (!$user->archivist) {
-			return $this->setStatusCode(401)->replyWithError("Sorry you must have Archivist Level Permissions");
-		}
-		$swagger = fetchSwaggerSchema('Language', 'V4');
-		return view('languages.create', compact('swagger'));
+		if(!$user->roles->where('name','archivist')->first()) return $this->setStatusCode(401)->replyWithError(trans('api.auth_wiki_validation_failed'));
+		//$swagger = fetchSwaggerSchema('Language', 'V4');
+		return view('dashboard.wiki.languages.create');
 	}
 
 	/**
@@ -265,7 +263,6 @@ class LanguagesController extends APIController
 			'iso1'       => ($request->method() == "POST") ? 'alpha|max:2|unique:dbp.languages,iso1' : 'alpha|max:2',
 			'name'       => 'required|string|max:191',
 			'autonym'    => 'required|string|max:191',
-			'level'      => 'string|max:191|nullable',
 			'maps'       => 'string|max:191|nullable',
 			'population' => 'integer',
 			'latitude'   => 'regex:' . $latLongRegex,

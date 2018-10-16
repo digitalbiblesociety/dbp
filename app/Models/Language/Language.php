@@ -47,7 +47,7 @@ class Language extends Model
 	protected $connection = 'dbp';
 	public $table = 'languages';
     protected $hidden = ['pivot'];
-    protected $fillable = ['glotto_id','iso','name','level','maps','development','use','location','area','population','population_notes','notes','typology','writing','description','family_pk','father_pk','child_dialect_count','child_family_count','child_language_count','latitude','longitude','pk','status','country_id','scope'];
+    protected $fillable = ['glotto_id','iso','name','maps','development','use','location','area','population','population_notes','notes','typology','writing','description','family_pk','father_pk','child_dialect_count','child_family_count','child_language_count','latitude','longitude','pk','status_id','status_notes','country_id','scope'];
 
 	/**
 	 * ID
