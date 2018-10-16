@@ -100,12 +100,12 @@ class BiblesController extends APIController
 		$media              = checkParam('media', null, 'optional');
 		$language           = checkParam('language', null, 'optional');
 		$full_word          = checkParam('full_word|language_name', null, 'optional');
-		$iso                = checkParam('language_family_code|language_code', null, 'optional');
+		$language_code      = checkParam('language_family_code|language_code', null, 'optional');
 		$updated            = checkParam('updated', null, 'optional');
 		$organization       = checkParam('organization_id', null, 'optional');
 		$sort_by            = checkParam('sort_by', null, 'optional');
 		$sort_dir           = checkParam('sort_dir', null, 'optional') ?? 'asc';
-		$fileset_filter     = boolval(checkParam('filter_by_fileset', null, 'optional')) ?? true;
+		$fileset_filter     = checkParam('filter_by_fileset', null, 'optional') ?? true;
 		$include_alt_names  = checkParam('include_alt_names', null, 'optional');
 		$include_regionInfo = checkParam('include_region_info', null, 'optional');
 		$country            = checkParam('country', null, 'optional');
@@ -116,9 +116,9 @@ class BiblesController extends APIController
 
 		$access_control = $this->accessControl($this->key, "api");
 
-		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $iso . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $bucket . $access_control->string . $paginate. $filter;
+		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $language_code . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $bucket . $access_control->string . $paginate. $filter;
 		\Cache::forget($cache_string);
-		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $filter, $language, $full_word, $iso, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $bucket, $include_alt_names, $include_regionInfo, $access_control, $paginate) {
+		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $filter, $language, $full_word, $language_code, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $bucket, $include_alt_names, $include_regionInfo, $access_control, $paginate) {
 			$bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($bucket, $access_control, $hide_restricted) {
 				if($bucket) $query->where('bucket_id', $bucket);
 				if($hide_restricted) $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
@@ -142,8 +142,8 @@ class BiblesController extends APIController
 			        $query->where('countries.id', $country);
 			    });
 			})
-			->when($iso, function ($q) use ($iso) {
-				$language = Language::where('iso',$iso)->first();
+			->when($language_code, function ($q) use ($language_code) {
+				$language = Language::where('iso',$language_code)->orWhere('id',$language_code)->first();
 			    $q->where('language_id', $language->id);
 			})
 			->when($organization, function ($q) use ($organization) {
