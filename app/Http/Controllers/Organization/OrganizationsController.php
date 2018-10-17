@@ -136,7 +136,7 @@ class OrganizationsController extends APIController
 		$destination_links = BibleLink::where('organization_id',$destination_organization->id)->get()->pluck('bible_id');
 		$destination = $destination_bibles->merge($destination_links);
 
-		return $this->reply($destination->diff($source)->flatten());
+		return $this->reply(array_flatten(array_sort($destination->diff($source)->unique())));
 
 	}
 
