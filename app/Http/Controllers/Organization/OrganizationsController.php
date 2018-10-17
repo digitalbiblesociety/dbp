@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\APIController;
+use App\Models\Bible\BibleLink;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Transformers\OrganizationTransformer;
@@ -25,7 +26,7 @@ class OrganizationsController extends APIController
 			return view('dashboard.organizations.index', compact('user'));
 		}
 
-		$i10n        = checkParam('iso', null, 'optional') ?? "eng";
+		$i10n        = checkParam('iso', null, 'optional') ?? 'eng';
 		$i10n_language     = Language::where('iso',$i10n)->first();
 		if(!$i10n_language) return $this->setStatusCode(404)->replyWithError(trans('api.i10n_errors_404', ['id' => $i10n]));
 		$membership  = checkParam('membership', null, 'optional');
@@ -126,12 +127,16 @@ class OrganizationsController extends APIController
 		$source_organization = Organization::with('bibles')->where('slug',$source_organization)->first();
 		if(!$source_organization) return $this->setStatusCode(404)->replyWithError('source_organization not found');
 		$source_bibles = $source_organization->bibles->pluck('id');
+		$source_links = BibleLink::where('organization_id',$source_organization->id)->get()->pluck('bible_id');
+		$source = $source_bibles->merge($source_links);
 
 		$destination_organization = Organization::with('bibles')->where('slug',$destination_organization)->first();
 		if(!$destination_organization) return $this->setStatusCode(404)->replyWithError('destination_organization not found');
 		$destination_bibles = $destination_organization->bibles->pluck('id');
+		$destination_links = BibleLink::where('organization_id',$destination_organization->id)->get()->pluck('bible_id');
+		$destination = $destination_bibles->merge($destination_links);
 
-		return $this->reply($destination_bibles->diff($source_bibles)->flatten());
+		return $this->reply($destination->diff($source)->flatten());
 
 	}
 
