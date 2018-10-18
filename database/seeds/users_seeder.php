@@ -20,11 +20,11 @@ class users_seeder extends Seeder
      */
     public function run()
     {
-    	//$this->seedUsers();
-	    //$this->seedBookmarks();
-	    //$this->seedAccounts();
-	    //$this->seedNotes();
-	    //$this->seedHighlights();
+	    // $this->seedBookmarks();
+	    // $this->seedAccounts();
+	    // $this->seedNotes();
+	    // $this->seedUsers();
+	    $this->seedHighlights();
     }
 
     public function seedUsers()
@@ -32,21 +32,23 @@ class users_seeder extends Seeder
 	    $first_user = \App\Models\User\User::orderBy('id','DESC')->first();
 	    $first_user_id = $first_user->id ?? 0;
 
-	    \DB::connection('dbp_users_v2')->table('user')->where('id','>',$first_user_id)->orderBy('id')->chunk(500, function ($users) {
-		    foreach($users as $user) {
-			    $currentUser = [
-				    'id'                => $user->id,
-				    'name'              => $user->username ?? $user->email,
-				    'password'          => bcrypt($user->password),
-				    'first_name'        => $user->first_name,
-				    'last_name'         => $user->last_name,
-				    'token'             => str_random(24),
-				    'email'             => $user->email,
-				    'activated'         => (int) $user->confirmed,
-			    ];
-			    User::create($currentUser);
-		    }
-	    });
+	    \DB::connection('dbp_users_v2')->table('user')
+			->where('id','>',$first_user_id)->orderBy('id')
+	        ->chunk(500, function ($users) {
+		        foreach($users as $user) {
+				    $currentUser = [
+					    'id'                => $user->id,
+					    'name'              => $user->username ?? $user->email,
+					    'password'          => bcrypt($user->password),
+					    'first_name'        => $user->first_name,
+					    'last_name'         => $user->last_name,
+					    'token'             => str_random(24),
+					    'email'             => $user->email,
+					    'activated'         => (int) $user->confirmed,
+				    ];
+				    User::create($currentUser);
+		        }
+	        });
     }
 
     public function seedHighlights()
@@ -90,6 +92,12 @@ class users_seeder extends Seeder
 			                ->table($fileset->id.'_vpl')->select(['verse_text','chapter'])->where('book',$book->id_usfx)
 			                ->where('chapter',$highlight->chapter_id)->where('verse_start',$highlight->verse_id)->first();
 		    	if(!isset($verse)) {
+		    		dd([
+		    			'table' => $fileset->id.'_vpl',
+					    'book' => $book->id_usfx,
+					    'chapter' => $highlight->chapter_id,
+					    'verse_start' => $highlight->verse_id
+				    ]);
 		    		echo "\nMissing Fileset: " . $fileset->id.'_vpl';
 		    		break;
 			    }

@@ -157,7 +157,6 @@ class UsersController extends APIController
 	 */
 	public function login(Request $request)
 	{
-		return "didn't redirect";
 		if (isset($request->social_provider_id)) {
 			$account = Account::where('provider_user_id', $request->social_provider_user_id)->where('provider_id', $request->social_provider_id)->first();
 			if ($account) return $this->reply($account->user);
