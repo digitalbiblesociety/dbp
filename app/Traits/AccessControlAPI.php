@@ -11,17 +11,17 @@ trait AccessControlAPI {
 	 *
 	 * Filters out filesets by the access control tables
 	 *
-	 * @param $api_key - The User's API key
+	 * @param string $api_key - The User's API key
 	 * @param string $type
 	 *
 	 * @return object
 	 */
-	public function accessControl($api_key,$type = "api") {
+	public function accessControl($api_key, $type='api') {
 
 		$user_location = checkParam('ip_address', null, 'optional');
 		$user_location = geoip($user_location);
-		if(!isset($user_location->iso_code)) $user_location->iso_code = "unset";
-		if(!isset($user_location->continent)) $user_location->continent = "unset";
+		if(!isset($user_location->iso_code)) $user_location->iso_code   = 'unset';
+		if(!isset($user_location->continent)) $user_location->continent = 'unset';
 
 		$access_type = AccessType::where('name',$type)->first();
 

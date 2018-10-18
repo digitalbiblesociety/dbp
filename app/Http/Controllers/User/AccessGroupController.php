@@ -4,11 +4,15 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
 use App\Models\User\AccessGroup;
+use App\Traits\AccessControlAPI;
 use App\Transformers\AccessGroupTransformer;
 use Illuminate\Http\Request;
 
 class AccessGroupController extends APIController
 {
+
+	use AccessControlAPI;
+
 	/**
 	 * Update the specified resource in storage.
 	 *
@@ -132,6 +136,13 @@ class AccessGroupController extends APIController
 			return fractal($access_group, new AccessGroupTransformer());
 		});
 		return $this->reply($access_group);
+	}
+
+	public function current()
+	{
+		$current_access = $this->accessControl($this->key, 'api');
+		$current_access->hash_count = count($current_access->hashes);
+		return $this->reply($current_access);
 	}
 
 	/**

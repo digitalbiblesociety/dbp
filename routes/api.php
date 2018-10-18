@@ -56,6 +56,7 @@
 	Route::name('v4_access_groups.index')->match(['get','options'],'access/groups',                                         'User\AccessGroupController@index');
 	Route::name('v4_access_groups.store')->post('access/groups/',                                                           'User\AccessGroupController@store');
 	Route::name('v4_access_groups.show')->match(['get','options'],'access/groups/{group_id}',                               'User\AccessGroupController@show');
+	Route::name('v4_access_groups.access')->match(['get','options'],'access/current',                                       'User\AccessGroupController@current');
 	Route::name('v4_access_groups.update')->put('access/groups/{group_id}',                                                 'User\AccessGroupController@update');
 	Route::name('v4_access_groups.destroy')->delete('access/groups/{group_id}',                                             'User\AccessGroupController@destroy');
 
