@@ -146,7 +146,8 @@ class APIController extends Controller
 		$format = checkParam('reply|format', null, 'optional');
 
 		// Status Code, Headers, Params, Body, Time
-		sendLogsToS3(request(), $this->getStatusCode(),$s3response);
+		apiLogs(request(), $this->getStatusCode(),$s3response);
+
 
 		switch ($format) {
 			case 'xml':
@@ -188,7 +189,7 @@ class APIController extends Controller
 	public function replyWithError($message, $action = null)
 	{
 		$status = $this->getStatusCode();
-		if((env('APP_ENV') != 'local') AND (env('APP_ENV') != 'testing')) sendLogsToS3(request(), $status);
+		if((env('APP_ENV') != 'local') AND (env('APP_ENV') != 'testing')) apiLogs(request(), $status);
 
 		if ((!$this->api AND !isset($status)) OR isset($_GET['local'])) redirect()->route('error')->with(['message' => $message, 'status' => $status]);
 		if (!$this->api OR isset($_GET['local'])) return redirect()->route("errors.$status", compact('message'))->with(['message' => $message]);

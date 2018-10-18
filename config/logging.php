@@ -48,6 +48,13 @@ return [
             'days'   => 7,
         ],
 
+        'api' => [
+	        'driver' => 'single',
+	        'path'   => storage_path('logs/api.log'),
+	        'level'  => 'debug',
+	        'days'   => 7,
+        ],
+
         'slack' => [
             'driver'   => 'slack',
             'url'      => env('LOG_SLACK_WEBHOOK_URL'),

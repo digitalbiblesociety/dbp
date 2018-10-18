@@ -41,7 +41,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(testArmor::class)->weekly();
+	    $schedule->command('BackUpLogs')->cron('5 * * * *');
     }
 
     /**

@@ -106,7 +106,7 @@ function fetchBible($bible_id)
 	if(!$bible) return [];
 }
 
-function sendLogsToS3($request, $status_code, $s3_string = false)
+function apiLogs($request, $status_code, $s3_string = false)
 {
 	$log_string = time().':::'.env('APP_SERVER_NAME').':::'.$status_code.":::".$request->path().":::";
 	$log_string .= '"'.$request->header('User-Agent').'"'.":::";
@@ -114,8 +114,7 @@ function sendLogsToS3($request, $status_code, $s3_string = false)
 	$log_string = rtrim($log_string,"|");
 	$log_string .= ':::'.$request->getClientIps()[0].':::';
 	if($s3_string) $log_string .= $s3_string;
-	//if($request->getContent()) foreach (collect($request->getContent())->toArray() as $header => $value) $log_string .= $header."=".$value."|";
-	App\Jobs\send_api_logs::dispatch($log_string);
+	\Log::channel('api')->info($log_string);
 }
 
 if( ! function_exists('unique_random') ){
