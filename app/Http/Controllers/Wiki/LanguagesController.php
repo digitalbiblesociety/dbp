@@ -74,10 +74,9 @@ class LanguagesController extends APIController
 
 		$access_control = $this->accessControl($this->key, 'api');
 
-		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $show_restricted . $include_alt_names;
+		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $show_restricted . $include_alt_names . $this->key;
 		if(env('APP_ENV') == 'local') \Cache::forget($cache_string);
 		$languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $code, $sort_by, $show_restricted, $access_control) {
-
 			//$include_alt_names
 			$languages = Language::select(['id', 'glotto_id', 'iso', 'name'])->with('autonym')
 				->when(!$show_restricted, function ($query) use($access_control) {
@@ -98,6 +97,7 @@ class LanguagesController extends APIController
 				})->when($sort_by, function ($query) use ($sort_by) {
 					return $query->orderBy($sort_by);
 				})->withCount('bibles')->withCount('filesets')->get();
+
 			return fractal($languages,new LanguageTransformer(),$this->serializer);
 		});
 
@@ -183,7 +183,7 @@ class LanguagesController extends APIController
 	public function show($id)
 	{
 		$language = fetchLanguage($id);
-		$language->load("translations", "codes", "dialects", "classifications", "countries", "primaryCountry", "bibles.translations.language", "bibles.filesets", "resources.translations", "resources.links");
+		$language->load('translations', 'codes', 'dialects', 'classifications', 'countries', 'primaryCountry', 'bibles.translations.language', 'bibles.filesets', 'resources.translations', 'resources.links');
 		if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
 		if($this->api) return $this->reply(fractal($language, new LanguageTransformer()));
 
@@ -200,7 +200,7 @@ class LanguagesController extends APIController
 	public function edit($id)
 	{
 		$language = Language::find($id);
-		return view('languages.edit', compact('language'));
+		return view('dashboard.wiki.languages.edit', compact('language'));
 	}
 
 	/**
