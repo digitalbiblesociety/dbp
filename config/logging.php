@@ -49,10 +49,9 @@ return [
         ],
 
         'api' => [
-	        'driver' => 'single',
-	        'path'   => storage_path('logs/api.log'),
-	        'level'  => 'debug',
-	        'days'   => 7,
+	        'driver'         => 'single',
+	        'formatter'      => new \App\Logs\EmptyLineFormatter("%message%\r\n"),
+	        'path'           => storage_path('logs/api.log')
         ],
 
         'slack' => [
