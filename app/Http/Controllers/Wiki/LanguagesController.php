@@ -74,7 +74,7 @@ class LanguagesController extends APIController
 
 		$access_control = $this->accessControl($this->key, 'api');
 
-		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $show_restricted . $include_alt_names . $this->key;
+		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $show_restricted . $include_alt_names . $access_control->string;
 		if(env('APP_ENV') == 'local') \Cache::forget($cache_string);
 		$languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $code, $sort_by, $show_restricted, $access_control) {
 			//$include_alt_names
