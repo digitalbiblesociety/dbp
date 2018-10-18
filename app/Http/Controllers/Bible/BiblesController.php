@@ -320,7 +320,12 @@ class BiblesController extends APIController
 	 */
 	public function show($id)
 	{
-        $bible = Bible::with('filesets.organization', 'translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents')->find($id);
+		$access_control = $this->accessControl($this->key, "api");
+
+        $bible = Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
+	        'filesets' => function ($query) use ($access_control) {
+				$query->whereIn('bible_filesets.hash_id', $access_control->hashes);
+			}])->find($id);
 		if (!$bible) return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id]));
 		if (!$this->api) return view('bibles.show', compact('bible'));
 
