@@ -129,7 +129,7 @@ class HomeController extends APIController
 			$urls["urls"][$paths[0]][$paths[1]][$paths[2]] = $this->signedUrl($filename, $signer, $bucket, $transaction_id);
 		}
 
-		return $this->reply($urls);
+		return $this->reply($urls, [], $transaction_id);
 	}
 
 	public function status_dbl()

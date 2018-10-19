@@ -137,7 +137,7 @@ class APIController extends Controller
 	 *
 	 * @return mixed
 	 */
-	public function reply($object, $meta = [], $s3response = null)
+	public function reply($object, $meta = [], $s3_transaction_id = null)
 	{
 		if (isset($_GET['echo'])) {
 			$object = [$_GET, $object];
@@ -146,7 +146,7 @@ class APIController extends Controller
 		$format = checkParam('reply|format', null, 'optional');
 
 		// Status Code, Headers, Params, Body, Time
-		apiLogs(request(), $this->getStatusCode(),$s3response);
+		apiLogs(request(), $this->getStatusCode(),$s3_transaction_id);
 
 
 		switch ($format) {

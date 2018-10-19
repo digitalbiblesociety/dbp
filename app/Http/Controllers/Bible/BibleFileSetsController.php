@@ -131,7 +131,6 @@ class BibleFileSetsController extends APIController
 			])->get();
 		if ($fileSetChapters->count() === 0) return $this->setStatusCode(404)->replyWithError('No Fileset Chapters Found for the provided params');
 
-		$transaction_code = '';
 		if($fileset->set_type_code != 'video_stream') {
 			$transaction_id = random_int(0,10000000);
 			foreach ($fileSetChapters as $key => $fileSet_chapter) {
@@ -153,7 +152,7 @@ class BibleFileSetsController extends APIController
 			}
 		}
 
-		return $this->reply(fractal($fileSetChapters, new FileSetTransformer())->serializeWith($this->serializer), [], $transaction_code);
+		return $this->reply(fractal($fileSetChapters, new FileSetTransformer())->serializeWith($this->serializer), [], $transaction_id ?? '');
 	}
 
 	/**
