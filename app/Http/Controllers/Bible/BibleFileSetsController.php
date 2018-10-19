@@ -133,8 +133,9 @@ class BibleFileSetsController extends APIController
 
 		$transaction_code = '';
 		if($fileset->set_type_code != 'video_stream') {
+			$transaction_id = random_int(0,10000000);
 			foreach ($fileSetChapters as $key => $fileSet_chapter) {
-				$fileSetChapters[$key]->file_name = $this->signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name, $bucket_id, $lifespan);
+				$fileSetChapters[$key]->file_name = $this->signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name, $bucket_id, $transaction_id);
 				// Prep Transaction Value
 				$sample_url = $fileSetChapters->pluck('file_name')->first();
 				$parts = parse_url($sample_url);

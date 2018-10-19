@@ -57,7 +57,8 @@ class VideoStreamController extends APIController
 
 		$currentResolution = $file->videoResolution->where('file_name',$file_name)->first();
 		foreach($currentResolution->transportStream as $stream) {
-			$current_file_path = $this->signedUrl('video' . '/' . $bible_path . $fileset->id . '/' . $stream->file_name, $fileset->bucket_id);
+			$transaction_id = random_int(0,10000000);
+			$current_file_path = $this->signedUrl('video' . '/' . $bible_path . $fileset->id . '/' . $stream->file_name, $fileset->bucket_id,$transaction_id);
 			$current_file .= "\n#EXTINF:$stream->runtime\n$current_file_path";
 		}
 		$current_file .= "\n#EXT-X-ENDLIST";

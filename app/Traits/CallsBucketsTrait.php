@@ -9,7 +9,7 @@ use SimpleXMLElement;
 
 trait CallsBucketsTrait {
 
-	public function signedUrl(string $file, string $bucket = 'dbp-prod')
+	public function signedUrl(string $file, string $bucket = 'dbp-prod', int $transaction)
 	{
 		$security_token = Cache::remember('iam_assumed_role', 60, function () {
 			$role_call  = $this->assumeRole();
@@ -20,23 +20,23 @@ trait CallsBucketsTrait {
 			}
 		});
 
-		return $this->aws_s3_link($security_token,$bucket,'/'.$file);
+		return $this->aws_s3_link($security_token,$bucket,'/'.$file,$transaction);
 	}
 
-	public function aws_s3_link($security_token, $bucket, $canonical_uri, $region = 'us-west-2', $extra_headers = array()) {
+	public function aws_s3_link($security_token, $bucket, $canonical_uri, $transaction, $region = 'us-west-2', $extra_headers = array()) {
 		$timestamp = Carbon::now()->addDay()->timestamp;
 
 		$temp_session_token = $security_token->AssumeRoleResult->Credentials->SessionToken;
 		$temp_secret_key    = $security_token->AssumeRoleResult->Credentials->SecretAccessKey;
 		$temp_access_key    = $security_token->AssumeRoleResult->Credentials->AccessKeyId;
 
-		$random_int = rand(0,10000000);
-		$data = "GET\n\n\n$timestamp\nx-amz-security-token:$temp_session_token\nx-amz-transaction:$random_int\n/$bucket$canonical_uri";
+
+		$data = "GET\n\n\n$timestamp\nx-amz-security-token:$temp_session_token\nx-amz-transaction:$transaction\n/$bucket$canonical_uri";
 		$hmac = hash_hmac("sha1", $data, $temp_secret_key, TRUE);
 		$signature = base64_encode($hmac);
 
 
-		return "https://$bucket.s3.amazonaws.com$canonical_uri?AWSAccessKeyId=".$temp_access_key."&Signature=".urlencode($signature)."&x-amz-security-token=".urlencode($temp_session_token)."&x-amz-transaction=$random_int&Expires=$timestamp";
+		return "https://$bucket.s3.amazonaws.com$canonical_uri?AWSAccessKeyId=".$temp_access_key."&Signature=".urlencode($signature)."&x-amz-security-token=".urlencode($temp_session_token)."&x-amz-transaction=$transaction&Expires=$timestamp";
 	}
 
 	private function assumeRole()

@@ -122,10 +122,11 @@ class HomeController extends APIController
 		$expiry    = $_GET['expiry'] ?? 5;
 		$urls      = [];
 
+		$transaction_id = random_int(0,10000000);
 		foreach ($filenames as $filename) {
 			$filename                                      = ltrim($filename, "/");
 			$paths                                         = explode("/", $filename);
-			$urls["urls"][$paths[0]][$paths[1]][$paths[2]] = $this->signedUrl($filename, $signer, $bucket, $expiry);
+			$urls["urls"][$paths[0]][$paths[1]][$paths[2]] = $this->signedUrl($filename, $signer, $bucket, $transaction_id);
 		}
 
 		return $this->reply($urls);
