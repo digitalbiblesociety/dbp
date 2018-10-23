@@ -39,7 +39,7 @@ class send_api_logs implements ShouldQueue
 		foreach($files as $key => $file) if(substr($file,-4) !== '.log') unset($files[$key]);
 		// If no files exist
 		if(\count($files) === 0) {
-			$starting_string = ''; //'timestamp:::server_name:::status_code:::path:::user_agent:::params:::ip_address:::lat:::lon:::country:::city:::state_name:::postal_code:::s3_signatures';
+			$starting_string = ''; //'timestamp∞server_name∞status_code∞path∞user_agent∞params∞ip_address∞lat∞lon∞country∞city∞state_name∞postal_code∞s3_signatures';
 			Storage::disk('logs')->put('api/' . $current_time->getTimestamp() . '-' . env('APP_SERVER_NAME') . '.log', $starting_string);
 			$current_file_time = Carbon::now();
 			$files = Storage::disk('logs')->files('api');
@@ -62,12 +62,12 @@ class send_api_logs implements ShouldQueue
 	}
 	private function addGeoData()
 	{
-		$log_array = explode(':::', $this->log_string);
+		$log_array = explode('∞', $this->log_string);
 		$ip_address = $log_array[5] ?? null;
 		if($ip_address) {
 			$geo_ip = geoip($ip_address);
 			$geo_array = [$geo_ip->lat, $geo_ip->lon, $geo_ip->country, $geo_ip->city, $geo_ip->state_name, $geo_ip->postal_code];
-			$this->log_string = implode(':::', array_merge($log_array,$geo_array));
+			$this->log_string = implode('∞', array_merge($log_array,$geo_array));
 		}
 	}
 
