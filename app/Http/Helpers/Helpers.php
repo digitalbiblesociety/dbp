@@ -112,7 +112,11 @@ function apiLogs($request, $status_code, $s3_string = false)
 	$log_string .= '"'.$request->header('User-Agent').'"'.'∞';
 	foreach ($_GET as $header => $value) $log_string .= ($value !== '') ? $header.'='.$value.'|' : $header.'|';
 	$log_string = rtrim($log_string,'|');
-	$log_string .= '∞'.$request->getClientIps()[0].'∞';
+
+	// client-ip-address
+	$ip_address = $request->header('X-Forwarded-For') ?? $request->getClientIps()[0];
+	$log_string .= '∞'.$ip_address.'∞';
+
 	if($s3_string) $log_string .= $s3_string;
 
 	App\Jobs\send_api_logs::dispatch($log_string);
