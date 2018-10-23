@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
+use App\Models\User;
 use App\Models\User\Study\HighlightColor;
 use App\Transformers\UserHighlightsTransformer;
 use App\Models\User\Study\Highlight;
@@ -49,7 +50,9 @@ class UserHighlightsController extends APIController
 	public function index($user_id)
 	{
 		// Validate Project / User Connection
-		$user_is_member = $this->compareProjects($user_id);
+		$user = User::where('id',$user_id)->select('id')->first();
+		if(!$user) return $this->replyWithError(trans('api.users_errors_404', ['param' => $user_id]));
+		$user_is_member = $this->compareProjects($user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		$fileset_id   = checkParam('fileset_id', null, 'optional');
@@ -139,7 +142,7 @@ class UserHighlightsController extends APIController
 	public function store()
 	{
 		// Validate Project / User Connection
-		$user_is_member = $this->compareProjects(request()->user_id);
+		$user_is_member = $this->compareProjects(request()->user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		// Validate Highlight
@@ -193,7 +196,7 @@ class UserHighlightsController extends APIController
 	public function show($user_id,$highlight_id)
 	{
 		// Validate Project / User Connection
-		$user_is_member = $this->compareProjects($user_id);
+		$user_is_member = $this->compareProjects($user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		$highlight  = Highlight::where('id', $highlight_id)->first();
@@ -232,7 +235,7 @@ class UserHighlightsController extends APIController
 	public function update($user_id, $id)
 	{
 		// Validate Project / User Connection
-		$user_is_member = $this->compareProjects($user_id);
+		$user_is_member = $this->compareProjects($user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		// Validate Highlight
@@ -279,7 +282,7 @@ class UserHighlightsController extends APIController
 	public function destroy($user_id, $id)
 	{
 		// Validate Project / User Connection
-		$user_is_member = $this->compareProjects($user_id);
+		$user_is_member = $this->compareProjects($user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		$highlight  = Highlight::where('id', $id)->first();

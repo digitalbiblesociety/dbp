@@ -240,19 +240,9 @@ class User extends Model implements Authenticatable
 		return $this->hasMany(Highlight::class);
 	}
 
-	public function projectDeveloper()
-	{
-		return $this->hasMany(ProjectMember::class)->where('role','developer');
-	}
-
-	public function projectAdmin()
-	{
-		return $this->belongsToMany(Project::class, 'project_members')->where('role','admin')->withPivot('role','subscribed');
-	}
-
 	public function projects()
 	{
-		return $this->belongsToMany(Project::class, 'project_members')->wherePivot('subscribed',true)->withPivot('role','subscribed');
+		return $this->belongsToMany(Project::class, 'project_members')->withPivot('role','subscribed');
 	}
 
 	public function projectMembers()
@@ -264,7 +254,7 @@ class User extends Model implements Authenticatable
 
 	public function authorizedArchivist($id = null)
 	{
-		return $this->hasOne(Role::class)->where('role','archivist')->where('organization_id',$id);
+		return $this->hasOne(Role::class)->where('name','archivist')->where('organization_id',$id);
 	}
 
 	public function role($role = null,$organization = null)

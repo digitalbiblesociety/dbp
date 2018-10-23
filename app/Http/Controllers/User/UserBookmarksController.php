@@ -43,7 +43,7 @@ class UserBookmarksController extends APIController
 	 */
     public function index($user_id)
     {
-	    $user_is_member = $this->compareProjects($user_id);
+	    $user_is_member = $this->compareProjects($user_id, $this->key);
 	    if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
     	$book_id = checkParam('book_id', null, 'optional');
@@ -87,7 +87,7 @@ class UserBookmarksController extends APIController
      */
     public function store()
     {
-	    $user_is_member = $this->compareProjects(request()->user_id);
+	    $user_is_member = $this->compareProjects(request()->user_id, $this->key);
 	    if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 	    $book = Book::where('id',request()->book_id)->orWhere('book_id',request()->book_id)->first();
@@ -109,7 +109,7 @@ class UserBookmarksController extends APIController
      */
     public function update($user_id,$id)
     {
-	    $user_is_member = $this->compareProjects($user_id);
+	    $user_is_member = $this->compareProjects($user_id, $this->key);
 	    if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 	    $invalidBookmark = $this->validateBookmark();
@@ -131,7 +131,7 @@ class UserBookmarksController extends APIController
      */
     public function destroy($user_id, $id)
     {
-	    $user_is_member = $this->compareProjects($user_id);
+	    $user_is_member = $this->compareProjects($user_id, $this->key);
 	    if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 	    $bookmark = Bookmark::where('id',$id)->where('user_id',$user_id)->first();

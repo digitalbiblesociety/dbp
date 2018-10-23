@@ -256,7 +256,7 @@ class UsersController extends APIController
 			]);
 		}
 
-		return $this->reply(["success" => "User created", "user" => $user]);
+		return $this->reply(['success' => 'User created', 'user' => $user]);
 	}
 
 	/**

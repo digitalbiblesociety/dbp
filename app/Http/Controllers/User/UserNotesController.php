@@ -52,7 +52,7 @@ class UserNotesController extends APIController
 	 */
 	public function index($user_id)
 	{
-		$user_is_member = $this->compareProjects($user_id);
+		$user_is_member = $this->compareProjects($user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		if (!$this->api) {
@@ -119,7 +119,7 @@ class UserNotesController extends APIController
 			return view('dashboard.notes.index');
 		}
 
-		$user_is_member = $this->compareProjects($user_id);
+		$user_is_member = $this->compareProjects($user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		$note        = Note::where('user_id', $user_id)->where('id', $note_id)->first();
@@ -171,7 +171,7 @@ class UserNotesController extends APIController
 	 */
 	public function store(Request $request)
 	{
-		$user_is_member = $this->compareProjects($request->user_id);
+		$user_is_member = $this->compareProjects($request->user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		$validator = Validator::make($request->all(), [
@@ -232,7 +232,7 @@ class UserNotesController extends APIController
 	 */
 	public function update(Request $request, $user_id, $note_id)
 	{
-		$user_is_member = $this->compareProjects($user_id);
+		$user_is_member = $this->compareProjects($user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		$note = Note::where('user_id', $user_id)->where('id',
@@ -277,7 +277,7 @@ class UserNotesController extends APIController
 	 */
 	public function destroy(integer $user_id, integer $note_id)
 	{
-		$user_is_member = $this->compareProjects($user_id);
+		$user_is_member = $this->compareProjects($user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		$note = Note::where('user_id', $user_id)->where('id', $note_id)->first();
