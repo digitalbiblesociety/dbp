@@ -133,26 +133,7 @@ class Highlight extends Model
       * @property int $highlighted_words
       */
      protected $highlighted_words;
-     /**
-      *
-	  * @OA\Property(
-	  *   title="created_at",
-	  *   type="string",
-	  *   description="The highlight's created_at timestamp"
-	  * )
-      *
-      * @method static Highlight whereCreatedAt($value)
-      * @property \Carbon\Carbon|null $created_at
-      *
-	  * @OA\Property(
-	  *   title="updated_at",
-	  *   type="string",
-	  *   description="The highlight's updated_at timestamp"
-	  * )
-      *
-      * @method static Highlight whereUpdatedAt($value)
-      * @property \Carbon\Carbon|null $updated_at
-      */
+
 
 
      public function color()

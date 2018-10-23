@@ -12,9 +12,9 @@ class AudioTransformer extends BaseTransformer
 	public function transform($audio)
 	{
 		switch ($this->version) {
-			case "2":
-			case "3": return $this->transformForV2($audio);
-			case "4":
+			case 2:
+			case 3: return $this->transformForV2($audio);
+			case 4:
 			default: return $this->transformForV4($audio);
 		}
 	}
@@ -35,10 +35,10 @@ class AudioTransformer extends BaseTransformer
 			 *   )
 			 * )
 			 */
-			case "v2_audio_timestamps": {
+			case 'v2_audio_timestamps': {
 				return [
-					"verse_id"    => (string) $audio->verse_start,
-					"verse_start" => $audio->timestamp
+					'verse_id'    => (string) $audio->verse_start,
+					'verse_start' => $audio->timestamp
 				];
 			}
 
@@ -56,11 +56,11 @@ class AudioTransformer extends BaseTransformer
 			 *   )
 			 * )
 			 */
-			case "v2_audio_path": {
+			case 'v2_audio_path': {
 				return [
-					"book_id"    => ucfirst(strtolower($audio->book->id_osis)),
-					"chapter_id" => (string) $audio->chapter_start,
-					"path"       => preg_replace("/https:\/\/.*?\/.*?\//", "", $audio->file_name)
+					'book_id'    => $audio->book ? ucfirst(strtolower($audio->book->id_osis)) : $audio->book_id,
+					'chapter_id' => (string) $audio->chapter_start,
+					'path'       => preg_replace("/https:\/\/.*?\/.*?\//", "", $audio->file_name)
 				];
 			}
 
@@ -88,14 +88,14 @@ class AudioTransformer extends BaseTransformer
 		 * )
 		 */
 		return [
-			"book_id"       => $audio->book_id,
-			"book_name"     => $audio->book->currentTranslation->name ?? $audio->book->name,
-			"chapter_start" => $audio->chapter_start,
-			"chapter_end"   => $audio->chapter_end,
-			"verse_start"   => $audio->verse_start,
-			"verse_end"     => $audio->verse_end,
-			"timestamp"     => $audio->timestamp,
-			"path"          => $audio->file_name
+			'book_id'       => $audio->book_id,
+			'book_name'     => $audio->book->currentTranslation->name ?? $audio->book->name,
+			'chapter_start' => $audio->chapter_start,
+			'chapter_end'   => $audio->chapter_end,
+			'verse_start'   => $audio->verse_start,
+			'verse_end'     => $audio->verse_end,
+			'timestamp'     => $audio->timestamp,
+			'path'          => $audio->file_name
 		];
 	}
 

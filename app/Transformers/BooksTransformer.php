@@ -4,54 +4,62 @@ namespace App\Transformers;
 
 class BooksTransformer extends BaseTransformer
 {
-    /**
-     * A Fractal transformer.
-     *
-     * @return array
-     */
+
+	/**
+	 * A Fractal transformer.
+	 *
+	 * @param $book
+	 *
+	 * @return array
+	 */
     public function transform($book)
     {
-	    switch ($this->version) {
-		    case "3": return $this->transformForV3($book);
-		    case "4":
+	    switch ((int) $this->version) {
+		    case 3: return $this->transformForV3($book);
+		    case 4:
 		    default: return $this->transformForV4($book);
 	    }
     }
 
-    public function transformForV3($book) {
+	/**
+	 * @param $book
+	 *
+	 * @return array
+	 */
+	public function transformForV3($book) {
 	    switch ( $this->route ) {
-		    case "v3_query": {
-		    	$manufactured_id = strval(random_int(0,20000));
+		    case 'v3_query': {
+			    $manufactured_id = (string) random_int(0,20000);
 			    return [
-				    "id"           => $manufactured_id,
-				    "name"         => $book->name,
-				    "book_code"    => $book->id,
-				    "created_at"   => $book->created_at->toDateTimeString(),
-				    "updated_at"   => $book->updated_at->toDateTimeString(),
-				    "sort_order"   => strval($book->protestant_order),
-				    "volume_id"    => "3070",
-				    "enabled"      => "1",
-				    "dam_id"       => $book->bible_id,
-				    "chapter_list" => implode( ",", $book->sophia_chapters ),
-				    "_links"       => [
-					    "self" => [ "href" => "http://v3.dbt.io/search/$manufactured_id" ]
+				    'id'           => $manufactured_id,
+				    'name'         => (string) $book->name,
+				    'book_code'    => (string) $book->id,
+				    'created_at'   => (string) $book->created_at->toDateTimeString(),
+				    'updated_at'   => (string) $book->updated_at->toDateTimeString(),
+				    'sort_order'   => (string) $book->protestant_order,
+				    'volume_id'    => '',
+				    'enabled'      => '1',
+				    'dam_id'       => $book->bible_id,
+				    'chapter_list' => implode( ',', $book->sophia_chapters ),
+				    '_links'       => [
+					    'self' => [ 'href' => 'http://v3.dbt.io/search/'.$manufactured_id ]
 				    ]
 			    ];
 		    }
 
-		    case "v3_books": {
-			    $manufactured_id = strval(random_int(0,20000));
+		    case 'v3_books': {
+			    $manufactured_id = random_int(0,20000);
 		    	return [
-				    "id"           => $manufactured_id,
-                    "name"         => $book->name,
-                    "dam_id"       => $book->bible_id,
-                    "book_code"    => $book->id,
-                    "order"        => strval($book->protestant_order),
-                    "enabled"      => true,
-				    "chapters"     => $book->chapters,
-				    "chapter_list" => $book->chapters->pluck('number')->implode(','),
-				    "_links"       => [
-					    "self" => [ "href" => "http://v3.dbt.io/search/$manufactured_id" ]
+				    'id'           => (string) $manufactured_id,
+                    'name'         => (string) $book->name,
+                    'dam_id'       => (string) $book->bible_id,
+                    'book_code'    => (string) $book->id,
+                    'order'        => (string) $book->protestant_order,
+                    'enabled'      => true,
+				    'chapters'     => $book->chapters,
+				    'chapter_list' => $book->chapters->pluck('number')->implode(','),
+				    '_links'       => [
+					    'self' => [ 'href' => 'http://v3.dbt.io/search/'.$manufactured_id ]
 				    ]
 			    ];
 		    }
@@ -62,12 +70,12 @@ class BooksTransformer extends BaseTransformer
 
 	/**
 	 * @OA\Schema (
-			*	type="array",
-			*	schema="v4_bible.allBooks",
-			*	description="The books of the bible with codes",
-			*	title="v4_bible.allBooks",
-			*	@OA\Xml(name="v4_bible.allBooks"),
-			*	@OA\Items(
+	 *    type="array",
+	 *    schema="v4_bible.allBooks",
+	 *    description="The books of the bible with codes",
+	 *    title="v4_bible.allBooks",
+	 *	@OA\Xml(name="v4_bible.allBooks"),
+	 *	@OA\Items(
 	 *          @OA\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
 	 *          @OA\Property(property="id_usfx",           ref="#/components/schemas/Book/properties/id_usfx"),
 	 *          @OA\Property(property="id_osis",           ref="#/components/schemas/Book/properties/id_osis"),
@@ -83,12 +91,12 @@ class BooksTransformer extends BaseTransformer
 	 * )
 	 *
 	 * @OA\Schema (
-			*	type="array",
-			*	schema="v4_bible.books",
-			*	description="The books of the bible with codes",
-			*	title="v4_bible.books",
-			*	@OA\Xml(name="v4_bible.books"),
-			*	@OA\Items(
+	 *    type="array",
+	 *    schema="v4_bible.books",
+	 *    description="The books of the bible with codes",
+	 *    title="v4_bible.books",
+	 *	@OA\Xml(name="v4_bible.books"),
+	 *	@OA\Items(
 	 *          @OA\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
 	 *          @OA\Property(property="id_usfx",           ref="#/components/schemas/Book/properties/id_usfx"),
 	 *          @OA\Property(property="id_osis",           ref="#/components/schemas/Book/properties/id_osis"),
@@ -103,19 +111,21 @@ class BooksTransformer extends BaseTransformer
 	 *   )
 	 * )
 	 *
+	 * @param $book
 	 *
+	 * @return array
 	 */
 	public function transformForV4($book) {
 		return [
-			"book_id"         => $book->book_id,
-			"book_id_usfx"    => $book->book->id_usfx,
-			"book_id_osis"    => $book->book->id_osis,
-			"name"            => $book->name,
-			"testament"       => $book->book->book_testament,
-			"testament_order" => $book->book->testament_order,
-			"book_order"      => $book->book->protestant_order,
-			"book_group"      => $book->book->book_group,
-			"chapters"        => $book->chapters,
+			'book_id'         => $book->book_id,
+			'book_id_usfx'    => $book->book->id_usfx,
+			'book_id_osis'    => $book->book->id_osis,
+			'name'            => $book->name,
+			'testament'       => $book->book->book_testament,
+			'testament_order' => $book->book->testament_order,
+			'book_order'      => $book->book->protestant_order,
+			'book_group'      => $book->book->book_group,
+			'chapters'        => $book->chapters,
 		];
 	}
 

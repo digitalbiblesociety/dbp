@@ -26,4 +26,5 @@ use Illuminate\Database\Eloquent\Model;
 class ArticleTag extends Model
 {
 	protected $connection = 'dbp_users';
+	protected $fillable = ['iso','name','description'];
 }

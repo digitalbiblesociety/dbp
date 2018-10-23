@@ -4,8 +4,10 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
 use App\Models\User\AccessGroup;
+use App\Models\User\Key;
 use App\Traits\AccessControlAPI;
 use App\Transformers\AccessGroupTransformer;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AccessGroupController extends APIController
@@ -131,10 +133,15 @@ class AccessGroupController extends APIController
 	{
 		if(env('APP_DEBUG') == "true") \Cache::forget('access_group_'.$id);
 		$access_group = \Cache::remember('access_group_'.$id, 1800,  function () use($id) {
-			$access_group = AccessGroup::with('filesets','types','keys')->find($id);
+			$access_group = AccessGroup::with('filesets','types','keys')->where('id',$id)->orWhere('name',$id)->first();
+			if(!$access_group) return $this->setStatusCode(404)->replyWithError(trans('api.access_group_404'));
 			$access_group->current_key = $this->key;
 			return fractal($access_group, new AccessGroupTransformer());
 		});
+
+		// If The access group is an error message don't pass it through to reply()
+		if(is_a($access_group, JsonResponse::class)) return $access_group;
+
 		return $this->reply($access_group);
 	}
 
@@ -178,7 +185,7 @@ class AccessGroupController extends APIController
 		$invalid = $this->validateAccessGroup($request);
 		if($invalid) return $this->setStatusCode(400)->reply($invalid);
 
-		$access_group = AccessGroup::find($id);
+		$access_group = AccessGroup::where('id',$id)->orWhere('name',$id)->first();
 		$access_group->fill($request->all())->save();
 
 		if(isset($request->filesets)) $access_group->filesets()->createMany($request->filesets);
@@ -218,11 +225,11 @@ class AccessGroupController extends APIController
 	 */
 	public function destroy($id)
 	{
-		if(!$this->validateUser()) return $this->replyWithError("not authorized");
-		$access_group = AccessGroup::find($id);
+		if(!$this->validateUser()) return $this->replyWithError('not authorized');
+		$access_group = AccessGroup::where('id',$id)->orWhere('name',$id)->first();
 		$access_group->delete();
 
-		return $this->reply("successfully deleted");
+		return $this->reply('successfully deleted');
 	}
 
 	/**
@@ -235,7 +242,7 @@ class AccessGroupController extends APIController
 	private function validateAccessGroup(Request $request)
 	{
 		$validator = \Validator::make($request->all(), [
-			'name'               => ($request->method() == 'POST') ? 'required|max:64|alpha_dash|unique:dbp.access_groups,name' : 'required|max:64|alpha_dash|exists:dbp.access_groups,name',
+			'name'               => ($request->method() == 'POST') ? 'required|max:64|alpha_dash|unique:dbp.access_groups,name' : 'max:64|alpha_dash|exists:dbp.access_groups,name',
 			'description'        => 'string',
 			'filesets.*'         => 'exists:dbp.bible_filesets,hash_id',
 			'keys.*'             => 'exists:dbp_users.user_keys,key',
@@ -251,7 +258,11 @@ class AccessGroupController extends APIController
 
 	private function validateUser()
 	{
-
+		$current_user = Key::whereKey($this->key)->first()->user;
+		if($current_user) {
+			$is_admin = $current_user->roles->where('slug','admin')->first();
+			if($is_admin) return true;
+		}
 	}
 
 }

@@ -119,7 +119,7 @@ function apiLogs($request, $status_code, $s3_string = false)
 
 	if($s3_string) $log_string .= $s3_string;
 
-	App\Jobs\send_api_logs::dispatch($log_string);
+	if(env('APP_ENV') != 'local') App\Jobs\send_api_logs::dispatch($log_string);
 }
 
 if( ! function_exists('unique_random') ){

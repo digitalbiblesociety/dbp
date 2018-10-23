@@ -8,9 +8,9 @@ class UserTransformer extends BaseTransformer
 	public function transform($user)
 	{
 		switch ($this->version) {
-			case "2":
-			case "3": return $this->transformForV2($user);
-			case "4":
+			case 2:
+			case 3: return $this->transformForV2($user);
+			case 4:
 			default: return $this->transformForV4($user);
 		}
 	}
@@ -18,7 +18,6 @@ class UserTransformer extends BaseTransformer
 	public function transformForV4($user)
 	{
 		switch($this->route) {
-
 			/**
 			 * @OA\Schema (
 			*	type="array",

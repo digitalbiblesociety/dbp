@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Wiki;
 
 use App\Http\Controllers\APIController;
 
+use App\Models\User\Key;
 use App\Models\User\User;
 use Auth;
 use Validator;
@@ -167,11 +168,9 @@ class AlphabetsController extends APIController
 	{
 		($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
 		$this->validateAlphabet($request);
-
-		Alphabet::create($request->all());
-		if (!$this->api) return redirect()->route('view_alphabets.show', ['id' => request()->id]);
-
-		return $this->reply(["message" => "Alphabet Successfully Created"]);
+		$alphabet = Alphabet::create($request->all());
+		if(!$this->api) return redirect()->route('view_alphabets.show', ['id' => request()->script]);
+		return $this->setStatusCode(200)->reply($alphabet);
 	}
 
 	/**
@@ -217,10 +216,10 @@ class AlphabetsController extends APIController
 		($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
 		$this->validateAlphabet($request);
 
-		Alphabet::find($script_id)->fill($request->all())->save();
+		$alphabet = Alphabet::find($script_id)->fill($request->all())->save();
 		if(!$this->api) return redirect()->route('view_alphabets.show', ['id' => $request->id]);
 
-		return $this->reply("Alphabet Successfully Updated");
+		return $this->setStatusCode(200)->reply($alphabet);
 	}
 
 	/**

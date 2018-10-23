@@ -263,18 +263,6 @@ class Language extends Model
 	/**
 	 * @OA\Property(
 	 *     title="Typology",
-	 *     description="The language's script",
-	 *     type="string"
-	 * )
-	 *
-	 * @property string $writing
-	 * @method static whereWriting($value)
-	 */
-	protected $writing;
-
-	/**
-	 * @OA\Property(
-	 *     title="Typology",
 	 *     description="The description of the language",
 	 *     type="string"
 	 * )

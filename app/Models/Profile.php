@@ -4,6 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Profile
+ *
+ * @mixin \Eloquent
+ *
+ * @OA\Schema (
+ *     type="object",
+ *     description="The Profile model communicates information about a user",
+ *     title="Profile",
+ *     @OA\Xml(name="Profile")
+ * )
+ *
+ */
 class Profile extends Model
 {
     /**

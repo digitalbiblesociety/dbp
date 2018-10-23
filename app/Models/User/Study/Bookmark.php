@@ -33,7 +33,6 @@ class Bookmark extends Model
 	 *   description="The unique incrementing id for each Bookmark",
 	 *   minimum=0
 	 * )
-	 *
 	 * @method static Note whereId($value)
 	 * @property int $id
 	 */
@@ -79,6 +78,18 @@ class Bookmark extends Model
 	 */
 	protected $bible_id;
 
+	/** @OA\Property(
+	 *   title="updated_at",
+	 *   type="string",
+	 *   description="The timestamp the Note was last updated at",
+	 *   nullable=true
+	 * )
+	 *
+	 * @method static Note whereUpdatedAt($value)
+	 * @public Carbon|null $updated_at
+	 */
+	public $updated_at;
+
 	/**
 	 *
 	 * @OA\Property(
@@ -88,23 +99,10 @@ class Bookmark extends Model
 	 * )
 	 *
 	 * @method static Note whereCreatedAt($value)
-	 * @property Carbon $created_at
-	 *
-	 * @OA\Property(
-	 *   title="updated_at",
-	 *   type="string",
-	 *   description="The timestamp the Note was last updated at",
-	 *   nullable=true
-	 * )
-	 *
-	 * @method static Note whereUpdatedAt($value)
-	 * @property Carbon|null $updated_at
+	 * @public Carbon $created_at
 	 */
+	public $created_at;
 
-	/**
-	 *
-	 * @property-read User $user
-	 */
 	public function user()
 	{
 		return $this->belongsTo(User::class);

@@ -159,14 +159,14 @@ class CountriesController extends APIController
 	 */
 	public function show($id)
 	{
-		$cache_string = "countries_". $id . $GLOBALS['i18n_iso'];
+		$cache_string = 'countries_'. $id . $GLOBALS['i18n_iso'];
 		if(env('APP_DEBUG')) \Cache::forget($cache_string);
 		$country = \Cache::remember($cache_string, 1600, function () use ($id) {
 			$country = Country::with('languagesFiltered.bibles.translations')->find($id);
-			if(!$country) return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', [], $GLOBALS['i18n_iso']));
+			if(!$country) return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['id' => $id], $GLOBALS['i18n_iso']));
 			return $country;
 		});
-
+		if(!is_a($country, Country::class)) return $country;
 		$includes = $this->loadWorldFacts($country);
 		if($this->api) return $this->reply(fractal($country, new CountryTransformer())->serializeWith($this->serializer)->parseIncludes($includes));
 		return view('wiki.countries.show', compact('country'));

@@ -12,6 +12,7 @@ use App\Models\User\User;
 use App\Models\User\Key;
 
 
+use App\Transformers\Serializers\DataArraySerializer;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\Auth;
 use Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class UsersController extends APIController
 {
@@ -58,12 +60,16 @@ class UsersController extends APIController
 	public function index()
 	{
 		if(!$this->api) return view('dashboard.users.index');
+		$limit = checkParam('limit', null, 'optional') ?? 100;
+		$project_id = checkParam('project_id');
 
-		$users = \DB::table('users')
-			->join('project_members','project_members.user_id','users.id')
-			->select(['users.id','users.name','users.email'])->get();
+		$users = \DB::table('users')->join('project_members', function ($join) use ($project_id) {
+			$join->on('users.id', '=', 'project_members.user_id')
+			     ->where('project_members.project_id', '=', $project_id);
+		})->select(['id','name','email']);
 
-		return $this->reply(fractal($users,UserTransformer::class));
+		$paginate = $users->paginate($limit);
+		return $this->reply(fractal($paginate->getCollection(), UserTransformer::class, DataArraySerializer::class)->paginateWith(new IlluminatePaginatorAdapter($paginate)));
 	}
 
 	/**
@@ -200,7 +206,6 @@ class UsersController extends APIController
 	 *              @OA\Property(property="name",                    ref="#/components/schemas/User/properties/name"),
 	 *              @OA\Property(property="password",                ref="#/components/schemas/User/properties/password"),
 	 *              @OA\Property(property="project_id",              ref="#/components/schemas/ProjectMember/properties/project_id"),
-	 *              @OA\Property(property="user_role",               ref="#/components/schemas/ProjectMember/properties/role"),
 	 *              @OA\Property(property="subscribed",              ref="#/components/schemas/ProjectMember/properties/subscribed"),
 	 *              @OA\Property(property="social_provider_id",      ref="#/components/schemas/Account/properties/provider_id"),
 	 *              @OA\Property(property="social_provider_user_id", ref="#/components/schemas/Account/properties/provider_user_id"),
@@ -274,7 +279,6 @@ class UsersController extends APIController
 	 *              @OA\Property(property="name",                    ref="#/components/schemas/User/properties/name"),
 	 *              @OA\Property(property="password",                ref="#/components/schemas/User/properties/password"),
 	 *              @OA\Property(property="project_id",              ref="#/components/schemas/ProjectMember/properties/project_id"),
-	 *              @OA\Property(property="user_role",               ref="#/components/schemas/ProjectMember/properties/role"),
 	 *              @OA\Property(property="subscribed",              ref="#/components/schemas/ProjectMember/properties/subscribed"),
 	 *              @OA\Property(property="social_provider_id",      ref="#/components/schemas/Account/properties/provider_id"),
 	 *              @OA\Property(property="social_provider_user_id", ref="#/components/schemas/Account/properties/provider_user_id"),

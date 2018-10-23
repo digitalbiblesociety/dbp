@@ -24,6 +24,7 @@ class ProjectMember extends Model
     public $incrementing = false;
     public $keyType = 'string';
     public $primaryKey = 'user_id';
+    public $timestamps = false;
 
 	/**
 	 *
@@ -52,7 +53,7 @@ class ProjectMember extends Model
 	/**
 	 *
      * @OA\Property(
-     *   title="role",
+     *   title="Role ID",
      *   type="integer",
      *   description="The incrementing ID for the account",
      *   minimum=0,
@@ -60,7 +61,7 @@ class ProjectMember extends Model
      * )
 	 *
 	 */
-	protected $role;
+	protected $role_id;
 	/**
 	 *
      * @OA\Property(

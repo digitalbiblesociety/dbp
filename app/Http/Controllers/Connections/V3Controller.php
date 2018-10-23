@@ -23,7 +23,7 @@ class V3Controller extends APIController
 				['id' => $bible_id]));
 		}
 
-		if ($action_type == "books") {
+		if ($action_type == 'books') {
 			$booksChapters = collect(\DB::connection('sophia')->table($bible_id . '_vpl')->select('book',
 				'chapter')->distinct()->get());
 			$books         = $booksChapters->pluck('book')->toArray();

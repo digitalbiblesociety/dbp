@@ -15,15 +15,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $cover_thumbnail
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\ArticleTranslation[] $translations
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Article whereCover($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Article whereCoverThumbnail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Article whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Article whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Article whereIso($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Article whereOrganizationId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Article whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\Article whereUserId($value)
+ * @property-read ArticleTranslation[] $translations
+ * @method static Article whereCover($value)
+ * @method static Article whereCoverThumbnail($value)
+ * @method static Article whereCreatedAt($value)
+ * @method static Article whereId($value)
+ * @method static Article whereIso($value)
+ * @method static Article whereOrganizationId($value)
+ * @method static Article whereUpdatedAt($value)
+ * @method static Article whereUserId($value)
  * @mixin \Eloquent
  */
 class Article extends Model
@@ -34,6 +34,11 @@ class Article extends Model
     public function translations()
     {
     	return $this->hasMany(ArticleTranslation::class);
+    }
+
+    public function tags()
+    {
+    	return $this->hasMany(ArticleTag::class);
     }
 
     public function currentTranslation()

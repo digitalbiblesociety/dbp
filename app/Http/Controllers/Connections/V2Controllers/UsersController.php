@@ -31,7 +31,22 @@ class UsersController extends APIController
 
 	public function user()
 	{
-		$user = User::where('id',request()->id)->first();
+		if(request()->method('POST')) {
+			$user = $user = User::where('email',request()->email)->first();
+			if(!$user) {
+				$user = User::create([
+					'email' => request()->email,
+					'password' => request()->password,
+					'name' => request()->username,
+					'token' => unique_random('users','token')
+				]);
+				return ['id' => $user->id];
+			}
+		} else {
+			$user = User::where('id',request()->id)->first();
+			if(!$user) return $this->setStatusCode(401)->replyWithError('User not found');
+		}
+
 		return [[
 	        'id'                => (string) $user->id,
             'first_name'        => (string) $user->first_name,

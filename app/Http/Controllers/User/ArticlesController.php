@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
+use App\Models\Language\Language;
 use App\Models\User\Article;
+use App\Models\User\User;
 use Illuminate\Http\Request;
 
 use Validator;
@@ -18,8 +20,8 @@ class ArticlesController extends APIController
 	 * @version 4
 	 * @category v4_articles.index
 	 * @link http://bible.build/articles - V4 Access
-	 * @link https://api.dbp.dev/articles?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_articles_all - V4 Test Docs
+	 * @link https://api.dbp.test/articles?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v4#/Wiki/v4_articles_all - V4 Test Docs
 	 *
 	 * @return mixed $articles string - A JSON string that contains the status code and error messages if applicable.
 	 *
@@ -38,7 +40,7 @@ class ArticlesController extends APIController
 	 * @version 4
 	 * @category view_alphabets.create
 	 * @link http://bible.build/articles/create - V4 Access
-	 * @link https://api.dbp.dev/articles/create - V4 Test Access
+	 * @link https://api.dbp.test/articles/create - V4 Test Access
 	 *
 	 * @return View - the Article Creation Form
 	 *
@@ -54,8 +56,8 @@ class ArticlesController extends APIController
 	 * @version 4
 	 * @category view_alphabets.store
 	 * @link http://bible.build/articles/create - V4 Access
-	 * @link https://api.dbp.dev/articles/create - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_articles_all - V4 Test Docs
+	 * @link https://api.dbp.test/articles/create - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v4#/Wiki/v4_articles_all - V4 Test Docs
 	 *
 	 * @param Request $request - Store
 	 *
@@ -65,24 +67,20 @@ class ArticlesController extends APIController
 	public function store(Request $request)
 	{
 		$user = ($this->api) ? $this->validateUser() : $this->validateUser(\Auth::user());
-		if(!$user) return false;
+		if(!is_a($user, User::class)) return $user;
 		$this->validateArticle($request);
 
 		$article                  = new Article();
 		$article->cover           = $request->cover;
-		$article->iso             = $request->iso ?? "eng";
 		$article->cover_thumbnail = $request->cover_thumbnail;
-		$article->user_id         = $user->id ?? "fnrS1pTKktHxwsXJ";
-		$article->organization_id = $request->organization_id ?? 1;
+		$article->user_id         = $user->id;
 		$article->save();
 
-		// $article->translations()->createMany(["name" => $request->name,"description" => $request->description]);
+		$article->translations()->createMany($request->translations);
+		$article->tags()->createMany($request->tags);
 
-		if (!$this->api) {
-			return redirect()->route('view_articles.show', ['id' => request()->id]);
-		}
-
-		return $this->reply(trans('api.article_store_200', []));
+		if (!$this->api) return redirect()->route('view_articles.show', ['id' => request()->id]);
+		return $this->reply($article);
 	}
 
 	/**
@@ -91,8 +89,8 @@ class ArticlesController extends APIController
 	 * @version 4
 	 * @category v4_articles.show
 	 * @link http://bible.build/articles - V4 Access
-	 * @link https://api.dbp.dev/articles?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_articles_all - V4 Test Docs
+	 * @link https://api.dbp.test/articles?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v4#/Wiki/v4_articles_all - V4 Test Docs
 	 *
 	 * @param string $id
 	 *
@@ -101,11 +99,10 @@ class ArticlesController extends APIController
 	 */
 	public function show($id)
 	{
-		if (!$this->api) {
-			return view('community.articles.show');
-		}
+		if (!$this->api) return view('community.articles.show');
+		$article = Article::where('id',$id)->orWhere('name',$id)->first();
 
-		return $this->reply(Article::find($id));
+		return $this->reply($article);
 	}
 
 	/**
@@ -114,7 +111,7 @@ class ArticlesController extends APIController
 	 * @version 4
 	 * @category view_alphabets.edit
 	 * @link http://bible.build/articles/create - V4 Access
-	 * @link https://api.dbp.dev/articles/create - V4 Test Access
+	 * @link https://api.dbp.test/articles/create - V4 Test Access
 	 *
 	 * @param string $id - the Article slug
 	 *
@@ -165,11 +162,10 @@ class ArticlesController extends APIController
 	private function validateArticle(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'iso'             => 'required|exists:dbp.languages,iso',
-			'organization_id' => 'required|exists:dbp.organizations,id',
-			'user_id'         => 'required|exists:dbp_users.users,id',
-			'cover'           => 'required',
-			'cover_thumbnail' => 'required',
+			'iso'                  => 'required|exists:dbp.languages,iso',
+			'user_id'              => 'required|exists:dbp_users.users,id',
+			'translations.*.title' => 'required',
+			'translations.*.body'  => 'required'
 		]);
 
 		if ($validator->fails()) {
@@ -193,7 +189,9 @@ class ArticlesController extends APIController
 			if (!isset($key)) return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed'));
 			$user = $key->user;
 		}
-		if (!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError(trans('api.articles_edit_permission_failed'));
+		$is_archivist = $user->roles->where('slug','archivist')->first();
+		$is_admin = $user->roles->where('slug','admin')->first();
+		if(!$is_archivist && !$is_admin) return $this->setStatusCode(401)->replyWithError(trans('api.articles_edit_permission_failed'));
 		return $user;
 	}
 

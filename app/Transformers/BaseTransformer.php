@@ -14,6 +14,11 @@ class BaseTransformer extends TransformerAbstract {
 
 	protected $currentScope = [];
 
+	protected $version;
+	protected $route;
+	protected $i10n;
+	protected $continent;
+
 	public function __construct()
 	{
 		$this->version = $_GET['v'] ?? 2;
