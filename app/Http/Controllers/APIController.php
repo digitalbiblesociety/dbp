@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Language\Language;
 use App\Models\User\Key;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use SoapBox\Formatter\Formatter;
 use League\Fractal\Serializer\DataArraySerializer;
@@ -144,7 +145,12 @@ class APIController extends Controller
 		$format = checkParam('reply|format', null, 'optional');
 
 		// Status Code, Headers, Params, Body, Time
-		apiLogs(request(), $this->getStatusCode(),$s3_transaction_id);
+		try {
+			apiLogs(request(), $this->getStatusCode(),$s3_transaction_id);
+		} catch (Exception $e) {
+			Log::error($e);
+		}
+
 
 		switch ($format) {
 			case 'xml':
@@ -186,7 +192,12 @@ class APIController extends Controller
 	public function replyWithError($message, $action = null)
 	{
 		$status = $this->getStatusCode();
-		if((env('APP_ENV') != 'local') AND (env('APP_ENV') != 'testing')) apiLogs(request(), $status);
+
+		try {
+			apiLogs(request(), $status);
+		} catch (Exception $e) {
+			Log::error($e);
+		}
 
 		if ((!$this->api AND !isset($status)) OR isset($_GET['local'])) redirect()->route('error')->with(['message' => $message, 'status' => $status]);
 		if (!$this->api OR isset($_GET['local'])) return redirect()->route("errors.$status", compact('message'))->with(['message' => $message]);
