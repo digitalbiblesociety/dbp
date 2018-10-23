@@ -102,19 +102,20 @@ function fetchBible($bible_id)
 {
 	$bibleEquivalent = \App\Models\Bible\BibleEquivalent::where('equivalent_id',$bible_id)->orWhere('equivalent_id',substr($bible_id,0,7))->first();
 	if(!isset($bibleEquivalent)) return \App\Models\Bible\Bible::find($bible_id);
-	if(isset($bibleEquivalent) AND !isset($bible)) return $bibleEquivalent->bible;
-	if(!$bible) return [];
+	if(isset($bibleEquivalent)) return $bibleEquivalent->bible;
+	return [];
 }
 
 function apiLogs($request, $status_code, $s3_string = false)
 {
-	$log_string = time().':::'.env('APP_SERVER_NAME').':::'.$status_code.":::".$request->path().":::";
-	$log_string .= '"'.$request->header('User-Agent').'"'.":::";
-	foreach ($_GET as $header => $value) $log_string .= ($value != '') ? $header."=".$value."|" : $header."|";
-	$log_string = rtrim($log_string,"|");
+	$log_string = time().':::'.env('APP_SERVER_NAME').':::'.$status_code.':::'.$request->path().':::';
+	$log_string .= '"'.$request->header('User-Agent').'"'.':::';
+	foreach ($_GET as $header => $value) $log_string .= ($value !== '') ? $header.'='.$value.'|' : $header.'|';
+	$log_string = rtrim($log_string,'|');
 	$log_string .= ':::'.$request->getClientIps()[0].':::';
 	if($s3_string) $log_string .= $s3_string;
-	\Log::channel('api')->info($log_string);
+
+	App\Jobs\send_api_logs::dispatch($log_string);
 }
 
 if( ! function_exists('unique_random') ){

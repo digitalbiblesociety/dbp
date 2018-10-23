@@ -2,13 +2,17 @@
 
 namespace App\Console\Commands;
 
+use App\Traits\CallsBucketsTrait;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
 use Storage;
 use Log;
+use Aws\Ec2\Ec2Client;
 
 class S3LogBackup extends Command
 {
+
+	use CallsBucketsTrait;
     /**
      * The name and signature of the console command.
      *
@@ -41,7 +45,7 @@ class S3LogBackup extends Command
 		// If no files exist
 		if(\count($files) === 0) {
 			$starting_string = 'timestamp:::server_name:::status_code:::path:::user_agent:::params:::ip_address:::s3_signatures:::lat:::lon:::country:::city:::state_name:::postal_code';
-			Storage::disk('data')->put('api-node-logs/' . $current_time->getTimestamp() . '-' . env('APP_SERVER_NAME') . '.log', $starting_string);
+			Storage::disk('logs')->put('api-node-logs/' . $current_time->getTimestamp() . '-' . env('APP_SERVER_NAME') . '.log', $starting_string);
 			$current_file_time = Carbon::now();
 			$files = Storage::disk('api');
 			$current_file = end($files);
@@ -50,13 +54,14 @@ class S3LogBackup extends Command
 			$current_file_time = (int) Carbon::createFromTimestamp(substr($current_file, 12, -10));
 		}
 
-		Storage::disk('data')->append($current_file, $this->log_string);
+		Storage::disk('logs')->append($current_file, $this->log_string);
 
 		// Push to S3 every couple minutes, delete the latest file and create a new one
 		if($current_time->diffInMinutes($current_file_time) > 2) {
 			$log_contents = Storage::disk('data')->get($current_file);
 			try
 			{
+				$this->pushToS3($current_file, $log_contents);
 				Storage::disk('s3_dbs_log')->put($current_file, $log_contents);
 				Storage::disk('data')->delete($current_file);
 			}
@@ -66,6 +71,42 @@ class S3LogBackup extends Command
 			}
 
 		}
+	}
+
+	private function pushToS3($current_file, $log_contents)
+	{
+		if(env('APP_ENV') == 'local') Cache::forget('iam_assumed_role');
+		$security_token = Cache::remember('iam_assumed_role', 60, function () {
+			$role_call  = $this->assumeRole();
+			if($role_call) {
+				$response_xml   = simplexml_load_string($role_call->response,'SimpleXMLElement',LIBXML_NOCDATA);
+				$response       = json_decode(json_encode($response_xml));
+				return $response;
+			}
+		});
+
+		$s3 = new S3Client([
+			'version' => 'latest',
+			'region'  => 'us-west-2',
+			'credentials' => [
+				'key' => $security_token->AssumeRoleResult->Credentials->AccessKeyId,
+				'secret' => $security_token->AssumeRoleResult->Credentials->SecretAccessKey,
+				'token' =>  $security_token->AssumeRoleResult->Credentials->SessionToken
+			]
+		]);
+
+		try {
+			// Upload data.
+			$result = $s3->putObject([
+				'Bucket' => 'dbp-log',
+				'Key'    => 'srv/'.$current_file,
+				'Body'   => 'Hello, world!'
+			]);
+			// Print the URL to the object.
+		} catch (S3Exception $e) {
+
+		}
+
 	}
 
 	private function addGeoData()
