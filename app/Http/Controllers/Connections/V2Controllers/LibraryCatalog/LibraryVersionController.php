@@ -13,7 +13,7 @@ class LibraryVersionController extends APIController
 	 *
 	 * Get the list of versions defined in the system
 	 *
-	 * @link https://api.dbp.dev/library/version?key=1234&v=2
+	 * @link https://api.dbp.test/library/version?key=1234&v=2
 	 *
 	 * @param code (optional): Get the entry for a three letter version code.
 	 * @param name (optional): Get the entry for a part of a version name in either native language or English.

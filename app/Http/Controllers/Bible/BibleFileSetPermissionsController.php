@@ -17,8 +17,8 @@ class BibleFileSetPermissionsController extends APIController
 	 * @version 4
 	 * @category v4_bible_filesets.permissions_index
 	 * @link http://bible.build/bibles/filesets/AMKWBT/permissions - V4 Access
-	 * @link https://api.dbp.dev/bibles/filesets/AMKWBT/permissions?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Bible/v4_bible_chapter2 - V4 Test Docs
+	 * @link https://api.dbp.test/bibles/filesets/AMKWBT/permissions?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v4#/Bible/v4_bible_chapter2 - V4 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/bibles/filesets/{id}/permissions/",
@@ -77,7 +77,7 @@ class BibleFileSetPermissionsController extends APIController
 	 * @version 4
 	 * @category v4_bible_filesets_permissions.store
 	 * @link http://bible.build/bibles/filesets/AMKWBT/permissions - V4 Access [POST]
-	 * @link https://dbp.dev/bibles/filesets/AMKWBT/permissions - V4 Test Access [POST]
+	 * @link https://dbp.test/bibles/filesets/AMKWBT/permissions - V4 Test Access [POST]
 	 *
 	 * @param string $fileset_id
 	 * @param Request $request
@@ -113,7 +113,7 @@ class BibleFileSetPermissionsController extends APIController
 	 * @version 4
 	 * @category v4_bible_filesets_permissions.store
 	 * @link http://bible.build/bibles/filesets/AMKWBT/permissions - V4 Access [POST]
-	 * @link https://dbp.dev/bibles/filesets/AMKWBT/permissions - V4 Test Access [POST]
+	 * @link https://dbp.test/bibles/filesets/AMKWBT/permissions - V4 Test Access [POST]
 	 *
 	 * @param string $fileset_id
 	 * @param Request $request

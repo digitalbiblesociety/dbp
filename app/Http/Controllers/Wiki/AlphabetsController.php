@@ -22,8 +22,8 @@ class AlphabetsController extends APIController
 	 * @version 4
 	 * @category v4_alphabets.all
 	 * @link http://bible.build/alphabets - V4 Access
-	 * @link https://api.dbp.dev/alphabets?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_alphabets_all - V4 Test Docs
+	 * @link https://api.dbp.test/alphabets?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v4#/Wiki/v4_alphabets_all - V4 Test Docs
 	 *
 	 * @return mixed $alphabets string - A JSON string that contains the status code and error messages if applicable.
 	 *
@@ -51,7 +51,7 @@ class AlphabetsController extends APIController
 	{
 		if (!$this->api) return view('wiki.languages.alphabets.index');
 
-		if(env('APP_DEBUG') == 'true') \Cache::forget('alphabets');
+		if(env('APP_DEBUG') === 'true') \Cache::forget('alphabets');
 		$alphabets = \Cache::remember('alphabets', 1600, function () {
 			$alphabets = Alphabet::select(['name', 'script', 'family', 'direction', 'type'])->get();
 			return fractal($alphabets, new AlphabetTransformer())->serializeWith($this->serializer);
@@ -64,13 +64,12 @@ class AlphabetsController extends APIController
 	/**
 	 * Returns Single Alphabet
 	 *
-	 * @version 4
+	 * @version  4
 	 * @category v4_alphabets.one
-	 * @link http://bible.build/alphabets - V4 Access
-	 * @link https://api.dbp.dev/alphabets/Latn?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_alphabets_one - V4 Test Docs
+	 * @link     http://bible.build/alphabets - V4 Access
+	 * @link     https://api.dbp.test/alphabets/Latn?key=1234&v=4&pretty - V4 Test Access
+	 * @link     https://dbp.test/eng/docs/swagger/v4#/Wiki/v4_alphabets_one - V4 Test Docs
 	 *
-	 * @return mixed $alphabets string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 * @OA\Get(
 	 *     path="/alphabets/{id}",
@@ -92,11 +91,15 @@ class AlphabetsController extends APIController
 	 *     )
 	 * )
 	 *
+	 * @param $id
+	 *
+	 * @return mixed $alphabets string - A JSON string that contains the status code and error messages if applicable.
+	 *
 	 */
 	public function show($id)
 	{
 
-		if(env('APP_DEBUG') == 'true') \Cache::forget('alphabet_' . $id);
+		if(env('APP_DEBUG') === 'true') \Cache::forget('alphabet_' . $id);
 		$alphabet = \Cache::remember('alphabet_' . $id, 1600, function () use ($id) {
 			return Alphabet::with('fonts', 'languages', 'bibles.currentTranslation')->where('script', $id)->first();
 		});
@@ -113,7 +116,7 @@ class AlphabetsController extends APIController
 	 *
 	 * @version 4
 	 * @category ui_alphabets.create
-	 * @link http://dbp.dev/alphabets/create - V4 Access
+	 * @link http://dbp.test/alphabets/create - V4 Access
 	 *
 	 * @return View
 	 *
@@ -121,10 +124,7 @@ class AlphabetsController extends APIController
 	public function create()
 	{
 		$validatedUser = $this->validateUser();
-		if (!is_a($validatedUser, User::class)) {
-		}
-
-		return $validatedUser;
+		if (!is_a($validatedUser, User::class)) return $validatedUser;
 
 		return view('wiki.languages.alphabets.create');
 	}
@@ -132,13 +132,11 @@ class AlphabetsController extends APIController
 	/**
 	 * Stores a Single Alphabet
 	 *
-	 * @version 4
+	 * @version  4
 	 * @category v4_alphabets.store
-	 * @link http://bible.build/alphabets - V4 Access
-	 * @link https://api.dbp.dev/alphabets?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_alphabets_store - V4 Test Docs
-	 *
-	 * @return mixed View|$alphabets
+	 * @link     http://bible.build/alphabets - V4 Access
+	 * @link     https://api.dbp.test/alphabets?key=1234&v=4&pretty - V4 Test Access
+	 * @link     https://dbp.test/eng/docs/swagger/v4#/Wiki/v4_alphabets_store - V4 Test Docs
 	 *
 	 * @OA\Post(
 	 *     path="/alphabets/",
@@ -162,6 +160,10 @@ class AlphabetsController extends APIController
 	 *     )
 	 * )
 	 *
+	 * @param Request $request
+	 *
+	 * @return mixed View|$alphabets
+	 *
 	 */
 
 	public function store(Request $request)
@@ -179,8 +181,8 @@ class AlphabetsController extends APIController
 	 * @version 4
 	 * @category v4_alphabets.update
 	 * @link http://bible.build/alphabets - V4 Access
-	 * @link https://api.dbp.dev/alphabets/Latn?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_alphabets_store - V4 Test Docs
+	 * @link https://api.dbp.test/alphabets/Latn?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v4#/Wiki/v4_alphabets_store - V4 Test Docs
 	 *
 	 * @param string $script_id - The ID of the alphabet currently being edited
 	 * @param Request $request - The form body

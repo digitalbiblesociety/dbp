@@ -53,7 +53,7 @@ class Bucket {
 		return $url;
 	}
 
-	// public static function signedUrl(string $file, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5)
+	// public static function signedUrl(string $file, string $name = 's3_fcbh', string $bucket = 'dbp.test', int $expiry = 5)
 
 	public static function download($files, string $name = 's3_fcbh', string $bucket = 'dbp-prod', int $expiry = 5, $books = null)
 	{
@@ -75,7 +75,7 @@ class Bucket {
 		}
 	}
 
-	public static function upload($files, string $name = 's3_fcbh', string $bucket = 'dbp_dev', int $expiry = 5, $books = null)
+	public static function upload($files, string $name = 's3_fcbh', string $bucket = 'dbp.test', int $expiry = 5, $books = null)
 	{
 		$s3 = Storage::disk($name);
 		$client = $s3->getDriver()->getAdapter()->getClient();

@@ -77,9 +77,9 @@ class FilmsController extends APIController
 	 * Returns an array of version return types
 	 *
 	 * @category v2_video_path
-	 * @link http://api.bible.build/api/reply - V4 Access
-	 * @link https://api.dbp.dev/api/reply?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
+	 * @link http://api.dbp4.org/api/reply - V4 Access
+	 * @link https://api.dbp.test/api/reply?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/video/path",

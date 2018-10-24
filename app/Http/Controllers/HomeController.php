@@ -118,7 +118,7 @@ class HomeController extends APIController
 		$filenames = $_GET['filenames'] ?? "";
 		$filenames = explode(",", $filenames);
 		$signer    = $_GET['signer'] ?? 's3_fcbh';
-		$bucket    = $_GET['bucket'] ?? "dbp-dev";
+		$bucket    = $_GET['bucket'] ?? "dbp.test";
 		$expiry    = $_GET['expiry'] ?? 5;
 		$urls      = [];
 

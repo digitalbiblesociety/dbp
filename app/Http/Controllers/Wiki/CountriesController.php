@@ -22,8 +22,8 @@ class CountriesController extends APIController
 	 * @version 4
 	 * @category v4_countries.all
 	 * @link http://bible.build/countries - V4 Access
-	 * @link https://api.dbp.dev/countries?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_countries_all - V4 Test Docs
+	 * @link https://api.dbp.test/countries?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v4#/Wiki/v4_countries_all - V4 Test Docs
 	 *
 	 * @return mixed $countries string - A JSON string that contains the status code and error messages if applicable.
 	 *
@@ -86,8 +86,8 @@ class CountriesController extends APIController
 	 * @version 4
 	 * @category v4_countries.jsp
 	 * @link http://bible.build/countries/joshua-project/ - V4 Access
-	 * @link https://api.dbp.dev/countries/joshua-project?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_countries_all - V4 Test Docs
+	 * @link https://api.dbp.test/countries/joshua-project?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v4#/Wiki/v4_countries_all - V4 Test Docs
 	 *
 	 *
 	 * @return mixed $countries string - A JSON string that contains the status code and error messages if applicable.
@@ -116,8 +116,8 @@ class CountriesController extends APIController
 	 * @version 4
 	 * @category v4_countries.one
 	 * @link http://bible.build/countries/RU/ - V4 Access
-	 * @link https://api.dbp.dev/countries/ru?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_countries_one - V4 Test Docs
+	 * @link https://api.dbp.test/countries/ru?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v4#/Wiki/v4_countries_one - V4 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/countries/{id}",
@@ -178,8 +178,8 @@ class CountriesController extends APIController
 	 * @version 4
 	 * @category ui_countries.create
 	 * @link http://bible.build/countries/RU/ - V4 Access
-	 * @link https://api.dbp.dev/countries/ru?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Wiki/v4_countries_one - V4 Test Docs
+	 * @link https://api.dbp.test/countries/ru?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v4#/Wiki/v4_countries_one - V4 Test Docs
 	 *
 	 *
 	 * @return mixed $countries string - A JSON string that contains the status code and error messages if applicable.

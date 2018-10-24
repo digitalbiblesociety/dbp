@@ -198,7 +198,7 @@ class BibleFileSetsController extends APIController
 				return $testamentLetter . str_pad($file->book->testament_order, 2, 0, STR_PAD_LEFT);
 			})->unique();
 		}
-		Bucket::download($files, 's3_fcbh', 'dbp_dev', 5, $books);
+		Bucket::download($files, 's3_fcbh', 'dbp.test', 5, $books);
 	}
 
 	/**
@@ -275,7 +275,7 @@ class BibleFileSetsController extends APIController
 	{
 		$iso = checkParam('iso', null, 'optional') ?? 'eng';
 		$type = checkParam('type', null, 'optional');
-		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? 'dbp-dev';
+		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? 'dbp.test';
 
 		$language = Language::where('iso',$iso)->first();
 		$fileset = BibleFileset::with(['copyright.organizations.logos', 'copyright.organizations.translations' => function ($q) use ($language) {

@@ -38,9 +38,9 @@ class ApiMetadataController extends APIController
 	 * Returns an array of signed audio urls
 	 *
 	 * @category v2_library_asset
-	 * @link http://api.bible.build/library/asset - V4 Access
-	 * @link https://api.dbp.dev/library/asset?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v2_library_asset - V4 Test Docs
+	 * @link http://api.dbp4.org/library/asset - V4 Access
+	 * @link https://api.dbp.test/library/asset?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/gen#/Version_2/v2_library_asset - V4 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/library/asset",
@@ -107,9 +107,9 @@ class ApiMetadataController extends APIController
 	 * Returns an array of version return types
 	 *
 	 * @category v2_video_path
-	 * @link http://api.bible.build/api/reply - V4 Access
-	 * @link https://api.dbp.dev/api/reply?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
+	 * @link http://api.dbp4.org/api/reply - V4 Access
+	 * @link https://api.dbp.test/api/reply?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/api/apiversion",
@@ -150,9 +150,9 @@ class ApiMetadataController extends APIController
 	 * Returns an array of version return types
 	 *
 	 * @category v2_api_apiReply
-	 * @link http://api.bible.build/api/reply - V4 Access
-	 * @link https://api.dbp.dev/api/reply?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
+	 * @link http://api.dbp4.org/api/reply - V4 Access
+	 * @link https://api.dbp.test/api/reply?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/api/reply",

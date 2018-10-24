@@ -14,7 +14,7 @@ class LibraryMetadataController extends APIController
 {
 	/**
 	 *
-	 * @link https://api.dbp.dev/library/metadata?key=1234&pretty&v=2
+	 * @link https://api.dbp.test/library/metadata?key=1234&pretty&v=2
 	 *
 	 * @OA\Get(
 	 *     path="/library/metadata",

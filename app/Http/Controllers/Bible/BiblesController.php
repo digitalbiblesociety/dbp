@@ -73,7 +73,7 @@ class BiblesController extends APIController
 	 *     @OA\Parameter(name="organization_id",      in="query", description="The owning organization to return bibles for. For a complete list of ids see the `/organizations` route", @OA\Schema(type="string")),
 	 *     @OA\Parameter(name="sort_by",              in="query", description="The any field to within the bible model may be selected as the value for this `sort_by` param.", @OA\Schema(type="string")),
 	 *     @OA\Parameter(name="sort_dir",             in="query", description="The direction to sort by the field specified in `sort_by`. Either `asc` or `desc`", @OA\Schema(type="string")),
-	 *     @OA\Parameter(name="bucket_id",            in="query", description="The bucket_id to filter results by. At the moment there are two buckets provided `dbp-dev` & `dbs-web`", @OA\Schema(type="string")),
+	 *     @OA\Parameter(name="bucket_id",            in="query", description="The bucket_id to filter results by. At the moment there are two buckets provided `dbp.test` & `dbs-web`", @OA\Schema(type="string")),
 	 *     @OA\Parameter(name="filter_by_fileset",    in="query", description="This field defaults to true but when set to false will return all Bible entries regardless of whether or not the API has content for that biblical text.", @OA\Schema(type="string")),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),

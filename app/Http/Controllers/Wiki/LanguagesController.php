@@ -29,7 +29,7 @@ class LanguagesController extends APIController
 	 * @deprecated family_only (optional): [true|false] When set to true the returned list is of only legal language families. The default is false.
 	 * @deprecated possibilities (optional); [true|false] When set to true the returned list is a combination of DBP languages and ISO languages not yet defined in DBP that meet any of the criteria.
 	 *
-	 * @link https://api.dbp.dev/languages?key=1234&v=4&pretty
+	 * @link https://api.dbp.test/languages?key=1234&v=4&pretty
 	 *
 	 * @return \Illuminate\Http\Response
 	 *

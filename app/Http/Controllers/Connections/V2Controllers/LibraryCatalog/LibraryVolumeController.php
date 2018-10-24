@@ -18,7 +18,7 @@ class LibraryVolumeController extends APIController
     /**
      * v2_volume_history
      *
-     * @link https://api.dbp.dev/library/volumehistory?key=1234&v=2
+     * @link https://api.dbp.test/library/volumehistory?key=1234&v=2
      *
      * @OA\Get(
      *     path="/library/volumehistory",
