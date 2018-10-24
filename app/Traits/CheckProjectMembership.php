@@ -21,11 +21,15 @@ trait CheckProjectMembership
 	 */
 	public function compareProjects($user_id, $key)
 	{
-		$developer = Key::with(['user.projectMembers' => function ($query) {
-			$query->whereIn('slug', ['admin','developer']);
+		$developer = Key::with(['user.projectMembers.role' => function ($query) {
+			$query->whereIn('name', ['admin','developer']);
 		}])->where('key',$key)->first();
-		$developer_projects = $developer->user->projectMembers->where('role','!=',1)->pluck('project_id')->toArray();
-		$user_projects = User::where('id',$user_id)->first()->projectMembers->pluck('project_id')->toArray();
+
+		if(!$developer->user->projectMembers) return false;
+		$developer_projects = $developer->user->projectMembers->pluck('project_id')->toArray();
+		$user = User::where('id',$user_id)->first();
+		if(!$user) return false;
+		$user_projects = $user->projectMembers->pluck('project_id')->toArray();
 
 		$membership = \count(array_intersect($developer_projects,$user_projects));
 		if(!$membership) return false;

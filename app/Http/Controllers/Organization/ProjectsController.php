@@ -9,6 +9,8 @@ use App\Models\User\ProjectMember;
 use Illuminate\Http\Request;
 use App\Transformers\ProjectTransformer;
 
+use Illuminate\View\View;
+use \Illuminate\Http\Response;
 use Validator;
 
 class ProjectsController extends APIController
@@ -35,30 +37,19 @@ class ProjectsController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
 	public function index()
 	{
-		if (!$this->api) {
-			return view('community.projects.index');
-		}
-		$all_open_projects = checkParam('all_projects', null, 'optional');
-
-		if (!isset($all_open_projects)) {
-			$key      = Key::find($this->key);
-			$user     = $key->user;
-			$projects = ($user->admin) ? Project::all() : $user->projects;
-		} else {
-			$projects = Project::where('sensitive', 0)->get();
-		}
-
-		return $this->reply(fractal()->transformWith(ProjectTransformer::class)->collection($projects));
+		if(!$this->api) return view('community.projects.index');
+		$projects = Project::where('sensitive', 0)->get();
+		return $this->reply(fractal($projects, ProjectTransformer::class));
 	}
 
 	/**
 	 * Show the form for creating a new resource.
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
 	public function create()
 	{
@@ -99,28 +90,14 @@ class ProjectsController extends APIController
 	 *
 	 * @param Request $request
 	 *
-	 * @return $this|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 * @return View|\Illuminate\Http\Response
 	 */
 	public function store(Request $request)
 	{
-		$user = \Auth::user() ?? Key::find($this->key)->user;
-		if (!$user) {
-			return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
-		}
+		$user = \Auth::user() ?? $this->user;
+		if(!$user) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
+		$this->validateProject($request);
 
-		$validator = Validator::make($request->all(), [
-			'id'   => 'required|unique:dbp_users.projects,id|max:24',
-			'name' => 'required',
-		]);
-
-		if ($validator->fails()) {
-			if ($this->api) {
-				return $this->setStatusCode(422)->replyWithError($validator->errors());
-			}
-			if (!$this->api) {
-				return redirect('dashboard/projects/create')->withErrors($validator)->withInput();
-			}
-		}
 		$project = \DB::transaction(function () use ($request, $user) {
 			$project = Project::create([
 				'name'            => $request->name,
@@ -134,9 +111,8 @@ class ProjectsController extends APIController
 			return $project;
 		});
 
-		if (!$this->api) return view('dashboard.projects.show', compact('user', 'project'));
-
-		return fractal()->transformWith(ProjectTransformer::class)->item($project)->addMeta(['message' => 'Project Creation Successful']);
+		if(!$this->api) return view('dashboard.projects.show', compact('user', 'project'));
+		return $this->reply(fractal($project,ProjectTransformer::class)->addMeta(['message' => trans('api.projects_created_200')]));
 	}
 
 	/**
@@ -163,30 +139,21 @@ class ProjectsController extends APIController
 	 *
 	 * @param  int $id
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return View|Response
 	 */
 	public function show($id)
 	{
 		$access_allowed = true;
-		$user           = \Auth::user() ?? @Key::find($this->key)->user;
+		$user           = \Auth::user() ?? $this->user;
 
 		$project = Project::find($id);
-		if (!$project) {
-			return $this->setStatusCode(404)->replyWithError("Project Not found");
-		}
+		if(!$project) return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
 
-		if ($project->sensitive) {
-			$access_allowed = isset($user) ? ($project->members->contains($user) OR $user->admin) : false;
-		}
-		if (!$access_allowed) {
-			return $this->setStatusCode(404)->replyWithError("Access Not allowed");
-		}
+		if($project->sensitive) $access_allowed = $user !== null ? ($project->members->contains($user) OR $user->admin) : false;
+		if(!$access_allowed) return $this->setStatusCode(404)->replyWithError(trans('api.projects_401'));
 
-		if (!$this->api) {
-			return view('community.projects.show', compact('project'));
-		}
-
-		return $this->reply(fractal()->transformWith(ProjectTransformer::class)->item($project));
+		if(!$this->api) return view('community.projects.show', compact('project'));
+		return $this->reply(fractal($project,ProjectTransformer::class));
 	}
 
 	/**
@@ -194,11 +161,12 @@ class ProjectsController extends APIController
 	 *
 	 * @param  int $id
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
 	public function edit($id)
 	{
-		return view('dashboard.projects.edit');
+		$project = Project::where('id',$id)->first();
+		return view('dashboard.projects.edit',compact('project'));
 	}
 
 	/**
@@ -226,29 +194,24 @@ class ProjectsController extends APIController
 	 * @param  \Illuminate\Http\Request $request
 	 * @param  int $id
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
 	public function update(Request $request, $id)
 	{
-		$user = \Auth::user() ?? Key::find($this->key)->user;
-		if (!$user) {
-			return $this->setStatusCode(401)->replyWithError("you're not logged in");
-		}
+		$user = \Auth::user() ?? Key::with('user')->find($this->key)->user;
+		if(!$user) return $this->setStatusCode(401)->replyWithError("you're not logged in");
+		$this->validateProject($request);
 
 		$project = Project::find($id);
-		if (!$project) {
-			return $this->setStatusCode(404)->replyWithError("Project Not found");
-		}
+		if(!$project) return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
 
-		$access_allowed = ($project->members->contains($user) OR $user->admin) ? true : false;
-		if (!$access_allowed) {
-			return $this->setStatusCode(404)->replyWithError("Access Not allowed");
-		}
+		$access_allowed = ($project->members->contains($user) OR $user->admin);
+		if(!$access_allowed) return $this->setStatusCode(404)->replyWithError(trans('api.projects_401'));
 
 		$project->update($request->all());
 		$project->save();
 
-		return $this->reply(trans('api.'));
+		return $this->reply(fractal($project,ProjectTransformer::class)->addMeta(['message' => trans('api.projects_updated_200')]));
 	}
 
 	/**
@@ -275,22 +238,21 @@ class ProjectsController extends APIController
 	 *
 	 * @param  int $id
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
 	public function destroy($id)
 	{
 		$user = \Auth::user() ?? Key::find($this->key)->user;
-		if (!$user) return $this->setStatusCode(401)->replyWithError("you're not logged in");
+		if(!$user) return $this->setStatusCode(401)->replyWithError(trans('api.users_errors_404'));
 
 		$project = Project::find($id);
-		if (!$project) return $this->setStatusCode(404)->replyWithError("Project Not found");
+		if(!$project) return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
 
 		$access_allowed = $project->admins->contains($user->id);
-		if (!$access_allowed) return $this->setStatusCode(404)->replyWithError("You must be an admin to delete a project");
+		if(!$access_allowed) return $this->setStatusCode(401)->replyWithError(trans('api.projects_destroy_401'));
 
 		$project->delete();
-
-		return $this->reply("project deleted");
+		return $this->setStatusCode(200)->reply(trans('api.projects_destroy_200'));
 	}
 
 
@@ -299,16 +261,39 @@ class ProjectsController extends APIController
 	 *
 	 * @param $token
 	 *
-	 * @return \Illuminate\Http\RedirectResponse|mixed
+	 * @return \Illuminate\Http\RedirectResponse
 	 */
 	public function connect($token)
 	{
 		$project_member = ProjectMember::with('project')->where('token',$token)->first();
-		if(!$project_member) return $this->replyWithError("404");
+		if(!$project_member) return $this->setStatusCode(404)->replyWithError(trans('api.project_errors_member_404'));
 
 		$project_member->subscribed = true;
 		$project_member->save();
 
 		return redirect()->away($project_member->project->url_site);
+	}
+
+
+	/**
+	 * Validate Requests to Connect Users to Projects
+	 *
+	 * @param $request
+	 *
+	 * @return Response|\Illuminate\Http\RedirectResponse|null
+	 */
+	private function validateProject(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'id'   => ($request->method() === 'POST') ? 'required|unique:dbp_users.projects,id|max:24' : 'required|exists:dbp_users.projects,id|max:24',
+			'name' => 'required',
+		]);
+
+		if($validator->fails()) {
+			if($this->api) return $this->setStatusCode(422)->replyWithError($validator->errors());
+			if(!$this->api) return redirect('dashboard/projects/create')->withErrors($validator)->withInput();
+		}
+
+		return null;
 	}
 }

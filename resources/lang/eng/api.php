@@ -29,11 +29,12 @@ return [
 	'wiki_authorization_failed'              => 'Your account does not have Archivist level permissions',
 	'alphabets_errors_404'                   => 'No alphabet could be found that has the `:id` id',
 	'languages_errors_404'                   => 'Unable to locate language',
-	'countries_errors_404'                   => 'No language for the provided iso: :l10n could be found.',
+	'countries_errors_404'                   => 'No Country for the provided id :id Could be Found',
 	'numerals_errors_404'                    => 'Alphabet Numbering System for the provided script `:script` could not be found',
 	'numerals_range_error_maxsize'           => 'Your given range of :num is outside the max size of 2000',
 
 	// Community Routes
+	'users_errors_404'                       => 'No user for the provided param `:param` could be found',
 	'users_errors_404_email'                 => 'No user with the email `:email` could be found',
 	'users_errors_422_email_disposable'      => 'Email is disposable',
 	'users_errors_422_email_nonexistent_host'=> 'The provided email host does not exist',
@@ -47,10 +48,16 @@ return [
 	'user_creation_permission_failed'        => 'You do not have permission to create users',
 	'user_notes_store_200'                   => 'Note successfully created',
 
-	'project_users_404'                      => 'The specified user is not a member of the project_id provided.',
-	'projects_destroy_200'                   => 'Projects',
+	'projects_404'                           => 'Project Not found',
+	'projects_401'                           => 'You don\'t have permission to alter projects',
+	'projects_created_200'                   => 'You have successfully created a new project',
+	'projects_updated_200'                   => 'You have successfully updated this project',
+	'projects_users_404'                     => 'The specified user is not a member of the project_id provided.',
+	'projects_destroy_200'                   => 'Project successfully deleted',
+	'projects_destroy_401'                   => 'You must be an admin to delete a project',
 	'projects_developer_not_a_member'        => 'The project ID provided is not associated with your developer key',
 	'projects_users_not_connected'           => 'This user needs to be connected with one of your projects.',
+	'projects_users_error_404'               => 'This user either does not exist',
 	'projects_users_needs_to_connect'        => 'This user needs to be connected with this project. A verification email has been sent to them',
 
 	'organizations_relationship_members_404' => 'No membership connection found.',

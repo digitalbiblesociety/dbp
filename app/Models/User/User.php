@@ -7,6 +7,7 @@ use App\Models\Social;
 use App\Models\User\Study\Bookmark;
 use App\Models\User\Study\Highlight;
 use App\Models\User\Study\Note;
+use App\Models\User\RoleUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -35,6 +36,15 @@ use jeremykenedy\LaravelRoles\Traits\HasRoleAndPermission;
  * @property-read Project[] $projects
  * @property-read Key[] $keys
  *
+ * @property integer $id
+ * @property string $name
+ * @property string $password
+ * @property string $nickname
+ * @property string $avatar
+ * @property string $email
+ * @property boolean $verified
+ * @property string $email_token
+ *
  * @OA\Schema (
  *     type="object",
  *     description="The User model communicates information about everyone involved with the project",
@@ -60,14 +70,11 @@ class User extends Model implements Authenticatable
 	 *
 	 * @OA\Property(
 	 *   title="id",
-	 *   type="string",
-	 *   description="The unique id for the user",
-	 *   maxLength=64,
-	 *   example="4E7Fk8AWGvZCCV7"
+	 *   type="integer",
+	 *   description="The unique id for the user"
 	 * )
 	 *
 	 * @method static User whereId($value)
-	 * @property string $id
 	 */
 	protected $id;
 
@@ -82,7 +89,6 @@ class User extends Model implements Authenticatable
 	 * )
 	 *
 	 * @method static User whereName($value)
-	 * @property string $name
 	 */
 	protected $name;
 
@@ -97,7 +103,6 @@ class User extends Model implements Authenticatable
 	 * )
 	 *
 	 * @method static User wherePassword($value)
-	 * @property string $password
 	 */
 	protected $password;
 
@@ -112,7 +117,6 @@ class User extends Model implements Authenticatable
 	 * )
 	 *
 	 * @method static User whereNickname($value)
-	 * @property string $nickname
 	 */
 	protected $nickname;
 
@@ -127,7 +131,6 @@ class User extends Model implements Authenticatable
 	 * )
 	 *
 	 * @method static User whereAvatar($value)
-	 * @property string $avatar
 	 */
 	protected $avatar;
 
@@ -142,7 +145,6 @@ class User extends Model implements Authenticatable
 	 * )
 	 *
 	 * @method static User whereEmail($value)
-	 * @property string $email
 	 */
 	protected $email;
 
@@ -156,7 +158,6 @@ class User extends Model implements Authenticatable
 	 * )
 	 *
 	 * @method static User whereVerified($value)
-	 * @property boolean $verified
 	 */
 	protected $verified;
 
@@ -170,7 +171,6 @@ class User extends Model implements Authenticatable
 	 * )
 	 *
 	 * @method static User whereEmailToken($value)
-	 * @property string $email_token
 	 */
 	protected $email_token;
 
@@ -266,7 +266,7 @@ class User extends Model implements Authenticatable
 
 	public function organizations()
 	{
-		return $this->hasManyThrough(Organization::class, Role::class, 'user_id', 'id', 'id', 'organization_id');
+		return $this->hasManyThrough(Organization::class, RoleUser::class, 'user_id', 'id', 'id', 'organization_id');
 	}
 
 	public function permissions()

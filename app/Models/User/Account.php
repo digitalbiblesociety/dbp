@@ -21,6 +21,7 @@ class Account extends Model
 	protected $connection = 'dbp_users';
 	protected $table = 'user_accounts';
 	protected $fillable = ['user_id', 'provider_user_id', 'provider_id','created_at'];
+	protected $hidden = ['user_id','id'];
 
     /**
      *

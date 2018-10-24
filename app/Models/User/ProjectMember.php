@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProjectMember extends Model
 {
 	protected $connection = 'dbp_users';
-	protected $table = 'project_members';
+	protected $table = 'dbp_users.project_members';
     protected $fillable = ['project_id','role','subscribed','token'];
     public $incrementing = false;
     public $keyType = 'string';

@@ -19,10 +19,10 @@ use App\Models\Organization\Organization;
 class Role extends Model
 {
 	protected $connection = 'dbp_users';
-	protected $table = 'dbp_users.role_user';
+	protected $table = 'dbp_users.roles';
 	public $incrementing = false;
 	public $timestamps = true;
-	public $fillable = ['organization_id','user_id','role'];
+	public $fillable = ['organization_id','user_id','role_id'];
 
 	/**
 	 *

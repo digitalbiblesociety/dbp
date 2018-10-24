@@ -14,7 +14,7 @@ class CreateRolesTable extends Migration
     {
     	if(!Schema::connection('dbp_users')->hasTable('roles')) {
 		    Schema::connection('dbp_users')->create('roles', function (Blueprint $table) {
-			    $table->increments('id')->unsigned();
+			    $table->tinyInteger('id')->unsigned()->autoIncrement();
 			    $table->string('name');
 			    $table->string('slug')->unique();
 			    $table->string('description')->nullable();
@@ -27,7 +27,7 @@ class CreateRolesTable extends Migration
         if(!Schema::connection('dbp_users')->hasTable('role_user')) {
 	        Schema::connection('dbp_users')->create('role_user', function (Blueprint $table) {
 		        $table->increments('id')->unsigned();
-		        $table->integer('role_id')->unsigned()->index();
+		        $table->tinyInteger('role_id')->unsigned()->index();
 		        $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
 		        $table->integer('user_id')->unsigned()->index();
 		        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -55,7 +55,7 @@ class CreateRolesTable extends Migration
 			    $table->increments('id')->unsigned();
 			    $table->integer('permission_id')->unsigned()->index();
 			    $table->foreign('permission_id')->references('id')->on('permissions')->onDelete('cascade');
-			    $table->integer('role_id')->unsigned()->index();
+			    $table->tinyInteger('role_id')->unsigned()->index();
 			    $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
 			    $table->timestamp('created_at')->useCurrent();
 			    $table->timestamp('updated_at')->useCurrent();

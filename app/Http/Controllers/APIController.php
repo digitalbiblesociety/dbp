@@ -87,6 +87,7 @@ class APIController extends Controller
 	protected $serializer;
 	protected $v;
 	protected $key;
+	protected $user;
 
 	public function __construct()
 	{
@@ -98,6 +99,7 @@ class APIController extends Controller
 			$this->v   = (int) checkParam('v');
 			$this->key = checkParam('key');
 			$keyExists = Key::find($this->key);
+			$this->user = $keyExists->user;
 			if(!$keyExists) abort(403, 'You need to provide a valid API key');
 
 			// i18n

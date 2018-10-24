@@ -39,13 +39,14 @@ class CreateUsersTable extends Migration
 
         if(!Schema::connection('dbp_users')->hasTable('user_keys')) {
 	        Schema::connection('dbp_users')->create('user_keys', function (Blueprint $table) {
-			    $table->integer('user_id')->unsigned()->primary();
+			    $table->integer('user_id')->unsigned();
 			    $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
 			    $table->string('key',64)->unique();
 			    $table->string('name')->nullable();
 			    $table->text('description')->nullable();
 			    $table->timestamp('created_at')->useCurrent();
 			    $table->timestamp('updated_at')->useCurrent();
+			    $table->unique(['user_id','key']);
 	        });
         }
 
@@ -98,15 +99,21 @@ class CreateUsersTable extends Migration
 
 	    if(!Schema::connection('dbp_users')->hasTable('profiles')) {
     		Schema::connection('dbp_users')->create('profiles', function (Blueprint $table) {
-		        $table->increments('id');
 		        $table->integer('user_id')->unsigned()->index();
 		        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-		        $table->string('location')->nullable();
 		        $table->text('bio')->nullable();
-		        $table->string('twitter_username')->nullable();
-		        $table->string('github_username')->nullable();
-		        $table->string('avatar')->nullable();
-		        $table->boolean('avatar_status')->default(0);
+		        $table->string('address_1')->nullable();
+			    $table->string('address_2')->nullable();
+			    $table->string('address_3')->nullable();
+			    $table->string('city')->nullable();
+			    $table->string('state')->nullable();
+			    $table->string('zip')->nullable();
+			    $table->char('country_id', 2)->nullable();
+			    $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
+			    $table->string('avatar')->nullable();
+			    $table->tinyInteger('sex')->default(0)->unsigned(); // Aligns to the ISO/IEC 5218 Standards
+			    $table->timestamp('birthday')->nullable();
+			    $table->string('phone',22)->nullable();
 		        $table->timestamp('created_at')->useCurrent();
 		        $table->timestamp('updated_at')->useCurrent();
 	        });

@@ -45,6 +45,7 @@ class DocsController extends APIController
 
 	public function swagger_docs_gen()
 	{
+		ini_set('memory_limit','250M');
 		$version      = checkParam('v', null, 'optional') ?? "v4";
 		$otherVersion = ($version == "v4") ? "v2" : "v4";
 		$swagger      = \OpenApi\scan(app_path());

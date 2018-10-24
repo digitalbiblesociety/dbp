@@ -56,7 +56,7 @@ class UserBookmarksController extends APIController
 			    $q->where('chapter',$chapter);
 		    })->get();
 
-		return $this->reply(fractal($bookmarks, UserBookmarksTransformer::class)->serializeWith($this->serializer));
+		return $this->reply(fractal($bookmarks, UserBookmarksTransformer::class,$this->serializer));
     }
 
     /**

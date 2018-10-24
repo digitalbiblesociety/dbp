@@ -15,7 +15,7 @@ class ProjectTransformer extends BaseTransformer
 	public function transform(Project $project)
     {
 	    switch ($this->version) {
-		    case "4":
+		    case 4:
 		    default: return $this->transformForV4($project);
 	    }
     }
@@ -43,15 +43,14 @@ class ProjectTransformer extends BaseTransformer
 	public function transformForV4($project)
 	{
 		return [
-			"id"              => $project->id,
-            "name"            => $project->name,
-            "url_avatar"      => $project->url_avatar,
-            "url_avatar_icon" => $project->url_avatar_icon,
-            "url_site"        => $project->url_site,
-            "description"     => $project->description,
-            "created_at"      => $project->created_at->toDateTimeString(),
-            "updated_at"      => $project->updated_at->toDateTimeString(),
-            "members"         => $project->members->pluck('name','id')
+			'id'              => $project->id,
+            'name'            => $project->name,
+            'url_avatar'      => $project->url_avatar,
+            'url_avatar_icon' => $project->url_avatar_icon,
+            'url_site'        => $project->url_site,
+            'description'     => $project->description,
+            'created_at'      => $project->created_at->toDateTimeString(),
+            'updated_at'      => $project->updated_at->toDateTimeString()
 		];
 	}
 

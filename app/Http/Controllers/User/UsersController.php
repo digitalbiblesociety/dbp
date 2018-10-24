@@ -8,6 +8,7 @@ use App\Models\User\Project;
 use App\Models\User\ProjectOauthProvider;
 use App\Models\User\ProjectMember;
 use App\Models\User\Account;
+use App\Models\User\Role;
 use App\Models\User\User;
 use App\Models\User\Key;
 
@@ -88,9 +89,9 @@ class UsersController extends APIController
 	 *     @OA\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_index")),
-	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_index")),
-	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_index"))
+	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_show")),
+	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_show")),
+	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_show"))
 	 *     )
 	 * )
 	 *
@@ -103,12 +104,13 @@ class UsersController extends APIController
 		$unauthorized_user = $this->unauthorizedToAlterUsers();
 		if($unauthorized_user) return $unauthorized_user;
 
-		$user = User::with('organizations.currentTranslation')->when($this->project_limited, function ($q) {
-			$q->whereHas('projects', function ($query) {
-				$query->whereIn('project_members.project_id', $this->user->developer->pluck('id'));
+		$project_limited = $this->project_limited();
+		$user = User::with('accounts','organizations','profile')->when($project_limited, function ($q) {
+			$q->whereHas('projectMembers', function ($query) {
+				$query->whereIn('project_id', $this->available_projects());
 			});
 		})->where('id', $id)->first();
-		if(!$user) return $this->replyWithError('user not found');
+		if(!$user) return $this->replyWithError(trans('api.users_errors_404', ['param' => $id]));
 
 		if(!$this->api) return view('dashboard.users.show', compact('user'));
 		return $this->reply(fractal($user, UserTransformer::class));
@@ -245,7 +247,7 @@ class UsersController extends APIController
 		if ($request->project_id) {
 			$user->projectMembers()->create([
 				'project_id' => $request->project_id,
-				'role'       => ($request->user_role) ? $request->user_role : 'user',
+				'role_id'    => ($request->user_role) ? $request->user_role : 'user',
 				'subscribed' => $request->subscribed ?? 0,
 			]);
 		}
@@ -315,7 +317,7 @@ class UsersController extends APIController
 		if(!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => request()->email], $GLOBALS['i18n_iso']));
 
 		// If the request does not originate from an admin
-		if($this->project_limited) {
+		if($this->project_limited()) {
 			$user_projects = $user->projects->pluck('id');
 			$developer_projects = $this->user->developer->pluck('id');
 			if(!$developer_projects->contains(request()->project_id)) return $this->setStatusCode(401)->replyWithError(trans('api.projects_developer_not_a_member', [], $GLOBALS['i18n_iso']));
@@ -325,7 +327,7 @@ class UsersController extends APIController
 				$connection = $user->projectMembers()->create([
 					'user_id'       => $user->id,
 					'project_id'    => $project->id,
-					'role'          => 'user',
+					'role_id'       => 'user',
 					'token'         => unique_random(env('DBP_USERS_DATABASE').'.project_members','token'),
 					'subscribed'    => false
 				]);
@@ -523,7 +525,8 @@ class UsersController extends APIController
 	private function unauthorizedToAlterUsers()
 	{
 		if(!isset($this->user)) return $this->setStatusCode(401)->replyWithError(trans('api.auth_key_validation_failed'));
-		if(!isset($this->user->canAlterUsers) AND !isset($this->user->developer)) return $this->setStatusCode(401)->replyWithError(trans('api.auth_user_validation_failed'));
+		$developer = $this->user->projectMembers->where('slug','developer')->first();
+		if($developer !== null) return $this->setStatusCode(401)->replyWithError(trans('api.auth_user_validation_failed'));
 		return false;
 	}
 
@@ -532,6 +535,16 @@ class UsersController extends APIController
 		$this->user = isset($_GET['key']) ? Key::where('key',$_GET['key'])->first()->user : \Auth::user();
 		if(isset($this->user)) return !($this->user->admin or $this->user->archivist);
 		return true;
+	}
+
+
+	private function available_projects()
+	{
+		$userWithProjects = $this->user->load(['projectMembers' => function ($query) {
+			$role = Role::where('slug','developer')->first();
+			$query->where('role_id', $role->id);
+		}]);
+		return $userWithProjects->projectMembers->pluck('project_id')->toArray();
 	}
 
 	/**
@@ -543,7 +556,7 @@ class UsersController extends APIController
 	private function validateUser()
 	{
 		$validator = Validator::make(request()->all(), [
-			'email'                   => (request()->method() == "POST") ? 'required|unique:dbp_users.users,email' : 'required|exists:dbp_users.users,email',
+			'email'                   => (request()->method() == 'POST') ? 'required|unique:dbp_users.users,email' : 'required|exists:dbp_users.users,email',
 			'project_id'              => 'required|exists:dbp_users.projects,id',
 			'social_provider_id'      => 'required_with:social_provider_user_id',
 			'social_provider_user_id' => 'required_with:social_provider_id',

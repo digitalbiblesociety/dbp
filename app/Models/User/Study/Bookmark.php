@@ -88,7 +88,7 @@ class Bookmark extends Model
 	 * @method static Note whereUpdatedAt($value)
 	 * @public Carbon|null $updated_at
 	 */
-	public $updated_at;
+	protected $updated_at;
 
 	/**
 	 *
@@ -101,7 +101,7 @@ class Bookmark extends Model
 	 * @method static Note whereCreatedAt($value)
 	 * @public Carbon $created_at
 	 */
-	public $created_at;
+	protected $created_at;
 
 	public function user()
 	{

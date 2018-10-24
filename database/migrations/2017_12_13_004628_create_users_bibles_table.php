@@ -15,7 +15,7 @@ class CreateUsersBiblesTable extends Migration
     {
     	if(!Schema::connection('dbp_users')->hasTable('projects')) {
 		    Schema::connection('dbp_users')->create('projects', function (Blueprint $table) {
-			    $table->string('id', 24)->primary();
+			    $table->smallInteger('id')->unsigned()->primary();
 			    $table->string('name');
 			    $table->string('url_avatar')->nullable();
 			    $table->string('url_avatar_icon')->nullable();
@@ -28,8 +28,8 @@ class CreateUsersBiblesTable extends Migration
 	    }
 		if(!Schema::connection('dbp_users')->hasTable('project_oauth_providers')) {
 			Schema::connection('dbp_users')->create('project_oauth_providers', function (Blueprint $table) {
-				$table->char('id', 8)->primary();
-				$table->string('project_id', 24);
+				$table->smallInteger('id')->unsigned()->primary();
+				$table->smallInteger('project_id')->unsigned();
 				$table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
 				$table->string('name');
 				$table->string('client_id');
@@ -45,12 +45,13 @@ class CreateUsersBiblesTable extends Migration
 			Schema::connection('dbp_users')->create('project_members', function (Blueprint $table) {
 				$table->integer('user_id')->unsigned();
 				$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
-				$table->string('project_id', 24);
+				$table->smallInteger('project_id')->unsigned();
 				$table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
-				$table->string('role');
+				$table->tinyInteger('role_id')->unsigned();
+				$table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade')->onUpdate('cascade');
 				$table->boolean('subscribed')->default(false)->nullable();
+				$table->string('token',16);
 				$table->timestamp('created_at')->useCurrent();
-				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
 		if(!Schema::connection('dbp_users')->hasTable('user_accounts')) {

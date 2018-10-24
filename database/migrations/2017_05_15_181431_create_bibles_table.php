@@ -278,8 +278,7 @@ class CreateBiblesTable extends Migration
 			    $table->string('file_name');
 			    $table->integer('file_size')->unsigned()->nullable();
 			    $table->integer('duration')->unsigned()->nullable();
-			    $table->unique(['hash_id', 'book_id', 'chapter_start', 'verse_start'],
-				    'unique_bible_file_by_reference');
+			    $table->unique(['hash_id', 'book_id', 'chapter_start', 'verse_start'], 'unique_bible_file_by_reference');
 			    $table->timestamp('created_at')->useCurrent();
 			    $table->timestamp('updated_at')->useCurrent();
 		    });
@@ -294,6 +293,47 @@ class CreateBiblesTable extends Migration
 			    $table->text('title');
 			    $table->text('description')->nullable();
 			    $table->text('key_words')->nullable();
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
+		    });
+	    }
+
+	    if(!Schema::connection('dbp')->hasTable('bible_file_tags')) {
+		    Schema::connection('dbp')->create('bible_file_tags', function (Blueprint $table) {
+			    $table->integer('file_id')->unsigned();
+			    $table->foreign('file_id')->references('id')->on('bible_files')->onUpdate('cascade')->onDelete('cascade');
+			    $table->unique(['file_id', 'tag', 'value'], 'unique_bible_file_tag');
+			    $table->string('tag',4);
+			    $table->string('value');
+			    $table->boolean('admin_only');
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
+		    });
+	    }
+
+	    if(!Schema::connection('dbp')->hasTable('bible_file_video_resolutions')) {
+		    Schema::connection('dbp')->create('bible_file_video_resolutions', function (Blueprint $table) {
+			    $table->increments('id');
+			    $table->integer('bible_file_id')->unsigned();
+			    $table->foreign('bible_file_id')->references('id')->on('bible_files')->onUpdate('cascade')->onDelete('cascade');
+			    $table->string('file_name');
+			    $table->integer('bandwidth')->unsigned();
+			    $table->integer('resolution_width')->unsigned();
+			    $table->integer('resolution_height')->unsigned();
+			    $table->string('codec',64);
+			    $table->boolean('stream');
+			    $table->timestamp('created_at')->useCurrent();
+			    $table->timestamp('updated_at')->useCurrent();
+		    });
+	    }
+
+	    if(!Schema::connection('dbp')->hasTable('bible_file_video_transport_stream')) {
+		    Schema::connection('dbp')->create('bible_file_video_transport_stream', function (Blueprint $table) {
+			    $table->increments('id');
+			    $table->integer('video_resolution_id')->unsigned();
+			    $table->foreign('video_resolution_id')->references('id')->on('bible_file_video_resolutions')->onUpdate('cascade')->onDelete('cascade');
+			    $table->string('file_name');
+			    $table->float('runtime');
 			    $table->timestamp('created_at')->useCurrent();
 			    $table->timestamp('updated_at')->useCurrent();
 		    });
