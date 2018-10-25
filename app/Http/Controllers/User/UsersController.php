@@ -245,9 +245,10 @@ class UsersController extends APIController
 			'password' => Hash::make($request->password),
 		]);
 		if ($request->project_id) {
+			$user_role = Role::where('slug','user')->first();
 			$user->projectMembers()->create([
 				'project_id' => $request->project_id,
-				'role_id'    => ($request->user_role) ? $request->user_role : 'user',
+				'role_id'    => $user_role->id,
 				'subscribed' => $request->subscribed ?? 0,
 			]);
 		}
