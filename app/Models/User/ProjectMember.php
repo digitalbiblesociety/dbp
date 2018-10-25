@@ -20,7 +20,7 @@ class ProjectMember extends Model
 {
 	protected $connection = 'dbp_users';
 	protected $table = 'dbp_users.project_members';
-    protected $fillable = ['project_id','role','subscribed','token'];
+    protected $fillable = ['project_id','user_id','role_id','subscribed','token'];
     public $incrementing = false;
     public $keyType = 'string';
     public $primaryKey = 'user_id';

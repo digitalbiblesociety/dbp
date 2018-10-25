@@ -9,11 +9,10 @@ use App\Models\Language\Language;
 
 use App\Models\Language\NumeralSystem;
 use App\Models\Language\NumeralSystemGlyph;
-use App\Transformers\AlphabetTransformer;
 use App\Transformers\NumbersTransformer;
 
 use Illuminate\Http\Request;
-
+use Validator;
 class NumbersController extends APIController
 {
 
@@ -24,8 +23,7 @@ class NumbersController extends APIController
 	 *     path="/numbers/range",
 	 *     tags={"Languages"},
 	 *     summary="Return a range of numbers",
-	 *     description="This route returns the vernacular numbers for a set range.
-	The range for a single call is limited to 2000 numbers.",
+	 *     description="This route returns the vernacular numbers for a set range. The range for a single call is limited to 2000 numbers.",
 	 *     operationId="v4_numbers.range",
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -174,15 +172,15 @@ class NumbersController extends APIController
 		$this->validateNumericSystem($request);
 
 		foreach ($request->numerals as $input_numeral) {
-			$alphabetExists = AlphabetNumber::where([
-				['script_id', $input_numeral['script_id']],
+			$alphabetExists = NumeralSystemGlyph::where([
+				['numeral_system_id', $input_numeral['script_id']],
 				['iso', $input_numeral['iso']],
 				['numeral', $input_numeral['numeral']],
 				['numeral_vernacular', $input_numeral['numeral_vernacular']],
 				['numeral_written', $input_numeral['numeral_written']],
 			])->first();
-			if ($alphabetExists == null) continue;
-			$alphabet_number = new AlphabetNumber();
+			if(!$alphabetExists) continue;
+			$alphabet_number = new NumeralSystemGlyph();
 			$alphabet_number->create($input_numeral);
 		}
 		$script_id = collect($request->numerals)->pluck('script_id')->first();
@@ -194,11 +192,7 @@ class NumbersController extends APIController
 	{
 		$alphabets = Alphabet::select('script')->get();
 		$languages = Language::select(['iso', 'name'])->get();
-		$numbers   = AlphabetNumber::where('script_id', $system)->get();
-		if ($this->api) {
-			return $numbers;
-		}
-
+		$numbers   = NumeralSystemGlyph::where('numeral_system_id', $system)->get();
 		return view('wiki.languages.alphabets.numerals.edit', compact('alphabets', 'languages', 'numbers', 'system'));
 	}
 
@@ -210,7 +204,7 @@ class NumbersController extends APIController
 	private function validateNumericSystem(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'script'              => ($request->method() == "POST") ? 'required|unique:dbp.alphabets,script|max:4|min:4' : 'required|exists:dbp.alphabets,script|max:4|min:4',
+			'script'              => ($request->method() === 'POST') ? 'required|unique:dbp.alphabets,script|max:4|min:4' : 'required|exists:dbp.alphabets,script|max:4|min:4',
 			'iso'                 => 'exists:dbp.languages,iso',
 			'unicode_pdf'         => 'url|nullable',
 			'family'              => 'string|max:191|nullable',

@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 use App\Traits\AccessControlAPI;
-
+use Validator;
 class LanguagesController extends APIController
 {
 
@@ -63,8 +63,8 @@ class LanguagesController extends APIController
 	 */
 	public function index()
 	{
-		if (env('APP_ENV') == 'local') ini_set('memory_limit', '700M');
-		if (!$this->api) return view('wiki.languages.index');
+		if(env('APP_ENV') === 'local') ini_set('memory_limit', '700M');
+		if(!$this->api) return view('wiki.languages.index');
 
 		$country               = checkParam('country', null, 'optional');
 		$code                  = checkParam('code|iso', null, 'optional');
@@ -75,7 +75,7 @@ class LanguagesController extends APIController
 		$access_control = $this->accessControl($this->key, 'api');
 
 		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $show_restricted . $include_alt_names . $access_control->string;
-		if(env('APP_ENV') == 'local') \Cache::forget($cache_string);
+		if(env('APP_ENV') === 'local') \Cache::forget($cache_string);
 		$languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $code, $sort_by, $show_restricted, $access_control) {
 			//$include_alt_names
 			$languages = Language::select(['id', 'glotto_id', 'iso', 'name'])->with('autonym')
@@ -150,12 +150,13 @@ class LanguagesController extends APIController
 	 */
 	public function store(Request $request)
 	{
-		if (!Auth::user()->archivist) {
-			return $this->setStatusCode(401)->replyWithError("You are not an Archivist");
+		if(!\Auth::user()->archivist) {
+			return $this->setStatusCode(401)->replyWithError(trans('api.languages_create_401'));
 		}
 		$this->validateLanguage($request);
-		Language::create($request->all());
-		redirect()->route('languages_show', ['id' => $request->id]);
+		$language = Language::create($request->all());
+		if(!$this->api) return $this->reply($language);
+		return redirect()->route('languages_show', ['id' => $request->id]);
 	}
 
 	/**
@@ -230,9 +231,7 @@ class LanguagesController extends APIController
 	 */
 	public function update(Request $request, $id)
 	{
-		if (!Auth::user()->archivist) {
-			return $this->setStatusCode(401)->replyWithError("You are not an Archivist");
-		}
+		if(!Auth::user()->archivist) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
 		$language = Language::find($id);
 		$this->validateLanguage($request);
 		$language->fill($request->all())->save();
@@ -249,9 +248,7 @@ class LanguagesController extends APIController
 	 */
 	public function destroy($id, Request $request)
 	{
-		if (!Auth::user()->archivist) {
-			return $this->setStatusCode(401)->replyWithError("You are not an Archivist");
-		}
+		if(!Auth::user()->archivist) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
 		Language::find($id)->delete();
 		return redirect()->route('view_languages.index');
 	}
@@ -260,11 +257,11 @@ class LanguagesController extends APIController
 	{
 		$latLongRegex = '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$';
 		$validator    = Validator::make($request->all(), [
-			'glotto_id'  => ($request->method() == "POST") ? 'alpha_num|unique:dbp.languages,glotto_id|max:8|required_if:iso,null|nullable' : 'alpha_num|exists:dbp.languages,glotto_id|max:8|required_if:iso,null|nullable',
-			'iso'        => ($request->method() == "POST") ? 'alpha|unique:dbp.languages,iso|max:3|required_if:glotto_code,null|nullable' : 'alpha|exists:dbp.languages,iso|max:3|required_if:glotto_code,null|nullable',
-			'iso2B'      => ($request->method() == "POST") ? 'alpha|max:3|unique:dbp.languages,iso2B' : 'alpha|max:3',
-			'iso2T'      => ($request->method() == "POST") ? 'alpha|max:3|unique:dbp.languages,iso2T' : 'alpha|max:3',
-			'iso1'       => ($request->method() == "POST") ? 'alpha|max:2|unique:dbp.languages,iso1' : 'alpha|max:2',
+			'glotto_id'  => ($request->method() === 'POST') ? 'alpha_num|unique:dbp.languages,glotto_id|max:8|required_if:iso,null|nullable' : 'alpha_num|exists:dbp.languages,glotto_id|max:8|required_if:iso,null|nullable',
+			'iso'        => ($request->method() === 'POST') ? 'alpha|unique:dbp.languages,iso|max:3|required_if:glotto_code,null|nullable' : 'alpha|exists:dbp.languages,iso|max:3|required_if:glotto_code,null|nullable',
+			'iso2B'      => ($request->method() === 'POST') ? 'alpha|max:3|unique:dbp.languages,iso2B' : 'alpha|max:3',
+			'iso2T'      => ($request->method() === 'POST') ? 'alpha|max:3|unique:dbp.languages,iso2T' : 'alpha|max:3',
+			'iso1'       => ($request->method() === 'POST') ? 'alpha|max:2|unique:dbp.languages,iso1' : 'alpha|max:2',
 			'name'       => 'required|string|max:191',
 			'autonym'    => 'required|string|max:191',
 			'maps'       => 'string|max:191|nullable',
@@ -274,13 +271,9 @@ class LanguagesController extends APIController
 			'country_id' => 'alpha|max:2|exists:dbp.countries,id',
 		]);
 
-		if ($validator->fails()) {
-			if ($this->api) {
-				return $this->setStatusCode(422)->replyWithError($validator->errors());
-			}
-			if (!$this->api) {
-				return redirect('dashboard/alphabets/create')->withErrors($validator)->withInput();
-			}
+		if($validator->fails()) {
+			if($this->api) return $this->setStatusCode(422)->replyWithError($validator->errors());
+			if(!$this->api) return redirect('dashboard/alphabets/create')->withErrors($validator)->withInput();
 		}
 
 	}

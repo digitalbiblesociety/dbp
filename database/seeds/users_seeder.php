@@ -57,56 +57,41 @@ class users_seeder extends Seeder
     	$first_highlight_id = $first_highlight->id ?? 0;
 
 	    $colorEquivalents = ['orange' => 1, 'green' => 2, 'yellow' => 3, 'blue' => 4, 'pink' => 5];
-	    $filesets = BibleFileset::all();
-	    $skippedFilesets = [];
+	    $bibles = \App\Models\Bible\Bible::with('filesets')->get();
 
-	    $books = Book::select(['id_osis','id_usfx','id'])->get();
+	    $books = Book::select(['id_osis','id_usfx','id','protestant_order'])->get();
 
 	    \DB::connection('dbp_users_v2')
 	       ->table('highlight')->where('id', '>', $first_highlight_id)->orderBy('id')
-	       ->chunk(500, function ($highlights) use($filesets, $skippedFilesets, $colorEquivalents, $books) {
+	       ->chunk(500, function ($highlights) use($bibles, $colorEquivalents, $books) {
 		    foreach($highlights as $highlight) {
-			    $fileset = $filesets->where('id',substr($highlight->dam_id,0, 6))->first();
-			    if(!$fileset) $fileset = $filesets->where('id', $highlight->dam_id)->first();
-			    if(!$fileset) $fileset = $filesets->where('id',substr($highlight->dam_id,0,-4))->first();
-			    if(!$fileset) $fileset = $filesets->where('id',substr($highlight->dam_id,0,-2))->first();
-			    if(!$fileset) {continue;}
-			    if($fileset->bible->first()) {
-				    if(!isset($fileset->bible->first()->id)) {continue;}
-			    } else {
-				    continue;
-			    }
+			    $bible = $bibles->where('id',substr($highlight->dam_id,0,6))->first();
+			    if(!$bible) { Log::driver('seed_errors')->info('bb_nfd_'.substr($highlight->dam_id,0,6)); continue; }
+			    $fileset = $bible->filesets->where('set_type_code','text_plain')->first();
+			    if(!$fileset) { continue; }
 
 			    $book = $books->where('id_osis', $highlight->book_id)->first();
-			    if(!isset($book)) {
-			    	echo "\n Missing Book: ". $highlight->book_id;
+			    if($book === null) $book = $books->where('protestant_order',$highlight->book_id)->first();
+			    if($book === null) {
+				    Log::driver('seed_errors')->info('bb_nfd_'.$highlight->book_id);
 			    	continue;
 			    }
 
 			    $tableExists = \Schema::connection('sophia')->hasTable($fileset->id.'_vpl');
-			    if(!$tableExists) {
-				    echo "\nMissing table: " . $fileset->id.'_vpl';
-			    	continue;
-			    }
+			    if(!$tableExists) {Log::driver('seed_errors')->info('b_nfd'.$fileset->id.'_vpl'); continue; }
 		    	$verse = \DB::connection('sophia')
 			                ->table($fileset->id.'_vpl')->select(['verse_text','chapter'])->where('book',$book->id_usfx)
 			                ->where('chapter',$highlight->chapter_id)->where('verse_start',$highlight->verse_id)->first();
-		    	if(!isset($verse)) {
-		    		dd([
-		    			'table' => $fileset->id.'_vpl',
-					    'book' => $book->id_usfx,
-					    'chapter' => $highlight->chapter_id,
-					    'verse_start' => $highlight->verse_id
-				    ]);
-		    		echo "\nMissing Fileset: " . $fileset->id.'_vpl';
+		    	if($verse === null) {
+				    Log::driver('seed_errors')->info('bb_nfd_'.$fileset->id);
 		    		break;
 			    }
-		    	$word_count = count(explode(' ',$verse->verse_text));
+		    	$word_count = substr_count($verse->verse_text, ' ') + 1;
 
 				Highlight::create([
 					'id'                => $highlight->id,
 					'user_id'           => $highlight->user_id,
-					'fileset_id'        => $fileset->id,
+					'bible_id'          => $bible->id,
 					'book_id'           => $book->id,
 					'chapter'           => $highlight->chapter_id,
 					'verse_start'       => $highlight->verse_id,
@@ -116,8 +101,6 @@ class users_seeder extends Seeder
 				]);
 		    }
 	    });
-
-	    file_put_contents(storage_path('/data/dbp2_seed_logs_highlights.json'),json_encode($skippedFilesets));
     }
 
 	public function seedNotes()

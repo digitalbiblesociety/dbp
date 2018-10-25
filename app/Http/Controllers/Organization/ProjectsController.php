@@ -6,6 +6,7 @@ use App\Http\Controllers\APIController;
 use App\Models\User\Key;
 use App\Models\User\Project;
 use App\Models\User\ProjectMember;
+use App\Models\User\Role;
 use Illuminate\Http\Request;
 use App\Transformers\ProjectTransformer;
 
@@ -100,19 +101,28 @@ class ProjectsController extends APIController
 
 		$project = \DB::transaction(function () use ($request, $user) {
 			$project = Project::create([
+				'id'              => random_int(1,65535),
 				'name'            => $request->name,
 				'url_avatar'      => $request->url_avatar,
 				'url_avatar_icon' => $request->url_avatar_icon,
 				'url_site'        => $request->url_site,
 				'description'     => $request->description,
 			]);
-			$project->members()->attach($user->id, ['role' => 'member', 'admin' => 1]);
+			$admin_role = Role::where('slug','admin')->first();
+			$developer_role = Role::where('slug','developer')->first();
+			$project->members()->create([
+				'user_id' => $user->id,
+				'role_id' => $admin_role->id
+			],[
+				'user_id' => $user->id,
+				'role_id' => $developer_role->id
+			]);
 
 			return $project;
 		});
 
 		if(!$this->api) return view('dashboard.projects.show', compact('user', 'project'));
-		return $this->reply(fractal($project,ProjectTransformer::class)->addMeta(['message' => trans('api.projects_created_200')]));
+		return $this->setStatusCode(200)->reply(fractal($project,ProjectTransformer::class)->addMeta(['message' => trans('api.projects_created_200')]));
 	}
 
 	/**
@@ -198,20 +208,19 @@ class ProjectsController extends APIController
 	 */
 	public function update(Request $request, $id)
 	{
-		$user = \Auth::user() ?? Key::with('user')->find($this->key)->user;
+		$user = $this->user;
 		if(!$user) return $this->setStatusCode(401)->replyWithError("you're not logged in");
 		$this->validateProject($request);
 
 		$project = Project::find($id);
 		if(!$project) return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
-
-		$access_allowed = ($project->members->contains($user) OR $user->admin);
+		$access_allowed = $project->developers;
 		if(!$access_allowed) return $this->setStatusCode(404)->replyWithError(trans('api.projects_401'));
 
 		$project->update($request->all());
 		$project->save();
 
-		return $this->reply(fractal($project,ProjectTransformer::class)->addMeta(['message' => trans('api.projects_updated_200')]));
+		return $this->setStatusCode(200)->reply(fractal($project,ProjectTransformer::class)->addMeta(['message' => trans('api.projects_updated_200')]));
 	}
 
 	/**
@@ -242,13 +251,10 @@ class ProjectsController extends APIController
 	 */
 	public function destroy($id)
 	{
-		$user = \Auth::user() ?? Key::find($this->key)->user;
-		if(!$user) return $this->setStatusCode(401)->replyWithError(trans('api.users_errors_404'));
-
 		$project = Project::find($id);
 		if(!$project) return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
 
-		$access_allowed = $project->admins->contains($user->id);
+		$access_allowed = $project->admins->where('user_id',$this->user->id)->first();
 		if(!$access_allowed) return $this->setStatusCode(401)->replyWithError(trans('api.projects_destroy_401'));
 
 		$project->delete();

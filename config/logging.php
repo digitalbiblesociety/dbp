@@ -41,6 +41,12 @@ return [
             'level'  => 'debug',
         ],
 
+        'seed_errors' => [
+	        'driver' => 'single',
+	        'path'   => storage_path('logs/seed_errors.log'),
+	        'level'  => 'debug'
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path'   => storage_path('logs/laravel.log'),

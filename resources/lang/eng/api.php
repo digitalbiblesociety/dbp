@@ -6,7 +6,7 @@ return [
 	'errors_404'                             => '404 Not Found.',
 
 	// Utility Routes
-	'auth_permission_denied'                 => 'you need to be logged in to see this page',
+	'auth_permission_denied'                 => 'You do not have permission for this action',
 	'auth_password_reset_success'            => 'Password successfully reset',
 	'auth_password_reset_token_failed'       => 'The provided password reset token could not be found.',
 	'auth_errors_twitter_stateless'          => 'Twitter does not support stateless Authentication',

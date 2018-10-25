@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\APIController;
+use App\Models\User\Project;
 use App\Models\User\ProjectOauthProvider;
 use Illuminate\Http\Request;
 use Validator;
@@ -31,11 +32,13 @@ class ProjectOAuthProvidersController extends APIController
 	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/ProjectOauthProvider"))
 	 *     )
 	 * )
+	 * @param string $project_id
 	 *
+	 * @return mixed
 	 */
-	public function index()
+	public function index(string $project_id)
 	{
-		$project_id = checkParam('project_id');
+		$project_id = checkParam('project_id', $project_id);
 		$providers  = ProjectOauthProvider::where('project_id', $project_id)->get();
 
 		return $this->reply($providers);
@@ -81,10 +84,11 @@ class ProjectOAuthProvidersController extends APIController
 	 */
 	public function store(Request $request)
 	{
-		$this->validateOAuthProvider($request);
-		$provider = ProjectOauthProvider::create(array_add($request->all(), 'id', 'generated'));
+		$invalidRequest = $this->invalidOAuthProvider($request);
+		if($invalidRequest) return $invalidRequest;
 
-		return $this->reply($provider);
+		$provider = ProjectOauthProvider::create(array_add($request->all(), 'id', 'generated'));
+		return $this->setStatusCode(200)->reply($provider);
 	}
 
 	/**
@@ -121,7 +125,7 @@ class ProjectOAuthProvidersController extends APIController
 		$provider_id = checkParam('provider_id', $provider_id);
 		$provider    = ProjectOauthProvider::where('project_id', $project_id)->where('id', $provider_id)->first();
 
-		return $this->reply($provider);
+		return $this->setStatusCode(200)->reply($provider);
 	}
 
 	/**
@@ -155,11 +159,14 @@ class ProjectOAuthProvidersController extends APIController
 	 */
 	public function update(Request $request, $project_id, $provider_id)
 	{
+		$invalidRequest = $this->invalidOAuthProvider($request);
+		if($invalidRequest) return $invalidRequest;
+
 		$project_id = checkParam('project_id', $project_id);
 		$provider   = ProjectOauthProvider::where('project_id', $project_id)->where('id', $provider_id)->first();
 		$provider->fill($request->all())->save();
 
-		return $this->reply($provider);
+		return $this->setStatusCode(200)->reply($provider);
 	}
 
 	/**
@@ -190,12 +197,18 @@ class ProjectOAuthProvidersController extends APIController
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroy($id)
+	public function destroy($project_id, $id)
 	{
-		$project_id = checkParam('project_id');
+		$project_id = checkParam('project_id', $project_id);
+
+		$project = Project::where('id',$project_id)->first();
+		if(!$project) return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
+
+		$access_allowed = $project->admins->where('user_id',$this->user->id)->first();
+		if(!$access_allowed) return $this->setStatusCode(401)->replyWithError(trans('api.projects_destroy_401'));
+
 		$provider   = ProjectOauthProvider::where('project_id', $project_id)->where('id', $id)->first();
 		$provider->delete();
-
 		return $this->reply(trans('api.projects_destroy_200', []));
 	}
 
@@ -208,26 +221,22 @@ class ProjectOAuthProvidersController extends APIController
 	 *
 	 * @return mixed
 	 */
-	private function validateOAuthProvider(Request $request)
+	private function invalidOAuthProvider(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'project_id'       => 'required|unique:dbp_users.projects,id',
-			'name'             => 'string|max:191|required|in:facebook,twitter,linkedin,google,github,bitbucket',
-			'client_id'        => 'string|max:191|required|different:client_secret',
-			'client_secret'    => 'string|required|different:client_id',
-			'callback_url'     => 'string|max:191|required|url|different:callback_url_alt',
+			'project_id'       => (($request->method() === 'POST') ? 'required|' : '') . 'exists:dbp_users.projects,id',
+			'name'             => (($request->method() === 'POST') ? 'required|' : '') . 'string|max:191|in:facebook,twitter,linkedin,google,github,bitbucket,test_provider',
+			'client_id'        => (($request->method() === 'POST') ? 'required|' : '') . 'string|max:191|different:client_secret',
+			'client_secret'    => (($request->method() === 'POST') ? 'required|' : '') . 'string|different:client_id',
+			'callback_url'     => (($request->method() === 'POST') ? 'required|' : '') . 'string|max:191|url|different:callback_url_alt',
 			'callback_url_alt' => 'string|max:191|url|different:callback_url|nullable',
 		]);
 
 		if ($validator->fails()) {
-			if ($this->api) {
-				return $this->setStatusCode(422)->replyWithError($validator->errors());
-			}
-			if (!$this->api) {
-				return redirect('dashboard/projects/oauth-providers/create')->withErrors($validator)->withInput();
-			}
+			if ($this->api) return $this->setStatusCode(422)->replyWithError($validator->errors());
+			if (!$this->api) return redirect('dashboard/projects/oauth-providers/create')->withErrors($validator)->withInput();
 		}
-
+		return false;
 	}
 
 }

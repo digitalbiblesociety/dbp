@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\User\Project
@@ -14,6 +15,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read User[] $admins
  * @mixin \Eloquent
  *
+ * @property string $id
+ * @property string $name
+ * @property string|null $url_avatar
+ * @property string|null $url_avatar_icon
+ * @property string|null $url_site
+ * @property string|null $reset_path
+ * @property string|null $description
+ * @property \Carbon\Carbon|null $deleted_at
+ * @property \Carbon\Carbon|null $updated_at
+ *
  * @OA\Schema (
  *     type="object",
  *     description="The Project's model",
@@ -24,11 +35,15 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Project extends Model
 {
+	use SoftDeletes;
+
 	protected $connection = 'dbp_users';
 	protected $table = 'projects';
 	protected $fillable = ['id','name','url_avatar','url_avatar_icon','url_site','description','role','reset_path'];
-	public $keyType = 'string';
+	public $keyType = 'integer';
 	public $incrementing = false;
+
+	protected $dates = ['deleted_at'];
 
 	/**
 	 *
@@ -40,7 +55,6 @@ class Project extends Model
 	 * )
 	 *
 	 * @method static Project whereId($value)
-	 * @property string $id
 	 */
 	protected $id;
 	/**
@@ -53,7 +67,6 @@ class Project extends Model
 	 * )
 	 *
 	 * @method static Project whereName($value)
-	 * @property string $name
 	 */
 	protected $name;
 	/**
@@ -66,7 +79,6 @@ class Project extends Model
 	 * )
 	 *
 	 * @method static Project whereUrlAvatar($value)
-	 * @property string|null $url_avatar
 	 */
 	protected $url_avatar;
 	/**
@@ -79,7 +91,6 @@ class Project extends Model
 	 * )
 	 *
 	 * @method static Project whereUrlAvatarIcon($value)
-	 * @property string|null $url_avatar_icon
 	 */
 	protected $url_avatar_icon;
 	/**
@@ -92,7 +103,6 @@ class Project extends Model
 	 * )
 	 *
 	 * @method static Project whereUrlSite($value)
-	 * @property string|null $url_site
 	 */
 	protected $url_site;
 
@@ -107,7 +117,6 @@ class Project extends Model
 	 * )
 	 *
 	 * @method static Project whereResetPath($value)
-	 * @property string|null $reset_path
 	 */
 	protected $reset_path;
 
@@ -120,9 +129,20 @@ class Project extends Model
 	 * )
 	 *
 	 * @method static Project whereDescription($value)
-	 * @property string|null $description
 	 */
 	protected $description;
+
+	/**
+	 *
+	 * @OA\Property(
+	 *   title="description",
+	 *   type="string",
+	 *   description="The day the project was soft deleted"
+	 * )
+	 *
+	 * @method static Project whereDeletedAt($value)
+	 */
+	protected $deleted_at;
 
 	/**
 	 *
@@ -146,7 +166,6 @@ class Project extends Model
 	 * )
 	 *
 	 * @method static Project whereUpdatedAt($value)
-	 * @property \Carbon\Carbon|null $updated_at
 	 */
 	protected $updated_at;
 /**
@@ -155,16 +174,22 @@ class Project extends Model
  */
 	protected $highlights;
 
+    public function members()
+    {
+    	return $this->hasMany(ProjectMember::class);
+    }
+
+	public function developers()
+	{
+		$role = Role::where('slug','developer')->first();
+		return $this->hasMany(ProjectMember::class)->where('role_id',$role->id);
+	}
 
 	public function admins()
 	{
-		return $this->belongsToMany(User::class,'project_members')->where('admin',true)->withPivot('role');
+		$role = Role::where('slug','admin')->first();
+		return $this->hasMany(ProjectMember::class)->where('role_id',$role->id);
 	}
-
-    public function members()
-    {
-    	return $this->belongsToMany(User::class,'project_members')->where('role','!=','user')->withPivot('role');
-    }
 
     public function users()
     {

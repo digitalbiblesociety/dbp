@@ -43,14 +43,14 @@ class ProjectTransformer extends BaseTransformer
 	public function transformForV4($project)
 	{
 		return [
-			'id'              => $project->id,
-            'name'            => $project->name,
-            'url_avatar'      => $project->url_avatar,
-            'url_avatar_icon' => $project->url_avatar_icon,
-            'url_site'        => $project->url_site,
-            'description'     => $project->description,
-            'created_at'      => $project->created_at->toDateTimeString(),
-            'updated_at'      => $project->updated_at->toDateTimeString()
+			'id'              => (int) $project->id,
+            'name'            => (string) $project->name,
+            'url_avatar'      => (string) $project->url_avatar,
+            'url_avatar_icon' => (string) $project->url_avatar_icon,
+            'url_site'        => (string) $project->url_site,
+            'description'     => (string) $project->description,
+            'created_at'      => (string) $project->created_at,
+            'updated_at'      => (string) $project->updated_at
 		];
 	}
 

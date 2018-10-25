@@ -121,8 +121,8 @@ class CreateUsersBiblesTable extends Migration
 				$table->increments('id');
 				$table->integer('user_id')->unsigned();
 				$table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-				$table->string('fileset_id', 16);
-				$table->foreign('fileset_id')->references('id')->on('dbp.bible_filesets')->onDelete('cascade')->onUpdate('cascade');
+				$table->string('bible_id', 12);
+				$table->foreign('bible_id')->references('id')->on('dbp.bibles')->onDelete('cascade')->onUpdate('cascade');
 				$table->char('book_id', 3);
 				$table->foreign('book_id')->references('id')->on('dbp.books');
 				$table->tinyInteger('chapter')->unsigned();

@@ -20,9 +20,9 @@ class users_notes_seeder extends Seeder
     public function run()
     {
 	    ini_set('memory_limit', '2064M');
-	    DB::statement("SET foreign_key_checks=0");
+	    DB::statement('SET foreign_key_checks=0');
 	    Note::truncate();
-	    DB::statement("SET foreign_key_checks=1");
+	    DB::statement('SET foreign_key_checks=1');
 
 	    $books = Book::select('id_osis','id')->get()->pluck('id','id_osis')->toArray();
 	    $users = User::select('id','notes')->get()->pluck('id','notes')->toArray();
