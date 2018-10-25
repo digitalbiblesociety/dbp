@@ -3,6 +3,7 @@
 return [
 
 	'success'                                => 'success',
+	'errors_401'                             => 'You do not have permission for this action',
 	'errors_404'                             => '404 Not Found.',
 
 	// Utility Routes

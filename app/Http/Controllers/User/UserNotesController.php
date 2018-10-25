@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
-use App\Models\User\Key;
 use App\Models\User\Study\Note;
-use App\Models\User\User;
 use App\Transformers\UserNotesTransformer;
 use Illuminate\Http\Request;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -65,7 +63,7 @@ class UserNotesController extends APIController
 		$chapter_id = checkParam('chapter_id', null, 'optional');
 		$limit      = checkParam('limit', null, 'optional') ?? 25;
 		$sort_by    = checkParam('sort_by', null, 'optional');
-		$sort_dir   = checkParam('sort_dir', null, 'optional') ?? "asc";
+		$sort_dir   = checkParam('sort_dir', null, 'optional') ?? 'asc';
 
 		$notes = Note::with('tags')->where('user_id', $user_id)
 			->when($bible_id, function ($q) use ($bible_id) {
@@ -109,12 +107,15 @@ class UserNotesController extends APIController
 	 *     )
 	 * )
 	 *
+	 * @param $user_id
+	 * @param $note_id
+	 *
 	 * @return \Illuminate\Http\Response
 	 */
 	public function show($user_id, $note_id)
 	{
 		if (!$this->api) {
-			if (!Auth::user()->hasRole('admin')) return $this->setStatusCode(401)->replyWithError('You must have admin class access to manage user notes');
+			if(!$this->user->hasRole('admin')) return $this->setStatusCode(401)->replyWithError(trans('api.errors_401'));
 			return view('dashboard.notes.index');
 		}
 
@@ -122,7 +123,7 @@ class UserNotesController extends APIController
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		$note        = Note::where('user_id', $user_id)->where('id', $note_id)->first();
-		if (!$note) return $this->setStatusCode(404)->replyWithError("No Note found for the specified ID");
+		if (!$note) return $this->setStatusCode(404)->replyWithError(trans('api.errors_404'));
 
 		return $this->reply($note);
 	}
@@ -146,7 +147,6 @@ class UserNotesController extends APIController
 	 *              @OA\Property(property="bible_id",                  ref="#/components/schemas/Bible/properties/id"),
 	 *              @OA\Property(property="user_id",                   ref="#/components/schemas/User/properties/id"),
 	 *              @OA\Property(property="book_id",                   ref="#/components/schemas/Book/properties/id"),
-	 *              @OA\Property(property="project_id",                ref="#/components/schemas/Project/properties/id"),
 	 *              @OA\Property(property="chapter",                   ref="#/components/schemas/Note/properties/chapter"),
 	 *              @OA\Property(property="verse_start",               ref="#/components/schemas/Note/properties/verse_start"),
 	 *              @OA\Property(property="notes",                     ref="#/components/schemas/Note/properties/notes"),
@@ -165,6 +165,8 @@ class UserNotesController extends APIController
 	 *     )
 	 * )
 	 *
+	 * @param Request $request
+	 *
 	 * @return \Illuminate\Http\Response
 	 */
 	public function store(Request $request)
@@ -172,17 +174,9 @@ class UserNotesController extends APIController
 		$user_is_member = $this->compareProjects($request->user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
-		$validator = Validator::make($request->all(), [
-			'bible_id'    => 'required|exists:dbp.bibles,id',
-			'user_id'     => 'required|exists:dbp_users.users,id',
-			'book_id'     => 'required|exists:dbp.books,id',
-			'chapter'     => 'required|max:150|min:1',
-			'verse_start' => 'required|max:177|min:1',
-			'notes'       => 'required',
-		]);
-		if ($validator->fails()) {
-			return ['errors' => $validator->errors()];
-		}
+		$invalidNote = $this->invalidNote($request);
+		if($invalidNote) return $invalidNote;
+
 		$note = Note::create([
 			'user_id'     => $request->user_id,
 			'bible_id'    => $request->bible_id,
@@ -224,6 +218,10 @@ class UserNotesController extends APIController
 	 *     )
 	 * )
 	 *
+	 * @param Request $request
+	 * @param         $user_id
+	 * @param         $note_id
+	 *
 	 * @return \Illuminate\Http\Response
 	 */
 	public function update(Request $request, $user_id, $note_id)
@@ -231,9 +229,13 @@ class UserNotesController extends APIController
 		$user_is_member = $this->compareProjects($user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
-		$note = Note::where('user_id', $user_id)->where('id',
-			$note_id)->first();
-		$note->fill($request->all());
+		$invalidNote = $this->invalidNote($request);
+		if($invalidNote) return $invalidNote;
+
+		$note = Note::where('user_id', $user_id)->where('id', $note_id)->first();
+		if(!$note) return $this->setStatusCode(404)->replyWithError(trans('api.user_notes_404'));
+
+		$note->fill($request->only(['bible_id','book_id','chapter','verse_start','verse_end','notes']));
 		if (isset($request->notes)) {
 			$note->notes = encrypt($request->notes);
 		}
@@ -241,7 +243,7 @@ class UserNotesController extends APIController
 
 		$this->handleTags($request, $note);
 
-		return $this->reply(["success" => "Note Updated"]);
+		return $this->reply(['success' => 'Note Updated']);
 	}
 
 	/**
@@ -271,38 +273,54 @@ class UserNotesController extends APIController
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroy(integer $user_id, integer $note_id)
+	public function destroy(int $user_id, int $note_id)
 	{
 		$user_is_member = $this->compareProjects($user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
 		$note = Note::where('user_id', $user_id)->where('id', $note_id)->first();
-		if (!$note) $this->setStatusCode(404)->replyWithError("Note Not Found");
+		if (!$note) $this->setStatusCode(404)->replyWithError('Note Not Found');
 		$note->delete();
 
-		return $this->reply(["success" => "Note Deleted"]);
+		return $this->reply(['success' => 'Note Deleted']);
 	}
 
 	private function handleTags(Request $request, $note)
 	{
 		$tags = collect(explode(',', $request->tags))->map(function ($tag) {
+
 			if (strpos($tag, ':::') !== false) {
 				$tag = explode(':::', $tag);
-
 				return ['value' => ltrim($tag[1]), 'type' => ltrim($tag[0])];
-			} else {
-				return ['value' => ltrim($tag), 'type' => 'general'];
 			}
+
+			return ['value' => ltrim($tag), 'type' => 'general'];
 		})->toArray();
 
-		if ($request->method() == "POST") {
+		if ($request->method() === 'POST') {
 			$note->tags()->createMany($tags);
 		}
-		if ($request->method() == "PUT") {
+		if ($request->method() === 'PUT') {
 			$note->tags()->delete();
 			$note->tags()->createMany($tags);
 		}
 
 	}
+
+	private function invalidNote($request)
+	{
+		$validator = Validator::make($request->all(), [
+			'bible_id'    => (($request->method === 'POST') ? 'required|' : '') . 'exists:dbp.bibles,id',
+			'user_id'     => (($request->method === 'POST') ? 'required|' : '') . 'exists:dbp_users.users,id',
+			'book_id'     => (($request->method === 'POST') ? 'required|' : '') . 'exists:dbp.books,id',
+			'chapter'     => (($request->method === 'POST') ? 'required|' : '') . 'max:150|min:1',
+			'verse_start' => (($request->method === 'POST') ? 'required|' : '') . 'max:177|min:1',
+			'notes'       => (($request->method === 'POST') ? 'required|' : '') . '',
+		]);
+		if ($validator->fails()) return ['errors' => $validator->errors()];
+
+		return null;
+	}
+
 
 }
