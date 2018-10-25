@@ -101,8 +101,10 @@ class TextController extends APIController
 			$path   = 'text/' . $bible->id . '/' . $fileset->id . '/' . $book_id . $chapter . '.html';
 			$exists = Storage::disk($formatted)->exists($path);
 			if (!$exists) return $this->replyWithError("The path: $path did not result in a file");
-			return $this->reply(['path' => $this->signedUrl($path)], [], true);
+			$transaction_id = random_int(0,10000000);
+			return $this->reply(['path' => $this->signedUrl($path, $formatted, $transaction_id)], [], $transaction_id);
 		}
+
 		// Fetch Verses
 		$table = strtoupper($fileset->id) . '_vpl';
 		$verses = DB::connection('sophia')->table($table)

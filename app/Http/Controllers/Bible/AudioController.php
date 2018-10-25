@@ -27,9 +27,9 @@ class AudioController extends APIController
 	 *
 	 * @version 4
 	 * @category v2_audio_path
-	 * @link http://api.bible.build/audio/path - V4 Access
-	 * @link https://api.dbp.dev/audio/path?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/gen#/Version_2/v4_alphabets.one - V4 Test Docs
+	 * @link http://api.dbp4.org/audio/path - V4 Access
+	 * @link https://api.dbp.test/audio/path?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/gen#/Version_2/v4_alphabets.one - V4 Test Docs
 	 *
 	 * @param null $id
 	 *
@@ -63,18 +63,21 @@ class AudioController extends APIController
 	 */
 	public function index($id = null)
 	{
-		$fileset_id = CheckParam('dam_id', $id);
-		$chapter_id = CheckParam('chapter_id', null, 'optional');
-		$book_id    = CheckParam('book_id', null, 'optional');
-		$bucket_id  = CheckParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$fileset_id = checkParam('dam_id', $id);
+		$chapter_id = checkParam('chapter_id', null, 'optional');
+		$book_id    = checkParam('book_id', null, 'optional');
+		$bucket_id  = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$limit = checkParam('expiration', null, 'optional') ?? 5;
-		if($this->v == "2") $limit = 240;
+		if($this->v === 2) $limit = 240;
 		
-		if ($book_id) $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
-		if (isset($book)) $book_id = $book->id;
+		if($book_id) {
+			$book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
+			$book_id = $book->id;
+		}
+
 		$fileset = BibleFileset::where('id', $fileset_id)->where('bucket_id', $bucket_id)->where('set_type_code', 'like', '%audio%')->first();
 		if (!$fileset) $fileset = BibleFileset::where('id', substr($fileset_id, 0, -4))->where('bucket_id', $bucket_id)->where('set_type_code', 'like', '%audio%')->first();
-		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No Audio Fileset could be found for the code: " . $fileset_id);
+		if (!$fileset) return $this->setStatusCode(404)->replyWithError('No Audio Fileset could be found for the code: ' . $fileset_id);
 
 		$audioChapters = BibleFile::with('book', 'bible')->where('hash_id', $fileset->hash_id)
 		                          ->when($chapter_id, function ($query) use ($chapter_id) {
@@ -83,11 +86,12 @@ class AudioController extends APIController
 				return $query->where('book_id', $book_id);
 			})->orderBy('file_name')->get();
 
+		$transaction_id = random_int(0,10000000);
 		foreach ($audioChapters as $key => $audio_chapter) {
-			$audioChapters[$key]->file_name = $this->signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name,$bucket_id,$limit);
+			$audioChapters[$key]->file_name = $this->signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name,$bucket_id,$transaction_id);
 		}
 
-		return $this->reply(fractal($audioChapters, new AudioTransformer())->serializeWith($this->serializer), [], true);
+		return $this->reply(fractal($audioChapters, new AudioTransformer())->serializeWith($this->serializer), [], $transaction_id);
 	}
 
 	/**
@@ -115,7 +119,6 @@ class AudioController extends APIController
 	public function availableTimestamps()
 	{
 		$hash_id = BibleFile::has('timestamps')->select('hash_id')->distinct()->get();
-
 		return $this->reply($hash_id);
 	}
 
@@ -154,15 +157,19 @@ class AudioController extends APIController
 	public function timestampsByReference(string $id = null, string $book = null, int $chapter = null)
 	{
 		// Set Params
-		$id      = CheckParam('fileset_id', $id);
-		$book    = CheckParam('book', $book);
-		$chapter = CheckParam('chapter', $chapter);
+		$id      = checkParam('fileset_id', $id);
+		$type    = checkParam('type');
+		$book    = checkParam('book', $book);
+		$chapter = checkParam('chapter', $chapter);
+
+		$fileset = BibleFileset::where('id',$id)->where('fileset_size_code',$type)->first();
+		$bible_files = BibleFile::where('hash_id',$fileset->hash_id)->where('book',$book)->where('chapter',$chapter)->get();
 
 		// Fetch timestamps
-		$audioTimestamps = BibleFileTimestamp::select(['file_id as verse_id', 'verse_start', 'timestamp'])
-		                                     ->where('file_id', $id)->orderBy('verse_start')->get();
-		// Return API
-		return $this->reply(fractal()->collection($audioTimestamps)->serializeWith($this->serializer)->transformWith(new AudioTransformer()));
+		$audioTimestamps = BibleFileTimestamp::whereIn('file_id', $bible_files->pluck('id'))->orderBy('verse_start')->get();
+
+		// Return Response
+		return $this->reply(fractal($audioTimestamps,new AudioTransformer(),$this->serializer));
 	}
 
 
@@ -170,7 +177,7 @@ class AudioController extends APIController
 	 * Returns a List of timestamps for a given word
 	 *
 	 * @OA\Get(
-	 *     path="/timestamps/{id}",
+	 *     path="/timestamps/search",
 	 *     tags={"Bibles"},
 	 *     summary="Returns audio timestamps for a specific word",
 	 *     description="This route will search the text for a specific word or phrase and return the timestamps associated with the references where that search term occurs.",
@@ -188,31 +195,46 @@ class AudioController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param string $id
-	 * @param string $query
 	 *
 	 * @return mixed
 	 */
-	public function timestampsByTag(string $id = "", string $query = "")
+	public function timestampsByTag()
 	{
 		// Check Params
-		$id    = CheckParam('dam_id|fileset_id', $id);
-		$query = CheckParam('query', $query);
+		$audio_fileset_id = checkParam('audio_fileset_id');
+		$text_fileset_id  = checkParam('text_fileset_id');
+		$book_id          = checkParam('book_id', null, 'optional');
+		$query            = checkParam('query');
+
+		$audio_fileset = BibleFileset::where('set_type_code', 'LIKE','audio%')->where('id',$audio_fileset_id)->first();
+		$text_fileset  = BibleFileset::where('set_type_code','text_plain')->where('id',$text_fileset_id)->first();
+		$books = Book::all();
 
 		$query  = \DB::connection()->getPdo()->quote('+' . str_replace(' ', ' +', $query));
-		$verses = \DB::connection('sophia')->table($id)
+		$verses = \DB::connection('sophia')->table($text_fileset->id.'_vpl')
 		             ->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))
+					 ->when($book_id, function ($query) use ($books,$book_id) {
+						 $current_book = $books->where('id',$book_id)->first();
+					 	return $query->where('book', $current_book->id_usfx);
+					 })
 		             ->select(['book', 'chapter'])
+					 ->take(50)
 		             ->get();
 
 		// Build the timestamp query
-		$timestamps = BibleFileTimestamp::query();
+		$bible_files = BibleFile::query();
+		$bible_files->where('hash_id',$audio_fileset->hash_id)->has('timestamps')->with('timestamps');
 		foreach ($verses as $verse) {
-			$timestamps->orWhere([['book_id', '=', $verse->book_id], ['chapter_start', '=', $verse->chapter_number]]);
+			$current_book = $books->where('id_usfx',$verse->book)->first();
+			$bible_files->orWhere([
+				['book_id', $current_book->id],
+				['chapter_start', $verse->chapter]
+			]);
 		}
-		$timestamps = $timestamps->limit(500)->get();
+		$bible_files = $bible_files->limit(100)->get();
+		return $this->reply($bible_files);
 
-		return $this->reply(fractal()->collection($timestamps)->transformWith(new AudioTransformer()));
+		return $this->reply(fractal($bible_files,new AudioTransformer()));
 	}
 
 
@@ -221,9 +243,9 @@ class AudioController extends APIController
 	 *
 	 * @version 2
 	 * @category v2_audio_location
-	 * @link http://api.bible.build/location - V4 Access
-	 * @link https://api.dbp.dev/audio/location?key=1234&v=4&pretty - V4 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v2#/Audio/v2_audio_location - V4 Test Docs
+	 * @link http://api.dbp4.org/location - V4 Access
+	 * @link https://api.dbp.test/audio/location?key=1234&v=4&pretty - V4 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v2#/Audio/v2_audio_location - V4 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/audio/location",
@@ -255,7 +277,7 @@ class AudioController extends APIController
 	{
 		return $this->reply([
 			[
-				"server"    => "dbp-dev.s3.us-west-2.amazonaws.com",
+				"server"    => "dbp.test.s3.us-west-2.amazonaws.com",
 				"root_path" => "/audio",
 				"protocol"  => "https",
 				"CDN"       => "1",

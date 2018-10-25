@@ -5,10 +5,7 @@ namespace App\Http\Controllers\Bible;
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\Book;
-use App\Models\Bible\Text;
 use App\Models\Bible\BibleFileset;
-use App\Models\Bible\BookTranslation;
-use App\Models\Language\Language;
 use App\Transformers\BooksTransformer;
 use App\Http\Controllers\APIController;
 use Illuminate\Http\JsonResponse;
@@ -22,8 +19,8 @@ class BooksController extends APIController
 	 *
 	 * @version 4
 	 * @category v4_bible.allBooks
-	 * @link http://api.dbp.dev/bibles/books?key=1234&v=4 - V4 Test Access URL
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Bible/v4_bible_books2 - V4 Test Docs
+	 * @link http://api.dbp.test/bibles/books?key=1234&v=4 - V4 Test Access URL
+	 * @link https://dbp.test/eng/docs/swagger/v4#/Bible/v4_bible_books2 - V4 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/bibles/books/",
@@ -51,7 +48,7 @@ class BooksController extends APIController
 	{
 		if (!$this->api) return view('docs.books');
 		$books = \Cache::remember('v4_books_index', 2400, function () {
-			return fractal()->collection(Book::all())->transformWith(new BooksTransformer());
+			return fractal(Book::all(),new BooksTransformer(),$this->serializer);
 		});
 		return $this->reply($books);
 	}
@@ -60,10 +57,10 @@ class BooksController extends APIController
 	 *
 	 * Returns the books and chapters for a specific fileset
 	 *
-	 * @version 4
+	 * @version  4
 	 * @category v4_bible.filesets.books
-	 * @link https://api.dbp.test/bibles/filesets/TZTWBT/books?key=e8a946a0-d9e2-11e7-bfa7-b1fb2d7f5824&v=4&pretty - V4 Test Access URL
-	 * @link https://dbp.dev/eng/docs/swagger/v4#/Bible/v4_bible.filesets_books - V4 Test Docs
+	 * @link     https://api.dbp.test/bibles/filesets/TZTWBT/books?key=e8a946a0-d9e2-11e7-bfa7-b1fb2d7f5824&v=4&pretty - V4 Test Access URL
+	 * @link     https://dbp.test/eng/docs/swagger/v4#/Bible/v4_bible.filesets_books - V4 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/bibles/filesets/{fileset_id}/books/",
@@ -89,6 +86,7 @@ class BooksController extends APIController
 	 *     )
 	 * )
 	 *
+	 * @param $id
 	 * @return Book string - A JSON string that contains the status code and error messages if applicable.
 	 */
 	public function show($id)
@@ -105,7 +103,7 @@ class BooksController extends APIController
 		if(!$bible) return $this->setStatusCode(404)->replyWithError(trans('api.bible_errors_404', ['id' => $id]));
 
 		// If the bible is stored in the sophia database
-		if($fileset->set_type_code == "text_plain") {
+		if($fileset->set_type_code === 'text_plain') {
 			$sophiaTable = $this->checkForSophiaTable($fileset);
 			if(is_a($sophiaTable,JsonResponse::class)) return $sophiaTable;
 			$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
@@ -122,6 +120,7 @@ class BooksController extends APIController
 			$books = $books->sortBy('book.'.$bible->versification.'_order');
 		} else {
 			// Otherwise select from bible_files table
+			if ($fileset->hash_id === null) return $this->setStatusCode(404)->replyWithError('Fileset Exists but is not ready for public use');
 			$bible_files = BibleFile::where('hash_id',$fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
 			$books = BibleBook::with('book')
 			                  ->whereIn('book_id', $bible_files->pluck('book_id')->unique())
@@ -135,7 +134,7 @@ class BooksController extends APIController
 			$books = $books->sortBy('book.'.$bible->versification.'_order');
 		}
 
-		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer())->serializeWith($this->serializer));
+		return $this->reply(fractal($books,new BooksTransformer(),$this->serializer));
 	}
 
 	private function checkForSophiaTable($fileset)

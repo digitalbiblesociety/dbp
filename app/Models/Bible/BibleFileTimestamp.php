@@ -23,8 +23,6 @@ class BibleFileTimestamp extends Model
 {
 	protected $connection = 'dbp';
 	protected $table = 'bible_file_timestamps';
-	public $primaryKey = 'bible_file_id';
-
 
 	/**
 	 *
@@ -92,6 +90,11 @@ class BibleFileTimestamp extends Model
 	public function book()
 	{
 		return $this->belongsTo(Book::class);
+	}
+
+	public function fileset()
+	{
+		return $this->belongsTo(BibleFileset::class,'hash_id','hash_id');
 	}
 
 }

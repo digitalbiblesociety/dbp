@@ -51,23 +51,23 @@ class FilmsController extends APIController
 	 */
 	public function location()
 	{
-		$videoServer      = env('video_server_bucket') ?? "dbp-video.s3.amazonaws.com";
-		$videoServerAlias = env('video_server_alias') ?? "video.dbt.io";
+		$videoServer      = env('video_server_bucket') ?? 'dbp-video.s3.amazonaws.com';
+		$videoServerAlias = env('video_server_alias') ?? 'video.dbt.io';
 
 		return $this->reply([
 			[
-				"server"    => $videoServer,
-				"root_path" => "",
-				"protocol"  => "http",
-				"CDN"       => 0,
-				"priority"  => 5,
+				'server'    => $videoServer,
+				'root_path' => '',
+				'protocol'  => 'http',
+				'CDN'       => 0,
+				'priority'  => 5,
 			],
 			[
-				"server"    => $videoServerAlias,
-				"root_path" => "",
-				"protocol"  => "http",
-				"CDN"       => 1,
-				"priority"  => 3,
+				'server'    => $videoServerAlias,
+				'root_path' => '',
+				'protocol'  => 'http',
+				'CDN'       => 1,
+				'priority'  => 3,
 			],
 		]);
 	}

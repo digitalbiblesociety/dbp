@@ -66,11 +66,11 @@ class OrganizationsController extends APIController
 					})->when($content, function($q) {
 						$q->has('bibles')->orHas('links')->orHas('resources');
 					})->has('translations')->get();
-				if (isset($_GET['count']) or (\Route::currentRouteName() == 'v2_volume_organization_list')) {
+				if (isset($_GET['count']) || (\Route::currentRouteName() === 'v2_volume_organization_list')) {
 					$organizations->load('bibles');
 				}
 
-				return fractal()->collection($organizations)->serializeWith($this->serializer)->transformWith(new OrganizationTransformer())->ToArray();
+				return fractal($organizations,new OrganizationTransformer(),$this->serializer);
 			});
 
 		return $this->reply($organizations);
@@ -85,7 +85,7 @@ class OrganizationsController extends APIController
 	 */
 	public function show($slug)
 	{
-		$i10n           = checkParam('iso', null, 'optional') ?? "eng";
+		$i10n           = checkParam('iso', null, 'optional') ?? 'eng';
 		$i10n_language  = Language::where('iso',$i10n)->first();
 		if(!$i10n_language) return $this->setStatusCode(404)->replyWithError(trans('api.i10n_errors_404', ['id' => $i10n]));
 		$searchedColumn = (is_numeric($slug)) ? 'id' : 'slug';
@@ -148,10 +148,7 @@ class OrganizationsController extends APIController
 	public function create()
 	{
 		$user = \Auth::user();
-		if (!$user->archivist) {
-			return $this->setStatusCode(401)->replyWithError(trans('api.wiki_authorization_failed'));
-		}
-
+		if(!$user->archivist) return $this->setStatusCode(401)->replyWithError(trans('api.wiki_authorization_failed'));
 		return view('community.organizations.create');
 	}
 
@@ -212,10 +209,7 @@ class OrganizationsController extends APIController
 		$organization->update(request()->except(['translations']));
 		$organization->translations()->delete();
 		foreach (request()->translations as $translation) {
-			$organization->translations()->create(['iso'         => $translation['iso'],
-			                                       'name'        => $translation['translation'],
-			                                       'description' => '',
-			]);
+			$organization->translations()->create(['iso' => $translation['iso'], 'name' => $translation['translation'], 'description' => '']);
 		}
 
 		return view('community.organizations.show', compact('organization'));
@@ -233,11 +227,9 @@ class OrganizationsController extends APIController
 		$organization = Organization::find($id);
 		$organization->delete();
 
-		if ($this->api) {
-			return $this->reply("Organization successfully deleted");
-		}
-		$organizations = Organization::with("currentTranslation")->get();
+		if($this->api) return $this->setStatusCode(200)->reply('Organization successfully deleted');
 
+		$organizations = Organization::with('currentTranslation')->get();
 		return view('community.organizations.index', compact('organizations'));
 	}
 

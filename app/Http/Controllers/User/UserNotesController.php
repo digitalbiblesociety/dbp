@@ -57,14 +57,13 @@ class UserNotesController extends APIController
 
 		if (!$this->api) {
 			if(!Auth::user()) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
-			return view('dashboard.notes.index', compact('notes'));
+			return view('dashboard.notes.index');
 		}
-
 
 		$bible_id   = checkParam('bible_id', null, 'optional');
 		$book_id    = checkParam('book_id', null, 'optional');
 		$chapter_id = checkParam('chapter_id', null, 'optional');
-		$limit      = intval(checkParam('limit', null, 'optional') ?? 25);
+		$limit      = checkParam('limit', null, 'optional') ?? 25;
 		$sort_by    = checkParam('sort_by', null, 'optional');
 		$sort_dir   = checkParam('sort_dir', null, 'optional') ?? "asc";
 
@@ -79,7 +78,7 @@ class UserNotesController extends APIController
 				$q->where('chapter_id', $chapter_id);
 			})->paginate($limit);
 
-		if (!$notes) return $this->setStatusCode(404)->replyWithError("No User found for the specified ID");
+		if (!$notes) return $this->setStatusCode(404)->replyWithError('No User found for the specified ID');
 		return $this->reply(fractal($notes->getCollection(), UserNotesTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($notes)));
 	}
 

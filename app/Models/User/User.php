@@ -242,7 +242,7 @@ class User extends Model implements Authenticatable
 
 	public function projects()
 	{
-		return $this->belongsToMany(Project::class, 'project_members')->withPivot('role','subscribed');
+		return $this->belongsToMany(Project::class, 'project_members');
 	}
 
 	public function projectMembers()

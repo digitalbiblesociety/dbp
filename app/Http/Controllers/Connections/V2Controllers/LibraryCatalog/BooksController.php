@@ -20,8 +20,8 @@ class BooksController extends APIController
 	 * @category v2_library_book
 	 * @category v2_library_bookOrder
 	 * @link http://dbt.io/library/bookorder - V2 Access
-	 * @link http://api.dbp.dev/library/bookorder?key=1234&v=2&dam_id=AMKWBT&pretty - V2 Test
-	 * @link https://dbp.dev/eng/docs/swagger/v2#/Library/v2_library_book - V2 Test Docs
+	 * @link http://api.dbp.test/library/bookorder?key=1234&v=2&dam_id=AMKWBT&pretty - V2 Test
+	 * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_book - V2 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/library/book/",
@@ -61,7 +61,7 @@ class BooksController extends APIController
 
 		switch (substr($id, -2, 1)) {
 			case 'O': { $testament = 'OT'; break; }
-			case 'N': { $testament = 'NT'; }
+			case 'N': { $testament = 'NT'; break; }
 		}
 		\Cache::forget('v2_library_book_' . $id . $bucket_id . $fileset . $testament);
 		$libraryBook = \Cache::remember('v2_library_book_' . $id . $bucket_id . $fileset . $testament, 1600,
@@ -96,7 +96,7 @@ class BooksController extends APIController
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
 
 		$sophiaTable = $this->checkForSophiaTable($fileset);
-		if(!is_string($sophiaTable)) return $sophiaTable;
+		if(!\is_string($sophiaTable)) return $sophiaTable;
 
 		$testament = false;
 
@@ -106,7 +106,7 @@ class BooksController extends APIController
 		}
 		\Cache::forget('v2_library_bookOrder_' . $id . $bucket_id . $fileset . $testament);
 		$libraryBook = \Cache::remember('v2_library_book_' . $id . $bucket_id . $fileset . $testament, 1600,
-			function () use ($id, $bucket_id, $fileset, $testament, $sophiaTable) {
+			function () use ($id, $fileset, $testament, $sophiaTable) {
 				$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
 				$books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
 				             ->when($testament, function ($q) use ($testament) {
@@ -134,8 +134,8 @@ class BooksController extends APIController
 	 * @version 2
 	 * @category v2_library_bookName
 	 * @link http://dbt.io/library/bookname - V2 Access
-	 * @link http://api.dbp.dev/library/bookname?key=1234&v=2&language_code=ben - V2 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v2#/Library/v2_library_bookname - V2 Test Docs
+	 * @link http://api.dbp.test/library/bookname?key=1234&v=2&language_code=ben - V2 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_bookname - V2 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/library/bookname/",
@@ -193,8 +193,8 @@ class BooksController extends APIController
 	 * @version 2
 	 * @category v2_library_chapter
 	 * @link http://dbt.io/library/chapter - V2 Access
-	 * @link https://api.dbp.dev/library/chapter?key=1234&v=2&dam_id=AMKWBT&book_id=MAT&pretty - V2 Test Access
-	 * @link https://dbp.dev/eng/docs/swagger/v2#/Library/v2_library_chapter - V2 Test Docs
+	 * @link https://api.dbp.test/library/chapter?key=1234&v=2&dam_id=AMKWBT&book_id=MAT&pretty - V2 Test Access
+	 * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_chapter - V2 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/library/chapter/",
@@ -263,17 +263,9 @@ class BooksController extends APIController
 	private function checkForSophiaTable($fileset)
 	{
 		$textExists = \Schema::connection('sophia')->hasTable(substr($fileset->id, 0, -4) . '_vpl');
-		if ($textExists) {
-			return substr($fileset->id, 0, -4);
-		}
-		if(!$textExists) {
-			$textExists = \Schema::connection('sophia')->hasTable($fileset->id . '_vpl');
-		}
-		if(!$textExists) {
-			return $this->setStatusCode(404)->replyWithError(trans('api.bible_filesets_errors_checkback',
-				['id' => $fileset->id]));
-		}
-
+		if($textExists) return substr($fileset->id, 0, -4);
+		if(!$textExists) $textExists = \Schema::connection('sophia')->hasTable($fileset->id . '_vpl');
+		if(!$textExists) return $this->setStatusCode(404)->replyWithError(trans('api.bible_filesets_errors_checkback', ['id' => $fileset->id]));
 		return $fileset->id;
 	}
 
