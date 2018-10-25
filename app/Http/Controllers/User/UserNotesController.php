@@ -151,7 +151,6 @@ class UserNotesController extends APIController
 	 *              @OA\Property(property="chapter",                   ref="#/components/schemas/Note/properties/chapter"),
 	 *              @OA\Property(property="verse_start",               ref="#/components/schemas/Note/properties/verse_start"),
 	 *              @OA\Property(property="notes",                     ref="#/components/schemas/Note/properties/notes"),
-	 *              @OA\Property(property="bookmark",                  ref="#/components/schemas/Note/properties/bookmark"),
 	 *          )
 	 *     )),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
@@ -180,8 +179,7 @@ class UserNotesController extends APIController
 			'book_id'     => 'required|exists:dbp.books,id',
 			'chapter'     => 'required|max:150|min:1',
 			'verse_start' => 'required|max:177|min:1',
-			'notes'       => 'required_without:bookmark',
-			'bookmark'    => 'required_without:notes|boolean',
+			'notes'       => 'required',
 		]);
 		if ($validator->fails()) {
 			return ['errors' => $validator->errors()];
@@ -193,7 +191,6 @@ class UserNotesController extends APIController
 			'chapter'     => $request->chapter,
 			'verse_start' => $request->verse_start,
 			'verse_end'   => $request->verse_end ?? $request->verse_start,
-			'bookmark'    => ($request->bookmark) ? 1 : 0,
 			'notes'       => isset($request->notes) ? encrypt($request->notes) : null,
 		]);
 
