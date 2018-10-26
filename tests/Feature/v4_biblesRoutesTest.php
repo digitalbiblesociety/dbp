@@ -55,7 +55,7 @@ class v4_biblesRoutesTest extends API_V4_Test
 	 */
 	public function test_v4_bible_filesets_copyright()
 	{
-		$path = route('v4_bible_filesets.copyright', $this->params);
+		$path = route('v4_bible_filesets.copyright', array_add($this->params,'fileset_id', 'ENGESV'));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
@@ -63,13 +63,13 @@ class v4_biblesRoutesTest extends API_V4_Test
 
 	/**
 	 * @category V4_API
-	 * @category Route Name: v4_bible.filesets
+	 * @category Route Name: v4_bible_filesets.books
 	 * @category Route Path: https://api.dbp.test/bibles/filesets/{fileset_id}/books?v=4&key=1234
 	 * @see      \App\Http\Controllers\Bible\BooksController::show
 	 */
 	public function test_v4_bible_filesets()
 	{
-		$path = route('v4_bible.filesets', $this->params);
+		$path = route('v4_bible_filesets.books', $this->params);
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
@@ -93,41 +93,12 @@ class v4_biblesRoutesTest extends API_V4_Test
 	/**
 	 * @category V4_API
 	 * @category Route Name: v4_bible_filesets.show
-	 * @category Route Path: https://api.dbp.test/bibles/filesets/ENGKJV?v=4&key=1234&type=plain_text&bucket=dbs-web
+	 * @category Route Path: https://api.dbp.test/bibles/filesets/ENGESV?v=4&key=1234&type=text_plain&bucket=dbp-prod
 	 * @see      \App\Http\Controllers\Bible\BibleFileSetsController::show
 	 */
 	public function test_v4_bible_filesets_show()
 	{
-		$this->params = array_merge(['fileset_id' => 'ENGKJV','book_id' => 'GEN', 'chapter' => 1], $this->params);
-		$path = route('v4_bible_filesets.show', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_bible_filesets.update
-	 * @category Route Path: https://api.dbp.test/bibles/filesets/{fileset_id}?v=4&key=1234
-	 * @see      \App\Http\Controllers\Bible\BibleFileSetsController::update
-	 */
-	public function test_v4_bible_filesets_update()
-	{
-		$path = route('v4_bible_filesets.update', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_bible_filesets.store
-	 * @category Route Path: https://api.dbp.test/bibles/filesets/?v=4&key=1234
-	 * @see      \App\Http\Controllers\Bible\BibleFileSetsController::store
-	 */
-	public function test_v4_bible_filesets_store()
-	{
-		$path = route('v4_bible_filesets.store', $this->params);
+		$path = route('v4_bible_filesets.show', array_merge(['fileset_id' => 'ACHBSU','book_id' => 'MAT', 'chapter' => 1,'type' => 'text_format', 'bucket' => 'dbp-prod'], $this->params));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
@@ -149,13 +120,13 @@ class v4_biblesRoutesTest extends API_V4_Test
 
 	/**
 	 * @category V4_API
-	 * @category Route Name: v4_bible.allBooks
+	 * @category Route Name: v4_bible_books_all
 	 * @category Route Path: https://api.dbp.test/bibles/books/?v=4&key=1234
 	 * @see      \App\Http\Controllers\Bible\BooksController::index
 	 */
-	public function test_v4_bible_allBooks()
+	public function test_v4_bible_books_all()
 	{
-		$path = route('v4_bible.allBooks', $this->params);
+		$path = route('v4_bible_books_all', $this->params);
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
@@ -206,12 +177,12 @@ class v4_biblesRoutesTest extends API_V4_Test
 	/**
 	 * @category V4_API
 	 * @category Route Name: v4_bible.books
-	 * @category Route Path: https://api.dbp.test/bibles/{bible_id}/book/{book?}?v=4&key=1234
+	 * @category Route Path: https://api.dbp.test/bibles/ENGESV/book?v=4&key=1234
 	 * @see      \App\Http\Controllers\Bible\BiblesController::books
 	 */
 	public function test_v4_bible_books()
 	{
-		$path = route('v4_bible.books', $this->params);
+		$path = route('v4_bible.books', array_merge(['bible_id' => 'ENGESV', 'book' => 'MAT'], $this->params));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
@@ -239,7 +210,7 @@ class v4_biblesRoutesTest extends API_V4_Test
 	 */
 	public function test_v4_bible_one()
 	{
-		$path = route('v4_bible.one', $this->params);
+		$path = route('v4_bible.one', array_add($this->params,'bible_id', 'ENGESV'));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();

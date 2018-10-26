@@ -392,10 +392,10 @@ class BiblesController extends APIController
 					    $q->where('book_testament',$testament);
 					})
 					->when($book_id, function ($q) use ($book_id) {
-						$q->where('id', $book_id);
+						$q->where('book_id', $book_id);
 					})->whereIn('book_id',$bible_books)->get();
 		$books = $books->sortBy('book.'.$bible->versification.'_order');
-		return $this->reply(fractal()->collection($books)->transformWith(new BooksTransformer)->toArray());
+		return $this->reply(fractal($books,new BooksTransformer));
 	}
 
 	public function edit($id)

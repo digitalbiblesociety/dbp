@@ -66,13 +66,11 @@
 	Route::name('v4_bible_filesets.podcast')->match(['get','options'],'bibles/filesets/{fileset_id}/podcast',               'Bible\BibleFileSetsController@podcast');
 	Route::name('v4_bible_filesets.download')->match(['get','options'],'bibles/filesets/{fileset_id}/download',             'Bible\BibleFileSetsController@download');
 	Route::name('v4_bible_filesets.copyright')->match(['get','options'],'bibles/filesets/{fileset_id}/copyright',           'Bible\BibleFileSetsController@copyright');
-	Route::name('v4_bible.filesets.books')->match(['get','options'],'bibles/filesets/{fileset_id}/books',                   'Bible\BooksController@show');
+	Route::name('v4_bible_filesets.books')->match(['get','options'],'bibles/filesets/{fileset_id}/books',                   'Bible\BooksController@show');
 	Route::name('v4_bible_filesets.chapter')->match(['get','options'],'bibles/filesets/{fileset_id}/{book}/{chapter}',      'Bible\TextController@index');
 	Route::name('v4_bible_filesets.show')->match(['get','options'],'bibles/filesets/{fileset_id?}',                         'Bible\BibleFileSetsController@show');
-	Route::name('v4_bible_filesets.update')->put('bibles/filesets/{fileset_id}',                                            'Bible\BibleFileSetsController@update');
-	Route::name('v4_bible_filesets.store')->post('bibles/filesets/',                                                        'Bible\BibleFileSetsController@store');
 	Route::name('v4_bible.links')->match(['get','options'],'bibles/links',                                                  'Bible\BibleLinksController@index');
-	Route::name('v4_bible.allBooks')->match(['get','options'],'bibles/books/',                                              'Bible\BooksController@index');
+	Route::name('v4_bible_books_all')->match(['get','options'],'bibles/books/',                                             'Bible\BooksController@index');
 	Route::name('v4_text_search')->match(['get','options'],'search',                                                        'Bible\TextController@search');
 	Route::name('v4_bible_equivalents.all')->match(['get','options'],'bible/equivalents',                                   'Bible\BibleEquivalentsController@index');
 	Route::name('v4_bible_equivalents.one')->match(['get','options'],'bibles/{bible_id}/equivalents',                       'Bible\BibleEquivalentsController@show');
@@ -81,7 +79,7 @@
 	Route::name('v4_bible.one')->match(['get','options'],'bibles/{bible_id}',                                               'Bible\BiblesController@show');
 	Route::name('v4_bible.all')->match(['get','options'],'bibles',                                                          'Bible\BiblesController@index');
 	Route::name('v4_timestamps')->match(['get','options'],'timestamps',                                                     'Bible\AudioController@availableTimestamps');
-	Route::name('v4_timestamps.tag')->match(['get','options'],'timestamps/{fileset_id}/{query}',                            'Bible\AudioController@timestampsByTag');
+	Route::name('v4_timestamps.tag')->match(['get','options'],'/timestamps/search',                                         'Bible\AudioController@timestampsByTag');
 	Route::name('v4_timestamps.verse')->match(['get','options'],'timestamps/{fileset_id}/{book}/{chapter}',                 'Bible\AudioController@timestampsByReference');
 
 	// VERSION 4 | WIKI
@@ -141,6 +139,7 @@
 	Route::name('v4_highlights.store')->post('users/{user_id}/highlights',                                                  'User\UserHighlightsController@store');
 	Route::name('v4_highlights.update')->put('users/{user_id}/highlights/{highlight_id}',                                   'User\UserHighlightsController@update');
 	Route::name('v4_highlights.destroy')->delete('users/{user_id}/highlights/{highlight_id}',                               'User\UserHighlightsController@destroy');
+
 	Route::name('v4_organizations.all')->match(['get','options'],'organizations/',                                          'Organization\OrganizationsController@index');
 	Route::name('v4_organizations.one')->match(['get','options'],'organizations/{organization_id}',                         'Organization\OrganizationsController@show');
 	Route::name('v4_organizations.compare')->match(['get','options'],'organizations/compare/{org1}/to/{org2}',              'Organization\OrganizationsController@compare');

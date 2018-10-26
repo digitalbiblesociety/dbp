@@ -23,7 +23,7 @@ class Highlight extends Model
 {
 	protected $connection = 'dbp_users';
     public $table = 'user_highlights';
-    protected $fillable = ['user_id','fileset_id','book_id','project_id','chapter','verse_start','verse_end','highlight_start','highlighted_words','highlighted_color','reference'];
+    protected $fillable = ['user_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','highlight_start','highlighted_words','highlighted_color','reference'];
     protected $hidden = ['user_id','project_id'];
 
      /**

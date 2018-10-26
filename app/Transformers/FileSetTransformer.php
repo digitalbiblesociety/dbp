@@ -7,11 +7,13 @@ use App\Models\Bible\Audio;
 class FileSetTransformer extends BaseTransformer
 {
 
-    /**
-     * A Fractal transformer.
-     *
-     * @return array
-     */
+	/**
+	 * A Fractal transformer.
+	 *
+	 * @param $audio
+	 *
+	 * @return array
+	 */
 	public function transform($audio)
 	{
 		switch ((int) $this->version) {
@@ -31,11 +33,11 @@ class FileSetTransformer extends BaseTransformer
 				];
 			}
 
-			case "v2_audio_path": {
+			case 'v2_audio_path': {
 				return [
-					"book_id"    => ucfirst(strtolower($audio->book->id_osis)),
-					"chapter_id" => (string) $audio->chapter_start,
-					"path"       => $audio->file_name
+					'book_id'    => ucfirst(strtolower($audio->book->id_osis)),
+					'chapter_id' => (string) $audio->chapter_start,
+					'path'       => $audio->file_name
 				];
 			}
 
@@ -46,27 +48,27 @@ class FileSetTransformer extends BaseTransformer
 
 		switch($this->route) {
 
-			case "v4_bible_filesets.podcast": {
+			case 'v4_bible_filesets.podcast': {
 				$bible = $fileset->bible->first();
-				if(!$bible) return $this->replyWithError(trans('api.filesets_errors_404',['l10n'=>$id],$this->preferred_language));
+				if(!$bible) return $this->replyWithError(trans('api.filesets_errors_404',['l10n'=>$GLOBALS['i18n_iso']],$this->preferred_language));
 
 				if(!isset($fileset->ietf_code)) {
-					$ietf_code = (isset($bible->language->iso1)) ? $bible->language->iso1 : $bible->language->iso;
+					$ietf_code = $bible->language->iso1 ?? $bible->language->iso;
 					$ietf_code .= '-';
-					$ietf_code .= (isset($bible->fileset->primaryCountry)) ? $bible->fileset->primaryCountry : $bible->language->primaryCountry;
+					$ietf_code .= $bible->fileset->primaryCountry ?? $bible->language->primaryCountry;
 				} else {
 					$ietf_code = $fileset->ietf_code;
 				}
 
-				$meta['channel']['title'] = $bible->translations->where('iso',$bible->iso)->first()->name.' - '.$bible->language->name ?? $bible->where('iso',"eng")->first()->name.' - '.$bible->language->name;
-				$meta['channel']['link'] = env('APP_URL_PODCAST') ?? "https://bible.is/";
+				$meta['channel']['title'] = $bible->translations->where('iso',$bible->iso)->first()->name.' - '.$bible->language->name ?? $bible->where('iso','eng')->first()->name.' - '.$bible->language->name;
+				$meta['channel']['link'] = env('APP_URL_PODCAST') ?? 'https://bible.is/';
 				$meta['channel']['atom:link']['_attributes'] = ['href'  => 'http://www.faithcomesbyhearing.com/feeds/audio-bibles/'.$bible->id.'.xml','rel'   => 'self','type'  => 'application/rss+xml'];
-				$meta['channel']['description'] = $bible->translations->where('iso',$bible->iso)->first()->description ?? $bible->where('iso',"eng")->first()->description;
+				$meta['channel']['description'] = $bible->translations->where('iso',$bible->iso)->first()->description ?? $bible->where('iso','eng')->first()->description;
 				$meta['channel']['language'] = $bible->language->iso;
 				$meta['channel']['managingEditor'] = 'adhooker@fcbhmail.org';
 				$meta['channel']['webMaster'] = 'charles@faithcomesbyhearing.com';
 				$meta['channel']['copyright'] = $bible->copyright;
-				$meta['channel']['lastBuildDate'] = ($bible->last_updated) ? $fileset->last_updated->toRfc2822String() : "";
+				$meta['channel']['lastBuildDate'] = $bible->last_updated ? $fileset->last_updated->toRfc2822String() : '';
 				//$meta['channel']['pubDate'] = ($bible->date) ? $fileset->date->toRfc2822String() : "";
 				$meta['channel']['docs'] = 'http://blogs.law.harvard.edu/tech/rss';
 				$meta['channel']['webMaster'] = env('APP_SITE_CONTACT') ?? "";
@@ -81,7 +83,7 @@ class FileSetTransformer extends BaseTransformer
 					'_attributes' => ['text' => 'Religion & Spirituality']
 				];
 
-				$meta['channel']['managingEditor'] = env('APP_SITE_CONTACT') ?? "";
+				$meta['channel']['managingEditor'] = env('APP_SITE_CONTACT') ?? '';
 				$meta['channel']['image']['_attributes'] = [
 					'url'   => 'http://bible.is/'.$fileset->id.'.jpg',
 					'title' => 'Faith Comes by Hearing',
@@ -115,8 +117,8 @@ class FileSetTransformer extends BaseTransformer
 						'pubDate'              => $fileset->created_at->toRfc2822String() ?? '',
 						'itunes:author'        => 'Faith Comes By Hearing',
 						'itunes:explicit'      => 'no',
-						'itunes:subtitle'      => ($file->currentTitle) ? preg_replace ($xml_safe_expression, ' ', $file->currentTitle->title) : "",
-						'itunes:summary'       => ($file->currentTitle) ? preg_replace ($xml_safe_expression, ' ', $file->currentTitle->title) : "",
+						'itunes:subtitle'      => $file->currentTitle ? preg_replace ($xml_safe_expression, ' ', $file->currentTitle->title) : "",
+						'itunes:summary'       => $file->currentTitle ? preg_replace ($xml_safe_expression, ' ', $file->currentTitle->title) : "",
 						'itunes:duration'      => $file->duration ?? '0:00',
 						'itunes:keywords'      => 'Bible, Testament, Jesus, Scripture, Holy, God, Heaven, Hell, Gospel, Christian, Bible.is, Church'
 					];

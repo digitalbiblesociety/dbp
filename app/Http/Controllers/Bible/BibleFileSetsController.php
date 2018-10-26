@@ -83,35 +83,20 @@ class BibleFileSetsController extends APIController
 
 		switch ($fileset->set_type_code) {
 			case 'audio_drama':
-			case 'audio': {
-				$fileset_type = 'audio';
-				break;
-			}
+			case 'audio':       { $fileset_type = 'audio'; break;}
 			case 'text_plain':
-			case 'text_format': {
-				$fileset_type = 'text';
-				break;
-			}
+			case 'text_format': { $fileset_type = 'text'; break;}
 			case 'video_stream':
-			case 'video': {
-				$fileset_type = 'video';
-				break;
-			}
-			case 'app': {
-				$fileset_type = 'app';
-				break;
-			}
-			default: {
-				$fileset_type = 'text';
-				break;
-			}
+			case 'video': { $fileset_type = 'video'; break;}
+			case 'app':   { $fileset_type = 'app'; break;}
+			default:      { $fileset_type = 'text'; break;}
 		}
+
 		$fileSetChapters = BibleFile::where('hash_id',$fileset->hash_id)
 			->join(env('DBP_DATABASE').'.bible_books', function($q) use($bible) {
-				$q->on('bible_books.book_id', '=', 'bible_files.book_id')
-				  ->where('bible_id',$bible->id);
+				$q->on('bible_books.book_id', 'bible_files.book_id')->where('bible_id',$bible->id);
 			})
-			->join(env('DBP_DATABASE').'.books','books.id', '=', 'bible_files.book_id')
+			->join(env('DBP_DATABASE').'.books','books.id', 'bible_files.book_id')
 			->when($chapter_id, function ($query) use ($chapter_id) {
 				return $query->where('bible_files.chapter_start', $chapter_id);
 			})->when($book_id, function ($query) use ($book_id) {
@@ -135,16 +120,6 @@ class BibleFileSetsController extends APIController
 			$transaction_id = random_int(0,10000000);
 			foreach ($fileSetChapters as $key => $fileSet_chapter) {
 				$fileSetChapters[$key]->file_name = $this->signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name, $bucket_id, $transaction_id);
-				// Prep Transaction Value
-				$sample_url = $fileSetChapters->pluck('file_name')->first();
-				$parts = parse_url($sample_url);
-				$queryParams = explode('&',$parts['query']);
-				foreach ($queryParams as $param) {
-					if(str_contains($param,'x-amz-transaction')) {
-						$param = explode('=',$param);
-						if(isset($param[1])) $transaction_code = $param[1];
-					}
-				}
 			}
 		} else {
 			foreach ($fileSetChapters as $key => $fileSet_chapter) {
@@ -152,7 +127,7 @@ class BibleFileSetsController extends APIController
 			}
 		}
 
-		return $this->reply(fractal($fileSetChapters, new FileSetTransformer())->serializeWith($this->serializer), [], $transaction_id ?? '');
+		return $this->reply(fractal($fileSetChapters, new FileSetTransformer(),$this->serializer), [], $transaction_id ?? '');
 	}
 
 	/**

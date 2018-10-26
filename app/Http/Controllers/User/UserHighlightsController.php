@@ -23,9 +23,9 @@ class UserHighlightsController extends APIController
 	 *     path="/users/{user_id}/highlights",
 	 *     tags={"Users"},
 	 *     summary="Get a list of highlights for a user/project combination",
-	 *     description="The highlights index response: Note the fileset_id is being used to identify the item instead of the bible_id. This is important as different filesets may have different numbers for the highlighted words field depending on their revision.",
+	 *     description="The highlights index response: Note the bible_id is being used to identify the item instead of the bible_id. This is important as different bibles may have different numbers for the highlighted words field depending on their revision.",
 	 *     operationId="v4_highlights.index",
-	 *     @OA\Parameter(name="fileset_id",    in="query", description="The fileset to filter highlights by", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OA\Parameter(name="bible_id",      in="query", description="The bible to filter highlights by", @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
 	 *     @OA\Parameter(name="book_id",       in="query", description="The book to filter highlights by", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OA\Parameter(name="chapter",       in="query", description="The chapter to filter highlights by", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
 	 *     @OA\Parameter(name="limit",         in="query", description="The number of highlights to include in each return", @OA\Schema(type="integer",example=15,default=15)),
@@ -55,27 +55,26 @@ class UserHighlightsController extends APIController
 		$user_is_member = $this->compareProjects($user_id, $this->key);
 		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
-		$fileset_id   = checkParam('fileset_id', null, 'optional');
+		$bible_id     = checkParam('bible_id', null, 'optional');
 		$book_id      = checkParam('book_id', null, 'optional');
 		$chapter_id   = checkParam('chapter', null, 'optional');
 		$limit        = (int) (checkParam('limit', null, 'optional') ?? 25);
 
 		$highlights = Highlight::with('color')->where('user_id', $user_id)
-			->join(env('DBP_DATABASE').'.bible_filesets as fileset', 'fileset.id', '=', env('DBP_USERS_DATABASE').'.user_highlights.fileset_id')
-			->join(env('DBP_DATABASE').'.bible_fileset_connections as connection', 'connection.hash_id', 'fileset.hash_id')
+			->join(env('DBP_DATABASE').'.bibles as bibles', 'bibles.id', '=', env('DBP_USERS_DATABASE').'.user_highlights.bible_id')
 			->join(env('DBP_DATABASE').'.bible_books as book', function ($join) {
-				$join->on('connection.bible_id', '=', 'book.bible_id')
+				$join->on('bibles.id', '=', 'book.bible_id')
 				     ->on('book.book_id', '=', 'user_highlights.book_id');
 			})
-		    ->when($fileset_id, function ($q) use ($fileset_id) {
-				$q->where('fileset_id', $fileset_id);
+		    ->when($bible_id, function ($q) use ($bible_id) {
+				$q->where('bible_id', $bible_id);
 		    })->when($book_id, function ($q) use ($book_id) {
 				$q->where('user_highlights.book_id', $book_id);
 			})->when($chapter_id, function ($q) use ($chapter_id) {
 				$q->where('chapter', $chapter_id);
 			})->select([
 				'user_highlights.id',
-				'user_highlights.fileset_id',
+				'user_highlights.bible_id',
 				'user_highlights.book_id',
 				'book.name as book_name',
 				'user_highlights.chapter',
@@ -107,7 +106,7 @@ class UserHighlightsController extends APIController
 	 *     summary="Create a user highlight",
 	 *     description="",
 	 *     operationId="v4_highlights.store",
-	 *     @OA\Parameter(name="fileset_id",   in="query", description="", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     @OA\Parameter(name="bible_id",   in="query", description="", @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
 	 *     @OA\Parameter(name="book_id",    in="query", description="", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OA\Parameter(name="chapter",    in="query", description="", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
 	 *     @OA\Parameter(name="paginate",   in="query", description="", @OA\Schema(type="integer",example=15,default=15)),
@@ -117,7 +116,7 @@ class UserHighlightsController extends APIController
 	 *     @OA\Parameter(ref="#/components/parameters/format"),
 	 *     @OA\RequestBody(required=true, description="Fields for User Highlight Creation", @OA\MediaType(mediaType="application/json",
 	 *          @OA\Schema(
-	 *              @OA\Property(property="fileset_id",                  ref="#/components/schemas/Bible/properties/id"),
+	 *              @OA\Property(property="bible_id",                  ref="#/components/schemas/Bible/properties/id"),
 	 *              @OA\Property(property="user_id",                   ref="#/components/schemas/User/properties/id"),
 	 *              @OA\Property(property="book_id",                   ref="#/components/schemas/Book/properties/id"),
 	 *              @OA\Property(property="chapter",                   ref="#/components/schemas/Highlight/properties/chapter"),
@@ -152,7 +151,7 @@ class UserHighlightsController extends APIController
 		request()->highlighted_color = $this->selectColor(request()->highlighted_color);
 		Highlight::create([
 			'user_id'           => request()->user_id,
-			'fileset_id'        => request()->fileset_id,
+			'bible_id'          => request()->bible_id,
 			'book_id'           => request()->book_id,
 			'chapter'           => request()->chapter,
 			'verse_start'       => request()->verse_start,
@@ -162,47 +161,6 @@ class UserHighlightsController extends APIController
 		]);
 
 		return $this->reply([trans('api.success') => trans('api.users_highlights_create_200')]);
-	}
-
-	/**
-	 * Display the specified resource.
-	 *
-	 * @OA\Get(
-	 *     path="/users/{user_id}/highlights/{highlight_id}",
-	 *     tags={"Users"},
-	 *     summary="Show a user highlight",
-	 *     description="",
-	 *     operationId="v4_highlights.show",
-	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OA\Parameter(ref="#/components/parameters/key"),
-	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OA\Parameter(ref="#/components/parameters/format"),
-	 *     @OA\Response(
-	 *         response=200,
-	 *         description="successful operation",
-	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
-	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
-	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_highlights_index"))
-	 *     )
-	 * )
-	 *
-	 * @param $user_id
-	 * @param $highlight_id
-	 *
-	 * @return \Illuminate\Http\Response
-	 * @internal param int $id
-	 *
-	 */
-	public function show($user_id,$highlight_id)
-	{
-		// Validate Project / User Connection
-		$user_is_member = $this->compareProjects($user_id, $this->key);
-		if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
-
-		$highlight  = Highlight::where('id', $highlight_id)->first();
-		if(!$highlight) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_highlights'));
-
-		return $this->reply($highlight);
 	}
 
 	/**
@@ -295,15 +253,15 @@ class UserHighlightsController extends APIController
 	private function validateHighlight()
 	{
 		$validator = Validator::make(request()->all(), [
-			'fileset_id'        => 'required|exists:dbp.bible_filesets,id',
-			'user_id'           => 'required|exists:dbp_users.users,id',
-			'book_id'           => 'required|exists:dbp.books,id',
-			'chapter'           => 'required|max:150|min:1|integer',
-			'verse_start'       => 'required|max:177|min:1|integer',
+			'bible_id'          => ((request()->method() === 'POST') ? 'required|' : '') . 'exists:dbp.bibles,id',
+			'user_id'           => ((request()->method() === 'POST') ? 'required|' : '') . 'exists:dbp_users.users,id',
+			'book_id'           => ((request()->method() === 'POST') ? 'required|' : '') . 'exists:dbp.books,id',
+			'chapter'           => ((request()->method() === 'POST') ? 'required|' : '') . 'max:150|min:1|integer',
+			'verse_start'       => ((request()->method() === 'POST') ? 'required|' : '') . 'max:177|min:1|integer',
 			'reference'         => 'string',
-			'highlight_start'   => 'required|min:0|integer',
-			'highlighted_words' => 'required|min:1|integer',
-			'highlighted_color' => 'required',
+			'highlight_start'   => ((request()->method() === 'POST') ? 'required|' : '') . 'min:0|integer',
+			'highlighted_words' => ((request()->method() === 'POST') ? 'required|' : '') . 'min:1|integer',
+			'highlighted_color' => (request()->method() === 'POST') ? 'required' : '',
 		]);
 		if($validator->fails()) return ['errors' => $validator->errors()];
 		return true;

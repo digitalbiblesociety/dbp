@@ -18,7 +18,7 @@ class BooksController extends APIController
 	 * Returns a static list of Scriptural Books and Accompanying meta data
 	 *
 	 * @version 4
-	 * @category v4_bible.allBooks
+	 * @category v4_bible_books_all
 	 * @link http://api.dbp.test/bibles/books?key=1234&v=4 - V4 Test Access URL
 	 * @link https://dbp.test/eng/docs/swagger/v4#/Bible/v4_bible_books2 - V4 Test Docs
 	 *
@@ -27,7 +27,7 @@ class BooksController extends APIController
 	 *     tags={"Bibles"},
 	 *     summary="Returns the books of the Bible",
 	 *     description="Returns all of the books of the Bible both canonical and deuterocanonical",
-	 *     operationId="v4_bible.allBooks",
+	 *     operationId="v4_bible_books_all",
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -37,7 +37,7 @@ class BooksController extends APIController
 	 *         description="successful operation",
 	 *         @OA\MediaType(
 	 *            mediaType="application/json",
-	 *            @OA\Schema(ref="#/components/schemas/v4_bible.allBooks")
+	 *            @OA\Schema(ref="#/components/schemas/v4_bible_books_all")
 	 *         )
 	 *     )
 	 * )
@@ -47,6 +47,7 @@ class BooksController extends APIController
 	public function index()
 	{
 		if (!$this->api) return view('docs.books');
+		if(env('APP_ENV') === 'local') \Cache::forget('v4_books_index');
 		$books = \Cache::remember('v4_books_index', 2400, function () {
 			return fractal(Book::all(),new BooksTransformer(),$this->serializer);
 		});
@@ -58,16 +59,16 @@ class BooksController extends APIController
 	 * Returns the books and chapters for a specific fileset
 	 *
 	 * @version  4
-	 * @category v4_bible.filesets.books
+	 * @category v4_bible_filesets.books
 	 * @link     https://api.dbp.test/bibles/filesets/TZTWBT/books?key=e8a946a0-d9e2-11e7-bfa7-b1fb2d7f5824&v=4&pretty - V4 Test Access URL
-	 * @link     https://dbp.test/eng/docs/swagger/v4#/Bible/v4_bible.filesets_books - V4 Test Docs
+	 * @link     https://dbp.test/eng/docs/swagger/v4#/Bible/v4_bible_filesets.books - V4 Test Docs
 	 *
 	 * @OA\Get(
 	 *     path="/bibles/filesets/{fileset_id}/books/",
 	 *     tags={"Bibles"},
 	 *     summary="Returns the books of the Bible",
 	 *     description="Returns the books and chapters for a specific fileset",
-	 *     operationId="v4_bible.filesets.books",
+	 *     operationId="v4_bible_filesets.books",
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -81,7 +82,7 @@ class BooksController extends APIController
 	 *         description="successful operation",
 	 *         @OA\MediaType(
 	 *            mediaType="application/json",
-	 *            @OA\Schema(ref="#/components/schemas/v4_bible.allBooks")
+	 *            @OA\Schema(ref="#/components/schemas/v4_bible_books_all")
 	 *         )
 	 *     )
 	 * )

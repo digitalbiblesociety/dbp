@@ -60,7 +60,7 @@ class AudioTransformer extends BaseTransformer
 				return [
 					'book_id'    => $audio->book ? ucfirst(strtolower($audio->book->id_osis)) : $audio->book_id,
 					'chapter_id' => (string) $audio->chapter_start,
-					'path'       => preg_replace("/https:\/\/.*?\/.*?\//", "", $audio->file_name)
+					'path'       => preg_replace("/https:\/\/.*?\/.*?\//", '', $audio->file_name)
 				];
 			}
 
@@ -75,7 +75,8 @@ class AudioTransformer extends BaseTransformer
 			*	description="The v4 timestamps tag",
 			*	title="v4_timestamps_tag",
 			*	@OA\Xml(name="v4_timestamps_tag"),
-			*	@OA\Items(              @OA\Property(property="book_id",       ref="#/components/schemas/Book/properties/id"),
+			*	@OA\Items(
+		 *              @OA\Property(property="book_id",       ref="#/components/schemas/Book/properties/id"),
 		 *              @OA\Property(property="book_name",     ref="#/components/schemas/Book/properties/name"),
 		 *              @OA\Property(property="chapter_start", ref="#/components/schemas/BibleFile/properties/chapter_start"),
 		 *              @OA\Property(property="chapter_end",   ref="#/components/schemas/BibleFile/properties/chapter_end"),
@@ -94,7 +95,7 @@ class AudioTransformer extends BaseTransformer
 			'chapter_end'   => $audio->chapter_end,
 			'verse_start'   => $audio->verse_start,
 			'verse_end'     => $audio->verse_end,
-			'timestamp'     => $audio->timestamp,
+			'timestamp'     => $audio->timestamps,
 			'path'          => $audio->file_name
 		];
 	}

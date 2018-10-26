@@ -71,10 +71,10 @@ class BooksTransformer extends BaseTransformer
 	/**
 	 * @OA\Schema (
 	 *    type="array",
-	 *    schema="v4_bible.allBooks",
+	 *    schema="v4_bible_books_all",
 	 *    description="The books of the bible with codes",
-	 *    title="v4_bible.allBooks",
-	 *	@OA\Xml(name="v4_bible.allBooks"),
+	 *    title="v4_bible_books_all",
+	 *	@OA\Xml(name="v4_bible_books_all"),
 	 *	@OA\Items(
 	 *          @OA\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
 	 *          @OA\Property(property="id_usfx",           ref="#/components/schemas/Book/properties/id_usfx"),
@@ -116,17 +116,43 @@ class BooksTransformer extends BaseTransformer
 	 * @return array
 	 */
 	public function transformForV4($book) {
-		return [
-			'book_id'         => $book->book_id,
-			'book_id_usfx'    => $book->book->id_usfx,
-			'book_id_osis'    => $book->book->id_osis,
-			'name'            => $book->name,
-			'testament'       => $book->book->book_testament,
-			'testament_order' => $book->book->testament_order,
-			'book_order'      => $book->book->protestant_order,
-			'book_group'      => $book->book->book_group,
-			'chapters'        => $book->chapters,
-		];
+
+		switch($this->route) {
+
+			case 'v4_bible_books_all': {
+				return [
+					'book_id'         => $book->book_id,
+					'book_id_usfx'    => $book->id_usfx,
+					'book_id_osis'    => $book->id_osis,
+					'name'            => $book->name,
+					'testament'       => $book->book_testament,
+					'testament_order' => $book->testament_order,
+					'book_order'      => $book->protestant_order,
+					'book_group'      => $book->book_group,
+					'chapters'        => $book->chapters,
+				];
+			}
+
+			case 'v4_bible.books': {
+				return [
+					'book_id'         => $book->id,
+					'book_id_usfx'    => $book->book->id_usfx,
+					'book_id_osis'    => $book->book->id_osis,
+					'name'            => $book->name,
+					'testament'       => $book->book->book_testament,
+					'testament_order' => $book->book->testament_order,
+					'book_order'      => $book->book->protestant_order,
+					'book_group'      => $book->book->book_group,
+					'chapters'        => $book->chapters,
+				];
+			}
+
+			default: {
+				return [];
+			}
+
+		}
+
 	}
 
 }
