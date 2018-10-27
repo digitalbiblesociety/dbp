@@ -80,21 +80,21 @@ class ApiMetadataController extends APIController
 	public function libraryAsset()
 	{
 		$dam_id = checkParam('dam_id|fileset_id', null, 'optional') ?? '';
-		$bucket_id = checkParam('bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
-		$fileset = BibleFileset::where('id',$dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2))->where('bucket_id', $bucket_id)->first();
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError("The fileset requested could not be found");
+		$fileset = BibleFileset::where('id',$dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2))->where('asset_id', $asset_id)->first();
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404'));
 
 		$s3 = Storage::disk('s3_fcbh');
 		$client = $s3->getDriver()->getAdapter()->getClient();
 
 		$libraryAsset = [
 			[
-				'server'    => $bucket_id.'.'.$client->getEndpoint()->getHost(),
-				'root_path' => "/audio",
+				'server'    => $asset_id.'.'.$client->getEndpoint()->getHost(),
+				'root_path' => '/audio',
 				'protocol'  => $client->getEndpoint()->getScheme(),
-				'CDN'       => "0",
-				'priority'  => "5",
+				'CDN'       => '0',
+				'priority'  => '5',
 				'volume_id' => $dam_id,
 			]
 		];

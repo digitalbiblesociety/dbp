@@ -26,7 +26,7 @@ class LanguageController extends APIController
 	 *     @OA\Parameter(in="query",name="full_word",description="Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string new is anywhere in the language name, like in Newari and Awa for Papua New Guinea. When true, it will only return volumes where the language name contains the full word 'new', like in `Awa for Papua New Guinea`. Default is false",@OA\Schema(type="boolean",default=false,example=false)),
 	 *     @OA\Parameter(in="query",deprecated=true,name="family_only",description="When set to true the returned list is of only legal language families. The default is false",@OA\Schema(type="boolean")),
 	 *     @OA\Parameter(in="query",deprecated=true,name="possibilities",description="When set to true the returned list is a combination of DBP languages and ISO languages not yet defined in DBP that meet any of the criteria",@OA\Schema(type="boolean",default=true,example=true)),
-	 *     @OA\Parameter(in="query",name="sort_by",description="Primary criteria by which to sort. 'name' refers to the native language name. The default is 'english'",@OA\Schema(ref="#/components/schemas/Bucket/properties/id")),
+	 *     @OA\Parameter(in="query",name="sort_by",description="Primary criteria by which to sort. 'name' refers to the native language name. The default is 'english'",@OA\Schema(ref="#/components/schemas/Asset/properties/id")),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),

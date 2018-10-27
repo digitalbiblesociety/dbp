@@ -2,11 +2,28 @@
 All notable changes to this project will be documented in this file.
 
 ##### Unreleased
+Tables that have been created but aren't being actively used... yet
 * Created *dbp_users.activations* table
 * Created *dbp_users.articles* and *dbp_users.article_translations* tables
 * Created *dbp_users.archivist_activity* (Currently laravel_logger_activity)
 * Created *dbp_users.2_step_authentication* (Currently laravel_logger_activity)
 * Created *dbp_users.profiles*
+* Created *dbp.videos*
+* Created *dbp.video_translations*
+* Created *dbp.video_tags*
+* Created *dbp.video_sources*
+
+
+
+##### language_id reliance (2018-08-16)
+
+* Removed **iso** field from **bibles**
+* Removed **iso** field from **bible_translations**
+* Removed **iso** field from **bible_size_translations**
+* Added **language_id** field to **bible_size_translations**
+* Removed **language_iso** field from **organization_translations**
+* Removed **iso** field from **resource_translations**
+
 
 ##### Inital Log (2018-08-14)
 

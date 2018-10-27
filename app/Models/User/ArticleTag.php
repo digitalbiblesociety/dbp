@@ -14,17 +14,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $description
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTag whereArticleId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTag whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTag whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTag whereIso($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTag whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTag whereTag($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTag whereUpdatedAt($value)
+ * @method static ArticleTag whereArticleId($value)
+ * @method static ArticleTag whereCreatedAt($value)
+ * @method static ArticleTag whereDescription($value)
+ * @method static ArticleTag whereIso($value)
+ * @method static ArticleTag whereName($value)
+ * @method static ArticleTag whereTag($value)
+ * @method static ArticleTag whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class ArticleTag extends Model
 {
 	protected $connection = 'dbp_users';
 	protected $fillable = ['iso','name','description'];
+
+	public function article()
+	{
+		return $this->belongsTo(Article::class);
+	}
+
 }

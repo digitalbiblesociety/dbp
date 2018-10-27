@@ -33,6 +33,46 @@ use App\Models\Resource\Resource;
  * @property-read \App\Models\Resource\Resource[] $resources
  * @property-read LanguageTranslation[] $translations
  *
+ * @property int $id
+ * @property string|null $glotto_id
+ * @property string|null $iso
+ * @property string $iso2B
+ * @property string $iso2T
+ * @property string $name
+ * @property string $maps
+ * @property string $development
+ * @property string $use
+ * @property string $location
+ * @property string $area
+ * @property string $population
+ * @property string $notes
+ * @property string $typology
+ * @property string $description
+ * @property string $latitude
+ * @property string $longitude
+ * @property string $status
+ * @property string $country_id
+ *
+ * @method static Language whereId($value)
+ * @method static Language whereGlottoId($value)
+ * @method static Language whereIso($value)
+ * @method static whereIso2b($value)
+ * @method static whereIso2t($value)
+ * @method static whereName($value)
+ * @method static whereMaps($value)
+ * @method static whereDevelopment($value)
+ * @method static whereUse($value)
+ * @method static whereLocation($value)
+ * @method static whereArea($value)
+ * @method static wherePopulation($value)
+ * @method static whereNotes($value)
+ * @method static whereTypology($value)
+ * @method static whereDescription($value)
+ * @method static whereLatitude($value)
+ * @method static whereLongitude($value)
+ * @method static whereStatus($value)
+ * @method static whereCountryId($value)
+ *
  * @OA\Schema (
  *     type="object",
  *     description="Language",
@@ -57,8 +97,6 @@ class Language extends Model
 	 *     type="integer"
 	 * )
 	 *
-	 * @method static Language whereId($value)
-	 * @property int $id
 	 */
 	protected $id;
 
@@ -75,8 +113,6 @@ class Language extends Model
 	 *     ),
 	 * )
 	 *
-	 * @method static Language whereGlottoId($value)
-	 * @property string|null $glotto_id
 	 *
 	 */
 	protected $glotto_id;
@@ -94,8 +130,6 @@ class Language extends Model
 	 *     ),
 	 * )
 	 *
-	 * @property string|null $iso
-	 * @method static Language whereIso($value)
 	 *
 	 */
 	protected $iso;
@@ -109,8 +143,6 @@ class Language extends Model
 	 *     type="integer"
 	 * )
 	 *
-	 * @property string $iso2B
-	 * @method static whereIso2b($value)
 	 */
 	protected $iso2B;
 
@@ -123,8 +155,6 @@ class Language extends Model
 	 *     type="integer"
 	 * )
 	 *
-	 * @property string $iso2T
-	 * @method static whereIso2t($value)
 	 */
 	protected $iso2T;
 
@@ -135,8 +165,6 @@ class Language extends Model
 	 *     type="integer"
 	 * )
 	 *
-	 * @property string $iso2T
-	 * @method static whereIso2t($value)
 	 */
 	protected $iso1;
 
@@ -147,8 +175,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $name
-	 * @method static whereName($value)
 	 */
 	protected $name;
 
@@ -159,8 +185,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $maps
-	 * @method static whereMaps($value)
 	 */
 	protected $maps;
 
@@ -171,8 +195,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $development
-	 * @method static whereDevelopment($value)
 	 */
 	protected $development;
 
@@ -183,8 +205,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $use
-	 * @method static whereUse($value)
 	 */
 	protected $use;
 
@@ -195,8 +215,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $location
-	 * @method static whereLocation($value)
 	 */
 	protected $location;
 
@@ -207,8 +225,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $area
-	 * @method static whereArea($value)
 	 */
 	protected $area;
 
@@ -219,8 +235,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $population
-	 * @method static wherePopulation($value)
 	 */
 	protected $population;
 
@@ -231,8 +245,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $population
-	 * @method static wherePopulation($value)
 	 */
 	protected $population_notes;
 
@@ -243,8 +255,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $notes
-	 * @method static whereNotes($value)
 	 */
 	protected $notes;
 
@@ -255,8 +265,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $typology
-	 * @method static whereTypology($value)
 	 */
 	protected $typology;
 
@@ -267,8 +275,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $description
-	 * @method static whereDescription($value)
 	 */
 	protected $description;
 
@@ -279,8 +285,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $latitude
-	 * @method static whereLatitude($value)
 	 */
 	protected $latitude;
 
@@ -291,8 +295,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $longitude
-	 * @method static whereLongitude($value)
 	 */
 	protected $longitude;
 
@@ -303,8 +305,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $status
-	 * @method static whereStatus($value)
 	 */
 	protected $status;
 
@@ -315,8 +315,6 @@ class Language extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @property string $country_id
-	 * @method static whereCountryId($value)
 	 */
 	protected $country_id;
 

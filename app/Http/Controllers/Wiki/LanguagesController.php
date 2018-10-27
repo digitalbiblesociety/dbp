@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Wiki;
 use App\Http\Controllers\APIController;
 
 use App\Models\Language\Language;
-use App\Models\Language\LanguageTranslation;
 use App\Transformers\LanguageTransformer;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -45,7 +44,7 @@ class LanguagesController extends APIController
 	 *     @OA\Parameter(name="sort_by",in="query",description="The sort_by field will order results by a specific field",@OA\Schema(type="object")),
 	 *     @OA\Parameter(name="has_bibles",in="query",description="When set to true will filter language results depending whether or not they have bibles.",@OA\Schema(type="object")),
 	 *     @OA\Parameter(name="has_filesets",in="query",description="When set to true will filter language results depending whether or not they have filesets. Will add new filesets_count field to the return.",@OA\Schema(type="object",default=null,example=true)),
-	 *     @OA\Parameter(name="bucket_id",in="query",description="The bucket_id",@OA\Schema(ref="#/components/schemas/Bucket/properties/id")),
+	 *     @OA\Parameter(name="asset_id",in="query",description="The bucket_id",@OA\Schema(ref="#/components/schemas/Asset/properties/id")),
 	 *     @OA\Parameter(name="include_alt_names",in="query",description="The include_alt_names",@OA\Schema(ref="#/components/schemas/Language/properties/name")),
 	 *     @OA\Parameter(ref="#/components/parameters/l10n"),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
@@ -112,8 +111,10 @@ class LanguagesController extends APIController
 	 */
 	public function create()
 	{
-		$user = \Auth::user();
+		$user = \Auth::user() ?? $this->user;
+		if(!$user) return $this->setStatusCode(401)->replyWithError(trans('api.languages_errors_404'));
 		if(!$user->roles->where('name','archivist')->first()) return $this->setStatusCode(401)->replyWithError(trans('api.auth_wiki_validation_failed'));
+
 		//$swagger = fetchSwaggerSchema('Language', 'V4');
 		return view('dashboard.wiki.languages.create');
 	}
@@ -231,7 +232,7 @@ class LanguagesController extends APIController
 	 */
 	public function update(Request $request, $id)
 	{
-		if(!Auth::user()->archivist) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
+		if(!\Auth::user()->archivist) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
 		$language = Language::find($id);
 		$this->validateLanguage($request);
 		$language->fill($request->all())->save();
@@ -246,10 +247,11 @@ class LanguagesController extends APIController
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroy($id, Request $request)
+	public function destroy($id)
 	{
-		if(!Auth::user()->archivist) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
-		Language::find($id)->delete();
+		if(!\Auth::user()->archivist) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
+		$language = Language::find($id);
+		if(!$language) return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
 		return redirect()->route('view_languages.index');
 	}
 
@@ -276,6 +278,7 @@ class LanguagesController extends APIController
 			if(!$this->api) return redirect('dashboard/alphabets/create')->withErrors($validator)->withInput();
 		}
 
+		return null;
 	}
 
 }

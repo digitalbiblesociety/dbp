@@ -55,153 +55,12 @@ class API_V4_Test extends TestCase
 	/**
 	 * @category V4_API
 	 * @category Route Name: v4_video_stream_ts'
-	 * @category Route Path:
-	 * @see      \App\Http\Controllers\bible/filesets/{fileset_id}/stream/{fhttps://api.dbp.test/
-	 *           ''?v=4&key=1234ile_id}/{file_name}', 'Bible\VideoStreamController::transportStream
+	 * @category Route Path:https://api.dbp.test/?v=4&key=1234ile_id}/{file_name}
+	 * @see      \App\Http\Controllers\VideoStreamController::transportStream
 	 */
 	public function test_v4_video_stream_ts()
 	{
 		$path = route('v4_video_stream_ts', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_api.versions
-	 * @category Route Path: https://api.dbp.test//api/versions?v=4&key=1234
-	 * @see      \App\Http\Controllers\HomeController::versions
-	 */
-	public function test_v4_api_versions()
-	{
-		$path = route('v4_api.versions', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_api.versionLatest
-	 * @category Route Path: https://api.dbp.test//api/versions/latest?v=4&key=1234
-	 * @see      \App\Http\Controllers\HomeController::versionLatest
-	 */
-	public function test_v4_api_versionLatest()
-	{
-		$path = route('v4_api.versionLatest', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_api.replyTypes
-	 * @category Route Path: https://api.dbp.test//api/versions/replyTypes?v=4&key=1234
-	 * @see      \App\Http\Controllers\HomeController::versionReplyTypes
-	 */
-	public function test_v4_api_replyTypes()
-	{
-		$path = route('v4_api.replyTypes', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_api.sign
-	 * @category Route Path: https://api.dbp.test/sign?v=4&key=1234
-	 * @see      \App\Http\Controllers\HomeController::signedUrls
-	 */
-	public function test_v4_api_sign()
-	{
-		$path = route('v4_api.sign', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_api.buckets
-	 * @category Route Path: https://api.dbp.test//api/buckets?v=4&key=1234
-	 * @see      \App\Http\Controllers\HomeController::buckets
-	 */
-	public function test_v4_api_buckets()
-	{
-		$path = route('v4_api.buckets', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_api.stats
-	 * @category Route Path: https://api.dbp.test//stats?v=4&key=1234
-	 * @see      \App\Http\Controllers\HomeController::stats
-	 */
-	public function test_v4_api_stats()
-	{
-		$path = route('v4_api.stats', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_api.logs
-	 * @category Route Path: https://api.dbp.test/sign?v=4&key=1234
-	 * @see      \App\Http\Controllers\HomeController::signedUrls
-	 */
-	public function test_v4_api_logs()
-	{
-		$path = route('v4_api.logs', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_algolia.bibles
-	 * @category Route Path: https://api.dbp.test//algolia/bibles?v=4&key=1234
-	 * @see      \App\Http\Controllers\Connections\AlgoliaOutputController::bibles
-	 */
-	public function test_v4_algolia_bibles()
-	{
-		$path = route('v4_algolia.bibles', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_algolia.languages
-	 * @category Route Path: https://api.dbp.test/algolia/languages?v=4&key=1234
-	 * @see      \App\Http\Controllers\Connections\AlgoliaOutputController::languages
-	 */
-	public function test_v4_algolia_languages()
-	{
-		$path = route('v4_algolia.languages', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_connections_jfm.sync
-	 * @category Route Path: https://api.dbp.test/connections/jesus-film/sync?v=4&key=1234
-	 * @see      \App\Http\Controllers\Connections\ArclightController::sync
-	 */
-	public function test_v4_connections_jfm_sync()
-	{
-		$path = route('v4_connections_jfm.sync', $this->params);
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
@@ -230,20 +89,6 @@ class API_V4_Test extends TestCase
 	public function test_v4_connections_app_deeplink()
 	{
 		$path = route('v4_connections_app.deeplink', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_connections_grn.sync
-	 * @category Route Path: https://api.dbp.test/connections/grn/sync?v=4&key=1234
-	 * @see      \App\Http\Controllers\Connections\GRNController::sync
-	 */
-	public function test_v4_connections_grn_sync()
-	{
-		$path = route('v4_connections_grn.sync', $this->params);
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();

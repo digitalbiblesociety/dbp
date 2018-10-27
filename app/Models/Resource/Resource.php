@@ -10,10 +10,32 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\Resource\Resource
  *
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Resource\ResourceLink[] $links
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Resource\ResourceLink[] $translations
- * @property-read \App\Models\Organization\Organization $organization
- * @property-read \App\Models\Resource\ResourceTranslation $currentTranslation
+ * @property-read ResourceLink[] $links
+ * @property-read ResourceLink[] $translations
+ * @property-read Organization $organization
+ * @property-read ResourceTranslation $currentTranslation
+ *
+ * @property int $id
+ * @property string $iso
+ * @property int $organization_id
+ * @property string|null $source_id
+ * @property string|null $cover
+ * @property string|null $cover_thumbnail
+ * @property string|null $date
+ * @property string $type
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ *
+ * @method static Resource whereId($value)
+ * @method static Resource whereIso($value)
+ * @method static Resource whereOrganizationId($value)
+ * @method static Resource whereSourceId($value)
+ * @method static Resource whereCover($value)
+ * @method static Resource whereCoverThumbnail($value)
+ * @method static Resource whereDate($value)
+ * @method static Resource whereType($value)
+ * @method static Resource whereCreatedAt($value)
+ * @method static Resource whereUpdatedAt($value)
  *
  * @OA\Schema (
  *     type="object",
@@ -38,9 +60,6 @@ class Resource extends Model
 	 *     minimum=0
 	 * )
 	 *
-	 * @method static Resource whereId($value)
-	 * @property int $id
-	 *
 	 */
 	protected $id;
 
@@ -53,18 +72,12 @@ class Resource extends Model
 	 *     minLength=3
 	 * )
 	 *
-	 * @method static Resource whereIso($value)
-	 * @property string $iso
-	 *
 	 */
 	protected $iso;
 
 	/**
 	 *
 	 * @OA\Property(ref="#/components/schemas/Organization/properties/id")
-	 *
-	 * @method static Resource whereOrganizationId($value)
-	 * @property int $organization_id
 	 *
 	 */
 	protected $organization_id;
@@ -78,9 +91,6 @@ class Resource extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static Resource whereSourceId($value)
-	 * @property string|null $source_id
-	 *
 	 */
 	protected $source_id;
 	/**
@@ -91,9 +101,6 @@ class Resource extends Model
 	 *   description="The url to the main cover art for the resource",
 	 *   nullable=true
 	 * )
-	 *
-	 * @method static Resource whereCover($value)
-	 * @property string|null $cover
 	 *
 	 */
 	protected $cover;
@@ -107,9 +114,6 @@ class Resource extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static Resource whereCoverThumbnail($value)
-	 * @property string|null $cover_thumbnail
-	 *
 	 */
 	protected $cover_thumbnail;
 
@@ -121,9 +125,6 @@ class Resource extends Model
 	 *   description="The date the resource was originally published",
 	 *   nullable=true
 	 * )
-	 *
-	 * @method static Resource whereDate($value)
-	 * @property string|null $date
 	 *
 	 */
 	protected $date;
@@ -137,31 +138,12 @@ class Resource extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static Resource whereType($value)
-	 * @property string $type
-	 *
 	 */
 	protected $type;
 
-	/**
-	 *
-	 * @method static Resource whereCreatedAt($value)
-	 * @property \Carbon\Carbon|null $created_at
-	 *
-	 */
-	protected $created_at;
-
-	/**
-	 *
-	 * @method static Resource whereUpdatedAt($value)
-	 * @property \Carbon\Carbon|null $updated_at
-	 *
-	 */
-	protected $updated_at;
-
 	public function language()
 	{
-		return $this->BelongsTo(Language::class);
+		return $this->belongsTo(Language::class);
 	}
 
     public function links()
@@ -176,7 +158,7 @@ class Resource extends Model
 
 	public function tags()
 	{
-		return $this->HasMany(ResourceTranslation::class)->where('tags',1);
+		return $this->hasMany(ResourceTranslation::class)->where('tags',1);
 	}
 
 	public function currentTranslation()
@@ -186,7 +168,7 @@ class Resource extends Model
 
 	public function organization()
 	{
-		return $this->BelongsTo(Organization::class);
+		return $this->belongsTo(Organization::class);
 	}
 
 }

@@ -76,7 +76,7 @@ class BooksController extends APIController
 	 *     @OA\Parameter(name="fileset_id", in="path", ref="#/components/schemas/BibleFileset/properties/id"),
 	 *     @OA\Parameter(name="fileset_type", in="query", description="The type of fileset being queried", @OA\Schema(type="string")),
 	 *     @OA\Parameter(name="testament", in="query", description="The testament to filter books by", @OA\Schema(type="string")),
-	 *     @OA\Parameter(name="bucket", in="query", description="The bucket to select the fileset by", @OA\Schema(type="string")),
+	 *     @OA\Parameter(name="asset_id", in="query", description="The asset id to select the fileset by", @OA\Schema(type="string")),
 	 *     @OA\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -93,10 +93,10 @@ class BooksController extends APIController
 	public function show($id)
 	{
 		$fileset_type = checkParam('fileset_type');
-		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$testament = checkParam('testament', null, 'optional');
 
-		$fileset   = BibleFileset::with('bible')->where('id', $id)->where('bucket_id', $bucket_id)
+		$fileset   = BibleFileset::with('bible')->where('id', $id)->where('asset_id', $asset_id)
 		                         ->where('set_type_code',$fileset_type)->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
 

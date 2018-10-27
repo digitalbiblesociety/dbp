@@ -30,7 +30,7 @@ class BooksController extends APIController
 	 *     description="Gets the book order and code listing for a volume.",
 	 *     operationId="v2_library_book",
 	 *     @OA\Parameter(name="dam_id",in="query",description="The bible ID",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
-	 *     @OA\Parameter(name="bucket_id",in="query",description="The bible ID", @OA\Schema(ref="#/components/schemas/Bucket/properties/id")),
+	 *     @OA\Parameter(name="asset_id",in="query",description="The Asset ID", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -49,9 +49,9 @@ class BooksController extends APIController
 	public function book()
 	{
 		$id        = checkParam('dam_id');
-		$bucket_id = checkParam('bucket', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
-		$fileset   = BibleFileset::with('bible')->where('id', $id)->orWhere('id',substr($id,0,-4))->orWhere('id',substr($id,0,-2))->where('bucket_id', $bucket_id)->first();
+		$fileset   = BibleFileset::with('bible')->where('id', $id)->orWhere('id',substr($id,0,-4))->orWhere('id',substr($id,0,-2))->where('asset_id', $asset_id)->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
 
 		$sophiaTable = $this->checkForSophiaTable($fileset);
@@ -63,9 +63,9 @@ class BooksController extends APIController
 			case 'O': { $testament = 'OT'; break; }
 			case 'N': { $testament = 'NT'; break; }
 		}
-		\Cache::forget('v2_library_book_' . $id . $bucket_id . $fileset . $testament);
-		$libraryBook = \Cache::remember('v2_library_book_' . $id . $bucket_id . $fileset . $testament, 1600,
-			function () use ($id, $bucket_id, $fileset, $testament, $sophiaTable) {
+		\Cache::forget('v2_library_book_' . $id . $asset_id . $fileset . $testament);
+		$libraryBook = \Cache::remember('v2_library_book_' . $id . $asset_id . $fileset . $testament, 1600,
+			function () use ($id, $asset_id, $fileset, $testament, $sophiaTable) {
 				$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
 				$books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
 					->when($testament, function ($q) use ($testament) {
@@ -90,9 +90,9 @@ class BooksController extends APIController
 	public function bookOrder()
 	{
 		$id        = checkParam('dam_id');
-		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
-		$fileset   = BibleFileset::with('bible')->where('id', $id)->orWhere('id',substr($id,0,-4))->orWhere('id',substr($id,0,-2))->where('bucket_id', $bucket_id)->first();
+		$fileset   = BibleFileset::with('bible')->where('id', $id)->orWhere('id',substr($id,0,-4))->orWhere('id',substr($id,0,-2))->where('asset_id', $asset_id)->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
 
 		$sophiaTable = $this->checkForSophiaTable($fileset);
@@ -104,8 +104,8 @@ class BooksController extends APIController
 			case 'O': { $testament = 'OT'; break; }
 			case 'N': { $testament = 'NT'; }
 		}
-		\Cache::forget('v2_library_bookOrder_' . $id . $bucket_id . $fileset . $testament);
-		$libraryBook = \Cache::remember('v2_library_book_' . $id . $bucket_id . $fileset . $testament, 1600,
+		\Cache::forget('v2_library_bookOrder_' . $id . $asset_id . $fileset . $testament);
+		$libraryBook = \Cache::remember('v2_library_book_' . $id . $asset_id . $fileset . $testament, 1600,
 			function () use ($id, $fileset, $testament, $sophiaTable) {
 				$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
 				$books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
@@ -203,7 +203,7 @@ class BooksController extends APIController
 	 *     description="Lists the chapters for a book or all books in a standard bible volume.",
 	 *     operationId="v2_library_chapter",
 	 *     @OA\Parameter(name="dam_id",in="query",description="The bible_id",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
-	 *     @OA\Parameter(name="bucket_id",in="query",description="The bucket_id", @OA\Schema(ref="#/components/schemas/Bucket/properties/id")),
+	 *     @OA\Parameter(name="asset_id",in="query",description="The asset_id", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
 	 *     @OA\Parameter(name="book_id",in="query",description="The book_id",required=true, @OA\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -218,7 +218,7 @@ class BooksController extends APIController
 	 *
 	 * @param dam_id - The Fileset ID to filter by
 	 * @param book_id - The USFM 2.4 or OSIS Book ID code
-	 * @param bucket_id - The optional bucket ID of the resource, if not given the API will assume FCBH origin
+	 * @param asset_id - The optional asset ID of the resource, if not given the API will assume FCBH origin
 	 *
 	 * @return mixed $chapters string - A JSON string that contains the status code and error messages if applicable.
 	 *
@@ -228,12 +228,12 @@ class BooksController extends APIController
 		if(!$this->api) return view('docs.books.chapters');
 
 		$id        = checkParam('dam_id');
-		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$book_id   = checkParam('book_id');
 
-		\Cache::forget('v2_library_chapter_' . $id . $bucket_id . $book_id);
-		$chapters = \Cache::remember('v2_library_chapter_' . $id . $bucket_id . $book_id, 1600, function () use ($id, $bucket_id, $book_id) {
-			$fileset = BibleFileset::where('id', $id)->orWhere('id', substr($id, 0, -4))->where('bucket_id', $bucket_id)->first();
+		\Cache::forget('v2_library_chapter_' . $id . $asset_id . $book_id);
+		$chapters = \Cache::remember('v2_library_chapter_' . $id . $asset_id . $book_id, 1600, function () use ($id, $asset_id, $book_id) {
+			$fileset = BibleFileset::where('id', $id)->orWhere('id', substr($id, 0, -4))->where('asset_id', $asset_id)->first();
 			if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
 
 			$book = Book::where('id_osis', $book_id)->orWhere('id', $book_id)->first();

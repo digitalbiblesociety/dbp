@@ -16,6 +16,8 @@ return [
 	'bibles_in_progress'  => 'In Progress',
 	'bibles_date'         => 'Published Date',
 
+	'languages_create_title'    => 'Create a New Language Entry',
+
 /*
 |--------------------------------------------------------------------------
 | Laravel Logger Language Lines - Global

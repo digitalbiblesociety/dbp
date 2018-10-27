@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use Aws\CloudFront\CloudFrontClient;
+use Aws\S3\S3Client;
 use Carbon\Carbon;
 use Curl\Curl;
 use Cache;
@@ -9,16 +11,62 @@ use SimpleXMLElement;
 
 trait CallsBucketsTrait {
 
+	public function authorizeAWS()
+	{
+		if(env('APP_ENV') === 'local') Cache::forget('iam_assumed_role');
+		$security_token = Cache::remember('iam_assumed_role', 60, function () {
+			$role_call  = $this->assumeRole();
+			if($role_call) {
+				$response_xml   = simplexml_load_string($role_call->response,'SimpleXMLElement',LIBXML_NOCDATA);
+				return json_decode(json_encode($response_xml));
+			}
+		});
+
+		$clients['cloudfront'] = new CloudFrontClient([
+			'version' => 'latest',
+			'region'  => 'us-west-2',
+			'credentials' => [
+				'key' => $security_token->AssumeRoleResult->Credentials->AccessKeyId,
+				'secret' => $security_token->AssumeRoleResult->Credentials->SecretAccessKey,
+				'token' =>  $security_token->AssumeRoleResult->Credentials->SessionToken
+			]
+		]);
+
+		$clients['s3'] = new S3Client([
+			'version' => 'latest',
+			'region'  => 'us-west-2',
+			'credentials' => [
+				'key' => $security_token->AssumeRoleResult->Credentials->AccessKeyId,
+				'secret' => $security_token->AssumeRoleResult->Credentials->SecretAccessKey,
+				'token' =>  $security_token->AssumeRoleResult->Credentials->SessionToken
+			]
+		]);
+		return $clients;
+	}
+
+	public function signedUrl(string $filepath, $bucket_id, int $transaction)
+	{
+		$clients = $this->authorizeAWS();
+		$cloudFrontClient = $clients['cloudfront'];
+
+		$request_array = [
+			'url'         => 'https://content.cdn.'.$bucket_id.'.dbp4.org/'.$filepath.'?x-amz-transaction='.$transaction,
+			'key_pair_id' => env('AWS_CLOUDFRONT_KEY_ID'),
+			'private_key' => storage_path('app/'.env('AWS_CLOUDFRONT_KEY_SECRET')),
+			'expires'     => Carbon::now()->addHour()->timestamp,
+		];
+		return $cloudFrontClient->getSignedUrl($request_array);
+	}
+
+
 	/**
-	 *
-	 *
 	 *
 	 * @param string $file
 	 * @param string $bucket
 	 * @param int    $transaction
 	 *
 	 * @return string
-	 */
+
 	public function signedUrl(string $file, string $bucket = 'dbp-prod', int $transaction)
 	{
 		$security_token = Cache::remember('iam_assumed_role', 60, function () {
@@ -38,7 +86,7 @@ trait CallsBucketsTrait {
 		$data = "GET\n\n\n$timestamp\nx-amz-security-token:$temp_session_token\nx-amz-transaction:$transaction\n/$bucket".'/'.$file;
 		$signature = base64_encode(hash_hmac('sha1', $data, $temp_secret_key, TRUE));
 		return "https://$bucket.s3.amazonaws.com/$file?AWSAccessKeyId=$temp_access_key&Signature=".urlencode($signature).'&x-amz-security-token='.urlencode($temp_session_token)."&x-amz-transaction=$transaction&Expires=$timestamp";
-	}
+	}	 */
 
 	private function assumeRole()
 	{
@@ -58,7 +106,7 @@ trait CallsBucketsTrait {
 		$client = new Curl();
 		$client->setHeader('Content-Type','application/x-www-form-urlencoded; charset=utf-8');
 		$client->setHeader('X-Amz-Date',$timestamp);
-		$client->setHeader('Authorization',"AWS4-HMAC-SHA256 Credential=".env('AWS_KEY')."/$date/us-east-1/sts/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=$credentials");
+		$client->setHeader('Authorization','AWS4-HMAC-SHA256 Credential='.env('AWS_KEY')."/$date/us-east-1/sts/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=$credentials");
 		$client->setHeader('Accept','');
 		$client->setHeader('Accept-Encoding','identity');
 		$response = $client->post('https://sts.amazonaws.com/', $form_params);

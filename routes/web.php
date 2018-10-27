@@ -73,7 +73,7 @@ Route::group(['middleware' => ['web', 'activity']], function () {
 	Route::name('swagger_v4')->get('docs/swagger/v4',                        'User\DocsController@swagger_v4');
 	Route::name('swagger_v2')->get('docs/swagger/v2',                        'User\DocsController@swagger_v2');
 	Route::name('history')->get('docs/history',                              'User\DocsController@history');
-	Route::name('docs.sdk')->get('docs/sdk',                                 'User\DocsController@sdk');
+	Route::name('docs.sdk')->get('sdk',                                      'User\DocsController@sdk');
 	Route::name('docs.getting_started')->get('guides/getting-started',       'User\DocsController@start');
 	Route::name('docs_team')->get('docs/team',                               'User\DocsController@team');
 	Route::name('docs_bible_equivalents')->get('docs/bibles/equivalents',    'User\DocsController@bibleEquivalents');
@@ -109,8 +109,8 @@ Route::group(['middleware' => ['auth', 'activated', 'activity']], function () {
     Route::name('activation-required')->get('/activation-required',     'Auth\ActivateController@activationRequired');
     Route::name('logout')->get('/logout',                               'Auth\LoginController@logout');
 
-    Route::name('public.home')->get('/home',                           'User\UserController@index');       //  Homepage Route - Redirect based on user role is in controller.
-    Route::name('profiles.show')->get('profile/{username}',            'User\Dashboard\ProfilesController@show');    // Show users profile - viewable by other users.
+    Route::name('public.home')->get('/home',                           'User\Dashboard\DashboardController@home');       //  Homepage Route - Redirect based on user role is in controller.
+    Route::name('profile.show')->get('profile/{username}',            'User\Dashboard\ProfilesController@show');    // Show users profile - viewable by other users.
 });
 
 // Registered, activated, and is current user routes.
@@ -132,7 +132,18 @@ Route::group(['middleware' => ['auth', 'activated', 'currentUser', 'activity']],
 // Registered, activated, and is admin routes.
 Route::group(['middleware' => ['auth', 'activated', 'role:admin', 'activity']], function () {
 
-	//
+	// Wiki
+	Route::resource('/dashboard/languages' ,      'Wiki\LanguagesController', [
+		'names' => [
+			'index'   => 'dashboard.languages',
+			'create'  => 'dashboard.languages.create',
+			'store'   => 'dashboard.languages.store',
+			'update'  => 'dashboard.languages.update',
+			'delete'  => 'dashboard.languages.delete',
+		]
+	]);
+
+
 	Route::name('dashboard.tasks')->get('/dashboard/{role}/tasks' ,            'User\Dashboard\TaskController@index');
 	Route::name('dashboard.dbl.index')->get('/dashboard/dbp/entries' ,         'Connections\DigitalBibleLibraryController@index');
 	Route::name('dashboard.dbl.create')->get('/dashboard/dbp/entry/create' ,   'Connections\DigitalBibleLibraryController@create');

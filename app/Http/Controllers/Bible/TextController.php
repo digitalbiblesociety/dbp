@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers\Bible;
 
-use App\Helpers\AWS\Bucket;
-use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
-use App\Models\Bible\BibleFilesetTag;
 use App\Models\Bible\Book;
-use App\Models\Bible\BibleEquivalent;
 use App\Models\Language\AlphabetFont;
 use App\Traits\AccessControlAPI;
 use App\Traits\CallsBucketsTrait;
@@ -84,7 +80,7 @@ class TextController extends APIController
 		$chapter     = checkParam('chapter_id', $chapter_url_param, 'optional');
 		$verse_start = checkParam('verse_start', null, 'optional') ?? 1;
 		$verse_end   = checkParam('verse_end', null, 'optional');
-		$formatted   = checkParam('bucket|bucket_id', null, 'optional');
+		$asset_id    = checkParam('bucket|bucket_id|asset_id', null, 'optional');
 
 		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id',substr($fileset_id,0,6))->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
@@ -97,12 +93,12 @@ class TextController extends APIController
 		if (!$book) return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
 		$book->push('name_vernacular', $book->translation($bible->language_id)->first());
 
-		if ($formatted) {
+		if ($asset_id) {
 			$path   = 'text/' . $bible->id . '/' . $fileset->id . '/' . $book_id . $chapter . '.html';
-			$exists = Storage::disk($formatted)->exists($path);
+			$exists = Storage::disk($asset_id)->exists($path);
 			if (!$exists) return $this->replyWithError("The path: $path did not result in a file");
 			$transaction_id = random_int(0,10000000);
-			return $this->reply(['path' => $this->signedUrl($path, $formatted, $transaction_id)], [], $transaction_id);
+			return $this->reply(['path' => $this->signedUrl($path, $asset_id, $transaction_id)], [], $transaction_id);
 		}
 
 		// Fetch Verses

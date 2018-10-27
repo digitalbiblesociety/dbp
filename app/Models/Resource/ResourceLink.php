@@ -7,6 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Resource\ResourceLink
  *
+ * @property int $resource_id
+ * @property string $title
+ * @property string|null $size
+ * @property string $type
+ * @property string $url
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ *
+ * @method static ResourceLink whereResourceId($value)
+ * @method static ResourceLink whereTitle($value)
+ * @method static ResourceLink whereSize($value)
+ * @method static ResourceLink whereType($value)
+ * @method static ResourceLink whereUrl($value)
+ * @method static ResourceLink whereCreatedAt($value)
+ * @method static ResourceLink whereUpdatedAt($value)
+ *
  * @OA\Schema (
  *     type="object",
  *     description="ResourceLink",
@@ -25,9 +41,6 @@ class ResourceLink extends Model
 	 *
 	 * @OA\Property(ref="#/components/schemas/Resource/properties/id")
 	 *
-	 * @method static ResourceLink whereResourceId($value)
-	 * @property int $resource_id
-	 *
 	 */
 	protected $resource_id;
 
@@ -39,9 +52,6 @@ class ResourceLink extends Model
 	 *   description="The type of media the resource can be categorized as",
 	 *   nullable=true
 	 * )
-	 *
-	 * @method static ResourceLink whereTitle($value)
-	 * @property string $title
 	 *
 	 */
 	protected $title;
@@ -55,9 +65,6 @@ class ResourceLink extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static ResourceLink whereSize($value)
-	 * @property string|null $size
-	 *
 	 */
 	protected $size;
 
@@ -70,9 +77,6 @@ class ResourceLink extends Model
 	 *   nullable=true
 	 * )
 	 *
-	 * @method static ResourceLink whereType($value)
-	 * @property string $type
-	 *
 	 */
 	protected $type;
 
@@ -84,27 +88,12 @@ class ResourceLink extends Model
 	 *   description="The link for the url"
 	 * )
 	 *
-	 * @method static ResourceLink whereUrl($value)
-	 * @property string $url
-	 *
 	 */
 	protected $url;
 
-	/**
-	 *
-	 *
-	 * @method static ResourceLink whereCreatedAt($value)
-	 * @property \Carbon\Carbon|null $created_at
-	 *
-	 */
-	protected $created_at;
-
-	/**
-	 *
-	 * @method static ResourceLink whereUpdatedAt($value)
-	 * @property \Carbon\Carbon|null $updated_at
-	 *
-	 */
-	protected $updated_at;
+	public function resource()
+	{
+		return $this->belongsTo(Resource::class);
+	}
 
 }

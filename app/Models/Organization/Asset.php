@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property int $hidden
  */
-class Bucket extends Model
+class Asset extends Model
 {
 	protected $connection = 'dbp';
 	public $primaryKey = 'id';
@@ -36,7 +36,7 @@ class Bucket extends Model
 	 *   minLength=24
 	 * )
 	 *
-	 * @method static Bucket whereId($value)
+	 * @method static Asset whereId($value)
 	 * @property string $id
 	 *
 	 */
@@ -46,11 +46,13 @@ class Bucket extends Model
 	 *
 	 * @OA\Property(ref="#/components/schemas/Organization/properties/id")
 	 *
-	 * @method static Bucket whereOrganizationId($value)
+	 * @method static Asset whereOrganizationId($value)
 	 * @property int $organization_id
 	 *
 	 */
 	protected $organization_id;
+
+	protected $asset_type;
 
 	/**
 	 *
@@ -60,7 +62,7 @@ class Bucket extends Model
 	 *   description="The timestamp at which the bucket was created",
 	 * )
 	 *
-	 * @method static Bucket whereCreatedAt($value)
+	 * @method static Asset whereCreatedAt($value)
 	 * @property Carbon $created_at
 	 *
 	 */
@@ -73,7 +75,7 @@ class Bucket extends Model
 	 *   description="The timestamp at which the bucket was last updated",
 	 * )
 	 *
-	 * @method static Bucket whereUpdatedAt($value)
+	 * @method static Asset whereUpdatedAt($value)
 	 * @property Carbon $updated_at
 	 *
 	 */

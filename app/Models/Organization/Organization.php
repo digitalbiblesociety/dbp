@@ -33,6 +33,45 @@ use App\Traits\Uuids;
  * @property-read mixed $bibles_count
  * @property-read mixed $filesets_count
  *
+ * @method static Organization whereId($value)
+ * @property int $id
+ * @method static Organization whereSlug($value)
+ * @property $slug
+ * @method static Organization whereAbbreviation($value)
+ * @property $abbreviation
+ * @method static Organization whereNotes($value)
+ * @property $notes
+ * @method static Organization wherePrimarycolor($value)
+ * @property $primaryColor
+ * @method static Organization whereSecondarycolor($value)
+ * @property $secondaryColor
+ * @method static Organization whereInactive($value)
+ * @property boolean $inactive
+ * @method static Organization whereUrlFacebook($value)
+ * @property $url_facebook
+ * @method static Organization whereUrlWebsite($value)
+ * @property $url_website
+ * @method static Organization whereUrlDonate($value)
+ * @property $url_donate
+ * @method static Organization whereUrlTwitter($value)
+ * @property $url_twitter
+ * @method static Organization whereAddress($value)
+ * @property $address
+ * @method static Organization whereAddress2($value)
+ * @property $address2
+ * @method static Organization whereCity($value)
+ * @property $city
+ * @method static Organization whereState($value)
+ * @property $state
+ * @method static Organization whereCountry($value)
+ * @property $country
+ * @method static Organization whereZip($value)
+ * @property $zip
+ * @method static Organization wherePhone($value)
+ * @property $phone
+ * @method static Organization whereEmail($value)
+ * @property $email
+ *
  * @OA\Schema (
  *     type="object",
  *     description="Organization",
@@ -57,8 +96,6 @@ class Organization extends Model
 	 *     minimum=0
 	 * )
 	 *
-	 * @method static Organization whereId($value)
-	 * @property int $id
 	 */
 	protected $id;
 	/**
@@ -70,8 +107,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization whereSlug($value)
-	 * @property $slug
 	 */
 	protected $slug;
 	/**
@@ -84,8 +119,6 @@ class Organization extends Model
 	 *     nullable=true
 	 * )
 	 *
-	 * @method static Organization whereAbbreviation($value)
-	 * @property $abbreviation
 	 */
 	protected $abbreviation;
 	/**
@@ -97,8 +130,6 @@ class Organization extends Model
 	 *     nullable=true
 	 * )
 	 *
-	 * @method static Organization whereNotes($value)
-	 * @property $notes
 	 */
 	protected $notes;
 	/**
@@ -112,8 +143,6 @@ class Organization extends Model
 	 *     nullable=true
 	 * )
 	 *
-	 * @method static Organization wherePrimarycolor($value)
-	 * @property $primaryColor
 	 */
 	protected $primaryColor;
 	/**
@@ -127,8 +156,6 @@ class Organization extends Model
 	 *     nullable=true
 	 * )
 	 *
-	 * @method static Organization whereSecondarycolor($value)
-	 * @property $secondaryColor
 	 */
 	protected $secondaryColor;
 	/**
@@ -140,8 +167,6 @@ class Organization extends Model
 	 *     nullable=true
 	 * )
 	 *
-	 * @method static Organization whereInactive($value)
-	 * @property boolean $inactive
 	 */
 	protected $inactive;
 	/**
@@ -153,8 +178,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization whereUrlFacebook($value)
-	 * @property $url_facebook
 	 */
 	protected $url_facebook;
 	/**
@@ -166,8 +189,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization whereUrlWebsite($value)
-	 * @property $url_website
 	 */
 	protected $url_website;
 	/**
@@ -179,8 +200,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization whereUrlDonate($value)
-	 * @property $url_donate
 	 */
 	protected $url_donate;
 	/**
@@ -192,8 +211,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization whereUrlTwitter($value)
-	 * @property $url_twitter
 	 */
 	protected $url_twitter;
 	/**
@@ -205,8 +222,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization whereAddress($value)
-	 * @property $address
 	 */
 	protected $address;
 	/**
@@ -218,8 +233,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization whereAddress2($value)
-	 * @property $address2
 	 */
 	protected $address2;
 	/**
@@ -231,8 +244,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization whereCity($value)
-	 * @property $city
 	 */
 	protected $city;
 	/**
@@ -244,8 +255,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization whereState($value)
-	 * @property $state
 	 */
 	protected $state;
 	/**
@@ -257,8 +266,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization whereCountry($value)
-	 * @property $country
 	 */
 	protected $country;
 	/**
@@ -270,8 +277,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization whereZip($value)
-	 * @property $zip
 	 */
 	protected $zip;
 	/**
@@ -283,8 +288,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization wherePhone($value)
-	 * @property $phone
 	 */
 	protected $phone;
 	/**
@@ -296,8 +299,6 @@ class Organization extends Model
 	 *     maxLength=191
 	 * )
 	 *
-	 * @method static Organization whereEmail($value)
-	 * @property $email
 	 */
 	protected $email;
 

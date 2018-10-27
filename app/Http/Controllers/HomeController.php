@@ -9,7 +9,6 @@ use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Models\Bible\Bible;
-use App\Helpers\AWS\Bucket;
 use App\Models\Resource\Resource;
 use App\Traits\CallsBucketsTrait;
 use Illuminate\Http\Request;
@@ -40,14 +39,14 @@ class HomeController extends APIController
 	}
 
 	/**
-	 * Returns a List of Buckets used by the API
+	 * Returns a List of Assets used by the API
 	 *
 	 * @OA\Get(
-	 *     path="/api/buckets",
+	 *     path="/api/assets",
 	 *     tags={"Bibles"},
-	 *     summary="Returns aws buckets currently being used by the api",
+	 *     summary="Returns the asset paths currently being used by the api",
 	 *     description="",
-	 *     operationId="v4_api.buckets",
+	 *     operationId="v4_api.assets",
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -55,28 +54,28 @@ class HomeController extends APIController
 	 *     @OA\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_api_buckets")),
-	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_api_buckets")),
-	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_api_buckets"))
+	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_api_assets")),
+	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_api_assets")),
+	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_api_assets"))
 	 *     )
 	 * )
 	 *
 	 * @OA\Schema (
 	 *     type="object",
-	 *     schema="v4_api_buckets",
-	 *     description="The aws buckets currently being used by the api",
-	 *     title="The buckets response",
+	 *     schema="v4_api_assets",
+	 *     description="The aws assets currently being used by the api",
+	 *     title="The assets response",
 	 *     required={"id","organization_id"},
-	 *     @OA\Xml(name="v4_api_buckets"),
-	 *     @OA\Property(property="id",              ref="#/components/schemas/Bucket/properties/id"),
-	 *     @OA\Property(property="organization_id", ref="#/components/schemas/Bucket/properties/organization_id")
+	 *     @OA\Xml(name="v4_api_assets"),
+	 *     @OA\Property(property="id",              ref="#/components/schemas/Asset/properties/id"),
+	 *     @OA\Property(property="organization_id", ref="#/components/schemas/Asset/properties/organization_id")
 	 * )
 	 *
 	 * @return mixed
 	 */
 	public function buckets()
 	{
-		return $this->reply(\App\Models\Organization\Bucket::with('organization')->get());
+		return $this->reply(\App\Models\Organization\Asset::with('organization')->get());
 	}
 
 	/**
@@ -111,25 +110,6 @@ class HomeController extends APIController
 	public function versions()
 	{
 		return $this->reply(["versions" => [2, 4]]);
-	}
-
-	public function signedUrls()
-	{
-		$filenames = $_GET['filenames'] ?? "";
-		$filenames = explode(",", $filenames);
-		$signer    = $_GET['signer'] ?? 's3_fcbh';
-		$bucket    = $_GET['bucket'] ?? "dbp.test";
-		$expiry    = $_GET['expiry'] ?? 5;
-		$urls      = [];
-
-		$transaction_id = random_int(0,10000000);
-		foreach ($filenames as $filename) {
-			$filename                                      = ltrim($filename, "/");
-			$paths                                         = explode("/", $filename);
-			$urls["urls"][$paths[0]][$paths[1]][$paths[2]] = $this->signedUrl($filename, $signer, $bucket, $transaction_id);
-		}
-
-		return $this->reply($urls, [], $transaction_id);
 	}
 
 	public function status_dbl()

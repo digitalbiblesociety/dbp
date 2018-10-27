@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Bible;
 
+use App\Models\Organization\Asset;
 use App\Traits\AccessControlAPI;
 use App\Traits\CallsBucketsTrait;
 use Validator;
@@ -15,7 +16,6 @@ use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFilesetType;
 use App\Models\Bible\Book;
 use App\Models\Language\Language;
-use App\Helpers\AWS\Bucket;
 use App\Models\User\Key;
 
 use App\Transformers\FileSetTransformer;
@@ -60,18 +60,18 @@ class BibleFileSetsController extends APIController
 		$fileset_id    = checkParam('dam_id|fileset_id', $id);
 		$chapter_id    = checkParam('chapter_id', null, 'optional');
 		$book_id       = checkParam('book_id', null, 'optional');
-		$bucket_id     = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id     = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$lifespan      = checkParam('lifespan', null, 'optional') ?? 5;
 		$type          = checkParam('type');
 		$versification = checkParam('versification', null, 'optional');
 
 		$book = $book_id ? Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first() : null;
 		if($book !== null) $book_id = $book->id;
-		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->when($bucket_id,
-			function ($query) use ($bucket_id) {
-				return $query->where('bucket_id', $bucket_id);
+		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->when($asset_id,
+			function ($query) use ($asset_id) {
+				return $query->where('asset_id', $asset_id);
 			})->where('set_type_code', $type)->first();
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404_bucket', ['bucket_id' => $bucket_id]));
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404_bucket', ['bucket_id' => $asset_id]));
 
 		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? 'download' : 'api';
 		$access_control = $this->accessControl($this->key, $access_control_type);
@@ -119,7 +119,7 @@ class BibleFileSetsController extends APIController
 		if($fileset->set_type_code != 'video_stream') {
 			$transaction_id = random_int(0,10000000);
 			foreach ($fileSetChapters as $key => $fileSet_chapter) {
-				$fileSetChapters[$key]->file_name = $this->signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name, $bucket_id, $transaction_id);
+				$fileSetChapters[$key]->file_name = $this->signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name, $asset_id, $transaction_id);
 			}
 		} else {
 			foreach ($fileSetChapters as $key => $fileSet_chapter) {
@@ -155,14 +155,12 @@ class BibleFileSetsController extends APIController
 	 */
 	public function download($id)
 	{
-		$set_id    = CheckParam('fileset_id', $id);
-		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-		$books     = CheckParam('book_ids', null, 'optional');
+		$set_id    = checkParam('fileset_id', $id);
+		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$books     = checkParam('book_ids', null, 'optional');
 
-		$fileset = BibleFileset::where('id', $set_id)->where('bucket_id', $bucket_id)->first();
-		if (!$fileset) {
-			return $this->replyWithError("Fileset ID not found");
-		}
+		$fileset = BibleFileset::where('id', $set_id)->where('asset_id', $asset_id)->first();
+		if (!$fileset) return $this->replyWithError("Fileset ID not found");
 
 		// Filter Download By Books
 		if ($books) {
@@ -173,7 +171,7 @@ class BibleFileSetsController extends APIController
 				return $testamentLetter . str_pad($file->book->testament_order, 2, 0, STR_PAD_LEFT);
 			})->unique();
 		}
-		Bucket::download($files, 's3_fcbh', 'dbp.test', 5, $books);
+		Asset::download($files, 's3_fcbh', 'dbp.test', 5, $books);
 	}
 
 	/**
@@ -196,17 +194,18 @@ class BibleFileSetsController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+	 * @param $id
 	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
 	 */
 	public function podcast($id)
 	{
-		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-		$fileset   = BibleFileset::with('files.currentTitle', 'bible.books')->where('id', $id)->where('bucket_id', $bucket_id)->first();
-		if (!$fileset) return $this->replyWithError("No Fileset exists for this ID");
+		$asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$fileset   = BibleFileset::with('files.currentTitle', 'bible.books')->where('id', $id)->where('asset_id', $asset_id)->first();
+		if(!$fileset) return $this->replyWithError(trans('api.bible_fileset_errors_404'));
 
 		$rootElementName = 'rss';
-		$rootAttributes  = ['xmlns:itunes' => "http://www.itunes.com/dtds/podcast-1.0.dtd", 'xmlns:atom' => "http://www.w3.org/2005/Atom", 'xmlns:media' => "http://search.yahoo.com/mrss/", 'version' => "2.0"];
+		$rootAttributes  = ['xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd', 'xmlns:atom' => 'http://www.w3.org/2005/Atom', 'xmlns:media' => 'http://search.yahoo.com/mrss/', 'version' => '2.0'];
 		$podcast         = fractal($fileset,new FileSetTransformer())->serializeWith($this->serializer);
 		return $this->reply($podcast, ['rootElementName' => $rootElementName, 'rootAttributes' => $rootAttributes]);
 	}
@@ -226,7 +225,7 @@ class BibleFileSetsController extends APIController
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OA\Parameter(ref="#/components/parameters/format"),
 	 *     @OA\Parameter(name="id", in="path", required=true, description="The fileset ID", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-	 *     @OA\Parameter(name="bucket_id", in="path", required=true, description="The bucket id", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/bucket_id")),
+	 *     @OA\Parameter(name="asset_id", in="path", required=true, description="The asset id", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
 	 *     @OA\Parameter(name="type", in="path", required=true, description="The set type code", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code")),
 	 *     @OA\Parameter(
 	 *         name="id",
@@ -250,14 +249,14 @@ class BibleFileSetsController extends APIController
 	{
 		$iso = checkParam('iso', null, 'optional') ?? 'eng';
 		$type = checkParam('type', null, 'optional');
-		$bucket_id = checkParam('bucket|bucket_id', null, 'optional') ?? 'dbp.test';
+		$asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? 'dbp.test';
 
 		$language = Language::where('iso',$iso)->first();
 		$fileset = BibleFileset::with(['copyright.organizations.logos', 'copyright.organizations.translations' => function ($q) use ($language) {
 			$q->where('language_id', $language->id);
 		}])
-		->when($bucket_id, function ($q) use($bucket_id) {
-			$q->where('bucket_id', $bucket_id);
+		->when($asset_id, function ($q) use($asset_id) {
+			$q->where('asset_id', $asset_id);
 		})
 		->when($type, function ($q) use($type) {
 			$q->where('set_type_code', $type);

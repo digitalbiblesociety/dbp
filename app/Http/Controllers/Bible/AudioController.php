@@ -49,7 +49,7 @@ class AudioController extends APIController
 	 *     @OA\Parameter(name="dam_id", in="query", description="The DAM ID for which to retrieve file path info.", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OA\Parameter(name="chapter_id", in="query", description="The id for the specified chapter. If chapter is specified only the specified chapter audio information is returned to the caller.", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
 	 *     @OA\Parameter(name="encoding", in="query", description="The audio encoding format desired (No longer in use as Audio Files default to mp3).", @OA\Schema(type="string",title="encoding")),
-	 *     @OA\Parameter(name="bucket_id", in="query", description="The bucket desired.", @OA\Schema(ref="#/components/schemas/Bucket/properties/id")),
+	 *     @OA\Parameter(name="asset_id", in="query", description="The bucket desired.", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
 	 *     @OA\Parameter(name="book_id", in="query", description="The USFM 2.4 book ID.", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
 	 *     @OA\Response(
 	 *         response=200,
@@ -66,7 +66,7 @@ class AudioController extends APIController
 		$fileset_id = checkParam('dam_id', $id);
 		$chapter_id = checkParam('chapter_id', null, 'optional');
 		$book_id    = checkParam('book_id', null, 'optional');
-		$bucket_id  = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id   = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$limit = checkParam('expiration', null, 'optional') ?? 5;
 		if($this->v === 2) $limit = 240;
 		
@@ -75,8 +75,8 @@ class AudioController extends APIController
 			$book_id = $book->id;
 		}
 
-		$fileset = BibleFileset::where('id', $fileset_id)->where('bucket_id', $bucket_id)->where('set_type_code', 'like', '%audio%')->first();
-		if (!$fileset) $fileset = BibleFileset::where('id', substr($fileset_id, 0, -4))->where('bucket_id', $bucket_id)->where('set_type_code', 'like', '%audio%')->first();
+		$fileset = BibleFileset::where('id', $fileset_id)->where('asset_id', $asset_id)->where('set_type_code', 'like', '%audio%')->first();
+		if (!$fileset) $fileset = BibleFileset::where('id', substr($fileset_id, 0, -4))->where('asset_id', $asset_id)->where('set_type_code', 'like', '%audio%')->first();
 		if (!$fileset) return $this->setStatusCode(404)->replyWithError('No Audio Fileset could be found for the code: ' . $fileset_id);
 
 		$audioChapters = BibleFile::with('book', 'bible')->where('hash_id', $fileset->hash_id)
@@ -88,7 +88,7 @@ class AudioController extends APIController
 
 		$transaction_id = random_int(0,10000000);
 		foreach ($audioChapters as $key => $audio_chapter) {
-			$audioChapters[$key]->file_name = $this->signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name,$bucket_id,$transaction_id);
+			$audioChapters[$key]->file_name = $this->signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name,$asset_id,$transaction_id);
 		}
 
 		return $this->reply(fractal($audioChapters, new AudioTransformer())->serializeWith($this->serializer), [], $transaction_id);

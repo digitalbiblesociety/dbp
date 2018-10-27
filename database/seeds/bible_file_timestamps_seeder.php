@@ -15,7 +15,7 @@ class bible_file_timestamps_seeder extends Seeder
      */
     public function run()
     {
-	    \DB::table('bible_file_timestamps')->delete();
+	    \DB::connection('dbp')->table('bible_file_timestamps')->delete();
     	$seederhelper = new SeederHelper();
 	    $skip = [];
 	    // Attach Timestamps

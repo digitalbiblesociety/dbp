@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Wiki;
 
 use App\Http\Controllers\APIController;
 
-use App\Models\User\Key;
 use App\Models\User\User;
 use Auth;
 use Validator;
@@ -168,7 +167,7 @@ class AlphabetsController extends APIController
 
 	public function store(Request $request)
 	{
-		($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
+		$this->validateUser();
 		$this->validateAlphabet($request);
 		$alphabet = Alphabet::create($request->all());
 		if(!$this->api) return redirect()->route('view_alphabets.show', ['id' => request()->script]);
@@ -215,12 +214,14 @@ class AlphabetsController extends APIController
 	 */
 	public function update(string $script_id, Request $request)
 	{
-		($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
+		$this->validateUser();
 		$this->validateAlphabet($request);
 
-		$alphabet = Alphabet::find($script_id)->fill($request->all())->save();
-		if(!$this->api) return redirect()->route('view_alphabets.show', ['id' => $request->id]);
+		$alphabet = Alphabet::find($script_id);
+		if(!$alphabet) return $this->setStatusCode(404)->replyWithError(trans('api.alphabets_errors_404'));
+		$alphabet->fill($request->all())->save();
 
+		if(!$this->api) return redirect()->route('view_alphabets.show', ['id' => $request->id]);
 		return $this->setStatusCode(200)->reply($alphabet);
 	}
 
@@ -237,9 +238,11 @@ class AlphabetsController extends APIController
 	 */
 	public function edit(string $script_id)
 	{
-		$this->validateUser(Auth::user());
+		$this->validateUser();
 
 		$alphabet = Alphabet::find($script_id);
+		if(!$alphabet) return $this->setStatusCode(404)->replyWithError(trans('api.alphabets_errors_404'));
+		$alphabet->fill(request()->all())->save();
 
 		return view('wiki.languages.alphabets.edit', compact('alphabet'));
 	}
@@ -251,14 +254,8 @@ class AlphabetsController extends APIController
 	 */
 	private function validateUser()
 	{
-		$user = Auth::user();
-		if (!$user) {
-			$key = Key::where('key', $this->key)->first();
-			if (!isset($key)) return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
-			$user = $key->user;
-		}
-		if (!$user->archivist AND !$user->admin) return $this->setStatusCode(401)->replyWithError("You don't have permission to edit the wiki");
-
+		$user = Auth::user() ?? $this->user;
+		if (!$user->archivist && !$user->admin) return $this->setStatusCode(401)->replyWithError("You don't have permission to edit the wiki");
 		return $user;
 	}
 

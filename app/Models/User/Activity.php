@@ -10,34 +10,11 @@ class Activity extends Model
     use SoftDeletes;
 
     /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table;
-
-    /**
-     * The connection name for the model.
-     *
-     * @var string
-     */
-    protected $connection;
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = true;
-
-    /**
      * The attributes that are not mass assignable.
      *
      * @var array
      */
-    protected $guarded = [
-        'id',
-    ];
+    protected $guarded = ['id'];
 
     /**
      * The attributes that should be mutated to dates.
@@ -74,28 +51,20 @@ class Activity extends Model
         'ipAddress'     => 'ipAddress',
         'userAgent'     => 'string',
         'locale'        => 'string',
-        'referer'       => 'url',
+        'referrer'      => 'url',
         'methodType'    => 'string',
     ];
 
-    /**
-     * Create a new instance to set the table and connection.
-     *
-     * @return void
-     */
-    public function __construct($attributes = [])
+	/**
+	 * Create a new instance to set the table and connection.
+	 *
+	 * @param array $attributes
+	 */
+    public function __construct(array $attributes)
     {
         parent::__construct($attributes);
         $this->table = config('LaravelLogger.loggerDatabaseTable');
         $this->connection = config('LaravelLogger.loggerDatabaseConnection');
-    }
-
-    /**
-     * Get the database connection.
-     */
-    public function getConnectionName()
-    {
-        return $this->connection;
     }
 
     /**
@@ -106,11 +75,12 @@ class Activity extends Model
         return $this->table;
     }
 
-    /**
-     * An activity has a user.
-     *
-     * @var array
-     */
+	/**
+	 * An activity has a user.
+	 *
+	 * @var array
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
     public function user()
     {
         return $this->hasOne(config('LaravelLogger.defaultUserModel'));
@@ -123,7 +93,7 @@ class Activity extends Model
      *
      * @return array
      */
-    public static function rules($merge = [])
+    public static function rules(array $merge)
     {
         return array_merge([
             'description'   => 'required|string',
@@ -133,7 +103,7 @@ class Activity extends Model
             'ipAddress'     => 'nullable|ip',
             'userAgent'     => 'nullable|string',
             'locale'        => 'nullable|string',
-            'referer'       => 'nullable|url',
+            'referrer'      => 'nullable|url',
             'methodType'    => 'nullable|string',
         ],
         $merge);

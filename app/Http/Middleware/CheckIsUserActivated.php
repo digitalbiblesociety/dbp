@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Activation;
+use App\Models\User\Activation;
 use Auth;
 use Carbon\Carbon;
 use Closure;

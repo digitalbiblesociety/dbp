@@ -174,6 +174,11 @@ class User extends Model implements Authenticatable
 	 */
 	protected $email_token;
 
+
+	protected $updated_at;
+	protected $created_at;
+	protected $deleted_at;
+
 	/**
 	 * Get the e-mail address where password reminders are sent.
 	 *

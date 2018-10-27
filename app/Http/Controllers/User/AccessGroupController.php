@@ -37,15 +37,13 @@ class AccessGroupController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param int $id
-	 *
 	 * @return \Illuminate\Http\Response
 	 */
 	public function index()
 	{
 		if (!$this->api) return view('access.groups.index');
 
-		if(env('APP_DEBUG') == "true") \Cache::forget('access_groups');
+		if(env('APP_DEBUG') === 'true') \Cache::forget('access_groups');
 		$access_groups = \Cache::remember('access_groups', 1800,  function () {
 			$access_groups = AccessGroup::select(['id','name'])->get();
 			return $access_groups->pluck('name','id');
@@ -77,28 +75,27 @@ class AccessGroupController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param int $id
+	 * @param Request $request
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
 	public function store(Request $request)
 	{
-		($this->api) ? $this->validateUser() : $this->validateUser(Auth::user());
+		$this->api ? $this->validateUser() : $this->validateUser(Auth::user());
 		$invalid = $this->validateAccessGroup($request);
 		if($invalid) return $this->setStatusCode(400)->reply($invalid);
 
-
-		\DB::transaction(function () use($request) {
+		$access_group = \DB::transaction(function () use($request) {
 			$access_group = AccessGroup::create($request->only(['name','description']));
 			if($request->filesets) {
 				foreach($request->filesets as $fileset) $access_group->filesets()->create(['hash_id' => $fileset]);
 				foreach($request->users as $user) $access_group->users()->create(['user_id' => $user]);
-				foreach($request->types as $type) $access_group->users()->create(['user_id' => $user]);
 			}
+			return $access_group;
 		});
 
-		//if (!$this->api) return redirect()->route('access.groups.show', ['group_id' => $access_group->id]);
-		return $this->reply(["message" => "Access Group Successfully Created"]);
+		if(!$this->api) return redirect()->route('access.groups.show', ['group_id' => $access_group->id]);
+		return $this->reply($access_group);
 	}
 
 
@@ -131,7 +128,7 @@ class AccessGroupController extends APIController
 	 */
 	public function show($id)
 	{
-		if(env('APP_DEBUG') == "true") \Cache::forget('access_group_'.$id);
+		if(env('APP_DEBUG') === 'true') \Cache::forget('access_group_'.$id);
 		$access_group = \Cache::remember('access_group_'.$id, 1800,  function () use($id) {
 			$access_group = AccessGroup::with('filesets','types','keys')->where('id',$id)->orWhere('name',$id)->first();
 			if(!$access_group) return $this->setStatusCode(404)->replyWithError(trans('api.access_group_404'));
@@ -148,7 +145,7 @@ class AccessGroupController extends APIController
 	public function current()
 	{
 		$current_access = $this->accessControl($this->key, 'api');
-		$current_access->hash_count = count($current_access->hashes);
+		$current_access->hash_count = \count($current_access->hashes);
 		return $this->reply($current_access);
 	}
 
@@ -186,6 +183,7 @@ class AccessGroupController extends APIController
 		if($invalid) return $this->setStatusCode(400)->reply($invalid);
 
 		$access_group = AccessGroup::where('id',$id)->orWhere('name',$id)->first();
+		if(!$access_group) return $this->setStatusCode(404)->replyWithError(trans('api.'));
 		$access_group->fill($request->all())->save();
 
 		if(isset($request->filesets)) $access_group->filesets()->createMany($request->filesets);
@@ -218,7 +216,6 @@ class AccessGroupController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param  \Illuminate\Http\Request $request
 	 * @param  int $id
 	 *
 	 * @return \Illuminate\Http\Response
@@ -226,7 +223,7 @@ class AccessGroupController extends APIController
 	public function destroy($id)
 	{
 		if(!$this->validateUser()) return $this->replyWithError('not authorized');
-		$access_group = AccessGroup::where('id',$id)->orWhere('name',$id)->first();
+		$access_group = AccessGroup::where('id',$id)->orWhere('name',$id)->firstOrFail();
 		$access_group->delete();
 
 		return $this->reply('successfully deleted');
@@ -242,7 +239,7 @@ class AccessGroupController extends APIController
 	private function validateAccessGroup(Request $request)
 	{
 		$validator = \Validator::make($request->all(), [
-			'name'               => ($request->method() == 'POST') ? 'required|max:64|alpha_dash|unique:dbp.access_groups,name' : 'max:64|alpha_dash|exists:dbp.access_groups,name',
+			'name'               => ($request->method() === 'POST') ? 'required|max:64|alpha_dash|unique:dbp.access_groups,name' : 'max:64|alpha_dash|exists:dbp.access_groups,name',
 			'description'        => 'string',
 			'filesets.*'         => 'exists:dbp.bible_filesets,hash_id',
 			'keys.*'             => 'exists:dbp_users.user_keys,key',
@@ -263,6 +260,8 @@ class AccessGroupController extends APIController
 			$is_admin = $current_user->roles->where('slug','admin')->first();
 			if($is_admin) return true;
 		}
+
+		return null;
 	}
 
 }

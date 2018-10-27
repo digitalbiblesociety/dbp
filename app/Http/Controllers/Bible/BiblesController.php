@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Bible;
 
-use App\Helpers\AWS\Bucket;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFileset;
@@ -73,7 +72,7 @@ class BiblesController extends APIController
 	 *     @OA\Parameter(name="organization_id",      in="query", description="The owning organization to return bibles for. For a complete list of ids see the `/organizations` route", @OA\Schema(type="string")),
 	 *     @OA\Parameter(name="sort_by",              in="query", description="The any field to within the bible model may be selected as the value for this `sort_by` param.", @OA\Schema(type="string")),
 	 *     @OA\Parameter(name="sort_dir",             in="query", description="The direction to sort by the field specified in `sort_by`. Either `asc` or `desc`", @OA\Schema(type="string")),
-	 *     @OA\Parameter(name="bucket_id",            in="query", description="The bucket_id to filter results by. At the moment there are two buckets provided `dbp.test` & `dbs-web`", @OA\Schema(type="string")),
+	 *     @OA\Parameter(name="asset_id",             in="query", description="The asset_id to filter results by. At the moment there are two buckets provided `dbp.test` & `dbs-web`", @OA\Schema(type="string")),
 	 *     @OA\Parameter(name="filter_by_fileset",    in="query", description="This field defaults to true but when set to false will return all Bible entries regardless of whether or not the API has content for that biblical text.", @OA\Schema(type="string")),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -109,18 +108,18 @@ class BiblesController extends APIController
 		$include_alt_names  = checkParam('include_alt_names', null, 'optional');
 		$include_regionInfo = checkParam('include_region_info', null, 'optional');
 		$country            = checkParam('country', null, 'optional');
-		$bucket             = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id           = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 		$hide_restricted    = checkParam('hide_restricted', null, 'optional') ?? true;
 		$paginate           = checkParam('paginate', null, 'optional') ?? false;
 		$filter             = checkParam('filter', null, 'optional') ?? false;
 
 		$access_control = $this->accessControl($this->key, "api");
 
-		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $language_code . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $bucket . $access_control->string . $paginate. $filter;
+		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $language_code . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $paginate. $filter;
 		\Cache::forget($cache_string);
-		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $filter, $language, $full_word, $language_code, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $bucket, $include_alt_names, $include_regionInfo, $access_control, $paginate) {
-			$bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($bucket, $access_control, $hide_restricted) {
-				if($bucket) $query->where('bucket_id', $bucket);
+		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $filter, $language, $full_word, $language_code, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $asset_id, $include_alt_names, $include_regionInfo, $access_control, $paginate) {
+			$bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($asset_id, $access_control, $hide_restricted) {
+				if($asset_id) $query->where('asset_id', $asset_id);
 				if($hide_restricted) $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
 			}])
 			->has('translations')->has('language')
@@ -132,9 +131,9 @@ class BiblesController extends APIController
 			->when($fileset_filter, function ($q) {
 			    $q->has('filesets.files');
 			})
-			->when($bucket, function ($q) use($bucket) {
-				$q->whereHas('filesets', function ($q) use ($bucket) {
-					$q->where('bucket_id', $bucket);
+			->when($asset_id, function ($q) use($asset_id) {
+				$q->whereHas('filesets', function ($q) use ($asset_id) {
+					$q->where('asset_id', $asset_id);
 				})->get();
 			})
 			->when($country, function ($q) use ($country) {
@@ -214,16 +213,16 @@ class BiblesController extends APIController
         $include_linkedBibles = checkParam('include_linked_bibles', null, 'optional');
         $dialects             = checkParam('include_dialects', null, 'optional');
 	    $language             = null;
-	    $bucket               = checkParam('bucket|bucket_id', null, 'optional');
+	    $asset_id             = checkParam('bucket|bucket_id|asset_id', null, 'optional');
 
         if($iso) {
             $language = Language::where('iso',$iso)->with('dialects')->first();
             if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for provided iso");
         }
 
-        $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$bucket;
+        $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id;
 		if(env('APP_ENV')) Cache::forget($cache_string);
-        $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects,$include_linkedBibles,$bucket) {
+        $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects,$include_linkedBibles,$asset_id) {
             $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {
@@ -235,9 +234,9 @@ class BiblesController extends APIController
                    $q->where('language_id', $language->id);
                    if($dialects) $q->orWhereIn('language_id',$language->dialects->pluck('dialect_id'));
                 })
-	            ->when($bucket, function ($q) use($bucket) {
-		            $q->whereHas('filesets', function ($q) use ($bucket) {
-			            $q->where('bucket_id', $bucket);
+	            ->when($asset_id, function ($q) use($asset_id) {
+		            $q->whereHas('filesets', function ($q) use ($asset_id) {
+			            $q->where('asset_id', $asset_id);
 		            })->get();
 	            })
                 ->when($organization_id, function ($q) use ($organization_id) {

@@ -86,15 +86,7 @@
 
 						</dl>
 
-						@if ($user->profile)
-							@if (Auth::user()->id == $user->id)
-								{!! HTML::icon_link(URL::to('/profile/'.Auth::user()->name.'/edit'), 'fa fa-fw fa-cog', trans('app.editProfile'), array('class' => 'btn btn-small btn-info btn-block')) !!}
-							@endif
-						@else
-							<p>{{ trans('profile.noProfileYet') }}</p>
-							{!! HTML::icon_link(URL::to('/profile/'.Auth::user()->name.'/edit'), 'fa fa-fw fa-plus ', trans('app.createProfile'), array('class' => 'btn btn-small btn-info btn-block')) !!}
-						@endif
-
+							@if (Auth::user()->id == $user->id) <a href="{{ URL::to('/profile/'.Auth::user()->name.'/edit') }}">Edit</a> @endif
 					</div>
 				</div>
 			</div>

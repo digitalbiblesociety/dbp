@@ -3,26 +3,23 @@
 namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\APIController;
-use App\Models\Bible\BibleLink;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Models\Resource\Resource;
+use App\Models\Resource\ResourceLink;
+use App\Models\Resource\ResourceTranslation;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use \Illuminate\Http\Response;
 
 use App\Transformers\ResourcesTransformer;
-use Illuminate\Pagination\LengthAwarePaginator;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use League\Fractal\Serializer\DataArraySerializer;
-
-use Yajra\DataTables\DataTables;
 
 class ResourcesController extends APIController
 {
 	/**
 	 * Display a listing of the resource.
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
 	public function index()
 	{
@@ -31,15 +28,15 @@ class ResourcesController extends APIController
 		$language        = null;
 		if($iso) {
 			$language        = Language::where('iso',$iso)->with('dialects')->first();
-			if(!$language)   return $this->setStatusCode(404)->replyWithError("Language not found for provided iso");
+			if(!$language)   return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
 		}
 		$limit           = checkParam('limit', null, 'optional') ?? 2000;
 		$organization    = checkParam('organization_id', null, 'optional');
         $dialects        = checkParam('include_dialects', null, 'optional');
 
-		if(isset($organization)) {
+		if($organization !== null) {
 			$organization = Organization::where('id',$organization)->orWhere('slug',$organization)->first();
-			if(!$organization) return $this->setStatusCode(404)->replyWithError("organization not found");
+			if(!$organization) return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404'));
 		}
 
 		$resources = Resource::with('translations', 'links', 'organization.translations','language')
@@ -51,7 +48,7 @@ class ResourcesController extends APIController
 			    $q->where('organization_id', $organization->id);
 			})->take($limit)->get();
 
-		return $this->reply(fractal()->collection($resources)->transformWith(new ResourcesTransformer())->serializeWith(new DataArraySerializer()));
+		return $this->reply(fractal($resources,new ResourcesTransformer(),$this->serializer));
 
 	}
 
@@ -74,7 +71,10 @@ class ResourcesController extends APIController
 	 */
 	public function store(Request $request)
 	{
-		return view('resources.store');
+		$invalidResource = $this->invalidResource($request);
+		if($invalidResource) return $invalidResource;
+
+
 	}
 
 	/**
@@ -89,7 +89,7 @@ class ResourcesController extends APIController
 		if (!$this->api) return view('resources.show');
 		$resource = Resource::with('translations', 'links', 'organization.translations')->find($id);
 
-		return $this->reply(fractal()->item($resource)->transformWith(new ResourcesTransformer()));
+		return $this->reply(fractal($resource,new ResourcesTransformer()));
 	}
 
 	/**
@@ -114,6 +114,9 @@ class ResourcesController extends APIController
 	 */
 	public function update(Request $request, $id)
 	{
+		$invalidResource = $this->invalidResource($request);
+		if($invalidResource) return $invalidResource;
+
 		return view('resources.update');
 	}
 
@@ -127,6 +130,32 @@ class ResourcesController extends APIController
 	public function destroy($id)
 	{
 		return view('resources.destroy');
+	}
+
+	private function invalidResource(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'unicode_pdf'         => 'url|nullable',
+			'slug'                => 'required|unique:dbp.resources,slug|string|maxLength:191|regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
+			'language_id'         => 'required|exists:dbp.languages,id',
+			'organization_id'     => 'required|exists:dbp.organizations,id',
+			'source_id'           => 'string|maxLength:191',
+			'cover'               => 'string|maxLength:191',
+			'cover_thumbnail'     => 'string|maxLength:191',
+			'date'                => 'date',
+			'type'                => 'string',
+			'translations.*.name' => 'required|unique:dbp.resource_translations,title|maxLength:191',
+			'translations.*.tag'  => 'boolean',
+			'links.*.url'         => 'required|url',
+			'links.*.title'       => 'string|maxLength:191'
+		]);
+
+		if ($validator->fails()) {
+			if (!$this->api) return redirect('dashboard/resources/create')->withErrors($validator)->withInput();
+			return $this->setStatusCode(422)->replyWithError($validator->errors());
+		}
+
+		return null;
 	}
 
 	/**
@@ -150,7 +179,7 @@ class ResourcesController extends APIController
 		$organization = Organization::where('slug', 'the-jesus-film-project')->first();
 		$iso          = strtolower(substr($id, 0, 3));
 		$language = false;
-		if(isset($iso)) {
+		if($iso !== null) {
 			$language = Language::where('iso',$iso)->first();
 			if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for provided iso");
 		}

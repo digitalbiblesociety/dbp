@@ -144,9 +144,6 @@
 	Route::name('v4_organizations.one')->match(['get','options'],'organizations/{organization_id}',                         'Organization\OrganizationsController@show');
 	Route::name('v4_organizations.compare')->match(['get','options'],'organizations/compare/{org1}/to/{org2}',              'Organization\OrganizationsController@compare');
 	Route::name('v4_api.versions')->match(['get','options'],'/api/versions',                                                'HomeController@versions');
-	Route::name('v4_api.versionLatest')->match(['get','options'],'/api/versions/latest',                                    'HomeController@versionLatest');
-	Route::name('v4_api.replyTypes')->match(['get','options'],'/api/versions/replyTypes',                                   'HomeController@versionReplyTypes');
-	Route::name('v4_api.sign')->match(['get','options'],'sign',                                                             'HomeController@signedUrls');
 
 	// VERSION 4 | PROJECTS
 	Route::name('v4_projects.index')->match(['get','options'],'projects',                                                   'Organization\ProjectsController@index');
@@ -163,7 +160,6 @@
 	// VERSION 4 | UTILITY
 	Route::name('v4_api.buckets')->match(['get','options'],'/api/buckets',                                                  'HomeController@buckets');
 	Route::name('v4_api.stats')->match(['get','options'],'/stats',                                                          'HomeController@stats');
-	Route::name('v4_api.logs')->match(['get','options'],'sign',                                                             'HomeController@signedUrls');
 	Route::name('v4_algolia.bibles')->match(['get','options'],'/algolia/bibles',                                            'Connections\AlgoliaOutputController@bibles');
 	Route::name('v4_algolia.languages')->match(['get','options'],'algolia/languages',                                       'Connections\AlgoliaOutputController@languages');
 	Route::name('v4_connections_jfm.sync')->match(['get','options'],'connections/jesus-film/sync',                          'Connections\ArclightController@sync');

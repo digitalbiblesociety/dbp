@@ -24,8 +24,8 @@ class bible_audio_seeder extends Seeder
 	    \DB::table('bible_file_timestamps')->delete();
 	    \DB::table('bible_files')->delete();
 
-	    $bucket_exists = \App\Models\Organization\Bucket::find('dbp_dev');
-	    if(!$bucket_exists) \App\Models\Organization\Bucket::create(['id'=>'dbp_dev','organization_id' => 9]);
+	    $bucket_exists = \App\Models\Organization\Asset::find('dbp_dev');
+	    if(!$bucket_exists) \App\Models\Organization\Asset::create(['id' =>'dbp_dev', 'organization_id' => 9]);
 
 	    \App\Models\Bible\BibleFilesetSize::create([
 	    	'id'            => 1,

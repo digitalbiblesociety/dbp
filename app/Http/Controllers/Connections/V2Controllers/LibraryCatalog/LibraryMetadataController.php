@@ -44,15 +44,15 @@ class LibraryMetadataController extends APIController
 		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
 
 		$fileset_id = checkParam('dam_id', null, 'optional');
-		$bucket_id  = checkParam('bucket|bucket_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
 		if(env('APP_ENV') == 'local') Cache::forget('v2_library_metadata' . $fileset_id);
-		$metadata = Cache::remember('v2_library_metadata' . $fileset_id, 1600, function () use ($fileset_id, $bucket_id) {
+		$metadata = Cache::remember('v2_library_metadata' . $fileset_id, 1600, function () use ($fileset_id, $asset_id) {
 
 			$metadata = BibleFileset::with('copyright.organizations.translations', 'copyright.role.roleTitle')->has('copyright')
 				->when($fileset_id, function ($q) use ($fileset_id) {
 					$q->where('id', $fileset_id)->orWhere('id',substr($fileset_id,0,-4))->orWhere('id',substr($fileset_id,0,-2));
-				})->where('bucket_id', $bucket_id)->first();
+				})->where('asset_id', $asset_id)->first();
 
 			$metadata->dam_id = $fileset_id;
 			return fractal([$metadata], new LibraryMetadataTransformer())->serializeWith($this->serializer);

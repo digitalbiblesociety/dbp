@@ -57,47 +57,91 @@
 @endsection
 
 @section('content')
+    <div class="container">
+    <div class="columns">
+    <div class="column is-3-desktop">
+    <div class="box">
+    @include('layouts.partials.side-menu', [
+    'menu_items' => [
+    'title_start' => 'Getting Started',
+    'section_start' => [
+        '/start' => 'First Call',
+        '/customers' => 'Customers',
+    ],
+    'title_team' => 'Team Settings',
+    'section_team' => [
+        '/team' => 'Manage Your Team',
+        'submenu' => [
+            'Members',
+            'Plugins',
+            'Add a member',
+        ],
+        '/customers' => 'Customers',
+    ],
+    'title_general' => 'General',
+    'section_general' => [
+        '/dashboard' => 'Dashboard',
+        '/customers' => 'Customers',
+    ],
+]])
+    </div>
+    </div>
 
+        <div class="column is-9-desktop">
 
-    <h1>Digital Bible Platform: Koinos</h1>
+            <section class="box">
 
+                <h4 class="title">The API Structure</h4>
+                <h2 class="subtitle">Bibles and Filesets</h2>
 
-    <section>
+                <div class="ribbon">If you want to jump right in to queries you can check out the <a href="#">API reference documentation.</a></div>
 
-        <h3>API Organization</h3>
-        <p>All calls within version 4 of the API are separated into three general categories: Bibles, Wiki, and Community.</p>
+                <p>Your first call to the DBP will probably be to <a href="#v4">/bibles</a>. All Biblical content whether it be Audio, Video, or text is nested within bible_id.</p>
+                <pre>
+    - ENGKJV
+        - Filesets:
+            - ENGKJVE2CT
+                -
+            - 3149021394
+            - ENGKJVE2DA
+</pre>
 
-        <h4>Bibles</h4>
-        <p>The routes categorized under the Bibles tag are generally focused on querying information about bibles and audio or text content of those Bibles.</p>
+                <p>All calls within version 4 of the API are separated into three general categories: Bibles, Wiki, and Community.</p>
 
-        <h4>Wiki</h4>
-        <p></p>
+                <h4>Bibles</h4>
+                <p>The routes categorized under the Bibles tag are generally focused on querying information about bibles and audio or text content of those Bibles.</p>
 
-        <h4>Community</h4>
-        <p>
-            The community section of the API allows not only API users to create and manage their users.
-            But also allows for notes, cross-references, and highlights to be used across different apps that utilize the Koinos API.
-        </p>
+                <h4>Wiki</h4>
+                <p></p>
 
-        <p>Common User Authorization Actions</p>
+                <h4>Community</h4>
+                <p>
+                    The community section of the API allows not only API users to create and manage their users.
+                    But also allows for notes, cross-references, and highlights to be used across different apps that utilize the Koinos API.
+                </p>
 
-        <ul>
-            <li></li>
-            <li></li>
-            <li></li>
-            <p>
-                Most user password changes require a verification email to be sent to the user. The only exception to this rule is if the `old_password`
-                field is supplied to the <a href="/docs/swagger/v4#/Community/v4_user_reset2">/users/reset/password</a> route.
-                You can trigger a password reset email by sending the <a href="/docs/swagger/v4#/Community/v4_user_reset1">/users/reset/password</a> user's email.
-            </p>
-        </ul>
+                <p>Common User Authorization Actions</p>
 
-        <p>Common User Notes Actions</p>
-        <ul>
-            <li>Creating a note</li>
-            <li>Updating a note</li>
-            <li>Displaying a new note</li>
-        </ul>
+                <ul>
+                    <p>
+                        Most user password changes require a verification email to be sent to the user. The only exception to this rule is if the `old_password`
+                        field is supplied to the <a href="/docs/swagger/v4#/Community/v4_user_reset2">/users/reset/password</a> route.
+                        You can trigger a password reset email by sending the <a href="/docs/swagger/v4#/Community/v4_user_reset1">/users/reset/password</a> user's email.
+                    </p>
+                </ul>
 
-    </section>
+                <p>Common User Notes Actions</p>
+                <ul>
+                    <li>Creating a note</li>
+                    <li>Updating a note</li>
+                    <li>Displaying a new note</li>
+                </ul>
+
+            </section>
+        </div>
+
+    </div>
+
+    </div>
+
 @endsection

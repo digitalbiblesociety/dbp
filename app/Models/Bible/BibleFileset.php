@@ -2,7 +2,7 @@
 
 namespace App\Models\Bible;
 
-use App\Models\Organization\Bucket;
+use App\Models\Organization\Asset;
 use App\Models\Organization\Organization;
 use App\Models\User\AccessGroup;
 use App\Models\User\AccessGroupFileset;
@@ -62,16 +62,16 @@ class BibleFileset extends Model
 	/**
 	 *
 	 * @OA\Property(
-	 *   title="bucket_id",
+	 *   title="asset_id",
 	 *   type="string",
-	 *   description="The bucket id of the AWS Bucket",
+	 *   description="The asset id of the AWS Bucket or CloudFront instance",
 	 *   maxLength=64
 	 * )
 	 *
 	 * @method static BibleFileset whereBucketId($value)
-	 * @property string $bucket_id
+	 * @property string $asset_id
 	 */
-	protected $bucket_id;
+	protected $asset_id;
 
 	/**
 	 *
@@ -158,7 +158,7 @@ class BibleFileset extends Model
 
 	public function organization()
 	{
-		return $this->hasManyThrough(Organization::class,Bucket::class,'id','id','bucket_id','organization_id');
+		return $this->hasManyThrough(Organization::class,Asset::class,'id','id','bucket_id','organization_id');
 	}
 
 	public function files()

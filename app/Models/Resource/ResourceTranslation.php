@@ -7,6 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Resource\ResourceTranslation
  *
+ * @property string $iso
+ * @property int $resource_id
+ * @property int $vernacular
+ * @property int $tag
+ * @property string $title
+ * @property string|null $description
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ *
+ * @method static ResourceTranslation whereIso($value)
+ * @method static ResourceTranslation whereResourceId($value)
+ * @method static ResourceTranslation whereVernacular($value)
+ * @method static ResourceTranslation whereTag($value)
+ * @method static ResourceTranslation whereTitle($value)
+ * @method static ResourceTranslation whereDescription($value)
+ * @method static ResourceTranslation whereCreatedAt($value)
+ * @method static ResourceTranslation whereUpdatedAt($value)
+ *
  * @OA\Schema (
  *     type="object",
  *     description="Resource Translation",
@@ -29,9 +47,6 @@ class ResourceTranslation extends Model
 	 *     type="string"
 	 * )
 	 *
-	 * @method static ResourceTranslation whereIso($value)
-	 * @property string $iso
-	 *
 	 */
     protected $iso;
 	/**
@@ -41,9 +56,6 @@ class ResourceTranslation extends Model
 	 *     description="The id for the resource that the translations describe",
 	 *     type="string"
 	 * )
-	 *
-	 * @method static ResourceTranslation whereResourceId($value)
-	 * @property int $resource_id
 	 *
 	 */
     protected $resource_id;
@@ -55,9 +67,6 @@ class ResourceTranslation extends Model
 	 *     type="boolean"
 	 * )
 	 *
-	 * @method static ResourceTranslation whereVernacular($value)
-	 * @property int $vernacular
-	 *
 	 */
     protected $vernacular;
 
@@ -68,9 +77,6 @@ class ResourceTranslation extends Model
 	 *     description="Determines if the current translation being described is an ancillary bit of meta data rather than a title of the resource",
 	 *     type="boolean"
 	 * )
-	 *
-	 * @method static ResourceTranslation whereTag($value)
-	 * @property int $tag
 	 *
 	 */
     protected $tag;
@@ -85,9 +91,6 @@ class ResourceTranslation extends Model
 	 *     example="Understanding Biblical Hebrew Verb Forms"
 	 * )
 	 *
-	 * @method static ResourceTranslation whereTitle($value)
-	 * @property string $title
-	 *
 	 */
     protected $title;
 
@@ -101,24 +104,12 @@ class ResourceTranslation extends Model
 	 *     example="Understanding Biblical Hebrew Verb Forms"
 	 * )
 	 *
-	 * @method static ResourceTranslation whereDescription($value)
-	 * @property string|null $description
-	 *
 	 */
     protected $description;
-	/**
-	 *
-	 * @method static ResourceTranslation whereCreatedAt($value)
-	 * @property \Carbon\Carbon|null $created_at
-	 *
-	 */
-    protected $created_at;
-	/**
-	 *
-	 * @method static ResourceTranslation whereUpdatedAt($value)
-	 * @property \Carbon\Carbon|null $updated_at
-	 *
-	 */
-    protected $updated_at;
+
+    public function resource()
+    {
+    	return $this->belongsTo(Resource::class);
+    }
 
 }

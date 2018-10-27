@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Activation;
-use App\Models\Profile;
-use App\Models\User;
+use App\Models\User\Activation;
+use App\Models\User\Profile;
 use App\Traits\ActivationTrait;
 use App\Traits\CaptureIpTrait;
 use Auth;
