@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User\Dashboard;
 
 use App\Http\Controllers\APIController;
-
+use Auth;
 class DashboardController extends APIController
 {
 
@@ -19,9 +19,7 @@ class DashboardController extends APIController
 
 	public function home()
 	{
-		$user = Auth::user();
-		$user = User::with('accounts','projects')->where('id',$user->id)->first();
-
+		$user = Auth::user() ?? $this->user;
 		if ($user->isAdmin()) return view('dashboard.admin',compact('user'));
 		return view('dashboard.home',compact('user'));
 	}

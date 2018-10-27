@@ -3,24 +3,26 @@
 namespace App\Http\Controllers\User\Dashboard;
 
 use App\Http\Controllers\APIController;
-use App\Models\Profile;
-use App\Models\User;
+use App\Models\User\User;
+use App\Models\User\Profile;
 use App\Traits\CaptureIpTrait;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\View\View;
 use jeremykenedy\LaravelRoles\Models\Role;
 use Validator;
+use Illuminate\Http\RedirectResponse;
 
 class UsersManagementController extends APIController
 {
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct()
     {
+    	parent::__construct();
         $this->middleware('auth');
     }
 
@@ -45,7 +47,7 @@ class UsersManagementController extends APIController
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function create()
     {
@@ -63,7 +65,7 @@ class UsersManagementController extends APIController
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse|\Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -91,9 +93,7 @@ class UsersManagementController extends APIController
             ]
         );
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
+        if ($validator->fails()) return back()->withErrors($validator)->withInput();
 
         $ipAddress = new CaptureIpTrait();
         $profile = new Profile();
@@ -135,21 +135,19 @@ class UsersManagementController extends APIController
      *
      * @param int $id
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function edit($id)
     {
         $user = User::findOrFail($id);
         $roles = Role::all();
 
-        foreach ($user->roles as $user_role) {
-            $currentRole = $user_role;
-        }
+        foreach ($user->roles as $user_role) $currentRole = $user_role;
 
         $data = [
             'user'        => $user,
             'roles'       => $roles,
-            'currentRole' => $currentRole,
+            'currentRole' => $currentRole ?? '',
         ];
 
         return view('dashboard.users.edit-user')->with($data);
@@ -161,13 +159,12 @@ class UsersManagementController extends APIController
      * @param \Illuminate\Http\Request $request
      * @param int                      $id
      *
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse|\Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $currentUser = Auth::user();
         $user = User::find($id);
-        $emailCheck = ($request->input('email') != '') && ($request->input('email') != $user->email);
+        $emailCheck = ($request->input('email') !== '') && ($request->input('email') !== $user->email);
         $ipAddress = new CaptureIpTrait();
 
         if ($emailCheck) {
@@ -183,9 +180,7 @@ class UsersManagementController extends APIController
             ]);
         }
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
+        if ($validator->fails()) return back()->withErrors($validator)->withInput();
 
         $user->name = $request->input('name');
         $user->first_name = $request->input('first_name');
@@ -195,28 +190,15 @@ class UsersManagementController extends APIController
             $user->email = $request->input('email');
         }
 
-        if ($request->input('password') != null) {
-            $user->password = bcrypt($request->input('password'));
-        }
+        if ($request->input('password') !== null) $user->password = bcrypt($request->input('password'));
 
         $userRole = $request->input('role');
-        if ($userRole != null) {
+        if ($userRole !== null) {
             $user->detachAllRoles();
             $user->attachRole($userRole);
         }
 
         $user->updated_ip_address = $ipAddress->getClientIp();
-
-        switch ($userRole) {
-            case 3:
-                $user->activated = 0;
-                break;
-
-            default:
-                $user->activated = 1;
-                break;
-        }
-
         $user->save();
 
         return back()->with('success', trans('usersmanagement.updateSuccess'));
@@ -231,11 +213,11 @@ class UsersManagementController extends APIController
      */
     public function destroy($id)
     {
-        $currentUser = Auth::user();
+        $currentUser = Auth::user() ?? $this->user;
         $user = User::findOrFail($id);
         $ipAddress = new CaptureIpTrait();
 
-        if ($user->id != $currentUser->id) {
+        if ($user->id !== $currentUser->id) {
             $user->deleted_ip_address = $ipAddress->getClientIp();
             $user->save();
             $user->delete();

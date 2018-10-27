@@ -3,20 +3,10 @@
 namespace App\Http\Controllers\User\Dashboard;
 
 use App\Http\Controllers\APIController;
-use App\Models\User;
-use Illuminate\Support\Facades\Route;
+use App\Models\User\User;
 
 class AdminDetailsController extends APIController
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
 
     /**
      * Display a listing of the resource.
@@ -25,10 +15,8 @@ class AdminDetailsController extends APIController
      */
     public function listRoutes()
     {
-        $routes = Route::getRoutes();
-        $data = [
-            'routes' => $routes,
-        ];
+        $routes = \Route::getRoutes();
+        $data = ['routes' => $routes];
 
         return view('dashboard.route-details', $data);
     }
@@ -41,7 +29,6 @@ class AdminDetailsController extends APIController
     public function activeUsers()
     {
         $users = User::count();
-
         return view('dashboard.active-users', ['users' => $users]);
     }
 
@@ -53,7 +40,7 @@ class AdminDetailsController extends APIController
 	    $s = preg_replace('/<th[^>]*>([^<]+)<\/th>/', '<info>\1</info>', $s);
 	    $s = preg_replace('/<td[^>]*>([^<]+)<\/td>/', '<info>\1</info>', $s);
 	    $t = preg_split('/(<h2[^>]*>[^<]+<\/h2>)/', $s, -1, PREG_SPLIT_DELIM_CAPTURE);
-	    $r = array(); $count = count($t);
+	    $r = array(); $count = \count($t);
 	    $p1 = '<info>([^<]+)<\/info>';
 	    $p2 = '/'.$p1.'\s*'.$p1.'\s*'.$p1.'/';
 	    $p3 = '/'.$p1.'\s*'.$p1.'/';

@@ -7,11 +7,11 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Http\Request;
 
 use App\Traits\IpAddressDetails;
 use App\Traits\UserAgentDetails;
 use App\Models\User\Activity;
+use Illuminate\View\View;
 
 class LaravelLoggerController extends APIController
 {
@@ -23,10 +23,10 @@ class LaravelLoggerController extends APIController
 	/**
 	 * Create a new controller instance.
 	 *
-	 * @return void
 	 */
 	public function __construct()
 	{
+		parent::__construct();
 		$this->middleware('auth');
 
 		$this->_rolesEnabled = config('LaravelLogger.rolesEnabled');
@@ -74,7 +74,7 @@ class LaravelLoggerController extends APIController
 			$totalActivities = $activities->count();
 		}
 
-		self::mapAdditionalDetails($activities);
+		$this->mapAdditionalDetails($activities);
 
 		$data = [
 			'activities'        => $activities,
@@ -87,12 +87,11 @@ class LaravelLoggerController extends APIController
 	/**
 	 * Show an individual activity log entry.
 	 *
-	 * @param Request $request
-	 * @param int     $id
+	 * @param int $id
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function showAccessLogEntry(Request $request, $id)
+	public function showAccessLogEntry($id)
 	{
 		$activity = Activity::findOrFail($id);
 
@@ -115,7 +114,7 @@ class LaravelLoggerController extends APIController
 			$totalUserActivities = $userActivities->count();
 		}
 
-		self::mapAdditionalDetails($userActivities);
+		$this->mapAdditionalDetails($userActivities);
 
 		$data = [
 			'activity'              => $activity,
@@ -135,17 +134,12 @@ class LaravelLoggerController extends APIController
 	/**
 	 * Remove the specified resource from storage.
 	 *
-	 * @param Request $request
-	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function clearActivityLog(Request $request)
+	public function clearActivityLog()
 	{
 		$activities = Activity::all();
-		foreach ($activities as $activity) {
-			$activity->delete();
-		}
-
+		foreach ($activities as $activity) $activity->delete();
 		return redirect('activity')->with('success', trans('LaravelLogger::laravel-logger.messages.logClearedSuccessfuly'));
 	}
 
@@ -168,7 +162,7 @@ class LaravelLoggerController extends APIController
 			$totalActivities = $activities->count();
 		}
 
-		self::mapAdditionalDetails($activities);
+		$this->mapAdditionalDetails($activities);
 
 		$data = [
 			'activities'        => $activities,
@@ -181,29 +175,20 @@ class LaravelLoggerController extends APIController
 	/**
 	 * Show an individual cleared (soft deleted) activity log entry.
 	 *
-	 * @param Request $request
-	 * @param int     $id
+	 * @param int $id
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return View
 	 */
-	public function showClearedAccessLogEntry(Request $request, $id)
+	public function showClearedAccessLogEntry($id)
 	{
-		$activity = self::getClearedActvity($id);
-
-		$userDetails = config('LaravelLogger.defaultUserModel')::find($activity->userId);
-		$userAgentDetails = UserAgentDetails::details($activity->useragent);
-		$ipAddressDetails = IpAddressDetails::checkIP($activity->ipAddress);
-		$langDetails = UserAgentDetails::localeLang($activity->locale);
-		$eventTime = Carbon::parse($activity->created_at);
-		$timePassed = $eventTime->diffForHumans();
-
-		$data = [
+		$activity = $this->getClearedActivity($id);
+		$data     = [
 			'activity'              => $activity,
-			'userDetails'           => $userDetails,
-			'ipAddressDetails'      => $ipAddressDetails,
-			'timePassed'            => $timePassed,
-			'userAgentDetails'      => $userAgentDetails,
-			'langDetails'           => $langDetails,
+			'userDetails'           => config('LaravelLogger.defaultUserModel')::find($activity->userId),
+			'ipAddressDetails'      => IpAddressDetails::checkIP($activity->ipAddress),
+			'timePassed'            => Carbon::parse($activity->created_at)->diffForHumans(),
+			'userAgentDetails'      => UserAgentDetails::details($activity->useragent),
+			'langDetails'           => UserAgentDetails::localeLang($activity->locale),
 			'isClearedEntry'        => true,
 		];
 
@@ -217,12 +202,10 @@ class LaravelLoggerController extends APIController
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	private static function getClearedActvity($id)
+	private function getClearedActivity($id)
 	{
 		$activity = Activity::onlyTrashed()->where('id', $id)->get();
-		if (count($activity) != 1) {
-			return abort(404);
-		}
+		if (\count($activity) !== 1) return abort(404);
 
 		return $activity[0];
 	}
@@ -230,11 +213,9 @@ class LaravelLoggerController extends APIController
 	/**
 	 * Destroy the specified resource from storage.
 	 *
-	 * @param Request $request
-	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroyActivityLog(Request $request)
+	public function destroyActivityLog()
 	{
 		$activities = Activity::onlyTrashed()->get();
 		foreach ($activities as $activity) {
@@ -247,16 +228,12 @@ class LaravelLoggerController extends APIController
 	/**
 	 * Restore the specified resource from soft deleted storage.
 	 *
-	 * @param Request $request
-	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function restoreClearedActivityLog(Request $request)
+	public function restoreClearedActivityLog()
 	{
 		$activities = Activity::onlyTrashed()->get();
-		foreach ($activities as $activity) {
-			$activity->restore();
-		}
+		foreach ($activities as $activity) $activity->restore();
 
 		return redirect('activity')->with('success', trans('LaravelLogger::laravel-logger.messages.logRestoredSuccessfuly'));
 	}

@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\User\Dashboard;
 
 use App\Http\Controllers\APIController;
-use App\Models\User;
-use Auth;
-use Illuminate\Http\Request;
+use App\Models\User\User;
 use jeremykenedy\LaravelRoles\Models\Role;
 
 class SoftDeletesController extends APIController
@@ -13,10 +11,10 @@ class SoftDeletesController extends APIController
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct()
     {
+    	parent::__construct();
         $this->middleware('auth');
     }
 
@@ -29,12 +27,9 @@ class SoftDeletesController extends APIController
      */
     public static function getDeletedUser($id)
     {
-        $user = User::onlyTrashed()->where('id', $id)->get();
-        if (count($user) != 1) {
-            return redirect('/users/deleted/')->with('error', trans('usersmanagement.errorUserNotFound'));
-        }
-
-        return $user[0];
+        $user = User::onlyTrashed()->where('id', $id)->first();
+        if(!$user) return redirect('/users/deleted/')->with('error', trans('usersmanagement.errorUserNotFound'));
+        return $user;
     }
 
     /**
@@ -47,7 +42,7 @@ class SoftDeletesController extends APIController
         $users = User::onlyTrashed()->get();
         $roles = Role::all();
 
-        return View('usersmanagement.show-deleted-users', compact('users', 'roles'));
+        return view('usersmanagement.show-deleted-users', compact('users', 'roles'));
     }
 
     /**
@@ -67,12 +62,11 @@ class SoftDeletesController extends APIController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
      * @param int                      $id
      *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update($id)
     {
         $user = self::getDeletedUser($id);
         $user->restore();

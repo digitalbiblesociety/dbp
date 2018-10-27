@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User\Dashboard;
 
 use App\Http\Controllers\APIController;
-use App\Models\Profile;
+use App\Models\User\Profile;
 use App\Models\User\User;
 use App\Notifications\SendGoodbyeEmail;
 use App\Traits\CaptureIpTrait;
@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Input;
 use Image;
 use jeremykenedy\Uuid\Uuid;
 use Validator;
+use View;
+
+use Illuminate\Http\RedirectResponse;
 
 class ProfilesController extends APIController
 {
@@ -22,7 +25,6 @@ class ProfilesController extends APIController
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct()
     {
@@ -52,13 +54,11 @@ class ProfilesController extends APIController
     /**
      * Display the specified resource.
      *
-     * @param string $username
-     *
-     * @return Response
+     * @return View
      */
     public function show()
     {
-    	$user = \Auth::user();
+    	$user = \Auth::user() ?? $this->user;
 		$user = User::with('profile')->where('id',$user->id)->firstOrFail();
         return view('dashboard.profiles.show', compact('user'));
     }
@@ -66,13 +66,12 @@ class ProfilesController extends APIController
     /**
      * /profiles/username/edit.
      *
-     * @param $username
      *
-     * @return mixed
+     * @return View
      */
     public function edit()
     {
-	    $user = \Auth::user();
+	    $user = \Auth::user() ?? $this->user;
 	    $user = User::with('profile')->where('id',$user->id)->firstOrFail();
 
         return view('dashboard.profiles.edit',compact('user'));
@@ -85,20 +84,20 @@ class ProfilesController extends APIController
      *
      * @return mixed
      */
-    public function update($username, Request $request)
+    public function update($username)
     {
 	    $user = User::with('profile')->where('id',$username)->firstOrFail();
         $input = Input::only('location', 'bio', 'twitter_username', 'github_username', 'avatar_status');
 
         $ipAddress = new CaptureIpTrait();
 
-        $profile_validator = $this->profile_validator($request->all());
+        $profile_validator = $this->profile_validator(request()->all());
 
         if ($profile_validator->fails()) {
             return back()->withErrors($profile_validator)->withInput();
         }
 
-        if ($user->profile == null) {
+        if ($user->profile === null) {
             $profile = new Profile();
             $profile->fill($input);
             $user->profile()->save($profile);
@@ -119,34 +118,26 @@ class ProfilesController extends APIController
      * @param \Illuminate\Http\Request $request
      * @param int                      $id
      *
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse|\Illuminate\Http\Response
      */
     public function updateUserAccount(Request $request, $id)
     {
-        $currentUser = \Auth::user();
         $user = User::findOrFail($id);
-        $emailCheck = ($request->input('email') != '') && ($request->input('email') != $user->email);
+        $emailCheck = ($request->input('email') !== '') && ($request->input('email') !== $user->email);
         $ipAddress = new CaptureIpTrait();
-        $rules = [];
 
-        if ($user->name != $request->input('name')) {
-            $usernameRules = [
-                'name' => 'required|max:255|unique:dbp_users.users',
-            ];
+        if ($user->name !== $request->input('name')) {
+            $usernameRules = ['name' => 'required|max:255|unique:dbp_users.users'];
         } else {
-            $usernameRules = [
-                'name' => 'required|max:255',
-            ];
+            $usernameRules = ['name' => 'required|max:255'];
         }
+
         if ($emailCheck) {
-            $emailRules = [
-                'email' => 'email|max:255|unique:dbp_users.users',
-            ];
+            $emailRules = ['email' => 'email|max:255|unique:dbp_users.users'];
         } else {
-            $emailRules = [
-                'email' => 'email|max:255',
-            ];
+            $emailRules = ['email' => 'email|max:255'];
         }
+
         $additionalRules = [
             'first_name' => 'nullable|string|max:255',
             'last_name'  => 'nullable|string|max:255',
@@ -155,9 +146,7 @@ class ProfilesController extends APIController
         $rules = array_merge($usernameRules, $emailRules, $additionalRules);
         $validator = Validator::make($request->all(), $rules);
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
+        if ($validator->fails()) return back()->withErrors($validator)->withInput();
 
         $user->name = $request->input('name');
         $user->first_name = $request->input('first_name');
@@ -180,11 +169,10 @@ class ProfilesController extends APIController
      * @param \Illuminate\Http\Request $request
      * @param int                      $id
      *
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse|\Illuminate\Http\Response
      */
     public function updateUserPassword(Request $request, $id)
     {
-        $currentUser = \Auth::user();
         $user = User::findOrFail($id);
         $ipAddress = new CaptureIpTrait();
 
@@ -200,16 +188,10 @@ class ProfilesController extends APIController
             ]
         );
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        if ($request->input('password') != null) {
-            $user->password = bcrypt($request->input('password'));
-        }
+        if ($validator->fails()) return back()->withErrors($validator)->withInput();
+        if ($request->input('password') !== null) $user->password = bcrypt($request->input('password'));
 
         $user->updated_ip_address = $ipAddress->getClientIp();
-
         $user->save();
 
         return redirect('profile/'.$user->name.'/edit')->with('success', trans('profile.updatePWSuccess'));
@@ -218,14 +200,12 @@ class ProfilesController extends APIController
     /**
      * Upload and Update user avatar.
      *
-     * @param $file
-     *
      * @return mixed
      */
     public function upload()
     {
         if (Input::hasFile('file')) {
-            $currentUser = \Auth::user();
+            $currentUser = \Auth::user() ?? $this->user;
             $avatar = Input::file('file');
             $filename = 'avatar.'.$avatar->getClientOriginalExtension();
             $save_path = storage_path().'/users/id/'.$currentUser->id.'/uploads/images/avatar/';
@@ -243,9 +223,9 @@ class ProfilesController extends APIController
             $currentUser->profile->save();
 
             return response()->json(['path' => $path], 200);
-        } else {
-            return response()->json(false, 200);
         }
+
+        return response()->json(false, 200);
     }
 
     /**
@@ -267,11 +247,11 @@ class ProfilesController extends APIController
      * @param \Illuminate\Http\Request $request
      * @param int                      $id
      *
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse|\Illuminate\Http\Response
      */
     public function deleteUserAccount(Request $request, $id)
     {
-        $currentUser = \Auth::user();
+        $currentUser = \Auth::user() ?? $this->user;
         $user = User::findOrFail($id);
         $ipAddress = new CaptureIpTrait();
 
@@ -284,13 +264,8 @@ class ProfilesController extends APIController
             ]
         );
 
-        if ($user->id != $currentUser->id) {
-            return redirect('profile/'.$user->name.'/edit')->with('error', trans('profile.errorDeleteNotYour'));
-        }
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
+        if($user->id !== $currentUser->id) return redirect('profile/'.$user->name.'/edit')->with('error', trans('profile.errorDeleteNotYour'));
+        if ($validator->fails()) return back()->withErrors($validator)->withInput();
 
         // Create and encrypt user account restore token
         $sepKey = $this->getSeperationKey();
@@ -309,7 +284,7 @@ class ProfilesController extends APIController
         $user->save();
 
         // Send Goodbye email notification
-        $this->sendGoodbyEmail($user, $user->token);
+        $this->sendGoodbyeEmail($user, $user->token);
 
         // Soft Delete User
         $user->delete();
@@ -321,15 +296,15 @@ class ProfilesController extends APIController
         return redirect('/login/')->with('success', trans('profile.successUserAccountDeleted'));
     }
 
-    /**
-     * Send GoodBye Email Function via Notify.
-     *
-     * @param array  $user
-     * @param string $token
-     *
-     * @return void
-     */
-    public static function sendGoodbyEmail(User $user, $token)
+	/**
+	 * Send GoodBye Email Function via Notify.
+	 *
+	 * @param $user
+	 * @param string $token
+	 *
+	 * @return void
+	 */
+    public function sendGoodbyeEmail($user, $token)
     {
         $user->notify(new SendGoodbyeEmail($token));
     }

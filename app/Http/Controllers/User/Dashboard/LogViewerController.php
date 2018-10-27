@@ -2,7 +2,6 @@
 namespace App\Http\Controllers\User\Dashboard;
 
 use App\Http\Controllers\APIController;
-use App\Models\User\LogViewer;
 use Storage;
 
 class LogViewerController extends APIController
@@ -53,7 +52,7 @@ class LogViewerController extends APIController
 
 	    preg_match_all($pattern, $file, $headings);
 
-	    if (!is_array($headings)) return $log;
+	    if (!\is_array($headings)) return $log;
 
 	    $log_data = preg_split($pattern, $file);
 
@@ -62,9 +61,9 @@ class LogViewerController extends APIController
 	    }
 
 	    foreach ($headings as $h) {
-		    for ($i=0, $j = count($h); $i < $j; $i++) {
+		    for ($i=0, $j = \count($h); $i < $j; $i++) {
 			    foreach ($log_levels as $level) {
-				    if (strpos(strtolower($h[$i]), '.' . $level) || strpos(strtolower($h[$i]), $level . ':')) {
+				    if (stripos($h[$i], '.' . $level) || stripos($h[$i], $level . ':')) {
 
 					    preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\](?:.*?(\w+)\.|.*?)' . $level . ': (.*?)( in .*?:[0-9]+)?$/i', $h[$i], $current);
 					    if (!isset($current[3])) continue;
@@ -75,7 +74,7 @@ class LogViewerController extends APIController
 						    'level_class' => $levels_classes[$level],
 						    'date' => $current[1],
 						    'text' => $current[3],
-						    'in_file' => isset($current[4]) ? $current[4] : null,
+						    'in_file' => $current[4] ?? null,
 						    'stack' => preg_replace("/^\n*/", '', $log_data[$i])
 					    );
 				    }

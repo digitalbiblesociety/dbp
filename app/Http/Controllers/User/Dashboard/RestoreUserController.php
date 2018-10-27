@@ -2,31 +2,29 @@
 
 namespace App\Http\Controllers\User\Dashboard;
 
-use App\Models\User;
+use App\Models\User\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class RestoreUserController extends ProfilesController
 {
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct()
     {
+    	parent::__construct();
         $this->middleware('web');
     }
 
     /**
      * User Account Restore.
      *
-     * @param \Illuminate\Http\Request $request
      * @param string                   $token
      *
      * @return \Illuminate\Http\Response
      */
-    public function userReActivate(Request $request, $token)
+    public function userReActivate($token)
     {
         $userKeys = new ProfilesController();
         $sepKey = $userKeys->getSeperationKey();
@@ -38,22 +36,19 @@ class RestoreUserController extends ProfilesController
         $level3 = base64_decode($level4);
         $level2 = urldecode($level3);
         $level1[] = explode($sepKey, $level2);
-        $uuid = $level1[0][0];
         $userId = $level1[0][1] / $userIdKey;
-        $user = SoftDeletesController::getDeletedUser($userId);
 
-        if (!is_object($user)) {
-            abort(500);
-        }
+	    $user = User::onlyTrashed()->where('id', $userId)->first();
+	    if(!$user) return redirect('/users/deleted/')->with('error', trans('usersmanagement.errorUserNotFound'));
+
+        if (!\is_object($user)) abort(500);
 
         $deletedDate = $user->deleted_at;
         $currentDate = Carbon::now();
         $daysDeleted = $currentDate->diffInDays($deletedDate);
         $cutoffDays = config('settings.restoreUserCutoff');
 
-        if ($daysDeleted >= $cutoffDays) {
-            return redirect('/login')->with('error', trans('profile.errorRestoreUserTime'));
-        }
+        if ($daysDeleted >= $cutoffDays) return redirect('/login')->with('error', trans('profile.errorRestoreUserTime'));
 
         $user->restore();
 
