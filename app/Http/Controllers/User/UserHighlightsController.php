@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
-use App\Models\User;
+use App\Models\User\User;
 use App\Models\User\Study\HighlightColor;
 use App\Transformers\UserHighlightsTransformer;
 use App\Models\User\Study\Highlight;

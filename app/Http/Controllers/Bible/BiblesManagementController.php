@@ -8,8 +8,8 @@ use App\Models\Bible\Book;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
-use App\Models\Profile;
-use App\Models\User;
+use App\Models\User\Profile;
+use App\Models\User\User;
 
 use App\Traits\CaptureIpTrait;
 use Auth;

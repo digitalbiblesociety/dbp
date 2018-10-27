@@ -2,7 +2,8 @@
 
 use Illuminate\Database\Seeder;
 use App\Models\User\ProjectMember;
-use App\Models\User;
+use App\Models\User\User;
+
 class seedProjectMemberTable extends Seeder
 {
     /**
