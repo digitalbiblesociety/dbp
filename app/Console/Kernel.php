@@ -19,7 +19,6 @@ class Kernel extends ConsoleKernel
 	    Commands\organizations_dbl_status::class,
 	    Commands\filesystem_update::class,
 	    Commands\checkIDs::class,
-	    Commands\fetch_s3_audio_length::class,
 	    Commands\fetch_fcbh_apk::class,
 	    Commands\fetch_beblia_bible::class,
 	    Commands\fetchAlphabets::class,
