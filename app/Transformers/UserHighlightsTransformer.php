@@ -36,7 +36,7 @@ class UserHighlightsTransformer extends TransformerAbstract
 
         return [
 	        'id'                => (int) $highlight->id,
-            'fileset_id'        => (string) $highlight->fileset_id,
+            'bible_id'        => (string) $highlight->bible_id,
             'book_id'           => (string) $highlight->book_id,
 	        'book_name'         => (string) $highlight->book->name,
             'chapter'           => (int) $highlight->chapter,

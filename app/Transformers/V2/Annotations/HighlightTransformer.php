@@ -13,7 +13,7 @@ class HighlightTransformer extends TransformerAbstract
 	 */
 	public function transform($highlight)
 	{
-		$dam_id = $highlight->fileset_id.substr($highlight->book_testament,0,1).'2ET';
+		$dam_id = $highlight->bible_id.substr($highlight->book_testament,0,1).'2ET';
 		return [
 			'id'                   => (string) $highlight->id,
 			'user_id'              => (string) $highlight->user_id,
