@@ -96,8 +96,8 @@ class APIController extends Controller
 			$this->v   = (int) checkParam('v');
 			$this->key = checkParam('key');
 			$keyExists = Key::find($this->key);
-			$this->user = $keyExists->user;
-			if(!$keyExists) abort(403, 'You need to provide a valid API key');
+			$this->user = $keyExists->user ?? null;
+			if(!$this->user) abort(403, 'You need to provide a valid API key');
 
 			// i18n
 			$i18n = checkParam('i18n',null,'optional') ?? 'eng';
@@ -140,7 +140,7 @@ class APIController extends Controller
 	 *
 	 * @return mixed
 	 */
-	public function reply($object,array $meta, $s3_transaction_id = null)
+	public function reply($object,array $meta = [], $s3_transaction_id = null)
 	{
 		if (isset($_GET['echo'])) $object = [$_GET, $object];
 		$input  = checkParam('callback|jsonp', null, 'optional');
