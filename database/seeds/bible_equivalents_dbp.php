@@ -44,7 +44,7 @@ class bible_equivalents_dbp extends Seeder
 		*/
 
     	BibleLink::where('url','like', '%is.bible%')->delete();
-    	$filsets = \App\Models\Bible\BibleFileset::with('bible')->where('bucket_id','dbp-dev')->where('hidden',0)->get();
+    	$filsets = \App\Models\Bible\BibleFileset::with('bible')->where('asset_id','dbp-dev')->where('hidden',0)->get();
     	$base_path = "https://is.bible.build/";
 
     	$organization = \App\Models\Organization\Organization::where('slug','faith-comes-by-hearing')->first();

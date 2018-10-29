@@ -67,7 +67,7 @@ class BibleTransformer extends BaseTransformer
 					        'collection_name'           => $bible->name,
 					        'updated_on'                => "".$bible->updated_at->toDateTimeString() ?? '',
 					        'created_on'                => "".$bible->created_at->toDateTimeString() ?? '',
-					        'right_to_left'             => (isset($bible->alphabet)) ? (($bible->alphabet->direction == "rtl") ? "true" : "false") : "false",
+					        'right_to_left'             => isset($bible->alphabet) ? (($bible->alphabet->direction == "rtl") ? "true" : "false") : "false",
 					        'num_art'                   => '0',
 					        'num_sample_audio'          => '0',
 					        'sku'                       => '',
@@ -170,7 +170,7 @@ class BibleTransformer extends BaseTransformer
 					'iso'               => $bible->language->iso ?? null,
 					'date'              => $bible->date,
 					'filesets'          => $bible->filesets->mapToGroups(function ($item, $key) {
-						return [$item['bucket_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
+						return [$item['asset_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
 					})
 				];
 				if($bible->langauge && $bible->langauge->relationLoaded('translations')) $output['language_altNames'] = $bible->language->translations->pluck('name');
@@ -241,7 +241,7 @@ class BibleTransformer extends BaseTransformer
 					})->values(),
 					'links'        => $bible->links,
 					'filesets'     => $bible->filesets->mapToGroups(function ($item, $key) {
-						return [$item['bucket_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
+						return [$item['asset_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
 					})
 				];
 			}

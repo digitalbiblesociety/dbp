@@ -158,7 +158,7 @@ class BibleFileset extends Model
 
 	public function organization()
 	{
-		return $this->hasManyThrough(Organization::class,Asset::class,'id','id','bucket_id','organization_id');
+		return $this->hasManyThrough(Organization::class,Asset::class,'id','id','asset_id','organization_id');
 	}
 
 	public function files()

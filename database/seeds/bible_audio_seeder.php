@@ -81,7 +81,7 @@ class bible_audio_seeder extends Seeder
 	    			'hash_id'         => substr(md5($chapter['dam_id'].$type."dbp_dev"), 0, 12),
 				    'id'              => $chapter['dam_id'],
 					'set_type_code'   => \App\Models\Bible\BibleFilesetType::find($type)->set_type_code,
-				    'bucket_id'       => "dbp_dev",
+				    'asset_id'       => "dbp_dev",
 				    'set_size_code'   => $testament,
 			    ]);
 			    $audioSet->save();

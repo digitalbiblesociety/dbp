@@ -71,7 +71,7 @@ class BibleFileSetsController extends APIController
 			function ($query) use ($asset_id) {
 				return $query->where('asset_id', $asset_id);
 			})->where('set_type_code', $type)->first();
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404_bucket', ['bucket_id' => $asset_id]));
+		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404_bucket', ['asset_id' => $asset_id]));
 
 		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? 'download' : 'api';
 		$access_control = $this->accessControl($this->key, $access_control_type);
@@ -468,8 +468,8 @@ class BibleFileSetsController extends APIController
 	private function validateBibleFileset(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'id'            => ($request->method() == "POST") ? 'required|unique:bible_filesets,id|max:16|min:6' : 'required|exists:bible_filesets,id|max:16|min:6',
-			'bucket_id'     => 'string|maxLength:64',
+			'id'            => ($request->method() === 'POST') ? 'required|unique:bible_filesets,id|max:16|min:6' : 'required|exists:bible_filesets,id|max:16|min:6',
+			'asset_id'     => 'string|maxLength:64',
 			'set_type_code' => 'string|maxLength:16',
 			'set_size_code' => 'string|maxLength:9',
 			'hidden'        => 'boolean',
