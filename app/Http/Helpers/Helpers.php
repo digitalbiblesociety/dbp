@@ -1,10 +1,5 @@
 <?php
 
-function bookCodeConvert($code = null, $source_type = null, $destination_type = null) {
-	$book = BookCode::where('type',$source_type)->where('code',$code)->first();
-	return BookCode::where('type',$destination_type)->where('book_id',$book->book_id)->first()->code;
-}
-
 /**
  * @param string $param
  * @param null|string $v4Style
@@ -30,7 +25,7 @@ function checkParam(string $param, $v4Style = null, $optional = false)
 	if(!$url_param && !$url_header) {
 		$body_param = request()->input($param);
 		if(!$body_param) {
-			if($optional != 'optional') {
+			if($optional !== 'optional') {
 				\Log::channel('errorlog')->error(["Missing Param '$param", 422]);
 				abort(422, "You need to provide the missing parameter '$param'. Please append it to the url or the request Header.");
 			}
@@ -41,75 +36,14 @@ function checkParam(string $param, $v4Style = null, $optional = false)
 	}
 	if($url_param) return $url_param;
 	if($url_header) return $url_header;
-}
-
-function fetchLanguage($id)
-{
-	$language = new \App\Models\Language\Language();
-
-	// Query string or Header overrides param if exists
-	if(isset($_GET['language_id'])) $id = $_GET['language_id'];
-	if(Request::header('language_id')) $id = Request::header('language_id');
-
-	// Check the incrementing numeric ID first
-	if(is_numeric($id)) return $language->find($id);
-
-	// Otherwise Fetch by string length
-	switch (strlen($id)) {
-		case 2:  return $language->where('iso1', $id)->first();
-		case 3:  return $language->where('iso', $id)->first();
-		default: return $language->where('glotto_id', $id)->orWhere('name',$id)->first();
-	}
-}
-
-function fetchAPI($path)
-{
-	if(env('APP_ENV') == "local") {
-		$context = ["ssl" => ["verify_peer"=> false]];
-	} else {
-		$context = [
-			"ssl" => [
-				"cafile" => storage_path("cacert.pem"),
-				"verify_peer"=> true,
-				"verify_peer_name"=> true,
-			]
-		];
-	}
-	$contents = json_decode(file_get_contents($path, false, stream_context_create($context)));
-	return json_encode($contents, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-}
-
-function fetchSwaggerSchema($schema, $version = "v4") {
-	$arrContextOptions = (env('APP_ENV') == "local") ? stream_context_create([ "ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]]) : stream_context_create([]);
-
-	$swagger['url'] = env('APP_URL') . "/swagger_$version.json";
-	$swagger['response'] = json_decode(file_get_contents($swagger['url'], false, $arrContextOptions), true);
-	if(!isset($swagger['response']['components']['schemas'][$schema])) return $swagger;
-	$swagger['schema'] = $swagger['response']['components']['schemas'][$schema];
-	$swagger['field_names'] = array_keys($swagger['schema']['properties']);
-	$swagger = collect($swagger);
-
-	return $swagger;
-}
-
-function fetchRandomBibleID() {
-	$bible = collect(\DB::connection('sophia')->select('SHOW TABLES'))->pluck('Tables_in_sophia')->filter(function ($value, $key) {
-		return (strpos($value, '_vpl') !== false) ? $value : false;
-	})->random(1)->first();
-	return substr($bible,0,-4);
-}
-
-function fetchRandomFilesetID()
-{
-	return \App\Models\Bible\BibleFileset::inRandomOrder()->first()->id;
+	return null;
 }
 
 function fetchBible($bible_id)
 {
 	$bibleEquivalent = \App\Models\Bible\BibleEquivalent::where('equivalent_id',$bible_id)->orWhere('equivalent_id',substr($bible_id,0,7))->first();
-	if(!isset($bibleEquivalent)) return \App\Models\Bible\Bible::find($bible_id);
-	if(isset($bibleEquivalent)) return $bibleEquivalent->bible;
+	if($bibleEquivalent === null) return \App\Models\Bible\Bible::find($bible_id);
+	if($bibleEquivalent !== null) return $bibleEquivalent->bible;
 	return [];
 }
 
@@ -126,7 +60,7 @@ function apiLogs($request, $status_code, $s3_string = false)
 
 	if($s3_string) $log_string .= $s3_string;
 
-	if(env('APP_ENV') != 'local') App\Jobs\send_api_logs::dispatch($log_string);
+	if(env('APP_ENV') !== 'local') App\Jobs\send_api_logs::dispatch($log_string);
 }
 
 if( ! function_exists('unique_random') ){
@@ -167,7 +101,7 @@ if( ! function_exists('unique_random') ){
 			$tested[] = $random;
 
 			// String appears to be unique
-			if( $count == 0){
+			if( $count === 0){
 				// Set unique to true to break the loop
 				$unique = true;
 			}

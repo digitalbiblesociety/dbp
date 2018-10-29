@@ -187,8 +187,9 @@ class UserHighlightsController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param                           $user_id
-	 * @param  int                      $id
+	 * @param Request $request
+	 * @param         $user_id
+	 * @param  int    $id
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
@@ -295,7 +296,7 @@ class UserHighlightsController extends APIController
 		// Try HSL
 		if(!$selectedColor) {
 			preg_match_all('/hsl\(\s*\d+\s*(\s*\,\s*\d+\%){2}\)|hsla\(\s*\d+(\s*,\s*\d+\s*\%){2}\s*\,\s*[\d\.]+\)/i', request()->highlighted_color, $matches, PREG_SET_ORDER);
-			if(isset($matches[0][0])) $selectedColor = $this->hslToRgb($color);
+			if(isset($matches[0][0])) $selectedColor = $this->hslToRgb($color, 1, 1);
 		}
 
 		$highlightColor = HighlightColor::where($selectedColor)->first();

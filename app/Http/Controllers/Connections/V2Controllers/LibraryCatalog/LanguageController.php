@@ -59,7 +59,7 @@ class LanguageController extends APIController
 				// Filter results by language name when set
 				->when($name, function ($query) use ($name, $full_word) {
 					return $query->whereHas('translations', function ($query) use ($name, $full_word) {
-						$added_space = ($full_word == 'true') ? " ": "";
+						$added_space = ($full_word === 'true') ? ' ': '';
 						$query->where('name', 'like', '%' . $name . $added_space . '%')->orWhere('name', $name);
 					});
 				})->get();
@@ -71,14 +71,16 @@ class LanguageController extends APIController
 
 	/**
 	 *
-	_method=put : REQUIRED for PUT DBT methods - PUT is not properly supported. To effect DBT methods requiring PUT, use the GET HTTP method and &_method=put.
-	iso_code: The three letter ISO language code.
-	glotto_code: the Glottolog code
-	name: The native language language name.
-	english_name: The English language language name.
-	variant (optional): [true|false] Forces the language code creation to be a variant of the ISO code and not the ISO code even if it is available as a DBP language code. This is used when FCBH considers the language being defined to be a variant of an official ISO language.
-	family_code (optional): The language code of the family to which this language belongs. If left empty or a non-existent language code is entered, the family_code will be set the same as the code entered to create this language.
+	 * _method=put : REQUIRED for PUT DBT methods - PUT is not properly supported. To effect DBT methods requiring PUT, use the GET HTTP method and &_method=put.
+	 * iso_code: The three letter ISO language code.
+	 * glotto_code: the Glottolog code
+	 * name: The native language language name.
+	 * english_name: The English language language name.
+	 * variant (optional): [true|false] Forces the language code creation to be a variant of the ISO code and not the ISO code even if it is available as a DBP language code. This is used when FCBH considers the language being defined to be a variant of an official ISO language.
+	 * family_code (optional): The language code of the family to which this language belongs. If left empty or a non-existent language code is entered, the family_code will be set the same as the code entered to create this language.
 	 *
+	 * @param Request $request
+	 * @return User|mixed|null
 	 */
 	public function languageCreate(Request $request)
 	{
@@ -87,7 +89,7 @@ class LanguageController extends APIController
 		$this->validateLanguage($request);
 
 		Language::create($request->all());
-		return $this->reply(["status" => "Success"]);
+		return $this->reply(['status' => 'Success']);
 	}
 
 

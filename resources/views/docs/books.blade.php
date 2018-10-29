@@ -31,9 +31,6 @@
             <h1 class="text-center">{{ trans('docs.v4_books_index_title') }} <small>{{ trans('docs.v4_books_index_subtitle') }}</small></h1>
             <p>{{ trans('docs.v4_books_description') }}</p>
         </div>
-        <div class="medium-5 columns">
-            <pre><code> <?php echo fetchAPI(route('v4_api_books.index', ['key' => env('API_KEY'), 'v' => 4])); ?> </code></pre>
-        </div>
     </section>
 
     <section role="tabpanel" aria-hidden="true" id="v2_books">

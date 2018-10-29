@@ -4,15 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Bible\BibleFileset;
 use App\Models\Country\Country;
-use App\Models\Country\CountryLanguage;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
+use App\Models\Organization\Asset;
 use App\Models\Organization\Organization;
 use App\Models\Bible\Bible;
 use App\Models\Resource\Resource;
 use App\Traits\CallsBucketsTrait;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+
+
 
 class HomeController extends APIController
 {
@@ -75,7 +75,7 @@ class HomeController extends APIController
 	 */
 	public function buckets()
 	{
-		return $this->reply(\App\Models\Organization\Asset::with('organization')->get());
+		return $this->reply(Asset::with('organization')->get());
 	}
 
 	/**
@@ -109,27 +109,10 @@ class HomeController extends APIController
 
 	public function versions()
 	{
-		return $this->reply(["versions" => [2, 4]]);
+		return $this->reply(['versions' => [2, 4]]);
 	}
 
-	public function status_dbl()
-	{
-		// Fetch Current number of DBL scriptures
-		// compare to existing equivalents to DBL
-		// return any discrepancy as a to do item
-		$status_dbl = '';
-
-		return $status_dbl;
-	}
-
-	public function status_biblegateway()
-	{
-		$status_gateway = '';
-
-		return $status_gateway;
-	}
-
-	public function error($status = null,$message = "")
+	public function error($status = null,$message = '')
 	{
 		if($status) return view('errors.'.$status,compact('message'));
 		return view('errors.broken',compact('message'));

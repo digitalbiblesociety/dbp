@@ -115,7 +115,6 @@ class LanguagesController extends APIController
 		if(!$user) return $this->setStatusCode(401)->replyWithError(trans('api.languages_errors_404'));
 		if(!$user->roles->where('name','archivist')->first()) return $this->setStatusCode(401)->replyWithError(trans('api.auth_wiki_validation_failed'));
 
-		//$swagger = fetchSwaggerSchema('Language', 'V4');
 		return view('dashboard.wiki.languages.create');
 	}
 
@@ -184,7 +183,7 @@ class LanguagesController extends APIController
 	 */
 	public function show($id)
 	{
-		$language = fetchLanguage($id);
+		$language = Language::where('id',$id)->orWhere('iso',$id)->first();
 		$language->load('translations', 'codes', 'dialects', 'classifications', 'countries', 'primaryCountry', 'bibles.translations.language', 'bibles.filesets', 'resources.translations', 'resources.links');
 		if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
 		if($this->api) return $this->reply(fractal($language, new LanguageTransformer()));

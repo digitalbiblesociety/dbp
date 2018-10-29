@@ -187,8 +187,8 @@ class BiblesController extends APIController
 			}
 
 			if ($this->v === 2) $bibles->load('language.parent.parentLanguage', 'alphabet', 'organizations');
-			if($paginate) return fractal($bibles, new BibleTransformer())->paginateWith(new IlluminatePaginatorAdapter($paginator))->serializeWith(new DataArraySerializer());
-			return fractal($bibles, new BibleTransformer())->serializeWith($this->serializer);
+			if($paginate) return fractal($bibles, new BibleTransformer(),new DataArraySerializer())->paginateWith(new IlluminatePaginatorAdapter($paginator));
+			return fractal($bibles, new BibleTransformer(),$this->serializer);
 		});
 		return $this->reply($bibles);
 	}

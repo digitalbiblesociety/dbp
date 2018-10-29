@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Connections\V2Controllers\LibraryCatalog;
 
 use App\Models\Bible\Book;
-use App\Models\Bible\Text;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BookTranslation;
 use App\Models\Language\Language;
@@ -59,13 +58,13 @@ class BooksController extends APIController
 
 		$testament = false;
 
-		switch (substr($id, -2, 1)) {
+		switch ($id[\strlen($id) - 2]) {
 			case 'O': { $testament = 'OT'; break; }
 			case 'N': { $testament = 'NT'; break; }
 		}
 		\Cache::forget('v2_library_book_' . $id . $asset_id . $fileset . $testament);
 		$libraryBook = \Cache::remember('v2_library_book_' . $id . $asset_id . $fileset . $testament, 1600,
-			function () use ($id, $asset_id, $fileset, $testament, $sophiaTable) {
+			function () use ($id, $fileset, $testament, $sophiaTable) {
 				$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
 				$books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
 					->when($testament, function ($q) use ($testament) {
@@ -100,7 +99,7 @@ class BooksController extends APIController
 
 		$testament = false;
 
-		switch (substr($id, -2, 1)) {
+		switch ($id[\strlen($id) - 2]) {
 			case 'O': { $testament = 'OT'; break; }
 			case 'N': { $testament = 'NT'; }
 		}
@@ -169,7 +168,7 @@ class BooksController extends APIController
 
 		\Cache::forget('v2_library_bookName_' . $iso);
 		$libraryBookName = \Cache::remember('v2_library_bookName_' . $iso, 1600, function () use ($language) {
-			$bookTranslations = BookTranslation::where('language_id', $language->id)->with('book')->select('name', 'book_id')->get()->pluck('name','book.id_osis');
+			$bookTranslations = BookTranslation::where('language_id', $language->id)->with('book')->select(['name', 'book_id'])->get()->pluck('name','book.id_osis');
 			$bookTranslations['AL'] = 'Alternative';
             $bookTranslations['ON'] = 'Old and New Testament';
             $bookTranslations['OT'] = 'Old Testament';
@@ -240,7 +239,7 @@ class BooksController extends APIController
 			if(!$book) return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404', ['id' => $id]));
 
 			$sophiaTable = $this->checkForSophiaTable($fileset);
-			if(!is_string($sophiaTable)) return $sophiaTable;
+			if(!\is_string($sophiaTable)) return $sophiaTable;
 
 			$chapters = \DB::connection('sophia')->table($sophiaTable . '_vpl')
 				->when($book, function ($q) use ($book) {

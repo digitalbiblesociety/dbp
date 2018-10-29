@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests;
-use Illuminate\Http\Request;
-
 use App\Models\Language\Language;
 use App\Models\User\Key;
-
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
 use SoapBox\Formatter\Formatter;
 use League\Fractal\Serializer\DataArraySerializer;
 
 use Spatie\Fractalistic\ArraySerializer;
 use Spatie\ArrayToXml\ArrayToXml;
+
+
+use Log;
 
 class APIController extends Controller
 {
@@ -105,7 +102,7 @@ class APIController extends Controller
 			// i18n
 			$i18n = checkParam('i18n',null,'optional') ?? 'eng';
 			$GLOBALS['i18n_iso'] = $i18n;
-			$GLOBALS['i18n_id'] = Language::where('iso',$i18n)->select('iso','id')->first()->id;
+			$GLOBALS['i18n_id'] = Language::where('iso',$i18n)->select(['iso','id'])->first()->id;
 			$this->serializer = (($this->v === 1) || ($this->v === 2) || ($this->v === 3)) ? new ArraySerializer() : new DataArraySerializer();
 		}
 	}
@@ -136,11 +133,14 @@ class APIController extends Controller
 	 *
 	 * Get The object and return it in the format requested via query params.
 	 *
-	 * @param $object
+	 * @param       $object
+	 *
+	 * @param array $meta
+	 * @param null  $s3_transaction_id
 	 *
 	 * @return mixed
 	 */
-	public function reply($object, $meta = [], $s3_transaction_id = null)
+	public function reply($object,array $meta, $s3_transaction_id = null)
 	{
 		if (isset($_GET['echo'])) $object = [$_GET, $object];
 		$input  = checkParam('callback|jsonp', null, 'optional');
@@ -149,7 +149,7 @@ class APIController extends Controller
 		// Status Code, Headers, Params, Body, Time
 		try {
 			apiLogs(request(), $this->getStatusCode(),$s3_transaction_id);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			Log::error($e);
 		}
 
@@ -157,56 +157,44 @@ class APIController extends Controller
 		switch ($format) {
 			case 'xml':
 				$formatter = ArrayToXml::convert($object->toArray(), [
-					'rootElementName' => (isset($meta['rootElementName'])) ? $meta['rootElementName'] : 'root',
-					'_attributes'     => (isset($meta['rootAttributes'])) ? $meta['rootAttributes'] : [],
-				], true, "utf-8");
-
-				return response()->make($formatter, $this->getStatusCode())->header('Content-Type',
-					'application/xml; charset=utf-8');
+					'rootElementName' => $meta['rootElementName'] ?? 'root',
+					'_attributes'     => $meta['rootAttributes'] ?? []
+				], true, 'utf-8');
+				return response()->make($formatter, $this->getStatusCode())->header('Content-Type', 'application/xml; charset=utf-8');
 			case 'yaml':
 				$formatter = Formatter::make($object, Formatter::ARR);
-
-				return response()->make($formatter->toYaml(), $this->getStatusCode())->header('Content-Type',
-					'text/yaml; charset=utf-8');
+				return response()->make($formatter->toYaml(), $this->getStatusCode())->header('Content-Type', 'text/yaml; charset=utf-8');
 			case 'csv':
 				$formatter = Formatter::make($object, Formatter::ARR);
-
-				return response()->make($formatter->toCsv(), $this->getStatusCode())->header('Content-Type',
-					'text/csv; charset=utf-8');
+				return response()->make($formatter->toCsv(), $this->getStatusCode())->header('Content-Type', 'text/csv; charset=utf-8');
 			default:
-				if (isset($_GET['pretty'])) {
-					return response()->json($object, $this->getStatusCode(), [],
-						JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)->header('Content-Type',
-						'application/json; charset=utf-8')->setCallback($input);
-				} else {
-					return response()->json($object, $this->getStatusCode(), [],
-						JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type',
-						'application/json; charset=utf-8')->setCallback($input);
-				}
+				if (isset($_GET['pretty'])) return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
+				return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
 		}
 	}
 
 	/**
 	 * @param $message
+	 * @param $action
 	 *
 	 * @return mixed
 	 */
-	public function replyWithError($message, $action = null)
+	public function replyWithError($message, $action)
 	{
 		$status = $this->getStatusCode();
 
 		try {
 			apiLogs(request(), $status);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			Log::error($e);
 		}
 
-		if ((!$this->api AND !isset($status)) OR isset($_GET['local'])) redirect()->route('error')->with(['message' => $message, 'status' => $status]);
-		if (!$this->api OR isset($_GET['local'])) return redirect()->route("errors.$status", compact('message'))->with(['message' => $message]);
+		if ((!$this->api && $status === null) || isset($_GET['local'])) redirect()->route('error')->with(['message' => $message, 'status' => $status]);
+		if (!$this->api || isset($_GET['local'])) return redirect()->route("errors.$status", compact('message'))->with(['message' => $message]);
 		$faces = ['⤜(ʘ_ʘ)⤏', '¯\_ツ_/¯', 'ᗒ ͟ʖᗕ', 'ᖗ´• ꔢ •`ᖘ', '|▰╭╮▰|'];
 
 
-		if((int) $this->v === 2 && (env('APP_ENV') != 'local')) return [];
+		if((int) $this->v === 2 && (env('APP_ENV') !== 'local')) return [];
 
 		$error = [
 				'message'     => $message,
@@ -219,7 +207,7 @@ class APIController extends Controller
 		return response()->json(['error' => $error], $this->getStatusCode(), [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 	}
 
-	function utf8_for_xml($string)
+	public function utf8_for_xml($string)
 	{
 		return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $string);
 	}
