@@ -70,7 +70,7 @@ class UserHighlightsController extends APIController
 				     ->on('book.book_id', '=', 'user_highlights.book_id');
 			})
 		    ->when($bible_id, function ($q) use ($bible_id) {
-				$q->where('bible_id', $bible_id);
+				$q->where('user_highlights.bible_id', $bible_id);
 		    })->when($book_id, function ($q) use ($book_id) {
 				$q->where('user_highlights.book_id', $book_id);
 			})->when($chapter_id, function ($q) use ($chapter_id) {
