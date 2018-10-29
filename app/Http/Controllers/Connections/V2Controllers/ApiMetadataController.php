@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Connections\V2Controllers;
 
 use App\Http\Controllers\APIController;
 use App\Models\Bible\BibleFileset;
-use Request;
 use Storage;
 
 class ApiMetadataController extends APIController
@@ -15,18 +14,17 @@ class ApiMetadataController extends APIController
 	 *
 	 * @param null    $path1
 	 * @param null    $path2
-	 * @param Request $request
 	 *
 	 * @return \Illuminate\Http\JsonResponse
 	 */
-	public function passThrough($path1 = null,$path2 = null, Request $request)
+	public function passThrough($path1 = null,$path2 = null)
 	{
 		$params = checkParam('params',null,'optional') ?? $_GET;
-		if(is_array($params)) {
+		if(\is_array($params)) {
 			$params = implode('&', array_map(function ($v, $k) {
-				if($k === 'key') return "key=53355c32fca5f3cac4d7a670d2df2e09";
+				if($k === 'key') return 'key=53355c32fca5f3cac4d7a670d2df2e09';
 				if($k === 0) return $v;
-				return sprintf("%s=%s", $k, $v);
+				return sprintf('%s=%s', $k, $v);
 			}, $params, array_keys($params)));
 		}
 		$contents = json_decode(file_get_contents('https://dbt.io/'.$path1.'/'.$path2.'?'.$params));
@@ -142,7 +140,7 @@ class ApiMetadataController extends APIController
 	 */
 	public function versionLatest()
 	{
-		return $this->reply(["Version" => 4]);
+		return $this->reply(['Version' => 4]);
 	}
 
 	/**
@@ -186,8 +184,8 @@ class ApiMetadataController extends APIController
 	public function versionReplyTypes()
 	{
 		$versionReplies = [
-			"2" => ["json", "jsonp", "html"],
-			"4" => ["json", "jsonp", "xml", "html"],
+			'2' => ['json', 'jsonp', 'html'],
+			'4' => ['json', 'jsonp', 'xml', 'html'],
 		];
 
 		return $this->reply($versionReplies[$this->v]);

@@ -39,7 +39,6 @@ class RegisterController extends Controller
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct()
     {
@@ -63,7 +62,7 @@ class RegisterController extends Controller
             $data['captcha'] = true;
         }
 
-        return Validator::make($data,
+        return \Validator::make($data,
             [
                 'name'                  => 'required|max:255|unique:dbp_users.users',
                 'first_name'            => '',

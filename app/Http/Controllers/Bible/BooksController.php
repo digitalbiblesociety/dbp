@@ -109,6 +109,7 @@ class BooksController extends APIController
 			if(is_a($sophiaTable,JsonResponse::class)) return $sophiaTable;
 			$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
 			$general_books = Book::whereIn('id_usfx',$booksChapters->pluck('book')->unique()->toArray())->get();
+
 			$books = BibleBook::with('book')
 			            ->whereIn('book_id', $general_books->pluck('id'))
 			            ->where('bible_id',$bible->id)

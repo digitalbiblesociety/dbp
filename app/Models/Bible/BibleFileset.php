@@ -4,13 +4,27 @@ namespace App\Models\Bible;
 
 use App\Models\Organization\Asset;
 use App\Models\Organization\Organization;
-use App\Models\User\AccessGroup;
 use App\Models\User\AccessGroupFileset;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * App\Models\Bible\BibleFileset
  * @mixin \Eloquent
+ *
+ * @method static BibleFileset whereId($value)
+ * @property string $id
+ * @method static BibleFileset whereHashId($value)
+ * @property string $hash_id
+ * @method static BibleFileset whereBucketId($value)
+ * @property string $asset_id
+ * @method static BibleFileset whereSetTypeCode($value)
+ * @property string $set_type_code
+ * @method static BibleFileset whereSetSizeCode($value)
+ * @property string $set_size_code
+ * @method static Bible whereCreatedAt($value)
+ * @property \Carbon\Carbon|null $created_at
+ * @method static Bible whereUpdatedAt($value)
+ * @property \Carbon\Carbon|null $updated_at
  *
  * @OA\Schema (
  *     type="object",
@@ -39,8 +53,6 @@ class BibleFileset extends Model
 	 *   maxLength=16
 	 * )
 	 *
-	 * @method static BibleFileset whereId($value)
-	 * @property string $id
 	 */
 	protected $id;
 
@@ -54,8 +66,6 @@ class BibleFileset extends Model
 	 *   maxLength=12
 	 * )
 	 *
-	 * @method static BibleFileset whereHashId($value)
-	 * @property hash_id $hash_id
 	 */
 	protected $hash_id;
 
@@ -68,8 +78,6 @@ class BibleFileset extends Model
 	 *   maxLength=64
 	 * )
 	 *
-	 * @method static BibleFileset whereBucketId($value)
-	 * @property string $asset_id
 	 */
 	protected $asset_id;
 
@@ -82,8 +90,6 @@ class BibleFileset extends Model
 	 *   maxLength=3
 	 * )
 	 *
-	 * @method static BibleFileset whereSetTypeCode($value)
-	 * @property string $set_type_code
 	 */
 	protected $set_type_code;
 
@@ -96,8 +102,6 @@ class BibleFileset extends Model
 	 *   maxLength=3
 	 * )
 	 *
-	 * @method static BibleFileset whereSetSizeCode($value)
-	 * @property string $set_size_code
 	 */
 	protected $set_size_code;
 
@@ -109,8 +113,6 @@ class BibleFileset extends Model
 	 *   description="The timestamp at which the fileset was originally created"
 	 * )
 	 *
-	 * @method static Bible whereCreatedAt($value)
-	 * @property \Carbon\Carbon|null $created_at
 	 */
 	protected $created_at;
 	/**
@@ -121,8 +123,6 @@ class BibleFileset extends Model
 	 *   description="The timestamp at which the fileset was last updated"
 	 * )
 	 *
-	 * @method static Bible whereUpdatedAt($value)
-	 * @property \Carbon\Carbon|null $updated_at
 	 */
 	protected $updated_at;
 

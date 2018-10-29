@@ -98,16 +98,16 @@
 	// VERSION 4 | USERS
 	Route::name('v4_user.index')->match(['get','options'],'users',                                                          'User\UsersController@index');
 	Route::name('v4_user.store')->post('users',                                                                             'User\UsersController@store');
+	Route::name('v4_user.geolocate')->match(['get','options'],'users/geolocate',                                            'User\UsersController@geoLocate');
 	Route::name('v4_user.show')->match(['get','options'],'users/{user_id}',                                                 'User\UsersController@show');
 	Route::name('v4_user.update')->put('users/{user_id}',                                                                   'User\UsersController@update');
 	Route::name('v4_user.destroy')->delete('users/{user_id}',                                                               'User\UsersController@destroy');
 	Route::name('v4_user.login')->post('users/login',                                                                       'User\UsersController@login');
-	Route::name('v4_user.geolocate')->match(['get','options'],'users/geolocate',                                            'User\UsersController@geoLocate');
 	Route::name('v4_user.oAuth')->match(['get','options'],'users/login/{driver}',                                           'User\UsersController@getSocialRedirect');
 	Route::name('v4_user.oAuthCallback')->match(['get','options'],'users/login/{driver}/callback',                          'User\UsersController@getSocialHandle');
 
 	// VERSION 4 | USER PASSWORDS
-	Route::name('v4_user.password_reset')->post('users/password/reset',                                                     'User\UserPasswordsController@validatePasswordReset');
+	Route::name('v4_user.password_reset')->post('users/password/reset/{token?}',                                            'User\UserPasswordsController@validatePasswordReset');
 	Route::name('v4_user.password_email')->post('users/password/email',                                                     'User\UserPasswordsController@triggerPasswordResetEmail');
 
 	// VERSION 4 | USER ACCOUNTS

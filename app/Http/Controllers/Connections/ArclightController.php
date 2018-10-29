@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Connections;
 
 use App\Http\Controllers\APIController;
-use Illuminate\Http\Request;
 
 class ArclightController extends APIController
 {
@@ -16,23 +15,24 @@ class ArclightController extends APIController
      */
     public function __construct()
     {
+    	parent::__construct();
         $this->api_key  = env('ARCLIGHT_API');
-        $this->base_url = "https://api.arclight.org/v2/";
+        $this->base_url = 'https://api.arclight.org/v2/';
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index($iso)
+	/**
+	 * Display a listing of the resource.
+	 *
+	 * @param string $iso
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+    public function index(string $iso)
     {
         // Fetch Language Id equivalent
         $languages   = $this->fetchLocal('languages.json');
         $language_id = $languages[$iso];
-        if (!$language_id) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404', []));
-        }
+        if (!$language_id) return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
 
         return $this->fetchMediaForLanguage($iso);
     }
@@ -53,11 +53,8 @@ class ArclightController extends APIController
     private function syncTypes()
     {
         $media_components = $this->fetch('media-components');
-        foreach ($media_components->mediaComponents as $component) {
-            $output[$component->subType][$component->mediaComponentId] = $component->title;
-        }
-        file_put_contents(storage_path('/data/jfm/types.json'),
-            json_encode(collect($output), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        foreach ($media_components->mediaComponents as $component) $output[$component->subType][$component->mediaComponentId] = $component->title;
+        file_put_contents(storage_path('/data/jfm/types.json'), json_encode(collect($output), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 
     private function syncLanguages()
@@ -92,18 +89,15 @@ class ArclightController extends APIController
         foreach ($media_components as $media_component) {
             $feature_films[$media_component] = $this->fetch("media-components/$media_component/languages/$language_id");
         }
-        if (!file_exists(storage_path("/data/jfm/languages"))) {
-            mkdir(storage_path("/data/jfm/feature-films"));
-        }
-        file_put_contents(storage_path("/data/jfm/feature-films/$iso.json"),
-            json_encode($feature_films, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        if(!file_exists(storage_path('/data/jfm/languages'))) mkdir(storage_path('/data/jfm/feature-films'));
+        file_put_contents(storage_path('/data/jfm/feature-films/$iso.json'), json_encode($feature_films, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         return $feature_films;
     }
 
-    private function fetch($path, $params = [])
+    private function fetch($path, array $params)
     {
-        $paramString = "";
+        $paramString = '';
         foreach ($params as $key => $value) {
             $paramString .= '&' . $key . '=' . $value;
         }

@@ -5,7 +5,14 @@ function bookCodeConvert($code = null, $source_type = null, $destination_type = 
 	return BookCode::where('type',$destination_type)->where('book_id',$book->book_id)->first()->code;
 }
 
-function checkParam($param, $v4Style = null, $optional = false)
+/**
+ * @param string $param
+ * @param null|string $v4Style
+ * @param bool $optional
+ *
+ * @return array|bool|null|string
+ */
+function checkParam(string $param, $v4Style = null, $optional = false)
 {
 	$url_param = null;
 	if(strpos($param, '|') !== false) {

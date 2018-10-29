@@ -109,7 +109,9 @@ class ProjectsController extends APIController
 				'description'     => $request->description,
 			]);
 			$admin_role = Role::where('slug','admin')->first();
+			if(!$admin_role) return $this->replyWithError('No Admin Role Found');
 			$developer_role = Role::where('slug','developer')->first();
+			if(!$developer_role) return $this->replyWithError('No Developer Role Found');
 			$project->members()->create([
 				'user_id' => $user->id,
 				'role_id' => $admin_role->id

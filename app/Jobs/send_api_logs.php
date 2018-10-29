@@ -81,30 +81,34 @@ class send_api_logs implements ShouldQueue
 
 	private function pushToS3($current_file, $log_contents)
 	{
-		if(env('APP_ENV') === 'local') Cache::forget('iam_assumed_role');
-		$security_token = Cache::remember('iam_assumed_role', 60, function () {
-			$role_call  = $this->assumeRole();
-			if($role_call) {
-				$response_xml   = simplexml_load_string($role_call->response,'SimpleXMLElement',LIBXML_NOCDATA);
-				return json_decode(json_encode($response_xml));
-			}
-		});
+		try {
+			$security_token = Cache::remember('iam_assumed_role', 60, function () {
+				$role_call  = $this->assumeRole();
+				if($role_call) {
+					$response_xml   = simplexml_load_string($role_call->response,'SimpleXMLElement',LIBXML_NOCDATA);
+					return json_decode(json_encode($response_xml));
+				}
+			});
 
-		$s3 = new S3Client([
-			'version' => 'latest',
-			'region'  => 'us-west-2',
-			'credentials' => [
-				'key' => $security_token->AssumeRoleResult->Credentials->AccessKeyId,
-				'secret' => $security_token->AssumeRoleResult->Credentials->SecretAccessKey,
-				'token' =>  $security_token->AssumeRoleResult->Credentials->SessionToken
-			]
-		]);
+			$s3 = new S3Client([
+				'version' => 'latest',
+				'region'  => 'us-west-2',
+				'credentials' => [
+					'key' => $security_token->AssumeRoleResult->Credentials->AccessKeyId,
+					'secret' => $security_token->AssumeRoleResult->Credentials->SecretAccessKey,
+					'token' =>  $security_token->AssumeRoleResult->Credentials->SessionToken
+				]
+			]);
 
-		$s3->putObject([
-			'Bucket' => 'dbp-log',
-			'Key'    => 'srv/'.substr($current_file,4),
-			'Body'   => $log_contents
-		]);
+			$s3->putObject([
+				'Bucket' => 'dbp-log',
+				'Key'    => 'srv/'.substr($current_file,4),
+				'Body'   => $log_contents
+			]);
+		} catch (\Exception $e){
+			\Log::error('unable to push logs to s3');
+		}
+
 	}
 
 }

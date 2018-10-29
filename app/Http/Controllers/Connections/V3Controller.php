@@ -6,9 +6,7 @@ use App\Http\Controllers\APIController;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\Book;
 use App\Transformers\BooksTransformer;
-use App\Transformers\FileSetTransformer;
 use App\Transformers\FileTransformer;
-use Illuminate\Http\Request;
 use Spatie\Fractalistic\ArraySerializer;
 
 class V3Controller extends APIController
@@ -18,12 +16,9 @@ class V3Controller extends APIController
 		$bible_id    = checkParam('dam_id');
 		$action_type = checkParam('resource');
 		$bible       = fetchBible($bible_id);
-		if (!$bible) {
-			return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404',
-				['id' => $bible_id]));
-		}
+		if(!$bible) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $bible_id]));
 
-		if ($action_type == 'books') {
+		if ($action_type === 'books') {
 			$booksChapters = collect(\DB::connection('sophia')->table($bible_id . '_vpl')->select('book',
 				'chapter')->distinct()->get());
 			$books         = $booksChapters->pluck('book')->toArray();
@@ -42,22 +37,22 @@ class V3Controller extends APIController
 			});
 
 			return $this->reply([
-				"_links"      => ["self" => ["href" => "http://v3.dbt.io/search"]],
-				"_embedded"   => fractal()->collection($books)->serializeWith(new ArraySerializer())->transformWith(new BooksTransformer()),
+				'_links'      => ['self' => ['href' => 'http://v3.dbt.io/search']],
+				'_embedded'   => fractal()->collection($books)->serializeWith(new ArraySerializer())->transformWith(new BooksTransformer()),
 				'total_items' => $books->count(),
 			]);
 		}
 
-		if ($action_type == "chapters") {
+		if ($action_type === 'chapters') {
 			$files = BibleFile::where('set_id', $bible->id)->orWhere('set_id', $bible_id)->get();
 
 			return $this->reply([
-				"_links"      => ["self" => ["href" => "http://v3.dbt.io/search"]],
-				"_embedded"   => fractal()->collection($files)->serializeWith(new ArraySerializer())->transformWith(new FileTransformer()),
+				'_links'      => ['self' => ['href' => 'http://v3.dbt.io/search']],
+				'_embedded'   => fractal($files,new FileTransformer(),new ArraySerializer()),
 				'total_items' => $files->count(),
 			]);
 		}
-
+		return null;
 	}
 
 	public function books()
@@ -69,7 +64,7 @@ class V3Controller extends APIController
 			return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $bible_id]));
 		}
 
-		$files         = ($children) ? BibleFile::where('set_id', $bible->id)->orWhere('set_id', $bible_id)->select([
+		$files         = $children ? BibleFile::where('set_id', $bible->id)->orWhere('set_id', $bible_id)->select([
 			'chapter_start as number',
 			'chapter_start as order',
 			'set_id as dam_id',
@@ -91,8 +86,8 @@ class V3Controller extends APIController
 		});
 
 		return $this->reply([
-			"_links"      => ["self" => ["href" => "http://v3.dbt.io/search"]],
-			"_embedded"   => fractal()->collection($books)->serializeWith(new ArraySerializer())->transformWith(new BooksTransformer()),
+			'_links'      => ['self' => ['href' => 'http://v3.dbt.io/search']],
+			'_embedded'   => fractal($books,new BooksTransformer(),new ArraySerializer()),
 			'total_items' => $books->count(),
 		]);
 	}

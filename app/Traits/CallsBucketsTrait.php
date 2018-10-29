@@ -7,13 +7,11 @@ use Aws\S3\S3Client;
 use Carbon\Carbon;
 use Curl\Curl;
 use Cache;
-use SimpleXMLElement;
 
 trait CallsBucketsTrait {
 
 	public function authorizeAWS()
 	{
-		if(env('APP_ENV') === 'local') Cache::forget('iam_assumed_role');
 		$security_token = Cache::remember('iam_assumed_role', 60, function () {
 			$role_call  = $this->assumeRole();
 			if($role_call) {

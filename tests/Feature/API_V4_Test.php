@@ -19,7 +19,7 @@ class API_V4_Test extends TestCase
 		parent::setUp();
 		config(['app.url' => 'https://api.dbp.test']);
 
-		$this->key    = '53355c32fca5f3cac4d7a670d2df2e09';
+		$this->key    = '1234';
 		$this->params = ['v' => 4, 'key' => $this->key, 'pretty'];
 
 		// Fetch the Swagger Docs for Structure Validation
@@ -37,41 +37,13 @@ class API_V4_Test extends TestCase
 	}
 
 
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_video_stream'
-	 * @category Route Path:
-	 * @see      \App\Http\Controllers\bible/filesets/{fileset_id}https://api.dbp.test/
-	 *           ''?v=4&key=1234/stream/{file_id}/playlist.m3u8',  'Bible\VideoStreamController::index
-	 */
-	public function test_v4_video_stream()
-	{
-		$path = route('v4_video_stream', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_video_stream_ts'
-	 * @category Route Path:https://api.dbp.test/?v=4&key=1234ile_id}/{file_name}
-	 * @see      \App\Http\Controllers\VideoStreamController::transportStream
-	 */
-	public function test_v4_video_stream_ts()
-	{
-		$path = route('v4_video_stream_ts', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
+	// TODO: Check JFM Connection
 	/**
 	 * @category V4_API
 	 * @category Route Name: v4_connections_jfm.index
 	 * @category Route Path: https://api.dbp.test/connections/jesus-film/{iso}?v=4&key=1234
 	 * @see      \App\Http\Controllers\Connections\ArclightController::index
-	 */
+
 	public function test_v4_connections_jfm_index()
 	{
 		$path = route('v4_connections_jfm.index', $this->params);
@@ -79,13 +51,16 @@ class API_V4_Test extends TestCase
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
 	}
+	 *
+	 */
 
+	// TODO: Check Deeplink Connection
 	/**
 	 * @category V4_API
 	 * @category Route Name: v4_connections_app.deeplink
 	 * @category Route Path: https://api.dbp.test/connections/app/deeplinking?v=4&key=1234
 	 * @see      \App\Http\Controllers\Connections\MobileAppsController::redirectDeepLink
-	 */
+
 	public function test_v4_connections_app_deeplink()
 	{
 		$path = route('v4_connections_app.deeplink', $this->params);
@@ -93,13 +68,14 @@ class API_V4_Test extends TestCase
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
 	}
-
+	 */
+	// TODO: Check GRN Connection
 	/**
 	 * @category V4_API
 	 * @category Route Name: v4_connections_grn.index
 	 * @category Route Path: https://api.dbp.test/connections/grn/{iso}?v=4&key=1234
 	 * @see      \App\Http\Controllers\Connections\GRNController::index
-	 */
+
 	public function test_v4_connections_grn_index()
 	{
 		$path = route('v4_connections_grn.index', $this->params);
@@ -107,5 +83,6 @@ class API_V4_Test extends TestCase
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
 	}
+	 * */
 
 }

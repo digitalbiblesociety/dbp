@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Bible;
 
 use App\Http\Controllers\APIController;
 use App\Models\Bible\BibleEquivalent;
+use Illuminate\Http\Response;
 
 class BibleEquivalentsController extends APIController
 {
@@ -33,7 +34,7 @@ class BibleEquivalentsController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @return json
+	 * @return Response
 	 */
 	public function index()
 	{
@@ -76,9 +77,11 @@ class BibleEquivalentsController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @return json
+	 * @param string $id
+	 *
+	 * @return Response
 	 */
-    public function show($id)
+    public function show(string $id)
     {
     	$bible_equivalents = BibleEquivalent::where('bible_id',$id)->get();
     	return $this->reply($bible_equivalents);

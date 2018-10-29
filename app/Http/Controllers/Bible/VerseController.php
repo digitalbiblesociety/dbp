@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Bible;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\Book;
-use App\Models\Bible\Text;
 use App\Http\Controllers\APIController;
 
 class VerseController extends APIController
@@ -19,6 +18,7 @@ class VerseController extends APIController
 
 		$bible = Bible::find($bible_id);
 		$book  = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->first();
+		if(!$book) return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404'));
 
 		$verse_info = \DB::connection('sophia')->table($bible->id . '_vpl')->where([
 			['book', '=', $book->id_usfx],

@@ -36,14 +36,38 @@ use Laravel\Scout\Searchable;
  * @property-read BibleFileset[] $filesetAudio
  * @property-read BibleFileset[] $filesetFilm
  * @property-read BibleFileset[] $filesetText
+ *
  * @property int $priority
  * @property int $open_access
  * @property int $connection_fab
  * @property int $connection_dbs
+ * @property string $id
+ * @property integer $language_id
+ * @property integer $date
+ * @property string|null $scope
+ * @property string|null $script
+ * @property string|null $derived
+ * @property string|null $copyright
+ * @property string|null $in_progress
+ * @property string|null $versification
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ *
  * @method static Bible wherePriority($value)
  * @method static Bible whereConnectionDbs($value)
  * @method static Bible whereConnectionFab($value)
  * @method static Bible whereOpenAccess($value)
+ * @method static Bible whereId($value)
+ * @method static Bible whereLanguageId($value)
+ * @method static Bible whereDate($value)
+ * @method static Bible whereScope($value)
+ * @method static Bible whereScript($value)
+ * @method static Bible whereDerived($value)
+ * @method static Bible whereCopyright($value)
+ * @method static Bible whereInProgress($value)
+ * @method static Bible whereVersification($value)
+ * @method static Bible whereCreatedAt($value)
+ * @method static Bible whereUpdatedAt($value)
  *
  * @OA\Schema (
  *     type="object",
@@ -81,8 +105,6 @@ class Bible extends Model
 	 *   example="ENGESV"
 	 * )
 	 *
-	 * @method static Bible whereId($value)
-	 * @property string $id
 	 */
 	protected $id;
 
@@ -90,8 +112,6 @@ class Bible extends Model
 	 *
 	 * @OA\Property(ref="#/components/schemas/Language/properties/id")
 	 *
-	 * @method static Bible whereLanguageId($value)
-	 * @property integer $language_id
 	 */
 	protected $language_id;
 
@@ -105,16 +125,12 @@ class Bible extends Model
 	 *   maximum=2030
 	 * )
 	 *
-	 * @method static Bible whereDate($value)
-	 * @property integer $date
 	 */
 	protected $date;
 	/**
 	 *
 	 * @OA\Property(ref="#/components/schemas/BibleFilesetSize/properties/set_size_code")
 	 *
-	 * @method static Bible whereScope($value)
-	 * @property string|null $scope
 	 */
 	protected $scope;
 
@@ -122,8 +138,6 @@ class Bible extends Model
 	 *
 	 * @OA\Property(ref="#/components/schemas/Alphabet/properties/script")
 	 *
-	 * @method static Bible whereScript($value)
-	 * @property string|null $script
 	 */
 	protected $script;
 
@@ -136,8 +150,6 @@ class Bible extends Model
 	 *   description="This field indicates the `bible_id` of the Scriptures that the current Scriptures being described are derived. For example, because the NIrV (New International Reader's Version) was created from / inspired by the NIV (New International Version). If this model was describing ENGNIRV the derived field would be ENGNIV.",
 	 * )
 	 *
-	 * @method static Bible whereDerived($value)
-	 * @property string|null $derived
 	 */
 	protected $derived;
 
@@ -150,8 +162,6 @@ class Bible extends Model
 	 *   maxLength=191
 	 * )
 	 *
-	 * @method static Bible whereCopyright($value)
-	 * @property string|null $copyright
 	 */
 	protected $copyright;
 
@@ -163,8 +173,6 @@ class Bible extends Model
 	 *   description="If the Bible being described is currently in progress.",
 	 * )
 	 *
-	 * @method static Bible whereInProgress($value)
-	 * @property string|null $in_progress
 	 */
 	protected $in_progress;
 
@@ -177,8 +185,6 @@ class Bible extends Model
 	 *   enum={"protestant","luther","synodal","german","kjva","vulgate","lxx","orthodox","nrsva","catholic","finnish"}
 	 * )
 	 *
-	 * @method static Bible whereVersification($value)
-	 * @property string|null $versification
 	 */
 	protected $versification;
 
@@ -190,8 +196,6 @@ class Bible extends Model
 	 *   description="The timestamp at which the bible was originally created"
 	 * )
 	 *
-	 * @method static Bible whereCreatedAt($value)
-	 * @property \Carbon\Carbon|null $created_at
 	 */
 	protected $created_at;
 	/**
@@ -202,8 +206,6 @@ class Bible extends Model
 	 *   description="The timestamp at which the bible was last updated"
 	 * )
 	 *
-	 * @method static Bible whereUpdatedAt($value)
-	 * @property \Carbon\Carbon|null $updated_at
 	 */
 	protected $updated_at;
 

@@ -35,16 +35,16 @@ class UserNotesTransformer extends TransformerAbstract
 	public function transform(Note $note)
 	{
 		return [
-			"id"			=> (int) $note->id,
-			"bible_id"		=> (string) $note->bible_id,
-			"book_id"		=> (string) $note->book_id,
-			"chapter"		=> (int) $note->chapter,
-			"verse_start"	=> (int) $note->verse_start,
-			"verse_end"		=> (int) $note->verse_end,
-			"notes"			=> (string) $note->notes,
-			"created_at"	=> (string) $note->created_at->toDateTimeString(),
-			"updated_at"	=> (string) $note->updated_at->toDateTimeString(),
-			"tags"			=> $note->tags,
+			'id'			=> (int) $note->id,
+			'bible_id'		=> (string) $note->bible_id,
+			'book_id'		=> (string) $note->book_id,
+			'chapter'		=> (int) $note->chapter,
+			'verse_start'	=> (int) $note->verse_start,
+			'verse_end'		=> (int) $note->verse_end,
+			'notes'			=> (string) $note->notes,
+			'created_at'	=> (string) $note->created_at,
+			'updated_at'	=> (string) $note->updated_at,
+			'tags'			=> $note->tags,
 		];
 	}
 }

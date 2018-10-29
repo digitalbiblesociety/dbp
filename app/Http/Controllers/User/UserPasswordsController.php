@@ -72,17 +72,18 @@ class UserPasswordsController extends APIController
 	 */
 	public function triggerPasswordResetEmail(Request $request)
 	{
+
 		$generatedToken = PasswordReset::create(['email' => $request->email, 'token' => str_random(64),'created_at' => Carbon::now()]);
 		$user = User::where('email', $request->email)->first();
 		$user->token = $generatedToken->token;
 		if(!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => $request->email]));
 
 		$project = Project::where('id',$request->project_id)->first();
-		//if (!$project) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project', ['user' => $user->id, 'project' => $request->project_id]));
+		if (!$project) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project', ['user' => $user->id, 'project' => $request->project_id]));
 
 		\Mail::to($user)->send(new EmailPasswordReset($user, $project));
 		if(!$this->api) return view('auth.verification-required');
-		return $this->reply(trans('api.email_send_successful', []));
+		return $this->reply(trans('api.email_send_successful'));
 	}
 
 	/**
@@ -123,19 +124,18 @@ class UserPasswordsController extends APIController
 	 * )
 	 *
 	 * @param Request $request
-	 *
 	 * @return mixed
 	 *
 	 */
 	public function validatePasswordReset(Request $request)
 	{
 		$validated = $this->validatePassword($request);
-		if($validated != "valid") return $validated;
+		if($validated !== 'valid') return $validated;
 
 		$user = User::where('email', $request->email)->first();
 		if(!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email',['email' => $request->email],$GLOBALS['i18n_iso']));
 
-		$user->password = (\Hash::needsRehash($request->new_password)) ? \Hash::make($request->new_password) : $request->new_password;
+		$user->password = \Hash::needsRehash($request->new_password) ? \Hash::make($request->new_password) : $request->new_password;
 		$user->save();
 
 		if($this->api) return $this->reply($user);

@@ -59,7 +59,8 @@ class UserTransformer extends BaseTransformer
 			 *  @OA\Property(property="accounts", type="object",description="The unique identifier for a user's connection to the api and the means of that connection",example={"facebook":"1903random6321","cookie": "43190crumbles1023"}),
 			 * )
 			 */
-			case 'v4_user.show': {
+			case 'v4_user.show':
+			default: {
 				return [
 					'id'        => $user->id,
 					'name'      => $user->name,

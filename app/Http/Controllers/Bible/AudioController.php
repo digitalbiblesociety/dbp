@@ -5,16 +5,12 @@ namespace App\Http\Controllers\Bible;
 use App\Http\Controllers\APIController;
 
 use App\Models\Bible\Book;
-use App\Models\Bible\Text;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFileTimestamp;
 
 use App\Traits\CallsBucketsTrait;
 use App\Transformers\AudioTransformer;
-
-use App\Helpers\AWS\Bucket;
-
 
 class AudioController extends APIController
 {
@@ -67,8 +63,6 @@ class AudioController extends APIController
 		$chapter_id = checkParam('chapter_id', null, 'optional');
 		$book_id    = checkParam('book_id', null, 'optional');
 		$asset_id   = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
-		$limit = checkParam('expiration', null, 'optional') ?? 5;
-		if($this->v === 2) $limit = 240;
 		
 		if($book_id) {
 			$book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
@@ -154,7 +148,7 @@ class AudioController extends APIController
 	 *
 	 * @return mixed
 	 */
-	public function timestampsByReference(string $id = null, string $book = null, int $chapter = null)
+	public function timestampsByReference(string $id, string $book, int $chapter)
 	{
 		// Set Params
 		$id      = checkParam('fileset_id', $id);
@@ -207,7 +201,9 @@ class AudioController extends APIController
 		$query            = checkParam('query');
 
 		$audio_fileset = BibleFileset::where('set_type_code', 'LIKE','audio%')->where('id',$audio_fileset_id)->first();
+		if(!$audio_fileset) return $this->setStatusCode(404)->replyWithError('Audio Fileset not found');
 		$text_fileset  = BibleFileset::where('set_type_code','text_plain')->where('id',$text_fileset_id)->first();
+		if(!$text_fileset) return $this->setStatusCode(404)->replyWithError('Text Comparison Fileset not found');
 		$books = Book::all();
 
 		$query  = \DB::connection()->getPdo()->quote('+' . str_replace(' ', ' +', $query));
@@ -232,7 +228,6 @@ class AudioController extends APIController
 			]);
 		}
 		$bible_files = $bible_files->limit(100)->get();
-		return $this->reply($bible_files);
 
 		return $this->reply(fractal($bible_files,new AudioTransformer()));
 	}
@@ -277,11 +272,11 @@ class AudioController extends APIController
 	{
 		return $this->reply([
 			[
-				"server"    => "dbp.test.s3.us-west-2.amazonaws.com",
-				"root_path" => "/audio",
-				"protocol"  => "https",
-				"CDN"       => "1",
-				"priority"  => "5",
+				'server'    => 'dbp.test.s3.us-west-2.amazonaws.com',
+				'root_path' => '/audio',
+				'protocol'  => 'https',
+				'CDN'       => '1',
+				'priority'  => '5',
 			],
 		]);
 	}

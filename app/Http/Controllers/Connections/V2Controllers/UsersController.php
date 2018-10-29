@@ -31,7 +31,7 @@ class UsersController extends APIController
 
 	public function user()
 	{
-		if(request()->method('POST')) {
+		if(request()->getMethod() === 'POST') {
 			$user = $user = User::where('email',request()->email)->first();
 			if(!$user) {
 				$user = User::create([

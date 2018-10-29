@@ -8,8 +8,11 @@ use App\Models\User\Study\HighlightColor;
 use App\Transformers\UserHighlightsTransformer;
 use App\Models\User\Study\Highlight;
 use App\Traits\CheckProjectMembership;
+use App\Transformers\V2\Annotations\HighlightTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Validator;
+
+use Illuminate\Http\Request;
 
 class UserHighlightsController extends APIController
 {
@@ -149,7 +152,7 @@ class UserHighlightsController extends APIController
 		if(\is_array($highlight_validation)) return $highlight_validation;
 
 		request()->highlighted_color = $this->selectColor(request()->highlighted_color);
-		Highlight::create([
+		$highlight = Highlight::create([
 			'user_id'           => request()->user_id,
 			'bible_id'          => request()->bible_id,
 			'book_id'           => request()->book_id,
@@ -159,8 +162,7 @@ class UserHighlightsController extends APIController
 			'highlighted_words' => request()->highlighted_words,
 			'highlighted_color' => request()->highlighted_color,
 		]);
-
-		return $this->reply([trans('api.success') => trans('api.users_highlights_create_200')]);
+		return $this->reply(fractal($highlight, new HighlightTransformer())->addMeta(['success' => trans('api.users_highlights_create_200')]));
 	}
 
 	/**
@@ -190,7 +192,7 @@ class UserHighlightsController extends APIController
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update($user_id, $id)
+	public function update(Request $request, $user_id, $id)
 	{
 		// Validate Project / User Connection
 		$user_is_member = $this->compareProjects($user_id, $this->key);
@@ -203,11 +205,14 @@ class UserHighlightsController extends APIController
 		$highlight = Highlight::where('user_id', $user_id)->where('id', $id)->first();
 		if(!$highlight) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_highlights'));
 
-		if(request()->highlighted_color) request()->highlighted_color = $this->selectColor(request()->highlighted_color);
+		if($request->highlighted_color) {
+			$color = $this->selectColor($request->highlighted_color);
+			$highlight->fill(array_add($request->except('highlighted_color'), 'highlighted_color',$color))->save();
+		} else {
+			$highlight->fill($request->all())->save();
+		}
 
-		$highlight->fill(request()->all())->save();
-
-		return $this->reply([trans('api.success') => trans('api.users_highlights_update_200')]);
+		return $this->reply(fractal($highlight, new HighlightTransformer())->addMeta([trans('api.success') => trans('api.users_highlights_update_200')]));
 	}
 
 	/**

@@ -14,7 +14,7 @@ use jeremykenedy\LaravelRoles\Models\Role;
 */
 
 /* @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\User\User::class, function (Faker\Generator $faker) {
     static $password;
     $userRole = Role::whereName('User')->first();
 
@@ -32,9 +32,9 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
     ];
 });
 
-$factory->define(App\Models\Profile::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\User\Profile::class, function (Faker\Generator $faker) {
     return [
-        'user_id'          => factory(App\Models\User::class)->create()->id,
+        'user_id'          => factory(App\Models\User\User::class)->create()->id,
         'theme_id'         => 1,
         'location'         => $faker->streetAddress,
         'bio'              => $faker->paragraph(2, true),

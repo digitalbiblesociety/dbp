@@ -3,19 +3,18 @@
 namespace App\Http\Controllers\Connections;
 
 use App\Http\Controllers\APIController;
-use Illuminate\Http\Request;
 
 class MobileAppsController extends APIController
 {
 
-	public function redirectDeepLink(Request $request)
+	public function redirectDeepLink()
 	{
 		try {
 			$device = $this->isMobileDevice();
 			$app    = checkParam('app', null, 'optional') ?? env('DEEPLINKING_APP');
 
 			$data = [];
-			if ($device == 'iPhone') {
+			if ($device === 'iPhone') {
 				$data['primaryRedirection']  = $app;
 				$data['secndaryRedirection'] = checkParam('app-store', null, 'optional') ?? env('DEEPLINKING_APPSTORE');
 			} else {
@@ -25,10 +24,11 @@ class MobileAppsController extends APIController
 			}
 
 			return view('layouts.partials.deeplink-redirect', compact($data));
-		} catch (Exception $e) {
-			Log::error(__METHOD__ . ' ' . $e->getMessage());
+		} catch (\Exception $e) {
+			\Log::error(__METHOD__ . ' ' . $e->getMessage());
 			abort(500, $e->getMessage());
 		}
+		return null;
 	}
 
 	private function isMobileDevice()

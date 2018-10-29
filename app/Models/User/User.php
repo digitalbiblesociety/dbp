@@ -2,15 +2,16 @@
 
 namespace App\Models\User;
 
-use App\Models\Profile;
-use App\Models\Social;
+use App\Models\User\Profile;
+use App\Models\User\Social;
 use App\Models\User\Study\Bookmark;
 use App\Models\User\Study\Highlight;
 use App\Models\User\Study\Note;
 use App\Models\User\RoleUser;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Auth\Authenticatable as AuthenticableTrait;
 
 use App\Models\Organization\Organization;
@@ -53,8 +54,10 @@ use jeremykenedy\LaravelRoles\Traits\HasRoleAndPermission;
  * )
  *
  */
-class User extends Model implements Authenticatable
+
+class User extends Authenticatable
 {
+
 	use HasRoleAndPermission;
 	use Notifiable;
 	use SoftDeletes;
@@ -62,7 +65,7 @@ class User extends Model implements Authenticatable
 
 	protected $connection = 'dbp_users';
 	protected $table     = 'users';
-	protected $fillable  = ['name', 'first_name', 'last_name', 'email', 'password', 'activated', 'token', 'signup_ip_address', 'signup_confirmation_ip_address', 'signup_sm_ip_address', 'admin_ip_address', 'updated_ip_address', 'deleted_ip_address'];
+	protected $fillable  = ['name', 'avatar', 'first_name', 'last_name', 'email', 'password', 'activated', 'token', 'signup_ip_address', 'signup_confirmation_ip_address', 'signup_sm_ip_address', 'admin_ip_address', 'updated_ip_address', 'deleted_ip_address'];
 	protected $hidden    = ['password', 'remember_token', 'activated', 'token'];
 	protected $dates     = ['deleted_at'];
 

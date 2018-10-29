@@ -6,7 +6,6 @@ use App\Http\Controllers\APIController;
 
 use App\Models\User\Key;
 use App\Models\Country\JoshuaProject;
-use App\Models\Language\Language;
 use App\Models\Country\Country;
 use App\Transformers\CountryTransformer;
 use Illuminate\View\View;
@@ -93,18 +92,16 @@ class CountriesController extends APIController
 	 */
 	public function joshuaProjectIndex()
 	{
-		$l10n = $_GET['iso'] ?? 'eng';
-		if(env('APP_DEBUG')) \Cache::forget('countries_jp_' . $l10n);
-		$joshua_project_countries = \Cache::remember('countries_jp_' . $l10n, 1600, function () use ($l10n) {
-			$language  = Language::where('iso', $l10n)->first();
-			if($language) return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
+
+		if(env('APP_ENV') === 'local') \Cache::forget('countries_jp_' . $GLOBALS['i18n_iso']);
+		$joshua_project_countries = \Cache::remember('countries_jp_' . $GLOBALS['i18n_iso'], 1600, function () {
 			$countries = JoshuaProject::with(['country',
-				'translations' => function ($query) use ($language) {
-					$query->where('language_id', $language->id);
+				'translations' => function ($query) {
+					$query->where('language_id', $GLOBALS['i18n_id']);
 				},
 			])->get();
 
-			return fractal()->collection($countries)->transformWith(CountryTransformer::class);
+			return fractal($countries,CountryTransformer::class);
 		});
         return $this->reply($joshua_project_countries);
 	}

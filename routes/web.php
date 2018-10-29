@@ -50,7 +50,15 @@ Route::get('/about/join',               'WelcomeController@join')->name('about.j
 Route::get('/about/partnering',         'WelcomeController@partnering')->name('about.partnering');
 
 // Authentication Routes | Passwords
-Auth::routes();
+Route::name('login')->match(['get','post'],'login',             'User\UsersController@login');
+Route::name('logout')->post('logout',                           'User\UsersController@logout');
+Route::name('register')->get('register',                        'User\UsersController@create');
+Route::post('register',                                         'User\UsersController@store');
+Route::name('password.request')->get('password/reset',          'User\UserPasswordsController@showRequestForm');
+Route::name('password.email')->post('password/email',           'User\UserPasswordsController@triggerPasswordResetEmail');
+Route::name('password.reset')->get('password/reset/{token}',    'User\ResetPasswordController@showResetForm');
+Route::post('password/reset',                                   'User\ResetPasswordController@reset');
+
 
 Route::name('wiki_bibles.one')->get('/wiki/bibles/{id}',              'Bible\BiblesController@show');
 Route::name('wiki_bibles.all')->get('/wiki/bibles',                   'Bible\BiblesController@index');

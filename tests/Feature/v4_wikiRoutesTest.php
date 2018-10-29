@@ -29,7 +29,7 @@ class v4_wikiRoutesTest extends API_V4_Test
 		/**
 		 * @category V4_API
 		 * @category Route Name: v4_countries.jsp
-		 * @category Route Path: https://api.dbp.test/countries/joshua-project/?v=4&key=1234
+		 * @category Route Path: https://api.dbp.test/countries/joshua-project?v=4&key=1234
 		 * @see      \App\Http\Controllers\Wiki\CountriesController::joshuaProjectIndex
 		 */
 		$path = route('v4_countries.jsp', $this->params);

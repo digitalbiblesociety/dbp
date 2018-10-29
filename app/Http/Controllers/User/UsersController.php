@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
 use App\Mail\ProjectVerificationEmail;
+
 use App\Models\User\Project;
 use App\Models\User\ProjectOauthProvider;
 use App\Models\User\ProjectMember;
@@ -12,20 +13,23 @@ use App\Models\User\Role;
 use App\Models\User\User;
 use App\Models\User\Key;
 
-
 use App\Transformers\Serializers\DataArraySerializer;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 
-use Laravel\Socialite\Facades\Socialite;
-use Intervention\Image\Facades\Image;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
-
+use Socialite;
+use Image;
+use Mail;
 use Validator;
-use Illuminate\Support\Facades\Mail;
+
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+
+use Laravel\Socialite\Two\BitbucketProvider;
+use Laravel\Socialite\Two\FacebookProvider;
+use Laravel\Socialite\One\TwitterProvider;
+use Laravel\Socialite\Two\GithubProvider;
+use Laravel\Socialite\Two\GoogleProvider;
 
 class UsersController extends APIController
 {
@@ -101,13 +105,12 @@ class UsersController extends APIController
 	 */
 	public function show($id)
 	{
-		$unauthorized_user = $this->unauthorizedToAlterUsers();
-		if($unauthorized_user) return $unauthorized_user;
-
 		$project_limited = $this->project_limited();
-		$user = User::with('accounts','organizations','profile')->when($project_limited, function ($q) {
-			$q->whereHas('projectMembers', function ($query) {
-				$query->whereIn('project_id', $this->available_projects());
+		$available_projects = $this->available_projects();
+
+		$user = User::with('accounts','organizations','profile')->when($project_limited, function ($q) use($available_projects) {
+			$q->whereHas('projectMembers', function ($query) use($available_projects) {
+				$query->whereIn('project_id', $available_projects);
 			});
 		})->where('id', $id)->first();
 		if(!$user) return $this->replyWithError(trans('api.users_errors_404', ['param' => $id]));
@@ -165,27 +168,24 @@ class UsersController extends APIController
 	 */
 	public function login(Request $request)
 	{
+		if(!$this->api && $request->method() !== 'POST') return view('auth.login');
 		if (isset($request->social_provider_id)) {
 			$account = Account::where('provider_user_id', $request->social_provider_user_id)->where('provider_id', $request->social_provider_id)->first();
 			if ($account) return $this->reply($account->user);
 		}
 		$user = User::with('accounts')->where('email', $request->email)->first();
-		if(!$user) {
-			if($this->api) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email'));
-			return redirect()->back()->withErrors(['errors' => 'No user found for the email provided']);
-		}
+		if(!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email'));
 
-		$loginSuccessful =  $this->guard()->attempt(['email' =>$user->email, 'password' => md5($request->password)], $request->filled('remember'));
-		if(!$loginSuccessful) $loginSuccessful = $this->guard()->attempt(['email' =>$user->email, 'password' => $request->password], $request->filled('remember'));
-
-		if ($loginSuccessful) {
-			if($this->api) return $this->reply($user);
-			return $this->sendLoginResponse($request);
+		$validPassword = \Hash::check(md5($request->password), $user->password) || \Hash::check($request->password, $user->password);
+		if($validPassword) {
+			if($this->api) return $user;
+			\Auth::guard('web')->login($user);
+			\Auth::guard('user')->login($user);
+			return view('dashboard.home',compact('user'));
 		}
 
 		$this->incrementLoginAttempts($request);
-		if($this->api) return $this->setStatusCode(401)->replyWithError(trans('auth.failed', [], $GLOBALS['i18n_iso']));
-		return $this->sendFailedLoginResponse($request);
+		return $this->setStatusCode(401)->replyWithError(trans('auth.failed', [], $GLOBALS['i18n_iso']));
 	}
 
 	/**
@@ -228,24 +228,21 @@ class UsersController extends APIController
 	 */
 	public function store(Request $request)
 	{
-		$unauthorized_user = $this->unauthorizedToAlterUsers();
-		if($unauthorized_user) return $unauthorized_user;
-
 		$invalid = $this->validateUser();
 		if($invalid) return $invalid;
 
 		$user = User::create([
-			'id'       => unique_random('users', 'id', 32),
-			'nickname' => $request->nickname,
 			'avatar'   => $request->avatar,
 			'email'    => $request->email,
 			'name'     => $request->name,
 			'token'    => unique_random('dbp_users.users','token'),
+			'activated' => 0,
 			'notes'    => $request->notes,
-			'password' => Hash::make($request->password),
+			'password' => \Hash::make($request->password),
 		]);
 		if ($request->project_id) {
 			$user_role = Role::where('slug','user')->first();
+			if(!$user_role) return $this->setStatusCode(404)->replyWithError('The Roles table has not been populated');
 			$user->projectMembers()->create([
 				'project_id' => $request->project_id,
 				'role_id'    => $user_role->id,
@@ -258,8 +255,7 @@ class UsersController extends APIController
 				'provider_user_id' => $request->social_provider_user_id,
 			]);
 		}
-
-		return $this->reply(['success' => 'User created', 'user' => $user]);
+		return $this->reply(fractal($user,new UserTransformer())->addMeta(['success' => 'User created']));
 	}
 
 	/**
@@ -297,6 +293,7 @@ class UsersController extends APIController
 	 * )
 	 *
 	 * @param Request $request
+	 * @param         $id
 	 *
 	 * @return mixed
 	 */
@@ -323,8 +320,9 @@ class UsersController extends APIController
 			$developer_projects = $this->user->developer->pluck('id');
 			if(!$developer_projects->contains(request()->project_id)) return $this->setStatusCode(401)->replyWithError(trans('api.projects_developer_not_a_member', [], $GLOBALS['i18n_iso']));
 
-			if($developer_projects->intersect($user_projects)->count() == 0) {
+			if($developer_projects->intersect($user_projects)->count() === 0) {
 				$project = Project::where('id',request()->project_id)->first();
+				if(!$project) return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
 				$connection = $user->projectMembers()->create([
 					'user_id'       => $user->id,
 					'project_id'    => $project->id,
@@ -345,7 +343,7 @@ class UsersController extends APIController
 			//$input['avatar'] = $id.".".$request->file('avatar')->extension();
 			//dd($request->file('avatar'));
 			$image = Image::make($request->file('avatar'));
-			if(isset($request->avatar_crop_width) AND isset($request->avatar_crop_height)) {
+			if(isset($request->avatar_crop_width, $request->avatar_crop_height)) {
 				$image->crop($request->avatar_crop_width, $request->avatar_crop_height, $request->avatar_crop_inital_x_coordinate, $request->avatar_crop_inital_y_coordinate);
 			}
 			$image->resize(300, 300);
@@ -354,18 +352,18 @@ class UsersController extends APIController
 		}
 
 		$user->fill($input)->save();
-		if($this->api) return $this->reply(["success" => "User updated", "user" => $user]);
+		if($this->api) return $this->reply(['success' => 'User updated', 'user' => $user]);
 		return view('dashboard.users.show', $id);
 	}
 
 	public function destroy($id)
 	{
 		$project_id = checkParam('project_id');
-
 		$connection = ProjectMember::where('user_id', $id)->where('project_id', $project_id)->first();
-		if(!$connection) return $this->setStatusCode(404)->replyWithError("User/Project connection not found");
+		if(!$connection) return $this->setStatusCode(404)->replyWithError('User/Project connection not found');
 		$connection->delete();
-		return $this->reply("User Project connection successfully removed");
+
+		return $this->reply('User Project connection successfully removed');
 	}
 
 
@@ -390,27 +388,25 @@ class UsersController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param Request $request
-	 *
 	 * @return mixed
 	 */
 	public function geoLocate()
 	{
-		$ip_address  = checkParam('ip_address');
-		$geolocation = geoip($ip_address);
+		$ip_address  = checkParam('ip_address', null, 'optional') ?? request()->getClientIp();
 
+		$geolocation = geoip($ip_address);
 		return $this->reply([
-			"ip"          => $geolocation->getAttribute("ip"),
-			"iso_code"    => $geolocation->getAttribute("iso_code"),
-			"country"     => $geolocation->getAttribute("country"),
-			"city"        => $geolocation->getAttribute("city"),
-			"state"       => $geolocation->getAttribute("state"),
-			"state_name"  => $geolocation->getAttribute("state_name"),
-			"postal_code" => $geolocation->getAttribute("postal_code"),
-			"lat"         => $geolocation->getAttribute("lat"),
-			"lon"         => $geolocation->getAttribute("lon"),
-			"timezone"    => $geolocation->getAttribute("timezone"),
-			"continent"   => $geolocation->getAttribute("continent"),
+			'ip'          => $geolocation->getAttribute('ip'),
+			'iso_code'    => $geolocation->getAttribute('iso_code'),
+			'country'     => $geolocation->getAttribute('country'),
+			'city'        => $geolocation->getAttribute('city'),
+			'state'       => $geolocation->getAttribute('state'),
+			'state_name'  => $geolocation->getAttribute('state_name'),
+			'postal_code' => $geolocation->getAttribute('postal_code'),
+			'lat'         => $geolocation->getAttribute('lat'),
+			'lon'         => $geolocation->getAttribute('lon'),
+			'timezone'    => $geolocation->getAttribute('timezone'),
+			'continent'   => $geolocation->getAttribute('continent'),
 		]);
 	}
 
@@ -447,24 +443,26 @@ class UsersController extends APIController
 	public function redirectToProvider($provider = null)
 	{
 		if ($this->api) {
-			if ($provider == "twitter") return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
+			if ($provider === 'twitter') return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
 			$project_id = checkParam('project_id');
 			$provider   = checkParam('name', $provider);
 			$alt_url    = checkParam('alt_url', null, 'optional');
-			if($provider == "twitter") return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
+			if($provider === 'twitter') return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
 			$driverData = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
 			$driver     = [
 				'client_id'     => $driverData->client_id,
 				'client_secret' => $driverData->client_secret,
-				'redirect'      => (!isset($alt_url)) ? $driverData->callback_url : $driverData->callback_url_alt,
+				'redirect'      => $alt_url === null ? $driverData->callback_url : $driverData->callback_url_alt,
 			];
 			switch ($provider) {
-				case "bitbucket": {$providerClass = BitbucketProvider::class; break; }
-				case "facebook":  {$providerClass = FacebookProvider::class; break; }
-				case "twitter":   {$providerClass = TwitterProvider::class; break; }
-				case "github":    {$providerClass = GithubProvider::class; break; }
-				case "google":    {$providerClass = GoogleProvider::class; break; }
+				case 'bitbucket': {$providerClass = BitbucketProvider::class; break; }
+				case 'facebook':  {$providerClass = FacebookProvider::class; break; }
+				case 'twitter':   {$providerClass = TwitterProvider::class; break; }
+				case 'github':    {$providerClass = GithubProvider::class; break; }
+				case 'google':    {$providerClass = GoogleProvider::class; break; }
+				default:          {$providerClass = null;}
 			}
+			if($providerClass === null) return $this->setStatusCode(404)->replyWithError('Provider Class not Found');
 			return $this->reply(Socialite::buildProvider($providerClass, $driver)->stateless()->redirect()->getTargetUrl());
 		}
 		return Socialite::driver($provider)->redirect();
@@ -506,7 +504,8 @@ class UsersController extends APIController
 
 	public function verify($token)
 	{
-		$user           = User::where('email_token', $token)->first();
+		$user = User::where('email_token', $token)->first();
+		if(!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404', ['param' => $token]));
 		$user->verified = 1;
 		$user->save();
 		\Auth::login($user);
@@ -525,7 +524,7 @@ class UsersController extends APIController
 	 */
 	private function unauthorizedToAlterUsers()
 	{
-		if(!isset($this->user)) return $this->setStatusCode(401)->replyWithError(trans('api.auth_key_validation_failed'));
+		if($this->user === null) return $this->setStatusCode(401)->replyWithError(trans('api.auth_key_validation_failed'));
 		$developer = $this->user->projectMembers->where('slug','developer')->first();
 		if($developer !== null) return $this->setStatusCode(401)->replyWithError(trans('api.auth_user_validation_failed'));
 		return false;
@@ -534,17 +533,21 @@ class UsersController extends APIController
 	private function project_limited()
 	{
 		$this->user = isset($_GET['key']) ? Key::where('key',$_GET['key'])->first()->user : \Auth::user();
-		if(isset($this->user)) return !($this->user->admin or $this->user->archivist);
+		if($this->user !== null) return !($this->user->admin or $this->user->archivist);
 		return true;
 	}
 
 
 	private function available_projects()
 	{
-		$userWithProjects = $this->user->load(['projectMembers' => function ($query) {
-			$role = Role::where('slug','developer')->first();
+		$role = Role::where('slug','developer')->first();
+		if(!$role) return $this->setStatusCode(404)->replyWithError('The Roles table has not been populated');
+		$user = $this->user;
+		if(!$user) $user = Key::whereKey($this->key)->first()->user;
+		$userWithProjects = $user->load(['projectMembers' => function ($query) use ($role) {
 			$query->where('role_id', $role->id);
 		}]);
+
 		return $userWithProjects->projectMembers->pluck('project_id')->toArray();
 	}
 
@@ -557,7 +560,7 @@ class UsersController extends APIController
 	private function validateUser()
 	{
 		$validator = Validator::make(request()->all(), [
-			'email'                   => (request()->method() == 'POST') ? 'required|unique:dbp_users.users,email' : 'required|exists:dbp_users.users,email',
+			'email'                   => (request()->method() === 'POST') ? 'required|unique:dbp_users.users,email' : 'required|exists:dbp_users.users,email',
 			'project_id'              => 'required|exists:dbp_users.projects,id',
 			'social_provider_id'      => 'required_with:social_provider_user_id',
 			'social_provider_user_id' => 'required_with:social_provider_id',

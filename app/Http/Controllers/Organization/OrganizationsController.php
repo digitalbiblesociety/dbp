@@ -38,7 +38,7 @@ class OrganizationsController extends APIController
 
         \Cache::forget($cache_string);
 		$organizations = \Cache::remember($cache_string, 2400,
-			function () use ($i10n, $i10n_language, $membership, $content, $bibles, $resources) {
+			function () use ($i10n_language, $membership, $content, $bibles, $resources) {
 				if ($membership) {
 					$membership = Organization::where('slug', $membership)->first();
 					if (!$membership) {
@@ -88,7 +88,7 @@ class OrganizationsController extends APIController
 		$i10n           = checkParam('iso', null, 'optional') ?? 'eng';
 		$i10n_language  = Language::where('iso',$i10n)->first();
 		if(!$i10n_language) return $this->setStatusCode(404)->replyWithError(trans('api.i10n_errors_404', ['id' => $i10n]));
-		$searchedColumn = (is_numeric($slug)) ? 'id' : 'slug';
+		$searchedColumn = is_numeric($slug) ? 'id' : 'slug';
 
 		$organization = Organization::with(['bibles.translations','bibles.language','memberships.child_organization.bibles.translations','memberships.child_organization.bibles.links','links','translations','currentTranslation','resources',
 		'logos' => function($query) use ($i10n_language) {
@@ -147,17 +147,14 @@ class OrganizationsController extends APIController
 	 */
 	public function create()
 	{
-		$user = \Auth::user();
+		$user = \Auth::user() ?? $this->user;
 		if(!$user->archivist) return $this->setStatusCode(401)->replyWithError(trans('api.wiki_authorization_failed'));
 		return view('community.organizations.create');
 	}
 
 	public function apply()
 	{
-		$user = \Auth::user();
-		if (!$user) {
-			return $this->setStatusCode(401)->replyWithError(trans('api.'));
-		}
+		$user = \Auth::user() ?? $this->user;
 		$organizations = Organization::with('translations')->get();
 
 		return view('dashboard.organizations.roles.create', compact('user', 'organizations'));

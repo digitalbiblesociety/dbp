@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Connections;
 
 use App\Http\Controllers\APIController;
-use Illuminate\Http\Request;
-
-use Illuminate\Support\Facades\Storage;
 use Sunra\PhpSimple\HtmlDomParser;
+
+use Storage;
 
 class GRNController extends APIController
 {
@@ -17,8 +16,7 @@ class GRNController extends APIController
      */
     public function index()
     {
-        $grn = json_decode(storage_path('data/connections/grn.json'));
-
+		return json_decode(storage_path('data/connections/grn.json'));
     }
 
     public function sync()
@@ -29,12 +27,10 @@ class GRNController extends APIController
         $pages   = json_decode($storage->get('connections/grn.json'), true);
 
         foreach ($pages as $page) {
-            if ($storage->exists('connections/grn/' . basename($page) . '.json')) {
-                continue;
-            }
+            if ($storage->exists('connections/grn/' . basename($page) . '.json')) continue;
 
             $dom = HtmlDomParser::file_get_html($page, false, null, 0);
-            foreach ($dom->find(".common-list div") as $collection) {
+            foreach ($dom->find('.common-list div') as $collection) {
                 $albums[] = [
                     'title'       => $collection->find('h3.title', 0)->plaintext,
                     'link'        => $collection->find('a', 0)->href,
@@ -42,10 +38,8 @@ class GRNController extends APIController
                 ];
             }
 
-            $storage->put('/connections/grn/' . basename($page) . '.json',
-                json_encode($albums, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-            unset($albums);
-            unset($dom);
+            $storage->put('/connections/grn/' . basename($page) . '.json', json_encode($albums, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+	        unset($albums, $dom);
         }
     }
 

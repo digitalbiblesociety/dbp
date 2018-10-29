@@ -81,7 +81,9 @@ class AccessGroupController extends APIController
 	 */
 	public function store(Request $request)
 	{
-		$this->api ? $this->validateUser() : $this->validateUser(Auth::user());
+		$invalidUser = $this->validateUser();
+		if($invalidUser) return $invalidUser;
+
 		$invalid = $this->validateAccessGroup($request);
 		if($invalid) return $this->setStatusCode(400)->reply($invalid);
 
@@ -222,8 +224,11 @@ class AccessGroupController extends APIController
 	 */
 	public function destroy($id)
 	{
-		if(!$this->validateUser()) return $this->replyWithError('not authorized');
-		$access_group = AccessGroup::where('id',$id)->orWhere('name',$id)->firstOrFail();
+		$invalidUser = $this->validateUser();
+		if($invalidUser) return $invalidUser;
+
+		$access_group = AccessGroup::where('id',$id)->orWhere('name',$id)->first();
+		if(!$access_group) return $this->setStatusCode(404)->replyWithError('Access Group not Found');
 		$access_group->delete();
 
 		return $this->reply('successfully deleted');
@@ -255,12 +260,8 @@ class AccessGroupController extends APIController
 
 	private function validateUser()
 	{
-		$current_user = Key::whereKey($this->key)->first()->user;
-		if($current_user) {
-			$is_admin = $current_user->roles->where('slug','admin')->first();
-			if($is_admin) return true;
-		}
-
+		$is_admin = $this->user->roles->where('slug','admin')->first();
+		if($is_admin) return true;
 		return null;
 	}
 

@@ -50,12 +50,12 @@ class v4_biblesRoutesTest extends API_V4_Test
 	/**
 	 * @category V4_API
 	 * @category Route Name: v4_bible_filesets.copyright
-	 * @category Route Path: https://api.dbp.test/bibles/filesets/{fileset_id}/copyright?v=4&key=1234
+	 * @category Route Path: https://api.dbp.test/bibles/filesets/ENGESV/copyright?v=4&key=1234
 	 * @see      \App\Http\Controllers\Bible\BibleFileSetsController::copyright
 	 */
 	public function test_v4_bible_filesets_copyright()
 	{
-		$path = route('v4_bible_filesets.copyright', array_add($this->params,'fileset_id', 'ENGESV'));
+		$path = route('v4_bible_filesets.copyright', array_merge(['fileset_id' => 'UBUANDP2DA','type' => 'audio_drama'],$this->params));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
@@ -64,12 +64,12 @@ class v4_biblesRoutesTest extends API_V4_Test
 	/**
 	 * @category V4_API
 	 * @category Route Name: v4_bible_filesets.books
-	 * @category Route Path: https://api.dbp.test/bibles/filesets/{fileset_id}/books?v=4&key=1234
+	 * @category Route Path: https://api.dbp.test/bibles/filesets/ENGESV/books?v=4&key=1234&fileset_type=text_plain
 	 * @see      \App\Http\Controllers\Bible\BooksController::show
 	 */
-	public function test_v4_bible_filesets()
+	public function test_v4_bible_filesets_books()
 	{
-		$path = route('v4_bible_filesets.books', $this->params);
+		$path = route('v4_bible_filesets.books', array_merge(['fileset_id' => 'ENGESV', 'fileset_type' => 'text_plain'], $this->params));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
@@ -140,7 +140,7 @@ class v4_biblesRoutesTest extends API_V4_Test
 	 */
 	public function test_v4_text_search()
 	{
-		$path = route('v4_text_search', $this->params);
+		$path = route('v4_text_search', array_merge(['fileset_id' => 'ENGKJV','query' => 'God'],$this->params));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();

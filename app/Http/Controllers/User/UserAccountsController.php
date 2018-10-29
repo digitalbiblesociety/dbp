@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
+
 use App\Models\User\Account;
 use App\Models\User\ProjectMember;
-use App\Models\User\User;
 use Illuminate\Http\Request;
-
+use Validator;
 
 class UserAccountsController extends APIController
 {
@@ -88,9 +88,12 @@ class UserAccountsController extends APIController
 	 */
 	public function store(Request $request)
 	{
-		$user = $this->verifyProjectUserConnection();
+		$invalidAccount = $this->invalidAccount();
+		if($invalidAccount) return $invalidAccount;
 
-		return $this->reply($user->accounts()->create($request->all()));
+		$user = $this->verifyProjectUserConnection();
+		$account = $user->accounts()->create($request->all());
+		return $this->reply($account);
 	}
 
 	/**
@@ -119,9 +122,11 @@ class UserAccountsController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param  int $id
+	 * @param $account_id
 	 *
 	 * @return \Illuminate\Http\Response
+	 * @internal param int $id
+	 *
 	 */
 	public function show($account_id)
 	{
@@ -158,14 +163,21 @@ class UserAccountsController extends APIController
 	 * )
 	 *
 	 * @param  \Illuminate\Http\Request $request
-	 * @param  int $id
+	 * @param                           $account_id
 	 *
 	 * @return \Illuminate\Http\Response
+	 * @internal param int $id
+	 *
 	 */
 	public function update(Request $request, $account_id)
 	{
+		$invalidAccount = $this->invalidAccount();
+		if($invalidAccount) return $invalidAccount;
+
 		$user    = $this->verifyProjectUserConnection();
-		$account = $user->accounts->where('id', $account_id)->first()->update($request->all());
+		$account = Account::where('id', $account_id)->first();
+		if(!$account) return $this->setStatusCode(404)->replyWithError('Account '. $account_id . ' not found');
+		$account->update($request->all());
 
 		return $this->reply($account);
 	}
@@ -196,9 +208,11 @@ class UserAccountsController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param  int $id
+	 * @param $account_id
 	 *
 	 * @return \Illuminate\Http\Response
+	 * @internal param int $id
+	 *
 	 */
 	public function destroy($account_id)
 	{
@@ -223,4 +237,26 @@ class UserAccountsController extends APIController
 
 		return $project_member->user;
 	}
+
+	/**
+	 * Ensure the current Account change is valid
+	 *
+	 * @return mixed
+	 */
+	private function invalidAccount()
+	{
+		$validator = Validator::make(request()->all(), [
+			'user_id'             => ((request()->method() === 'POST') ? 'required|' : ''). 'exists:dbp_users.users,id',
+			'provider_id'         => ((request()->method() === 'POST') ? 'required|' : ''). 'string|in:cookie,facebook,google,twitter,test',
+			'provider_user_id'    => ((request()->method() === 'POST') ? 'required|' : ''). 'string',
+		]);
+
+		if ($validator->fails()) {
+			if (!$this->api) return redirect('dashboard/accounts/create')->withErrors($validator)->withInput();
+			return $this->setStatusCode(422)->replyWithError($validator->errors());
+		}
+
+		return null;
+	}
+
 }

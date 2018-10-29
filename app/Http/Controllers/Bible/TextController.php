@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\Bible;
 
+use DB;
+use Storage;
+
+use Illuminate\Http\Response;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Book;
 use App\Models\Language\AlphabetFont;
@@ -9,8 +13,6 @@ use App\Traits\AccessControlAPI;
 use App\Traits\CallsBucketsTrait;
 use App\Transformers\FontsTransformer;
 use App\Transformers\TextTransformer;
-use DB;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\APIController;
 
 class TextController extends APIController
@@ -70,7 +72,7 @@ class TextController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @return JSON|View
+	 * @return Response
 	 */
 	public function index($bible_url_param = null, $book_url_param = null, $chapter_url_param = null)
 	{
@@ -91,7 +93,7 @@ class TextController extends APIController
 
 		$book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
 		if (!$book) return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
-		$book->push('name_vernacular', $book->translation($bible->language_id)->first());
+		$book->push('name_vernacular', $book->translation($bible->language_id));
 
 		if ($asset_id) {
 			$path   = 'text/' . $bible->id . '/' . $fileset->id . '/' . $book_id . $chapter . '.html';
@@ -182,13 +184,12 @@ class TextController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @return JSON|View
+	 * @return Response
 	 */
 	public function fonts()
 	{
 		$id       = checkParam('id', null, 'optional');
 		$name     = checkParam('name', null, 'optional');
-		$platform = checkParam('platform', null, 'optional') ?? 'all';
 
 		$fonts = AlphabetFont::when($name, function ($q) use($name) {
 			$q->where('name', $name);
@@ -226,7 +227,7 @@ class TextController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @return View|JSON
+	 * @return Response
 	 */
 	public function search()
 	{
@@ -236,21 +237,21 @@ class TextController extends APIController
 		$query   = checkParam('query');
 		$exclude = checkParam('exclude', null, 'optional') ?? false;
 		if ($exclude) $exclude = ' -' . $exclude;
-		$fileset_id = checkParam('fileset_id|dam_id');
+		$fileset_id = checkParam('fileset_id');
 		$limit    = checkParam('limit', null, 'optional') ?? 15;
 		$book_id  = checkParam('book', null, 'optional');
 
 		$book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
 
 		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id',substr($fileset_id,0,-4))->orWhere('id',substr($fileset_id,0,-2))->first();
-		if (!$fileset) return $this->setStatusCode(404)->replyWithError("No fileset found for the provided params");
+		if (!$fileset) return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
 		$bible = $fileset->bible->first();
 
 		$table = strtoupper($fileset->id) . '_vpl';
 		$query  = DB::connection('sophia')->getPdo()->quote('+' . str_replace(' ', ' +', $query) . $exclude);
 		$verses = DB::connection('sophia')->table($table)
 			->join(env('DBP_DATABASE').'.books', 'books.id_usfx', 'book')
-			->join(env('DBP_DATABASE').'.bible_books as bb', function ($join) use ($table,$bible) {
+			->join(env('DBP_DATABASE').'.bible_books as bb', function ($join) use ($bible) {
 				$join->on('bb.book_id', 'books.id')->where('bible_id',$bible->id);
 			})
 			->join(env('DBP_DATABASE').'.numeral_system_glyphs as glyph_chapter', function ($join) use ($table,$bible) {
@@ -270,7 +271,7 @@ class TextController extends APIController
 			})
 			->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)
 			->select([
-				"canon_order",
+				'canon_order',
 				'books.name as book_name',
 				'books.protestant_order as protestant_order',
 				'bb.name as book_vernacular_name',
@@ -323,7 +324,7 @@ class TextController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @return JSON
+	 * @return Response
 	 */
 	public function searchGroup()
 	{

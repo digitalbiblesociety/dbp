@@ -189,7 +189,7 @@ class UserNotesController extends APIController
 
 		$this->handleTags($request, $note);
 
-		return $this->reply(trans('api.user_notes_store_200', []));
+		return $this->reply(fractal($note,new UserNotesTransformer())->addMeta(['success' => trans('api.user_notes_store_200')]));
 	}
 
 	/**

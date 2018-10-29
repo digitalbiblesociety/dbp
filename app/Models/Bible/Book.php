@@ -3,7 +3,6 @@
 namespace App\Models\Bible;
 
 use Illuminate\Database\Eloquent\Model;
-use i18n;
 
 /**
  * App\Models\Bible\Book
@@ -16,6 +15,54 @@ use i18n;
  * @method static Book whereVerses($value)
  * @method static Book whereTestamentOrder($value)
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bible
+ *
+ * @method static Book whereId($value)
+ * @property string $id
+ * @method static Book whereIdUsfx($value)
+ * @property string $id_usfx
+ * @method static Book whereIdOsis($value)
+ * @property string $id_osis
+ * @method static Book whereProtestantOrder($value)
+ * @property int $protestant_order
+ * @method static Book whereLutherOrder($value)
+ * @property int $luther_order
+ * @method static Book whereSynodalOrder($value)
+ * @property int $synodal_order
+ * @method static Book whereGermanOrder($value)
+ * @property int $german_order
+ * @method static Book whereKjvaOrder($value)
+ * @property int $kjva_order
+ * @method static Book whereVulgateOrder($value)
+ * @property int $vulgate_order
+ * @method static Book whereLxxOrder($value)
+ * @property int $lxx_order
+ * @method static Book whereOrthodoxOrder($value)
+ * @property int $orthodox_order
+ * @method static Book whereNrsvaOrder($value)
+ * @property int $nrsva_order
+ * @method static Book whereCatholicOrder($value)
+ * @property int $catholic_order
+ * @method static Book whereFinnishOrder($value)
+ * @property int $finnish_order
+ * @method static Book whereBookOrder($value)
+ * @property int $testament_order
+ * @method static Book whereBookTestament($value)
+ * @property string $book_testament
+ * @method static Book whereBookGroup($value)
+ * @property string $book_group
+ * @method static Book whereChapters($value)
+ * @property int|null $chapters
+ * @property int|null $verses
+ * @method static Book whereName($value)
+ * @property string $name
+ * @method static Book whereNotes($value)
+ * @property string $notes
+ * @method static Book whereDescription($value)
+ * @property string $description
+ * @method static Book whereCreatedAt($value)
+ * @property \Carbon\Carbon|null $created_at
+ * @method static Book whereUpdatedAt($value)
+ * @property \Carbon\Carbon|null $updated_at
  *
  * @OA\Schema (
  *     type="object",
@@ -42,8 +89,6 @@ class Book extends Model
 	 *   maxLength=3
 	 * )
 	 *
-	 * @method static Book whereId($value)
-	 * @property string $id
 	 *
 	 */
 	protected $id;
@@ -58,8 +103,6 @@ class Book extends Model
 	 *   maxLength=2
 	 * )
 	 *
-	 * @method static Book whereIdUsfx($value)
-	 * @property string $id_usfx
 	 *
 	 */
 	protected $id_usfx;
@@ -74,8 +117,6 @@ class Book extends Model
 	 *   maxLength=2
 	 * )
 	 *
-	 * @method static Book whereIdOsis($value)
-	 * @property string $id_osis
 	 *
 	 */
 	protected $id_osis;
@@ -89,8 +130,6 @@ class Book extends Model
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereProtestantOrder($value)
-	 * @property int $protestant_order
 	 *
 	 */
 	protected $protestant_order;
@@ -104,8 +143,6 @@ class Book extends Model
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereLutherOrder($value)
-	 * @property int $luther_order
 	 *
 	 */
 	protected $luther_order;
@@ -119,8 +156,6 @@ class Book extends Model
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereSynodalOrder($value)
-	 * @property int $synodal_order
 	 *
 	 */
 	protected $synodal_order;
@@ -134,8 +169,6 @@ class Book extends Model
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereGermanOrder($value)
-	 * @property int $german_order
 	 *
 	 */
 	protected $german_order;
@@ -149,8 +182,6 @@ class Book extends Model
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereKjvaOrder($value)
-	 * @property int $kjva_order
 	 *
 	 */
 	protected $kjva_order;
@@ -164,8 +195,6 @@ class Book extends Model
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereVulgateOrder($value)
-	 * @property int $vulgate_order
 	 *
 	 */
 	protected $vulgate_order;
@@ -179,8 +208,6 @@ class Book extends Model
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereLxxOrder($value)
-	 * @property int $lxx_order
 	 *
 	 */
 	protected $lxx_order;
@@ -194,8 +221,6 @@ class Book extends Model
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereOrthodoxOrder($value)
-	 * @property int $orthodox_order
 	 *
 	 */
 	protected $orthodox_order;
@@ -209,8 +234,6 @@ class Book extends Model
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereNrsvaOrder($value)
-	 * @property int $nrsva_order
 	 *
 	 */
 	protected $nrsva_order;
@@ -224,8 +247,6 @@ class Book extends Model
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereCatholicOrder($value)
-	 * @property int $catholic_order
 	 *
 	 */
 	protected $catholic_order;
@@ -239,8 +260,6 @@ class Book extends Model
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereFinnishOrder($value)
-	 * @property int $finnish_order
 	 *
 	 */
 	protected $finnish_order;
@@ -254,8 +273,6 @@ class Book extends Model
 	 *   minimum=0
 	 * )
 	 *
-	 * @method static Book whereBookOrder($value)
-	 * @property int $testament_order
 	 *
 	 */
 	protected $testament_order;
@@ -271,8 +288,6 @@ class Book extends Model
 	 *   maxLength=2
 	 * )
 	 *
-	 * @method static Book whereBookTestament($value)
-	 * @property string $book_testament
 	 *
 	 */
 	protected $book_testament;
@@ -286,8 +301,6 @@ class Book extends Model
 	 *   enum={"Historical Books","Pauline Epistles","General Epistles","Apostolic History","Minor Prophets","Major Prophets","The Law","Wisdom Books","Gospels","Apocalypse"}
 	 * )
 	 *
-	 * @method static Book whereBookGroup($value)
-	 * @property string $book_group
 	 *
 	 */
 	protected $book_group;
@@ -301,8 +314,6 @@ class Book extends Model
 	 *   description="The book's number of chapters"
 	 * )
 	 *
-	 * @method static Book whereChapters($value)
-	 * @property int|null $chapters
 	 *
 	 */
 	protected $chapters;
@@ -316,8 +327,6 @@ class Book extends Model
 	 *   description="The book's number of verses"
 	 * )
 	 *
-	 * @method static Book whereVerses($value)
-	 * @property int|null $verses
 	 *
 	 */
 	protected $verses;
@@ -330,8 +339,6 @@ class Book extends Model
 	 *   description="The English name of the book"
 	 * )
 	 *
-	 * @method static Book whereName($value)
-	 * @property string $name
 	 *
 	 */
 	protected $name;
@@ -344,8 +351,6 @@ class Book extends Model
 	 *   description="Any archivist notes about the book"
 	 * )
 	 *
-	 * @method static Book whereNotes($value)
-	 * @property string $notes
 	 *
 	 */
 	protected $notes;
@@ -358,8 +363,6 @@ class Book extends Model
 	 *   description="The book's description"
 	 * )
 	 *
-	 * @method static Book whereDescription($value)
-	 * @property string $description
 	 *
 	 */
 	protected $description;
@@ -372,8 +375,6 @@ class Book extends Model
 	 *   description="The timestamp for the books creation"
 	 * )
 	 *
-	 * @method static Book whereCreatedAt($value)
-	 * @property \Carbon\Carbon|null $created_at
 	 *
 	 */
 	protected $created_at;
@@ -386,30 +387,28 @@ class Book extends Model
 	 *   description="The timestamp for the last update of the book"
 	 * )
 	 *
-	 * @method static Book whereUpdatedAt($value)
-	 * @property \Carbon\Carbon|null $updated_at
 	 *
 	 */
 	protected $updated_at;
 
     public function translations()
     {
-        return $this->HasMany(BookTranslation::class, 'book_id');
+        return $this->hasMany(BookTranslation::class, 'book_id');
     }
 
 	public function translation($language_id)
 	{
-		return $this->HasMany(BookTranslation::class, 'book_id')->where('language_id',$language_id);
+		return $this->hasMany(BookTranslation::class, 'book_id')->where('language_id',$language_id);
 	}
 
     public function currentTranslation()
     {
-        return $this->HasOne(BookTranslation::class, 'book_id')->where('language_id',$GLOBALS['i18n_id']);
+        return $this->hasOne(BookTranslation::class, 'book_id')->where('language_id',$GLOBALS['i18n_id']);
     }
 
     public function vernacularTranslation()
     {
-        return $this->HasOne(BookTranslation::class, 'book_id')->where('language_id',$this->language_id);
+        return $this->hasOne(BookTranslation::class, 'book_id')->where('language_id',$this->language_id);
     }
 
     public function bible()
@@ -419,7 +418,7 @@ class Book extends Model
 
     public function bibleBooks()
     {
-	    return $this->HasMany(BibleBook::class);
+	    return $this->hasMany(BibleBook::class);
     }
 
 }

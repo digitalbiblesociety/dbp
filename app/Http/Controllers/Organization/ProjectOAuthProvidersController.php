@@ -115,9 +115,11 @@ class ProjectOAuthProvidersController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param  int $id
+	 * @param $project_id
+	 * @param $provider_id
 	 *
 	 * @return \Illuminate\Http\Response
+	 *
 	 */
 	public function show($project_id, $provider_id)
 	{
@@ -153,9 +155,11 @@ class ProjectOAuthProvidersController extends APIController
 	 * )
 	 *
 	 * @param  \Illuminate\Http\Request $request
-	 * @param  int $id
+	 * @param                           $project_id
+	 * @param                           $provider_id
 	 *
 	 * @return \Illuminate\Http\Response
+	 *
 	 */
 	public function update(Request $request, $project_id, $provider_id)
 	{
@@ -193,6 +197,7 @@ class ProjectOAuthProvidersController extends APIController
 	 *     )
 	 * )
 	 *
+	 * @param      $project_id
 	 * @param  int $id
 	 *
 	 * @return \Illuminate\Http\Response

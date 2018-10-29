@@ -47,7 +47,7 @@ class VideoStreamController extends APIController
 	 */
 	public function transportStream($fileset_id = null,$file_id = null,$file_name = null)
 	{
-		$fileset = BibleFileset::with('bible')->where('id',$fileset_id)->select(['id','hash_id','bucket_id'])->first();
+		$fileset = BibleFileset::with('bible')->where('id',$fileset_id)->select(['id','hash_id','asset_id'])->first();
 		if(!$fileset) return $this->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $fileset_id]));
 		$file    = BibleFile::with('videoResolution.transportStream')->where('hash_id', $fileset->hash_id)->where('id',$file_id)->first();
 		if(!$file) return $this->replyWithError(trans('api.bible_file_errors_404', ['id'=> $file_id]));
@@ -58,7 +58,7 @@ class VideoStreamController extends APIController
 		$currentResolution = $file->videoResolution->where('file_name',$file_name)->first();
 		foreach($currentResolution->transportStream as $stream) {
 			$transaction_id = random_int(0,10000000);
-			$current_file_path = $this->signedUrl('video' . '/' . $bible_path . $fileset->id . '/' . $stream->file_name, $fileset->bucket_id,$transaction_id);
+			$current_file_path = $this->signedUrl('video' . '/' . $bible_path . $fileset->id . '/' . $stream->file_name, $fileset->asset_id,$transaction_id);
 			$current_file .= "\n#EXTINF:$stream->runtime\n$current_file_path";
 		}
 		$current_file .= "\n#EXT-X-ENDLIST";

@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\Controller;
-use Auth;
+use App\Http\Controllers\APIController;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\User\TwoStepAuth;
 use App\Traits\Laravel2StepTrait;
 use Validator;
 
-class UserTwoStepController extends Controller
+class UserTwoStepController extends APIController
 {
     use Laravel2StepTrait;
 
@@ -23,12 +21,12 @@ class UserTwoStepController extends Controller
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct()
     {
-        $this->middleware('auth');
+    	parent::__construct();
 
+        $this->middleware('auth');
         $this->middleware(function ($request, $next)
         {
             $this->setUser2StepData();
@@ -38,13 +36,13 @@ class UserTwoStepController extends Controller
     }
 
     /**
-     * Set the User2Step Variables
-     *
-     * @return void
+     * Set the User2Step Variable
      */
     private function setUser2StepData()
     {
-        $user                       = Auth::User();
+        $user                       = \Auth::user();
+        if(!$user) return $this->setStatusCode(404)->replyWithError('user not found');
+
         $twoStepAuth                = $this->getTwoStepAuthStatus($user->id);
         $authCount                  = $twoStepAuth->authCount;
         $this->_user                = $user;
@@ -63,7 +61,7 @@ class UserTwoStepController extends Controller
      */
     private function invalidCodeReturnData($errors = null)
     {
-        $this->_authCount = $this->_twoStepAuth->authCount += 1;
+        $this->_authCount = ++$this->_twoStepAuth->authCount;
         $this->_twoStepAuth->save();
 
         $returnData = [
@@ -89,8 +87,6 @@ class UserTwoStepController extends Controller
         if(!config('laravel2step.laravel2stepEnabled')) abort(404);
 
         $twoStepAuth = $this->_twoStepAuth;
-        $authStatus  = $this->_authStatus;
-
         if($this->checkExceededTime($twoStepAuth->updated_at)) $this->resetExceededTime($twoStepAuth);
 
         $data = [
@@ -164,10 +160,8 @@ class UserTwoStepController extends Controller
             $code       = $request->v_input_1 . $request->v_input_2 . $request->v_input_3 . $request->v_input_4;
             $validCode  = $this->_twoStepAuth->authCode;
 
-            if ($validCode != $code) {
-
+            if ($validCode !== $code) {
                 $returnData = $this->invalidCodeReturnData();
-
                 return response()->json($returnData, 418);
             }
 
@@ -178,7 +172,7 @@ class UserTwoStepController extends Controller
                 'message' => trans('laravel2step::laravel-verification.titlePassed'),
             ];
 
-            return response()->json($returnData, 200);
+            return $this->reply($returnData);
         } else {
             abort(404);
         }

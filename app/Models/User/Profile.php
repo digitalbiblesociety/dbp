@@ -5,7 +5,7 @@ namespace App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Profile
+ * App\Models\User\Profile
  *
  * @mixin \Eloquent
  *

@@ -133,6 +133,7 @@ class BooksTransformer extends BaseTransformer
 				];
 			}
 
+			case 'v4_bible_filesets.books':
 			case 'v4_bible.books': {
 				return [
 					'book_id'         => $book->id,

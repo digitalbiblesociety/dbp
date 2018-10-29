@@ -91,7 +91,7 @@ class BiblesController extends APIController
 	 */
 	public function index()
 	{
-		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
+		if (env('APP_ENV') === 'local') ini_set('memory_limit', '864M');
 		// Return the documentation if it's not an API request
 		if (!$this->api) return view('bibles.index');
 
@@ -99,7 +99,7 @@ class BiblesController extends APIController
 		$media              = checkParam('media', null, 'optional');
 		$language           = checkParam('language', null, 'optional');
 		$full_word          = checkParam('full_word|language_name', null, 'optional');
-		$language_code      = checkParam('language_family_code|language_code', null, 'optional');
+		$language_code      = checkParam('language_family_code|language_code', null, 'optional') ?? 'eng';
 		$updated            = checkParam('updated', null, 'optional');
 		$organization       = checkParam('organization_id', null, 'optional');
 		$sort_by            = checkParam('sort_by', null, 'optional');
@@ -113,7 +113,10 @@ class BiblesController extends APIController
 		$paginate           = checkParam('paginate', null, 'optional') ?? false;
 		$filter             = checkParam('filter', null, 'optional') ?? false;
 
-		$access_control = $this->accessControl($this->key, "api");
+		$access_control = $this->accessControl($this->key, 'api');
+
+		$language_code = Language::where('iso',$language_code)->orWhere('id',$language_code)->first();
+		if(!$language_code) return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
 
 		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $language_code . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $paginate. $filter;
 		\Cache::forget($cache_string);
@@ -142,8 +145,7 @@ class BiblesController extends APIController
 			    });
 			})
 			->when($language_code, function ($q) use ($language_code) {
-				$language = Language::where('iso',$language_code)->orWhere('id',$language_code)->first();
-			    $q->where('language_id', $language->id);
+			    $q->where('language_id', $language_code->id);
 			})
 			->when($organization, function ($q) use ($organization) {
 			    $q->whereHas('organizations', function ($q) use ($organization) {
@@ -153,9 +155,9 @@ class BiblesController extends APIController
 					$q->where('id', $dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2));
 				})->when($media, function ($q) use ($media) {
 					switch ($media) {
-						case "video": {$q->has('filesetFilm');break;}
-						case "audio": {$q->has('filesetAudio');break;}
-						case "text": {$q->has('filesetText');break;}
+						case 'video': {$q->has('filesetFilm');break;}
+						case 'audio': {$q->has('filesetAudio');break;}
+						case 'text': {$q->has('filesetText');break;}
 					}
 				})->when($updated, function ($q) use ($updated) {
 					$q->where('updated_at', '>', $updated);
@@ -178,15 +180,9 @@ class BiblesController extends APIController
 			if ($language) {
 				$bibles = $bibles->filter(function ($bible) use ($language, $full_word) {
 					$altNameList = [];
-					if (isset($bible->language->translations)) {
-						$altNameList = $bible->language->translations->pluck('name')->toArray();
-					}
-					if (isset($full_word)) {
-						return ($bible->language->name == $language) || in_array($language, $altNameList);
-					}
-					return (stripos($bible->language->name,
-							$language) || ($bible->language->name == $language) || stripos(implode($altNameList),
-							$language));
+					if (isset($bible->language->translations)) $altNameList = $bible->language->translations->pluck('name')->toArray();
+					if ($full_word !== null) return ($bible->language->name === $language) || \in_array($language, $altNameList);
+					return (stripos($bible->language->name, $language) || ($bible->language->name === $language) || stripos(implode($altNameList), $language));
 				});
 			}
 
@@ -199,7 +195,7 @@ class BiblesController extends APIController
 
 	public function archival()
     {
-        if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
+        if (env('APP_ENV') === 'local') ini_set('memory_limit', '864M');
         $iso                = checkParam('iso', null, 'optional');
         $organization_id    = checkParam('organization_id', null, 'optional');
         $organization = '';
@@ -217,12 +213,12 @@ class BiblesController extends APIController
 
         if($iso) {
             $language = Language::where('iso',$iso)->with('dialects')->first();
-            if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for provided iso");
+            if(!$language) return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
         }
 
         $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id;
-		if(env('APP_ENV')) Cache::forget($cache_string);
-        $bibles = Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects,$include_linkedBibles,$asset_id) {
+		if(env('APP_ENV')) \Cache::forget($cache_string);
+        $bibles = \Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects,$asset_id) {
             $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {
@@ -249,9 +245,7 @@ class BiblesController extends APIController
                 ->get();
 
 	        $language = Language::where('iso','eng')->first();
-            foreach ($bibles as $bible) {
-            	$bible->english_language_id = $language->id;
-            }
+            foreach ($bibles as $bible) $bible->english_language_id = $language->id;
 
 	        if ($include_regionInfo) $bibles->load('country');
 
@@ -319,7 +313,7 @@ class BiblesController extends APIController
 	 */
 	public function show($id)
 	{
-		$access_control = $this->accessControl($this->key, "api");
+		$access_control = $this->accessControl($this->key, 'api');
 
         $bible = Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
 	        'filesets' => function ($query) use ($access_control) {
@@ -372,19 +366,12 @@ class BiblesController extends APIController
 	 */
 	public function books($bible_id, $book_id = null)
 	{
-		if (!$this->api) {
-			return view('bibles.books.index');
-		}
+		if (!$this->api) return view('bibles.books.index');
 
 		$book_id = checkParam('book_id', $book_id, 'optional');
 		$testament = checkParam('testament',null,'optional');
 
-		$translation_languages = checkParam('language_codes', null, 'optional');
-		if ($translation_languages) {
-			$translation_languages = explode('|', $translation_languages);
-		}
 		$bible = Bible::find($bible_id);
-		//BookTranslation::all()
 		$bible_books = BibleBook::where('bible_id', $bible_id)->select('book_id')->distinct()->get()->pluck('book_id');
 		$books = BookTranslation::with('book')->where('language_id',$bible->language_id)
 					->when($testament, function ($q) use ($testament) {

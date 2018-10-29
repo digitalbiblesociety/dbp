@@ -8,6 +8,24 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\Bible\BookTranslation
  * @mixin \Eloquent
  *
+ * @method static BookTranslation whereIso($value)
+ * @method static BookTranslation whereBookId($value)
+ * @method static BookTranslation whereName($value)
+ * @method static BookTranslation whereNameLong($value)
+ * @method static BookTranslation whereNameShort($value)
+ * @method static BookTranslation whereNameAbbreviation($value)
+ * @method static BookTranslation whereCreatedAt($value)
+ * @method static BookTranslation whereUpdatedAt($value)
+ *
+ * @property string $iso
+ * @property string $book_id
+ * @property string $name
+ * @property string $name_long
+ * @property string $name_short
+ * @property string $name_abbreviation
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ *
  * @OA\Schema (
  *     type="object",
  *     description="The Book Translation's model",
@@ -26,16 +44,12 @@ class BookTranslation extends Model
 	/**
 	 *
 	 * @OA\Property(ref="#/components/schemas/Language/properties/iso")
-	 * @method static BookTranslation whereIso($value)
-	 * @property string $iso
 	 */
 	protected $iso;
 
 	/**
 	 *
 	 * @OA\Property(ref="#/components/schemas/Book/properties/id")
-	 * @method static BookTranslation whereBookId($value)
-	 * @property string $book_id
 	 */
 	protected $book_id;
 
@@ -47,8 +61,6 @@ class BookTranslation extends Model
 	 *   description="The translated name of the biblical book"
 	 * )
 	 *
-	 * @method static BookTranslation whereName($value)
-	 * @property string $name
 	 */
 	protected $name;
 
@@ -60,8 +72,6 @@ class BookTranslation extends Model
 	 *   description="The long form of the translated name"
 	 * )
 	 *
-	 * @method static BookTranslation whereNameLong($value)
-	 * @property string $name_long
 	 */
 	protected $name_long;
 
@@ -73,8 +83,6 @@ class BookTranslation extends Model
 	 *   description="The short form of the translated name"
 	 * )
 	 *
-	 * @method static BookTranslation whereNameShort($value)
-	 * @property string $name_short
 	 */
 	protected $name_short;
 
@@ -86,8 +94,6 @@ class BookTranslation extends Model
 	 *   description="The abbreviated form of the translated name"
 	 * )
 	 *
-	 * @method static BookTranslation whereNameAbbreviation($value)
-	 * @property string $name_abbreviation
 	 */
 	protected $name_abbreviation;
 
@@ -99,8 +105,6 @@ class BookTranslation extends Model
 	 *   description="The timestamp that the translated name was originally created"
 	 * )
 	 *
-	 * @method static BookTranslation whereCreatedAt($value)
-	 * @property \Carbon\Carbon|null $created_at
 	 */
 	protected $created_at;
 
@@ -112,8 +116,6 @@ class BookTranslation extends Model
 	 *   description="The timestamp that the translated name was last updated"
 	 * )
 	 *
-	 * @method static BookTranslation whereUpdatedAt($value)
-	 * @property \Carbon\Carbon|null $updated_at
 	 */
 	protected $updated_at;
 
@@ -124,7 +126,7 @@ class BookTranslation extends Model
 	 */
     public function book()
     {
-        return $this->BelongsTo(Book::class,'book_id','id');
+        return $this->belongsTo(Book::class,'book_id','id');
     }
 
 }

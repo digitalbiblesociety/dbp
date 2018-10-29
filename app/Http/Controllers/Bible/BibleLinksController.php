@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Bible;
 
 use App\Models\Language\Language;
 use App\Transformers\BibleLinksTransformer;
-use Illuminate\Http\Request;
-use App\Models\Bible\BibleLink;
 use App\Models\Organization\Organization;
 use App\Http\Controllers\APIController;
 
@@ -21,9 +19,10 @@ class BibleLinksController extends APIController
 
 	    if($organization !== null) {
 		    $organization = Organization::where('id',$organization)->orWhere('slug',$organization)->first();
-		    if(!$organization) return $this->setStatusCode(404)->replyWithError('organization not found');
+		    if(!$organization) return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404'));
 	    }
 	    $language = Language::where('iso',$iso)->first();
+	    if(!$language) return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
 	    $bibleLinks = \DB::table(env('DBP_DATABASE').'.bible_links')
 		->join(env('DBP_DATABASE').'.bible_translations', function($q) use($language) {
 			$q->on('bible_links.bible_id','bible_translations.bible_id')->where('language_id',$language->id);

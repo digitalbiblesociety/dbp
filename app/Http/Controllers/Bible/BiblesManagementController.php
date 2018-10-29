@@ -14,6 +14,7 @@ use App\Models\User\User;
 use App\Traits\CaptureIpTrait;
 use Auth;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use jeremykenedy\LaravelRoles\Models\Role;
@@ -24,10 +25,10 @@ class BiblesManagementController extends APIController
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct()
     {
+    	parent::__construct();
         $this->middleware('auth');
     }
 
@@ -72,7 +73,7 @@ class BiblesManagementController extends APIController
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|RedirectResponse
      */
     public function store(Request $request)
     {
@@ -100,9 +101,7 @@ class BiblesManagementController extends APIController
             ]
         );
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
+        if ($validator->fails()) return back()->withErrors($validator)->withInput();
 
         $ipAddress = new CaptureIpTrait();
         $profile = new Profile();
@@ -164,13 +163,12 @@ class BiblesManagementController extends APIController
      * @param \Illuminate\Http\Request $request
      * @param int                      $id
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|RedirectResponse
      */
     public function update(Request $request, $id)
     {
-        $currentUser = Auth::user();
         $bible = User::find($id);
-        $emailCheck = ($request->input('email') != '') && ($request->input('email') != $bible->email);
+        $emailCheck = ($request->input('email') !== '') && ($request->input('email') !== $bible->email);
         $ipAddress = new CaptureIpTrait();
 
         if ($emailCheck) {
@@ -186,39 +184,25 @@ class BiblesManagementController extends APIController
             ]);
         }
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
+        if ($validator->fails()) return back()->withErrors($validator)->withInput();
 
         $bible->name = $request->input('name');
         $bible->first_name = $request->input('first_name');
         $bible->last_name = $request->input('last_name');
 
-        if ($emailCheck) {
-            $bible->email = $request->input('email');
-        }
+        if ($emailCheck) $bible->email = $request->input('email');
 
-        if ($request->input('password') != null) {
-            $bible->password = bcrypt($request->input('password'));
-        }
+        if ($request->input('password') !== null) $bible->password = bcrypt($request->input('password'));
 
         $bibleRole = $request->input('role');
-        if ($bibleRole != null) {
+        if ($bibleRole !== null) {
             $bible->detachAllRoles();
             $bible->attachRole($bibleRole);
         }
 
         $bible->updated_ip_address = $ipAddress->getClientIp();
 
-        switch ($bibleRole) {
-            case 3:
-                $bible->activated = 0;
-                break;
-
-            default:
-                $bible->activated = 1;
-                break;
-        }
+		$bible->activated = $bibleRole === 3 ? 0 : 1;
 
         $bible->save();
 
@@ -234,11 +218,11 @@ class BiblesManagementController extends APIController
      */
     public function delete($id)
     {
-        $currentUser = Auth::user();
+        $currentUser = Auth::user() ?? $this->user;
         $bible = User::findOrFail($id);
         $ipAddress = new CaptureIpTrait();
 
-        if ($bible->id != $currentUser->id) {
+        if ($bible->id !== $currentUser->id) {
             $bible->deleted_ip_address = $ipAddress->getClientIp();
             $bible->save();
             $bible->delete();

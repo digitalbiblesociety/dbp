@@ -7,6 +7,7 @@ use App\Models\Bible\Book;
 use App\Models\User\Study\Bookmark;
 use App\Traits\CheckProjectMembership;
 use App\Transformers\UserBookmarksTransformer;
+use App\Transformers\V2\Annotations\BookmarkTransformer;
 use Illuminate\Support\Facades\Validator;
 
 class UserBookmarksController extends APIController
@@ -90,23 +91,25 @@ class UserBookmarksController extends APIController
 	    $user_is_member = $this->compareProjects(request()->user_id, $this->key);
 	    if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
-	    $book = Book::where('id',request()->book_id)->orWhere('book_id',request()->book_id)->first();
+	    $book = Book::where('id',request()->book_id)->first();
 	    request()->book_id = $book->id;
 		request()->bible_id = request()->dam_id ?? request()->bible_id;
 
         $invalidBookmark = $this->validateBookmark();
         if($invalidBookmark) return $this->setStatusCode(422)->replyWithError($invalidBookmark);
 
-        Bookmark::create(request()->all());
-        return $this->reply('Bookmark Created successfully');
+        $bookmark = Bookmark::create(request()->all());
+        return $this->reply(fractal($bookmark,new BookmarkTransformer())->addMeta(['success' => 'Bookmark Created successfully']));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+	/**
+	 * Update the specified resource in storage.
+	 *
+	 * @param  int $user_id
+	 * @param  int $id
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
     public function update($user_id,$id)
     {
 	    $user_is_member = $this->compareProjects($user_id, $this->key);
@@ -120,7 +123,7 @@ class UserBookmarksController extends APIController
 	    $bookmark->fill(request()->all());
 	    $bookmark->save();
 
-	    return $this->reply('Bookmark Created successfully');
+	    return $this->reply(fractal($bookmark, new BookmarkTransformer())->addMeta(['success' => 'Bookmark Successfully updated']));
     }
 
     /**
@@ -143,11 +146,11 @@ class UserBookmarksController extends APIController
     private function validateBookmark()
     {
 		$validator = Validator::make(request()->all(), [
-		    'bible_id'    => 'required|exists:dbp.bibles,id',
-		    'user_id'     => 'required|exists:dbp_users.users,id',
-		    'book_id'     => 'required|exists:dbp.books,id',
-		    'chapter_id'  => 'required|max:150|min:1|integer',
-		    'verse_id'    => 'required|max:177|min:1|integer'
+		    'bible_id'    => ((request()->method() === 'POST') ? 'required|' : ''). 'exists:dbp.bibles,id',
+		    'user_id'     => ((request()->method() === 'POST') ? 'required|' : ''). 'exists:dbp_users.users,id',
+		    'book_id'     => ((request()->method() === 'POST') ? 'required|' : ''). 'exists:dbp.books,id',
+		    'chapter'     => ((request()->method() === 'POST') ? 'required|' : ''). 'max:150|min:1|integer',
+		    'verse_start' => ((request()->method() === 'POST') ? 'required|' : ''). 'max:177|min:1|integer'
 		]);
 		if ($validator->fails()) return ['errors' => $validator->errors()];
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\APIController;
 use App\Models\Language\Language;
 use App\Models\User\Article;
+use App\Models\User\Role;
 use App\Models\User\User;
 use Illuminate\Http\Request;
 
@@ -66,14 +67,16 @@ class ArticlesController extends APIController
 	 */
 	public function store(Request $request)
 	{
-		$user = ($this->api) ? $this->validateUser() : $this->validateUser(\Auth::user());
-		if(!is_a($user, User::class)) return $user;
-		$this->validateArticle($request);
+		$invalidUser = $this->invalidUser();
+		if($invalidUser) return $invalidUser;
+
+		$invalidArticle = $this->invalidArticle($request);
+		if($invalidArticle) return $invalidArticle;
 
 		$article                  = new Article();
 		$article->cover           = $request->cover;
 		$article->cover_thumbnail = $request->cover_thumbnail;
-		$article->user_id         = $user->id;
+		$article->user_id         = $this->user->id;
 		$article->save();
 
 		$article->translations()->createMany($request->translations);
@@ -133,6 +136,12 @@ class ArticlesController extends APIController
 	 */
 	public function update(Request $request, $id)
 	{
+		$invalidUser = $this->invalidUser();
+		if($invalidUser) return $invalidUser;
+
+		$invalidArticle = $this->invalidArticle($request);
+		if($invalidArticle) return $invalidArticle;
+
 		return view('community.articles.show',compact('request','id'));
 	}
 
@@ -159,7 +168,7 @@ class ArticlesController extends APIController
 	 *
 	 * @return mixed
 	 */
-	private function validateArticle(Request $request)
+	private function invalidArticle(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
 			'iso'                  => 'required|exists:dbp.languages,iso',
@@ -172,7 +181,7 @@ class ArticlesController extends APIController
 			if ($this->api) return $this->setStatusCode(422)->replyWithError($validator->errors());
 			if (!$this->api) return redirect('articles/create')->withErrors($validator)->withInput();
 		}
-		return true;
+		return null;
 	}
 
 	/**
@@ -181,18 +190,13 @@ class ArticlesController extends APIController
 	 *
 	 * @return \App\Models\User\User|mixed|null
 	 */
-	private function validateUser()
+	private function invalidUser()
 	{
-		$user = \Auth::user();
-		if (!$user) {
-			$key = Key::where('key', $this->key)->first();
-			if (!isset($key)) return $this->setStatusCode(403)->replyWithError(trans('api.auth_key_validation_failed'));
-			$user = $key->user;
-		}
-		$is_archivist = $user->roles->where('slug','archivist')->first();
+		$user = $this->user;
+		$is_archivist = $user->roles->whereIn('slug','archivist')->first();
 		$is_admin = $user->roles->where('slug','admin')->first();
 		if(!$is_archivist && !$is_admin) return $this->setStatusCode(401)->replyWithError(trans('api.articles_edit_permission_failed'));
-		return $user;
+		return null;
 	}
 
 }

@@ -6,8 +6,6 @@ use App\Http\Controllers\APIController;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Models\Resource\Resource;
-use App\Models\Resource\ResourceLink;
-use App\Models\Resource\ResourceTranslation;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use \Illuminate\Http\Response;
@@ -73,8 +71,7 @@ class ResourcesController extends APIController
 	{
 		$invalidResource = $this->invalidResource($request);
 		if($invalidResource) return $invalidResource;
-
-
+		return null;
 	}
 
 	/**
@@ -101,7 +98,8 @@ class ResourcesController extends APIController
 	 */
 	public function edit($id)
 	{
-		return view('resources.edit');
+		$resource = Resource::findOrFail($id);
+		return view('resources.edit',compact('resource'));
 	}
 
 	/**
@@ -117,7 +115,9 @@ class ResourcesController extends APIController
 		$invalidResource = $this->invalidResource($request);
 		if($invalidResource) return $invalidResource;
 
-		return view('resources.update');
+		$resource = Resource::findOrFail($id);
+
+		return view('resources.show',compact('resource'));
 	}
 
 	/**
@@ -129,7 +129,8 @@ class ResourcesController extends APIController
 	 */
 	public function destroy($id)
 	{
-		return view('resources.destroy');
+		$resource = Resource::findOrFail($id);
+		return view('resources.index');
 	}
 
 	private function invalidResource(Request $request)
