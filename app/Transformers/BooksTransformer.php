@@ -121,7 +121,7 @@ class BooksTransformer extends BaseTransformer
 
 			case 'v4_bible_books_all': {
 				return [
-					'book_id'         => $book->book_id,
+					'book_id'         => $book->id,
 					'book_id_usfx'    => $book->id_usfx,
 					'book_id_osis'    => $book->id_osis,
 					'name'            => $book->name,
@@ -136,7 +136,7 @@ class BooksTransformer extends BaseTransformer
 			case 'v4_bible_filesets.books':
 			case 'v4_bible.books': {
 				return [
-					'book_id'         => $book->id,
+					'book_id'         => $book->book->id,
 					'book_id_usfx'    => $book->book->id_usfx,
 					'book_id_osis'    => $book->book->id_osis,
 					'name'            => $book->name,
