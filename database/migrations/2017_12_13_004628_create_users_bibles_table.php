@@ -99,7 +99,6 @@ class CreateUsersBiblesTable extends Migration
 			    $table->tinyInteger('chapter')->unsigned();
 			    $table->tinyInteger('verse_start')->unsigned();
 			    $table->timestamp('created_at')->useCurrent();
-
 			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
@@ -135,16 +134,21 @@ class CreateUsersBiblesTable extends Migration
 				$table->timestamp('updated_at')->useCurrent();
 			});
 		}
-		if(!Schema::connection('dbp_users')->hasTable('user_note_tags')) {
-			Schema::connection('dbp_users')->create('user_note_tags', function (Blueprint $table) {
+		if(!Schema::connection('dbp_users')->hasTable('user_annotation_tags')) {
+			Schema::connection('dbp_users')->create('user_annotation_tags', function (Blueprint $table) {
 				$table->increments('id');
-				$table->integer('note_id')->unsigned();
+				$table->integer('note_id')->unsigned()->nullable();
 				$table->foreign('note_id')->references('id')->on('user_notes')->onUpdate('cascade')->onDelete('cascade');
-				$table->string('type', 64);
+				$table->integer('bookmark_id')->unsigned()->nullable();
+				$table->foreign('bookmark_id')->references('id')->on('user_bookmarks')->onUpdate('cascade')->onDelete('cascade');
+				$table->integer('highlight_id')->unsigned()->nullable();
+				$table->foreign('highlight_id')->references('id')->on('user_highlights')->onUpdate('cascade')->onDelete('cascade');
+				$table->string('type', 64)->index();
 				$table->string('value', 64);
 				$table->timestamp('created_at')->useCurrent();
 				$table->timestamp('updated_at')->useCurrent();
 			});
+			DB::connection('dbp_users')->statement('ALTER TABLE user_annotation_tags ADD CONSTRAINT CHECK (note_id IS NOT NULL OR bookmark_id IS NOT NULL OR highlight_id IS NOT NULL)');
 		}
 		if(!Schema::connection('dbp')->hasTable('access_groups')) {
 			Schema::connection('dbp')->create('access_groups', function (Blueprint $table) {
@@ -221,7 +225,7 @@ class CreateUsersBiblesTable extends Migration
      */
     public function down()
     {
-	    Schema::connection('dbp_users')->dropIfExists('user_note_tags');
+	    Schema::connection('dbp_users')->dropIfExists('user_annotation_tags');
 	    Schema::connection('dbp_users')->dropIfExists('user_accounts');
         Schema::connection('dbp_users')->dropIfExists('user_notes');
 	    Schema::connection('dbp_users')->dropIfExists('user_highlights');
