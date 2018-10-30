@@ -56,8 +56,14 @@ class VideoStreamController extends APIController
 		$current_file = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-ALLOW-CACHE:YES\n#EXT-X-TARGETDURATION:4";
 
 		$currentResolution = $file->videoResolution->where('file_name',$file_name)->first();
+		$transaction_id = random_int(0,10000000);
+		try {
+			apiLogs(request(), $this->getStatusCode(), $transaction_id);
+		} catch (\Exception $e) {
+			Log::error($e);
+		}
+
 		foreach($currentResolution->transportStream as $stream) {
-			$transaction_id = random_int(0,10000000);
 			$current_file_path = $this->signedUrl('video' . '/' . $bible_path . $fileset->id . '/' . $stream->file_name, $fileset->asset_id,$transaction_id);
 			$current_file .= "\n#EXTINF:$stream->runtime\n$current_file_path";
 		}
