@@ -80,9 +80,9 @@ class UserTransformer extends BaseTransformer
 	public function transformForDataTables($user)
 	{
 		return [
-			"<a href='/dashboard/users/".$user->id."'>".$user->name.'</a>',
+			'<a href="'.route('profile.show',['user_id' => $user->id]).'">'.$user->name.'</a>',
 			$user->email,
-			$user->nickname ?? "",
+			$user->nickname ?? '',
 			$user->organizations->pluck('currentTranslation.name')->implode(','),
 		];
 	}
