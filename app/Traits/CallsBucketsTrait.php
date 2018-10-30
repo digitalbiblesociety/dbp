@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\Organization\Asset;
 use Aws\CloudFront\CloudFrontClient;
 use Aws\S3\S3Client;
 use Carbon\Carbon;
@@ -10,9 +11,10 @@ use Cache;
 
 trait CallsBucketsTrait {
 
-	public function authorizeAWS()
+	public function authorizeAWS($source)
 	{
-		$security_token = Cache::remember('iam_assumed_role', 60, function () {
+		//\Cache::forget('iam_assumed_role');
+		$security_token = Cache::remember('iam_assumed_role', 600, function () {
 			$role_call  = $this->assumeRole();
 			if($role_call) {
 				$response_xml   = simplexml_load_string($role_call->response,'SimpleXMLElement',LIBXML_NOCDATA);
@@ -20,71 +22,63 @@ trait CallsBucketsTrait {
 			}
 		});
 
-		$clients['cloudfront'] = new CloudFrontClient([
-			'version' => 'latest',
-			'region'  => 'us-west-2',
-			'credentials' => [
-				'key' => $security_token->AssumeRoleResult->Credentials->AccessKeyId,
-				'secret' => $security_token->AssumeRoleResult->Credentials->SecretAccessKey,
-				'token' =>  $security_token->AssumeRoleResult->Credentials->SessionToken
-			]
-		]);
+		if($source === 'cloudfront') {
+			return new CloudFrontClient([
+				'version' => 'latest',
+				'region'  => 'us-west-2',
+				'credentials' => [
+					'key' => $security_token->AssumeRoleResult->Credentials->AccessKeyId,
+					'secret' => $security_token->AssumeRoleResult->Credentials->SecretAccessKey,
+					'token' =>  $security_token->AssumeRoleResult->Credentials->SessionToken
+				]
+			]);
 
-		$clients['s3'] = new S3Client([
-			'version' => 'latest',
-			'region'  => 'us-west-2',
-			'credentials' => [
-				'key' => $security_token->AssumeRoleResult->Credentials->AccessKeyId,
-				'secret' => $security_token->AssumeRoleResult->Credentials->SecretAccessKey,
-				'token' =>  $security_token->AssumeRoleResult->Credentials->SessionToken
-			]
-		]);
-		return $clients;
+		} else {
+			return $security_token;
+			return new S3Client([
+				'version' => 'latest',
+				'region'  => 'us-west-2',
+				'credentials' => [
+					'key' => $security_token->AssumeRoleResult->Credentials->AccessKeyId,
+					'secret' => $security_token->AssumeRoleResult->Credentials->SecretAccessKey,
+					'token' =>  $security_token->AssumeRoleResult->Credentials->SessionToken
+				]
+			]);
+		}
 	}
 
-	public function signedUrl(string $filepath, $bucket_id, int $transaction)
+	public function signedUrl(string $file_path, $asset_id, int $transaction)
 	{
-		$clients = $this->authorizeAWS();
-		$cloudFrontClient = $clients['cloudfront'];
+		$asset = Asset::where('id',$asset_id)->first();
+		$client = $this->authorizeAWS($asset->asset_type);
 
-		$request_array = [
-			'url'         => 'https://content.cdn.'.$bucket_id.'.dbp4.org/'.$filepath.'?x-amz-transaction='.$transaction,
-			'key_pair_id' => env('AWS_CLOUDFRONT_KEY_ID'),
-			'private_key' => storage_path('app/'.env('AWS_CLOUDFRONT_KEY_SECRET')),
-			'expires'     => Carbon::now()->addHour()->timestamp,
-		];
-		return $cloudFrontClient->getSignedUrl($request_array);
+		// Return Either CloudFront Signed Urls
+		if($asset->asset_type === 'cloudfront') {
+			$request_array = [
+				'url'         => 'https://content.cdn.'.$asset_id.'.dbp4.org/'.$file_path.'?x-amz-transaction='.$transaction,
+				'key_pair_id' => env('AWS_CLOUDFRONT_KEY_ID'),
+				'private_key' => storage_path('app/'.env('AWS_CLOUDFRONT_KEY_SECRET')),
+				'expires'     => Carbon::now()->addHour()->timestamp,
+			];
+			return $client->getSignedUrl($request_array);
+		}
+
+		// Or return S3 Urls
+		if($asset->asset_type === 's3') {
+
+			$temp_session_token = $client->AssumeRoleResult->Credentials->SessionToken;
+			$temp_secret_key    = $client->AssumeRoleResult->Credentials->SecretAccessKey;
+			$temp_access_key    = $client->AssumeRoleResult->Credentials->AccessKeyId;
+
+			$bucket = $asset->id;
+
+			$timestamp = Carbon::now()->addDay()->timestamp;
+			$data = "GET\n\n\n$timestamp\nx-amz-security-token:$temp_session_token\nx-amz-transaction:$transaction\n/$bucket".'/'.$file_path;
+			$signature = base64_encode(hash_hmac('sha1', $data, $temp_secret_key, TRUE));
+			return "https://$bucket.s3.amazonaws.com/$file_path?AWSAccessKeyId=$temp_access_key&Signature=".urlencode($signature).'&x-amz-security-token='.urlencode($temp_session_token)."&x-amz-transaction=$transaction&Expires=$timestamp";
+		}
+
 	}
-
-
-	/**
-	 *
-	 * @param string $file
-	 * @param string $bucket
-	 * @param int    $transaction
-	 *
-	 * @return string
-
-	public function signedUrl(string $file, string $bucket = 'dbp-prod', int $transaction)
-	{
-		$security_token = Cache::remember('iam_assumed_role', 60, function () {
-			$role_call  = $this->assumeRole();
-			if($role_call) {
-				$response_xml   = simplexml_load_string($role_call->response,'SimpleXMLElement',LIBXML_NOCDATA);
-				$response       = json_decode(json_encode($response_xml));
-				return $response;
-			}
-		});
-
-		$temp_session_token = $security_token->AssumeRoleResult->Credentials->SessionToken;
-		$temp_secret_key    = $security_token->AssumeRoleResult->Credentials->SecretAccessKey;
-		$temp_access_key    = $security_token->AssumeRoleResult->Credentials->AccessKeyId;
-
-		$timestamp = Carbon::now()->addDay()->timestamp;
-		$data = "GET\n\n\n$timestamp\nx-amz-security-token:$temp_session_token\nx-amz-transaction:$transaction\n/$bucket".'/'.$file;
-		$signature = base64_encode(hash_hmac('sha1', $data, $temp_secret_key, TRUE));
-		return "https://$bucket.s3.amazonaws.com/$file?AWSAccessKeyId=$temp_access_key&Signature=".urlencode($signature).'&x-amz-security-token='.urlencode($temp_session_token)."&x-amz-transaction=$transaction&Expires=$timestamp";
-	}	 */
 
 	private function assumeRole()
 	{
