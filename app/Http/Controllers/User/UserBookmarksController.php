@@ -9,6 +9,7 @@ use App\Traits\CheckProjectMembership;
 use App\Transformers\UserBookmarksTransformer;
 use App\Transformers\V2\Annotations\BookmarkTransformer;
 use Illuminate\Support\Facades\Validator;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class UserBookmarksController extends APIController
 {
@@ -49,15 +50,18 @@ class UserBookmarksController extends APIController
 
     	$book_id = checkParam('book_id', null, 'optional');
 	    $chapter = checkParam('chapter', null, 'optional');
+	    $limit        = (int) (checkParam('limit', null, 'optional') ?? 25);
 
     	$bookmarks = Bookmark::where('user_id',$user_id)
 			->when($book_id, function ($q) use ($book_id) {
 			    $q->where('book_id',$book_id);
 	        })->when($chapter, function ($q) use ($chapter) {
 			    $q->where('chapter',$chapter);
-		    })->get();
+		    })->paginate($limit);
 
-		return $this->reply(fractal($bookmarks, UserBookmarksTransformer::class,$this->serializer));
+		return $this->reply(
+			fractal($bookmarks->getCollection(), UserBookmarksTransformer::class,$this->serializer)->paginateWith(new IlluminatePaginatorAdapter($bookmarks))
+		);
     }
 
     /**
