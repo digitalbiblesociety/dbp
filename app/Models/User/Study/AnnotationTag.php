@@ -3,10 +3,29 @@
 namespace App\Models\User\Study;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 /**
- * App\Models\User\NoteTag
+ * App\Models\User\AnnotationTag
  * @mixin \Eloquent
+ *
+ * @method static AnnotationTag whereId($value)
+ * @method static AnnotationTag whereHighlightId($value)
+ * @method static AnnotationTag whereBookmarkId($value)
+ * @method static AnnotationTag whereNoteId($value)
+ * @method static AnnotationTag whereType($value)
+ * @method static AnnotationTag whereValue($value)
+ * @method static AnnotationTag whereCreatedAt($value)
+ * @method static AnnotationTag whereUpdatedAt($value)
+ *
+ * @property int $id
+ * @property int $note_id
+ * @property string $type
+ * @property string $value
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property int $bookmark_id
+ * @property int $highlight_id
  *
  * @OA\Schema (
  *     type="object",
@@ -16,11 +35,12 @@ use Illuminate\Database\Eloquent\Model;
  * )
  *
  */
-class NoteTag extends Model
+class AnnotationTag extends Model
 {
 	protected $connection = 'dbp_users';
-    public $table = 'user_note_tags';
+    public $table = 'user_annotation_tags';
 	protected $fillable = ['type','value'];
+	protected $hidden = ['created_at','updated_at'];
 
 	 /**
 	  *
@@ -31,24 +51,23 @@ class NoteTag extends Model
 	  *   minimum=0
 	  * )
 	  *
-	  * @method static NoteTag whereId($value)
-	  * @property int $id
 	  */
 	 protected $id;
 
 	 /**
-	  *
-	  * @OA\Property(
-	  *   title="note_id",
-	  *   type="integer",
-	  *   description="The id for the note which the NoteTag is attached to",
-	  *   minimum=0
-	  * )
-	  *
-	  * @method static NoteTag whereNoteId($value)
-	  * @property int $note_id
+	  * @OA\Property(ref="#/components/schemas/Note/properties/id")
 	  */
 	 protected $note_id;
+
+	/**
+	 * @OA\Property(ref="#/components/schemas/Bookmark/properties/id")
+	 */
+	protected $bookmark_id;
+
+	/**
+	 * @OA\Property(ref="#/components/schemas/Highlight/properties/id")
+	 */
+	protected $highlight_id;
 
 	 /**
 	  *
@@ -58,8 +77,6 @@ class NoteTag extends Model
 	  *   description="The type of tag that this NoteTag is categorized within."
 	  * )
 	  *
-	  * @method static NoteTag whereType($value)
-	  * @property string $type
 	  */
 	 protected $type;
 
@@ -71,8 +88,6 @@ class NoteTag extends Model
 	  *   description="The value to the type of NoteTag for this note."
 	  * )
 	  *
-	  * @method static NoteTag whereValue($value)
-	  * @property string $value
 	  */
 	 protected $value;
 
@@ -84,8 +99,6 @@ class NoteTag extends Model
 	  *   description="The timestamp the NoteTag was first created at"
 	  * )
 	  *
-	  * @method static NoteTag whereCreatedAt($value)
-	  * @property Carbon $created_at
 	  */
 	 protected $created_at;
 
@@ -97,8 +110,6 @@ class NoteTag extends Model
 	  *   description="The timestamp the NoteTag was last updated"
 	  * )
 	  *
-	  * @method static NoteTag whereUpdatedAt($value)
-	  * @property Carbon $updated_at
 	  */
 	 protected $updated_at;
 

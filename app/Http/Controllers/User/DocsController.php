@@ -69,10 +69,10 @@ class DocsController extends APIController
 			}
 		}
 		foreach ($swagger->paths as $key => $path) {
-			if($path->get->operationId !== null && strpos($path->get->operationId, $version) !== 0) unset($swagger->paths[$key]);
-			if($path->put->operationId !== null && strpos($path->put->operationId, $version) !== 0) unset($swagger->paths[$key]);
-			if($path->post->operationId !== null && strpos($path->post->operationId, $version) !== 0) unset($swagger->paths[$key]);
-			if($path->delete->operationId !== null && strpos($path->delete->operationId, $version) !== 0) unset($swagger->paths[$key]);
+			if(isset($path->get->operationId)) if(strpos($path->get->operationId, $version) !== 0) unset($swagger->paths[$key]);
+			if(isset($path->put->operationId)) if(strpos($path->put->operationId, $version) !== 0) unset($swagger->paths[$key]);
+			if(isset($path->post->operationId)) if(strpos($path->post->operationId, $version) !== 0) unset($swagger->paths[$key]);
+			if(isset($path->delete->operationId)) if(strpos($path->delete->operationId, $version) !== 0) unset($swagger->paths[$key]);
 		}
 
 		return response()->json($swagger, $this->getStatusCode(), [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'application/json');

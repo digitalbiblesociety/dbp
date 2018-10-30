@@ -158,12 +158,12 @@ class Note extends Model
 
 	/**
 	 *
-	 * @property-read NoteTag[] $tags
+	 * @property-read AnnotationTag[] $tags
 	 *
 	 */
     public function tags()
     {
-    	return $this->hasMany(NoteTag::class,'note_id','id');
+    	return $this->hasMany(AnnotationTag::class,'note_id','id');
     }
 
     public function book()

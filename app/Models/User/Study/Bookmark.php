@@ -11,6 +11,22 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\User\Study
  * @mixin \Eloquent
  *
+ * @property int $id
+ * @property string $book_id
+ * @property int $chapter
+ * @property int $verse_start
+ * @property string $user_id
+ * @property string $bible_id
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ *
+ * @method static Note whereId($value)
+ * @method static Note whereBookId($value)
+ * @method static Note whereChapter($value)
+ * @method static Note whereVerseStart($value)
+ * @method static Note whereUserId($value)
+ * @method static Note whereBibleId($value)
+ *
  * @OA\Schema (
  *     type="object",
  *     description="The User created Bookmark",
@@ -33,48 +49,36 @@ class Bookmark extends Model
 	 *   description="The unique incrementing id for each Bookmark",
 	 *   minimum=0
 	 * )
-	 * @method static Note whereId($value)
-	 * @property int $id
 	 */
 	protected $id;
 
 	/**
 	 *
 	 * @OA\Property(ref="#/components/schemas/Book/properties/id")
-	 * @method static Note whereBookId($value)
-	 * @property string $book_id
 	 */
 	protected $book_id;
 
 	/**
 	 *
 	 * @OA\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
-	 * @method static Note whereChapter($value)
-	 * @property int $chapter
 	 */
 	protected $chapter;
 
 	/**
 	 *
 	 * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
-	 * @method static Note whereVerseStart($value)
-	 * @property int $verse_start
 	 */
 	protected $verse_start;
 
 	/**
 	 *
 	 * @OA\Property(ref="#/components/schemas/User/properties/id")
-	 * @method static Note whereUserId($value)
-	 * @property string $user_id
 	 */
 	protected $user_id;
 
 	/**
 	 *
 	 * @OA\Property(ref="#/components/schemas/Bible/properties/id")
-	 * @method static Note whereBibleId($value)
-	 * @property string $bible_id
 	 */
 	protected $bible_id;
 
@@ -116,6 +120,11 @@ class Bookmark extends Model
 	public function bible()
 	{
 		return $this->belongsTo(Bible::class);
+	}
+
+	public function tags()
+	{
+		return $this->hasMany(AnnotationTag::class,'bookmark_id','id');
 	}
 
 

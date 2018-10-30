@@ -63,7 +63,7 @@ class UserHighlightsController extends APIController
 		$chapter_id   = checkParam('chapter', null, 'optional');
 		$limit        = (int) (checkParam('limit', null, 'optional') ?? 25);
 
-		$highlights = Highlight::with('color')->where('user_id', $user_id)
+		$highlights = Highlight::with('color')->with('tags')->where('user_id', $user_id)
 			->join(env('DBP_DATABASE').'.bibles as bibles', 'bibles.id', '=', env('DBP_USERS_DATABASE').'.user_highlights.bible_id')
 			->join(env('DBP_DATABASE').'.bible_books as book', function ($join) {
 				$join->on('bibles.id', '=', 'book.bible_id')
@@ -162,6 +162,9 @@ class UserHighlightsController extends APIController
 			'highlighted_words' => request()->highlighted_words,
 			'highlighted_color' => request()->highlighted_color,
 		]);
+
+		$this->handleTags(request(), $highlight);
+
 		return $this->reply(fractal($highlight, new HighlightTransformer())->addMeta(['success' => trans('api.users_highlights_create_200')]));
 	}
 
@@ -212,6 +215,8 @@ class UserHighlightsController extends APIController
 		} else {
 			$highlight->fill($request->all())->save();
 		}
+
+		$this->handleTags(request(), $highlight);
 
 		return $this->reply(fractal($highlight, new HighlightTransformer())->addMeta([trans('api.success') => trans('api.users_highlights_update_200')]));
 	}

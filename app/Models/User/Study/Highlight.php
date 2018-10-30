@@ -4,12 +4,33 @@ namespace App\Models\User\Study;
 
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFileset;
-use App\Models\Bible\Book;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * App\Models\User\Highlight
  * @mixin \Eloquent
+ *
+ * @property int $id
+ * @property string $user_id
+ * @property string $bible_id
+ * @property string $book_id
+ * @property int $chapter
+ * @property string|null $highlighted_color
+ * @property int $verse_start
+ * @property string|null $project_id
+ * @property int $highlight_start
+ * @property int $highlighted_words
+ *
+ * @method static Highlight whereId($value)
+ * @method static Highlight whereUserId($value)
+ * @method static Highlight whereBibleId($value)
+ * @method static Highlight whereBookId($value)
+ * @method static Highlight whereChapter($value)
+ * @method static Highlight whereHighlightedColor($value)
+ * @method static Highlight whereVerseStart($value)
+ * @method static Highlight whereProjectId($value)
+ * @method static Highlight whereHighlightStart($value)
+ * @method static Highlight whereHighlightedWords($value)
  *
  * @OA\Schema (
  *     type="object",
@@ -35,8 +56,6 @@ class Highlight extends Model
       *   minimum=0
 	  * )
       *
-      * @method static Highlight whereId($value)
-      * @property int $id
       */
      protected $id;
      /**
@@ -47,29 +66,21 @@ class Highlight extends Model
 	  *   description="The user that created the highlight"
 	  * )
       *
-      * @method static Highlight whereUserId($value)
-      * @property string $user_id
       */
      protected $user_id;
      /**
       *
       * @OA\Property(ref="#/components/schemas/BibleFileset/properties/id")
-      * @method static Highlight whereBibleId($value)
-      * @property string $bible_id
       */
      protected $bible_id;
      /**
       *
       * @OA\Property(ref="#/components/schemas/Book/properties/id")
-      * @method static Highlight whereBookId($value)
-      * @property string $book_id
       */
      protected $book_id;
      /**
       *
       * @OA\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
-      * @method static Highlight whereChapter($value)
-      * @property int $chapter
       */
      protected $chapter;
      /**
@@ -81,15 +92,11 @@ class Highlight extends Model
       *   example="#4488bb"
 	  * )
       *
-      * @method static Highlight whereHighlightedColor($value)
-      * @property string|null $highlighted_color
       */
      protected $highlighted_color;
      /**
       *
       * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
-      * @method static Highlight whereVerseStart($value)
-      * @property int $verse_start
       */
      protected $verse_start;
 
@@ -97,15 +104,12 @@ class Highlight extends Model
 	 *
 	 * @OA\Property(type="string")
 	 * @method static Highlight whereReference($value)
-	 * @property int $verse_start
 	 */
 	protected $reference;
 
      /**
       *
       * @OA\Property(ref="#/components/schemas/Project/properties/id")
-      * @method static Highlight whereProjectId($value)
-      * @property string|null $project_id
       */
      protected $project_id;
      /**
@@ -117,8 +121,6 @@ class Highlight extends Model
       *   minimum=0
 	  * )
       *
-      * @method static Highlight whereHighlightStart($value)
-      * @property int $highlight_start
       */
      protected $highlight_start;
      /**
@@ -129,8 +131,6 @@ class Highlight extends Model
       *   description="The number of words being highlighted. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
 	  * )
       *
-      * @method static Highlight whereHighlightedWords($value)
-      * @property int $highlighted_words
       */
      protected $highlighted_words;
 
@@ -150,5 +150,10 @@ class Highlight extends Model
      {
      	return $this->hasOne(BibleBook::class,'book_id','book_id');
      }
+
+	public function tags()
+	{
+		return $this->hasMany(AnnotationTag::class,'highlight_id','id');
+	}
 
 }

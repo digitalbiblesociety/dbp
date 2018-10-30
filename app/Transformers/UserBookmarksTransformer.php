@@ -37,8 +37,9 @@ class UserBookmarksTransformer extends TransformerAbstract
 			'book_id'		=> (string) $bookmark->book_id,
 			'chapter'		=> (int) $bookmark->chapter,
 			'verse'         => (int) $bookmark->verse_start,
-			'created_at'	=> (string) $bookmark->created_at->toDateTimeString(),
-			'updated_at'	=> (string) $bookmark->updated_at->toDateTimeString()
+			'created_at'	=> (string) $bookmark->created_at,
+			'updated_at'	=> (string) $bookmark->updated_at,
+			'tags'          => $bookmark->tags
 		];
 	}
 }

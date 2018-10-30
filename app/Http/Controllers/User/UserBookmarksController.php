@@ -52,7 +52,7 @@ class UserBookmarksController extends APIController
 	    $chapter = checkParam('chapter', null, 'optional');
 	    $limit        = (int) (checkParam('limit', null, 'optional') ?? 25);
 
-    	$bookmarks = Bookmark::where('user_id',$user_id)
+    	$bookmarks = Bookmark::with('tags')->where('user_id',$user_id)
 			->when($book_id, function ($q) use ($book_id) {
 			    $q->where('book_id',$book_id);
 	        })->when($chapter, function ($q) use ($chapter) {
@@ -103,6 +103,9 @@ class UserBookmarksController extends APIController
         if($invalidBookmark) return $this->setStatusCode(422)->replyWithError($invalidBookmark);
 
         $bookmark = Bookmark::create(request()->all());
+
+	    $this->handleTags(request(), $bookmark);
+
         return $this->reply(fractal($bookmark,new BookmarkTransformer())->addMeta(['success' => 'Bookmark Created successfully']));
     }
 
@@ -126,6 +129,8 @@ class UserBookmarksController extends APIController
 	    if(!$bookmark) return $this->setStatusCode(404)->replyWithError('Bookmark not found');
 	    $bookmark->fill(request()->all());
 	    $bookmark->save();
+
+	    $this->handleTags(request(), $bookmark);
 
 	    return $this->reply(fractal($bookmark, new BookmarkTransformer())->addMeta(['success' => 'Bookmark Successfully updated']));
     }

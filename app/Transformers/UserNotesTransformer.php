@@ -24,7 +24,7 @@ class UserNotesTransformer extends TransformerAbstract
 	 *			@OA\Property(property="notes",          ref="#/components/schemas/Note/properties/notes"),
 	 *			@OA\Property(property="created_at",     ref="#/components/schemas/Note/properties/created_at"),
 	 *			@OA\Property(property="updated_at",     ref="#/components/schemas/Note/properties/updated_at"),
-	 *			@OA\Property(property="tags",           ref="#/components/schemas/NoteTag"),
+	 *			@OA\Property(property="tags",           ref="#/components/schemas/AnnotationTag"),
 	 *        )
 	 *    )
 	 *)
