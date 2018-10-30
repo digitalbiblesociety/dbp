@@ -202,7 +202,6 @@ class UsersController extends APIController
 	 *     @OA\Parameter(ref="#/components/parameters/format"),
 	 *     @OA\RequestBody(required=true, description="Information supplied for user creation", @OA\MediaType(mediaType="application/json",
 	 *          @OA\Schema(
-	 *              @OA\Property(property="nickname",                ref="#/components/schemas/User/properties/nickname"),
 	 *              @OA\Property(property="avatar",                  ref="#/components/schemas/User/properties/avatar"),
 	 *              @OA\Property(property="email",                   ref="#/components/schemas/User/properties/email"),
 	 *              @OA\Property(property="name",                    ref="#/components/schemas/User/properties/name"),
@@ -232,9 +231,11 @@ class UsersController extends APIController
 		if($invalid) return $invalid;
 
 		$user = User::create([
-			'avatar'   => $request->avatar,
-			'email'    => $request->email,
-			'name'     => $request->name,
+			'avatar'        => $request->avatar,
+			'email'         => $request->email,
+			'name'          => $request->name,
+			'first_name'    => $request->first_name,
+			'last_name'     => $request->last_name,
 			'token'    => unique_random('dbp_users.users','token'),
 			'activated' => 0,
 			'notes'    => $request->notes,
@@ -489,7 +490,6 @@ class UsersController extends APIController
 			if (!$user) {
 				$user = User::create([
 					'id'       => str_random(24),
-					'nickname' => $providerUser->getNickname(),
 					'email'    => $providerUser->getEmail(),
 					'name'     => $providerUser->getName(),
 					'verified' => 1,
@@ -565,7 +565,8 @@ class UsersController extends APIController
 			'social_provider_id'      => 'required_with:social_provider_user_id',
 			'social_provider_user_id' => 'required_with:social_provider_id',
 			'name'                    => 'string|max:191',
-			'nickname'                => 'string|max:191',
+			'first_name'              => 'string|max:64',
+			'last_name'               => 'string|max:64',
 			'remember_token'          => 'max:100',
 			'verified'                => 'boolean'
 		]);
