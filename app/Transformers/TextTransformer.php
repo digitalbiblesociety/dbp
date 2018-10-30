@@ -2,8 +2,6 @@
 
 namespace App\Transformers;
 
-use App\Models\Bible\Text;
-
 class TextTransformer extends BaseTransformer
 {
     public function transform($text)
@@ -16,7 +14,7 @@ class TextTransformer extends BaseTransformer
 	    }
     }
 
-    public function transformforV2($text)
+    public function transformForV2($text)
     {
 	    switch($this->route) {
 
@@ -71,16 +69,16 @@ class TextTransformer extends BaseTransformer
 		     *   )
 		     * )
 		     */
-		    case "v2_text_search_group": {
+		    case 'v2_text_search_group': {
 		    	return [
 				    'dam_id'           => $text->bible_id,
 				    'book_name'        => $text->book_name,
 				    'book_id'          => $text->id_osis,
-				    'chapter_id'       => "$text->chapter",
-				    'verse_id'         => "$text->verse_start",
+				    'chapter_id'       => (string) $text->chapter,
+				    'verse_id'         => (string) $text->verse_start,
 				    'verse_text'       => $text->verse_text,
-				    'results'		   => "$text->resultsCount",
-				    'book_order'	   => "$text->protestant_order"
+				    'results'		   => (string) $text->resultsCount,
+				    'book_order'	   => (string) $text->protestant_order
 			    ];
 		    }
 
@@ -105,14 +103,14 @@ class TextTransformer extends BaseTransformer
 		     */
 		    default: {
 			    return [
-				    'book_name'        => $text->book_name,
-				    'book_id'          => $text->osis_id,
+				    'book_name'        => (string) $text->book_name,
+				    'book_id'          => (string) $text->osis_id,
 				    'book_order'       => (string) $text->protestant_order,
 				    'chapter_id'       => (string) $text->chapter,
 				    'chapter_title'    => "Chapter $text->chapter",
-				    'verse_id'         => "$text->verse_start",
-				    'verse_text'       => "$text->verse_text",
-				    'paragraph_number' => "1"
+				    'verse_id'         => (string) $text->verse_start,
+				    'verse_text'       => (string) $text->verse_text,
+				    'paragraph_number' => (string) 1
 			    ];
 		    }
 	    }
@@ -121,12 +119,12 @@ class TextTransformer extends BaseTransformer
 
 	/**
 	 * @OA\Schema (
-			*	type="array",
-			*	schema="v4_bible_filesets_chapter",
-			*	description="The bible chapter response",
-			*	title="v4_bible_filesets_chapter",
-			*	@OA\Xml(name="v4_bible_filesets_chapter"),
-			*	@OA\Items(              required={"name","script","family","type","direction"},
+	 *    type="array",
+	 *    schema="v4_bible_filesets_chapter",
+	 *    description="The bible chapter response",
+	 *    title="v4_bible_filesets_chapter",
+	 *	@OA\Xml(name="v4_bible_filesets_chapter"),
+	 *	@OA\Items(              required={"name","script","family","type","direction"},
 	 *              @OA\Property(property="book_id",           ref="#/components/schemas/Book/properties/id"),
 	 *              @OA\Property(property="book_name",         ref="#/components/schemas/Book/properties/name"),
 	 *              @OA\Property(property="book_name_alt",     ref="#/components/schemas/BookTranslation/properties/name"),
@@ -141,8 +139,10 @@ class TextTransformer extends BaseTransformer
 	 *   )
 	 * )
 	 *
+	 * @param $text
+	 * @return array
 	 */
-	public function transformforV4($text)
+	public function transformForV4($text)
 	{
 		return [
 			'book_id'          => $text->book_id,

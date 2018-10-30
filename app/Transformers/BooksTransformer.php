@@ -134,7 +134,8 @@ class BooksTransformer extends BaseTransformer
 			}
 
 			case 'v4_bible_filesets.books':
-			case 'v4_bible.books': {
+			case 'v4_bible.books':
+			default: {
 				return [
 					'book_id'         => $book->book->id,
 					'book_id_usfx'    => $book->book->id_usfx,
@@ -146,10 +147,6 @@ class BooksTransformer extends BaseTransformer
 					'book_group'      => $book->book->book_group,
 					'chapters'        => $book->chapters,
 				];
-			}
-
-			default: {
-				return [];
 			}
 
 		}

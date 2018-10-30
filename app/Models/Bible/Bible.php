@@ -5,12 +5,9 @@ namespace App\Models\Bible;
 use App\Models\Country\Country;
 use App\Models\Language\Alphabet;
 use App\Models\Language\NumeralSystem;
-use Illuminate\Database\Eloquent\Builder;
 use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
-
-use Laravel\Scout\Searchable;
 
 /**
  * App\Models\Bible\Bible
@@ -218,12 +215,6 @@ class Bible extends Model
      */
     public $incrementing = false;
 
-    /**
-     *
-     * Titles and descriptions for every text can be translated into any language.
-     * This relationship returns those translations.
-     *
-     */
     public function translations()
     {
         return $this->hasMany(BibleTranslation::class)->where('name','!=','');
@@ -325,11 +316,6 @@ class Bible extends Model
         return $this->hasMany(BibleEquivalent::class)->where('type','eBible');
     }
 
-    /**
-     * Basically anybody who helps out with the bible Translation
-     *
-     * @return mixed
-     */
     public function organizations()
     {
         return $this->belongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type']);
@@ -340,20 +326,11 @@ class Bible extends Model
 		return $this->belongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type'])->wherePivot('relationship_type','publisher');
 	}
 
-
-    /**
-     * Each Bible has many links that attach
-     *
-     * @return mixed
-     */
     public function links()
     {
         return $this->hasMany(BibleLink::class)->where('visible',true);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
     public function language()
     {
         return $this->belongsTo(Language::class);
@@ -364,9 +341,6 @@ class Bible extends Model
     	return $this->hasManyThrough(Country::class,Language::class,'id','id','language_id','country_id')->select(['countries.id as country_id','countries.continent','countries.name']);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
     public function alphabet()
     {
         return $this->hasOne(Alphabet::class,'script','script')->select(['script','name','direction','unicode','requires_font']);
@@ -377,10 +351,6 @@ class Bible extends Model
 		return $this->hasOne(NumeralSystem::class,'number_id','number_id');
 	}
 
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function videos()
     {
         return $this->hasMany(Video::class)->orderBy('order','asc');

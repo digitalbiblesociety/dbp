@@ -14,20 +14,18 @@ class ProjectTransformer extends BaseTransformer
 	 */
 	public function transform(Project $project)
     {
-	    switch ($this->version) {
-		    case 4:
-		    default: return $this->transformForV4($project);
-	    }
+		return $this->transformForV4($project);
     }
 
 	/**
 	 * @OA\Schema (
-			*	type="array",
-			*	schema="v4_projects_index",
-			*	description="The minimized alphabet return for the all alphabets route",
-			*	title="v4_projects_index",
-			*	@OA\Xml(name="v4_projects_index"),
-			*	@OA\Items(        @OA\Property(property="id",                ref="#/components/schemas/Project/properties/id"),
+	 *    type="array",
+	 *    schema="v4_projects_index",
+	 *    description="The minimized alphabet return for the all alphabets route",
+	 *    title="v4_projects_index",
+	 *	@OA\Xml(name="v4_projects_index"),
+	 *	@OA\Items(
+	 *        @OA\Property(property="id",                ref="#/components/schemas/Project/properties/id"),
 	 *        @OA\Property(property="name",              ref="#/components/schemas/Project/properties/name"),
 	 *        @OA\Property(property="url_avatar",        ref="#/components/schemas/Project/properties/url_avatar"),
 	 *        @OA\Property(property="url_avatar_icon",   ref="#/components/schemas/Project/properties/url_avatar_icon"),
@@ -39,6 +37,8 @@ class ProjectTransformer extends BaseTransformer
 	 *     )
 	 *   )
 	 * )
+	 * @param $project
+	 * @return array
 	 */
 	public function transformForV4($project)
 	{

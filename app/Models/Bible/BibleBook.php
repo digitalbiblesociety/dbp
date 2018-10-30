@@ -92,8 +92,9 @@ class BibleBook extends Model
 	/**
 	 * Remove brackets from uncertain book names
 	 *
-	 * @param  string  $name
-	 * @return void
+	 * @param  string $name
+	 *
+	 * @return string
 	 */
 	public function getNameAttribute($name)
 	{

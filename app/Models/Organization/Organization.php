@@ -304,17 +304,17 @@ class Organization extends Model
 
     public function translations()
     {
-        return $this->HasMany(OrganizationTranslation::class,'organization_id','id');
+        return $this->hasMany(OrganizationTranslation::class,'organization_id','id');
     }
 
     public function currentTranslation()
     {
-        return $this->HasOne(OrganizationTranslation::class,'organization_id','id')->where('language_id',$GLOBALS['i18n_id']);
+        return $this->hasOne(OrganizationTranslation::class,'organization_id','id')->where('language_id',$GLOBALS['i18n_id']);
     }
 
 	public function vernacularTranslation()
 	{
-		return $this->HasOne(OrganizationTranslation::class)->where('vernacular',1);
+		return $this->hasOne(OrganizationTranslation::class)->where('vernacular',1);
 	}
 
     public function bibles()
@@ -324,38 +324,38 @@ class Organization extends Model
 
 	public function links()
 	{
-		return $this->HasMany(BibleLink::class,'provider','slug');
+		return $this->hasMany(BibleLink::class,'provider','slug');
 	}
 
 	// TODO FIX This
     public function filesets()
     {
-    	return $this->HasManyThrough(BibleFilesetConnection::class, BibleFileset::class);
+    	return $this->hasManyThrough(BibleFilesetConnection::class, BibleFileset::class);
     }
 
     public function resources()
     {
-        return $this->HasMany(Resource::class, 'organization_id', 'id');
+        return $this->hasMany(Resource::class, 'organization_id', 'id');
     }
 
 	public function logos()
 	{
-		return $this->HasMany(OrganizationLogo::class);
+		return $this->hasMany(OrganizationLogo::class);
 	}
 
 	public function logo()
 	{
-		return $this->HasOne(OrganizationLogo::class,'organization_id','id');
+		return $this->hasOne(OrganizationLogo::class,'organization_id','id');
 	}
 
 	public function logoIcon()
 	{
-		return $this->HasOne(OrganizationLogo::class,'organization_id','id')->where('icon',1);
+		return $this->hasOne(OrganizationLogo::class,'organization_id','id')->where('icon',1);
 	}
 
 	public function members()
 	{
-		return $this->HasMany(Role::class);
+		return $this->hasMany(Role::class);
 	}
 
 	public function relationships()

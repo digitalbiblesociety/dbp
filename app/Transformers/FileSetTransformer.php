@@ -2,8 +2,6 @@
 
 namespace App\Transformers;
 
-use App\Models\Bible\Audio;
-
 class FileSetTransformer extends BaseTransformer
 {
 
@@ -33,6 +31,7 @@ class FileSetTransformer extends BaseTransformer
 				];
 			}
 
+			default:
 			case 'v2_audio_path': {
 				return [
 					'book_id'    => ucfirst(strtolower($audio->book->id_osis)),
@@ -50,15 +49,7 @@ class FileSetTransformer extends BaseTransformer
 
 			case 'v4_bible_filesets.podcast': {
 				$bible = $fileset->bible->first();
-				if(!$bible) return $this->replyWithError(trans('api.filesets_errors_404',['l10n'=>$GLOBALS['i18n_iso']],$this->preferred_language));
-
-				if(!isset($fileset->ietf_code)) {
-					$ietf_code = $bible->language->iso1 ?? $bible->language->iso;
-					$ietf_code .= '-';
-					$ietf_code .= $bible->fileset->primaryCountry ?? $bible->language->primaryCountry;
-				} else {
-					$ietf_code = $fileset->ietf_code;
-				}
+				if(!$bible) return $this->replyWithError(trans('api.filesets_errors_404'));
 
 				$meta['channel']['title'] = $bible->translations->where('iso',$bible->iso)->first()->name.' - '.$bible->language->name ?? $bible->where('iso','eng')->first()->name.' - '.$bible->language->name;
 				$meta['channel']['link'] = env('APP_URL_PODCAST') ?? 'https://bible.is/';
@@ -71,7 +62,7 @@ class FileSetTransformer extends BaseTransformer
 				$meta['channel']['lastBuildDate'] = $bible->last_updated ? $fileset->last_updated->toRfc2822String() : '';
 				//$meta['channel']['pubDate'] = ($bible->date) ? $fileset->date->toRfc2822String() : "";
 				$meta['channel']['docs'] = 'http://blogs.law.harvard.edu/tech/rss';
-				$meta['channel']['webMaster'] = env('APP_SITE_CONTACT') ?? "";
+				$meta['channel']['webMaster'] = env('APP_SITE_CONTACT') ?? '';
 				$meta['channel']['itunes:keywords'] = 'Bible, Testament, Jesus, Scripture, Holy, God, Heaven, Hell, Gospel, Christian, Bible.is, Church';
 				$meta['channel']['itunes:author'] = 'Faith Comes By Hearing';
 				$meta['channel']['itunes:subtitle'] = 'Online Audio Bible Recorded by Faith Comes By Hearing';
@@ -117,8 +108,8 @@ class FileSetTransformer extends BaseTransformer
 						'pubDate'              => $fileset->created_at->toRfc2822String() ?? '',
 						'itunes:author'        => 'Faith Comes By Hearing',
 						'itunes:explicit'      => 'no',
-						'itunes:subtitle'      => $file->currentTitle ? preg_replace ($xml_safe_expression, ' ', $file->currentTitle->title) : "",
-						'itunes:summary'       => $file->currentTitle ? preg_replace ($xml_safe_expression, ' ', $file->currentTitle->title) : "",
+						'itunes:subtitle'      => $file->currentTitle ? preg_replace ($xml_safe_expression, ' ', $file->currentTitle->title) : '',
+						'itunes:summary'       => $file->currentTitle ? preg_replace ($xml_safe_expression, ' ', $file->currentTitle->title) : '',
 						'itunes:duration'      => $file->duration ?? '0:00',
 						'itunes:keywords'      => 'Bible, Testament, Jesus, Scripture, Holy, God, Heaven, Hell, Gospel, Christian, Bible.is, Church'
 					];

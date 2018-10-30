@@ -10,6 +10,24 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Organization\Organization $organization
  * @mixin \Eloquent
  *
+ * @property int $organization_id
+ * @property int $vernacular
+ * @property int $alt
+ * @property string $name
+ * @property string|null $description
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property string $language_iso
+ * @property string|null $description_short
+ *
+ * @method static OrganizationTranslation whereOrganizationId($value)
+ * @method static OrganizationTranslation whereVernacular($value)
+ * @method static OrganizationTranslation whereAlt($value)
+ * @method static OrganizationTranslation whereName($value)
+ * @method static OrganizationTranslation whereDescription($value)
+ * @method static OrganizationTranslation whereCreatedAt($value)
+ * @method static OrganizationTranslation whereUpdatedAt($value)
+ *
  * @OA\Schema (
  *     type="object",
  *     description="The alternative names in different languages for an organization",
@@ -37,7 +55,6 @@ class OrganizationTranslation extends Model
 	 * )
 	 *
 	 * @method static OrganizationTranslation whereLanguageIso($value)
-	 * @property string $language_iso
 	 *
 	 */
 	protected $language_iso;
@@ -51,9 +68,6 @@ class OrganizationTranslation extends Model
 	  *     minimum=0
 	  * )
 	  *
-	  * @method static OrganizationTranslation whereOrganizationId($value)
-	  * @property int $organization_id
-	  *
 	  */
 	protected $organization_id;
 
@@ -65,9 +79,6 @@ class OrganizationTranslation extends Model
 	  *     type="boolean"
 	  * )
 	  *
-	  * @method static OrganizationTranslation whereVernacular($value)
-	  * @property int $vernacular
-	  *
 	  */
 	protected $vernacular;
 	 /**
@@ -77,9 +88,6 @@ class OrganizationTranslation extends Model
 	  *     description="If the current name is a secondary title for the organization",
 	  *     type="boolean"
 	  * )
-	  *
-	  * @method static OrganizationTranslation whereAlt($value)
-	  * @property int $alt
 	  *
 	  */
 	protected $alt;
@@ -92,9 +100,6 @@ class OrganizationTranslation extends Model
 	  *     maxLength=191
 	  * )
 	  *
-	  * @method static OrganizationTranslation whereName($value)
-	  * @property string $name
-	  *
 	  */
 	protected $name;
 	 /**
@@ -104,9 +109,6 @@ class OrganizationTranslation extends Model
 	  *     description="The current translated description for the organization",
 	  *     type="string"
 	  * )
-	  *
-	  * @method static OrganizationTranslation whereDescription($value)
-	  * @property string|null $description
 	  *
 	  */
 	protected $description;
@@ -119,28 +121,16 @@ class OrganizationTranslation extends Model
 	 * )
 	 *
 	 * @method static OrganizationTranslation whereDescriptionShort($value)
-	 * @property string|null $description_short
 	 *
 	 */
 	protected $description_short;
-	 /**
-	  *
-	  * @method static OrganizationTranslation whereCreatedAt($value)
-	  * @property \Carbon\Carbon|null $created_at
-	  */
 	protected $created_at;
-	 /**
-	  *
-	  * @method static OrganizationTranslation whereUpdatedAt($value)
-	  * @property \Carbon\Carbon|null $updated_at
-	  *
-	  */
 	protected $updated_at;
 
 
     public function organization()
     {
-        return $this->BelongsTo(Organization::class);
+        return $this->belongsTo(Organization::class);
     }
 
 }

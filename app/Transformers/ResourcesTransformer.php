@@ -6,17 +6,16 @@ use App\Models\Resource\Resource;
 
 class ResourcesTransformer extends BaseTransformer
 {
-    /**
-     * A Fractal transformer.
-     *
-     * @return array
-     */
+	/**
+	 * A Fractal transformer.
+	 *
+	 * @param Resource $resource
+	 *
+	 * @return array
+	 */
 	public function transform(Resource $resource)
 	{
-		switch ($this->version) {
-			case "4": return $this->transformForV4($resource);
-			default:  return $this->transformForV4($resource);
-		}
+		return $this->transformForV4($resource);
 	}
 
 	public function transformForV4($resource) {
@@ -25,25 +24,14 @@ class ResourcesTransformer extends BaseTransformer
 		$vname_description = @$resource->translations->where('tag',0)->where('iso',$resource->iso)->first()->description ?? '';
 		$name = @$resource->translations->where('tag',0)->where('iso',$this->i10n)->first()->title ?? '';
 		$name_description = @$resource->translations->where('tag',0)->where('iso',$this->i10n)->first()->description ?? '';
-		if($vname == $name) $name = '';
-		if($vname_description == $name_description) $name_description = '';
+		if($vname === $name) $name = '';
+		if($vname_description === $name_description) $name_description = '';
 
 		switch($this->route) {
-			case "v4_resources.index": {
+
+			case 'v4_resources.show': {
 				return [
-					'id'                => intval($resource->id),
-					'iso'               => $resource->iso,
-					'language'          => $resource->language->name,
-					'vname'             => $vname,
-					'name'              => $name,
-					'links'             => $resource->links,
-					'type'              => $resource->type,
-					'organization'      => $resource->organization->translations->where('language_iso',$this->i10n)->first()->name ?? str_replace('-',' ',$resource->organization->slug)
-				];
-			}
-			case "v4_resources.show": {
-				return [
-					'id'                 => intval($resource->id),
+					'id'                 => (int) $resource->id,
 					'iso'                => $resource->iso,
 					'language'           => $resource->language->name,
 					'cover_thumbnail'    => $resource->cover_thumbnail,
@@ -55,6 +43,22 @@ class ResourcesTransformer extends BaseTransformer
 					'organization'       => $resource->organization
 				];
 			}
+
+
+			case 'v4_resources.index':
+			default: {
+				return [
+					'id'                => (int) $resource->id,
+					'iso'               => $resource->iso,
+					'language'          => $resource->language->name,
+					'vname'             => $vname,
+					'name'              => $name,
+					'links'             => $resource->links,
+					'type'              => $resource->type,
+					'organization'      => $resource->organization->translations->where('language_iso',$this->i10n)->first()->name ?? str_replace('-',' ',$resource->organization->slug)
+				];
+			}
+
 		}
 
 

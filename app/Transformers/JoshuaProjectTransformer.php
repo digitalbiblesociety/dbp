@@ -6,11 +6,13 @@ use League\Fractal\TransformerAbstract;
 
 class JoshuaProjectTransformer extends TransformerAbstract
 {
-    /**
-     * A Fractal transformer.
-     *
-     * @return array
-     */
+	/**
+	 * A Fractal transformer.
+	 *
+	 * @param $joshuaProject
+	 *
+	 * @return array
+	 */
     public function transform($joshuaProject)
     {
         return [

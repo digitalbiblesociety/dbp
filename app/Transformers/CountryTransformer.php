@@ -3,12 +3,6 @@
 namespace App\Transformers;
 
 use App\Models\Country\Country;
-use App\Models\Country\JoshuaProject;
-
-
-use App\Models\Country\FactBook\CountryEthnicities;
-use App\Models\Country\FactBook\CountryRegions;
-use App\Models\Country\FactBook\CountryTranslations;
 
 use App\Transformers\Factbook\CommunicationsTransformer;
 use App\Transformers\Factbook\EconomyTransformer;
@@ -16,7 +10,6 @@ use App\Transformers\Factbook\EnergyTransformer;
 use App\Transformers\Factbook\GeographyTransformer;
 use App\Transformers\Factbook\GovernmentTransformer;
 use App\Transformers\Factbook\IssuesTransformer;
-use App\Transformers\Factbook\LanguageTransformer;
 use App\Transformers\Factbook\PeopleTransformer;
 use App\Transformers\Factbook\EthnicitiesTransformer;
 use App\Transformers\Factbook\RegionsTransformer;
@@ -54,10 +47,10 @@ class CountryTransformer extends BaseTransformer
 	 */
 	public function transform($country)
 	{
-		switch ($this->version) {
-			case "2":
-			case "3": return $this->transformForV2($country);
-			case "4":
+		switch ((int) $this->version) {
+			case 2:
+			case 3: return $this->transformForV2($country);
+			case 4:
 			default: return $this->transformForV4($country);
 		}
 	}
@@ -66,55 +59,21 @@ class CountryTransformer extends BaseTransformer
 	{
 		switch($this->route) {
 
-			/**
-			 * @OA\Schema (
-			*	type="array",
-			*	schema="v4_countries.all",
-			*	description="The minimized country return for the all countries route",
-			*	title="v4_countries.all",
-			*	@OA\Xml(name="v4_countries.all"),
-			*	@OA\Items(          @OA\Property(property="name",              ref="#/components/schemas/Country/properties/name"),
-			 *          @OA\Property(property="continent_code",    ref="#/components/schemas/Country/properties/continent"),
-			 *          @OA\Property(property="languages",         @OA\Schema(type="array",
-			 *              @OA\Items(@OA\Schema(description="A key value pair consisting of an iso code and language name", example={"eng"="English"}))))
-			 *      )
-			 *   )
-			 * )
-			 */
-			case "v4_countries.all": {
-				$output['name'] = $country->currentTranslation->name ?? $country->name;
-				$output['continent_code'] = $country->continent;
-				$output['codes'] = [
-					'fips'       => $country->fips,
-					'iso_a3'     => $country->iso_a3,
-					'iso_a2'     => $country->id
-				];
-				if($country->relationLoaded('languagesFiltered')) {
-					if(isset($country->languagesFiltered->translation)) {
-						$output['languages'] = $country->languagesFiltered->mapWithKeys(function ($item) {
-							return [ $item['iso'] => $item['translation']['name'] ?? $item['name'] ];
-						});
-					} else {
-						$output['languages'] = $country->languagesFiltered->pluck('iso');
-					}
-				}
-				return $output;
-			}
-			case "v4_countries.jsp": {
+			case 'v4_countries.jsp': {
 				return [
-					"id"                      => $country->country->id,
-                    "name"                    => $country->country->name,
-					"continent"               => $country->country->continent,
-					"population"              => number_format($country->population),
-					"population_unreached"    => number_format($country->population_unreached),
-					"language_official_name"  => $country->language_official_name,
-					"people_groups"           => $country->people_groups,
-					"people_groups_unreached" => $country->people_groups_unreached,
-					"joshua_project_scale"    => $country->joshua_project_scale,
-					"primary_religion"        => $country->primary_religion,
-					"percent_christian"       => $country->percent_christian,
-					"resistant_belt"          => $country->resistant_belt,
-					"percent_literate"        => $country->percent_literate
+					'id'                      => $country->country->id,
+					'name'                    => $country->country->name,
+					'continent'               => $country->country->continent,
+					'population'              => number_format($country->population),
+					'population_unreached'    => number_format($country->population_unreached),
+					'language_official_name'  => $country->language_official_name,
+					'people_groups'           => $country->people_groups,
+					'people_groups_unreached' => $country->people_groups_unreached,
+					'joshua_project_scale'    => $country->joshua_project_scale,
+					'primary_religion'        => $country->primary_religion,
+					'percent_christian'       => $country->percent_christian,
+					'resistant_belt'          => $country->resistant_belt,
+					'percent_literate'        => $country->percent_literate
 				];
 			}
 
@@ -134,7 +93,7 @@ class CountryTransformer extends BaseTransformer
 			 *   )
 			 * )
 			 */
-			case "v4_countries.one": {
+			case 'v4_countries.one': {
 				return [
 					'name'           => $country->name,
 					'introduction'   => $country->introduction,
@@ -160,6 +119,45 @@ class CountryTransformer extends BaseTransformer
 					]
 				];
 			}
+
+
+			/**
+			 * @OA\Schema (
+			 *	type="array",
+			 *	schema="v4_countries.all",
+			 *	description="The minimized country return for the all countries route",
+			 *	title="v4_countries.all",
+			 *	@OA\Xml(name="v4_countries.all"),
+			 *	@OA\Items(
+			 *          @OA\Property(property="name",              ref="#/components/schemas/Country/properties/name"),
+			 *          @OA\Property(property="continent_code",    ref="#/components/schemas/Country/properties/continent"),
+			 *          @OA\Property(property="languages",         @OA\Schema(type="array",
+			 *              @OA\Items(@OA\Schema(description="A key value pair consisting of an iso code and language name", example={"eng"="English"}))))
+			 *      )
+			 *   )
+			 * )
+			 */
+			default:
+			case 'v4_countries.all': {
+				$output['name'] = $country->currentTranslation->name ?? $country->name;
+				$output['continent_code'] = $country->continent;
+				$output['codes'] = [
+					'fips'       => $country->fips,
+					'iso_a3'     => $country->iso_a3,
+					'iso_a2'     => $country->id
+				];
+				if($country->relationLoaded('languagesFiltered')) {
+					if(isset($country->languagesFiltered->translation)) {
+						$output['languages'] = $country->languagesFiltered->mapWithKeys(function ($item) {
+							return [ $item['iso'] => $item['translation']['name'] ?? $item['name'] ];
+						});
+					} else {
+						$output['languages'] = $country->languagesFiltered->pluck('iso');
+					}
+				}
+				return $output;
+			}
+
 		}
 	}
 

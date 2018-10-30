@@ -29,10 +29,10 @@ class LanguageTransformer extends BaseTransformer
                     'english_name'              => $language->name ?? '',
                     'language_code'             => strtoupper($language->iso),
                     'language_iso'              => $language->iso,
-                    'language_iso_2B'           => $language->iso2B ?? '',
-                    'language_iso_2T'           => $language->iso2T ?? '',
-                    'language_iso_1'            => $language->iso1 ?? '',
-                    'language_iso_name'         => $language->name ?? '',
+                    'language_iso_2B'           => $language->iso, // $language->iso2B,
+                    'language_iso_2T'           => $language->iso, // $language->iso2T,
+                    'language_iso_1'            => '', //$language->iso1,
+                    'language_iso_name'         => $language->name,
 					'language_family_code'      => $language->parent ? $language->parent->autonym : strtoupper($language->iso),
 					'language_family_name'      => ($language->parent ? $language->parent->autonym : $language->autonym) ?? '',
 					'language_family_english'   => ($language->parent ? $language->parent->name : $language->name) ?? '',
@@ -48,15 +48,15 @@ class LanguageTransformer extends BaseTransformer
 
 			default: {
 				return [
-					'language_code'        => strtoupper($language->iso) ?? '',
-					'language_name'        => $language->autonym ?? '',
-					'english_name'         => $language->name ?? '',
-					'language_iso'         => $language->iso ?? '',
-					'language_iso_2B'      => $language->iso2B ?? '',
-					'language_iso_2T'      => $language->iso2T ?? '',
-					'language_iso_1'       => $language->iso1 ?? '',
-					'language_iso_name'    => $language->name ?? '',
-					'language_family_code' => $language->iso ?? ''
+					'language_code'        => strtoupper($language->iso),
+					'language_name'        => $language->autonym,
+					'english_name'         => $language->name,
+					'language_iso'         => $language->iso,
+					'language_iso_2B'      => $language->iso2B,
+					'language_iso_2T'      => $language->iso2T,
+					'language_iso_1'       => $language->iso1,
+					'language_iso_name'    => $language->name,
+					'language_family_code' => $language->iso,
 				];
 			}
 

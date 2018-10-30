@@ -32,9 +32,9 @@ class OrganizationTransformer extends BaseTransformer
 		switch($this->route) {
 			case 'v2_volume_organization_list': {
 				return [
-					'organization_id'   => $organization->id,
-					'organization_name' => $organization->name ?? "",
-					'number_volumes'    => $organization->bibles->count() ?? 0,
+					'organization_id'   => (string) $organization->id,
+					'organization_name' => (string) $organization->name,
+					'number_volumes'    => (string) $organization->bibles->count(),
 				];
 				break;
 			}
@@ -78,62 +78,62 @@ class OrganizationTransformer extends BaseTransformer
 		}
 
 		switch($this->route) {
-			case "v4_organizations.one": {
+			case 'v4_organizations.one': {
 				return [
-					"slug"              => $organization->slug,
-					"name"              => $organization->name,
-					"description"       => $organization->description,
-					"description_short" => $organization->tagline,
-					"phone"             => $organization->phone,
-					"email"             => $organization->email,
-					"bibles"            => $bibles,
-					"resources"         => $organization->resources,
-					"logos"             => $organization->logos,
-					"colors" => [
-						"primary"      => $organization->primaryColor,
-						"secondary"    => $organization->secondaryColor,
+					'slug'              => $organization->slug,
+					'name'              => $organization->name,
+					'description'       => $organization->description,
+					'description_short' => $organization->tagline,
+					'phone'             => $organization->phone,
+					'email'             => $organization->email,
+					'bibles'            => $bibles,
+					'resources'         => $organization->resources,
+					'logos'             => $organization->logos,
+					'colors' => [
+						'primary'      => $organization->primaryColor,
+						'secondary'    => $organization->secondaryColor,
 					],
-					"urls" => [
-						"site"          => $organization->url_website ?? '',
-						"donate"        => $organization->url_donate ?? '',
-						"twitter"       => $organization->url_twitter ?? '',
-						"facebook"      => $organization->url_facebook ?? '',
-						"instagram"     => $organization->url_instagram ?? '',
+					'urls' => [
+						'site'          => (string) $organization->url_website,
+						'donate'        => (string) $organization->url_donate,
+						'twitter'       => (string) $organization->url_twitter,
+						'facebook'      => (string) $organization->url_facebook,
+						'instagram'     => (string) $organization->url_instagram,
 					],
-					"address" => [
-						"line_1"            => $organization->address,
-						"line_2"            => $organization->address2,
-						"city"              => $organization->city,
-						"state"             => $organization->state,
-						"country"           => $organization->country,
-						"zip"               => $organization->zip,
+					'address' => [
+						'line_1'            => $organization->address,
+						'line_2'            => $organization->address2,
+						'city'              => $organization->city,
+						'state'             => $organization->state,
+						'country'           => $organization->country,
+						'zip'               => $organization->zip,
 					]
 				];
 			}
 
 			default:
-			case "v4_organizations.all": {
+			case 'v4_organizations.all': {
 
 				$output = [
-					"id"                => $organization->id,
-					"name"              => $organization->name,
-					"description_short" => $organization->tagline,
-					"slug"              => $organization->slug,
-					"logo"              => @$organization->logos->where('icon',0)->first()->url,
-					"logo_icon"         => @$organization->logos->where('icon',1)->first()->url,
-					"phone"             => $organization->phone,
-					"email"             => $organization->email,
-					"latitude"          => $organization->latitude,
-					"longitude"         => $organization->longitude,
-					"colors"            => [
-						"primary"       => $organization->primaryColor,
-						"secondary"     => $organization->secondaryColor,
+					'id'                => $organization->id,
+					'name'              => $organization->name,
+					'description_short' => $organization->tagline,
+					'slug'              => $organization->slug,
+					'logo'              => @$organization->logos->where('icon',0)->first()->url,
+					'logo_icon'         => @$organization->logos->where('icon',1)->first()->url,
+					'phone'             => $organization->phone,
+					'email'             => $organization->email,
+					'latitude'          => $organization->latitude,
+					'longitude'         => $organization->longitude,
+					'colors'            => [
+						'primary'   => $organization->primaryColor,
+						'secondary' => $organization->secondaryColor,
 					],
-					"urls" => [
-						"site"        => $organization->url_website,
-						"donate"      => $organization->url_donate,
-						"twitter"     => $organization->url_twitter,
-						"facebook"    => $organization->url_facebook,
+					'urls'              => [
+						'site'     => $organization->url_website,
+						'donate'   => $organization->url_donate,
+						'twitter'  => $organization->url_twitter,
+						'facebook' => $organization->url_facebook,
 					]
 				];
 
