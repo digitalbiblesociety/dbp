@@ -9,6 +9,8 @@ class HighlightTransformer extends TransformerAbstract
 	/**
 	 * A Fractal transformer.
 	 *
+	 * @param $highlight
+	 *
 	 * @return array
 	 */
 	public function transform($highlight)

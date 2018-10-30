@@ -227,6 +227,7 @@ class UsersController extends APIController
 	public function annotationHighlight()
 	{
 		$fileset_id = checkParam('dam_id', null, 'optional');
+		$bible_id = BibleFileset::where('id',$fileset_id)->first()->id ?? strtoupper(substr($fileset_id,0,6));
 		$limit = checkParam('limit', null, 'optional') ?? 1000;
 
 		if(checkParam('hash') === $this->hash) {
@@ -237,8 +238,8 @@ class UsersController extends APIController
 				         ->on('bible_books.book_id', '=', 'user_highlights.book_id');
 				})
 					->join(env('DBP_DATABASE').'.books', 'books.id', '=', 'user_highlights.book_id')
-				->when($fileset_id, function ($q) use ($fileset_id) {
-				    $q->where('fileset_id', $fileset_id);
+				->when($fileset_id, function ($q) use ($bible_id) {
+				    $q->where('user_highlights.bible_id', $bible_id);
 				})->select([
 					'user_highlights.id',
 					'user_highlights.bible_id',
@@ -276,14 +277,14 @@ class UsersController extends APIController
 			}
 
 			$book = Book::where('id_osis',request()->book_id)->first();
-			$fileset_id = strtoupper(substr(request()->dam_id,0,6));
-			$chapter = \DB::connection('sophia')->table($fileset_id.'_vpl')->where('chapter',request()->chapter_id)->where('book',$book->id_usfx)->where('verse_start',request()->verse_id)->first();
+			$bible_id = BibleFileset::where('id',request()->dam_id)->first()->id ?? strtoupper(substr(request()->dam_id,0,6));
+			$chapter = \DB::connection('sophia')->table($bible_id.'_vpl')->where('chapter',request()->chapter_id)->where('book',$book->id_usfx)->where('verse_start',request()->verse_id)->first();
 			if(!$chapter) return $this->setStatusCode(404)->replyWithError('No bible_fileset found');
 			$highlightColor = HighlightColor::where('color',request()->color)->first();
 			$highlight = Highlight::create([
 				'user_id'           => request()->user_id,
 				'book_id'           => $book->id,
-				'fileset_id'        => $fileset_id,
+				'bible_id'          => $bible_id,
 				'chapter'           => request()->chapter_id,
 				'verse_start'       => request()->verse_id,
 				'highlight_start'   => 1,
