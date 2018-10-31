@@ -21,7 +21,7 @@
 	Route::name('v2_library_verseInfo')->match(['get','options'],'library/verseinfo',                                       'Bible\VerseController@info');
 	Route::name('v2_library_numbers')->match(['get','options'],'library/numbers',                                           'Wiki\NumbersController@customRange');
 	Route::name('v2_library_organization')->match(['get','options'],'library/organization',                                 'Organization\OrganizationsController@index');
-	Route::name('v2_audio_location')->match(['get','options'],'audio/location',                                             'Bible\AudioController@location');
+	Route::name('v2_audio_location')->match(['get','options'],'audio/location',                                             'Connections\V2Controllers\ApiMetadataController@libraryAsset');
 	Route::name('v2_audio_path')->match(['get','options'],'audio/path',                                                     'Bible\AudioController@index');
 	Route::name('v2_audio_timestamps')->match(['get','options'],'audio/versestart',                                         'Bible\AudioController@timestampsByReference');
 	Route::name('v2_text_font')->match(['get','options'],'text/font',                                                       'Bible\TextController@fonts');
@@ -31,6 +31,10 @@
 	Route::name('v2_video_location')->match(['get','options'],'video/location',                                             'Organization\FilmsController@location');
 	Route::name('v2_video_path')->match(['get','options'],'video/path',                                                     'Organization\FilmsController@videoPath');
 	Route::name('v2_api_jesusFilms')->match(['get','options'],'library/jesusfilm',                                          'Organization\ResourcesController@jesusFilmListing');
+
+	Route::name('v2_api_jesusFilm_index')->match(['get','options'], 'video/jesusfilm',                                      'Connections\ArclightController@index');
+	Route::name('v2_api_jesusFilm_stream')->match(['get','options'], 'arclight/chapter/{id}.m3u8',                          'Connections\ArclightController@chapter');
+	Route::name('v2_sync_api_jesusFilm')->get('arclight/sync',                                                              'Connections\ArclightController@sync');
 
 	// Bible.is API
 	Route::name('v2_users_banners_banner')->match(['get','options'], '/v2/banners/banner',                                  'Connections\V2Controllers\UsersController@banner');

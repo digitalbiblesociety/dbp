@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Connections\V2Controllers;
 
 use App\Http\Controllers\APIController;
 use App\Models\Bible\BibleFileset;
+use App\Models\Organization\Asset;
 use Storage;
 
 class ApiMetadataController extends APIController
@@ -83,14 +84,12 @@ class ApiMetadataController extends APIController
 		$fileset = BibleFileset::where('id',$dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2))->where('asset_id', $asset_id)->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404'));
 
-		$s3 = Storage::disk('s3_fcbh');
-		$client = $s3->getDriver()->getAdapter()->getClient();
-
+		$asset = Asset::find($asset_id);
 		$libraryAsset = [
 			[
-				'server'    => $asset_id.'.'.$client->getEndpoint()->getHost(),
+				'server'    => $asset->base_name,
 				'root_path' => '/audio',
-				'protocol'  => $client->getEndpoint()->getScheme(),
+				'protocol'  => $asset->protocol,
 				'CDN'       => '0',
 				'priority'  => '5',
 				'volume_id' => $dam_id,

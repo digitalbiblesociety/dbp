@@ -97,7 +97,7 @@ class APIController extends Controller
 			$this->key = checkParam('key');
 			$keyExists = Key::find($this->key);
 			$this->user = $keyExists->user ?? null;
-			if(!$this->user) abort(403, 'You need to provide a valid API key. To request an api key please email access@dbp4.org');
+			if(!$this->user) abort(401, 'You need to provide a valid API key. To request an api key please email access@dbp4.org');
 
 			// i18n
 			$i18n = checkParam('i18n',null,'optional') ?? 'eng';

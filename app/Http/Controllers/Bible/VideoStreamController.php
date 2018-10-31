@@ -49,6 +49,7 @@ class VideoStreamController extends APIController
 	{
 		$fileset = BibleFileset::with('bible')->where('id',$fileset_id)->select(['id','hash_id','asset_id'])->first();
 		if(!$fileset) return $this->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $fileset_id]));
+
 		$file    = BibleFile::with('videoResolution.transportStream')->where('hash_id', $fileset->hash_id)->where('id',$file_id)->first();
 		if(!$file) return $this->replyWithError(trans('api.bible_file_errors_404', ['id'=> $file_id]));
 
