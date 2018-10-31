@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Connections\V2Controllers\LibraryCatalog;
 
+use App\Models\Bible\BibleFile;
 use App\Models\Bible\Book;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BookTranslation;
@@ -50,12 +51,13 @@ class BooksController extends APIController
 		$id        = checkParam('dam_id');
 		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
 
-		$fileset   = BibleFileset::with('bible')->where('id', $id)->orWhere('id',substr($id,0,-4))->orWhere('id',substr($id,0,-2))->where('asset_id', $asset_id)->first();
+		$fileset   = BibleFileset::with('bible')->where('asset_id', $asset_id)
+						->where('id', $id)
+						->orWhere('id',substr($id,0,-4))
+						->orWhere('id',substr($id,0,-2))
+						->orWhere('id','LIKE',$id.'%')
+						->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
-
-		$sophiaTable = $this->checkForSophiaTable($fileset);
-		if(!\is_string($sophiaTable)) return $sophiaTable;
-
 		$testament = false;
 
 		switch ($id[\strlen($id) - 2]) {
@@ -64,23 +66,40 @@ class BooksController extends APIController
 		}
 		\Cache::forget('v2_library_book_' . $id . $asset_id . $fileset . $testament);
 		$libraryBook = \Cache::remember('v2_library_book_' . $id . $asset_id . $fileset . $testament, 1600,
-			function () use ($id, $fileset, $testament, $sophiaTable) {
+			function () use ($id, $fileset, $testament) {
+
+			// If plain text check Sophia
+			if($fileset->set_type_code == 'text_plain') {
+				$sophiaTable = $this->checkForSophiaTable($fileset);
+				if(!\is_string($sophiaTable)) return $sophiaTable;
 				$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
 				$books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
-					->when($testament, function ($q) use ($testament) {
-				             $q->where('book_testament',$testament);
-					})->orderBy('protestant_order')->get();
-				
+				             ->when($testament, function ($q) use ($testament) {
+					             $q->where('book_testament',$testament);
+				             })->orderBy('protestant_order')->get();
+				foreach ($books as $key => $book) {
+					$book[$key]->chapters = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
+				}
+			} else {
+				// Otherwise refer to Bible Files
+				$booksChapters = BibleFile::where('hash_id',$fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
+				$books = Book::whereIn('id', $booksChapters->pluck('book_id'))->when($testament, function ($q) use ($testament) {
+					$q->where('book_testament',$testament);
+				})->orderBy('protestant_order')->get();
+				foreach ($books as $key => $book) {
+					$books[$key]->chapters = $booksChapters->where('book_id', $book->id)->pluck('chapter_start');
+				}
+			}
+
 				$bible_id = $fileset->bible->first()->id;
 				foreach ($books as $key => $book) {
-					$chapters                     = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
 					$books[$key]->source_id       = $id;
 					$books[$key]->bible_id        = $bible_id;
-					$books[$key]->chapters        = $chapters->implode(',');
-					$books[$key]->number_chapters = $chapters->count();
+					$books[$key]->number_chapters = $book->chapters->count();
+					$books[$key]->chapters        = $book->chapters->implode(',');
 				}
 
-				return fractal($books, new BookTransformer())->serializeWith($this->serializer);
+				return fractal($books, new BookTransformer(),$this->serializer);
 			});
 
 		return $this->reply($libraryBook);
