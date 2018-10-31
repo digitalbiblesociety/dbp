@@ -12,11 +12,11 @@ class LibraryVolumeTransformer extends BaseTransformer
     {
 	    switch($this->route) {
 
-            case "v2_volume_history": {
+            case 'v2_volume_history': {
                 return [
-                    "dam_id" => $fileset->v2_id,
-                    "time"   => $fileset->updated_at->toDateTimeString(),
-                    "event"  => "Updated"
+	                'dam_id' => $fileset->v2_id,
+	                'time'   => $fileset->updated_at->toDateTimeString(),
+	                'event'  => 'Updated'
                 ];
                 break;
             }
@@ -90,7 +90,7 @@ class LibraryVolumeTransformer extends BaseTransformer
 				    'language_iso_1'            => (string) $fileset->iso1,
 				    'language_iso_name'         => (string) $fileset->language_name,
 				    'language_family_code'      => (string) $fileset->iso,
-				    'language_family_name'      => (string) $fileset->language_name,
+				    'language_family_name'      => (string) $fileset->autonym,
 				    'language_family_english'   => (string) $fileset->language_name,
 				    'language_family_iso'       => (string) $fileset->iso,
 				    'language_family_iso_2B'    => (string) $fileset->iso2B,

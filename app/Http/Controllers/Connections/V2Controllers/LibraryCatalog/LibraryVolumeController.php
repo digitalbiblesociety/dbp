@@ -218,6 +218,10 @@ class LibraryVolumeController extends APIController
 						$q->on('bibles.script','alphabets.script');
 					})
 					->join('languages', 'bibles.language_id','languages.id')
+					->join('language_translations', function($q) {
+						$q->on('languages.id','language_translations.language_source_id')
+						  ->on('languages.id','language_translations.language_translation_id');
+					})
 					->when($language, function ($q, $language) {
 						$q->where('languages.iso',$language->iso);
 					})
@@ -237,13 +241,12 @@ class LibraryVolumeController extends APIController
 						'languages.iso2T',
 						'languages.iso1',
 						'languages.name as language_name',
-						'languages.autonym as autonym',
+						'language_translations.name as autonym'
 					])
 					->when($updated, function($q) use($updated) {
 						$q->where('updated_at','>',$updated);
 					})->orderBy('bibles.id')
 					->get();
-
 		return $this->reply(fractal($this->generate_v2_style_id($filesets), new LibraryVolumeTransformer())->serializeWith($this->serializer));
 	}
 
