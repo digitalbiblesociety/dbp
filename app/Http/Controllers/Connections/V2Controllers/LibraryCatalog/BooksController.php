@@ -78,7 +78,7 @@ class BooksController extends APIController
 					             $q->where('book_testament',$testament);
 				             })->orderBy('protestant_order')->get();
 				foreach ($books as $key => $book) {
-					$book[$key]->chapters = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
+					$current_chapters[$key] = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
 				}
 			} else {
 				// Otherwise refer to Bible Files
@@ -87,7 +87,7 @@ class BooksController extends APIController
 					$q->where('book_testament',$testament);
 				})->orderBy('protestant_order')->get();
 				foreach ($books as $key => $book) {
-					$books[$key]->chapters = $booksChapters->where('book_id', $book->id)->pluck('chapter_start');
+					$current_chapters[$key] = $booksChapters->where('book_id', $book->id)->pluck('chapter_start');
 				}
 			}
 
@@ -95,8 +95,8 @@ class BooksController extends APIController
 				foreach ($books as $key => $book) {
 					$books[$key]->source_id       = $id;
 					$books[$key]->bible_id        = $bible_id;
-					$books[$key]->number_chapters = $book->chapters->count();
-					$books[$key]->chapters        = $book->chapters->implode(',');
+					$books[$key]->number_chapters = $current_chapters[$key]->count();
+					$books[$key]->chapters        = $current_chapters[$key]->implode(',');
 				}
 
 				return fractal($books, new BookTransformer(),$this->serializer);
