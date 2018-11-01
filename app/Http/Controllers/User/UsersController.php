@@ -148,7 +148,8 @@ class UsersController extends APIController
 	 *     @OA\RequestBody(required=true, description="Either the `email` & `password` or the `social_provider_user_id` & `social_provider_id` are required for user Login", @OA\MediaType(mediaType="application/json",
 	 *          @OA\Schema(
 	 *              @OA\Property(property="email",                     ref="#/components/schemas/User/properties/email"),
-	 *              @OA\Property(property="password",                  ref="#/components/schemas/User/properties/password"),
+	 *              @OA\Property(property="password",                  ref="#/components/schemas/User/properties/password"),\
+	 *              @OA\Property(property="project_id",                ref="#/components/schemas/Project/properties/id"),
 	 *              @OA\Property(property="social_provider_user_id",   ref="#/components/schemas/Account/properties/provider_user_id"),
 	 *              @OA\Property(property="social_provider_id",        ref="#/components/schemas/Account/properties/provider_id"),
 	 *          )
@@ -168,6 +169,8 @@ class UsersController extends APIController
 	 */
 	public function login(Request $request)
 	{
+		$project_id = checkParam('project_id', null, 'optional');
+
 		if(!$this->api && $request->method() !== 'POST') return view('auth.login');
 		if (isset($request->social_provider_id)) {
 			$account = Account::where('provider_user_id', $request->social_provider_user_id)->where('provider_id', $request->social_provider_id)->first();
@@ -178,6 +181,20 @@ class UsersController extends APIController
 
 		$validPassword = \Hash::check(md5($request->password), $user->password) || \Hash::check($request->password, $user->password);
 		if($validPassword) {
+
+			// Associate user with Project
+			if($project_id) {
+				$connection_exists = ProjectMember::where(['user_id' =>$user->id, 'project_id' =>$project_id])->exists();
+				if(!$connection_exists) {
+					$role = Role::where('slug','user')->first();
+					ProjectMember::create([
+						'user_id'    => $user->id,
+						'project_id' => $project_id,
+						'role'       => $role->id
+					]);
+				}
+			}
+
 			if($this->api) return $user;
 			\Auth::guard('web')->login($user);
 			\Auth::guard('user')->login($user);
@@ -185,7 +202,7 @@ class UsersController extends APIController
 		}
 
 		$this->incrementLoginAttempts($request);
-		return $this->setStatusCode(401)->replyWithError(trans('auth.failed', [], $GLOBALS['i18n_iso']));
+		return $this->setStatusCode(401)->replyWithError(trans('auth.failed'));
 	}
 
 	/**
