@@ -20,7 +20,7 @@ trait AnnotationTags
 			$tags = request()->tags;
 		}
 
-		if($tags->count() > 0) {
+		if(\count($tags) > 0) {
 			if (request()->method() === 'POST') {
 				$annotation->tags()->createMany($tags);
 			}
