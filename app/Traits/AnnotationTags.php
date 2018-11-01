@@ -20,13 +20,16 @@ trait AnnotationTags
 			$tags = request()->tags;
 		}
 
-		if (request()->method() === 'POST') {
-			$annotation->tags()->createMany($tags);
+		if($tags->count() > 0) {
+			if (request()->method() === 'POST') {
+				$annotation->tags()->createMany($tags);
+			}
+			if (request()->method() === 'PUT') {
+				$annotation->tags()->delete();
+				$annotation->tags()->createMany($tags);
+			}
 		}
-		if (request()->method() === 'PUT') {
-			$annotation->tags()->delete();
-			$annotation->tags()->createMany($tags);
-		}
+
 	}
 
 }
