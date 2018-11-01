@@ -10,10 +10,11 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Validator;
 use Auth;
 use App\Traits\CheckProjectMembership;
+use App\Traits\AnnotationTags;
 
 class UserNotesController extends APIController
 {
-
+	use AnnotationTags;
 	use CheckProjectMembership;
 
 	/**

@@ -10,10 +10,12 @@ use App\Transformers\UserBookmarksTransformer;
 use App\Transformers\V2\Annotations\BookmarkTransformer;
 use Illuminate\Support\Facades\Validator;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Traits\AnnotationTags;
 
 class UserBookmarksController extends APIController
 {
 
+	use AnnotationTags;
 	use CheckProjectMembership;
 
 	/**
