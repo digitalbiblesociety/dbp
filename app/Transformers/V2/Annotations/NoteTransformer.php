@@ -2,7 +2,6 @@
 
 namespace App\Transformers\V2\Annotations;
 
-use App\Models\User\Study\Note;
 use League\Fractal\TransformerAbstract;
 
 class NoteTransformer extends TransformerAbstract
@@ -15,7 +14,7 @@ class NoteTransformer extends TransformerAbstract
 	 * @param $note
 	 * @return array
 	 */
-	public function transform(Note $note)
+	public function transform($note)
 	{
 		$dam_id = $note->bible_id.substr($note->book->book_testament,0,1).'2ET';
 		return [

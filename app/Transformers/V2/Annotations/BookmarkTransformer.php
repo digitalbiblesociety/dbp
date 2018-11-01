@@ -2,7 +2,6 @@
 
 namespace App\Transformers\V2\Annotations;
 
-use App\Models\User\Study\Bookmark;
 use League\Fractal\TransformerAbstract;
 
 class BookmarkTransformer extends TransformerAbstract
@@ -12,10 +11,10 @@ class BookmarkTransformer extends TransformerAbstract
 	 * the expected return for the old Version 2 DBP api route
 	 * and regenerates the old dam_id from the new bible_id
 	 *
-	 * @param Bookmark $bookmark
+	 * @param $bookmark
 	 * @return array
 	 */
-    public function transform(Bookmark $bookmark)
+    public function transform($bookmark)
     {
 	    $dam_id = $bookmark->bible_id.substr($bookmark->book_testament,0,1).'2ET';
         return [
