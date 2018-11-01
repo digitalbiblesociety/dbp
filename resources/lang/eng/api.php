@@ -5,6 +5,7 @@ return [
 	'success'                                => 'success',
 	'errors_401'                             => 'You do not have permission for this action',
 	'errors_404'                             => '404 Not Found.',
+	'chapter_title_prefix'                   => 'Chapter',
 
 	// Utility Routes
 	'auth_permission_denied'                 => 'You do not have permission for this action',
@@ -66,6 +67,8 @@ return [
 
 	'articles_show_404'                      => 'The specified article id `:id` could not be found.',
 	'articles_edit_permission_failed'        => 'You do not have permission to edit the articles',
+
+
 
 	// API_DOCS
 	'docs' => [

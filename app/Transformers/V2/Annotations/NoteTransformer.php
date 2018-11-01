@@ -2,16 +2,20 @@
 
 namespace App\Transformers\V2\Annotations;
 
+use App\Models\User\Study\Note;
 use League\Fractal\TransformerAbstract;
 
 class NoteTransformer extends TransformerAbstract
 {
 	/**
-	 * A Fractal transformer.
+	 * This transformer modifies the UserNote response to reflect
+	 * the expected return for the old Version 2 DBP api route
+	 * and regenerates the old dam_id from the new bible_id
 	 *
+	 * @param $note
 	 * @return array
 	 */
-	public function transform($note)
+	public function transform(Note $note)
 	{
 		$dam_id = $note->bible_id.substr($note->book->book_testament,0,1).'2ET';
 		return [
