@@ -188,7 +188,7 @@ class UserNotesController extends APIController
 			'notes'       => isset($request->notes) ? encrypt($request->notes) : null,
 		]);
 
-		$this->handleTags($request, $note);
+		$this->handleTags($note);
 
 		return $this->reply(fractal($note,new UserNotesTransformer())->addMeta(['success' => trans('api.user_notes_store_200')]));
 	}
@@ -242,7 +242,7 @@ class UserNotesController extends APIController
 		}
 		$note->save();
 
-		$this->handleTags($request, $note);
+		$this->handleTags($note);
 
 		return $this->reply(['success' => 'Note Updated']);
 	}
@@ -284,28 +284,6 @@ class UserNotesController extends APIController
 		$note->delete();
 
 		return $this->reply(['success' => 'Note Deleted']);
-	}
-
-	private function handleTags(Request $request, $note)
-	{
-		$tags = collect(explode(',', $request->tags))->map(function ($tag) {
-
-			if (strpos($tag, ':::') !== false) {
-				$tag = explode(':::', $tag);
-				return ['value' => ltrim($tag[1]), 'type' => ltrim($tag[0])];
-			}
-
-			return ['value' => ltrim($tag), 'type' => 'general'];
-		})->toArray();
-
-		if ($request->method() === 'POST') {
-			$note->tags()->createMany($tags);
-		}
-		if ($request->method() === 'PUT') {
-			$note->tags()->delete();
-			$note->tags()->createMany($tags);
-		}
-
 	}
 
 	private function invalidNote($request)

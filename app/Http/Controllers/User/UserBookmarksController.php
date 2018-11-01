@@ -106,7 +106,7 @@ class UserBookmarksController extends APIController
 
         $bookmark = Bookmark::create(request()->all());
 
-	    $this->handleTags(request(), $bookmark);
+	    $this->handleTags($bookmark);
 
         return $this->reply(fractal($bookmark,new BookmarkTransformer())->addMeta(['success' => 'Bookmark Created successfully']));
     }
@@ -132,7 +132,7 @@ class UserBookmarksController extends APIController
 	    $bookmark->fill(request()->all());
 	    $bookmark->save();
 
-	    $this->handleTags(request(), $bookmark);
+	    $this->handleTags($bookmark);
 
 	    return $this->reply(fractal($bookmark, new BookmarkTransformer())->addMeta(['success' => 'Bookmark Successfully updated']));
     }

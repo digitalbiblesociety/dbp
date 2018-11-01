@@ -165,7 +165,7 @@ class UserHighlightsController extends APIController
 			'highlighted_color' => request()->highlighted_color,
 		]);
 
-		$this->handleTags(request(), $highlight);
+		$this->handleTags($highlight);
 
 		return $this->reply(fractal($highlight, new HighlightTransformer())->addMeta(['success' => trans('api.users_highlights_create_200')]));
 	}
@@ -218,7 +218,7 @@ class UserHighlightsController extends APIController
 			$highlight->fill($request->all())->save();
 		}
 
-		$this->handleTags(request(), $highlight);
+		$this->handleTags($highlight);
 
 		return $this->reply(fractal($highlight, new HighlightTransformer())->addMeta([trans('api.success') => trans('api.users_highlights_update_200')]));
 	}

@@ -4,10 +4,10 @@ namespace App\Traits;
 
 trait AnnotationTags
 {
-	public function handleTags(Request $request, $annotation)
+	public function handleTags($annotation)
 	{
-		if(\is_string($request->tags)) {
-			$tags = collect(explode(',', $request->tags))->map(function ($tag) {
+		if(\is_string(request()->tags)) {
+			$tags = collect(explode(',', request()->tags))->map(function ($tag) {
 
 				if (strpos($tag, ':::') !== false) {
 					$tag = explode(':::', $tag);
@@ -17,13 +17,13 @@ trait AnnotationTags
 				return ['value' => ltrim($tag), 'type' => 'general'];
 			})->toArray();
 		} else {
-			$tags = $request->tags;
+			$tags = request()->tags;
 		}
 
-		if ($request->method() === 'POST') {
+		if (request()->method() === 'POST') {
 			$annotation->tags()->createMany($tags);
 		}
-		if ($request->method() === 'PUT') {
+		if (request()->method() === 'PUT') {
 			$annotation->tags()->delete();
 			$annotation->tags()->createMany($tags);
 		}
