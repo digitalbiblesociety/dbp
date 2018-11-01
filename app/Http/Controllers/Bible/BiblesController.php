@@ -99,7 +99,7 @@ class BiblesController extends APIController
 		$media              = checkParam('media', null, 'optional');
 		$language           = checkParam('language', null, 'optional');
 		$full_word          = checkParam('full_word|language_name', null, 'optional');
-		$language_code      = checkParam('language_family_code|language_code', null, 'optional') ?? 'eng';
+		$language_code      = checkParam('language_family_code|language_code', null, 'optional');
 		$updated            = checkParam('updated', null, 'optional');
 		$organization       = checkParam('organization_id', null, 'optional');
 		$sort_by            = checkParam('sort_by', null, 'optional');
@@ -116,7 +116,6 @@ class BiblesController extends APIController
 		$access_control = $this->accessControl($this->key, 'api');
 
 		$language_code = Language::where('iso',$language_code)->orWhere('id',$language_code)->first();
-		if(!$language_code) return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
 
 		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $language_code . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $paginate. $filter;
 		\Cache::forget($cache_string);
