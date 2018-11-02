@@ -70,17 +70,23 @@ class LanguagesController extends APIController
 		$sort_by               = checkParam('sort_by', null, 'optional') ?? 'name';
 		$include_alt_names     = checkParam('include_alt_names', null, 'optional');
 		$show_restricted       = checkParam('show_only_restricted', null, 'optional');
+		$asset_id              = checkParam('bucket_id|asset_id', null, 'optional');
 
 		$access_control = $this->accessControl($this->key, 'api');
 
-		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $show_restricted . $include_alt_names . $access_control->string;
+		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $show_restricted . $include_alt_names . $asset_id . $access_control->string;
 		if(env('APP_ENV') === 'local') \Cache::forget($cache_string);
-		$languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $code, $sort_by, $show_restricted, $access_control) {
+		$languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $asset_id, $code, $sort_by, $show_restricted, $access_control) {
 			//$include_alt_names
 			$languages = Language::select(['id', 'glotto_id', 'iso', 'name'])->with('autonym')
-				->when(!$show_restricted, function ($query) use($access_control) {
-					$query->whereHas('filesets', function ($query) use($access_control) {
+				->when(!$show_restricted, function ($query) use($access_control,$asset_id) {
+					$query->whereHas('filesets', function ($query) use($access_control,$asset_id) {
 						$query->whereIn('hash_id', $access_control->hashes);
+						if($asset_id) {
+							$query->whereHas('fileset', function($query) use($asset_id) {
+								$query->where('asset_id', $asset_id);
+							});
+						}
 					});
 				    $query->has('bibles');
 				})
