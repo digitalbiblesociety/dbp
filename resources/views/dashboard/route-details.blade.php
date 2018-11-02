@@ -29,9 +29,6 @@
             	</thead>
             	<tbody>
                     @foreach ($routes as $route)
-
-                        @if(str_contains($route->uri,'_debugbar')) @continue @endif
-
             			<tr>
                             <td>{{$route->uri}}</td>
                             <td>{{$route->getName()}}</td>

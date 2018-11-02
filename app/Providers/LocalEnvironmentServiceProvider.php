@@ -12,18 +12,14 @@ class LocalEnvironmentServiceProvider extends ServiceProvider
      *
      * @var array
      */
-    protected $localProviders = [
-        \Barryvdh\Debugbar\ServiceProvider::class,
-    ];
+    protected $localProviders = [];
 
     /**
      * List of only Local Environment Facade Aliases.
      *
      * @var array
      */
-    protected $facadeAliases = [
-        'Debugbar' => \Barryvdh\Debugbar\Facade::class,
-    ];
+    protected $facadeAliases = [];
 
     /**
      * Bootstrap the application services.
@@ -32,10 +28,7 @@ class LocalEnvironmentServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (\App::environment(config('debugbar.enabled_environment'))) {
-            $this->registerServiceProviders();
-            $this->registerFacadeAliases();
-        }
+    	//
     }
 
     /**
