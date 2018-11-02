@@ -75,19 +75,16 @@ class CreateLanguagesTable extends Migration
 
 		    if(!Schema::connection('dbp')->hasTable('language_translations') ) {
 		        Schema::connection('dbp')->create('language_translations', function (Blueprint $table) {
-				    $table->increments('id');
+			        $table->increments('id');
 				    $table->integer('language_source_id')->unsigned();
 				    $table->foreign('language_source_id')->references('id')->on('languages')->onUpdate('cascade');
 				    $table->integer('language_translation_id')->unsigned();
 				    $table->foreign('language_translation_id')->references('id')->on('languages')->onUpdate('cascade');
 				    $table->string('name');
 				    $table->text('description')->nullable();
-				    $table->boolean('vernacular')->default(0);
-				    $table->boolean('autonym')->default(0);
 				    $table->tinyInteger('priority')->nullable();
-				    //$table->unique(['language_source_id', 'language_translation_id', 'name'], 'unq_language_translations');
+				    $table->unique(['language_source_id', 'language_translation_id', 'name'], 'unq_language_translations');
 				    $table->timestamp('created_at')->useCurrent();
-
 				    $table->timestamp('updated_at')->useCurrent();
 		        });
             }

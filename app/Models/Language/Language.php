@@ -343,7 +343,7 @@ class Language extends Model
 
 	public function autonym()
 	{
-		return $this->hasOne(LanguageTranslation::class,'language_source_id')->where('vernacular', 1);
+		return $this->hasOne(LanguageTranslation::class,'language_source_id')->where('language_translation_id', $this->id);
 	}
 
     public function currentTranslation()

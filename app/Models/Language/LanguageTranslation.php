@@ -77,21 +77,6 @@ class LanguageTranslation extends Model
     protected $name;
 
 	/**
-	 *
-	 * @OA\Property(
-	 *   title="vernacular",
-	 *   type="integer",
-	 *   description="The vernacular",
-	 *   minimum=0
-	 * )
-	 *
-	 * @method static LanguageTranslation whereVernacular($value)
-	 * @property string $vernacular
-	 *
-	 */
-	protected $vernacular;
-
-	/**
 	 * @OA\Property(
 	 *     title="Priority",
 	 *     description="The priority of the language translation",
@@ -105,19 +90,6 @@ class LanguageTranslation extends Model
 	 * @method static whereDescription($value)
 	 */
 	protected $priority;
-
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="description",
-	 *   type="string",
-	 *   description="The description of the language translation"
-	 * )
-	 *
-	 * @method static LanguageTranslation whereDescription($value)
-	 * @property string|null $description
-	 */
-    protected $description;
 
 	/**
 	 *
@@ -162,14 +134,6 @@ class LanguageTranslation extends Model
     public function getIsoSourceAttribute()
     {
         return $this->source_iso->iso ?? '';
-    }
-
-
-    public static function vernacularTranslation($iso)
-    {
-        $translation = static::where('iso_translation',$iso)->where('iso_language',$iso)->select('name')->first();
-        if($translation !== null) return $translation->name;
-        return NULL;
     }
 
     public function translation_iso()
