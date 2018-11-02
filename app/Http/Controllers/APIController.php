@@ -12,6 +12,7 @@ use Spatie\ArrayToXml\ArrayToXml;
 
 
 use Log;
+use Symfony\Component\Yaml\Yaml;
 
 class APIController extends Controller
 {
@@ -34,7 +35,7 @@ class APIController extends Controller
 	 * )
 	 *
 	 * @OA\Server(
-	 *     url="https://api.dbp.localhost",
+	 *     url="https://api.dbp.test",
 	 *     description="Development server",
 	 *     @OA\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
 	 * )
@@ -162,10 +163,10 @@ class APIController extends Controller
 				], true, 'utf-8');
 				return response()->make($formatter, $this->getStatusCode())->header('Content-Type', 'application/xml; charset=utf-8');
 			case 'yaml':
-				$formatter = Formatter::make($object, Formatter::ARR);
-				return response()->make($formatter->toYaml(), $this->getStatusCode())->header('Content-Type', 'text/yaml; charset=utf-8');
+				$formatter = Yaml::dump($object->toArray());
+				return response()->make($formatter, $this->getStatusCode())->header('Content-Type', 'text/yaml; charset=utf-8');
 			case 'csv':
-				$formatter = Formatter::make($object, Formatter::ARR);
+				$formatter = Formatter::make($object->toArray(), Formatter::ARR);
 				return response()->make($formatter->toCsv(), $this->getStatusCode())->header('Content-Type', 'text/csv; charset=utf-8');
 			default:
 				if (isset($_GET['pretty'])) return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
@@ -190,7 +191,7 @@ class APIController extends Controller
 		}
 
 		if ((!$this->api && $status === null) || isset($_GET['local'])) redirect()->route('error')->with(['message' => $message, 'status' => $status]);
-		if (!$this->api || isset($_GET['local'])) return redirect()->route("errors.$status", compact('message'))->with(['message' => $message]);
+		if (!$this->api || isset($_GET['local'])) return view('layouts.errors.broken')->with(['message' => $message]);
 		$faces = ['⤜(ʘ_ʘ)⤏', '¯\_ツ_/¯', 'ᗒ ͟ʖᗕ', 'ᖗ´• ꔢ •`ᖘ', '|▰╭╮▰|'];
 
 
