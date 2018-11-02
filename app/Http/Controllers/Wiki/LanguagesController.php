@@ -72,6 +72,7 @@ class LanguagesController extends APIController
 		$show_restricted       = checkParam('show_only_restricted', null, 'optional');
 		$asset_id              = checkParam('bucket_id|asset_id', null, 'optional');
 
+
 		$access_control = $this->accessControl($this->key, 'api');
 
 		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $show_restricted . $include_alt_names . $asset_id . $access_control->string;
@@ -83,8 +84,9 @@ class LanguagesController extends APIController
 					$query->whereHas('filesets', function ($query) use($access_control,$asset_id) {
 						$query->whereIn('hash_id', $access_control->hashes);
 						if($asset_id) {
+							$asset_id = explode(',',$asset_id);
 							$query->whereHas('fileset', function($query) use($asset_id) {
-								$query->where('asset_id', $asset_id);
+								$query->whereIn('asset_id', $asset_id);
 							});
 						}
 					});
