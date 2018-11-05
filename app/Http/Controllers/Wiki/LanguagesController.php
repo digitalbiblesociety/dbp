@@ -76,10 +76,16 @@ class LanguagesController extends APIController
 		$access_control = $this->accessControl($this->key, 'api');
 
 		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $show_restricted . $include_alt_names . $asset_id . $access_control->string;
-		if(env('APP_ENV') === 'local') \Cache::forget($cache_string);
+		\Cache::forget($cache_string);
 		$languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $asset_id, $code, $sort_by, $show_restricted, $access_control) {
-			//$include_alt_names
-			$languages = Language::select(['id', 'glotto_id', 'iso', 'name'])->with('autonym')
+			$languages = Language::select(['languages.id', 'languages.glotto_id', 'languages.iso', 'current_translation.name as name', 'autonym.name as autonym'])
+				->join('language_translations as autonym', function ($join) {
+					$join->on('autonym.language_source_id', 'languages.id');
+					$join->on('autonym.language_translation_id','languages.id');
+				})
+				->join('language_translations as current_translation', function ($join) {
+					$join->on('current_translation.language_source_id', 'languages.id')->where('current_translation.language_translation_id', $GLOBALS['i18n_id']);
+				})
 				->when(!$show_restricted, function ($query) use($access_control,$asset_id) {
 					$query->whereHas('filesets', function ($query) use($access_control,$asset_id) {
 						$query->whereIn('hash_id', $access_control->hashes);

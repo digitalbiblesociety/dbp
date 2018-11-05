@@ -119,7 +119,7 @@ class LanguageTransformer extends BaseTransformer
 					'glotto_id' => $language->glotto_id,
 					'iso'       => $language->iso,
 					'name'      => $language->name,
-					'autonym'   => $language->autonym ? $language->autonym->name : '',
+					'autonym'   => $language->autonym,
 					'bibles'    => $language->bibles_count,
 					'filesets'  => $language->filesets_count,
 				];
