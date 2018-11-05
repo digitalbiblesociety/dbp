@@ -123,7 +123,7 @@ class LanguageTransformer extends BaseTransformer
 					'bibles'    => $language->bibles_count,
 					'filesets'  => $language->filesets_count,
 				];
-				if($language->relationLoaded('translations')) $output['translations'] = $language->translations->pluck('name','id');
+				if($language->relationLoaded('translations')) $output['translations'] = $language->translations->pluck('name','language_translation_id');
 				return $output;
 			}
 
