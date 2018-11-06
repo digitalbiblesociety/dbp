@@ -15,7 +15,6 @@ class alphabet_seeder extends Seeder
     public function run()
     {
 	    \DB::connection('dbp')->table('alphabet_fonts')->delete();
-    	\DB::connection('dbp')->table('alphabet_numbers')->delete();
 	    \DB::connection('dbp')->table('alphabet_language')->delete();
 	    \DB::connection('dbp')->table('alphabets')->delete();
         $seederhelper = new SeederHelper();
