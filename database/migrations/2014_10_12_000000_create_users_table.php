@@ -100,7 +100,7 @@ class CreateUsersTable extends Migration
 	    if(!Schema::connection('dbp_users')->hasTable('profiles')) {
     		Schema::connection('dbp_users')->create('profiles', function (Blueprint $table) {
 		        $table->integer('user_id')->unsigned()->index();
-		        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+		        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
 		        $table->text('bio')->nullable();
 		        $table->string('address_1')->nullable();
 			    $table->string('address_2')->nullable();

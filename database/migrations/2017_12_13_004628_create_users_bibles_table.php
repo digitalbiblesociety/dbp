@@ -80,8 +80,6 @@ class CreateUsersBiblesTable extends Migration
 				$table->tinyInteger('verse_end')->unsigned()->nullable();
 				$table->text('notes')->nullable();
 				$table->boolean('bookmark')->default(false);
-				$table->string('project_id', 24)->nullable();
-				$table->foreign('project_id')->references('id')->on('projects')->onUpdate('cascade')->onDelete('cascade');
 				$table->timestamp('created_at')->useCurrent();
 				$table->timestamp('updated_at')->useCurrent();
 			});

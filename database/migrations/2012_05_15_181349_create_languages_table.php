@@ -49,7 +49,6 @@ class CreateLanguagesTable extends Migration
 				$table->char('iso2T', 3)->nullable()->unique();
 				$table->char('iso1', 2)->nullable()->unique();
 				$table->string('name');
-				$table->string('autonym')->nullable();
 				$table->string('maps')->nullable();
 				$table->string('level')->nullable();
 				$table->text('development')->nullable();
@@ -64,7 +63,7 @@ class CreateLanguagesTable extends Migration
 				$table->text('description')->nullable();
 				$table->float('latitude', 11, 7)->nullable();
 				$table->float('longitude', 11, 7)->nullable();
-				$table->char('status',2)->nullable()->unsigned();
+				$table->char('status',2)->nullable();
 				$table->foreign('status')->references('id')->on('language_status')->onUpdate('cascade');
 				$table->text('status_notes')->nullable();
 				$table->timestamp('created_at')->useCurrent();
