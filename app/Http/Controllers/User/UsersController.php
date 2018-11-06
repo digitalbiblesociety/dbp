@@ -148,7 +148,7 @@ class UsersController extends APIController
 	 *     @OA\RequestBody(required=true, description="Either the `email` & `password` or the `social_provider_user_id` & `social_provider_id` are required for user Login", @OA\MediaType(mediaType="application/json",
 	 *          @OA\Schema(
 	 *              @OA\Property(property="email",                     ref="#/components/schemas/User/properties/email"),
-	 *              @OA\Property(property="password",                  ref="#/components/schemas/User/properties/password"),\
+	 *              @OA\Property(property="password",                  ref="#/components/schemas/User/properties/password"),
 	 *              @OA\Property(property="project_id",                ref="#/components/schemas/Project/properties/id"),
 	 *              @OA\Property(property="social_provider_user_id",   ref="#/components/schemas/Account/properties/provider_user_id"),
 	 *              @OA\Property(property="social_provider_id",        ref="#/components/schemas/Account/properties/provider_id"),
