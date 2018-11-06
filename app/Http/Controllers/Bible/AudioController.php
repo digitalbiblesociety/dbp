@@ -28,7 +28,7 @@ class AudioController extends APIController
 	 * @link https://dbp.test/eng/docs/swagger/gen#/Version_2/v4_alphabets.one - V4 Test Docs
 	 *
 	 * @OA\Get(
-	 *     path="/audio/path/{dam_id}",
+	 *     path="/audio/path",
 	 *     tags={"Library Audio"},
 	 *     summary="Returns Audio File path information",
 	 *     description="This call returns the file path information for audio files within a volume
@@ -51,14 +51,13 @@ class AudioController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param null|string $id
 	 * @return mixed
 	 *
 	 */
-	public function index($id = null)
+	public function index()
 	{
 		// Check Params
-		$fileset_id = checkParam('dam_id', $id);
+		$fileset_id = checkParam('dam_id', null, 'optional');
 		$chapter_id = checkParam('chapter_id', null, 'optional');
 		$book_id    = checkParam('book_id', null, 'optional');
 		$asset_id   = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
