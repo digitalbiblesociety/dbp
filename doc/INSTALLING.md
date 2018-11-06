@@ -32,7 +32,7 @@ Setting up the API takes approximately 30 minutes. If you don't already have [gi
 `valet install && mkdir ~/Sites && cd ~/Sites && valet park`
 
 ##### Install Repo
-`git clone git@github.com:digitalbiblesociety/dbp.git && cd dbp && cp .env.example .env && composer install`
+`git clone git@github.com:digitalbiblesociety/dbp.git && cd dbp && cp .env.example .env && composer install && php artisan key:generate`
 
 ##### Install Node and run npm install
 `brew install node && npm install`
