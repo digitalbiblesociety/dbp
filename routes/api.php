@@ -18,7 +18,7 @@
 	Route::name('v2_library_metadata')->match(['get','options'],'library/metadata',                                         'Connections\V2Controllers\LibraryCatalog\LibraryMetadataController@index');
 	Route::name('v2_library_volume')->match(['get','options'],'library/volume',                                             'Connections\V2Controllers\LibraryCatalog\LibraryVolumeController@libraryVolume');
 	Route::name('v2_volume_organization_list')->match(['get','options'],'library/volumeorganization',                       'Organization\OrganizationsController@index');
-	Route::name('v2_library_verseInfo')->match(['get','options'],'library/verseinfo',                                       'Bible\VerseController@info');
+	Route::name('v2_library_verseInfo')->match(['get','options'],'library/verseinfo',                                       'Connections\V2Controllers\VerseController@info');
 	Route::name('v2_library_numbers')->match(['get','options'],'library/numbers',                                           'Wiki\NumbersController@customRange');
 	Route::name('v2_library_organization')->match(['get','options'],'library/organization',                                 'Organization\OrganizationsController@index');
 	Route::name('v2_audio_location')->match(['get','options'],'audio/location',                                             'Connections\V2Controllers\ApiMetadataController@libraryAsset');
