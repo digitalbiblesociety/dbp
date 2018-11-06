@@ -74,7 +74,7 @@ class BooksController extends APIController
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OA\Parameter(ref="#/components/parameters/format"),
-	 *     @OA\Parameter(name="fileset_id", in="path", ref="#/components/schemas/BibleFileset/properties/id"),
+	 *     @OA\Parameter(name="fileset_id", in="path", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
 	 *     @OA\Parameter(name="fileset_type", in="query", description="The type of fileset being queried", @OA\Schema(type="string")),
 	 *     @OA\Parameter(name="testament", in="query", description="The testament to filter books by", @OA\Schema(type="string")),
 	 *     @OA\Parameter(name="asset_id", in="query", description="The asset id to select the fileset by", @OA\Schema(type="string")),
