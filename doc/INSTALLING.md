@@ -12,7 +12,7 @@
 - Composer
 
 ### Running on OSX
-Setting up the API takes approximately 30 minutes. If you don't already have [git]('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git') or [homebrew]('https://brew.sh/') installed. You will want install those now.
+Setting up the API takes approximately 30 minutes. If you don't already have [git]('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git') or [homebrew]('https://brew.sh/') installed. You will want to install those now.
 
 ##### Install and/or update Homebrew to the latest version using brew update
 `/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
@@ -32,10 +32,7 @@ Setting up the API takes approximately 30 minutes. If you don't already have [gi
 `valet install && mkdir ~/Sites && cd ~/Sites && valet park`
 
 ##### Install Repo
-`git clone git@bitbucket.org:confirmed/dbp.git && cd dbp && mv "env-sample.txt" ".env" && composer install`
-
-##### Need to set up a valid .env file rename the sample and fill out the fields.
-`cp env-sample.txt .env`
+`git clone git@github.com:digitalbiblesociety/dbp.git && cd dbp && cp .env.example .env && composer install`
 
 ##### Install Node and run npm install
 `brew install node && npm install`
