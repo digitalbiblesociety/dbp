@@ -63,8 +63,10 @@ class CreateLanguagesTable extends Migration
 				$table->text('description')->nullable();
 				$table->float('latitude', 11, 7)->nullable();
 				$table->float('longitude', 11, 7)->nullable();
-				$table->char('status',2)->nullable();
-				$table->foreign('status')->references('id')->on('language_status')->onUpdate('cascade');
+				$table->char('country_id', 2);
+				$table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
+				$table->char('status_id',2)->nullable();
+				$table->foreign('status_id')->references('id')->on('language_status')->onUpdate('cascade');
 				$table->text('status_notes')->nullable();
 				$table->timestamp('created_at')->useCurrent();
 				$table->timestamp('updated_at')->useCurrent();
