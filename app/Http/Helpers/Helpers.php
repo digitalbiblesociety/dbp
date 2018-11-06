@@ -21,6 +21,8 @@ function checkParam(string $param, $v4Style = null, $optional = false)
 	}
 
 	$url_header = request()->header($param);
+	if($param === 'key' && !$url_header) $url_header = request()->header('Authorization');
+
 	if($v4Style) return $v4Style;
 	if(!$url_param && !$url_header) {
 		$body_param = request()->input($param);
