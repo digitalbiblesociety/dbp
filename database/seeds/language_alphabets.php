@@ -20,7 +20,7 @@ class language_alphabets extends Seeder
                 $id = last(explode('-',$type));
                 $language = Language::where('iso',$languageId)->first();
                 if($language) {
-                    if(Alphabet::where('script','=',ucwords($id))->count() != 0) {
+                    if(Alphabet::where('script','=',ucwords($id))->count() !== 0) {
                         DB::connection('dbp')->table('alphabet_language')->insert(['script_id' => ucwords($id), 'language_id' => $language->id]);
                     } else {
                         echo "\nBroken Alphabet Code: ".ucwords($id);
@@ -34,35 +34,35 @@ class language_alphabets extends Seeder
 
         $fonts = json_decode(file_get_contents(storage_path().'/data/languages/fonts/fonts.json'));
         foreach($fonts as $type => $fonts) {
-            $fonts = explode(",",$fonts);
+            $fonts = explode(',',$fonts);
             if(is_array($fonts)) {
                 foreach($fonts as $font) {
                     $thickness = last(explode('-',$font));
                     switch($thickness) {
-                        case "Thin": $thickness = 250;
-                        case "Light": $thickness = 300;
-                        case "DemiLight": $thickness = 350;
-                        case "Regular": $thickness = 400;
-                        case "Medium": $thickness = 500;
-                        case "Bold": $thickness = 700;
-                        case "Black": $thickness = 800;
+                        case 'Thin': {$thickness = 250;break;}
+                        case 'Light': {$thickness = 300;break;}
+                        case 'DemiLight': {$thickness = 350;break;}
+                        case 'Regular': {$thickness = 400;break;}
+                        case 'Medium': {$thickness = 500;break;}
+                        case 'Bold': {$thickness = 700;break;}
+                        case 'Black': {$thickness = 800;break;}
                         default: $thickness = null;
                     }
-                    AlphabetFont::insert(['script_id' => ucwords($type), 'fontName' => $font, 'fontFileName' => $font, 'italic' => 0, 'fontWeight' => $thickness]);
+                    AlphabetFont::insert(['script_id' => ucwords($type), 'font_name' => $font, 'font_filename' => $font, 'italic' => 0, 'font_weight' => $thickness]);
                 }
             } else {
                 $thickness = last(explode('-',$fonts));
                 switch($thickness) {
-                    case "Thin": $thickness = 250;
-                    case "Light": $thickness = 300;
-                    case "DemiLight": $thickness = 350;
-                    case "Regular": $thickness = 400;
-                    case "Medium": $thickness = 500;
-                    case "Bold": $thickness = 700;
-                    case "Black": $thickness = 800;
-                    default: $thickness = "";
+                    case 'Thin': {$thickness = 250;break;}
+                    case 'Light': {$thickness = 300;break;}
+                    case 'DemiLight': {$thickness = 350;break;}
+                    case 'Regular': {$thickness = 400;break;}
+                    case 'Medium': {$thickness = 500;break;}
+                    case 'Bold': {$thickness = 700;break;}
+                    case 'Black': {$thickness = 800;break;}
+                    default: $thickness = '';
                 }
-                AlphabetFont::insert(['script_id' => $type, 'fontName' => $fonts, 'fontFileName' => $fonts, 'italic' => 0, 'fontWeight' => $thickness]);
+                AlphabetFont::insert(['script_id' => $type, 'font_name' => $fonts, 'font_filename' => $fonts, 'italic' => 0, 'font_weight' => $thickness]);
             }
 
         }
