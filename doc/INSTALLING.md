@@ -12,7 +12,7 @@
 - Composer
 
 ### Running on OSX (Local)
-Setting up the API takes approximately 30 minutes. If you don't already have [git]('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git') or [homebrew]('https://brew.sh/') installed. You will want install those now.
+Setting up the API takes approximately 30 minutes. If you don't already have [git]('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git') or [homebrew]('https://brew.sh/') installed. You will want to install those now.
 
 ##### Install and/or update Homebrew to the latest version using brew update
 `/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
@@ -29,6 +29,10 @@ Setting up the API takes approximately 30 minutes. If you don't already have [gi
 `sudo nano /etc/paths`
 
 ##### Set up valet
+If this is your first time working with Valet, set it up following these instructions: https://laravel.com/docs/valet
+
+Then ensure you've set your sites directory up something like this:
+
 `valet install && mkdir ~/Sites && cd ~/Sites && valet park`
 
 ##### Install Repo
@@ -42,13 +46,23 @@ and Run composer install
 
 `composer install`
 
-##### Need to set up a valid .env file rename the sample and fill out the fields.
-`cp env-sample.txt .env`
+##### Set up a valid local .env file
+`cp .env.example .env`
+
+##### Generate a new application key:
+
+`php artisan key:generate`
+
+##### Link the API subdomain
+`valet link api.dbp`
+
+##### Secure the Valet domains
+`valet secure`
 
 ##### Install Node and run npm install
 `brew install node && npm install`
 
-##### import a copy of the live database using your preferred method: phpMyAdmin, Sequel pro, ect.
+##### Import a copy of the live database using your preferred method: phpMyAdmin, Sequel pro, etc.
 
 ### Running on Windows
 ##### (Coming soon)
