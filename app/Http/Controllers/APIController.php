@@ -10,9 +10,9 @@ use League\Fractal\Serializer\DataArraySerializer;
 use Spatie\Fractalistic\ArraySerializer;
 use Spatie\ArrayToXml\ArrayToXml;
 
-
 use Log;
 use Symfony\Component\Yaml\Yaml;
+use Yosymfony\Toml\TomlBuilder;
 
 class APIController extends Controller
 {
@@ -96,14 +96,25 @@ class APIController extends Controller
 			$this->api = true;
 			$this->v   = (int) checkParam('v');
 			$this->key = checkParam('key');
-			$keyExists = Key::find($this->key);
-			$this->user = $keyExists->user ?? null;
+			$this->user = \Cache::remember('selected_user'.$this->key, 2000, function() {
+				$keyExists = Key::find($this->key);
+				return $keyExists->user ?? null;
+			});
+
 			if(!$this->user) abort(401, 'You need to provide a valid API key. To request an api key please email access@dbp4.org');
 
 			// i18n
 			$i18n = checkParam('i18n',null,'optional') ?? 'eng';
-			$GLOBALS['i18n_iso'] = $i18n;
-			$GLOBALS['i18n_id'] = Language::where('iso',$i18n)->select(['iso','id'])->first()->id;
+			$current_language = \Cache::remember('selected_api_language_'.$i18n, 2000, function() use ($i18n) {
+				$language = Language::where('iso',$i18n)->select(['iso','id'])->first();
+				return [
+					'i18n_iso' => $language->iso,
+					'i18n_id'  => $language->id,
+				];
+			});
+			$GLOBALS['i18n_iso'] = $current_language['i18n_iso'];
+			$GLOBALS['i18n_id']  = $current_language['i18n_id'];
+
 			$this->serializer = (($this->v === 1) || ($this->v === 2) || ($this->v === 3)) ? new ArraySerializer() : new DataArraySerializer();
 		}
 	}
@@ -164,6 +175,10 @@ class APIController extends Controller
 				return response()->make($formatter, $this->getStatusCode())->header('Content-Type', 'application/xml; charset=utf-8');
 			case 'yaml':
 				$formatter = Yaml::dump($object->toArray());
+				return response()->make($formatter, $this->getStatusCode())->header('Content-Type', 'text/yaml; charset=utf-8');
+			case 'toml':
+				$tomlBuilder = new TomlBuilder();
+				$formatter = $tomlBuilder->addValue('multiple',$object->toArray())->getTomlString();
 				return response()->make($formatter, $this->getStatusCode())->header('Content-Type', 'text/yaml; charset=utf-8');
 			case 'csv':
 				$formatter = Formatter::make($object->toArray(), Formatter::ARR);
