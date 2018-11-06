@@ -3,15 +3,16 @@
 namespace App\Transformers\V2\LibraryCatalog;
 
 use App\Transformers\BaseTransformer;
-use League\Fractal\TransformerAbstract;
 
 class BookTransformer extends BaseTransformer
 {
-    /**
-     * A Fractal transformer.
-     *
-     * @return array
-     */
+	/**
+	 * A Fractal transformer.
+	 *
+	 * @param $book
+	 *
+	 * @return array
+	 */
     public function transform($book)
     {
 
@@ -19,8 +20,9 @@ class BookTransformer extends BaseTransformer
 
 		    /**
 		     *
-		     * @see https://dbt.io/library/bookorder?key=111a125057abd2f8931f6d6ad9f2921f&dam_id=ENGESVN1ET&v=2
-		     * @see https://api.dbp.localhost/library/bookorder?key=1234&v=2&dam_id=ENGESV
+		     * @see Controller: \App\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::bookOrder
+		     * @see Old Route:  https://dbt.io/library/bookorder?key=test_key&dam_id=ENGESVN1ET&v=2
+		     * @see New Route:  https://api.dbp.localhost/library/bookorder?key=test_key&v=2&dam_id=ENGESV
 		     *
 		     * @OA\Schema (
 		     *	type="array",
@@ -38,19 +40,20 @@ class BookTransformer extends BaseTransformer
 		     * )
 		     *
 		     */
-		    case "v2_library_bookOrder": {
+		    case 'v2_library_bookOrder': {
 			    return [
-				    "book_order"  => (string) $book->protestant_order,
-				    "book_id"     => $book->id,
-				    "book_name"   => $book->name,
-				    "dam_id_root" => $book->source_id
+				    'book_order'  => (string) $book->protestant_order,
+				    'book_id'     => $book->id,
+				    'book_name'   => $book->name,
+				    'dam_id_root' => $book->source_id
 			    ];
 		    }
 
 		    /**
 		     *
-		     * @see https://dbt.io/library/book?key=111a125057abd2f8931f6d6ad9f2921f&v=2&dam_id=ENGESVN1ET
-		     * @see https://api.dbp.localhost/library/book?key=1234&pretty&v=2&dam_id=ENGESVN1ET
+		     * @see Controller: \App\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::book
+		     * @see Old Route:  https://dbt.io/library/book?key=test_key&v=2&dam_id=ENGESVN1ET
+		     * @see New Route:  https://api.dbp.localhost/library/book?key=test_key&pretty&v=2&dam_id=ENGESVN1ET
 		     *
 		     * @OA\Schema (
 		     *	type="array",
@@ -70,22 +73,23 @@ class BookTransformer extends BaseTransformer
 		     * )
 		     *
 		     */
-		    case "v2_library_book": {
+		    case 'v2_library_book': {
 			    return [
-			    	"dam_id"             => $book->source_id,
-				    "book_id"            => $book->id_osis,
-				    "book_name"          => $book->name,
-				    "book_order"         => (string) $book->protestant_order,
-				    "number_of_chapters" => (string) $book->number_chapters,
-				    "chapters"           => (string) $book->chapters
+				    'dam_id'             => $book->source_id,
+				    'book_id'            => $book->id_osis,
+				    'book_name'          => $book->name,
+				    'book_order'         => (string) $book->protestant_order,
+				    'number_of_chapters' => (string) $book->number_chapters,
+				    'chapters'           => (string) $book->chapters
 			    ];
 		    }
 
 
 		    /**
 		     *
-		     * @see https://dbt.io/library/book?key=111a125057abd2f8931f6d6ad9f2921f&v=2&dam_id=ENGESVN1ET
-		     * @see https://api.dbp.localhost/library/book?key=1234&pretty&v=2&dam_id=ENGESVN1ET
+		     * @see Controller: \App\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::chapters
+		     * @see Old Route:  https://dbt.io/library/book?key=test_key&v=2&dam_id=ENGESVN1ET
+		     * @see New Route:  https://api.dbp.localhost/library/book?key=test_key&pretty&v=2&dam_id=ENGESVN1ET
 		     *
 		     * @OA\Schema (
 		     *	type="array",
@@ -104,13 +108,14 @@ class BookTransformer extends BaseTransformer
 		     * )
 		     *
 		     */
-		    case "v2_library_chapter": {
+		    case 'v2_library_chapter':
+		    default: {
 			    return [
-				    "dam_id"           => $book->source_id,
-				    "book_id"          => $book->book_id,
-				    "chapter_id"       => (string) $book->chapter,
-				    "chapter_name"     => "Chapter " . $book->chapter,
-				    "default"          => ""
+				    'dam_id'       => $book->source_id,
+				    'book_id'      => $book->book_id,
+				    'chapter_id'   => (string) $book->chapter,
+				    'chapter_name' => 'Chapter ' . $book->chapter,
+				    'default'      => ''
 			    ];
 		    }
 

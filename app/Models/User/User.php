@@ -74,7 +74,8 @@ class User extends Authenticatable
 	 * @OA\Property(
 	 *   title="id",
 	 *   type="integer",
-	 *   description="The unique id for the user"
+	 *   description="The unique id for the user",
+	 *   minimum=1
 	 * )
 	 *
 	 * @method static User whereId($value)
@@ -115,7 +116,7 @@ class User extends Authenticatable
 	 *   title="nickname",
 	 *   type="string",
 	 *   description="The preferred name for the user or an informal means of addressing them",
-	 *   nullable="true",
+	 *   nullable=true,
 	 *   example="Elwë"
 	 * )
 	 *
@@ -129,7 +130,7 @@ class User extends Authenticatable
 	 *   title="avatar",
 	 *   type="string",
 	 *   description="The url to the user's profile picture",
-	 *   nullable="true",
+	 *   nullable=true,
 	 *   example="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
 	 * )
 	 *

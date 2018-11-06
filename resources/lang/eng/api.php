@@ -19,8 +19,9 @@ return [
 
 	// Bibles Routes
 	'bibles_errors_404'                      => 'The specified bible_id `:bible_id` could not be found',
+	'bible_equivalents_errors_404'           => 'No equivalents for the specified parameters could be found',
 	'bible_fileset_errors_404'               => 'The specified fileset id `:id` could not be found.',
-	'bible_fileset_errors_404_bucket'        => 'No Fileset Found in the :bucket_id Bucket for the provided params',
+	'bible_fileset_errors_404_asset'         => 'No Fileset Found for the :asset_id Asset for the provided params',
 	'bible_fileset_errors_401'               => 'The Fileset exists, but no Permissions were found for your current key',
 	'bible_filesets_errors_checkback'        => 'The data for this Fileset is still being updated, please check back later',
 	'bible_filesets_delete_200'              => 'The fileset `:id` has been successfully deleted',

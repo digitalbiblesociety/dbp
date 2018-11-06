@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Connections\V2Controllers;
 use App\Http\Controllers\APIController;
 use App\Models\Bible\BibleFileset;
 use App\Models\Organization\Asset;
+use App\Traits\CallsBucketsTrait;
 use Storage;
 
 class ApiMetadataController extends APIController
 {
+
+	use CallsBucketsTrait;
 
 	/**
 	 *
@@ -78,20 +81,24 @@ class ApiMetadataController extends APIController
 	 */
 	public function libraryAsset()
 	{
-		$dam_id = checkParam('dam_id|fileset_id', null, 'optional') ?? '';
+		$dam_id   = checkParam('dam_id|fileset_id', null, 'optional');
 		$asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$protocol = checkParam('protocol', null, 'optional');
 
-		$fileset = BibleFileset::where('id',$dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2))->where('asset_id', $asset_id)->first();
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404'));
+		if($dam_id) {
+			$fileset = BibleFileset::where('id',$dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2))->where('asset_id', $asset_id)->first();
+			if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404'));
+		}
 
-		$asset = Asset::find($asset_id);
+		$asset = Asset::where('id',$asset_id)->first();
+
 		$libraryAsset = [
 			[
 				'server'    => $asset->base_name,
 				'root_path' => '/audio',
 				'protocol'  => $asset->protocol,
-				'CDN'       => '0',
-				'priority'  => '5',
+				'CDN'       => $asset->cdn,
+				'priority'  => $asset->priority,
 				'volume_id' => $dam_id,
 			]
 		];

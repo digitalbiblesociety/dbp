@@ -11,6 +11,10 @@ class BookmarkTransformer extends TransformerAbstract
 	 * the expected return for the old Version 2 DBP api route
 	 * and regenerates the old dam_id from the new bible_id
 	 *
+	 * @see Controller: \App\Http\Controllers\Connections\V2Controllers\UsersController::annotationBookmark
+	 * @see Old Route:  http://api.bible.is/annotations/bookmark?dbt_data=1&dbt_version=2&hash=test_hash&key=test_key&reply=json&user_id=313117&v=1
+	 * @see New Route:  https://api.dbp.test/v2/annotations/bookmark?key=test_key&pretty&v=2&user_id=5
+	 *
 	 * @param $bookmark
 	 * @return array
 	 */

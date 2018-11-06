@@ -10,10 +10,10 @@ class LanguageListingTransformer extends BaseTransformer
 {
 	/**
 	 * @OA\Schema (
-	 *	type="array",
-	 *	schema="v2_library_language",
-	 *	description="The minimized language return for the all languages v2 route",
-	 *	title="v2_library_language",
+	 *    type="array",
+	 *    schema="v2_library_language",
+	 *    description="The minimized language return for the all languages v2 route",
+	 *    title="v2_library_language",
 	 *	@OA\Xml(name="v2_library_language"),
 	 *	@OA\Items(
 	 *          @OA\Property(property="language_code",         ref="#/components/schemas/Language/properties/iso"),
@@ -28,6 +28,9 @@ class LanguageListingTransformer extends BaseTransformer
 	 *     )
 	 *   )
 	 * )
+	 *
+	 * @param Language $language
+	 * @return array
 	 */
     public function transform(Language $language)
     {
@@ -42,15 +45,15 @@ class LanguageListingTransformer extends BaseTransformer
 				    'language_iso_2T'           => (string) $language->iso2T,
 				    'language_iso_1'            => (string) $language->iso1,
 				    'language_iso_name'         => (string) $language->name,
-				    'language_family_code'      => ($language->parent) ? $language->parent->autonym : strtoupper($language->iso),
-				    'language_family_name'      => (($language->parent) ? $language->parent->autonym : $language->autonym) ?? "",
-				    'language_family_english'   => (($language->parent) ? $language->parent->name : $language->name) ?? "",
-				    'language_family_iso'       => $language->iso ?? "",
-				    'language_family_iso_2B'    => (($language->parent) ? $language->parent->iso2B : $language->iso2B) ?? "",
-				    'language_family_iso_2T'    => (($language->parent) ? $language->parent->iso2T : $language->iso2T) ?? "",
-				    'language_family_iso_1'     => (($language->parent) ? $language->parent->iso1 : $language->iso1) ?? "",
-				    'media'                     => ["text"],
-				    'delivery'                  => ["mobile","web","subsplash"],
+				    'language_family_code'      => $language->parent ? $language->parent->autonym : strtoupper($language->iso),
+				    'language_family_name'      => ($language->parent ? $language->parent->autonym : $language->autonym) ?? '',
+				    'language_family_english'   => ($language->parent ? $language->parent->name : $language->name) ?? '',
+				    'language_family_iso'       => $language->iso ?? '',
+				    'language_family_iso_2B'    => ($language->parent ? $language->parent->iso2B : $language->iso2B) ?? '',
+				    'language_family_iso_2T'    => ($language->parent ? $language->parent->iso2T : $language->iso2T) ?? '',
+				    'language_family_iso_1'     => ($language->parent ? $language->parent->iso1 : $language->iso1) ?? '',
+				    'media'                     => ['text'],
+				    'delivery'                  => ['mobile', 'web', 'subsplash'],
 				    'resolution'                => []
 			    ];
 		    }
@@ -117,34 +120,34 @@ class LanguageListingTransformer extends BaseTransformer
 		     *   )
 		     * )
 		     */
-		    case "v2_library_volumeLanguageFamily": {
+		    case 'v2_library_volumeLanguageFamily': {
 		    	return [
-			        "language_family_code"    => (string) strtoupper($language->iso),
-                    "language_family_name"    => (string) $language->name,
-                    "language_family_english" => (string) $language->name,
-                    "language_family_iso"     => (string) $language->iso,
-                    "language_family_iso_2B"  => (string) $language->iso2B,
-                    "language_family_iso_2T"  => (string) $language->iso2T,
-                    "language_family_iso_1"   => (string) $language->iso1,
-                    "language"                => [
-	                    (string) strtoupper($language->iso)
+				    'language_family_code'    => strtoupper($language->iso),
+				    'language_family_name'    => (string) $language->name,
+				    'language_family_english' => (string) $language->name,
+				    'language_family_iso'     => (string) $language->iso,
+				    'language_family_iso_2B'  => (string) $language->iso2B,
+				    'language_family_iso_2T'  => (string) $language->iso2T,
+				    'language_family_iso_1'   => (string) $language->iso1,
+				    'language'                => [
+					    strtoupper($language->iso)
                     ],
-                    "media"                   => ["video","text"],
-                    "delivery"                => ["mobile","web","subsplash"],
-                    "resolution"              => ["lo"]
+				    'media'                   => ['video', 'text'],
+				    'delivery'                => ['mobile', 'web', 'subsplash'],
+				    'resolution'              => ['lo']
 				];
 		    }
 
 		    default: {
 			    return [
-				    'language_code'        => (string) @strtoupper($language->iso),
-				    'language_name'        => (string) @$language->name,
-				    'english_name'         => (string) @$language->name,
+				    'language_code'        => @strtoupper($language->iso),
+				    'language_name'        => @$language->name,
+				    'english_name'         => @$language->name,
 				    'language_iso'         => (string) @$language->iso,
-				    "language_iso_2B"      => (string) @$language->iso2B,
-				    "language_iso_2T"      => (string) @$language->iso2B,
-				    "language_iso_1"       => (string) @$language->iso2B,
-				    'language_iso_name'    => (string) @$language->name,
+				    'language_iso_2B'      => @$language->iso2B,
+				    'language_iso_2T'      => @$language->iso2B,
+				    'language_iso_1'       => @$language->iso2B,
+				    'language_iso_name'    => @$language->name,
 				    'language_family_code' => (string) @$language->iso
 			    ];
 		    }

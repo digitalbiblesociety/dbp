@@ -24,8 +24,6 @@ class AlphabetsController extends APIController
 	 * @link https://api.dbp.test/alphabets?key=1234&v=4&pretty - V4 Test Access
 	 * @link https://dbp.test/eng/docs/swagger/v4#/Wiki/v4_alphabets_all - V4 Test Docs
 	 *
-	 * @return mixed $alphabets string - A JSON string that contains the status code and error messages if applicable.
-	 *
 	 * @OA\Get(
 	 *     path="/alphabets",
 	 *     tags={"Languages"},
@@ -45,10 +43,12 @@ class AlphabetsController extends APIController
 	 *     )
 	 * )
 	 *
+	 * @return mixed $alphabets string - A JSON string that contains the status code and error messages if applicable.
+	 *
 	 */
 	public function index()
 	{
-		if (!$this->api) return view('wiki.languages.alphabets.index');
+		if(!$this->api) return view('wiki.languages.alphabets.index');
 
 		if(env('APP_DEBUG') === 'true') \Cache::forget('alphabets');
 		$alphabets = \Cache::remember('alphabets', 1600, function () {
@@ -90,15 +90,12 @@ class AlphabetsController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param $id
-	 *
+	 * @param string $id
 	 * @return mixed $alphabets string - A JSON string that contains the status code and error messages if applicable.
 	 *
 	 */
 	public function show($id)
 	{
-
-		if(env('APP_DEBUG') === 'true') \Cache::forget('alphabet_' . $id);
 		$alphabet = \Cache::remember('alphabet_' . $id, 1600, function () use ($id) {
 			return Alphabet::with('fonts', 'languages', 'bibles.currentTranslation')->where('script', $id)->first();
 		});

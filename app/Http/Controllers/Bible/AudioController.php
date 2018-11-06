@@ -47,10 +47,7 @@ class AudioController extends APIController
 	 *     @OA\Response(
 	 *         response=200,
 	 *         description="successful operation",
-	 *         @OA\MediaType(
-	 *            mediaType="application/json",
-	 *            @OA\Schema(ref="#/components/schemas/v2_audio_path")
-	 *         )
+	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_audio_path"))
 	 *     )
 	 * )
 	 *

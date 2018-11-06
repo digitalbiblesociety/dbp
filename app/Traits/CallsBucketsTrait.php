@@ -35,15 +35,6 @@ trait CallsBucketsTrait {
 
 		} else {
 			return $security_token;
-			return new S3Client([
-				'version' => 'latest',
-				'region'  => 'us-west-2',
-				'credentials' => [
-					'key' => $security_token->AssumeRoleResult->Credentials->AccessKeyId,
-					'secret' => $security_token->AssumeRoleResult->Credentials->SecretAccessKey,
-					'token' =>  $security_token->AssumeRoleResult->Credentials->SessionToken
-				]
-			]);
 		}
 	}
 

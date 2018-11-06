@@ -25,9 +25,9 @@ class UserBookmarksController extends APIController
 	 *     path="/users/{user_id}/bookmarks/",
 	 *     tags={"User"},
 	 *     summary="Returns a list of bookmarks for a specific user",
-	 *     description="Returns filtered permissions for a fileset dependent upon your authorization level and API key",
-	 *     operationId="v4_bible_filesets_permissions.index",
-	 *     @OA\Parameter(name="id", in="path", required=true, description="The fileset ID", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+	 *     description="",
+	 *     operationId="v4_user_annotation_bookmarks.index",
+	 *     @OA\Parameter(name="user_id", in="path", required=true, description="The user_id", @OA\Schema(ref="#/components/schemas/User/properties/id")),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -37,7 +37,7 @@ class UserBookmarksController extends APIController
 	 *         description="successful operation",
 	 *         @OA\MediaType(
 	 *            mediaType="application/json",
-	 *            @OA\Schema(ref="#/components/schemas/v4_bible_filesets_permissions.index")
+	 *            @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")
 	 *         )
 	 *     )
 	 * )
@@ -74,8 +74,8 @@ class UserBookmarksController extends APIController
      *     tags={"User"},
      *     summary="Create a brand new bookmark for a specific user",
      *     description="Returns filtered permissions for a fileset dependent upon your authorization level and API key",
-     *     operationId="v4_bible_filesets_permissions.index",
-     *     @OA\Parameter(name="id", in="path", required=true, description="The fileset ID", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+     *     operationId="v4_user_annotation_bookmarks.store",
+     *     @OA\Parameter(name="user_id", in="path", required=true, description="The user_id", @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -85,7 +85,7 @@ class UserBookmarksController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(
      *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/v4_bible_filesets_permissions.index")
+     *            @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")
      *         )
      *     )
      * )
@@ -114,12 +114,34 @@ class UserBookmarksController extends APIController
 	/**
 	 * Update the specified resource in storage.
 	 *
+	 * @OA\Put(
+	 *     path="/users/{user_id}/bookmarks/{bookmark_id}",
+	 *     tags={"User"},
+	 *     summary="Update an existing bookmark for a specific user",
+	 *     description="",
+	 *     operationId="v4_user_annotation_bookmarks.update",
+	 *     @OA\Parameter(name="user_id", in="path", required=true, description="The user_id", @OA\Schema(ref="#/components/schemas/User/properties/id")),
+	 *     @OA\Parameter(name="bookmark_id", in="path", required=true, description="The bookmark id", @OA\Schema(ref="#/components/schemas/User/properties/id")),
+	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
+	 *     @OA\Parameter(ref="#/components/parameters/key"),
+	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
+	 *     @OA\Parameter(ref="#/components/parameters/format"),
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="successful operation",
+	 *         @OA\MediaType(
+	 *            mediaType="application/json",
+	 *            @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")
+	 *         )
+	 *     )
+	 * )
+	 *
 	 * @param  int $user_id
-	 * @param  int $id
+	 * @param  int $bookmark_id
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-    public function update($user_id,$id)
+    public function update($user_id,$bookmark_id)
     {
 	    $user_is_member = $this->compareProjects($user_id, $this->key);
 	    if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
@@ -127,7 +149,7 @@ class UserBookmarksController extends APIController
 	    $invalidBookmark = $this->validateBookmark();
 	    if($invalidBookmark) return $this->setStatusCode(422)->replyWithError($invalidBookmark);
 
-	    $bookmark = Bookmark::where('id',$id)->where('user_id',$user_id)->first();
+	    $bookmark = Bookmark::where('id',$bookmark_id)->where('user_id',$user_id)->first();
 	    if(!$bookmark) return $this->setStatusCode(404)->replyWithError('Bookmark not found');
 	    $bookmark->fill(request()->all());
 	    $bookmark->save();
@@ -140,15 +162,38 @@ class UserBookmarksController extends APIController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @OA\Delete(
+     *     path="/users/{user_id}/bookmarks/{bookmark_id}",
+     *     tags={"User"},
+     *     summary="Delete a new bookmark from a specific user",
+     *     description="",
+     *     operationId="v4_user_annotation_bookmarks.delete",
+     *     @OA\Parameter(name="user_id", in="path", required=true, description="The user_id", @OA\Schema(ref="#/components/schemas/User/properties/id")),
+     *     @OA\Parameter(name="bookmark_id", in="path", required=true, description="The bookmark id", @OA\Schema(ref="#/components/schemas/User/properties/id")),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(
+     *            mediaType="application/json",
+     *            @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")
+     *         )
+     *     )
+     * )
+     *
+     * @param  int  $user_id
+     * @param  int  $bookmark_id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($user_id, $id)
+    public function destroy($user_id, $bookmark_id)
     {
 	    $user_is_member = $this->compareProjects($user_id, $this->key);
 	    if(!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
 
-	    $bookmark = Bookmark::where('id',$id)->where('user_id',$user_id)->first();
+	    $bookmark = Bookmark::where('id',$bookmark_id)->where('user_id',$user_id)->first();
 	    $bookmark->delete();
 
 	    return $this->reply('bookmark successfully deleted');

@@ -10,7 +10,7 @@ class LibraryCatalogTransformer extends BaseTransformer
 	public function transform($version)
 	{
 		switch ($this->route) {
-			case "v2_library_version": {
+			case 'v2_library_version': {
 				return [
 					'version_code' => $version->id,
 					'version_name' => $version->bible->first()->vernacularTranslation->name ?? '',

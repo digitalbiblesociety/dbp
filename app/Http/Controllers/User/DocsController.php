@@ -68,6 +68,8 @@ class DocsController extends APIController
 				$swagger->tags[$key]->description = substr($swagger->tags[$key]->description, 2);
 			}
 		}
+		$swagger->tags = array_flatten($swagger->tags);
+
 		foreach ($swagger->paths as $key => $path) {
 			if(isset($path->get->operationId)) if(strpos($path->get->operationId, $version) !== 0) unset($swagger->paths[$key]);
 			if(isset($path->put->operationId)) if(strpos($path->put->operationId, $version) !== 0) unset($swagger->paths[$key]);

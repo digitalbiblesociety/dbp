@@ -69,7 +69,7 @@ class BooksController extends APIController
 			function () use ($id, $fileset, $testament) {
 
 			// If plain text check Sophia
-			if($fileset->set_type_code == 'text_plain') {
+			if($fileset->set_type_code === 'text_plain') {
 				$sophiaTable = $this->checkForSophiaTable($fileset);
 				if(!\is_string($sophiaTable)) return $sophiaTable;
 				$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());

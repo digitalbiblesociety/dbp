@@ -60,12 +60,11 @@ class AccessGroupController extends APIController
 	 *     tags={"Admin"},
 	 *     summary="Create the specified Access group",
 	 *     description="",
-	 *     operationId="v4_access_groups.show",
+	 *     operationId="v4_access_groups.store",
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OA\Parameter(ref="#/components/parameters/format"),
-	 *     @OA\Parameter(name="access_group_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/AccessGroup/properties/id")),
 	 *     @OA\Response(
 	 *         response=200,
 	 *         description="successful operation",
@@ -114,7 +113,7 @@ class AccessGroupController extends APIController
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OA\Parameter(ref="#/components/parameters/format"),
-	 *     @OA\Parameter(name="access_group_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/AccessGroup/properties/id")),
+	 *     @OA\Parameter(name="group_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/AccessGroup/properties/id")),
 	 *     @OA\Response(
 	 *         response=200,
 	 *         description="successful operation",

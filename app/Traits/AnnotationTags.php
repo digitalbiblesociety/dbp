@@ -22,14 +22,12 @@ trait AnnotationTags
 
 		if(!isset($tags)) { return null; }
 
-		if(\count($tags) > 0) {
-			if (request()->method() === 'POST') {
-				$annotation->tags()->createMany($tags);
-			}
-			if (request()->method() === 'PUT') {
-				$annotation->tags()->delete();
-				$annotation->tags()->createMany($tags);
-			}
+		if (request()->method() === 'POST') {
+			$annotation->tags()->createMany($tags);
+		}
+		if (request()->method() === 'PUT') {
+			$annotation->tags()->delete();
+			$annotation->tags()->createMany($tags);
 		}
 
 	}

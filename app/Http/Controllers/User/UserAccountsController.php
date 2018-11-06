@@ -109,10 +109,8 @@ class UserAccountsController extends APIController
 	 *     @OA\Parameter(ref="#/components/parameters/key"),
 	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
 	 *     @OA\Parameter(ref="#/components/parameters/format"),
-	 *     @OA\Parameter(name="project_id", in="query", description="The Project ID", required=true,
-	 *          @OA\Schema(ref="#/components/schemas/Project/properties/id")),
-	 *     @OA\Parameter(name="user_id", in="query", description="The User ID", required=true,
-	 *          @OA\Schema(ref="#/components/schemas/User/properties/id")),
+	 *     @OA\Parameter(name="account_id", in="path", description="The account_id", required=true, @OA\Schema(ref="#/components/schemas/Account/properties/id")),
+	 *     @OA\Parameter(name="project_id", in="query", description="The Project ID", required=true, @OA\Schema(ref="#/components/schemas/Project/properties/id")),
 	 *     @OA\Response(
 	 *         response=200,
 	 *         description="successful operation",
