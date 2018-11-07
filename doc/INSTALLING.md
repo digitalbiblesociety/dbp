@@ -75,7 +75,7 @@ apt-get install software-properties-common
 add-apt-repository -y 'ppa:ondrej/php'
 add-apt-repository -y 'ppa:ondrej/nginx'
 apt-get update
-apt-get -y install gcc curl gzip git tar software-properties-common nginx composer
+apt-get -y install gcc npm curl gzip git tar software-properties-common nginx composer
 apt-get -y install php7.2-fpm php7.2-xml php7.2-bz2 php7.2-zip php7.2-mysql php7.2-intl php7.2-gd php7.2-curl php7.2-soap php7.2-mbstring php7.2-memcached
 ```
 ##### Configure PHP
