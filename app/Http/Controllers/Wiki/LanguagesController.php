@@ -111,7 +111,7 @@ class LanguagesController extends APIController
 					return $query->where('iso', $code);
 				})->when($sort_by, function ($query) use ($sort_by) {
 					return $query->orderBy($sort_by);
-				})->withCount('bibles')->withCount('filesets')->get();
+				})->withCount('bibles')->withCount('filesets')->get()->unique();
 
 			return fractal($languages,new LanguageTransformer(),$this->serializer);
 		});
@@ -200,8 +200,8 @@ class LanguagesController extends APIController
 	public function show($id)
 	{
 		$language = Language::where('id',$id)->orWhere('iso',$id)->first();
-		$language->load('translations', 'codes', 'dialects', 'classifications', 'countries', 'primaryCountry', 'bibles.translations.language', 'bibles.filesets', 'resources.translations', 'resources.links');
 		if(!$language) return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
+		$language->load('translations', 'codes', 'dialects', 'classifications', 'countries', 'primaryCountry', 'bibles.translations.language', 'bibles.filesets', 'resources.translations', 'resources.links');
 		if($this->api) return $this->reply(fractal($language, new LanguageTransformer()));
 
 		return view('wiki.languages.show', compact('language'));
