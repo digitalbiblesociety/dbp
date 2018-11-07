@@ -95,10 +95,12 @@ class TextController extends APIController
 		if (!$book) return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
 		$book->push('name_vernacular', $book->translation($bible->language_id));
 
-		if ($asset_id) {
+		if ($fileset->set_type_code !== 'text_plain') {
 			$path   = 'text/' . $bible->id . '/' . $fileset->id . '/' . $book_id . $chapter . '.html';
+
 			$exists = Storage::disk($asset_id)->exists($path);
 			if (!$exists) return $this->replyWithError("The path: $path did not result in a file");
+
 			$transaction_id = random_int(0,10000000);
 			return $this->reply(['path' => $this->signedUrl($path, $asset_id, $transaction_id)], [], $transaction_id);
 		}
