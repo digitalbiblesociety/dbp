@@ -125,7 +125,7 @@ class BiblesController extends APIController
 				});
 			})
 			->when($fileset_filter, function ($q) {
-			    $q->has('filesets.files');
+			    $q->has('filesets');
 			})
 			->when($asset_id, function ($q) use($asset_id) {
 				$q->whereHas('filesets', function ($q) use ($asset_id) {
