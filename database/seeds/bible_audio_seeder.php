@@ -5,8 +5,8 @@ use App\Models\Bible\BibleEquivalent;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\Book;
-use App\Models\Bible\BookCode;
 use database\seeds\SeederHelper;
+use App\Models\Organization\Organization;
 
 class bible_audio_seeder extends Seeder
 {
@@ -25,7 +25,7 @@ class bible_audio_seeder extends Seeder
 	    \DB::table('bible_files')->delete();
 
 	    $bucket_exists = \App\Models\Organization\Asset::find('dbp_dev');
-	    if(!$bucket_exists) \App\Models\Organization\Asset::create(['id' =>'dbp_dev', 'organization_id' => 9]);
+	    if(!$bucket_exists) \App\Models\Organization\Asset::create(['id' =>'dbp_dev', 'organization_id' => 9,'asset_type' => 's3','base_name' => 'cdn.example.com']);
 
 	    \App\Models\Bible\BibleFilesetSize::create([
 	    	'id'            => 1,
@@ -58,17 +58,17 @@ class bible_audio_seeder extends Seeder
 	    ]);
 
 	    $seederhelper = new SeederHelper();
-	    $chapters = $seederhelper->csv_to_array(storage_path() . "/data/dbp3/audio.csv");
+	    $chapters = $seederhelper->csv_to_array(storage_path() . '/data/dbp3/audio.csv');
 	    $setsCreated = array();
-	    $fcbh_id = \App\Models\Organization\Organization::where('slug','faith-comes-by-hearing')->first()->id;
+	    Organization::where('slug','faith-comes-by-hearing')->first()->id;
 	    foreach($chapters as $chapter) {
 		    if(!isset($chapter['audio_path'])) { continue; }
 	    	$dam_id = $chapter['dam_id'];
-		    $testament = (substr($dam_id,-4,1) == 'N') ? "NT" : "OT";
+		    $testament = ($dam_id[strlen($dam_id) - 4] === 'N') ? 'NT' : 'OT';
 		    //$testament_code = (substr($dam_id,-4,1) == 'N') ? 1 : 2;
 
-		    if(substr($dam_id,-2,1) == 'D') {
-			    $type = (substr($dam_id,-3,1) == 2) ? 1 : 2;
+		    if($dam_id[strlen($dam_id) - 2] === 'D') {
+			    $type = ($dam_id[strlen($dam_id) - 3] === 2) ? 1 : 2;
 		    } else {
 		    	$type = 3;
 		    }
@@ -78,10 +78,10 @@ class bible_audio_seeder extends Seeder
 			    if(!$bibleEquivalent) {$missing[] = $dam_id;continue;}
 
 	    		$audioSet = BibleFileset::create([
-	    			'hash_id'         => substr(md5($chapter['dam_id'].$type."dbp_dev"), 0, 12),
+	    			'hash_id'         => substr(md5($chapter['dam_id'].$type . 'dbp_dev'), 0, 12),
 				    'id'              => $chapter['dam_id'],
 					'set_type_code'   => \App\Models\Bible\BibleFilesetType::find($type)->set_type_code,
-				    'asset_id'       => "dbp_dev",
+				    'asset_id'       => 'dbp_dev',
 				    'set_size_code'   => $testament,
 			    ]);
 			    $audioSet->save();
@@ -95,7 +95,7 @@ class bible_audio_seeder extends Seeder
 	    	// Create the Audio Resource
 
 		    $book = Book::where('id', $chapter['book_code'])->first();
-		    if(!$book) {echo "Missing USFM:". $chapter['book_code'];continue;}
+		    if(!$book) {echo 'Missing USFM:' . $chapter['book_code'];continue;}
 			if(BibleFile::where('file_name',$chapter['audio_path'])->orWhere([
 				['hash_id',       '=', $audioSet->hash_id],
 				['book_id',       '=', $book->id],
@@ -111,7 +111,6 @@ class bible_audio_seeder extends Seeder
 				'verse_end'     => null,
 			]);
 	    }
-	    echo "Missing IDs: ".implode(',',array_unique($missing));
 
     }
 }

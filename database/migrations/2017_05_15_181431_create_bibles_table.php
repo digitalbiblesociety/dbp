@@ -150,8 +150,6 @@ class CreateBiblesTable extends Migration
 	        Schema::connection('dbp')->create('book_translations', function (Blueprint $table) {
 		        $table->integer('language_id')->unsigned();
 		        $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
-		        $table->char('iso', 3)->index();
-		        $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
 		        $table->char('book_id', 3);
 		        $table->foreign('book_id')->references('id')->on('books');
 		        $table->string('name');

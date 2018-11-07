@@ -10,6 +10,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Language\LanguageStatus $language_status
  * @mixin \Eloquent
  *
+ * @property int $id
+ * @property string $title
+ * @property string $description
+ * @method static LanguageStatus whereId($value)
+ * @method static LanguageStatus whereTitle($value)
+ * @method static LanguageStatus whereDescription($value)
+ *
  * @OA\Schema (
  *     type="object",
  *     description="",
@@ -30,13 +37,10 @@ class LanguageStatus extends Model
 	 *
 	 * @OA\Property(
 	 *   title="id",
-	 *   type="integer",
-	 *   description="The incrementing id of the language Code",
+	 *   type="string",
+	 *   description="The id for the language status",
 	 *   minimum=0
 	 * )
-	 *
-	 * @property int $id
-	 * @method static LanguageCode whereId($value)
 	 *
 	 */
 	protected $id;
@@ -46,12 +50,8 @@ class LanguageStatus extends Model
 	 * @OA\Property(
 	 *   title="title",
 	 *   type="string",
-	 *   description="",
-	 *   minimum=0
+	 *   description="The title"
 	 * )
-	 *
-	 * @property $title
-	 * @method static LanguageCode whereTitle($value)
 	 *
 	 */
 	protected $title;
@@ -61,12 +61,8 @@ class LanguageStatus extends Model
 	 * @OA\Property(
 	 *   title="description",
 	 *   type="string",
-	 *   description="",
-	 *   minimum=0
+	 *   description="The description"
 	 * )
-	 *
-	 * @property $description
-	 * @method static LanguageCode whereDescription($value)
 	 *
 	 */
 	protected $description;

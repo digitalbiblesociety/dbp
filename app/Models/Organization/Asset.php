@@ -25,6 +25,7 @@ class Asset extends Model
     public $incrementing = false;
     public $keyType = 'string';
     public $hidden = ['created_at','updated_at'];
+    public $fillable = ['id','organization_id','hidden','asset_type','base_name','protocol'];
 
 	/**
 	 *

@@ -24,10 +24,6 @@ class language_seeder extends Seeder
 
 		$languages = $seederHelper->csv_to_array(storage_path('data/languages.csv'));
 		foreach($languages as $language) {
-			unset($language['iso2B']);
-			unset($language['iso2T']);
-			unset($language['iso1']);
-
 			Language::create($language);
 		}
 

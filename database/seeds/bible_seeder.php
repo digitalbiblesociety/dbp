@@ -15,18 +15,17 @@ class bible_seeder extends Seeder {
 		\DB::connection('dbp')->table('bible_translations')->delete();
 		\DB::connection('dbp')->table('bibles')->delete();
 		$seederhelper = new SeederHelper();
-		$bibles       = $seederhelper->csv_to_array( storage_path("/data/bibles/bibles.csv") );
+		$bibles       = $seederhelper->csv_to_array( storage_path('/data/bibles/bibles.csv') );
 		foreach ( $bibles as $key => $bible ) {
 			if(!isset($bible['abbr'])) continue;
-			if($bible['abbr'] == null) continue;
+			if($bible['abbr'] === null) continue;
 			$language = Language::where('iso',$bible['iso'])->first();
 			if(!$language) {echo "\nMissing: ".$bible['iso'];continue;}
 
 			$alphabet = Alphabet::find($bible['script']);
 			if(!$alphabet) {echo "\nMissing: ".$bible['script'];continue;}
 
-			$current_bible = new Bible();
-			$current_bible->create([
+			Bible::create([
 				'id'          => $bible['abbr'],
 				'iso'         => $language->iso,
 				'date'        => $bible['date'],
@@ -38,22 +37,20 @@ class bible_seeder extends Seeder {
 			]);
 
 			// English Title
-			$translation = new \App\Models\Bible\BibleTranslation();
-			$translation->create([
-				"bible_id"    => $bible['abbr'],
-				"iso"         => "eng",
-				"vernacular"  => (($language->iso == "eng") AND isset($bible["eng_title"]) ? 1 : 0),
-				"name"        => $bible["eng_title"],
-				"description" => $bible["description"]
+
+			BibleTranslation::create([
+				'bible_id'    => $bible['abbr'],
+				'iso'         => 'eng',
+				'name'        => $bible['eng_title'],
+				'description' => $bible['description']
 			]);
 
 			// Vernacular Title
-			$translation->create([
-				"bible_id"    => $bible['abbr'],
-				"iso"         => $bible["iso"],
-				"vernacular"  => ($language->iso != "eng") ? 1 : 0,
-				"name"        => $bible["vern_title"],
-				"description" => $bible["description"]
+			BibleTranslation::create([
+				'bible_id'    => $bible['abbr'],
+				'iso'         => $bible['iso'],
+				'name'        => $bible['vern_title'],
+				'description' => $bible['description']
 			]);
 
 		}
