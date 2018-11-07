@@ -9,11 +9,10 @@ class language_descriptions extends Seeder
     /**
      * Run the database seeds.
      *
-     * @return void
      */
     public function run()
     {
-        $descriptions = collect(glob(storage_path("data/languages/descriptions/*/*.json")));
+        $descriptions = collect(glob(storage_path('data/languages/descriptions/*/*.json')));
 		foreach ($descriptions as $description_url) {
 			$description = json_decode(file_get_contents($description_url));
 
@@ -40,13 +39,10 @@ class language_descriptions extends Seeder
 
 
 			// Update Language Translations Table
-			$translation = LanguageTranslation::where('language_source',$description_language)->where('language_translation',$translation_language)->first();
+			$translation = LanguageTranslation::where('language_source_id',$description_language)->where('language_translation_id',$translation_language)->first();
 			if(!$translation) { continue; }
 			$translation->description = $description;
 			$translation->save();
 		}
-
-
-
     }
 }

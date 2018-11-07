@@ -23,8 +23,14 @@ class language_seeder extends Seeder
 
 
 		$languages = $seederHelper->csv_to_array(storage_path('data/languages.csv'));
-		foreach($languages as $language) {
-			Language::create($language);
+		foreach($languages as $language_values) {
+
+			foreach ($language_values as $key => $language_value) {
+				if($language_value === 'NULL') $language_value = null;
+				$values[$key] = $language_value;
+			}
+
+			Language::create($values);
 		}
 
 	}

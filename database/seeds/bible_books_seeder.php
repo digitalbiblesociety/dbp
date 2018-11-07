@@ -2,9 +2,13 @@
 
 use Illuminate\Database\Seeder;
 use database\seeds\SeederHelper;
+use App\Models\Bible\BookTranslation;
+use App\Models\Language\Language;
 
 use App\Models\Bible\Book;
 use App\Models\Bible\BookCode;
+use App\Models\Bible\BibleEquivalent;
+use App\Models\Bible\BibleBook;
 
 class bible_books_seeder extends Seeder
 {
@@ -48,16 +52,16 @@ class bible_books_seeder extends Seeder
 	        $book->id_usfx = $canonItem['usfx'];
 	        $book->id_osis = $canonItem['osis'];
 			$book->protestant_order = $canonItem['book_order'];
-			$book->luther_order =   isset($book_orders[$canonItem['id']]['lutherOrder']) ? (($book_orders[$canonItem['id']]['lutherOrder'] > -1) ? $book_orders[$canonItem['id']]['lutherOrder'] : null) : null;
-			$book->synodal_order =  isset($book_orders[$canonItem['id']]['synodalOrder']) ? (($book_orders[$canonItem['id']]['synodalOrder'] > -1) ? $book_orders[$canonItem['id']]['synodalOrder'] : null) : null;
-			$book->german_order =   isset($book_orders[$canonItem['id']]['germanOrder']) ? (($book_orders[$canonItem['id']]['germanOrder'] > -1) ? $book_orders[$canonItem['id']]['germanOrder'] : null) : null;
-			$book->kjva_order =     isset($book_orders[$canonItem['id']]['kjvaOrder']) ? (($book_orders[$canonItem['id']]['kjvaOrder'] > -1) ? $book_orders[$canonItem['id']]['kjvaOrder'] : null) : null;
-			$book->vulgate_order =  isset($book_orders[$canonItem['id']]['vulgateOrder']) ? (($book_orders[$canonItem['id']]['vulgateOrder'] > -1) ? $book_orders[$canonItem['id']]['vulgateOrder'] : null) : null;
-			$book->lxx_order =      isset($book_orders[$canonItem['id']]['lxxOrder']) ? (($book_orders[$canonItem['id']]['lxxOrder'] > -1) ? $book_orders[$canonItem['id']]['lxxOrder'] : null) : null;
-			$book->orthodox_order = isset($book_orders[$canonItem['id']]['orthodoxOrder']) ? (($book_orders[$canonItem['id']]['orthodoxOrder'] > -1) ? $book_orders[$canonItem['id']]['orthodoxOrder'] : null) : null;
-			$book->nrsva_order =    isset($book_orders[$canonItem['id']]['nrsvaOrder']) ? (($book_orders[$canonItem['id']]['nrsvaOrder'] > -1) ? $book_orders[$canonItem['id']]['nrsvaOrder'] : null) : null;
-			$book->catholic_order = isset($book_orders[$canonItem['id']]['catholicOrder']) ? (($book_orders[$canonItem['id']]['catholicOrder'] > -1) ? $book_orders[$canonItem['id']]['catholicOrder'] : null) : null;
-			$book->finnish_order =  isset($book_orders[$canonItem['id']]['finnishOrder']) ? (($book_orders[$canonItem['id']]['finnishOrder'] > -1) ? $book_orders[$canonItem['id']]['finnishOrder'] : null) : null;
+			$book->luther_order =   (isset($book_orders[$canonItem['id']]['lutherOrder'])) ? (($book_orders[$canonItem['id']]['lutherOrder'] > -1) ? $book_orders[$canonItem['id']]['lutherOrder'] : null) : null;
+			$book->synodal_order =  (isset($book_orders[$canonItem['id']]['synodalOrder'])) ? (($book_orders[$canonItem['id']]['synodalOrder'] > -1) ? $book_orders[$canonItem['id']]['synodalOrder'] : null) : null;
+			$book->german_order =   (isset($book_orders[$canonItem['id']]['germanOrder'])) ? (($book_orders[$canonItem['id']]['germanOrder'] > -1) ? $book_orders[$canonItem['id']]['germanOrder'] : null) : null;
+			$book->kjva_order =     (isset($book_orders[$canonItem['id']]['kjvaOrder'])) ? (($book_orders[$canonItem['id']]['kjvaOrder'] > -1) ? $book_orders[$canonItem['id']]['kjvaOrder'] : null) : null;
+			$book->vulgate_order =  (isset($book_orders[$canonItem['id']]['vulgateOrder'])) ? (($book_orders[$canonItem['id']]['vulgateOrder'] > -1) ? $book_orders[$canonItem['id']]['vulgateOrder'] : null) : null;
+			$book->lxx_order =      (isset($book_orders[$canonItem['id']]['lxxOrder'])) ? (($book_orders[$canonItem['id']]['lxxOrder'] > -1) ? $book_orders[$canonItem['id']]['lxxOrder'] : null) : null;
+			$book->orthodox_order = (isset($book_orders[$canonItem['id']]['orthodoxOrder'])) ? (($book_orders[$canonItem['id']]['orthodoxOrder'] > -1) ? $book_orders[$canonItem['id']]['orthodoxOrder'] : null) : null;
+			$book->nrsva_order =    (isset($book_orders[$canonItem['id']]['nrsvaOrder'])) ? (($book_orders[$canonItem['id']]['nrsvaOrder'] > -1) ? $book_orders[$canonItem['id']]['nrsvaOrder'] : null) : null;
+			$book->catholic_order = (isset($book_orders[$canonItem['id']]['catholicOrder'])) ? (($book_orders[$canonItem['id']]['catholicOrder'] > -1) ? $book_orders[$canonItem['id']]['catholicOrder'] : null) : null;
+			$book->finnish_order =  (isset($book_orders[$canonItem['id']]['finnishOrder'])) ? (($book_orders[$canonItem['id']]['finnishOrder'] > -1) ? $book_orders[$canonItem['id']]['finnishOrder'] : null) : null;
             $book->save();
         }
 

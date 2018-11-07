@@ -34,21 +34,25 @@ class organizations_seeder extends Seeder
 		}
 
 		$languages = \App\Models\Language\Language::where('iso','eng')->orWhere('iso','nep')->orWhere('iso','spa')->first();
+
 		$organizationTranslations = $seederHelper->csv_to_array("https://docs.google.com/spreadsheets/d/$googleSheetID/export?format=csv&id=$googleSheetID&gid=557153729");
 		foreach($organizationTranslations as $key => $data) {
 			$language = $languages->where('iso',$data['language_iso'])->first();
 			$organizationTranslation = new OrganizationTranslation();
 			$data['vernacular'] = (bool) $data['vernacular'];
 			$data['language_id'] = $language->id;
-			if($data['alt'] === '') $data['alt'] = 0;
+			if($data['alt'] === '') { $data['alt'] = 0; }
 			$organizationTranslation->create($data);
 		}
 
 		$organizationLogos = $seederHelper->csv_to_array("https://docs.google.com/spreadsheets/d/$googleSheetID/export?format=csv&id=$googleSheetID&gid=1154991446");
 		foreach($organizationLogos as $key => $data) {
-			$organizationLogo = new OrganizationLogo();
+			if(!Organization::where('id',$data['organization_id'])->exists()) {continue;}
+			$language = \App\Models\Language\Language::where('iso',$data['language_iso'])->first();
+			if(!$language) {continue;}
+			$data['language_id'] = $language->id;
 			if($data['url'] === '') { continue; }
-			$organizationLogo->create($data);
+			OrganizationLogo::create($data);
 		}
 
 		$organizations = Organization::with('translations')->get();
