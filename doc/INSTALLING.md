@@ -67,7 +67,7 @@ and Run composer install
 ### Running on Windows
 ##### (Coming soon)
 
-#### Installing on Ubuntu 16
+#### Installing on Ubuntu 18
 
 ##### Install Packages
 ```bash

@@ -15,6 +15,8 @@
 
             <form method="POST" action="{{ route('register') }}">
                 @csrf
+                <input type="hidden" name="v" value="4">
+                <input type="hidden" name="project_id" value="{{ $project->id }}">
                 <div class="columns">
                 <div class="field column">
                     <label class="label" for="email">{{ __('Username') }}</label>

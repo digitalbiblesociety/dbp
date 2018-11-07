@@ -23,9 +23,9 @@
                 @isset($status)
                     <div class="message-header">{{ trans('api.errors_'.$status) }}</div>
                 @else
-                    <div class="message-header">{{ trans('api.errors') }}</div>
+                    <div class="message-header">{{ trans('api.errors'.$message) }}</div>
                 @endif
-                <div class="message-body">@if(isset($message)) {{ trans($message) }} @endif</div>
+                <div class="message-body">@if(isset($message)) {{ $message }} @endif</div>
             </div>
 
         </div>

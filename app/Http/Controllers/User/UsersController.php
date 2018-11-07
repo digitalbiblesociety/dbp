@@ -130,7 +130,8 @@ class UsersController extends APIController
 
 	public function create()
 	{
-		return view('auth.register');
+		$project = Project::where('name','Digital Bible Platform')->first();
+		return view('auth.register',compact('project'));
 	}
 
 	/**
@@ -253,10 +254,10 @@ class UsersController extends APIController
 			'name'          => $request->name,
 			'first_name'    => $request->first_name,
 			'last_name'     => $request->last_name,
-			'token'    => unique_random('dbp_users.users','token'),
-			'activated' => 0,
-			'notes'    => $request->notes,
-			'password' => \Hash::make($request->password),
+			'token'         => unique_random('dbp_users.users','token'),
+			'activated'     => 0,
+			'notes'         => $request->notes,
+			'password'      => \Hash::make($request->password),
 		]);
 		if ($request->project_id) {
 			$user_role = Role::where('slug','user')->first();
@@ -266,6 +267,17 @@ class UsersController extends APIController
 				'role_id'    => $user_role->id,
 				'subscribed' => $request->subscribed ?? 0,
 			]);
+
+			$dbp_project = Project::where('name','Digital Bible Platform')->first();
+
+			if($request->project_id === $dbp_project->id) {
+				$user->keys()->create([
+					'key' => unique_random('user_keys','key',24),
+					'name' => 'DBP Generated',
+					'description' => 'An Auto-Generated Key'
+				]);
+			}
+
 		}
 		if ($request->social_provider_id) {
 			$user->accounts()->create([
@@ -273,6 +285,7 @@ class UsersController extends APIController
 				'provider_user_id' => $request->social_provider_user_id,
 			]);
 		}
+		if(!$this->api) return view('dashboard.home',compact('user'));
 		return $this->reply(fractal($user,new UserTransformer())->addMeta(['success' => 'User created']));
 	}
 

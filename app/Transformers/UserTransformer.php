@@ -45,6 +45,20 @@ class UserTransformer extends BaseTransformer
 				];
 			}
 
+			case 'v4_user.store': {
+				return [
+					'id'        => $user->id,
+					'name'      => $user->name,
+					'nickname'  => $user->nickname,
+					'avatar'    => $user->avatar,
+					'email'     => $user->email,
+					'profile'   => $user->profile,
+					'organizations' => $user->organizations,
+					'accounts'  => $user->accounts,
+					'keys'      => $user->keys
+				];
+			}
+
 			/**
 			 * @OA\Schema (
 			 *    type="object",

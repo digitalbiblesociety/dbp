@@ -2,6 +2,9 @@
 
 @section('head')
     <title>{{ $user->name }}'s' Homepage</title>
+    <style>
+        .disabled {opacity:.2}
+    </style>
 @endsection
 
 @section('content')
@@ -9,27 +12,36 @@
     @include('layouts.partials.banner', ['title' => 'Dashboard'])
 
     <div class="container box">
-        <div class="row">
+        <div class="columns">
 
             <aside class="menu column is-one-quarter">
                 <p class="menu-label">General</p>
                 <ul class="menu-list">
-                    <li><a href="{{ route('profile.show', $user->id) }}">Profile</a></li>
-                    <li><a href="">Accounts</a></li>
-                    <li><a href="#">Donate</a></li>
+                    <li><a href="#" class="disabled">Profile</a></li>
+                    <li><a href="#" class="disabled">Accounts</a></li>
+                    <li><a href="#" class="disabled">Donate</a></li>
                 </ul>
                 <p class="menu-label">Messages</p>
                 <ul class="menu-list">
-                    <li><a href="{{ route('messages.index') }}">Messages</a></li>
+                    <li><a href="#" class="disabled">Messages</a></li>
                 </ul>
                 <p class="menu-label">Notes</p>
                 <ul class="menu-list">
-                    <li><a href="#">Create New Note</a></li>
-                    <li><a href="#">Notes</a></li>
+                    <li><a href="#" class="disabled">Create New Note</a></li>
+                    <li><a href="#" class="disabled">Notes</a></li>
                 </ul>
             </aside>
 
-            <section>
+            <section class="column is-three-quarters">
+                @if($user->keys->count() !== 0)
+                <h2>Keys</h2>
+                    @foreach($user->keys as $key_record)
+                        <pre>{{ $key_record->key }}</pre>
+                        <b>{{$key_record->name }}</b>
+                        <p>{{ $key_record->description }}</p>
+                    @endforeach
+                @endif
+
                 <h2 class="is-size-4 has-text-centered">Projects</h2>
                 <hr />
                 @if($user->projects->count() == 0)
