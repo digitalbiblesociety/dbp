@@ -97,8 +97,8 @@ class ApiMetadataController extends APIController
 				'server'    => $asset->base_name,
 				'root_path' => '/audio',
 				'protocol'  => $asset->protocol,
-				'CDN'       => $asset->cdn,
-				'priority'  => $asset->priority,
+				'CDN'       => $asset->cdn ?? '1',
+				'priority'  => $asset->priority ?? '1',
 				'volume_id' => $dam_id,
 			]
 		];
