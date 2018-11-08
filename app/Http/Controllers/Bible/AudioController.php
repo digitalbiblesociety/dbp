@@ -151,30 +151,28 @@ class AudioController extends APIController
 	 *     )
 	 * )
 	 *
-	 * @param $id
-	 * @param $book
-	 * @param $chapter
 	 *
 	 * @return mixed
 	 */
-	public function timestampsByReference($id, $book, $chapter)
+	public function timestampsByReference()
 	{
 		// Check Params
-		$id      = checkParam('fileset_id', $id);
-		$type    = checkParam('type');
-		$book    = checkParam('book', $book);
-		$chapter = checkParam('chapter', $chapter);
+		$id      = checkParam('fileset_id|dam_id');
+		$book    = checkParam('book|osis_code');
+		$chapter = checkParam('chapter_id|chapter_number');
+
+		$book = Book::where('id',$book)->orWhere('id_osis',$book)->first();
 
 		// Fetch Fileset & Files
-		$fileset = BibleFileset::where('id',$id)->where('fileset_size_code',$type)->first();
+		$fileset = BibleFileset::where('id',$id)->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
-		$bible_files = BibleFile::where('hash_id',$fileset->hash_id)->where('book',$book)->where('chapter',$chapter)->get();
+		$bible_files = BibleFile::where('hash_id',$fileset->hash_id)->where('book_id',$book->id)->where('chapter_start',$chapter)->get();
 
 		// Fetch Timestamps
-		$audioTimestamps = BibleFileTimestamp::whereIn('file_id', $bible_files->pluck('id'))->orderBy('verse_start')->get();
+		$audioTimestamps = BibleFileTimestamp::whereIn('bible_file_id', $bible_files->pluck('id'))->orderBy('verse_start')->get();
 
 		// Return Response
-		return $this->reply(fractal($audioTimestamps,new AudioTransformer(),$this->serializer));
+		return $this->reply(fractal($audioTimestamps, new AudioTransformer(), $this->serializer));
 	}
 
 
