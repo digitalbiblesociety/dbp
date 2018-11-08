@@ -29,7 +29,7 @@
 	Route::name('v2_text_search')->match(['get','options'],'text/search',                                                   'Bible\TextController@search');
 	Route::name('v2_text_search_group')->match(['get','options'],'text/searchgroup',                                        'Bible\TextController@searchGroup');
 	Route::name('v2_video_location')->match(['get','options'],'video/location',                                             'Organization\FilmsController@location');
-	Route::name('v2_video_path')->match(['get','options'],'video/path',                                                     'Organization\FilmsController@videoPath');
+	Route::name('v2_video_path')->match(['get','options'],'video/videopath',                                                'Organization\FilmsController@videoPath');
 	Route::name('v2_api_jesusFilms')->match(['get','options'],'library/jesusfilm',                                          'Organization\ResourcesController@jesusFilmListing');
 
 	Route::name('v2_api_jesusFilm_index')->match(['get','options'], 'video/jesusfilm',                                      'Connections\ArclightController@index');
@@ -77,7 +77,6 @@
 	Route::name('v4_bible_books_all')->match(['get','options'],'bibles/books/',                                             'Bible\BooksController@index');
 	Route::name('v4_text_search')->match(['get','options'],'search',                                                        'Bible\TextController@search');
 	Route::name('v4_bible_equivalents.all')->match(['get','options'],'bible/equivalents',                                   'Bible\BibleEquivalentsController@index');
-	Route::name('v4_bible_equivalents.one')->match(['get','options'],'bibles/{bible_id}/equivalents',                       'Bible\BibleEquivalentsController@show');
 	Route::name('v4_bible.books')->match(['get','options'],'bibles/{bible_id}/book/{book?}',                                'Bible\BiblesController@books');
 	Route::name('v4_bible.archival')->match(['get','options'],'bibles/archival',                                            'Bible\BiblesController@archival');
 	Route::name('v4_bible.one')->match(['get','options'],'bibles/{bible_id}',                                               'Bible\BiblesController@show');
