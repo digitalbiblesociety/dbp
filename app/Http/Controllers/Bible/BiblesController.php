@@ -85,7 +85,6 @@ class BiblesController extends APIController
 	 */
 	public function index()
 	{
-		if (env('APP_ENV') === 'local') ini_set('memory_limit', '864M');
 		// Return the documentation if it's not an API request
 		if (!$this->api) return view('bibles.index');
 
@@ -112,51 +111,61 @@ class BiblesController extends APIController
 		$language_code = Language::where('iso',$language_code)->orWhere('id',$language_code)->first();
 
 		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $language_code . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $paginate. $filter;
-		if(env('APP_DEBUG') === 'true') \Cache::forget($cache_string);
 		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $filter, $language, $full_word, $language_code, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $asset_id, $include_alt_names, $include_regionInfo, $access_control, $paginate) {
-			$bibles = Bible::with(['translatedTitles', 'language', 'filesets' => function ($query) use ($asset_id, $access_control, $hide_restricted) {
-				if($asset_id) $query->where('asset_id', $asset_id);
-				if($hide_restricted) $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
-			}])
-			->has('translations')->has('language')
-			->when($filter, function ($q) use($filter) {
-				$q->whereHas('translatedTitles', function ($query) use($filter) {
-					$query->where('name', 'like', '%'.$filter.'%');
-				});
-			})
-			->when($fileset_filter, function ($q) {
-			    $q->has('filesets');
-			})
-			->when($asset_id, function ($q) use($asset_id) {
-				$q->whereHas('filesets', function ($q) use ($asset_id) {
-					$q->where('asset_id', $asset_id);
-				})->get();
-			})
-			->when($country, function ($q) use ($country) {
-			    $q->whereHas('country', function ($query) use ($country) {
-			        $query->where('countries.id', $country);
-			    });
-			})
-			->when($language_code, function ($q) use ($language_code) {
-			    $q->where('language_id', $language_code->id);
-			})
-			->when($organization, function ($q) use ($organization) {
-			    $q->whereHas('organizations', function ($q) use ($organization) {
-			        $q->where('organization_id', $organization);
-			    })->get();
-			})->when($dam_id, function ($q) use ($dam_id) {
-					$q->where('id', $dam_id)->orWhere('id',substr($dam_id,0,-4))->orWhere('id',substr($dam_id,0,-2));
-				})->when($media, function ($q) use ($media) {
-					switch ($media) {
-						case 'video': {$q->has('filesetFilm');break;}
-						case 'audio': {$q->has('filesetAudio');break;}
-						case 'text': {$q->has('filesetText');break;}
-					}
-				})->when($updated, function ($q) use ($updated) {
-					$q->where('updated_at', '>', $updated);
-				})->when($sort_by, function ($q) use ($sort_by, $sort_dir) {
-					$q->orderBy($sort_by, $sort_dir);
-				})->orderBy('priority', 'desc');
+			$bibles = Bible::with(['filesets' => function ($q) use ($asset_id, $access_control, $hide_restricted) {
+					if($asset_id) $q->where('asset_id', $asset_id);
+					if($hide_restricted) $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
+				}])
+					->whereHas('filesets', function ($q) use ($asset_id, $access_control, $hide_restricted) {
+						if($asset_id) $q->where('asset_id', $asset_id);
+						if($hide_restricted) $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
+					})
+				->leftJoin('bible_translations as ver_title', function ($join) {
+					$join->on('ver_title.bible_id', '=', 'bibles.id')
+					     ->where('ver_title.vernacular', 1);
+				})
+				->leftJoin('bible_translations as current_title', function ($join) {
+					$join->on('current_title.bible_id', '=', 'bibles.id')
+					     ->where('current_title.language_id', '=', $GLOBALS['i18n_id']);
+				})
+				->leftJoin('languages as languages', function ($join) use($language_code) {
+					$join->on('languages.id', '=', 'bibles.language_id');
+					if($language_code) $join->where('languages.id',$language_code);
+				})
+				->leftJoin('language_translations as language_autonym', function ($join) {
+					$join->on('language_autonym.language_source_id', '=', 'bibles.language_id')
+					     ->on('language_autonym.language_translation_id', '=', 'bibles.language_id')
+					     ->orderBy('priority','desc');
+				})
+				->leftJoin('language_translations as language_current', function ($join) {
+					$join->on('language_current.language_source_id', '=', 'bibles.language_id')
+					     ->where('language_current.language_translation_id', '=', $GLOBALS['i18n_id'])
+						 ->orderBy('priority','desc');
+				})
+				->rightJoin('bible_fileset_connections','bible_fileset_connections.bible_id','bibles.id')
+				->rightJoin('bible_filesets','bible_filesets.hash_id','bible_fileset_connections.hash_id')
+				->when($country, function ($q) use ($country) {
+					$q->whereHas('country', function ($query) use ($country) {
+						$query->where('countries.id', $country);
+					});
+				})
+				->when($organization, function ($q) use ($organization) {
+					$q->whereHas('organizations', function ($q) use ($organization) {
+						$q->where('organization_id', $organization);
+					})->get();
+				})
+				->select(
+					'current_title.name as ctitle',
+					'ver_title.name as vtitle',
+					'bibles.language_id',
+					'languages.iso',
+					'bibles.date',
+					'language_autonym.name as language_autonym',
+					'language_current.name as language_current',
+					'bibles.priority',
+					'bibles.id'
+				)
+				->orderBy('priority', 'desc')->distinct();
 
 			if($paginate) {
 				$queryParams = array_diff_key($_GET, array_flip(['page']));
@@ -167,21 +176,8 @@ class BiblesController extends APIController
 				$bibles = $bibles->get();
 			}
 
-			if ($include_alt_names) $bibles->load('language.translations');
-			if ($include_regionInfo) $bibles->load('country');
-
-			if ($language) {
-				$bibles = $bibles->filter(function ($bible) use ($language, $full_word) {
-					$altNameList = [];
-					if (isset($bible->language->translations)) $altNameList = $bible->language->translations->pluck('name')->toArray();
-					if ($full_word !== null) return ($bible->language->name === $language) || \in_array($language, $altNameList);
-					return (stripos($bible->language->name, $language) || ($bible->language->name === $language) || stripos(implode($altNameList), $language));
-				});
-			}
-
-			if ($this->v === 2) $bibles->load('language.parent.parentLanguage', 'alphabet', 'organizations');
 			if($paginate) return fractal($bibles, new BibleTransformer(),new DataArraySerializer())->paginateWith(new IlluminatePaginatorAdapter($paginator));
-			return fractal($bibles, new BibleTransformer(),$this->serializer);
+			return fractal($bibles, new BibleTransformer(),new DataArraySerializer());
 		});
 		return $this->reply($bibles);
 	}

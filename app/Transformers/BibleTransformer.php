@@ -162,12 +162,12 @@ class BibleTransformer extends BaseTransformer
 			case 'v4_bible.all': {
 				$output = [
 					'abbr'              => $bible->id,
-					'name'              => @$bible->translations->where('language_id',$GLOBALS['i18n_id'])->first()->name,
-					'vname'             => @$bible->translations->where('language_id',$bible->language_id)->first()->name,
-					'language'          => $bible->language->name ?? null,
-					'autonym'           => $bible->language->autonym ?? null,
-					'language_id'       => $bible->language->id,
-					'iso'               => $bible->language->iso ?? null,
+					'name'              => $bible->ctitle,
+					'vname'             => $bible->vtitle,
+					'language'          => $bible->language_current ?? null,
+					'autonym'           => $bible->language_autonym ?? null,
+					'language_id'       => $bible->language_id,
+					'iso'               => $bible->iso ?? null,
 					'date'              => $bible->date,
 					'filesets'          => $bible->filesets->mapToGroups(function ($item, $key) {
 						return [$item['asset_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
