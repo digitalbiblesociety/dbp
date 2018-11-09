@@ -73,7 +73,7 @@
 	Route::name('v4_bible_filesets.books')->match(['get','options'],'bibles/filesets/{fileset_id}/books',                   'Bible\BooksController@show');
 	Route::name('v4_bible_filesets.show')->match(['get','options'],'bibles/filesets/{fileset_id?}',                         'Bible\BibleFileSetsController@show');
 
-	Route::name('v4_bible_filesets.chapter')->match(['get','options'],'bible/filesets/{fileset_id}/{book}/{chapter}',       'Bible\TextController@index');
+	Route::name('v4_bible_filesets.chapter')->match(['get','options'],'bibles/filesets/{fileset_id}/{book}/{chapter}',      'Bible\TextController@index');
 	Route::name('v4_text_search')->match(['get','options'],'text/search',                                                   'Bible\TextController@search');
 
 	Route::name('v4_bible.links')->match(['get','options'],'bibles/links',                                                  'Bible\BibleLinksController@index');
