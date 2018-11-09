@@ -84,7 +84,7 @@ class TextController extends APIController
 		$verse_end   = checkParam('verse_end', null, 'optional');
 		$asset_id    = checkParam('bucket|bucket_id|asset_id', null, 'optional');
 
-		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id',substr($fileset_id,0,6))->first();
+		$fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id',substr($fileset_id,0,6))->where('set_type_code','text_plain')->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
 		$access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? 'download' : 'api';
 		$access_control = $this->accessControl($this->key, $access_control_type);
@@ -94,16 +94,6 @@ class TextController extends APIController
 		$book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
 		if (!$book) return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
 		$book->push('name_vernacular', $book->translation($bible->language_id));
-
-		if ($fileset->set_type_code !== 'text_plain') {
-			$path   = 'text/' . $bible->id . '/' . $fileset->id . '/' . $book_id . $chapter . '.html';
-
-			// $exists = Storage::disk($asset_id)->exists($path);
-			// if (!$exists) return $this->replyWithError("The path: $path did not result in a file");
-
-			$transaction_id = random_int(0,10000000);
-			return $this->reply(['path' => $this->signedUrl($path, $asset_id, $transaction_id)], [], $transaction_id);
-		}
 
 		// Fetch Verses
 		$table = strtoupper($fileset->id) . '_vpl';
