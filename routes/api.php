@@ -71,11 +71,13 @@
 	Route::name('v4_bible_filesets.download')->match(['get','options'],'bibles/filesets/{fileset_id}/download',             'Bible\BibleFileSetsController@download');
 	Route::name('v4_bible_filesets.copyright')->match(['get','options'],'bibles/filesets/{fileset_id}/copyright',           'Bible\BibleFileSetsController@copyright');
 	Route::name('v4_bible_filesets.books')->match(['get','options'],'bibles/filesets/{fileset_id}/books',                   'Bible\BooksController@show');
-	Route::name('v4_bible_filesets.chapter')->match(['get','options'],'bibles/filesets/{fileset_id}/{book}/{chapter}',      'Bible\TextController@index');
 	Route::name('v4_bible_filesets.show')->match(['get','options'],'bibles/filesets/{fileset_id?}',                         'Bible\BibleFileSetsController@show');
+
+	Route::name('v4_bible_filesets.chapter')->match(['get','options'],'text/{fileset_id}/{book}/{chapter}',                 'Bible\TextController@index');
+	Route::name('v4_text_search')->match(['get','options'],'text/search',                                                   'Bible\TextController@search');
+
 	Route::name('v4_bible.links')->match(['get','options'],'bibles/links',                                                  'Bible\BibleLinksController@index');
 	Route::name('v4_bible_books_all')->match(['get','options'],'bibles/books/',                                             'Bible\BooksController@index');
-	Route::name('v4_text_search')->match(['get','options'],'search',                                                        'Bible\TextController@search');
 	Route::name('v4_bible_equivalents.all')->match(['get','options'],'bible/equivalents',                                   'Bible\BibleEquivalentsController@index');
 	Route::name('v4_bible.books')->match(['get','options'],'bibles/{bible_id}/book/{book?}',                                'Bible\BiblesController@books');
 	Route::name('v4_bible.archival')->match(['get','options'],'bibles/archival',                                            'Bible\BiblesController@archival');
@@ -170,7 +172,7 @@
 	Route::name('v4_algolia.languages')->match(['get','options'],'algolia/languages',                                       'Connections\AlgoliaOutputController@languages');
 	Route::name('v4_connections_jfm.sync')->match(['get','options'],'connections/jesus-film/sync',                          'Connections\ArclightController@sync');
 	Route::name('v4_connections_jfm.index')->match(['get','options'],'connections/jesus-film/{iso}',                        'Connections\ArclightController@index');
-	Route::name('v4_connections_app.deeplink')->match(['get','options'],'connections/app/deeplinking',                      'Connections\MobileAppsController@redirectDeepLink');
+	Route::name('v4_connections_app.deeplink')->match(['get','options'],'connections/app/deeplinking',                      'Connections\MobileAppsController@redirecDeepLink');
 	Route::name('v4_connections_grn.sync')->match(['get','options'],'connections/grn/sync',                                 'Connections\GRNController@sync');
 	Route::name('v4_connections_grn.index')->match(['get','options'],'connections/grn/{iso}',                               'Connections\GRNController@index');
 	Route::name('v4_resources.index')->match(['get','options'],'resources',                                                 'Organization\ResourcesController@index');

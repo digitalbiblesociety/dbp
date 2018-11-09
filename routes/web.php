@@ -76,6 +76,10 @@ Route::group(['middleware' => ['web', 'activity']], function () {
 
 	Route::name('notes')->get('notes',                                       'User\UserNotesController@index');
 
+	// Getting Started
+	Route::name('apiDocs_bible_equivalents')->get('/api/bible/bible-equivalents', 'Bible\BibleEquivalentsController@index');
+
+
 	// Docs Routes
 	Route::name('docs')->get('docs',                                         'User\DocsController@index');
 	Route::name('swagger_v4')->get('docs/swagger/v4',                        'User\DocsController@swagger_v4');
@@ -107,13 +111,13 @@ Route::group(['middleware' => ['web', 'activity']], function () {
 	Route::name('exceeded')->get('/exceeded',                           'Auth\ActivateController@exceeded');
 
     // Socialite Register Routes
-    Route::name('social.redirect')->get('/login/redirect/{provider}',   'User\UsersController@redirectToProvider');
+    Route::name('social.redirect')->get('/login/redirect/{provider}',   'User\UsersController@getSocialRedirect');
     Route::name('social.handle')->get('/login/{provider}/callback',     'User\UsersController@handleProviderCallback');
     Route::name('user.reactivate')->get('/re-activate/{token}',         'User\Dashboard\RestoreUserController@userReActivate');    // Route to for user to reactivate their user deleted account.
 });
 
 // Registered and Activated User Routes
-Route::group(['middleware' => ['auth', 'activated', 'activity']], function () {
+Route::group(['middleware' => ['auth', 'activity']], function () {
     Route::name('activation-required')->get('/activation-required',     'Auth\ActivateController@activationRequired');
     Route::name('logout')->get('/logout',                               'Auth\LoginController@logout');
 

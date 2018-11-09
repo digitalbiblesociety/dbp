@@ -22,7 +22,6 @@ use Image;
 use Mail;
 use Validator;
 
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 use Laravel\Socialite\Two\BitbucketProvider;
@@ -33,10 +32,6 @@ use Laravel\Socialite\Two\GoogleProvider;
 
 class UsersController extends APIController
 {
-
-	use AuthenticatesUsers;
-
-	protected $redirectAfterLogout = '/';
 
 	/**
 	 * Returns an index of all users within the system
@@ -180,8 +175,10 @@ class UsersController extends APIController
 		$user = User::with('accounts')->where('email', $request->email)->first();
 		if(!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email'));
 
-		$validPassword = \Hash::check(md5($request->password), $user->password) || \Hash::check($request->password, $user->password);
-		if($validPassword) {
+		$oldPassword = \Hash::check(md5($request->password), $user->password);
+		$newPassword = \Hash::check($request->password, $user->password);
+
+		if($oldPassword || $newPassword) {
 
 			// Associate user with Project
 			if($project_id) {
@@ -197,12 +194,11 @@ class UsersController extends APIController
 			}
 
 			if($this->api) return $user;
-			\Auth::guard('web')->login($user);
-			\Auth::guard('user')->login($user);
+
+			\Auth::guard()->setUser($user);
 			return view('dashboard.home',compact('user'));
 		}
 
-		$this->incrementLoginAttempts($request);
 		return $this->setStatusCode(401)->replyWithError(trans('auth.failed'));
 	}
 
@@ -471,7 +467,7 @@ class UsersController extends APIController
 	 * @return mixed
 	 *
 	 */
-	public function redirectToProvider($provider = null)
+	public function getSocialRedirect($provider = null)
 	{
 		if ($this->api) {
 			if ($provider === 'twitter') return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
@@ -541,12 +537,6 @@ class UsersController extends APIController
 		\Auth::login($user);
 		$this->guard()->login($user);
 		return redirect()->route('home');
-	}
-
-	public function authenticated()
-	{
-		if(auth()->user()->admin) return redirect('/admin/dashboard');
-		return redirect('/user/dashboard');
 	}
 
 	/**
