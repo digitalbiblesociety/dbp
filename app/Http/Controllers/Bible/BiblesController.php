@@ -105,11 +105,9 @@ class BiblesController extends APIController
 
 		$access_control = $this->accessControl($this->key, 'api');
 
-		$language = Language::where('iso',$language_code)->orWhere('id',$language_code)->first();
-
-		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $language . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $filter;
+		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language_code . '_' . $include_regionInfo . $full_word . '_' . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $filter;
 		if(env('APP_ENV') === 'local') \Cache::forget($cache_string);
-		$bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language, $organization, $country, $asset_id, $access_control) {
+		$bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language_code, $organization, $country, $asset_id, $access_control) {
 			$bibles = Bible::with(['filesets' => function ($q) use ($asset_id, $access_control, $hide_restricted) {
 					if($asset_id) $q->where('asset_id', $asset_id);
 					if($hide_restricted) $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
@@ -119,8 +117,7 @@ class BiblesController extends APIController
 						if($hide_restricted) $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
 					})
 				->leftJoin('bible_translations as ver_title', function ($join) {
-					$join->on('ver_title.bible_id', '=', 'bibles.id')
-					     ->where('ver_title.vernacular', 1);
+					$join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
 				})
 				->leftJoin('bible_translations as current_title', function ($join) {
 					$join->on('current_title.bible_id', '=', 'bibles.id')
@@ -136,12 +133,12 @@ class BiblesController extends APIController
 				})
 				->leftJoin('language_translations as language_current', function ($join) {
 					$join->on('language_current.language_source_id', '=', 'bibles.language_id')
-					     ->where('language_current.language_translation_id', '=', $GLOBALS['i18n_id'])
-						 ->orderBy('priority','desc');
+					     ->where('language_current.language_translation_id', '=', $GLOBALS['i18n_id'])->orderBy('priority','desc');
 				})
 				->rightJoin('bible_fileset_connections','bible_fileset_connections.bible_id','bibles.id')
 				->rightJoin('bible_filesets','bible_filesets.hash_id','bible_fileset_connections.hash_id')
-				->when($language, function ($q) use ($language) {
+				->when($language_code, function ($q) use ($language_code) {
+					$language = Language::where('iso',$language_code)->orWhere('id',$language_code)->first();
 					$q->where('bibles.language_id', $language->id);
 				})
 				->when($country, function ($q) use ($country) {
@@ -166,7 +163,7 @@ class BiblesController extends APIController
 					'bibles.id'
 				)
 				->orderBy('priority', 'desc')->distinct()->get();
-			
+
 			return fractal($bibles->unique(), new BibleTransformer(),new DataArraySerializer());
 		});
 		return $this->reply($bibles);
