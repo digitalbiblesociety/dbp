@@ -56,7 +56,7 @@ return [
 
         'api' => [
 	        'driver'         => 'daily',
-	        'formatter'      => new App\Logs\EmptyLineFormatter("%message%\r\n"),
+	        'formatter'      => \App\Logs\EmptyLineFormatter::class,
 	        'path'           => storage_path('logs/api/api.log')
         ],
 
