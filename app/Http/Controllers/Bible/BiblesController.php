@@ -97,7 +97,6 @@ class BiblesController extends APIController
 		$sort_by            = checkParam('sort_by', null, 'optional');
 		$sort_dir           = checkParam('sort_dir', null, 'optional') ?? 'asc';
 		$fileset_filter     = checkParam('filter_by_fileset', null, 'optional') ?? true;
-		$include_alt_names  = checkParam('include_alt_names', null, 'optional');
 		$include_regionInfo = checkParam('include_region_info', null, 'optional');
 		$country            = checkParam('country', null, 'optional');
 		$asset_id           = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
@@ -110,7 +109,8 @@ class BiblesController extends APIController
 		$language = Language::where('iso',$language_code)->orWhere('id',$language_code)->first();
 
 		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $language . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $paginate. $filter;
-		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $filter, $language, $full_word, $language_code, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $asset_id, $include_alt_names, $include_regionInfo, $access_control, $paginate) {
+		if(env('APP_ENV') === 'local') \Cache::forget($cache_string);
+		$bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language, $organization, $country, $asset_id, $access_control, $paginate) {
 			$bibles = Bible::with(['filesets' => function ($q) use ($asset_id, $access_control, $hide_restricted) {
 					if($asset_id) $q->where('asset_id', $asset_id);
 					if($hide_restricted) $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
@@ -127,7 +127,7 @@ class BiblesController extends APIController
 					$join->on('current_title.bible_id', '=', 'bibles.id')
 					     ->where('current_title.language_id', '=', $GLOBALS['i18n_id']);
 				})
-				->leftJoin('languages as languages', function ($join) use($language) {
+				->leftJoin('languages as languages', function ($join) {
 					$join->on('languages.id', '=', 'bibles.language_id');
 				})
 				->leftJoin('language_translations as language_autonym', function ($join) {
