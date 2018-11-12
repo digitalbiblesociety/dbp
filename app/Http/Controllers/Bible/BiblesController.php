@@ -110,7 +110,6 @@ class BiblesController extends APIController
 		$language = Language::where('iso',$language_code)->orWhere('id',$language_code)->first();
 
 		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $language . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $paginate. $filter;
-		\Cache::forget($cache_string);
 		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $filter, $language, $full_word, $language_code, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $asset_id, $include_alt_names, $include_regionInfo, $access_control, $paginate) {
 			$bibles = Bible::with(['filesets' => function ($q) use ($asset_id, $access_control, $hide_restricted) {
 					if($asset_id) $q->where('asset_id', $asset_id);
