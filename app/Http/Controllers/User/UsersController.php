@@ -188,7 +188,7 @@ class UsersController extends APIController
 					ProjectMember::create([
 						'user_id'    => $user->id,
 						'project_id' => $project_id,
-						'role'       => $role->id
+						'role_id'    => $role->id ?? 'user'
 					]);
 				}
 			}
