@@ -90,7 +90,6 @@ class BiblesController extends APIController
 
 		$dam_id             = checkParam('dam_id|fcbh_id|bible_id', null, 'optional');
 		$media              = checkParam('media', null, 'optional');
-		$language           = checkParam('language', null, 'optional');
 		$full_word          = checkParam('full_word|language_name', null, 'optional');
 		$language_code      = checkParam('language_family_code|language_code', null, 'optional');
 		$updated            = checkParam('updated', null, 'optional');
@@ -179,8 +178,8 @@ class BiblesController extends APIController
 				$bibles = $bibles->get();
 			}
 
-			if($paginate) return fractal($bibles, new BibleTransformer(),new DataArraySerializer())->paginateWith(new IlluminatePaginatorAdapter($paginator));
-			return fractal($bibles, new BibleTransformer(),new DataArraySerializer());
+			if($paginate) return fractal($bibles->unique(), new BibleTransformer(),new DataArraySerializer())->paginateWith(new IlluminatePaginatorAdapter($paginator));
+			return fractal($bibles->unique(), new BibleTransformer(),new DataArraySerializer());
 		});
 		return $this->reply($bibles);
 	}
