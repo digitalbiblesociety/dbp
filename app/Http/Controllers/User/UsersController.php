@@ -469,42 +469,40 @@ class UsersController extends APIController
 	 */
 	public function getSocialRedirect($provider = null)
 	{
-		if ($this->api) {
-			if ($provider === 'twitter') return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
-			$project_id = checkParam('project_id');
-			$provider   = checkParam('name', $provider);
-			$alt_url    = checkParam('alt_url', null, 'optional');
-			if($provider === 'twitter') return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
-			$driverData = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
-			$driver     = [
-				'client_id'     => $driverData->client_id,
-				'client_secret' => $driverData->client_secret,
-				'redirect'      => $alt_url === null ? $driverData->callback_url : $driverData->callback_url_alt,
-			];
-			switch ($provider) {
-				case 'bitbucket': {$providerClass = BitbucketProvider::class; break; }
-				case 'facebook':  {$providerClass = FacebookProvider::class; break; }
-				case 'twitter':   {$providerClass = TwitterProvider::class; break; }
-				case 'github':    {$providerClass = GithubProvider::class; break; }
-				case 'google':    {$providerClass = GoogleProvider::class; break; }
-				default:          {$providerClass = null;}
-			}
-			if($providerClass === null) return $this->setStatusCode(404)->replyWithError('Provider Class not Found');
-			return $this->reply(Socialite::buildProvider($providerClass, $driver)->stateless()->redirect()->getTargetUrl());
+		if ($provider === 'twitter') return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
+		$project_id = checkParam('project_id');
+		$provider   = checkParam('name', $provider);
+		$alt_url    = checkParam('alt_url', null, 'optional');
+		if($provider === 'twitter') return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
+		$driverData = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
+		$driver     = [
+			'client_id'     => $driverData->client_id,
+			'client_secret' => $driverData->client_secret,
+			'redirect'      => $alt_url === null ? $driverData->callback_url : $driverData->callback_url_alt,
+		];
+		switch ($provider) {
+			case 'bitbucket': {$providerClass = BitbucketProvider::class; break; }
+			case 'facebook':  {$providerClass = FacebookProvider::class; break; }
+			case 'twitter':   {$providerClass = TwitterProvider::class; break; }
+			case 'github':    {$providerClass = GithubProvider::class; break; }
+			case 'google':    {$providerClass = GoogleProvider::class; break; }
+			default:          {$providerClass = null;}
 		}
-		return Socialite::driver($provider)->redirect();
+		if($providerClass === null) return $this->setStatusCode(404)->replyWithError('Provider Class not Found');
+		$redirect_url = Socialite::buildProvider($providerClass, $driver)->stateless()->redirect()->getTargetUrl();
+		return $this->reply([
+				'data' => [
+					'provider_id'  => $provider,
+					'redirect_url' => urldecode($redirect_url),
+				]
+			]);
 	}
 
-	public function handleProviderCallback($provider = null)
+	public function handleProviderCallback($provider)
 	{
-		if(!$provider) $provider = request()->remote_type;
 		$user = \Socialite::driver($provider)->stateless()->user();
 		$user = $this->createOrGetUser($user, $provider);
-		\Auth::login($user);
-		$this->guard()->login($user);
-		if ($this->api) return $user;
-		if ($user->admin) return redirect()->route('admin');
-		return view('home',compact('user'));
+		return $user;
 	}
 
 	public function createOrGetUser($providerUser, $provider)

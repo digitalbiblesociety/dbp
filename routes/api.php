@@ -37,17 +37,17 @@
 	Route::name('v2_sync_api_jesusFilm')->get('arclight/sync',                                                              'Connections\ArclightController@sync');
 
 	// Bible.is API
-	Route::name('v2_users_banners_banner')->match(['get','options'], '/v2/banners/banner',                                  'Connections\V2Controllers\UsersController@banner');
-	Route::name('v2_users_user')->match(['get','post','options'], '/v2/users/user',                                         'Connections\V2Controllers\UsersController@user');
-	Route::name('v2_users_profile')->match(['post','options'], '/v2/users/profile',                                         'Connections\V2Controllers\UsersController@profile');
-	Route::name('v2_user_login')->match(['put','post','options'],'/v2/users/login',                                         'Connections\V2Controllers\UsersController@login');
-	Route::name('v2_annotations_list')->match(['get','options'],'/v2/annotations/list',                                     'Connections\V2Controllers\UsersController@annotationList');
-	Route::name('v2_annotations_bookmarks')->match(['get','options'],'/v2/annotations/bookmark',                            'Connections\V2Controllers\UsersController@annotationBookmark');
-	Route::name('v2_annotations_bookmarks_store')->match(['post','options'],'/v2/annotations/bookmark',                     'Connections\V2Controllers\UsersController@annotationBookmarkStore');
-	Route::name('v2_annotations_notes')->match(['get','options'], '/v2/annotations/note',                                   'Connections\V2Controllers\UsersController@annotationNote');
-	Route::name('v2_annotations_notes_store')->match(['post','options'], '/v2/annotations/note',                            'Connections\V2Controllers\UsersController@annotationNoteStore');
-	Route::name('v2_annotations_highlights')->match(['get','options'], '/v2/annotations/highlight',                         'Connections\V2Controllers\UsersController@annotationHighlight');
-	Route::name('v2_annotations_highlights_store')->match(['post','options','delete'], '/v2/annotations/highlight',         'Connections\V2Controllers\UsersController@annotationHighlightAlter');
+	Route::name('v2_users_banners_banner')->match(['get','options'], '/banners/banner',                                  'Connections\V2Controllers\UsersController@banner');
+	Route::name('v2_users_user')->match(['get','post','options'], '/users/user',                                         'Connections\V2Controllers\UsersController@user');
+	Route::name('v2_users_profile')->match(['post','options'], '/users/profile',                                         'Connections\V2Controllers\UsersController@profile');
+	Route::name('v2_user_login')->match(['put','post','options'],'/users/login',                                         'Connections\V2Controllers\UsersController@login');
+	Route::name('v2_annotations_list')->match(['get','options'],'/annotations/list',                                     'Connections\V2Controllers\UsersController@annotationList');
+	Route::name('v2_annotations_bookmarks')->match(['get','options'],'/annotations/bookmark',                            'Connections\V2Controllers\UsersController@annotationBookmark');
+	Route::name('v2_annotations_bookmarks_store')->match(['post','options'],'/annotations/bookmark',                     'Connections\V2Controllers\UsersController@annotationBookmarkStore');
+	Route::name('v2_annotations_notes')->match(['get','options'], '/annotations/note',                                   'Connections\V2Controllers\UsersController@annotationNote');
+	Route::name('v2_annotations_notes_store')->match(['post','options'], '/annotations/note',                            'Connections\V2Controllers\UsersController@annotationNoteStore');
+	Route::name('v2_annotations_highlights')->match(['get','options'], '/annotations/highlight',                         'Connections\V2Controllers\UsersController@annotationHighlight');
+	Route::name('v2_annotations_highlights_store')->match(['post','options','delete'], '/annotations/highlight',         'Connections\V2Controllers\UsersController@annotationHighlightAlter');
 
 	// VERSION 3
 	// What can man do against such reckless hate
@@ -105,14 +105,13 @@
 	Route::name('v4_user.store')->post('users',                                                                             'User\UsersController@store');
 	Route::name('v4_user.geolocate')->match(['get','options'],'users/geolocate',                                            'User\UsersController@geoLocate');
 
-	Route::name('v4_user.login')->post('users/login',                                                                       'User\UsersController@login');
-	Route::name('v4_user.oAuth')->match(['get','options'],'users/login/{driver}',                                           'User\UsersController@getSocialRedirect');
-	Route::name('v4_user.oAuthCallback')->match(['get','options'],'users/login/{driver}/callback',                          'User\UsersController@handleProviderCallback');
+	Route::name('v4_user.login')->post('/login',                                                                            'User\UsersController@login');
+	Route::name('v4_user.oAuth')->match(['get','options'],'/login/{driver}',                                                'User\UsersController@getSocialRedirect');
+	Route::name('v4_user.oAuthCallback')->match(['get','options'],'/login/{driver}/callback',                               'User\UsersController@handleProviderCallback');
 
 	Route::name('v4_user.show')->match(['get','options'],'users/{user_id}',                                                 'User\UsersController@show');
 	Route::name('v4_user.update')->put('users/{user_id}',                                                                   'User\UsersController@update');
 	Route::name('v4_user.destroy')->delete('users/{user_id}',                                                               'User\UsersController@destroy');
-
 
 	// VERSION 4 | USER PASSWORDS
 	Route::name('v4_user.password_reset')->post('users/password/reset/{token?}',                                            'User\UserPasswordsController@validatePasswordReset');
