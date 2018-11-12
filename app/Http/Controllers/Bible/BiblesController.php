@@ -108,9 +108,10 @@ class BiblesController extends APIController
 
 		$access_control = $this->accessControl($this->key, 'api');
 
-		$language_code = Language::where('iso',$language_code)->orWhere('id',$language_code)->first();
+		$language = Language::where('iso',$language_code)->orWhere('id',$language_code)->first();
 
-		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $language_code . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $paginate. $filter;
+		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language . '_' . $include_regionInfo . $full_word . '_' . $language . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $paginate. $filter;
+		\Cache::forget($cache_string);
 		$bibles = \Cache::remember($cache_string, 1600, function () use ($dam_id, $hide_restricted, $media, $filter, $language, $full_word, $language_code, $updated, $organization, $sort_by, $sort_dir, $fileset_filter, $country, $asset_id, $include_alt_names, $include_regionInfo, $access_control, $paginate) {
 			$bibles = Bible::with(['filesets' => function ($q) use ($asset_id, $access_control, $hide_restricted) {
 					if($asset_id) $q->where('asset_id', $asset_id);
@@ -128,9 +129,8 @@ class BiblesController extends APIController
 					$join->on('current_title.bible_id', '=', 'bibles.id')
 					     ->where('current_title.language_id', '=', $GLOBALS['i18n_id']);
 				})
-				->leftJoin('languages as languages', function ($join) use($language_code) {
+				->leftJoin('languages as languages', function ($join) use($language) {
 					$join->on('languages.id', '=', 'bibles.language_id');
-					if($language_code) $join->where('languages.id',$language_code);
 				})
 				->leftJoin('language_translations as language_autonym', function ($join) {
 					$join->on('language_autonym.language_source_id', '=', 'bibles.language_id')
@@ -144,6 +144,9 @@ class BiblesController extends APIController
 				})
 				->rightJoin('bible_fileset_connections','bible_fileset_connections.bible_id','bibles.id')
 				->rightJoin('bible_filesets','bible_filesets.hash_id','bible_fileset_connections.hash_id')
+				->when($language, function ($q) use ($language) {
+					$q->where('bibles.language_id', $language->id);
+				})
 				->when($country, function ($q) use ($country) {
 					$q->whereHas('country', function ($query) use ($country) {
 						$query->where('countries.id', $country);
