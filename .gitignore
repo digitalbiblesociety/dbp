@@ -24,7 +24,6 @@
 # Locally Generated Development Files
 *.log
 resources/assets/react/
-resources/assets/js/swagger_*.json
 /.idea
 /.vagrant
 Homestead.json
