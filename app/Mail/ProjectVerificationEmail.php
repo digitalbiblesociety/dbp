@@ -36,7 +36,7 @@ class ProjectVerificationEmail extends Mailable
 	    ];
 	    $actions = [
 	    	'title'       => trans('api.projects_connect_action_title'),
-		    'url'         => env('APP_URL').route('projects.connect', ['token' => $this->connection->token],false)
+		    'url'         => route('projects.connect', ['token' => $this->connection->token],false)
 	    ];
 
 	    return $this->view('emails.transaction')->from('info@dbp4.org')->with([

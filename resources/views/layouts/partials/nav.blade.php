@@ -90,24 +90,5 @@
                     @endforeach
                 </div>
             </div>
-            <div class="navbar-item">
-                 @guest <a class="button is-primary" href="{{ route('login') }}">Login</a> @else
-                    <div class="navbar-item has-dropdown is-hoverable">
-                        <a class="navbar-link" href="#">
-                            @if((Auth::User()->profile) && Auth::user()->profile->avatar_status == 1)
-                                <img src="{{ Auth::user()->profile->avatar }}" alt="{{ Auth::user()->name }}" class="user-avatar-nav">
-                            @endif
-                            {{ Auth::user()->name }}
-                        </a>
-                        <div class="navbar-dropdown">
-                            <a class="navbar-item" href="{{ url('/profile/'.Auth::user()->name) }}">@lang('app.profile')</a>
-                            <a class="navbar-item" href="{{ route('logout') }}"
-                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> {{ __('Logout') }}</a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;"> @csrf </form>
-                        </div>
-                    </div>
-                 @endguest
-                </div>
-            </div>
     </div>
 </nav>

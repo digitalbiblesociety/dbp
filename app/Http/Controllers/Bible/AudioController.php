@@ -60,7 +60,7 @@ class AudioController extends APIController
 		$fileset_id = checkParam('dam_id', null, 'optional');
 		$chapter_id = checkParam('chapter_id', null, 'optional');
 		$book_id    = checkParam('book_id', null, 'optional');
-		$asset_id   = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id   = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 
 		// Account for various book ids
 		if($book_id) {

@@ -70,7 +70,7 @@ return [
     |
     */
 
-    'connection' => null,
+    'connection' => env('DBP_USERS_DATABASE'),
 
     /*
     |--------------------------------------------------------------------------

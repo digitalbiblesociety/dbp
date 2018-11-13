@@ -23,8 +23,8 @@ class BibleLinksController extends APIController
 	    }
 	    $language = Language::where('iso',$iso)->first();
 	    if(!$language) return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
-	    $bibleLinks = \DB::table(env('DBP_DATABASE').'.bible_links')
-		->join(env('DBP_DATABASE').'.bible_translations', function($q) use($language) {
+	    $bibleLinks = \DB::table(config('database.connections.dbp.database').'.bible_links')
+		->join(config('database.connections.dbp.database').'.bible_translations', function($q) use($language) {
 			$q->on('bible_links.bible_id','bible_translations.bible_id')->where('language_id',$language->id);
 		})
 		->when($type, function ($q) use ($type) {
@@ -35,7 +35,7 @@ class BibleLinksController extends APIController
 	    })->when($limit, function ($q) use ($limit) {
 		    $q->limit($limit);
 	    })->when($bible_id, function ($q) use ($bible_id) {
-		    $q->where(env('DBP_DATABASE').'.bible_links.bible_id',$bible_id);
+		    $q->where(config('database.connections.dbp.database').'.bible_links.bible_id',$bible_id);
 	    })->where('visible',1)->get();
 
 	    return $this->reply(fractal($bibleLinks, new BibleLinksTransformer()));

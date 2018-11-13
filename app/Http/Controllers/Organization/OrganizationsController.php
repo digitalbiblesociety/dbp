@@ -36,7 +36,7 @@ class OrganizationsController extends APIController
 
 		$cache_string = $this->v . 'organizations' . $i10n . $membership . $content . $bibles .$resources;
 
-        \Cache::forget($cache_string);
+        if(config('app.env') === 'local') \Cache::forget($cache_string);
 		$organizations = \Cache::remember($cache_string, 2400,
 			function () use ($i10n_language, $membership, $content, $bibles, $resources) {
 				if ($membership) {
@@ -203,6 +203,7 @@ class OrganizationsController extends APIController
 	public function update($slug)
 	{
 		$organization = Organization::where('slug', $slug)->first();
+		if(!$organization) return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404'));
 		$organization->update(request()->except(['translations']));
 		$organization->translations()->delete();
 		foreach (request()->translations as $translation) {

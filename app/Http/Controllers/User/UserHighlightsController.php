@@ -67,8 +67,8 @@ class UserHighlightsController extends APIController
 		$limit        = (int) (checkParam('limit', null, 'optional') ?? 25);
 
 		$highlights = Highlight::with('color')->with('tags')->where('user_id', $user_id)
-			->join(env('DBP_DATABASE').'.bibles as bibles', 'bibles.id', '=', env('DBP_USERS_DATABASE').'.user_highlights.bible_id')
-			->join(env('DBP_DATABASE').'.bible_books as book', function ($join) {
+			->join(config('database.connections.dbp.database').'.bibles as bibles', 'bibles.id', '=', config('database.connections.dbp_users.database').'.user_highlights.bible_id')
+			->join(config('database.connections.dbp.database').'.bible_books as book', function ($join) {
 				$join->on('bibles.id', '=', 'book.bible_id')
 				     ->on('book.book_id', '=', 'user_highlights.book_id');
 			})

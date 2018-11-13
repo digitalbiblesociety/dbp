@@ -135,7 +135,7 @@ class ResourcesController extends APIController
 
 	private function invalidResource(Request $request)
 	{
-		$validator = Validator::make($request->all(), [
+		$validator = \Validator::make($request->all(), [
 			'unicode_pdf'         => 'url|nullable',
 			'slug'                => 'required|unique:dbp.resources,slug|string|maxLength:191|regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
 			'language_id'         => 'required|exists:dbp.languages,id',

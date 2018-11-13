@@ -49,6 +49,12 @@ Route::get('/organizations',           'Organization\OrganizationsController@ind
 Route::get('/about/join',               'WelcomeController@join')->name('about.join');
 Route::get('/about/partnering',         'WelcomeController@partnering')->name('about.partnering');
 
+// Reader
+Route::get('/reader',                                   'Bible\ReaderController@languages')->name('reader.languages');
+Route::get('/reader/languages/{language_id}',           'Bible\ReaderController@bibles')->name('reader.bibles');
+Route::get('/reader/bibles/{id}/',                      'Bible\ReaderController@books')->name('reader.books');
+Route::get('/reader/bibles/{id}/{book}/{chapter}',      'Bible\ReaderController@chapter')->name('reader.chapter');
+
 // Authentication Routes | Passwords
 Route::name('login')->match(['get','post'],'login',             'User\UsersController@login');
 Route::name('logout')->post('logout',                           'User\UsersController@logout');
@@ -56,8 +62,8 @@ Route::name('register')->get('register',                        'User\UsersContr
 Route::post('register',                                         'User\UsersController@store');
 Route::name('password.request')->get('password/reset',          'User\UserPasswordsController@showRequestForm');
 Route::name('password.email')->post('password/email',           'User\UserPasswordsController@triggerPasswordResetEmail');
-Route::name('password.reset')->get('password/reset/{token}',    'User\ResetPasswordController@showResetForm');
-Route::post('password/reset',                                   'User\ResetPasswordController@reset');
+Route::name('password.reset')->get('password/reset/{token}',    'User\UserPasswordsController@showResetForm');
+Route::post('password/reset',                                   'User\UserPasswordsController@reset');
 
 
 Route::name('wiki_bibles.one')->get('/wiki/bibles/{id}',              'Bible\BiblesController@show');
@@ -105,103 +111,15 @@ Route::group(['middleware' => ['web', 'activity']], function () {
 
     // Activation Routes
 	Route::name('projects.connect')->get('/connect/{token}',            'Organization\ProjectsController@connect');
-	Route::name('activate')->get('/activate',                           'Auth\ActivateController@initial');
-	Route::name('authenticated.activate')->get('/activate/{token}',     'Auth\ActivateController@activate');
-	Route::name('authenticated.activation-resend')->get('/activation',  'Auth\ActivateController@resend');
-	Route::name('exceeded')->get('/exceeded',                           'Auth\ActivateController@exceeded');
 
     // Socialite Register Routes
     Route::name('social.redirect')->get('/login/redirect/{provider}',   'User\UsersController@getSocialRedirect');
     Route::name('social.handle')->get('/login/{provider}/callback',     'User\UsersController@handleProviderCallback');
-    Route::name('user.reactivate')->get('/re-activate/{token}',         'User\Dashboard\RestoreUserController@userReActivate');    // Route to for user to reactivate their user deleted account.
 });
 
 // Registered and Activated User Routes
 Route::group(['middleware' => ['auth', 'activity']], function () {
-    Route::name('activation-required')->get('/activation-required',     'Auth\ActivateController@activationRequired');
-    Route::name('logout')->get('/logout',                               'Auth\LoginController@logout');
-
     Route::name('public.home')->get('/home',                           'User\Dashboard\DashboardController@home');       //  Homepage Route - Redirect based on user role is in controller.
-    Route::name('profile.show')->get('profile/{username}',            'User\Dashboard\ProfilesController@show');    // Show users profile - viewable by other users.
-});
-
-// Registered, activated, and is current user routes.
-Route::group(['middleware' => ['auth', 'activated', 'currentUser', 'activity']], function () {
-
-    // User Profile and Account Routes
-    //Route::resource('profile', 'User\Dashboard\ProfilesController', ['only' => ['show', 'edit', 'update', 'create']]);
-	Route::name('profile.home')->get('profile',                                 'User\Dashboard\ProfilesController@edit');
-	Route::name('profile.update')->put('profile',                               'User\Dashboard\ProfilesController@update');
-	//Route::name('profile.update')->put('profile',                               'User\Dashboard\ProfilesController@update');
-
-    Route::name('{username}')->put('profile/{username}/updateUserAccount',      'User\Dashboard\ProfilesController@updateUserAccount');
-    Route::name('{username}')->put('profile/{username}/updateUserPassword',     'User\Dashboard\ProfilesController@updateUserPassword');
-    Route::name('{username}')->delete('profile/{username}/deleteUserAccount',   'User\Dashboard\ProfilesController@deleteUserAccount');
-    Route::get('images/profile/{id}/avatar/{image}',                            'User\Dashboard\ProfilesController@userProfileAvatar');   // Route to show user avatar
-    Route::post('avatar/upload', ['as' => 'avatar.upload', 'uses' => 'User\Dashboard\ProfilesController@upload']); // Route to upload user avatar.
-});
-
-// Registered, activated, and is admin routes.
-Route::group(['middleware' => ['auth', 'activated', 'role:admin', 'activity']], function () {
-
-	// Wiki
-	Route::resource('/dashboard/languages' ,      'Wiki\LanguagesController', [
-		'names' => [
-			'index'   => 'dashboard.languages',
-			'create'  => 'dashboard.languages.create',
-			'store'   => 'dashboard.languages.store',
-			'update'  => 'dashboard.languages.update',
-			'delete'  => 'dashboard.languages.delete',
-		]
-	]);
-
-
-	Route::name('dashboard.tasks')->get('/dashboard/{role}/tasks' ,            'User\Dashboard\TaskController@index');
-	Route::name('dashboard.dbl.index')->get('/dashboard/dbp/entries' ,         'Connections\DigitalBibleLibraryController@index');
-	Route::name('dashboard.dbl.create')->get('/dashboard/dbp/entry/create' ,   'Connections\DigitalBibleLibraryController@create');
-	Route::name('dashboard.dbl.store')->post('/dashboard/dbp/entry' ,          'Connections\DigitalBibleLibraryController@store');
-
-	// Dashboards
-	Route::get('/activity',                         'User\Dashboard\LaravelLoggerController@showAccessLog')->name('activity');
-	Route::get('/activity/cleared',                 'User\Dashboard\LaravelLoggerController@showClearedActivityLog')->name('cleared');
-	Route::get('/activity/log/{id}',                'User\Dashboard\LaravelLoggerController@showAccessLogEntry');
-	Route::get('/activity/cleared/log/{id}',        'User\Dashboard\LaravelLoggerController@showClearedAccessLogEntry');
-	Route::delete('/activity/clear-activity',       'User\Dashboard\LaravelLoggerController@clearActivityLog')->name('clear-activity');
-	Route::delete('/activity/destroy-activity',     'User\Dashboard\LaravelLoggerController@destroyActivityLog')->name('destroy-activity');
-	Route::post('/activity/restore-log',            'User\Dashboard\LaravelLoggerController@restoreClearedActivityLog')->name('restore-activity');
-
-
-	Route::get('/php-info',           'User\Dashboard\AdminDetailsController@phpinfo')->name('phpinfo');
-	Route::get('/messages',           'User\UserContactController@index')->name('messages.index');
-    Route::resource('/users/deleted', 'User\Dashboard\SoftDeletesController', ['only' => ['index', 'show', 'update', 'destroy']]);
-
-	Route::resource('bibles', 'Bible\BiblesManagementController', [
-		'names' => [
-			'index'   => 'dashboard.bibles',
-			'create'  => 'dashboard.bibles.create',
-			'store'   => 'dashboard.bibles.store',
-			'update'  => 'dashboard.bibles.update',
-			'delete'  => 'dashboard.bible.delete',
-		],
-		'except' => [
-			'deleted',
-		],
-	]);
-
-    Route::resource('users', 'User\Dashboard\UsersManagementController', [
-        'names' => [
-            'index'   => 'users',
-            'destroy' => 'user.destroy',
-        ],
-        'except' => [
-            'deleted',
-        ],
-    ]);
-    Route::post('search-users', 'User\Dashboard\UsersManagementController@search')->name('search-users');
-
-    Route::get('logs/{log?}', 'User\Dashboard\LogViewerController@index');
-    Route::get('routes', 'User\Dashboard\AdminDetailsController@listRoutes');
-    Route::get('active-users', 'User\Dashboard\AdminDetailsController@activeUsers');
 });
 
 });

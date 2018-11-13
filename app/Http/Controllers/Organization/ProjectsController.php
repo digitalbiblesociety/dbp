@@ -23,7 +23,7 @@ class ProjectsController extends APIController
 	 *     path="/projects",
 	 *     tags={"Users"},
 	 *     summary="Returns the projects currently using the DBP",
-	 *     description="Returns a list of all your projects currently registered as using the DBP",
+	 *     description="Returns the projects currently registered that aren't labeled as sensitive",
 	 *     operationId="v4_projects.index",
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
 	 *     @OA\Parameter(ref="#/components/parameters/key"),

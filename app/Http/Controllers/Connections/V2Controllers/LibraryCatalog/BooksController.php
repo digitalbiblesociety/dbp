@@ -49,7 +49,7 @@ class BooksController extends APIController
 	public function book()
 	{
 		$id        = checkParam('dam_id');
-		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 
 		$fileset   = BibleFileset::with('bible')->where('asset_id', $asset_id)
 						->where('id', $id)
@@ -108,7 +108,7 @@ class BooksController extends APIController
 	public function bookOrder()
 	{
 		$id        = checkParam('dam_id');
-		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 
 		$fileset   = BibleFileset::with('bible')->where('id', $id)->orWhere('id',substr($id,0,-4))->orWhere('id',substr($id,0,-2))->where('asset_id', $asset_id)->first();
 		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
@@ -246,7 +246,7 @@ class BooksController extends APIController
 		if(!$this->api) return view('docs.books.chapters');
 
 		$id        = checkParam('dam_id');
-		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 		$book_id   = checkParam('book_id');
 
 		\Cache::forget('v2_library_chapter_' . $id . $asset_id . $book_id);

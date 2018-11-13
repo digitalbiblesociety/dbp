@@ -58,7 +58,7 @@ class LibraryVersionController extends APIController
 		$name = checkParam('name', null, 'optional');
 		$sort = checkParam('sort_by', null, 'optional');
 
-		$versions = BibleFileset::where('asset_id', env('FCBH_AWS_BUCKET'))
+		$versions = BibleFileset::where('asset_id', config('filesystems.disks.s3_fcbh.bucket'))
 			->with('bible.currentTranslation','bible.vernacularTranslation')
 			->when($code, function ($q) use ($code) {
 			    $q->where('id', $code);

@@ -170,7 +170,7 @@ class LibraryVolumeController extends APIController
 	 */
 	public function libraryVolume()
 	{
-		if (env('APP_ENV') == 'local') ini_set('memory_limit', '864M');
+		if (config('app.env') == 'local') ini_set('memory_limit', '864M');
 		// Return the documentation if it's not an API request
 		if (!$this->api) return view('bibles.index');
 

@@ -2,14 +2,9 @@
 
 namespace App\Models\User;
 
-use App\Models\User\Profile;
-use App\Models\User\Social;
 use App\Models\User\Study\Bookmark;
 use App\Models\User\Study\Highlight;
 use App\Models\User\Study\Note;
-use App\Models\User\RoleUser;
-use Illuminate\Contracts\Auth\CanResetPassword;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Auth\Authenticatable as AuthenticableTrait;
@@ -57,11 +52,9 @@ use jeremykenedy\LaravelRoles\Traits\HasRoleAndPermission;
 
 class User extends Authenticatable
 {
-
 	use HasRoleAndPermission;
 	use Notifiable;
 	use SoftDeletes;
-	use AuthenticableTrait;
 
 	protected $connection = 'dbp_users';
 	protected $table     = 'users';

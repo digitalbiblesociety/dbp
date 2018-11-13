@@ -64,7 +64,7 @@ class BibleFileSetsController extends APIController
 		$fileset_id    = checkParam('dam_id|fileset_id', $id);
 		$book_id       = checkParam('book_id', null, 'optional');
 		$chapter_id    = checkParam('chapter_id', null, 'optional');
-		$asset_id      = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id      = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 		$versification = checkParam('versification', null, 'optional');
 		$type          = checkParam('type');
 
@@ -96,10 +96,10 @@ class BibleFileSetsController extends APIController
 		}
 
 		$fileSetChapters = BibleFile::where('hash_id',$fileset->hash_id)
-			->join(env('DBP_DATABASE').'.bible_books', function($q) use($bible) {
+			->join(config('database.connections.dbp.database').'.bible_books', function($q) use($bible) {
 				$q->on('bible_books.book_id', 'bible_files.book_id')->where('bible_id',$bible->id);
 			})
-			->join(env('DBP_DATABASE').'.books','books.id', 'bible_files.book_id')
+			->join(config('database.connections.dbp.database').'.books','books.id', 'bible_files.book_id')
 			->when($chapter_id, function ($query) use ($chapter_id) {
 				return $query->where('bible_files.chapter_start', $chapter_id);
 			})->when($book_id, function ($query) use ($book_id) {
@@ -159,7 +159,7 @@ class BibleFileSetsController extends APIController
 	public function download($id)
 	{
 		$set_id    = checkParam('fileset_id', $id);
-		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 		$books     = checkParam('book_ids', null, 'optional');
 		$files     = null;
 
@@ -207,7 +207,7 @@ class BibleFileSetsController extends APIController
 	 */
 	public function podcast($id)
 	{
-		$asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 		$fileset   = BibleFileset::with('files.currentTitle', 'bible.books')->where('id', $id)->where('asset_id', $asset_id)->first();
 		if(!$fileset) return $this->replyWithError(trans('api.bible_fileset_errors_404'));
 

@@ -13,9 +13,9 @@ class GitDeployController extends APIController
 		$payload = request()->getContent();
 		$hash    = request()->header('X-Hub-Signature');
 
-		$local_hash = 'sha1=' . hash_hmac('sha1', $payload, env('APP_DEPLOY_SECRET'), false);
+		$local_hash = 'sha1=' . hash_hmac('sha1', $payload, config('app.deploy.secret'), false);
 		if (hash_equals($hash, $local_hash)) {
-			$process = new Process(env('APP_DEPLOY_SCRIPT_PATH'));
+			$process = new Process(config('app.deploy.path'));
 			$process->run(function ($buffer) {
 				echo $buffer;
 			});

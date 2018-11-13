@@ -132,7 +132,7 @@ class LanguageController extends APIController
 			return view('docs.v2.country_language');
 		}
 
-		if (env('APP_ENV') == 'local') {
+		if (config('app.env') == 'local') {
 			ini_set('memory_limit', '864M');
 		}
 

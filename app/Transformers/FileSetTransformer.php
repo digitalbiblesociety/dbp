@@ -52,7 +52,7 @@ class FileSetTransformer extends BaseTransformer
 				if(!$bible) return $this->replyWithError(trans('api.filesets_errors_404'));
 
 				$meta['channel']['title'] = $bible->translations->where('iso',$bible->iso)->first()->name.' - '.$bible->language->name ?? $bible->where('iso','eng')->first()->name.' - '.$bible->language->name;
-				$meta['channel']['link'] = env('APP_URL_PODCAST') ?? 'https://bible.is/';
+				$meta['channel']['link'] = config('app.url_podcast');
 				$meta['channel']['atom:link']['_attributes'] = ['href'  => 'http://www.faithcomesbyhearing.com/feeds/audio-bibles/'.$bible->id.'.xml','rel'   => 'self','type'  => 'application/rss+xml'];
 				$meta['channel']['description'] = $bible->translations->where('iso',$bible->iso)->first()->description ?? $bible->where('iso','eng')->first()->description;
 				$meta['channel']['language'] = $bible->language->iso;
@@ -62,19 +62,19 @@ class FileSetTransformer extends BaseTransformer
 				$meta['channel']['lastBuildDate'] = $bible->last_updated ? $fileset->last_updated->toRfc2822String() : '';
 				//$meta['channel']['pubDate'] = ($bible->date) ? $fileset->date->toRfc2822String() : "";
 				$meta['channel']['docs'] = 'http://blogs.law.harvard.edu/tech/rss';
-				$meta['channel']['webMaster'] = env('APP_SITE_CONTACT') ?? '';
+				$meta['channel']['webMaster'] = config('app.contact');
 				$meta['channel']['itunes:keywords'] = 'Bible, Testament, Jesus, Scripture, Holy, God, Heaven, Hell, Gospel, Christian, Bible.is, Church';
 				$meta['channel']['itunes:author'] = 'Faith Comes By Hearing';
 				$meta['channel']['itunes:subtitle'] = 'Online Audio Bible Recorded by Faith Comes By Hearing';
 				$meta['channel']['itunes:explicit'] = 'no';
 				$meta['channel']['itunes:owner']['itunes:name'] = 'Faith Comes By Hearing';
-				$meta['channel']['itunes:owner']['itunes:email'] = 'adhooker@fcbhmail.org';
+				$meta['channel']['itunes:owner']['itunes:email'] = config('app.contact');
 				$meta['channel']['itunes:image'] = ['href' => 'http://bible.is/ImageSize300X300.jpg'];
 				$meta['channel']['itunes:category'] = [
 					'_attributes' => ['text' => 'Religion & Spirituality']
 				];
 
-				$meta['channel']['managingEditor'] = env('APP_SITE_CONTACT') ?? '';
+				$meta['channel']['managingEditor'] = config('app.contact');
 				$meta['channel']['image']['_attributes'] = [
 					'url'   => 'http://bible.is/'.$fileset->id.'.jpg',
 					'title' => 'Faith Comes by Hearing',

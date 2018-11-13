@@ -50,7 +50,7 @@ class AlphabetsController extends APIController
 	{
 		if(!$this->api) return view('wiki.languages.alphabets.index');
 
-		if(env('APP_DEBUG') === 'true') \Cache::forget('alphabets');
+		if(config('app.debug') === 'true') \Cache::forget('alphabets');
 		$alphabets = \Cache::remember('alphabets', 1600, function () {
 			$alphabets = Alphabet::select(['name', 'script', 'family', 'direction', 'type'])->get();
 			return fractal($alphabets, new AlphabetTransformer())->serializeWith($this->serializer);

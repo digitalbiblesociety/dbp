@@ -17,7 +17,7 @@ class ArclightController extends APIController
     public function __construct()
     {
     	parent::__construct();
-        $this->api_key  = env('ARCLIGHT_API');
+        $this->api_key  = config('services.arclight.key');
         $this->base_url = 'https://api.arclight.org/v2/';
     }
 

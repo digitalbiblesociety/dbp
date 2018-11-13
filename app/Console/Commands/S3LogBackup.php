@@ -45,7 +45,7 @@ class S3LogBackup extends Command
 		// If no files exist
 		if(\count($files) === 0) {
 			$starting_string = 'timestamp:::server_name:::status_code:::path:::user_agent:::params:::ip_address:::s3_signatures:::lat:::lon:::country:::city:::state_name:::postal_code';
-			Storage::disk('logs')->put('api-node-logs/' . $current_time->getTimestamp() . '-' . env('APP_SERVER_NAME') . '.log', $starting_string);
+			Storage::disk('logs')->put('api-node-logs/' . $current_time->getTimestamp() . '-' . config('app.server_name') . '.log', $starting_string);
 			$current_file_time = Carbon::now();
 			$files = Storage::disk('api');
 			$current_file = end($files);
@@ -75,7 +75,7 @@ class S3LogBackup extends Command
 
 	private function pushToS3($current_file, $log_contents)
 	{
-		if(env('APP_ENV') == 'local') Cache::forget('iam_assumed_role');
+		if(config('app.env') == 'local') Cache::forget('iam_assumed_role');
 		$security_token = Cache::remember('iam_assumed_role', 60, function () {
 			$role_call  = $this->assumeRole();
 			if($role_call) {

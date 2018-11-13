@@ -62,7 +62,7 @@ class LanguagesController extends APIController
 	 */
 	public function index()
 	{
-		if(env('APP_ENV') === 'local') ini_set('memory_limit', '700M');
+		if(config('app.env') === 'local') ini_set('memory_limit', '700M');
 		if(!$this->api) return view('wiki.languages.index');
 
 		$country               = checkParam('country', null, 'optional');
@@ -76,7 +76,7 @@ class LanguagesController extends APIController
 		$access_control = $this->accessControl($this->key, 'api');
 
 		$cache_string = 'v' . $this->v . '_languages_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $show_restricted . $include_alt_names . $asset_id . $access_control->string;
-		if(env('APP_ENV') === 'local') \Cache::forget($cache_string);
+		if(config('app.env') === 'local') \Cache::forget($cache_string);
 		$languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $asset_id, $code, $sort_by, $show_restricted, $access_control) {
 			$languages = Language::select(['languages.id', 'languages.glotto_id', 'languages.iso', 'current_translation.name as name', 'autonym.name as autonym'])
 				->leftJoin('language_translations as autonym', function ($join) {

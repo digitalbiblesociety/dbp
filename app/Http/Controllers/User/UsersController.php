@@ -354,9 +354,10 @@ class UsersController extends APIController
 					'user_id'       => $user->id,
 					'project_id'    => $project->id,
 					'role_id'       => 'user',
-					'token'         => unique_random(env('DBP_USERS_DATABASE').'.project_members','token'),
+					'token'         => unique_random(config('database.connections.dbp_users.database').'.project_members','token'),
 					'subscribed'    => false
 				]);
+
 				Mail::to($user->email)->send(new ProjectVerificationEmail($connection,$project));
 				return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_needs_to_connect', [], $GLOBALS['i18n_iso']));
 			}

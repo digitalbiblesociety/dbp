@@ -41,7 +41,7 @@ class send_api_logs implements ShouldQueue
 		// If no files exist
 		if(\count($files) === 0) {
 			$starting_string = ''; //'timestamp∞server_name∞status_code∞path∞user_agent∞params∞ip_addresss∞3_signatures∞lat∞lon∞country∞city∞state_name∞postal_code';
-			Storage::disk('logs')->put('api/' . $current_time->getTimestamp() . '-' . env('APP_SERVER_NAME') . '.log', $starting_string);
+			Storage::disk('logs')->put('api/' . $current_time->getTimestamp() . '-' . config('app.server_name') . '.log', $starting_string);
 			$current_file_time = Carbon::now();
 			$files = Storage::disk('logs')->files('api');
 			$current_file = end($files);

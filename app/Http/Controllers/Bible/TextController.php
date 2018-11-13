@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Bible;
 
 use DB;
-use Storage;
 
 use Illuminate\Http\Response;
 use App\Models\Bible\BibleFileset;
@@ -95,6 +94,7 @@ class TextController extends APIController
 		if (!$book) return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
 		$book->push('name_vernacular', $book->translation($bible->language_id));
 
+
 		// Fetch Verses
 		$table = strtoupper($fileset->id) . '_vpl';
 		$verses = DB::connection('sophia')->table($table)
@@ -108,22 +108,22 @@ class TextController extends APIController
 		            ->when($verse_end, function ($query) use ($verse_end) {
 			            return $query->where('verse_end', '<=', $verse_end);
 		            })
-					->join(env('DBP_DATABASE').'.books as books', function($join) use($book) {
+					->join(config('database.connections.dbp.database').'.books as books', function($join) use($book) {
 						$join->where('books.id', '=', $book->id);
 					})
-					->join(env('DBP_DATABASE').'.bible_books as bb', function($join) use($bible,$book) {
+					->join(config('database.connections.dbp.database').'.bible_books as bb', function($join) use($bible,$book) {
 						$join->where('bb.book_id', '=', $book->id)
 						     ->where('bb.bible_id', '=', $bible->id);
 					})
-					->join(env('DBP_DATABASE').'.numeral_system_glyphs as glyph_chapter', function ($join) use ($table,$bible) {
+					->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_chapter', function ($join) use ($table,$bible) {
 						$join->on("$table.chapter",'=','glyph_chapter.value')
 						     ->where('glyph_chapter.numeral_system_id', '=', $bible->numeral_system_id);
 					})
-					->join(env('DBP_DATABASE').'.numeral_system_glyphs as glyph_start', function ($join) use ($table,$bible) {
+					->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_start', function ($join) use ($table,$bible) {
 						$join->on("$table.verse_start",'=','glyph_start.value')
 						     ->where('glyph_start.numeral_system_id', '=', $bible->numeral_system_id);
 					})
-					->join(env('DBP_DATABASE').'.numeral_system_glyphs as glyph_end', function ($join) use ($table,$bible) {
+					->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_end', function ($join) use ($table,$bible) {
 						$join->on("$table.verse_end",'=','glyph_end.value')
 						     ->where('glyph_end.numeral_system_id', '=', $bible->numeral_system_id);
 					})
@@ -144,7 +144,6 @@ class TextController extends APIController
 					])->get();
 
 		if(\count($verses) === 0) return $this->setStatusCode(404)->replyWithError('No Verses Were found with the provided params');
-
 		return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)->toArray());
 	}
 
@@ -242,19 +241,19 @@ class TextController extends APIController
 		$table = strtoupper($fileset->id) . '_vpl';
 		$query  = DB::connection('sophia')->getPdo()->quote('+' . str_replace(' ', ' +', $query) . $exclude);
 		$verses = DB::connection('sophia')->table($table)
-			->join(env('DBP_DATABASE').'.books', 'books.id_usfx', 'book')
-			->join(env('DBP_DATABASE').'.bible_books as bb', function ($join) use ($bible) {
+			->join(config('database.connections.dbp.database').'.books', 'books.id_usfx', 'book')
+			->join(config('database.connections.dbp.database').'.bible_books as bb', function ($join) use ($bible) {
 				$join->on('bb.book_id', 'books.id')->where('bible_id',$bible->id);
 			})
-			->join(env('DBP_DATABASE').'.numeral_system_glyphs as glyph_chapter', function ($join) use ($table,$bible) {
+			->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_chapter', function ($join) use ($table,$bible) {
 				$join->on("$table.chapter",'=','glyph_chapter.value')
 				     ->where('glyph_chapter.numeral_system_id', '=', $bible->numeral_system_id);
 			})
-			->join(env('DBP_DATABASE').'.numeral_system_glyphs as glyph_start', function ($join) use ($table,$bible) {
+			->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_start', function ($join) use ($table,$bible) {
 				$join->on("$table.verse_start",'=','glyph_start.value')
 				     ->where('glyph_start.numeral_system_id', '=', $bible->numeral_system_id);
 			})
-			->join(env('DBP_DATABASE').'.numeral_system_glyphs as glyph_end', function ($join) use ($table,$bible) {
+			->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_end', function ($join) use ($table,$bible) {
 				$join->on("$table.verse_end",'=','glyph_end.value')
 				     ->where('glyph_end.numeral_system_id', '=', $bible->numeral_system_id);
 			})

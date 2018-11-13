@@ -141,7 +141,7 @@ class UserPasswordsController extends APIController
 		if($this->api) return $this->reply($user);
 
 		\Auth::login($user);
-		return redirect(env('APP_URL').'/home');
+		return redirect()->route('public.home');
 	}
 
 

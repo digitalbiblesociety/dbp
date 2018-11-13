@@ -99,14 +99,14 @@ class BiblesController extends APIController
 		$fileset_filter     = checkParam('filter_by_fileset', null, 'optional') ?? true;
 		$include_regionInfo = checkParam('include_region_info', null, 'optional');
 		$country            = checkParam('country', null, 'optional');
-		$asset_id           = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+		$asset_id           = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 		$hide_restricted    = checkParam('hide_restricted', null, 'optional') ?? true;
 		$filter             = checkParam('filter', null, 'optional') ?? false;
 
 		$access_control = $this->accessControl($this->key, 'api');
 
 		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language_code . '_' . $include_regionInfo . $full_word . '_' . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $filter;
-		if(env('APP_ENV') === 'local') \Cache::forget($cache_string);
+		if(config('app.env') === 'local') \Cache::forget($cache_string);
 		$bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language_code, $organization, $country, $asset_id, $access_control) {
 			$bibles = Bible::with(['filesets' => function ($q) use ($asset_id, $access_control, $hide_restricted) {
 					if($asset_id) $q->where('asset_id', $asset_id);
@@ -171,7 +171,7 @@ class BiblesController extends APIController
 
 	public function archival()
     {
-        if (env('APP_ENV') === 'local') ini_set('memory_limit', '864M');
+        if (config('app.env') === 'local') ini_set('memory_limit', '864M');
         $iso                = checkParam('iso', null, 'optional');
         $organization_id    = checkParam('organization_id', null, 'optional');
         $organization = '';
@@ -193,7 +193,7 @@ class BiblesController extends APIController
         }
 
         $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id;
-		if(env('APP_ENV')) \Cache::forget($cache_string);
+		if(config('app.env')) \Cache::forget($cache_string);
         $bibles = \Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects,$asset_id) {
             $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')

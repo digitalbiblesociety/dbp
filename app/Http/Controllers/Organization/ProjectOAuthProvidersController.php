@@ -16,8 +16,9 @@ class ProjectOAuthProvidersController extends APIController
 	 * @OA\Get(
 	 *     path="/projects/{project_id}/oauth-providers/",
 	 *     tags={"Users"},
-	 *     summary="Returns the oAuth providers being used by a project",
-	 *     description="",
+	 *     summary="A Project's oAuth Providers",
+	 *     description="Returns the oAuth providers being used by a project. This route can inform
+	 *         developers about the potential login options provided to users by each project.",
 	 *     operationId="v4_projects_oAuthProvider.index",
 	 *     @OA\Parameter(name="project_id", in="path", required=true, description="The Project id", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
 	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
@@ -39,7 +40,8 @@ class ProjectOAuthProvidersController extends APIController
 	public function index(string $project_id)
 	{
 		$project_id = checkParam('project_id', $project_id);
-		$providers  = ProjectOauthProvider::where('project_id', $project_id)->get();
+		$provider_id = checkParam('provider_id', null, 'optional');
+		$providers  = ProjectOauthProvider::where('project_id', $project_id)->when()->get();
 
 		return $this->reply($providers);
 	}
@@ -60,13 +62,13 @@ class ProjectOAuthProvidersController extends APIController
 	 *     @OA\Parameter(ref="#/components/parameters/format"),
 	 *     @OA\RequestBody(required=true, description="Information supplied for oAuth Provider creation", @OA\MediaType(mediaType="application/json",
 	 *          @OA\Schema(
-	 *              @OA\Property(property="project_id",ref="#/components/schemas/ProjectOauthProvider/properties/project_id"),
-	 *              @OA\Property(property="name",ref="#/components/schemas/ProjectOauthProvider/properties/name"),
-	 *              @OA\Property(property="client_id",ref="#/components/schemas/ProjectOauthProvider/properties/client_id"),
-	 *              @OA\Property(property="client_secret",ref="#/components/schemas/ProjectOauthProvider/properties/client_secret"),
-	 *              @OA\Property(property="callback_url",ref="#/components/schemas/ProjectOauthProvider/properties/callback_url"),
-	 *              @OA\Property(property="callback_url_alt",ref="#/components/schemas/ProjectOauthProvider/properties/callback_url_alt"),
-	 *              @OA\Property(property="description",ref="#/components/schemas/ProjectOauthProvider/properties/description"),
+	 *              @OA\Property(property="project_id",       ref="#/components/schemas/ProjectOauthProvider/properties/project_id"),
+	 *              @OA\Property(property="name",             ref="#/components/schemas/ProjectOauthProvider/properties/name"),
+	 *              @OA\Property(property="client_id",        ref="#/components/schemas/ProjectOauthProvider/properties/client_id"),
+	 *              @OA\Property(property="client_secret",    ref="#/components/schemas/ProjectOauthProvider/properties/client_secret"),
+	 *              @OA\Property(property="callback_url",     ref="#/components/schemas/ProjectOauthProvider/properties/callback_url"),
+	 *              @OA\Property(property="callback_url_alt", ref="#/components/schemas/ProjectOauthProvider/properties/callback_url_alt"),
+	 *              @OA\Property(property="description",      ref="#/components/schemas/ProjectOauthProvider/properties/description"),
 	 *          )
 	 *     )),
 	 *     @OA\Response(
@@ -88,45 +90,6 @@ class ProjectOAuthProvidersController extends APIController
 		if($invalidRequest) return $invalidRequest;
 
 		$provider = ProjectOauthProvider::create(array_add($request->all(), 'id', 'generated'));
-		return $this->setStatusCode(200)->reply($provider);
-	}
-
-	/**
-	 * Display the specified resource.
-	 *
-	 * @OA\Get(
-	 *     path="/projects/{project_id}/oauth-providers/{provider_id}",
-	 *     tags={"Users"},
-	 *     summary="Return a specific oAuth provider",
-	 *     description="",
-	 *     operationId="v4_projects_oAuthProvider.show",
-	 *     @OA\Parameter(name="project_id", in="path", required=true, description="The Project id", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
-	 *     @OA\Parameter(name="provider_id", in="path", required=true, description="The Provider id", @OA\Schema(ref="#/components/schemas/ProjectOauthProvider/properties/id")),
-	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OA\Parameter(ref="#/components/parameters/key"),
-	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OA\Parameter(ref="#/components/parameters/format"),
-	 *     @OA\Response(
-	 *         response=200,
-	 *         description="successful operation",
-	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
-	 *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
-	 *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/ProjectOauthProvider"))
-	 *     )
-	 * )
-	 *
-	 * @param $project_id
-	 * @param $provider_id
-	 *
-	 * @return \Illuminate\Http\Response
-	 *
-	 */
-	public function show($project_id, $provider_id)
-	{
-		$project_id  = checkParam('project_id', $project_id);
-		$provider_id = checkParam('provider_id', $provider_id);
-		$provider    = ProjectOauthProvider::where('project_id', $project_id)->where('id', $provider_id)->first();
-
 		return $this->setStatusCode(200)->reply($provider);
 	}
 

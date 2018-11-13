@@ -47,7 +47,7 @@ class BooksController extends APIController
 	public function index()
 	{
 		if (!$this->api) return view('docs.books');
-		if(env('APP_ENV') === 'local') \Cache::forget('v4_books_index');
+		if(config('app.env') === 'local') \Cache::forget('v4_books_index');
 		$books = \Cache::remember('v4_books_index', 2400, function () {
 			$books = Book::orderBy('protestant_order')->get();
 			return fractal($books,new BooksTransformer(),$this->serializer);
@@ -94,7 +94,8 @@ class BooksController extends APIController
 	public function show($id)
 	{
 		$fileset_type = checkParam('fileset_type');
-		$asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? env('FCBH_AWS_BUCKET');
+
+		$asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 		$testament = checkParam('testament', null, 'optional');
 
 		$fileset   = BibleFileset::with('bible')->where('id', $id)->where('asset_id', $asset_id)

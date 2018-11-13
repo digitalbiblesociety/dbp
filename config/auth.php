@@ -36,25 +36,15 @@ return [
     */
 
     'guards' => [
-        'web' => [
-            'driver'   => 'session',
-            'provider' => 'users',
-        ],
+	    'web' => [
+		    'driver' => 'session',
+		    'provider' => 'users',
+	    ],
 
-        'api' => [
-            'driver'   => 'token',
-            'provider' => 'users',
-        ],
-
-        'user' => [
-            'driver'   => 'session',
-            'provider' => 'users',
-        ],
-
-        'administrator' => [
-            'driver'   => 'session',
-            'provider' => 'users',
-        ],
+	    'api' => [
+		    'driver' => 'token',
+		    'provider' => 'users',
+	    ],
     ],
 
     /*
@@ -80,10 +70,6 @@ return [
             'model'  => App\Models\User\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
 
     /*

@@ -91,7 +91,6 @@ class APIController extends Controller
 	{
 		$url           = explode('.', url()->current());
 		$subdomain     = array_shift($url);
-
 		if (str_contains($subdomain,'api')) {
 			$this->api = true;
 			$this->v   = (int) checkParam('v');
@@ -109,7 +108,7 @@ class APIController extends Controller
 				$language = Language::where('iso',$i18n)->select(['iso','id'])->first();
 				return [
 					'i18n_iso' => $language->iso,
-					'i18n_id'  => $language->id,
+					'i18n_id'  => $language->id
 				];
 			});
 			$GLOBALS['i18n_iso'] = $current_language['i18n_iso'];
@@ -210,7 +209,7 @@ class APIController extends Controller
 		$faces = ['⤜(ʘ_ʘ)⤏', '¯\_ツ_/¯', 'ᗒ ͟ʖᗕ', 'ᖗ´• ꔢ •`ᖘ', '|▰╭╮▰|'];
 
 
-		if((int) $this->v === 2 && (env('APP_ENV') !== 'local')) return [];
+		if((int) $this->v === 2 && (config('app.env') !== 'local')) return [];
 
 		$error = [
 				'message'     => $message,

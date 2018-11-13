@@ -24,9 +24,9 @@ class EmailPasswordReset extends Mailable
     {
     	if(!$project) {
     		$project = new Project();
-    		$project->iso = "eng";
-    		$project->name = "Digital Bible Platform";
-    		$project->url_reset = env('APP_URL')."/users/password/reset";
+    		$project->iso = 'eng';
+    		$project->name = 'Digital Bible Platform';
+    		$project->url_reset = url('/users/password/reset');
 	    }
 
 	    $this->user = $user;
@@ -41,7 +41,7 @@ class EmailPasswordReset extends Mailable
     public function build()
     {
 	    return $this->view('emails.password_reset')
-	                ->from("info@dbp4.org", $this->project->name)
+	                ->from('info@dbp4.org', $this->project->name)
 	                ->subject(trans('auth.reset_email_heading', [], $this->project->iso))
 	                ->with(['user' => $this->user,'project' => $this->project]);
     }

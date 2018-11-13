@@ -80,9 +80,9 @@ trait CallsBucketsTrait {
 		$form_params = [
 			'Action'          => 'AssumeRole',
 			'Version'         => '2011-06-15',
-			'RoleArn'         => env('AWS_ARN_ROLE'),
+			'RoleArn'         => config('filesystems.disks.s3.arn'),
 			'DurationSeconds' => 43200,
-			'RoleSessionName' => env('APP_SERVER_NAME').$timestamp,
+			'RoleSessionName' => config('app.server_name').$timestamp,
 		];
 		$credentials  = $this->generateCreds('/', $timestamp, $form_params);
 
@@ -125,7 +125,7 @@ trait CallsBucketsTrait {
 
 	private function encryptValues($string_to_sign, $service, $region = 'us-east-1')
 	{
-		$layer_1   = hash_hmac('sha256', date('Ymd'), 'AWS4'.env('AWS_SECRET'), true);
+		$layer_1   = hash_hmac('sha256', date('Ymd'), 'AWS4'.config('filesystems.disks.s3.secret'), true);
 		$layer_2   = hash_hmac('sha256', $region, $layer_1, true);
 		$layer_3   = hash_hmac('sha256', $service, $layer_2, true);
 		$layer_4   = hash_hmac('sha256', 'aws4_request', $layer_3, true);

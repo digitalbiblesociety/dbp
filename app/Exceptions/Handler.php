@@ -78,7 +78,7 @@ class Handler extends ExceptionHandler
             abort(403);
         }
 
-	    if(env('APP_ENV') == 'local') return parent::render($request, $exception);
+	    if(config('app.env') == 'local') return parent::render($request, $exception);
 
 		$message = $exception->getMessage();
         if($message === '') $message = 'Something has gone wrong';

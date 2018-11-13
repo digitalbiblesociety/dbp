@@ -59,4 +59,15 @@ return [
         'redirect'      => env('TWITCH_REDIRECT_URI'),
     ],
 
+	// Bible APIs
+	'bibleIs' => [
+		'key' => env('BIS_API_KEY'),
+		'secret' => env('BIS_API_SECRET')
+	],
+
+	'arclight' => [
+		'key' => env('ARCLIGHT_API')
+	]
+
+
 ];

@@ -26,7 +26,7 @@ class UsersController extends APIController
 	public function __construct()
 	{
 		parent::__construct();
-		$this->hash = md5(date('m/d/Y').env('BIS_API_KEY').env('BIS_API_SECRET'));
+		$this->hash = md5(date('m/d/Y').config('services.bibleIs.key').config('services.bibleIs.secret'));
 	}
 
 	public function user()
@@ -233,11 +233,11 @@ class UsersController extends APIController
 		if(checkParam('hash') === $this->hash) {
 			$user_id = checkParam('user_id');
 			$highlights = Highlight::with('color')->where('user_id', $user_id)
-				->join(env('DBP_DATABASE').'.bible_books', function ($join) {
+				->join(config('database.connections.dbp.database').'.bible_books', function ($join) {
 				    $join->on('user_highlights.bible_id', '=', 'bible_books.bible_id')
 				         ->on('bible_books.book_id', '=', 'user_highlights.book_id');
 				})
-					->join(env('DBP_DATABASE').'.books', 'books.id', '=', 'user_highlights.book_id')
+					->join(config('database.connections.dbp.database').'.books', 'books.id', '=', 'user_highlights.book_id')
 				->when($fileset_id, function ($q) use ($bible_id) {
 				    $q->where('user_highlights.bible_id', $bible_id);
 				})->select([

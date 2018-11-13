@@ -113,6 +113,7 @@ class LanguageTransformer extends BaseTransformer
 			 *   )
 			 * )
 			 */
+			default:
 			case 'v4_languages.all': {
 				$output = [
 					'id'        => $language->id,
