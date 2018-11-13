@@ -95,10 +95,9 @@ class APIController extends Controller
 			$this->api = true;
 			$this->v   = (int) checkParam('v');
 			$this->key = checkParam('key');
-			$this->user = \Cache::remember('selected_user'.$this->key, 2000, function() {
-				$keyExists = Key::find($this->key);
-				return $keyExists->user ?? null;
-			});
+			$keyExists = Key::find($this->key);
+			$this->user = $keyExists->user ?? null;
+
 
 			if(!$this->user) abort(401, 'You need to provide a valid API key. To request an api key please email access@dbp4.org');
 
