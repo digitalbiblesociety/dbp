@@ -100,7 +100,7 @@ class CreateUsersTable extends Migration
 	    if(!Schema::connection('dbp_users')->hasTable('profiles')) {
     		Schema::connection('dbp_users')->create('profiles', function (Blueprint $table) {
 		        $table->integer('user_id')->unsigned()->index();
-		        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+		        $table->foreign('user_id')->references('id')->on('dbp_users.users')->onDelete('cascade')->onUpdate('cascade');
 		        $table->text('bio')->nullable();
 		        $table->string('address_1')->nullable();
 			    $table->string('address_2')->nullable();
@@ -109,7 +109,7 @@ class CreateUsersTable extends Migration
 			    $table->string('state')->nullable();
 			    $table->string('zip')->nullable();
 			    $table->char('country_id', 2)->nullable();
-			    $table->foreign('country_id')->references('id')->on('countries')->onUpdate('cascade');
+			    $table->foreign('country_id')->references('id')->on('dbp.countries')->onUpdate('cascade');
 			    $table->string('avatar')->nullable();
 			    $table->tinyInteger('sex')->default(0)->unsigned(); // Aligns to the ISO/IEC 5218 Standards
 			    $table->timestamp('birthday')->nullable();
