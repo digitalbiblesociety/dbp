@@ -1,6 +1,6 @@
+dist: trusty
 language: php
 sudo: required
-dist: trusty
 
 php:
   - '7.2'
@@ -8,6 +8,10 @@ php:
 branches:
   only:
     - dev
+
+addons:
+  hosts:
+  - dbp.test
 
 before_install:
   - mysql -e 'CREATE DATABASE dbp;'
