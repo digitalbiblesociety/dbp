@@ -106,8 +106,8 @@
 	Route::name('v4_user.geolocate')->match(['get','options'],'users/geolocate',                                            'User\UsersController@geoLocate');
 
 	Route::name('v4_user.login')->post('/login',                                                                            'User\UsersController@login');
-	Route::name('v4_user.oAuth')->match(['get','options'],'/login/{driver}',                                                'User\UsersController@getSocialRedirect');
-	Route::name('v4_user.oAuthCallback')->match(['get','options'],'/login/{driver}/callback',                               'User\UsersController@handleProviderCallback');
+	Route::name('v4_user.oAuth')->match(['get','options'],'/login/{driver}',                                                'User\UserSocialController@getSocialRedirect');
+	Route::name('v4_user.oAuthCallback')->match(['get','options'],'/login/{driver}/callback',                               'User\UserSocialController@handleProviderCallback');
 
 	Route::name('v4_user.show')->match(['get','options'],'users/{user_id}',                                                 'User\UsersController@show');
 	Route::name('v4_user.update')->put('users/{user_id}',                                                                   'User\UsersController@update');

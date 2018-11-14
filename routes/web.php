@@ -113,8 +113,8 @@ Route::group(['middleware' => ['web', 'activity']], function () {
 	Route::name('projects.connect')->get('/connect/{token}',            'Organization\ProjectsController@connect');
 
     // Socialite Register Routes
-    Route::name('social.redirect')->get('/login/redirect/{provider}',   'User\UsersController@getSocialRedirect');
-    Route::name('social.handle')->get('/login/{provider}/callback',     'User\UsersController@handleProviderCallback');
+    Route::name('social.redirect')->get('/login/redirect/{provider}',   'User\UserSocialController@getSocialRedirect');
+    Route::name('social.handle')->get('/login/{provider}/callback',     'User\UserSocialController@handleProviderCallback');
 });
 
 // Registered and Activated User Routes
