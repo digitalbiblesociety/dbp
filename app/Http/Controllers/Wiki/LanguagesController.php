@@ -79,14 +79,15 @@ class LanguagesController extends APIController
 		if(config('app.env') === 'local') \Cache::forget($cache_string);
 		$languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $asset_id, $code, $sort_by, $show_restricted, $access_control) {
 			$languages = Language::select(['languages.id', 'languages.glotto_id', 'languages.iso', 'current_translation.name as name', 'autonym.name as autonym'])
-				->leftJoin('language_translations as autonym', function ($join) {
-					$join->on('autonym.language_source_id', 'languages.id');
-					$join->on('autonym.language_translation_id','languages.id');
-					$join->orderBy('autonym.priority','desc');
+				->leftJoin('language_translations as autonym', function ($leftJoin) {
+					$leftJoin->on('autonym.language_source_id', '=', 'languages.id')
+					         ->on('autonym.language_translation_id','=', 'languages.id')
+					         ->where('autonym.priority', '=', \DB::raw('(select max(`priority`) from language_translations WHERE language_translations.language_translation_id = languages.id LIMIT 1)'));
 				})
-				->leftJoin('language_translations as current_translation', function ($join) {
-					$join->on('current_translation.language_source_id', 'languages.id')->where('current_translation.language_translation_id', $GLOBALS['i18n_id']);
-					$join->orderBy('current_translation.priority','desc');
+				->join('language_translations as current_translation', function ($join) {
+					$join->on('current_translation.language_source_id', 'languages.id')
+						->where('current_translation.language_translation_id', '=', $GLOBALS['i18n_id'])
+						->where('current_translation.priority', '=', \DB::raw('(select max(`priority`) from language_translations WHERE language_translations.language_source_id = languages.id LIMIT 1)'));
 				})
 				->when(!$show_restricted, function ($query) use($access_control,$asset_id) {
 					$query->whereHas('filesets', function ($query) use($access_control,$asset_id) {
@@ -111,7 +112,7 @@ class LanguagesController extends APIController
 					return $query->where('iso', $code);
 				})->when($sort_by, function ($query) use ($sort_by) {
 					return $query->orderBy($sort_by);
-				})->withCount('bibles')->withCount('filesets')->get()->unique();
+				})->withCount('bibles')->withCount('filesets')->get();
 
 			return fractal($languages,new LanguageTransformer(),$this->serializer);
 		});
