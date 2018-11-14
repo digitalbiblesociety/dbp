@@ -75,7 +75,7 @@ class S3LogBackup extends Command
 
 	private function pushToS3($current_file, $log_contents)
 	{
-		if(config('app.env') == 'local') Cache::forget('iam_assumed_role');
+		if(config('app.env') === 'local') Cache::forget('iam_assumed_role');
 		$security_token = Cache::remember('iam_assumed_role', 60, function () {
 			$role_call  = $this->assumeRole();
 			if($role_call) {

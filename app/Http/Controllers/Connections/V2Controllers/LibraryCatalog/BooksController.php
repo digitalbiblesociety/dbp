@@ -64,7 +64,7 @@ class BooksController extends APIController
 			case 'O': { $testament = 'OT'; break; }
 			case 'N': { $testament = 'NT'; break; }
 		}
-		\Cache::forget('v2_library_book_' . $id . $asset_id . $fileset . $testament);
+		if(config('app.env') === 'local') \Cache::forget('v2_library_book_' . $id . $asset_id . $fileset . $testament);
 		$libraryBook = \Cache::remember('v2_library_book_' . $id . $asset_id . $fileset . $testament, 1600,
 			function () use ($id, $fileset, $testament) {
 
@@ -122,7 +122,7 @@ class BooksController extends APIController
 			case 'O': { $testament = 'OT'; break; }
 			case 'N': { $testament = 'NT'; }
 		}
-		\Cache::forget('v2_library_bookOrder_' . $id . $asset_id . $fileset . $testament);
+		if(config('app.env') === 'local') \Cache::forget('v2_library_bookOrder_' . $id . $asset_id . $fileset . $testament);
 		$libraryBook = \Cache::remember('v2_library_book_' . $id . $asset_id . $fileset . $testament, 1600,
 			function () use ($id, $fileset, $testament, $sophiaTable) {
 				$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
@@ -185,7 +185,7 @@ class BooksController extends APIController
 		$language = Language::where('iso',$iso)->first();
 		if(!$language) return $this->setStatusCode(404)->replywithError('No language could be found for the iso code specified');
 
-		\Cache::forget('v2_library_bookName_' . $iso);
+		if(config('app.env') === 'local') \Cache::forget('v2_library_bookName_' . $iso);
 		$libraryBookName = \Cache::remember('v2_library_bookName_' . $iso, 1600, function () use ($language) {
 			$bookTranslations = BookTranslation::where('language_id', $language->id)->with('book')->select(['name', 'book_id'])->get()->pluck('name','book.id_osis');
 			$bookTranslations['AL'] = 'Alternative';
@@ -249,7 +249,7 @@ class BooksController extends APIController
 		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 		$book_id   = checkParam('book_id');
 
-		\Cache::forget('v2_library_chapter_' . $id . $asset_id . $book_id);
+		if(config('app.env') === 'local') \Cache::forget('v2_library_chapter_' . $id . $asset_id . $book_id);
 		$chapters = \Cache::remember('v2_library_chapter_' . $id . $asset_id . $book_id, 1600, function () use ($id, $asset_id, $book_id) {
 			$fileset = BibleFileset::where('id', $id)->orWhere('id', substr($id, 0, -4))->where('asset_id', $asset_id)->first();
 			if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));

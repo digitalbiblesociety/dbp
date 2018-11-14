@@ -21,7 +21,6 @@ class BiblesController extends APIController
 
 	use AccessControlAPI;
 
-
 	/**
 	 * Display a listing of the bibles.
 	 *
@@ -193,7 +192,7 @@ class BiblesController extends APIController
         }
 
         $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id;
-		if(config('app.env')) \Cache::forget($cache_string);
+	    if(config('app.env') === 'local') \Cache::forget($cache_string);
         $bibles = \Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects,$asset_id) {
             $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')

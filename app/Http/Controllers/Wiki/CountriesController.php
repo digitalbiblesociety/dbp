@@ -56,7 +56,7 @@ class CountriesController extends APIController
 		$include_languages = checkParam('include_languages', null, 'optional');
 
 		$cache_string = 'countries' . $GLOBALS['i18n_iso'] . $has_filesets . $asset_id . $include_languages;
-		if(config('app.debug')) \Cache::forget($cache_string);
+		if(config('app.env') === 'local') \Cache::forget($cache_string);
 		return \Cache::remember($cache_string, 1600, function () use ($has_filesets, $asset_id, $include_languages) {
 				$countries = Country::with('currentTranslation')->when($has_filesets, function ($query) use ($asset_id) {
 					$query->whereHas('languages.bibles.filesets', function ($query) use ($asset_id) {
@@ -155,7 +155,7 @@ class CountriesController extends APIController
 	public function show($id)
 	{
 		$cache_string = 'countries_'. $id . $GLOBALS['i18n_iso'];
-		if(config('app.debug')) \Cache::forget($cache_string);
+		if(config('app.env') === 'local') \Cache::forget($cache_string);
 		$country = \Cache::remember($cache_string, 1600, function () use ($id) {
 			$country = Country::with('languagesFiltered.bibles.translations')->find($id);
 			if(!$country) return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['id' => $id], $GLOBALS['i18n_iso']));

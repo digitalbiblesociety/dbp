@@ -46,7 +46,7 @@ class LibraryMetadataController extends APIController
 		$fileset_id = checkParam('dam_id', null, 'optional');
 		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-		if(config('app.env') == 'local') Cache::forget('v2_library_metadata' . $fileset_id);
+		if(config('app.env') === 'local') Cache::forget('v2_library_metadata' . $fileset_id);
 		$metadata = Cache::remember('v2_library_metadata' . $fileset_id, 1600, function () use ($fileset_id, $asset_id) {
 
 			$metadata = BibleFileset::with('copyright.organizations.translations', 'copyright.role.roleTitle')->has('copyright')

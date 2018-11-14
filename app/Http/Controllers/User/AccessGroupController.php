@@ -43,7 +43,7 @@ class AccessGroupController extends APIController
 	{
 		if (!$this->api) return view('access.groups.index');
 
-		if(config('app.debug') === 'true') \Cache::forget('access_groups');
+		if(config('app.env') === 'local') \Cache::forget('access_groups');
 		$access_groups = \Cache::remember('access_groups', 1800,  function () {
 			$access_groups = AccessGroup::select(['id','name'])->get();
 			return $access_groups->pluck('name','id');
@@ -129,7 +129,7 @@ class AccessGroupController extends APIController
 	 */
 	public function show($id)
 	{
-		if(config('app.debug') === 'true') \Cache::forget('access_group_'.$id);
+		if(config('app.env') === 'local') \Cache::forget('access_group_'.$id);
 		$access_group = \Cache::remember('access_group_'.$id, 1800,  function () use($id) {
 			$access_group = AccessGroup::with('filesets','types','keys')->where('id',$id)->orWhere('name',$id)->first();
 			if(!$access_group) return $this->setStatusCode(404)->replyWithError(trans('api.access_group_404'));

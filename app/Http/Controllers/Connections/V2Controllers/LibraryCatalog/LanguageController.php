@@ -49,7 +49,7 @@ class LanguageController extends APIController
 
 		// Caching Logic
 		$cache_string = 'v' . $this->v . '_languages_' . $code.$full_word.$name.$sort_by;
-		\Cache::forget($cache_string);
+		if(config('app.env') === 'local') \Cache::forget($cache_string);
 		$cached_languages = \Cache::remember($cache_string, 1600, function () use ($code, $full_word, $name, $sort_by) {
 			$languages = Language::select(['id', 'iso2B', 'iso', 'name'])->orderBy($sort_by)
 				->when($code, function ($query) use ($code) {
@@ -213,7 +213,7 @@ class LanguageController extends APIController
 		$media           = checkParam('media', null, 'optional');
 		$organization_id = checkParam('organization_id', null, 'optional');
 
-		\Cache::forget('volumeLanguage' . $root . $iso . $media . $organization_id);
+		if(config('app.env') === 'local') \Cache::forget('volumeLanguage' . $root . $iso . $media . $organization_id);
 		$languages = \Cache::remember('volumeLanguage' . $root . $iso . $media . $organization_id, 2400,
 			function () use ($root, $iso, $media, $organization_id) {
 				$languages = Language::select(['id', 'iso', 'iso2B', 'iso2T', 'iso1', 'name', 'autonym'])->with('parent')
@@ -301,9 +301,8 @@ class LanguageController extends APIController
 
 		$access_control = $this->accessControl($this->key, 'api');
 
-		//\Cache::forget('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id);
-		//$languages = \Cache::remember('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id,
-			//2400, function () use ($root, $iso, $media, $delivery, $organization_id) {
+		if(config('app.env') === 'local') \Cache::forget('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id);
+		$languages = \Cache::remember('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id, 2400, function () use ($root, $iso, $access_control, $media, $delivery, $organization_id) {
 				$languages = Language::with('bibles')->with('dialects')
 					->whereHas('filesets', function ($query) use($access_control) {
 						$query->whereIn('hash_id', $access_control->hashes);
@@ -319,7 +318,7 @@ class LanguageController extends APIController
 						return $query->where('name', 'LIKE', '%' . $root . '%');
 					})->get();
 				return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer);
-			//});
+		});
 		return $this->reply($languages);
 	}
 

@@ -32,7 +32,7 @@ class ArclightController extends APIController
     	$dam_id = checkParam('dam_id');
     	$iso    = substr($dam_id,0,3);
 
-    	\Cache::forget('arclight_'.$iso);
+	    if(config('app.env') === 'local') \Cache::forget('arclight_'.$iso);
     	$chapters = \Cache::remember('arclight_'.$iso, 2400, function() use($iso) {
 		    $languages = collect($this->fetch('media-languages')->mediaLanguages)->pluck('languageId', 'iso3');
 		    $language_id = $languages[strtolower($iso)];
