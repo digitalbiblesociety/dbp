@@ -6,11 +6,8 @@ use App\Http\Controllers\APIController;
 
 use App\Models\Language\Language;
 use App\Transformers\LanguageTransformer;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
-
 use App\Traits\AccessControlAPI;
-use Validator;
+
 class LanguagesController extends APIController
 {
 

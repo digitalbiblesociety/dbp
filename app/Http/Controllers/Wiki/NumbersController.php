@@ -4,15 +4,10 @@ namespace App\Http\Controllers\Wiki;
 
 use App\Http\Controllers\APIController;
 
-use App\Models\Language\Alphabet;
-use App\Models\Language\Language;
-
 use App\Models\Language\NumeralSystem;
 use App\Models\Language\NumeralSystemGlyph;
 use App\Transformers\NumbersTransformer;
 
-use Illuminate\Http\Request;
-use Validator;
 class NumbersController extends APIController
 {
 

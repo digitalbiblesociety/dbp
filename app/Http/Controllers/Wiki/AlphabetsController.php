@@ -4,11 +4,6 @@ namespace App\Http\Controllers\Wiki;
 
 use App\Http\Controllers\APIController;
 
-use App\Models\User\User;
-use Auth;
-use Validator;
-use Illuminate\View\View;
-use Illuminate\Http\Request;
 use App\Models\Language\Alphabet;
 use App\Transformers\AlphabetTransformer;
 
@@ -106,7 +101,7 @@ class AlphabetsController extends APIController
     {
         if (config('app.env') === 'local') \Cache::forget('alphabet_' . $id);
         $alphabet = \Cache::remember('alphabet_' . $id, 1600, function () use ($id) {
-            $alphabet = Alphabet::with('fonts', 'languages', 'bibles.currentTranslation')-find($id);
+            $alphabet = Alphabet::with('fonts', 'languages', 'bibles.currentTranslation')->find($id);
             return fractal($alphabet, AlphabetTransformer::class, $this->serializer);
         });
         if (!$alphabet) return $this->setStatusCode(404)->replyWithError(trans('api.alphabets_errors_404'));

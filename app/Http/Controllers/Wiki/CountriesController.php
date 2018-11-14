@@ -4,11 +4,9 @@ namespace App\Http\Controllers\Wiki;
 
 use App\Http\Controllers\APIController;
 
-use App\Models\User\Key;
 use App\Models\Country\JoshuaProject;
 use App\Models\Country\Country;
 use App\Transformers\CountryTransformer;
-use Illuminate\View\View;
 
 class CountriesController extends APIController
 {
@@ -40,7 +38,7 @@ class CountriesController extends APIController
      *     @OA\Parameter(
      *          name="has_filesets",
      *          in="query",
-     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id"),
      *          description="Filter the returned countries to those containing languages that have filesets",
      *     ),
      *     @OA\Parameter(
