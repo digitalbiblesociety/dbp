@@ -149,7 +149,12 @@ class CountriesController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="id",in="path",required=true,@OA\Schema(ref="#/components/schemas/Country/properties/id")),
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Country/properties/id")
+     *     ),
      *     @OA\Parameter(name="communications",in="query",@OA\Schema(ref="#/components/schemas/CountryCommunication")),
      *     @OA\Parameter(name="economy",in="query",@OA\Schema(ref="#/components/schemas/CountryEconomy")),
      *     @OA\Parameter(name="energy",in="query",@OA\Schema(ref="#/components/schemas/CountryEnergy")),
@@ -185,14 +190,14 @@ class CountriesController extends APIController
         }
         $country = \Cache::remember($cache_string, 1600, function () use ($id) {
             $country = Country::with('languagesFiltered.bibles.translations')->find($id);
-            if (!$country) return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['id' => $id], $GLOBALS['i18n_iso']));
+            if (!$country) {
+                return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['id' => $id]));
+            }
             return $country;
         });
         if (!is_a($country, Country::class)) return $country;
         $includes = $this->loadWorldFacts($country);
-
-        if ($this->api) return $this->reply(fractal($country, new CountryTransformer())->serializeWith($this->serializer)->parseIncludes($includes));
-        return view('wiki.countries.show', compact('country'));
+        return $this->reply(fractal($country, new CountryTransformer(), $this->serializer)->parseIncludes($includes));
     }
 
     private function loadWorldFacts($country)

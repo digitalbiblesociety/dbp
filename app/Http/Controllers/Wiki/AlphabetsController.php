@@ -82,7 +82,13 @@ class AlphabetsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="id", in="path", description="The alphabet ID", required=true, @OA\Schema(ref="#/components/schemas/Alphabet/properties/script")),
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="The alphabet ID",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Alphabet/properties/script")
+     *      ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -100,13 +106,11 @@ class AlphabetsController extends APIController
     {
         if (config('app.env') === 'local') \Cache::forget('alphabet_' . $id);
         $alphabet = \Cache::remember('alphabet_' . $id, 1600, function () use ($id) {
-            return Alphabet::with('fonts', 'languages', 'bibles.currentTranslation')->where('script', $id)->first();
+            $alphabet = Alphabet::with('fonts', 'languages', 'bibles.currentTranslation')-find($id);
+            return fractal($alphabet, AlphabetTransformer::class, $this->serializer);
         });
-
-        if (!$alphabet) return $this->setStatusCode(404)->replyWithError(trans('api.alphabets_errors_404', ['id' => $id], $GLOBALS['i18n_iso']));
-        if (!$this->api) return view('wiki.languages.alphabets.show', compact('alphabet'));
-
-        return $this->reply(fractal()->item($alphabet)->transformWith(AlphabetTransformer::class)->serializeWith($this->serializer));
+        if (!$alphabet) return $this->setStatusCode(404)->replyWithError(trans('api.alphabets_errors_404'));
+        return $this->reply($alphabet);
     }
 
 }

@@ -143,9 +143,7 @@ class NumbersController extends APIController
      */
     public function show($system)
     {
-        if (!$this->api) {
-            return view('wiki.languages.alphabets.numerals.show');
-        }
+        if (!$this->api) return view('wiki.languages.alphabets.numerals.show');
 
         $numerals = NumeralSystem::where('id', $system)->first();
         if (!$numerals) {
