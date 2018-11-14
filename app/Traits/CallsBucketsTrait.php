@@ -13,7 +13,6 @@ trait CallsBucketsTrait {
 
 	public function authorizeAWS($source)
 	{
-		//\Cache::forget('iam_assumed_role');
 		$security_token = Cache::remember('iam_assumed_role', 600, function () {
 			$role_call  = $this->assumeRole();
 			if($role_call) {
@@ -21,6 +20,7 @@ trait CallsBucketsTrait {
 				return json_decode(json_encode($response_xml));
 			}
 		});
+		if(!$security_token->AssumeRoleResult) return $this->setStatusCode(500)->replyWithError('s3 connection currently down');
 
 		if($source === 'cloudfront') {
 			return new CloudFrontClient([
