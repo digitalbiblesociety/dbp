@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Language\Language;
 use App\Models\User\Key;
+
 use SoapBox\Formatter\Formatter;
 use League\Fractal\Serializer\DataArraySerializer;
 
@@ -14,9 +15,12 @@ use Log;
 use Symfony\Component\Yaml\Yaml;
 use Yosymfony\Toml\TomlBuilder;
 
+use App\Traits\CaptureIpTrait;
+
 class APIController extends Controller
 {
 	// Top Level Swagger Docs
+    use CaptureIpTrait;
 
 	/**
 	 * @OA\Info(
@@ -155,14 +159,13 @@ class APIController extends Controller
 		if (isset($_GET['echo'])) $object = [$_GET, $object];
 		$input  = checkParam('callback|jsonp', null, 'optional');
 		$format = checkParam('reply|format', null, 'optional');
-
+        
 		// Status Code, Headers, Params, Body, Time
 		try {
-			apiLogs(request(), $this->getStatusCode(),$s3_transaction_id);
+			apiLogs(request(), $this->getStatusCode(),$s3_transaction_id, $this->getIpAddress());
 		} catch (\Exception $e) {
 			Log::error($e);
 		}
-
 
 		switch ($format) {
 			case 'xml':

@@ -49,17 +49,13 @@ function fetchBible($bible_id)
 	return [];
 }
 
-function apiLogs($request, $status_code, $s3_string = false)
+function apiLogs($request, $status_code, $s3_string = false, $ip_address = null)
 {
 	$log_string = time().'∞'.config('app.server_name').'∞'.$status_code.'∞'.$request->path().'∞';
 	$log_string .= '"'.$request->header('User-Agent').'"'.'∞';
 	foreach ($_GET as $header => $value) $log_string .= ($value !== '') ? $header.'='.$value.'|' : $header.'|';
 	$log_string = rtrim($log_string,'|');
-
-	// client-ip-address
-	$ip_address = $request->header('X-Forwarded-For') ?? $request->getClientIps()[0];
 	$log_string .= '∞'.$ip_address.'∞';
-
 	if($s3_string) $log_string .= $s3_string;
 
 	if(config('app.env') !== 'local') App\Jobs\send_api_logs::dispatch($log_string);
