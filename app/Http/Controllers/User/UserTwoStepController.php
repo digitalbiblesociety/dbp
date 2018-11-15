@@ -24,11 +24,10 @@ class UserTwoStepController extends APIController
      */
     public function __construct()
     {
-    	parent::__construct();
+        parent::__construct();
 
         $this->middleware('auth');
-        $this->middleware(function ($request, $next)
-        {
+        $this->middleware(function ($request, $next) {
             $this->setUser2StepData();
 
             return $next($request);
@@ -41,7 +40,7 @@ class UserTwoStepController extends APIController
     private function setUser2StepData()
     {
         $user                       = \Auth::user();
-        if(!$user) return $this->setStatusCode(404)->replyWithError('user not found');
+        if (!$user) return $this->setStatusCode(404)->replyWithError('user not found');
 
         $twoStepAuth                = $this->getTwoStepAuthStatus($user->id);
         $authCount                  = $twoStepAuth->authCount;
@@ -84,10 +83,10 @@ class UserTwoStepController extends APIController
      */
     public function showVerification()
     {
-        if(!config('laravel2step.laravel2stepEnabled')) abort(404);
+        if (!config('laravel2step.laravel2stepEnabled')) abort(404);
 
         $twoStepAuth = $this->_twoStepAuth;
-        if($this->checkExceededTime($twoStepAuth->updated_at)) $this->resetExceededTime($twoStepAuth);
+        if ($this->checkExceededTime($twoStepAuth->updated_at)) $this->resetExceededTime($twoStepAuth);
 
         $data = [
             'user'              => $this->_user,
@@ -95,7 +94,6 @@ class UserTwoStepController extends APIController
         ];
 
         if ($this->_authCount > config('laravel2step.laravel2stepExceededCount')) {
-
             $exceededTimeDetails = $this->exceededTimeParser($twoStepAuth->updated_at);
 
             $data['timeUntilUnlock']     = $exceededTimeDetails['tomorrow'];
@@ -140,8 +138,7 @@ class UserTwoStepController extends APIController
             abort(404);
         }
 
-        if($request->ajax()) {
-
+        if ($request->ajax()) {
             $validator = Validator::make($request->all(), [
                 'v_input_1' => 'required|min:1|max:1',
                 'v_input_2' => 'required|min:1|max:1',
@@ -150,11 +147,9 @@ class UserTwoStepController extends APIController
             ]);
 
             if ($validator->fails()) {
-
                 $returnData = $this->invalidCodeReturnData($validator->errors());
 
                 return response()->json($returnData, 418);
-
             }
 
             $code       = $request->v_input_1 . $request->v_input_2 . $request->v_input_3 . $request->v_input_4;

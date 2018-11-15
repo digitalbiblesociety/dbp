@@ -230,7 +230,7 @@ class TextController extends APIController
 		if ($exclude) $exclude = ' -' . $exclude;
 		$fileset_id = checkParam('fileset_id');
 		$limit    = checkParam('limit', null, 'optional') ?? 15;
-		$book_id  = checkParam('book', null, 'optional');
+		$book_id  = checkParam('book|book_id', null, 'optional');
 
 		$book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
 

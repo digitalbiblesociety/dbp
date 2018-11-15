@@ -105,7 +105,6 @@ class BiblesController extends APIController
 		$access_control = $this->accessControl($this->key, 'api');
 
 		$cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language_code . '_' . $include_regionInfo . $full_word . '_' . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $filter;
-		if(config('app.env') === 'local') \Cache::forget($cache_string);
 		$bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language_code, $organization, $country, $asset_id, $access_control) {
 			$bibles = Bible::with(['filesets' => function ($q) use ($asset_id, $access_control, $hide_restricted) {
 					if($asset_id) $q->where('asset_id', $asset_id);
@@ -192,7 +191,7 @@ class BiblesController extends APIController
         }
 
         $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id;
-	    if(config('app.env') === 'local') \Cache::forget($cache_string);
+
         $bibles = \Cache::remember($cache_string, 1600, function () use ($language,$organization_id,$country,$include_regionInfo,$dialects,$asset_id) {
             $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')

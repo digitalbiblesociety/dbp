@@ -47,7 +47,6 @@ class BooksController extends APIController
 	public function index()
 	{
 		if (!$this->api) return view('docs.books');
-		if(config('app.env') === 'local') \Cache::forget('v4_books_index');
 		$books = \Cache::remember('v4_books_index', 2400, function () {
 			$books = Book::orderBy('protestant_order')->get();
 			return fractal($books,new BooksTransformer(),$this->serializer);

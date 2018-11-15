@@ -107,49 +107,55 @@ class LanguagesController extends APIController
         $cache_string = 'v'.$this->v.'_l_'.$country.$code.$GLOBALS['i18n_id'].$sort_by.
                         $show_restricted.$include_alt_names.$asset_id.$access_control->string;
 
-        if (config('app.env') === 'local') \Cache::forget($cache_string);
+        /*
+         *
+         * App\salesreport::join(DB::RAW('(SELECT company_id, GROUP_CONCAT(periods ORDER BY periods DESC) grouped_periods FROM salesreport GROUP BY company_id ) latest_report'),function($join){
+        $join->on('salesreport.company_id','=','latest_report.company_id');
+        $join->whereBetween(DB::raw('FIND_IN_SET(`salesreport`.`periods`, `latest_report`.`grouped_periods`)'), [1, 2]);
+    })->get();
+         *
+         */
 
-        $languages = \Cache::remember($cache_string, 1600, function () use (
-            $country,
-            $include_alt_names,
-            $asset_id,
-            $code,
-            $sort_by,
-            $show_restricted,
-            $access_control
-        ) {
+        $languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $asset_id, $code, $sort_by, $show_restricted, $access_control) {
             $languages = Language::select([
                     'languages.id',
                     'languages.glotto_id',
                     'languages.iso',
+                    'languages.name as backup_name',
                     'current_translation.name as name',
                     'autonym.name as autonym'
                 ])
-                ->leftJoin('language_translations as autonym', function ($leftJoin) {
-                    $priority_q = \DB::raw('(select max(`priority`) FROM language_translations
-                                            WHERE language_translation_id = languages.id LIMIT 1)');
-                    $leftJoin->on('autonym.language_source_id', '=', 'languages.id')
+                ->leftJoin('language_translations as autonym', function ($join) {
+                    $priority_q = \DB::raw('(select max(`priority`) FROM language_translations WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
+                    $join->on('autonym.language_source_id', '=', 'languages.id')
                              ->on('autonym.language_translation_id', '=', 'languages.id')
-                             ->where('autonym.priority', '=', $priority_q);
+                             ->orderBy('autonym.priority', '=', $priority_q)->limit(1);
                 })
-                ->join('language_translations as current_translation', function ($join) {
-                    $priority_q = \DB::raw('(select max(`priority`) from language_translations
-                                            WHERE language_source_id = languages.id LIMIT 1)');
+                ->leftJoin('language_translations as current_translation', function ($join) {
+                    $priority_q = \DB::raw('(select max(`priority`) from language_translations WHERE language_source_id = languages.id LIMIT 1)');
                     $join->on('current_translation.language_source_id', 'languages.id')
                         ->where('current_translation.language_translation_id', '=', $GLOBALS['i18n_id'])
-                        ->where('current_translation.priority', '=', $priority_q);
+                        ->where('current_translation.priority', '=', $priority_q)->limit(1);
                 })
+
                 ->when(!$show_restricted, function ($query) use ($access_control, $asset_id) {
-                    $query->whereHas('filesets', function ($query) use ($access_control, $asset_id) {
-                        $query->whereIn('hash_id', $access_control->hashes);
-                        if ($asset_id) {
-                            $asset_id = explode(',', $asset_id);
-                            $query->whereHas('fileset', function ($query) use ($asset_id) {
-                                $query->whereIn('asset_id', $asset_id);
-                            });
-                        }
-                    });
-                    //$query->has('bibles');
+
+                    dd($this->key);
+
+                    $query->leftJoin('bibles','bibles.language_id','language.id');
+                    $query->leftJoin('bible_fileset_connections','bibles.id','bible_fileset_connections.bible_id');
+                    $query->leftJoin('access_group_filesets','bible_fileset_connections.hash_id','access_group_filesets.hash_id');
+
+                    //// Eloquent Model
+                    //$query->whereHas('filesets', function ($query) use ($access_control, $asset_id) {
+                    //    $query->whereIn('hash_id', $access_control->hashes);
+                    //    if ($asset_id) {
+                    //        $asset_id = explode(',', $asset_id);
+                    //        $query->whereHas('fileset', function ($query) use ($asset_id) {
+                    //            $query->whereIn('asset_id', $asset_id);
+                    //        });
+                    //    }
+                    //});
                 })
                 ->when($include_alt_names, function ($query) {
                     return $query->with('translations');

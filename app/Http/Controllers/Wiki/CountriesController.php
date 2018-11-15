@@ -76,7 +76,7 @@ class CountriesController extends APIController
         $languages = checkParam('include_languages', null, 'optional');
 
         $cache_string = 'countries' . $GLOBALS['i18n_iso'] . $filesets . $asset_id . $languages;
-        if (config('app.env') === 'local') \Cache::forget($cache_string);
+
         $countries = \Cache::remember($cache_string, 1600, function () use ($filesets, $asset_id, $languages) {
                 $countries = Country::with('currentTranslation')->when($filesets, function ($query) use ($asset_id) {
                     $query->whereHas('languages.bibles.filesets', function ($query) use ($asset_id) {
@@ -115,7 +115,7 @@ class CountriesController extends APIController
      */
     public function joshuaProjectIndex()
     {
-        if (config('app.env') === 'local') \Cache::forget('countries_jp_' . $GLOBALS['i18n_iso']);
+
         $joshua_project_countries = \Cache::remember('countries_jp_' . $GLOBALS['i18n_iso'], 1600, function () {
             $countries = JoshuaProject::with(['country',
                 'translations' => function ($query) {
@@ -183,9 +183,6 @@ class CountriesController extends APIController
     public function show($id)
     {
         $cache_string = 'countries_'. $id . $GLOBALS['i18n_iso'];
-        if (config('app.env') === 'local') {
-            \Cache::forget($cache_string);
-        }
         $country = \Cache::remember($cache_string, 1600, function () use ($id) {
             $country = Country::with('languagesFiltered.bibles.translations')->find($id);
             if (!$country) {

@@ -36,7 +36,6 @@ class OrganizationsController extends APIController
 
 		$cache_string = $this->v . 'organizations' . $i10n . $membership . $content . $bibles .$resources;
 
-        if(config('app.env') === 'local') \Cache::forget($cache_string);
 		$organizations = \Cache::remember($cache_string, 2400,
 			function () use ($i10n_language, $membership, $content, $bibles, $resources) {
 				if ($membership) {

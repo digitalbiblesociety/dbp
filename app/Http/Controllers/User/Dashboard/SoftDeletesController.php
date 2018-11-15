@@ -14,7 +14,7 @@ class SoftDeletesController extends APIController
      */
     public function __construct()
     {
-    	parent::__construct();
+        parent::__construct();
         $this->middleware('auth');
     }
 
@@ -28,7 +28,7 @@ class SoftDeletesController extends APIController
     public static function getDeletedUser($id)
     {
         $user = User::onlyTrashed()->where('id', $id)->first();
-        if(!$user) return redirect('/users/deleted/')->with('error', trans('usersmanagement.errorUserNotFound'));
+        if (!$user) return redirect('/users/deleted/')->with('error', trans('usersmanagement.errorUserNotFound'));
         return $user;
     }
 

@@ -46,7 +46,6 @@ class AlphabetsController extends APIController
     public function index()
     {
         if (!$this->api) return view('wiki.languages.alphabets.index');
-        if (config('app.env') === 'local') \Cache::forget('alphabets');
 
         $alphabets = \Cache::remember('alphabets', 1600, function () {
             $alphabets = Alphabet::select(['name', 'script', 'family', 'direction', 'type'])->get();
@@ -99,7 +98,6 @@ class AlphabetsController extends APIController
      */
     public function show($id)
     {
-        if (config('app.env') === 'local') \Cache::forget('alphabet_' . $id);
         $alphabet = \Cache::remember('alphabet_' . $id, 1600, function () use ($id) {
             $alphabet = Alphabet::with('fonts', 'languages', 'bibles.currentTranslation')->find($id);
             return fractal($alphabet, AlphabetTransformer::class, $this->serializer);

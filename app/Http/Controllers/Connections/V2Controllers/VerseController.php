@@ -50,7 +50,7 @@ class VerseController extends APIController
 	{
 		$bible_id    = checkParam('dam_id');
 		$book_id     = checkParam('book_id');
-		$chapter_id  = checkParam('chapter');
+		$chapter_id  = checkParam('chapter|chapter_id');
 		$verse_start = checkParam('verse_start');
 		$verse_end   = checkParam('verse_end', null, 'optional');
 
