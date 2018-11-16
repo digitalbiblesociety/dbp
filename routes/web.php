@@ -35,8 +35,8 @@ Route::get('/about/license',         'WelcomeController@license')->name('license
 Route::get('/acerca-de/licencia',    'WelcomeController@license')->name('es.license')->localization('es');
 
 // Legal | Privacy Policy
-Route::get('/about/privacy-policy',                'WelcomeController@privacy_policy')->name('privacy_policy');
-Route::get('/acerca-de/politica-de-privacidad',    'WelcomeController@privacy_policy')->name('es.privacy_policy')->localization('es');
+Route::get('/about/privacy-policy',                'WelcomeController@privacyPolicy')->name('privacy_policy');
+Route::get('/acerca-de/politica-de-privacidad',    'WelcomeController@privacyPolicy')->name('es.privacy_policy')->localization('es');
 
 Route::get('/about/contact',         'User\UserContactController@create')->name('contact.create');
 Route::post('/about/contact',        'User\UserContactController@store')->name('contact.store');
@@ -88,8 +88,8 @@ Route::group(['middleware' => ['web', 'activity']], function () {
 
 	// Docs Routes
 	Route::name('docs')->get('docs',                                         'User\DocsController@index');
-	Route::name('swagger_v4')->get('docs/swagger/v4',                        'User\DocsController@swagger_v4');
-	Route::name('swagger_v2')->get('docs/swagger/v2',                        'User\DocsController@swagger_v2');
+	Route::name('swagger_v4')->get('docs/swagger/v4',                        'User\DocsController@swaggerV4');
+	Route::name('swagger_v2')->get('docs/swagger/v2',                        'User\DocsController@swaggerV2');
 	Route::name('history')->get('docs/history',                              'User\DocsController@history');
 	Route::name('docs.sdk')->get('sdk',                                      'User\DocsController@sdk');
 	Route::name('docs.getting_started')->get('guides/getting-started',       'User\DocsController@start');
@@ -102,12 +102,12 @@ Route::group(['middleware' => ['web', 'activity']], function () {
 	Route::name('docs_languages')->get('docs/languages',                     'User\DocsController@languages');
 	Route::name('docs_countries')->get('docs/countries',                     'User\DocsController@countries');
 	Route::name('docs_alphabets')->get('docs/alphabets',                     'User\DocsController@alphabets');
-	Route::name('docs_analysis')->get('docs/code-analysis',                  'User\DocsController@code_analysis');
+	Route::name('docs_analysis')->get('docs/code-analysis',                  'User\DocsController@codeAnalysis');
 
 	// Docs Generator Routes
-	Route::name('swagger_docs_gen')->get('swagger_docs',                     'User\DocsController@swagger_docs_gen');
-	Route::name('swagger_database')->get('docs/swagger/database',            'User\DocsController@swagger_database');
-	Route::name('swagger_database_model')->get('docs/swagger/database/{id}', 'User\DocsController@swagger_database_model');
+	Route::name('swagger_docs_gen')->get('swagger_docs',                     'User\DocsController@swaggerDocsGen');
+	Route::name('swagger_database')->get('docs/swagger/database',            'User\DocsController@swaggerDatabase');
+	Route::name('swagger_database_model')->get('docs/swagger/database/{id}', 'User\DocsController@swaggerDatabase_model');
 
     // Activation Routes
 	Route::name('projects.connect')->get('/connect/{token}',            'Organization\ProjectsController@connect');
