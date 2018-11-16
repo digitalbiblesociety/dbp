@@ -58,7 +58,7 @@ function apiLogs($request, $status_code, $s3_string = false, $ip_address = null)
 	$log_string .= '∞'.$ip_address.'∞';
 	if($s3_string) $log_string .= $s3_string;
 
-	if(config('app.env') !== 'local') App\Jobs\send_api_logs::dispatch($log_string);
+	if(config('app.env') !== 'local') App\Jobs\SendApiLogs::dispatch($log_string);
 }
 
 if( ! function_exists('unique_random') ){
