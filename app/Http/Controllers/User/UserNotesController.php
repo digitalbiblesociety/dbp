@@ -64,12 +64,12 @@ class UserNotesController extends APIController
             return view('dashboard.notes.index');
         }
 
-        $bible_id   = checkParam('bible_id', null, 'optional');
-        $book_id    = checkParam('book_id', null, 'optional');
-        $chapter_id = checkParam('chapter_id', null, 'optional');
-        $limit      = checkParam('limit', null, 'optional') ?? 25;
-        $sort_by    = checkParam('sort_by', null, 'optional');
-        $sort_dir   = checkParam('sort_dir', null, 'optional') ?? 'asc';
+        $bible_id   = checkParam('bible_id');
+        $book_id    = checkParam('book_id');
+        $chapter_id = checkParam('chapter_id');
+        $limit      = checkParam('limit') ?? 25;
+        $sort_by    = checkParam('sort_by');
+        $sort_dir   = checkParam('sort_dir') ?? 'asc';
 
         $notes = Note::with('tags')->where('user_id', $user_id)
             ->when($bible_id, function ($q) use ($bible_id) {

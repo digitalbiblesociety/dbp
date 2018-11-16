@@ -3,11 +3,11 @@
 /**
  * @param string $param
  * @param null|string $v4Style
- * @param bool $optional
+ * @param bool $required
  *
  * @return array|bool|null|string
  */
-function checkParam(string $param, $v4Style = null, $optional = false)
+function checkParam(string $param, $required = false, $v4Style = null)
 {
     $url_param = null;
     if (strpos($param, '|') !== false) {
@@ -33,7 +33,7 @@ function checkParam(string $param, $v4Style = null, $optional = false)
     if (!$url_param && !$url_header) {
         $body_param = request()->input($param);
         if (!$body_param) {
-            if ($optional !== 'optional') {
+            if ($required) {
                 \Log::channel('errorlog')->error(["Missing Param '$param", 422]);
                 abort(422, "You need to provide the missing parameter '$param'. Please append it to the url or the request Header.");
             }

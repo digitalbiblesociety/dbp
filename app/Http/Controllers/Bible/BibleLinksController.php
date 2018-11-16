@@ -11,11 +11,11 @@ class BibleLinksController extends APIController
 {
     public function index()
     {
-        $iso             = checkParam('iso', null, 'optional') ?? 'eng';
-        $limit           = checkParam('limit', null, 'optional');
-        $organization    = checkParam('organization_id', null, 'optional');
-        $type            = checkParam('type', null, 'optional');
-        $bible_id        = checkParam('bible_id', null, 'optional');
+        $iso             = checkParam('iso') ?? 'eng';
+        $limit           = checkParam('limit');
+        $organization    = checkParam('organization_id');
+        $type            = checkParam('type');
+        $bible_id        = checkParam('bible_id');
 
         if ($organization !== null) {
             $organization = Organization::where('id', $organization)->orWhere('slug', $organization)->first();

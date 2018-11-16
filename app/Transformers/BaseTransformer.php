@@ -23,8 +23,8 @@ class BaseTransformer extends TransformerAbstract
 
     public function __construct()
     {
-        $this->version = checkParam('v');
-        $this->i10n = checkParam('i10n', null, 'optional') ?? 'eng';
+        $this->version = checkParam('v', true);
+        $this->i10n = checkParam('i10n') ?? 'eng';
         $this->continent = $_GET['continent'] ?? false;
         $this->route = Route::currentRouteName() ?? '';
     }

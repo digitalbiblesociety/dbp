@@ -98,12 +98,12 @@ class LanguagesController extends APIController
             return view('wiki.languages.index');
         }
 
-        $country               = checkParam('country', null, 'optional');
-        $code                  = checkParam('code|iso', null, 'optional');
-        $sort_by               = checkParam('sort_by', null, 'optional') ?? 'name';
-        $include_alt_names     = checkParam('include_alt_names', null, 'optional');
-        $show_restricted       = checkParam('show_only_restricted', null, 'optional');
-        $asset_id              = checkParam('bucket_id|asset_id', null, 'optional');
+        $country               = checkParam('country');
+        $code                  = checkParam('code|iso');
+        $sort_by               = checkParam('sort_by') ?? 'name';
+        $include_alt_names     = checkParam('include_alt_names');
+        $show_restricted       = checkParam('show_only_restricted');
+        $asset_id              = checkParam('bucket_id|asset_id');
 
 
         $access_control = $this->accessControl($this->key, 'api');

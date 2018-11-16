@@ -39,8 +39,8 @@ class ProjectOAuthProvidersController extends APIController
      */
     public function index(string $project_id)
     {
-        $project_id = checkParam('project_id', $project_id);
-        $provider_id = checkParam('provider_id', null, 'optional');
+        $project_id = checkParam('project_id', true, $project_id);
+        $provider_id = checkParam('provider_id');
         $providers  = ProjectOauthProvider::where('project_id', $project_id)->when()->get();
 
         return $this->reply($providers);
@@ -133,7 +133,7 @@ class ProjectOAuthProvidersController extends APIController
             return $invalidRequest;
         }
 
-        $project_id = checkParam('project_id', $project_id);
+        $project_id = checkParam('project_id', true, $project_id);
         $provider   = ProjectOauthProvider::where('project_id', $project_id)->where('id', $provider_id)->first();
         $provider->fill($request->all())->save();
 
@@ -171,7 +171,7 @@ class ProjectOAuthProvidersController extends APIController
      */
     public function destroy($project_id, $id)
     {
-        $project_id = checkParam('project_id', $project_id);
+        $project_id = checkParam('project_id', true, $project_id);
 
         $project = Project::where('id', $project_id)->first();
         if (!$project) {

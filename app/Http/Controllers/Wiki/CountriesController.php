@@ -75,9 +75,9 @@ class CountriesController extends APIController
             ini_set('memory_limit', '864M');
         }
 
-        $filesets = checkParam('has_filesets', null, 'optional') ?? true;
-        $asset_id = checkParam('asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
-        $languages = checkParam('include_languages', null, 'optional');
+        $filesets = checkParam('has_filesets') ?? true;
+        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $languages = checkParam('include_languages');
 
         $cache_string = 'countries' . $GLOBALS['i18n_iso'] . $filesets . $asset_id . $languages;
 
@@ -205,18 +205,18 @@ class CountriesController extends APIController
     {
         $loadedProfiles = [];
         // World Factbook
-        $profiles['communications'] = checkParam('communications', null, 'optional') ?? 0;
-        $profiles['economy']        = checkParam('economy', null, 'optional') ?? 0;
-        $profiles['energy']         = checkParam('energy', null, 'optional') ?? 0;
-        $profiles['geography']      = checkParam('geography', null, 'optional') ?? 0;
-        $profiles['government']     = checkParam('government', null, 'optional') ?? 0;
-        $profiles['issues']         = checkParam('issues', null, 'optional') ?? 0;
-        $profiles['people']         = checkParam('people', null, 'optional') ?? 0;
-        $profiles['ethnicities']    = checkParam('ethnicity', null, 'optional') ?? 0;
-        $profiles['regions']        = checkParam('regions', null, 'optional') ?? 0;
-        $profiles['religions']      = checkParam('religions', null, 'optional') ?? 0;
-        $profiles['transportation'] = checkParam('transportation', null, 'optional') ?? 0;
-        $profiles['joshuaProject']  = checkParam('joshuaProject', null, 'optional') ?? 0;
+        $profiles['communications'] = checkParam('communications') ?? 0;
+        $profiles['economy']        = checkParam('economy') ?? 0;
+        $profiles['energy']         = checkParam('energy') ?? 0;
+        $profiles['geography']      = checkParam('geography') ?? 0;
+        $profiles['government']     = checkParam('government') ?? 0;
+        $profiles['issues']         = checkParam('issues') ?? 0;
+        $profiles['people']         = checkParam('people') ?? 0;
+        $profiles['ethnicities']    = checkParam('ethnicity') ?? 0;
+        $profiles['regions']        = checkParam('regions') ?? 0;
+        $profiles['religions']      = checkParam('religions') ?? 0;
+        $profiles['transportation'] = checkParam('transportation') ?? 0;
+        $profiles['joshuaProject']  = checkParam('joshuaProject') ?? 0;
         foreach ($profiles as $key => $profile) {
             if ($profile !== 0) {
                 $country->load($key);

@@ -76,12 +76,12 @@ class TextController extends APIController
     public function index($bible_url_param = null, $book_url_param = null, $chapter_url_param = null)
     {
         // Fetch and Assign $_GET params
-        $fileset_id  = checkParam('dam_id|fileset_id', $bible_url_param);
-        $book_id     = checkParam('book_id', $book_url_param);
+        $fileset_id  = checkParam('dam_id|fileset_id', true, $bible_url_param);
+        $book_id     = checkParam('book_id', true, $book_url_param);
         $chapter     = checkParam('chapter_id', $chapter_url_param, 'optional');
-        $verse_start = checkParam('verse_start', null, 'optional') ?? 1;
-        $verse_end   = checkParam('verse_end', null, 'optional');
-        $asset_id    = checkParam('bucket|bucket_id|asset_id', null, 'optional');
+        $verse_start = checkParam('verse_start') ?? 1;
+        $verse_end   = checkParam('verse_end');
+        $asset_id    = checkParam('bucket|bucket_id|asset_id');
 
         $fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id', substr($fileset_id, 0, 6))->where('set_type_code', 'text_plain')->first();
         if (!$fileset) {
@@ -187,8 +187,8 @@ class TextController extends APIController
      */
     public function fonts()
     {
-        $id       = checkParam('id', null, 'optional');
-        $name     = checkParam('name', null, 'optional');
+        $id       = checkParam('id');
+        $name     = checkParam('name');
 
         $fonts = AlphabetFont::when($name, function ($q) use ($name) {
             $q->where('name', $name);
@@ -235,14 +235,14 @@ class TextController extends APIController
             return view('docs.v2.text_search');
         }
 
-        $query   = checkParam('query');
-        $exclude = checkParam('exclude', null, 'optional') ?? false;
+        $query   = checkParam('query', true);
+        $exclude = checkParam('exclude') ?? false;
         if ($exclude) {
             $exclude = ' -' . $exclude;
         }
         $fileset_id = checkParam('fileset_id');
-        $limit    = checkParam('limit', null, 'optional') ?? 15;
-        $book_id  = checkParam('book|book_id', null, 'optional');
+        $limit    = checkParam('limit') ?? 15;
+        $book_id  = checkParam('book|book_id');
 
         $book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
 
@@ -340,7 +340,7 @@ class TextController extends APIController
             return view('docs.v2.text_search_group');
         }
 
-        $query    = checkParam('query');
+        $query    = checkParam('query', true);
         $bible_id = checkParam('dam_id');
 
         $tableExists = \Schema::connection('sophia')->hasTable($bible_id . '_vpl');

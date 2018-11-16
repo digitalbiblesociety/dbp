@@ -97,8 +97,8 @@ class APIController extends Controller
         $subdomain     = array_shift($url);
         if (str_contains($subdomain, 'api')) {
             $this->api = true;
-            $this->v   = (int) checkParam('v');
-            $this->key = checkParam('key');
+            $this->v   = (int) checkParam('v', true);
+            $this->key = checkParam('key', true);
             $keyExists = Key::find($this->key);
             $this->user = $keyExists->user ?? null;
 
@@ -108,7 +108,7 @@ class APIController extends Controller
             }
 
             // i18n
-            $i18n = checkParam('i18n', null, 'optional') ?? 'eng';
+            $i18n = checkParam('i18n') ?? 'eng';
             $current_language = \Cache::remember('selected_api_language_'.$i18n, 2000, function () use ($i18n) {
                 $language = Language::where('iso', $i18n)->select(['iso','id'])->first();
                 return [
@@ -161,8 +161,8 @@ class APIController extends Controller
         if (isset($_GET['echo'])) {
             $object = [$_GET, $object];
         }
-        $input  = checkParam('callback|jsonp', null, 'optional');
-        $format = checkParam('reply|format', null, 'optional');
+        $input  = checkParam('callback|jsonp');
+        $format = checkParam('reply|format');
         
         // Status Code, Headers, Params, Body, Time
         try {

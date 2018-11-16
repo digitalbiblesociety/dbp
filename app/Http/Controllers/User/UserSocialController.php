@@ -68,8 +68,8 @@ class UserSocialController extends APIController
     public function getSocialRedirect($provider = null)
     {
         $project_id = checkParam('project_id');
-        $provider   = checkParam('name', $provider);
-        $alt_url    = checkParam('alt_url', null, 'optional');
+        $provider   = checkParam('name', true, $provider);
+        $alt_url    = checkParam('alt_url');
 
         $socialiteProvider = $this->getOauthProvider($project_id, $provider, $alt_url);
         if (is_a($socialiteProvider, JsonResponse::class)) {

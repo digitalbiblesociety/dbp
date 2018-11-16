@@ -55,9 +55,9 @@ class LibraryVersionController extends APIController
      */
     public function libraryVersion()
     {
-        $code = checkParam('code', null, 'optional');
-        $name = checkParam('name', null, 'optional');
-        $sort = checkParam('sort_by', null, 'optional');
+        $code = checkParam('code');
+        $name = checkParam('name');
+        $sort = checkParam('sort_by');
 
         $versions = BibleFileset::where('asset_id', config('filesystems.disks.s3_fcbh.bucket'))
             ->with('bible.currentTranslation', 'bible.vernacularTranslation')

@@ -50,7 +50,7 @@ class LibraryVolumeController extends APIController
             return view('bibles.history');
         }
 
-        $limit  = checkParam('limit', null, 'optional') ?? 500;
+        $limit  = checkParam('limit') ?? 500;
         $filesets = BibleFileset::with('bible.language')->has('bible.language')->take($limit)->get();
         $filesets->map(function ($fileset) {
             $fileset->v2_id = strtoupper($fileset->bible->first()->language->iso.substr($fileset->bible->first()->id, 3, 3));
@@ -180,13 +180,13 @@ class LibraryVolumeController extends APIController
             return view('bibles.index');
         }
 
-        $dam_id             = checkParam('dam_id|fcbh_id', null, 'optional');
-        $media              = checkParam('media', null, 'optional');
-        $language_name      = checkParam('language', null, 'optional');
-        $full_word          = checkParam('full_word', null, 'optional');
-        $iso                = checkParam('language_code|language_family_code', null, 'optional');
-        $updated            = checkParam('updated', null, 'optional');
-        $organization       = checkParam('organization_id', null, 'optional');
+        $dam_id             = checkParam('dam_id|fcbh_id');
+        $media              = checkParam('media');
+        $language_name      = checkParam('language');
+        $full_word          = checkParam('full_word');
+        $iso                = checkParam('language_code|language_family_code');
+        $updated            = checkParam('updated');
+        $organization       = checkParam('organization_id');
 
         $access_control = $this->accessControl($this->key, 'api');
 

@@ -56,7 +56,7 @@ class UsersController extends APIController
         if (!$this->api) {
             return view('dashboard.users.index');
         }
-        $limit = checkParam('limit', null, 'optional') ?? 100;
+        $limit = checkParam('limit') ?? 100;
         $project_id = checkParam('project_id');
 
         $users = \DB::table('users')->join('project_members', function ($join) use ($project_id) {
@@ -168,7 +168,7 @@ class UsersController extends APIController
      */
     public function login(Request $request)
     {
-        $project_id = checkParam('project_id', null, 'optional');
+        $project_id = checkParam('project_id');
 
         if (!$this->api && $request->method() !== 'POST') {
             return view('auth.login');
@@ -443,7 +443,7 @@ class UsersController extends APIController
      */
     public function geoLocate()
     {
-        $ip_address  = checkParam('ip_address', null, 'optional') ?? request()->getClientIp();
+        $ip_address  = checkParam('ip_address') ?? request()->getClientIp();
 
         $geolocation = geoip($ip_address);
         return $this->reply([

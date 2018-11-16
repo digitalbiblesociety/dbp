@@ -14,7 +14,7 @@ class V3Controller extends APIController
     public function search()
     {
         $bible_id    = checkParam('dam_id');
-        $action_type = checkParam('resource');
+        $action_type = checkParam('resource', true);
         $bible       = fetchBible($bible_id);
         if (!$bible) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $bible_id]));
@@ -62,7 +62,7 @@ class V3Controller extends APIController
     public function books()
     {
         $bible_id = checkParam('dam_id');
-        $children = checkParam('children', null, 'optional');
+        $children = checkParam('children');
         $bible    = fetchBible($bible_id);
         if (!$bible) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $bible_id]));

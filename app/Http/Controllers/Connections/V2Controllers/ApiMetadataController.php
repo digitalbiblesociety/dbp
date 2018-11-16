@@ -22,7 +22,7 @@ class ApiMetadataController extends APIController
      */
     public function passThrough($path1 = null, $path2 = null)
     {
-        $params = checkParam('params', null, 'optional') ?? $_GET;
+        $params = checkParam('params') ?? $_GET;
         if (\is_array($params)) {
             $params = implode('&', array_map(function ($v, $k) {
                 if ($k === 'key') {
@@ -84,8 +84,8 @@ class ApiMetadataController extends APIController
      */
     public function libraryAsset()
     {
-        $dam_id   = checkParam('dam_id|fileset_id', null, 'optional');
-        $asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $dam_id   = checkParam('dam_id|fileset_id');
+        $asset_id = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
         if ($dam_id) {
             $fileset = BibleFileset::where('id', $dam_id)->orWhere('id', substr($dam_id, 0, -4))->orWhere('id', substr($dam_id, 0, -2))->where('asset_id', $asset_id)->first();

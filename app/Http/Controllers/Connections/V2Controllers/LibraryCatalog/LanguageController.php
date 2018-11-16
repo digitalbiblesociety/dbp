@@ -41,10 +41,10 @@ class LanguageController extends APIController
     public function languageListing()
     {
         // Params
-        $code                  = checkParam('code', null, 'optional');
-        $name                  = checkParam('name', null, 'optional');
-        $full_word             = checkParam('full_word', null, 'optional') ?? 'false';
-        $sort_by               = checkParam('sort_by', null, 'optional') ?? 'name';
+        $code                  = checkParam('code');
+        $name                  = checkParam('name');
+        $full_word             = checkParam('full_word') ?? 'false';
+        $sort_by               = checkParam('sort_by') ?? 'name';
 
         // Caching Logic
         $cache_string = 'v' . $this->v . '_languages_' . $code.$full_word.$name.$sort_by;
@@ -137,10 +137,10 @@ class LanguageController extends APIController
         }
 
         // Get and set variables from Params. Both are optional.
-        $sort_by            = checkParam('sort_by', null, 'optional');
-        $lang_code          = checkParam('lang_code', null, 'optional');
-        $country_code       = checkParam('country_code', null, 'optional');
-        $country_additional = checkParam('additional', null, 'optional');
+        $sort_by            = checkParam('sort_by');
+        $lang_code          = checkParam('lang_code');
+        $country_code       = checkParam('country_code');
+        $country_additional = checkParam('additional');
         $cache_string       = 'v2_country_lang_' . $sort_by . $lang_code . $country_code . $country_additional;
 
         $countryLang = \Cache::remember(
@@ -212,11 +212,11 @@ class LanguageController extends APIController
      */
     public function volumeLanguage()
     {
-        // $delivery =  checkParam('delivery', null, 'optional');
-        $iso             = checkParam('language_code', null, 'optional');
-        $root            = checkParam('root', null, 'optional');
-        $media           = checkParam('media', null, 'optional');
-        $organization_id = checkParam('organization_id', null, 'optional');
+        // $delivery =  checkParam('delivery');
+        $iso             = checkParam('language_code');
+        $root            = checkParam('root');
+        $media           = checkParam('media');
+        $organization_id = checkParam('organization_id');
 
 
         $languages = \Cache::remember(
@@ -300,11 +300,11 @@ class LanguageController extends APIController
      */
     public function volumeLanguageFamily()
     {
-        $iso             = checkParam('language_code', null, 'optional');
-        $root            = checkParam('root', null, 'optional');
-        $media           = checkParam('media', null, 'optional');
-        $delivery        = checkParam('delivery', null, 'optional');
-        $organization_id = checkParam('organization_id', null, 'optional');
+        $iso             = checkParam('language_code');
+        $root            = checkParam('root');
+        $media           = checkParam('media');
+        $delivery        = checkParam('delivery');
+        $organization_id = checkParam('organization_id');
 
         $access_control = $this->accessControl($this->key, 'api');
 

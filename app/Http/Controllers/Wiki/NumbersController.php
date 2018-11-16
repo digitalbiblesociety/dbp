@@ -56,9 +56,9 @@ class NumbersController extends APIController
      */
     public function customRange()
     {
-        $script = checkParam('script');
-        $start  = checkParam('start', null, 'optional');
-        $end    = checkParam('end', null, 'optional');
+        $script = checkParam('script', true);
+        $start  = checkParam('start');
+        $end    = checkParam('end');
         if (($end - $start) > 2000) {
             return $this->replyWithError(trans('api.numerals_range_error', ['num' => $end]));
         }

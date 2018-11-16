@@ -39,9 +39,9 @@ class BibleEquivalentsController extends APIController
     public function index()
     {
         // Check Params
-        $type     = checkParam('type', null, 'optional');
-        $org_id   = checkParam('organization_id', null, 'optional');
-        $bible_id = checkParam('bible_id', null, 'optional');
+        $type     = checkParam('type');
+        $org_id   = checkParam('organization_id');
+        $bible_id = checkParam('bible_id');
 
         // Fetch Bible Equivalents
         $bible_equivalents = BibleEquivalent::when($type, function ($q) use ($type) {

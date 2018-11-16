@@ -20,7 +20,7 @@ trait AccessControlAPI
     public function accessControl($api_key, $type = 'api')
     {
 
-        $user_location = checkParam('ip_address', null, 'optional');
+        $user_location = checkParam('ip_address');
         $user_location = geoip($user_location);
         if (!isset($user_location->iso_code)) {
             $user_location->iso_code   = 'unset';

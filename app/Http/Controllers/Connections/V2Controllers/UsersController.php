@@ -79,7 +79,7 @@ class UsersController extends APIController
     public function login()
     {
         if ($this->hash === request()->hash) {
-            $alt_url = checkParam('alt_url', null, 'optional');
+            $alt_url = checkParam('alt_url');
             $provider = request()->remote_type;
             if ($provider == 'twitter') {
                 return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
@@ -137,7 +137,7 @@ class UsersController extends APIController
      */
     public function annotationList()
     {
-        $count_only = checkParam('count_only', null, 'optional');
+        $count_only = checkParam('count_only');
         $user_id = checkParam('user_id');
         $user = User::withCount('notes', 'highlights', 'bookmarks')->where('id', $user_id)->first();
 
@@ -161,8 +161,8 @@ class UsersController extends APIController
      */
     public function annotationBookmark()
     {
-        $limit   = checkParam('limit', null, 'optional') ?? 1000;
-        $offset  = checkParam('offset', null, 'optional') ?? 0;
+        $limit   = checkParam('limit') ?? 1000;
+        $offset  = checkParam('offset') ?? 0;
         $user_id = checkParam('user_id');
 
         $bookmarks = \DB::table('user_bookmarks')
@@ -230,11 +230,11 @@ class UsersController extends APIController
      */
     public function annotationHighlight()
     {
-        $fileset_id = checkParam('dam_id', null, 'optional');
+        $fileset_id = checkParam('dam_id');
         $bible_id = BibleFileset::where('id', $fileset_id)->first()->id ?? strtoupper(substr($fileset_id, 0, 6));
-        $limit = checkParam('limit', null, 'optional') ?? 1000;
+        $limit = checkParam('limit') ?? 1000;
 
-        if (checkParam('hash') === $this->hash) {
+        if (checkParam('hash', true) === $this->hash) {
             $user_id = checkParam('user_id');
             $highlights = Highlight::with('color')->where('user_id', $user_id)
                 ->join(config('database.connections.dbp.database').'.bible_books', function ($join) {
@@ -315,9 +315,9 @@ class UsersController extends APIController
      */
     public function annotationNote()
     {
-        if ($this->hash === checkParam('hash')) {
-            $user_id = checkParam('user_id', null, 'optional');
-            $updated = checkParam('updated', null, 'optional') ?? Carbon::createFromDate(1969);
+        if ($this->hash === checkParam('hash', true)) {
+            $user_id = checkParam('user_id');
+            $updated = checkParam('updated') ?? Carbon::createFromDate(1969);
             $notes = Note::with('book:id,id_osis,book_testament')->where('user_id', $user_id)->where('updated_at', '>', $updated)->get();
 
             return $this->reply(fractal($notes, NoteTransformer::class, NoteArraySerializer::class));

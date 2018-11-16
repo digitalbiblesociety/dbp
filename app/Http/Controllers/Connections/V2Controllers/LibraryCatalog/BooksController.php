@@ -49,7 +49,7 @@ class BooksController extends APIController
     public function book()
     {
         $id        = checkParam('dam_id');
-        $asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
         $fileset   = BibleFileset::with('bible')->where('asset_id', $asset_id)
                         ->where('id', $id)
@@ -120,7 +120,7 @@ class BooksController extends APIController
     public function bookOrder()
     {
         $id        = checkParam('dam_id');
-        $asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
         $fileset   = BibleFileset::with('bible')->where('id', $id)->orWhere('id', substr($id, 0, -4))->orWhere('id', substr($id, 0, -2))->where('asset_id', $asset_id)->first();
         if (!$fileset) {
@@ -273,7 +273,7 @@ class BooksController extends APIController
         }
 
         $id        = checkParam('dam_id');
-        $asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $book_id   = checkParam('book_id');
 
 

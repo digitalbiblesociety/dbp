@@ -58,9 +58,9 @@ class UserBookmarksController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $book_id = checkParam('book_id', null, 'optional');
-        $chapter = checkParam('chapter|chapter_id', null, 'optional');
-        $limit        = (int) (checkParam('limit', null, 'optional') ?? 25);
+        $book_id = checkParam('book_id');
+        $chapter = checkParam('chapter|chapter_id');
+        $limit        = (int) (checkParam('limit') ?? 25);
 
         $bookmarks = Bookmark::with('tags')->where('user_id', $user_id)
             ->when($book_id, function ($q) use ($book_id) {

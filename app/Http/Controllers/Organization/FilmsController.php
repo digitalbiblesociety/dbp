@@ -115,12 +115,12 @@ class FilmsController extends APIController
         }
 
         $bible_id      = checkParam('dam_id|fileset_id');
-        // $encoding      = checkParam('encoding', null, 'optional');
-        // $resolution    = checkParam('resolution', null, 'optional');
-        // $segment_order = checkParam('segment_order', null, 'optional');
-        // $book_id       = checkParam('book_id', null, 'optional');
-        // $chapter_id    = checkParam('chapter_id', null, 'optional');
-        // $verse_id      = checkParam('verse_id', null, 'optional');
+        // $encoding      = checkParam('encoding');
+        // $resolution    = checkParam('resolution');
+        // $segment_order = checkParam('segment_order');
+        // $book_id       = checkParam('book_id');
+        // $chapter_id    = checkParam('chapter_id');
+        // $verse_id      = checkParam('verse_id');
 
         $films = Video::with([
             'book',

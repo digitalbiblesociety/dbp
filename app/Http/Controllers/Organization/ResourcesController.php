@@ -24,7 +24,7 @@ class ResourcesController extends APIController
         if (!$this->api) {
             return view('resources.index');
         }
-        $iso             = checkParam('iso', null, 'optional');
+        $iso             = checkParam('iso');
         $language        = null;
         if ($iso) {
             $language        = Language::where('iso', $iso)->with('dialects')->first();
@@ -32,9 +32,9 @@ class ResourcesController extends APIController
                 return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
             }
         }
-        $limit           = checkParam('limit', null, 'optional') ?? 2000;
-        $organization    = checkParam('organization_id', null, 'optional');
-        $dialects        = checkParam('include_dialects', null, 'optional');
+        $limit           = checkParam('limit') ?? 2000;
+        $organization    = checkParam('organization_id');
+        $dialects        = checkParam('include_dialects');
 
         if ($organization !== null) {
             $organization = Organization::where('id', $organization)->orWhere('slug', $organization)->first();
@@ -187,10 +187,10 @@ class ResourcesController extends APIController
     {
 
         $id         = checkParam('dam_id');
-        $encoding   = checkParam('encoding', null, 'optional');
-        $book_id    = checkParam('book_id', null, 'optional');
-        $chapter_id = checkParam('chapter_id', null, 'optional');
-        $verse_id   = checkParam('verse_id', null, 'optional');
+        $encoding   = checkParam('encoding');
+        $book_id    = checkParam('book_id');
+        $chapter_id = checkParam('chapter_id');
+        $verse_id   = checkParam('verse_id');
 
         $organization = Organization::where('slug', 'the-jesus-film-project')->first();
         $iso          = strtolower(substr($id, 0, 3));

@@ -97,10 +97,10 @@ class UserHighlightsController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $bible_id     = checkParam('bible_id', null, 'optional');
-        $book_id      = checkParam('book_id', null, 'optional');
-        $chapter_id   = checkParam('chapter|chapter_id', null, 'optional');
-        $limit        = (int) (checkParam('limit', null, 'optional') ?? 25);
+        $bible_id     = checkParam('bible_id');
+        $book_id      = checkParam('book_id');
+        $chapter_id   = checkParam('chapter|chapter_id');
+        $limit        = (int) (checkParam('limit') ?? 25);
         $dbp_database = config('database.connections.dbp_users.database');
 
         $highlights = Highlight::with('color')->with('tags')->where('user_id', $user_id)

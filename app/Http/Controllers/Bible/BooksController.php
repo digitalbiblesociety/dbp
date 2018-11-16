@@ -106,7 +106,7 @@ class BooksController extends APIController
     public function show($id)
     {
         $fileset_type = checkParam('fileset_type');
-        $asset_id = checkParam('asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
         $cache_string = 'bible_books_'.$id.$fileset_type.$asset_id;
         $books = \Cache::remember($cache_string, 2400, function () use ($fileset_type, $asset_id, $id) {

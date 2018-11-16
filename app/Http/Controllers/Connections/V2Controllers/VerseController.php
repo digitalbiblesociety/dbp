@@ -52,7 +52,7 @@ class VerseController extends APIController
         $book_id     = checkParam('book_id');
         $chapter_id  = checkParam('chapter|chapter_id');
         $verse_start = checkParam('verse_start');
-        $verse_end   = checkParam('verse_end', null, 'optional');
+        $verse_end   = checkParam('verse_end');
 
         $bible = Bible::find($bible_id);
         $book  = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->first();

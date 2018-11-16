@@ -53,7 +53,7 @@ class UserHighlightsTransformer extends TransformerAbstract
 
     private function checkColorPreference($highlight)
     {
-        $color_preference = checkParam('prefer_color', null, 'optional') ?? 'rgba';
+        $color_preference = checkParam('prefer_color') ?? 'rgba';
         if ($color_preference === 'hex') {
             $highlight->color = '#'.$highlight->color->hex;
         }

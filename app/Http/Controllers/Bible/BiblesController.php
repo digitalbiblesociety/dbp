@@ -89,20 +89,20 @@ class BiblesController extends APIController
             return view('bibles.index');
         }
 
-        $dam_id             = checkParam('dam_id|fcbh_id|bible_id', null, 'optional');
-        $media              = checkParam('media', null, 'optional');
-        $full_word          = checkParam('full_word|language_name', null, 'optional');
-        $language_code      = checkParam('language_family_code|language_code', null, 'optional');
-        $updated            = checkParam('updated', null, 'optional');
-        $organization       = checkParam('organization_id', null, 'optional');
-        $sort_by            = checkParam('sort_by', null, 'optional');
-        $sort_dir           = checkParam('sort_dir', null, 'optional') ?? 'asc';
-        $fileset_filter     = checkParam('filter_by_fileset', null, 'optional') ?? true;
-        $include_regionInfo = checkParam('include_region_info', null, 'optional');
-        $country            = checkParam('country', null, 'optional');
-        $asset_id           = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
-        $hide_restricted    = checkParam('hide_restricted', null, 'optional') ?? true;
-        $filter             = checkParam('filter', null, 'optional') ?? false;
+        $dam_id             = checkParam('dam_id|fcbh_id|bible_id');
+        $media              = checkParam('media');
+        $full_word          = checkParam('full_word|language_name');
+        $language_code      = checkParam('language_family_code|language_code');
+        $updated            = checkParam('updated');
+        $organization       = checkParam('organization_id');
+        $sort_by            = checkParam('sort_by');
+        $sort_dir           = checkParam('sort_dir') ?? 'asc';
+        $fileset_filter     = checkParam('filter_by_fileset') ?? true;
+        $include_regionInfo = checkParam('include_region_info');
+        $country            = checkParam('country');
+        $asset_id           = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $hide_restricted    = checkParam('hide_restricted') ?? true;
+        $filter             = checkParam('filter') ?? false;
 
         $access_control = $this->accessControl($this->key, 'api');
 
@@ -182,20 +182,20 @@ class BiblesController extends APIController
         if (config('app.env') === 'local') {
             ini_set('memory_limit', '864M');
         }
-        $iso                = checkParam('iso', null, 'optional');
-        $organization_id    = checkParam('organization_id', null, 'optional');
+        $iso                = checkParam('iso');
+        $organization_id    = checkParam('organization_id');
         $organization = '';
         if ($organization_id) {
             $organization = (!is_numeric($organization_id)) ? Organization::with('relationships')->orWhere('slug', $organization_id)->first() : Organization::with('relationships')->where('id', $organization_id)->first();
             $organization_id = $organization->relationships->where('type', 'member')->pluck('organization_child_id');
             $organization_id->push($organization->id);
         }
-        $country              = checkParam('country', null, 'optional');
-        $include_regionInfo   = checkParam('include_region_info', null, 'optional');
-        $include_linkedBibles = checkParam('include_linked_bibles', null, 'optional');
-        $dialects             = checkParam('include_dialects', null, 'optional');
+        $country              = checkParam('country');
+        $include_regionInfo   = checkParam('include_region_info');
+        $include_linkedBibles = checkParam('include_linked_bibles');
+        $dialects             = checkParam('include_dialects');
         $language             = null;
-        $asset_id             = checkParam('bucket|bucket_id|asset_id', null, 'optional');
+        $asset_id             = checkParam('bucket|bucket_id|asset_id');
 
         if ($iso) {
             $language = Language::where('iso', $iso)->with('dialects')->first();
@@ -369,7 +369,7 @@ class BiblesController extends APIController
         }
 
         $book_id = checkParam('book_id', $book_id, 'optional');
-        $testament = checkParam('testament', null, 'optional');
+        $testament = checkParam('testament');
 
         $bible = Bible::find($bible_id);
         $bible_books = BibleBook::where('bible_id', $bible_id)->select('book_id')->distinct()->get()->pluck('book_id');

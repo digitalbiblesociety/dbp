@@ -26,15 +26,15 @@ class OrganizationsController extends APIController
             return view('dashboard.organizations.index', compact('user'));
         }
 
-        $i10n        = checkParam('iso', null, 'optional') ?? 'eng';
+        $i10n        = checkParam('iso') ?? 'eng';
         $i10n_language     = Language::where('iso', $i10n)->first();
         if (!$i10n_language) {
             return $this->setStatusCode(404)->replyWithError(trans('api.i10n_errors_404', ['id' => $i10n]));
         }
-        $membership  = checkParam('membership', null, 'optional');
-        $content     = checkParam('has_content', null, 'optional');
-        $bibles      = checkParam('bibles', null, 'optional');
-        $resources   = checkParam('resources', null, 'optional');
+        $membership  = checkParam('membership');
+        $content     = checkParam('has_content');
+        $bibles      = checkParam('bibles');
+        $resources   = checkParam('resources');
 
         $cache_string = $this->v . 'organizations' . $i10n . $membership . $content . $bibles .$resources;
 
@@ -93,7 +93,7 @@ class OrganizationsController extends APIController
      */
     public function show($slug)
     {
-        $i10n           = checkParam('iso', null, 'optional') ?? 'eng';
+        $i10n           = checkParam('iso') ?? 'eng';
         $i10n_language  = Language::where('iso', $i10n)->first();
         if (!$i10n_language) {
             return $this->setStatusCode(404)->replyWithError(trans('api.i10n_errors_404', ['id' => $i10n]));

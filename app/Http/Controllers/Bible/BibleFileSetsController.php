@@ -61,12 +61,12 @@ class BibleFileSetsController extends APIController
     public function show($id = null)
     {
         //if (!$this->api) return view('bibles.filesets.index');
-        $fileset_id    = checkParam('dam_id|fileset_id', $id);
-        $book_id       = checkParam('book_id', null, 'optional');
-        $chapter_id    = checkParam('chapter_id', null, 'optional');
-        $asset_id      = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
-        $versification = checkParam('versification', null, 'optional');
-        $type          = checkParam('type');
+        $fileset_id    = checkParam('dam_id|fileset_id', true, $id);
+        $book_id       = checkParam('book_id');
+        $chapter_id    = checkParam('chapter_id');
+        $asset_id      = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $versification = checkParam('versification');
+        $type          = checkParam('type', true);
 
         $book = $book_id ? Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first() : null;
         if ($book !== null) {
@@ -178,9 +178,9 @@ class BibleFileSetsController extends APIController
      */
     public function download($id)
     {
-        $set_id    = checkParam('fileset_id', $id);
-        $asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
-        $books     = checkParam('book_ids', null, 'optional');
+        $set_id    = checkParam('fileset_id', true, $id);
+        $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $books     = checkParam('book_ids');
         $files     = null;
 
         $fileset = BibleFileset::where('id', $set_id)->where('asset_id', $asset_id)->first();
@@ -231,7 +231,7 @@ class BibleFileSetsController extends APIController
      */
     public function podcast($id)
     {
-        $asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $asset_id = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $fileset   = BibleFileset::with('translations', 'files.currentTitle', 'bible.books')->where('id', $id)->where('asset_id', $asset_id)->first();
         if (!$fileset) {
             return $this->replyWithError(trans('api.bible_fileset_errors_404'));
@@ -280,9 +280,9 @@ class BibleFileSetsController extends APIController
      */
     public function copyright($id)
     {
-        $iso = checkParam('iso', null, 'optional') ?? 'eng';
-        $type = checkParam('type');
-        $asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? 'dbp-prod';
+        $iso = checkParam('iso') ?? 'eng';
+        $type = checkParam('type', true);
+        $asset_id = checkParam('bucket|bucket_id|asset_id') ?? 'dbp-prod';
 
         $language = Language::where('iso', $iso)->first();
         if (!$language) {

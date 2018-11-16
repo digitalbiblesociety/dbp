@@ -11,14 +11,14 @@ class MobileAppsController extends APIController
     {
         try {
             $device = $this->isMobileDevice();
-            $app    = checkParam('app', null, 'optional') ?? env('DEEPLINKING_APP');
+            $app    = checkParam('app') ?? env('DEEPLINKING_APP');
 
             $data = [];
             if ($device === 'iPhone') {
                 $data['primaryRedirection']  = $app;
-                $data['secndaryRedirection'] = checkParam('app-store', null, 'optional') ?? env('DEEPLINKING_APPSTORE');
+                $data['secndaryRedirection'] = checkParam('app-store') ?? env('DEEPLINKING_APPSTORE');
             } else {
-                $redirect = checkParam('app-site', null, 'optional') ?? env('DEEPLINKING_WEBSITE');
+                $redirect = checkParam('app-site') ?? env('DEEPLINKING_WEBSITE');
 
                 return redirect($redirect);
             }

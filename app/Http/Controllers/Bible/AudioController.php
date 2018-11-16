@@ -39,11 +39,35 @@ class AudioController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="dam_id",     in="path",  description="The DAM ID for which to retrieve file path info.", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Parameter(name="chapter_id", in="query", description="The id for the specified chapter. If chapter is specified only the specified chapter audio information is returned to the caller.", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
-     *     @OA\Parameter(name="encoding",   in="query", description="The audio encoding format desired (No longer in use as Audio Files default to mp3).", @OA\Schema(type="string",title="encoding")),
-     *     @OA\Parameter(name="asset_id",   in="query", description="The bucket desired.", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
-     *     @OA\Parameter(name="book_id",    in="query", description="The USFM 2.4 book ID.", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OA\Parameter(name="dam_id",
+     *         in="path",
+     *         description="The DAM ID for which to retrieve file path info.",
+     *         required=true,
+     *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
+     *     ),
+     *     @OA\Parameter(name="chapter_id",
+     *         in="query",
+     *         @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start"),
+     *         description="If this value is the return will be limited to the provided chapter",
+     *     ),
+     *     @OA\Parameter(
+     *         name="encoding",
+     *         in="query",
+     *         depreciated=true,
+     *         @OA\Schema(type="string",title="encoding"),
+     *         description="The audio encoding format desired (No longer in use as Audio Files default to mp3)."
+     *     ),
+     *     @OA\Parameter(
+     *         name="asset_id",
+     *         in="query",
+     *         @OA\Schema(ref="#/components/schemas/Asset/properties/id"),
+     *         description="The asset id that contains the resource."
+     *     ),
+     *     @OA\Parameter(name="book_id",
+     *         in="query",
+     *         @OA\Schema(ref="#/components/schemas/Book/properties/id"),
+     *         description="The USFM 2.4 book ID."
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -57,10 +81,10 @@ class AudioController extends APIController
     public function index()
     {
         // Check Params
-        $fileset_id = checkParam('dam_id', null, 'optional');
-        $chapter_id = checkParam('chapter_id', null, 'optional');
-        $book_id    = checkParam('book_id', null, 'optional');
-        $asset_id   = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $fileset_id = checkParam('dam_id');
+        $chapter_id = checkParam('chapter_id');
+        $book_id    = checkParam('book_id');
+        $asset_id   = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
         // Account for various book ids
         if ($book_id) {
@@ -217,8 +241,8 @@ class AudioController extends APIController
         // Check Params
         $audio_fileset_id = checkParam('audio_fileset_id');
         $text_fileset_id  = checkParam('text_fileset_id');
-        $book_id          = checkParam('book_id', null, 'optional');
-        $query            = checkParam('query');
+        $book_id          = checkParam('book_id');
+        $query            = checkParam('query', true);
 
         // Fetch Fileset & Books
         $audio_fileset = BibleFileset::where('set_type_code', 'LIKE', 'audio%')->where('id', $audio_fileset_id)->first();

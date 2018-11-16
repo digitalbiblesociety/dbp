@@ -45,8 +45,8 @@ class LibraryMetadataController extends APIController
             ini_set('memory_limit', '864M');
         }
 
-        $fileset_id = checkParam('dam_id', null, 'optional');
-        $asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $fileset_id = checkParam('dam_id');
+        $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
         if (config('app.env') === 'local') {
             Cache::forget('v2_library_metadata' . $fileset_id);
