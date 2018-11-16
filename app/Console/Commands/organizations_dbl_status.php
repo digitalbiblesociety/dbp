@@ -55,7 +55,7 @@ class organizations_dbl_status extends Command
     {
 	    $organizations = json_decode(file_get_contents(storage_path("data/organizations/organizations_dbl.json")));
 	    $organizations = collect($organizations->orgs);
-	    $relationships = OrganizationRelationship::with('child_organization')->whereIn('relationship_id',$organizations->pluck('id'))->get();
+	    $relationships = OrganizationRelationship::with('childOrganization')->whereIn('relationship_id',$organizations->pluck('id'))->get();
 	    foreach($organizations as $organization) {
 	    	//$relationship = $relationships->where('relationship_id',)
 	    }

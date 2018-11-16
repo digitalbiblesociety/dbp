@@ -20,55 +20,54 @@ use App\Models\Language\Language;
  */
 class CountryLanguage extends Model
 {
-	protected $connection = 'dbp';
+    protected $connection = 'dbp';
     protected $table = 'country_language';
-	public $timestamps = false;
-	public $incrementing = false;
+    public $timestamps = false;
+    public $incrementing = false;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="continent ID",
-	 *     description="The continent code for the country",
-	 *     type="string",
-	 *     minLength=2,
-	 *     maxLength=2,
-	 *     example="EU"
-	 * )
-	 *
-	 * @method static CountryLanguage whereCountryId($value)
-	 * @property string $country_id
-	 */
-	protected $country_id;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="language_id",
-	 *     description="The language_id for the speakers",
-	 *     type="integer"
-	 * )
-	 *
-	 * @method static CountryLanguage whereLanguageId($value)
-	 * @property int $language_id
-	 */
-	protected $language_id;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="population",
-	 *     description="The population of the speakers",
-	 *     type="integer",
-	 *     example=20699
-	 * )
-	 *
-	 * @method static CountryLanguage wherePopulation($value)
-	 * @property int $population
-	 */
-	protected $population;
+    /**
+     *
+     * @OA\Property(
+     *     title="continent ID",
+     *     description="The continent code for the country",
+     *     type="string",
+     *     minLength=2,
+     *     maxLength=2,
+     *     example="EU"
+     * )
+     *
+     * @method static CountryLanguage whereCountryId($value)
+     * @property string $country_id
+     */
+    protected $country_id;
+    /**
+     *
+     * @OA\Property(
+     *     title="language_id",
+     *     description="The language_id for the speakers",
+     *     type="integer"
+     * )
+     *
+     * @method static CountryLanguage whereLanguageId($value)
+     * @property int $language_id
+     */
+    protected $language_id;
+    /**
+     *
+     * @OA\Property(
+     *     title="population",
+     *     description="The population of the speakers",
+     *     type="integer",
+     *     example=20699
+     * )
+     *
+     * @method static CountryLanguage wherePopulation($value)
+     * @property int $population
+     */
+    protected $population;
 
-	public function language()
-	{
-		return $this->belongsTo(Language::class);
-	}
-
+    public function language()
+    {
+        return $this->belongsTo(Language::class);
+    }
 }

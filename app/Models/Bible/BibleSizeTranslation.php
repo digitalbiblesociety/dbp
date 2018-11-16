@@ -25,9 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BibleSizeTranslation extends Model
 {
-	protected $connection = 'dbp';
-	protected $table = 'bible_size_translations';
+    protected $connection = 'dbp';
+    protected $table = 'bible_size_translations';
 
-	protected $set_size_code;
-
+    protected $set_size_code;
 }

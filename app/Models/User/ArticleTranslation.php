@@ -28,18 +28,16 @@ use Carbon\Carbon;
  */
 class ArticleTranslation extends Model
 {
-	protected $connection = 'dbp_users';
-	public $fillable = ['iso','name','body'];
+    protected $connection = 'dbp_users';
+    public $fillable = ['iso','name','body'];
 
-	public function getSlugAttribute()
-	{
-		return str_slug($this->name);
-	}
+    public function getSlugAttribute()
+    {
+        return str_slug($this->name);
+    }
 
-	public function article()
-	{
-		return $this->belongsTo(Article::class);
-	}
-
-
+    public function article()
+    {
+        return $this->belongsTo(Article::class);
+    }
 }

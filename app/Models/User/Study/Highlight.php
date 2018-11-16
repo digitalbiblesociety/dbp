@@ -42,118 +42,117 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Highlight extends Model
 {
-	protected $connection = 'dbp_users';
+    protected $connection = 'dbp_users';
     public $table = 'user_highlights';
     protected $fillable = ['user_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','highlight_start','highlighted_words','highlighted_color','reference'];
     protected $hidden = ['user_id','project_id'];
 
      /**
       *
-	  * @OA\Property(
-	  *   title="id",
-	  *   type="integer",
-	  *   description="The highlight id",
+      * @OA\Property(
+      *   title="id",
+      *   type="integer",
+      *   description="The highlight id",
       *   minimum=0
-	  * )
+      * )
       *
       */
-     protected $id;
+    protected $id;
      /**
       *
-	  * @OA\Property(
-	  *   title="user_id",
-	  *   type="string",
-	  *   description="The user that created the highlight"
-	  * )
+      * @OA\Property(
+      *   title="user_id",
+      *   type="string",
+      *   description="The user that created the highlight"
+      * )
       *
       */
-     protected $user_id;
+    protected $user_id;
      /**
       *
       * @OA\Property(ref="#/components/schemas/BibleFileset/properties/id")
       */
-     protected $bible_id;
+    protected $bible_id;
      /**
       *
       * @OA\Property(ref="#/components/schemas/Book/properties/id")
       */
-     protected $book_id;
+    protected $book_id;
      /**
       *
       * @OA\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
       */
-     protected $chapter;
+    protected $chapter;
      /**
       *
-	  * @OA\Property(
-	  *   title="highlighted_color",
-	  *   type="string",
-	  *   description="The highlight's highlighted color in either hex, rgb, or rgba notation.",
+      * @OA\Property(
+      *   title="highlighted_color",
+      *   type="string",
+      *   description="The highlight's highlighted color in either hex, rgb, or rgba notation.",
       *   example="#4488bb"
-	  * )
+      * )
       *
       */
-     protected $highlighted_color;
+    protected $highlighted_color;
      /**
       *
       * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
       */
-     protected $verse_start;
+    protected $verse_start;
 
-	/**
-	 *
-	 * @OA\Property(type="string")
-	 * @method static Highlight whereReference($value)
-	 */
-	protected $reference;
+    /**
+     *
+     * @OA\Property(type="string")
+     * @method static Highlight whereReference($value)
+     */
+    protected $reference;
 
      /**
       *
       * @OA\Property(ref="#/components/schemas/Project/properties/id")
       */
-     protected $project_id;
+    protected $project_id;
      /**
       *
-	  * @OA\Property(
-	  *   title="highlight_start",
-	  *   type="integer",
-	  *   description="The number of words from the beginning of the verse to start the highlight at. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
+      * @OA\Property(
+      *   title="highlight_start",
+      *   type="integer",
+      *   description="The number of words from the beginning of the verse to start the highlight at. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
       *   minimum=0
-	  * )
+      * )
       *
       */
-     protected $highlight_start;
+    protected $highlight_start;
      /**
       *
-	  * @OA\Property(
-	  *   title="highlighted_words",
-	  *   type="string",
+      * @OA\Property(
+      *   title="highlighted_words",
+      *   type="string",
       *   description="The number of words being highlighted. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
-	  * )
+      * )
       *
       */
-     protected $highlighted_words;
+    protected $highlighted_words;
 
 
 
-     public function color()
-     {
-     	return $this->belongsTo(HighlightColor::class,'highlighted_color','id');
-     }
+    public function color()
+    {
+        return $this->belongsTo(HighlightColor::class, 'highlighted_color', 'id');
+    }
 
-     public function fileset()
-     {
-     	return $this->belongsTo(BibleFileset::class);
-     }
+    public function fileset()
+    {
+        return $this->belongsTo(BibleFileset::class);
+    }
 
-     public function book()
-     {
-     	return $this->hasOne(BibleBook::class,'book_id','book_id');
-     }
+    public function book()
+    {
+        return $this->hasOne(BibleBook::class, 'book_id', 'book_id');
+    }
 
-	public function tags()
-	{
-		return $this->hasMany(AnnotationTag::class,'highlight_id','id');
-	}
-
+    public function tags()
+    {
+        return $this->hasMany(AnnotationTag::class, 'highlight_id', 'id');
+    }
 }

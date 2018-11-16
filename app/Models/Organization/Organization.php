@@ -82,255 +82,255 @@ use App\Traits\Uuids;
  */
 class Organization extends Model
 {
-	protected $connection = 'dbp';
-	// The attributes excluded from the model's JSON form.
-	protected $hidden = ['logo','facebook','twitter','id','code','created_at','updated_at','notes'];
+    protected $connection = 'dbp';
+    // The attributes excluded from the model's JSON form.
+    protected $hidden = ['logo','facebook','twitter','id','code','created_at','updated_at','notes'];
     protected $fillable = ['name', 'email', 'password','facebook','twitter','website','address','phone'];
 
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="id",
-	 *     description="The Organization's incrementing id",
-	 *     type="integer",
-	 *     minimum=0
-	 * )
-	 *
-	 */
-	protected $id;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="slug",
-	 *     description="The Organization's slug",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $slug;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="abbreviation",
-	 *     description="The Organization's abbreviation",
-	 *     type="string",
-	 *     maxLength=6,
-	 *     nullable=true
-	 * )
-	 *
-	 */
-	protected $abbreviation;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="notes",
-	 *     description="Archivist notes about the organization being described",
-	 *     type="string",
-	 *     nullable=true
-	 * )
-	 *
-	 */
-	protected $notes;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="primaryColor",
-	 *     description="The Organization's primary color derived from their logo",
-	 *     type="string",
-	 *     maxLength=7,
-	 *     minLength=7,
-	 *     nullable=true
-	 * )
-	 *
-	 */
-	protected $primaryColor;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="secondaryColor",
-	 *     description="The Organization's secondary color derived from their logo",
-	 *     type="string",
-	 *     maxLength=7,
-	 *     minLength=7,
-	 *     nullable=true
-	 * )
-	 *
-	 */
-	protected $secondaryColor;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="inactive",
-	 *     description="If the organization has not responded to several attempts to contact this value will be set to true",
-	 *     type="boolean",
-	 *     nullable=true
-	 * )
-	 *
-	 */
-	protected $inactive;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="url_facebook",
-	 *     description="The URL to the organization's facebook page",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $url_facebook;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="url_website",
-	 *     description="The url to the Organization's website",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $url_website;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="url_donate",
-	 *     description="The url to the organization's donation page",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $url_donate;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="url_twitter",
-	 *     description="The url to the organization's twitter page",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $url_twitter;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="address",
-	 *     description="The Organization's address",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $address;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="address2",
-	 *     description="The Organization's second line of the address",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $address2;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="city",
-	 *     description="The organization's city",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $city;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="state",
-	 *     description="The Organization's state",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $state;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="country",
-	 *     description="ThThe Organization's country",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $country;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="zip",
-	 *     description="The Organization's zip",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $zip;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="phone",
-	 *     description="The Organization's phone number",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $phone;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="email",
-	 *     description="The Organization's email address",
-	 *     type="string",
-	 *     maxLength=191
-	 * )
-	 *
-	 */
-	protected $email;
+    /**
+     *
+     * @OA\Property(
+     *     title="id",
+     *     description="The Organization's incrementing id",
+     *     type="integer",
+     *     minimum=0
+     * )
+     *
+     */
+    protected $id;
+    /**
+     *
+     * @OA\Property(
+     *     title="slug",
+     *     description="The Organization's slug",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $slug;
+    /**
+     *
+     * @OA\Property(
+     *     title="abbreviation",
+     *     description="The Organization's abbreviation",
+     *     type="string",
+     *     maxLength=6,
+     *     nullable=true
+     * )
+     *
+     */
+    protected $abbreviation;
+    /**
+     *
+     * @OA\Property(
+     *     title="notes",
+     *     description="Archivist notes about the organization being described",
+     *     type="string",
+     *     nullable=true
+     * )
+     *
+     */
+    protected $notes;
+    /**
+     *
+     * @OA\Property(
+     *     title="primaryColor",
+     *     description="The Organization's primary color derived from their logo",
+     *     type="string",
+     *     maxLength=7,
+     *     minLength=7,
+     *     nullable=true
+     * )
+     *
+     */
+    protected $primaryColor;
+    /**
+     *
+     * @OA\Property(
+     *     title="secondaryColor",
+     *     description="The Organization's secondary color derived from their logo",
+     *     type="string",
+     *     maxLength=7,
+     *     minLength=7,
+     *     nullable=true
+     * )
+     *
+     */
+    protected $secondaryColor;
+    /**
+     *
+     * @OA\Property(
+     *     title="inactive",
+     *     description="If the organization has not responded to several attempts to contact this value will be set to true",
+     *     type="boolean",
+     *     nullable=true
+     * )
+     *
+     */
+    protected $inactive;
+    /**
+     *
+     * @OA\Property(
+     *     title="url_facebook",
+     *     description="The URL to the organization's facebook page",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $url_facebook;
+    /**
+     *
+     * @OA\Property(
+     *     title="url_website",
+     *     description="The url to the Organization's website",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $url_website;
+    /**
+     *
+     * @OA\Property(
+     *     title="url_donate",
+     *     description="The url to the organization's donation page",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $url_donate;
+    /**
+     *
+     * @OA\Property(
+     *     title="url_twitter",
+     *     description="The url to the organization's twitter page",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $url_twitter;
+    /**
+     *
+     * @OA\Property(
+     *     title="address",
+     *     description="The Organization's address",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $address;
+    /**
+     *
+     * @OA\Property(
+     *     title="address2",
+     *     description="The Organization's second line of the address",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $address2;
+    /**
+     *
+     * @OA\Property(
+     *     title="city",
+     *     description="The organization's city",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $city;
+    /**
+     *
+     * @OA\Property(
+     *     title="state",
+     *     description="The Organization's state",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $state;
+    /**
+     *
+     * @OA\Property(
+     *     title="country",
+     *     description="ThThe Organization's country",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $country;
+    /**
+     *
+     * @OA\Property(
+     *     title="zip",
+     *     description="The Organization's zip",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $zip;
+    /**
+     *
+     * @OA\Property(
+     *     title="phone",
+     *     description="The Organization's phone number",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $phone;
+    /**
+     *
+     * @OA\Property(
+     *     title="email",
+     *     description="The Organization's email address",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
+    protected $email;
 
     public function translations()
     {
-        return $this->hasMany(OrganizationTranslation::class,'organization_id','id');
+        return $this->hasMany(OrganizationTranslation::class, 'organization_id', 'id');
     }
 
     public function currentTranslation()
     {
-        return $this->hasOne(OrganizationTranslation::class,'organization_id','id')->where('language_id',$GLOBALS['i18n_id']);
+        return $this->hasOne(OrganizationTranslation::class, 'organization_id', 'id')->where('language_id', $GLOBALS['i18n_id']);
     }
 
-	public function vernacularTranslation()
-	{
-		return $this->hasOne(OrganizationTranslation::class)->where('vernacular',1);
-	}
+    public function vernacularTranslation()
+    {
+        return $this->hasOne(OrganizationTranslation::class)->where('vernacular', 1);
+    }
 
     public function bibles()
     {
-        return $this->belongsToMany(Bible::class,'bible_organizations');
+        return $this->belongsToMany(Bible::class, 'bible_organizations');
     }
 
-	public function links()
-	{
-		return $this->hasMany(BibleLink::class,'provider','slug');
-	}
+    public function links()
+    {
+        return $this->hasMany(BibleLink::class, 'provider', 'slug');
+    }
 
-	// TODO FIX This
+    // TODO FIX This
     public function filesets()
     {
-    	return $this->hasManyThrough(BibleFilesetConnection::class, BibleFileset::class);
+        return $this->hasManyThrough(BibleFilesetConnection::class, BibleFileset::class);
     }
 
     public function resources()
@@ -338,34 +338,33 @@ class Organization extends Model
         return $this->hasMany(Resource::class, 'organization_id', 'id');
     }
 
-	public function logos()
-	{
-		return $this->hasMany(OrganizationLogo::class);
-	}
+    public function logos()
+    {
+        return $this->hasMany(OrganizationLogo::class);
+    }
 
-	public function logo()
-	{
-		return $this->hasOne(OrganizationLogo::class,'organization_id','id');
-	}
+    public function logo()
+    {
+        return $this->hasOne(OrganizationLogo::class, 'organization_id', 'id');
+    }
 
-	public function logoIcon()
-	{
-		return $this->hasOne(OrganizationLogo::class,'organization_id','id')->where('icon',1);
-	}
+    public function logoIcon()
+    {
+        return $this->hasOne(OrganizationLogo::class, 'organization_id', 'id')->where('icon', 1);
+    }
 
-	public function members()
-	{
-		return $this->hasMany(Role::class);
-	}
+    public function members()
+    {
+        return $this->hasMany(Role::class);
+    }
 
-	public function relationships()
-	{
-		return $this->hasMany(OrganizationRelationship::class, 'organization_child_id');
-	}
+    public function relationships()
+    {
+        return $this->hasMany(OrganizationRelationship::class, 'organization_child_id');
+    }
 
-	public function memberships()
-	{
-		return $this->hasMany(OrganizationRelationship::class, 'organization_parent_id');
-	}
-
+    public function memberships()
+    {
+        return $this->hasMany(OrganizationRelationship::class, 'organization_parent_id');
+    }
 }

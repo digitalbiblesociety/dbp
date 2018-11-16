@@ -18,16 +18,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProjectMember extends Model
 {
-	protected $connection = 'dbp_users';
-	protected $table = 'dbp_users.project_members';
+    protected $connection = 'dbp_users';
+    protected $table = 'dbp_users.project_members';
     protected $fillable = ['project_id','user_id','role_id','subscribed','token'];
     public $incrementing = false;
     public $keyType = 'string';
     public $primaryKey = 'user_id';
     public $timestamps = false;
 
-	/**
-	 *
+    /**
+     *
      * @OA\Property(
      *   title="user_id",
      *   type="integer",
@@ -35,11 +35,11 @@ class ProjectMember extends Model
      *   minimum=0,
      *   example="4"
      * )
-	 *
-	 */
-	protected $user_id;
-	/**
-	 *
+     *
+     */
+    protected $user_id;
+    /**
+     *
      * @OA\Property(
      *   title="project_id",
      *   type="integer",
@@ -47,11 +47,11 @@ class ProjectMember extends Model
      *   minimum=0,
      *   example="4"
      * )
-	 *
-	 */
-	protected $project_id;
-	/**
-	 *
+     *
+     */
+    protected $project_id;
+    /**
+     *
      * @OA\Property(
      *   title="Role ID",
      *   type="integer",
@@ -59,11 +59,11 @@ class ProjectMember extends Model
      *   minimum=0,
      *   example="4"
      * )
-	 *
-	 */
-	protected $role_id;
-	/**
-	 *
+     *
+     */
+    protected $role_id;
+    /**
+     *
      * @OA\Property(
      *   title="subscribed",
      *   type="integer",
@@ -71,24 +71,23 @@ class ProjectMember extends Model
      *   minimum=0,
      *   example="4"
      * )
-	 *
-	 */
-	protected $subscribed;
+     *
+     */
+    protected $subscribed;
 
 
-	public function user()
-	{
-		return $this->hasOne(User::class,'id','user_id');
-	}
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 
-	public function project()
-	{
-		return $this->belongsTo(Project::class);
-	}
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
 
-	public function role()
-	{
-		return $this->belongsTo(Role::class);
-	}
-
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
 }

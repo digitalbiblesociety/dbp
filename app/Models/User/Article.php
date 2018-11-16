@@ -28,22 +28,21 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Article extends Model
 {
-	protected $connection = 'dbp_users';
+    protected $connection = 'dbp_users';
     protected $fillable = ['title','description','cover','cover_thumbnail'];
 
     public function translations()
     {
-    	return $this->hasMany(ArticleTranslation::class);
+        return $this->hasMany(ArticleTranslation::class);
     }
 
     public function tags()
     {
-    	return $this->hasMany(ArticleTag::class);
+        return $this->hasMany(ArticleTag::class);
     }
 
     public function currentTranslation()
     {
-    	return $this->hasOne(ArticleTranslation::class)->where('iso',\App::getLocale());
+        return $this->hasOne(ArticleTranslation::class)->where('iso', \App::getLocale());
     }
-
 }

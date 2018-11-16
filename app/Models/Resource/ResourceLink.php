@@ -34,66 +34,65 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ResourceLink extends Model
 {
-	protected $connection = 'dbp';
-	protected $hidden = ['created_at','updated_at', 'resource_id'];
+    protected $connection = 'dbp';
+    protected $hidden = ['created_at','updated_at', 'resource_id'];
 
-	/**
-	 *
-	 * @OA\Property(ref="#/components/schemas/Resource/properties/id")
-	 *
-	 */
-	protected $resource_id;
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/Resource/properties/id")
+     *
+     */
+    protected $resource_id;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="type",
-	 *   type="string",
-	 *   description="The type of media the resource can be categorized as",
-	 *   nullable=true
-	 * )
-	 *
-	 */
-	protected $title;
+    /**
+     *
+     * @OA\Property(
+     *   title="type",
+     *   type="string",
+     *   description="The type of media the resource can be categorized as",
+     *   nullable=true
+     * )
+     *
+     */
+    protected $title;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="size",
-	 *   type="string",
-	 *   description="The size of the resource measured in kilobytes",
-	 *   nullable=true
-	 * )
-	 *
-	 */
-	protected $size;
+    /**
+     *
+     * @OA\Property(
+     *   title="size",
+     *   type="string",
+     *   description="The size of the resource measured in kilobytes",
+     *   nullable=true
+     * )
+     *
+     */
+    protected $size;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="type",
-	 *   type="string",
-	 *   description="The destination type for the url",
-	 *   nullable=true
-	 * )
-	 *
-	 */
-	protected $type;
+    /**
+     *
+     * @OA\Property(
+     *   title="type",
+     *   type="string",
+     *   description="The destination type for the url",
+     *   nullable=true
+     * )
+     *
+     */
+    protected $type;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="url",
-	 *   type="string",
-	 *   description="The link for the url"
-	 * )
-	 *
-	 */
-	protected $url;
+    /**
+     *
+     * @OA\Property(
+     *   title="url",
+     *   type="string",
+     *   description="The link for the url"
+     * )
+     *
+     */
+    protected $url;
 
-	public function resource()
-	{
-		return $this->belongsTo(Resource::class);
-	}
-
+    public function resource()
+    {
+        return $this->belongsTo(Resource::class);
+    }
 }

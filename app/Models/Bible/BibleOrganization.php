@@ -32,63 +32,62 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BibleOrganization extends Model
 {
-	protected $connection = 'dbp';
+    protected $connection = 'dbp';
     protected $table = 'bible_organizations';
     public $timestamps = false;
     public $incrementing = false;
 
 
-	/**
-	 *
-	 * @OA\Property(ref="#/components/schemas/Bible/properties/id")
-	 * @var string|null $bible_id
-	 */
-	protected $bible_id;
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/Bible/properties/id")
+     * @var string|null $bible_id
+     */
+    protected $bible_id;
 
-	/**
-	 *
-	 * @OA\Property(ref="#/components/schemas/Organization/properties/id")
-	 * @var
-	 */
-	protected $organization_id;
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/Organization/properties/id")
+     * @var
+     */
+    protected $organization_id;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="relationship_type",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 * @var
-	 */
-	protected $relationship_type;
+    /**
+     *
+     * @OA\Property(
+     *   title="relationship_type",
+     *   type="string",
+     *   description=""
+     * )
+     * @var
+     */
+    protected $relationship_type;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="created_at",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 * @var
-	 */
-	protected $created_at;
+    /**
+     *
+     * @OA\Property(
+     *   title="created_at",
+     *   type="string",
+     *   description=""
+     * )
+     * @var
+     */
+    protected $created_at;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="updated_at",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 * @var
-	 */
-	protected $updated_at;
+    /**
+     *
+     * @OA\Property(
+     *   title="updated_at",
+     *   type="string",
+     *   description=""
+     * )
+     * @var
+     */
+    protected $updated_at;
 
 
-	public function bible()
-	{
-		return $this->belongsTo(Bible::class,'bible_id','id');
-	}
-
+    public function bible()
+    {
+        return $this->belongsTo(Bible::class, 'bible_id', 'id');
+    }
 }

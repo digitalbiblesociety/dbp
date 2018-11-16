@@ -36,138 +36,138 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BibleFileset extends Model
 {
-	protected $connection = 'dbp';
-	public $incrementing = false;
-	protected $keyType = 'string';
-	protected $hidden = ['created_at','updated_at','response_time','hidden','bible_id','hash_id'];
-	protected $fillable = ['name','set_type','organization_id','variation_id','bible_id','set_copyright'];
+    protected $connection = 'dbp';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    protected $hidden = ['created_at','updated_at','response_time','hidden','bible_id','hash_id'];
+    protected $fillable = ['name','set_type','organization_id','variation_id','bible_id','set_copyright'];
 
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="id",
-	 *   type="string",
-	 *   description="The fileset id",
-	 *   minLength=6,
-	 *   maxLength=16
-	 * )
-	 *
-	 */
-	protected $id;
+    /**
+     *
+     * @OA\Property(
+     *   title="id",
+     *   type="string",
+     *   description="The fileset id",
+     *   minLength=6,
+     *   maxLength=16
+     * )
+     *
+     */
+    protected $id;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="hash_id",
-	 *   type="string",
-	 *   description="The hash_id generated from the `bucket_id`, `set_type_code`, and `id`",
-	 *   minLength=12,
-	 *   maxLength=12
-	 * )
-	 *
-	 */
-	protected $hash_id;
+    /**
+     *
+     * @OA\Property(
+     *   title="hash_id",
+     *   type="string",
+     *   description="The hash_id generated from the `bucket_id`, `set_type_code`, and `id`",
+     *   minLength=12,
+     *   maxLength=12
+     * )
+     *
+     */
+    protected $hash_id;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="asset_id",
-	 *   type="string",
-	 *   description="The asset id of the AWS Bucket or CloudFront instance",
-	 *   maxLength=64
-	 * )
-	 *
-	 */
-	protected $asset_id;
+    /**
+     *
+     * @OA\Property(
+     *   title="asset_id",
+     *   type="string",
+     *   description="The asset id of the AWS Bucket or CloudFront instance",
+     *   maxLength=64
+     * )
+     *
+     */
+    protected $asset_id;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="set_type_code",
-	 *   type="string",
-	 *   description="The set_type_code indicating the type of the fileset",
-	 *   maxLength=3
-	 * )
-	 *
-	 */
-	protected $set_type_code;
+    /**
+     *
+     * @OA\Property(
+     *   title="set_type_code",
+     *   type="string",
+     *   description="The set_type_code indicating the type of the fileset",
+     *   maxLength=3
+     * )
+     *
+     */
+    protected $set_type_code;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="set_size_code",
-	 *   type="string",
-	 *   description="The set_size_code indicating the size of the fileset",
-	 *   maxLength=3
-	 * )
-	 *
-	 */
-	protected $set_size_code;
+    /**
+     *
+     * @OA\Property(
+     *   title="set_size_code",
+     *   type="string",
+     *   description="The set_size_code indicating the size of the fileset",
+     *   maxLength=3
+     * )
+     *
+     */
+    protected $set_size_code;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="created_at",
-	 *   type="string",
-	 *   description="The timestamp at which the fileset was originally created"
-	 * )
-	 *
-	 */
-	protected $created_at;
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="updated_at",
-	 *   type="string",
-	 *   description="The timestamp at which the fileset was last updated"
-	 * )
-	 *
-	 */
-	protected $updated_at;
+    /**
+     *
+     * @OA\Property(
+     *   title="created_at",
+     *   type="string",
+     *   description="The timestamp at which the fileset was originally created"
+     * )
+     *
+     */
+    protected $created_at;
+    /**
+     *
+     * @OA\Property(
+     *   title="updated_at",
+     *   type="string",
+     *   description="The timestamp at which the fileset was last updated"
+     * )
+     *
+     */
+    protected $updated_at;
 
-	public function copyright()
-	{
-		return $this->hasOne(BibleFilesetCopyright::class,'hash_id','hash_id');
-	}
-
-	public function copyrightOrganization()
+    public function copyright()
     {
-        return $this->hasMany(BibleFilesetCopyrightOrganization::class,'hash_id','hash_id');
+        return $this->hasOne(BibleFilesetCopyright::class, 'hash_id', 'hash_id');
     }
 
-	public function permissions()
-	{
-		return $this->hasMany(AccessGroupFileset::class,'hash_id','hash_id');
-	}
+    public function copyrightOrganization()
+    {
+        return $this->hasMany(BibleFilesetCopyrightOrganization::class, 'hash_id', 'hash_id');
+    }
 
-	public function bible()
-	{
-		return $this->hasManyThrough(Bible::class,BibleFilesetConnection::class, 'hash_id','id','hash_id','bible_id');
-	}
+    public function permissions()
+    {
+        return $this->hasMany(AccessGroupFileset::class, 'hash_id', 'hash_id');
+    }
 
-	public function translations()
-	{
-		return $this->hasManyThrough(BibleTranslation::class,BibleFilesetConnection::class, 'hash_id','bible_id','hash_id','bible_id');
-	}
+    public function bible()
+    {
+        return $this->hasManyThrough(Bible::class, BibleFilesetConnection::class, 'hash_id', 'id', 'hash_id', 'bible_id');
+    }
 
-	public function connections()
-	{
-		return $this->hasOne(BibleFilesetConnection::class,'hash_id', 'hash_id');
-	}
+    public function translations()
+    {
+        return $this->hasManyThrough(BibleTranslation::class, BibleFilesetConnection::class, 'hash_id', 'bible_id', 'hash_id', 'bible_id');
+    }
 
-	public function organization()
-	{
-		return $this->hasManyThrough(Organization::class,Asset::class,'id','id','asset_id','organization_id');
-	}
+    public function connections()
+    {
+        return $this->hasOne(BibleFilesetConnection::class, 'hash_id', 'hash_id');
+    }
 
-	public function files()
-	{
-		return $this->hasMany(BibleFile::class,'hash_id', 'hash_id');
-	}
+    public function organization()
+    {
+        return $this->hasManyThrough(Organization::class, Asset::class, 'id', 'id', 'asset_id', 'organization_id');
+    }
 
-	public function meta()
-	{
-		return $this->hasMany(BibleFilesetTag::class,'hash_id','hash_id');
-	}
+    public function files()
+    {
+        return $this->hasMany(BibleFile::class, 'hash_id', 'hash_id');
+    }
+
+    public function meta()
+    {
+        return $this->hasMany(BibleFilesetTag::class, 'hash_id', 'hash_id');
+    }
 }

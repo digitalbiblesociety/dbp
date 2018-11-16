@@ -37,80 +37,79 @@ use Carbon\Carbon;
  */
 class AnnotationTag extends Model
 {
-	protected $connection = 'dbp_users';
+    protected $connection = 'dbp_users';
     public $table = 'user_annotation_tags';
-	protected $fillable = ['type','value'];
-	protected $hidden = ['created_at','updated_at'];
+    protected $fillable = ['type','value'];
+    protected $hidden = ['created_at','updated_at'];
 
-	 /**
-	  *
-	  * @OA\Property(
-	  *   title="id",
-	  *   type="integer",
-	  *   description="The unique incrementing id for each NoteTag",
-	  *   minimum=0
-	  * )
-	  *
-	  */
-	 protected $id;
+     /**
+      *
+      * @OA\Property(
+      *   title="id",
+      *   type="integer",
+      *   description="The unique incrementing id for each NoteTag",
+      *   minimum=0
+      * )
+      *
+      */
+    protected $id;
 
-	 /**
-	  * @OA\Property(ref="#/components/schemas/Note/properties/id")
-	  */
-	 protected $note_id;
+     /**
+      * @OA\Property(ref="#/components/schemas/Note/properties/id")
+      */
+    protected $note_id;
 
-	/**
-	 * @OA\Property(ref="#/components/schemas/Bookmark/properties/id")
-	 */
-	protected $bookmark_id;
+    /**
+     * @OA\Property(ref="#/components/schemas/Bookmark/properties/id")
+     */
+    protected $bookmark_id;
 
-	/**
-	 * @OA\Property(ref="#/components/schemas/Highlight/properties/id")
-	 */
-	protected $highlight_id;
+    /**
+     * @OA\Property(ref="#/components/schemas/Highlight/properties/id")
+     */
+    protected $highlight_id;
 
-	 /**
-	  *
-	  * @OA\Property(
-	  *   title="type",
-	  *   type="string",
-	  *   description="The type of tag that this NoteTag is categorized within."
-	  * )
-	  *
-	  */
-	 protected $type;
+     /**
+      *
+      * @OA\Property(
+      *   title="type",
+      *   type="string",
+      *   description="The type of tag that this NoteTag is categorized within."
+      * )
+      *
+      */
+    protected $type;
 
-	 /**
-	  *
-	  * @OA\Property(
-	  *   title="value",
-	  *   type="string",
-	  *   description="The value to the type of NoteTag for this note."
-	  * )
-	  *
-	  */
-	 protected $value;
+     /**
+      *
+      * @OA\Property(
+      *   title="value",
+      *   type="string",
+      *   description="The value to the type of NoteTag for this note."
+      * )
+      *
+      */
+    protected $value;
 
-	 /**
-	  *
-	  * @OA\Property(
-	  *   title="created_at",
-	  *   type="string",
-	  *   description="The timestamp the NoteTag was first created at"
-	  * )
-	  *
-	  */
-	 protected $created_at;
+     /**
+      *
+      * @OA\Property(
+      *   title="created_at",
+      *   type="string",
+      *   description="The timestamp the NoteTag was first created at"
+      * )
+      *
+      */
+    protected $created_at;
 
-	 /**
-	  *
-	  * @OA\Property(
-	  *   title="updated_at",
-	  *   type="string",
-	  *   description="The timestamp the NoteTag was last updated"
-	  * )
-	  *
-	  */
-	 protected $updated_at;
-
+     /**
+      *
+      * @OA\Property(
+      *   title="updated_at",
+      *   type="string",
+      *   description="The timestamp the NoteTag was last updated"
+      * )
+      *
+      */
+    protected $updated_at;
 }

@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class VideoTransportStream extends Model
 {
-	protected $table = 'bible_file_video_transport_stream';
-	protected $fillable = ['file_name','runtime'];
-
+    protected $table = 'bible_file_video_transport_stream';
+    protected $fillable = ['file_name','runtime'];
 }

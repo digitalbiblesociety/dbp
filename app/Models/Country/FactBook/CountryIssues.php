@@ -18,8 +18,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CountryIssues extends Model
 {
-	protected $connection = 'dbp';
-	public $incrementing = false;
+    protected $connection = 'dbp';
+    public $incrementing = false;
 
 /**
  *
@@ -27,7 +27,7 @@ class CountryIssues extends Model
  * @static method CountryIssues whereCountryId($value)
  * @property string $country_id
  */
-protected $country_id;
+    protected $country_id;
 /**
  *
  * @OA\Property(
@@ -39,7 +39,7 @@ protected $country_id;
  * @static method CountryIssues whereInternationalDisputes($value)
  * @property string $international_disputes
  */
-protected $international_disputes;
+    protected $international_disputes;
 /**
  *
  * @OA\Property(
@@ -51,7 +51,7 @@ protected $international_disputes;
  * @static method CountryIssues whereIllicitDrugs($value)
  * @property string $illicit_drugs
  */
-protected $illicit_drugs;
+    protected $illicit_drugs;
 /**
  *
  * @OA\Property(
@@ -63,7 +63,7 @@ protected $illicit_drugs;
  * @static method CountryIssues whereRefugees($value)
  * @property string $refugees
  */
-protected $refugees;
+    protected $refugees;
 /**
  *
  * @OA\Property(
@@ -75,7 +75,7 @@ protected $refugees;
  * @static method CountryIssues whereCreatedAt($value)
  * @property \Carbon\Carbon|null $created_at
  */
-protected $created_at;
+    protected $created_at;
 /**
  *
  * @OA\Property(
@@ -87,6 +87,5 @@ protected $created_at;
  * @static method CountryIssues whereUpdatedAt($value)
  * @property \Carbon\Carbon|null $updated_at
  */
-protected $updated_at;
-
+    protected $updated_at;
 }

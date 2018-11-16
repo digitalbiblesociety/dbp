@@ -74,7 +74,7 @@ class OrganizationTransformer extends BaseTransformer
         $bibles = $organization->bibles->toArray();
         if ($organization->relationLoaded('memberships')) {
             foreach ($organization->memberships as $member_organization) {
-                $bibles[] = $member_organization->child_organization->bibles->toArray();
+                $bibles[] = $member_organization->childOrganization->bibles->toArray();
             }
         }
 

@@ -100,7 +100,7 @@ class OrganizationsController extends APIController
         }
         $searchedColumn = is_numeric($slug) ? 'id' : 'slug';
 
-        $organization = Organization::with(['bibles.translations','bibles.language','memberships.child_organization.bibles.translations','memberships.child_organization.bibles.links','links','translations','currentTranslation','resources',
+        $organization = Organization::with(['bibles.translations','bibles.language','memberships.childOrganization.bibles.translations','memberships.childOrganization.bibles.links','links','translations','currentTranslation','resources',
         'logos' => function ($query) use ($i10n_language) {
             $query->where('language_id', $i10n_language->id);
         }])->where($searchedColumn, $slug)->first();

@@ -55,11 +55,11 @@ class Activity extends Model
         'methodType'    => 'string',
     ];
 
-	/**
-	 * Create a new instance to set the table and connection.
-	 *
-	 * @param array $attributes
-	 */
+    /**
+     * Create a new instance to set the table and connection.
+     *
+     * @param array $attributes
+     */
     public function __construct(array $attributes)
     {
         parent::__construct($attributes);
@@ -75,12 +75,12 @@ class Activity extends Model
         return $this->table;
     }
 
-	/**
-	 * An activity has a user.
-	 *
-	 * @var array
-	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
-	 */
+    /**
+     * An activity has a user.
+     *
+     * @var array
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function user()
     {
         return $this->hasOne(config('LaravelLogger.defaultUserModel'));
@@ -95,7 +95,8 @@ class Activity extends Model
      */
     public static function rules(array $merge)
     {
-        return array_merge([
+        return array_merge(
+            [
             'description'   => 'required|string',
             'userType'      => 'required|string',
             'userId'        => 'nullable|integer',
@@ -105,7 +106,8 @@ class Activity extends Model
             'locale'        => 'nullable|string',
             'referrer'      => 'nullable|url',
             'methodType'    => 'nullable|string',
-        ],
-        $merge);
+            ],
+            $merge
+        );
     }
 }

@@ -18,7 +18,7 @@ class TwoStepAuth extends Model
      *
      * @var string
      */
-	protected $connection = 'dbp_users';
+    protected $connection = 'dbp_users';
 
     /**
      * Indicates if the model should be timestamped.
@@ -114,14 +114,16 @@ class TwoStepAuth extends Model
      *
      * @return array
      */
-    public static function rules($merge=[])
+    public static function rules($merge = [])
     {
-        return array_merge([
+        return array_merge(
+            [
             'user_id'     => 'required|integer',
             'authCode'   => 'required|string|max:4|min:4',
             'authCount'  => 'required|integer',
             'authStatus' => 'required|boolean'
-        ],
-        $merge);
+            ],
+            $merge
+        );
     }
 }

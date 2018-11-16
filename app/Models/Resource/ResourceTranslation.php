@@ -36,80 +36,79 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ResourceTranslation extends Model
 {
-	protected $connection = 'dbp';
+    protected $connection = 'dbp';
     protected $hidden = ['created_at','updated_at', 'resource_id','vernacular','tag','iso'];
 
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="iso",
-	 *     description="The iso code for the resource's translations",
-	 *     type="string"
-	 * )
-	 *
-	 */
+    /**
+     *
+     * @OA\Property(
+     *     title="iso",
+     *     description="The iso code for the resource's translations",
+     *     type="string"
+     * )
+     *
+     */
     protected $iso;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="resource_id",
-	 *     description="The id for the resource that the translations describe",
-	 *     type="string"
-	 * )
-	 *
-	 */
+    /**
+     *
+     * @OA\Property(
+     *     title="resource_id",
+     *     description="The id for the resource that the translations describe",
+     *     type="string"
+     * )
+     *
+     */
     protected $resource_id;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="vernacular",
-	 *     description="Determines if the current translations being described is in the vernacular of the resource",
-	 *     type="boolean"
-	 * )
-	 *
-	 */
+    /**
+     *
+     * @OA\Property(
+     *     title="vernacular",
+     *     description="Determines if the current translations being described is in the vernacular of the resource",
+     *     type="boolean"
+     * )
+     *
+     */
     protected $vernacular;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="tag",
-	 *     description="Determines if the current translation being described is an ancillary bit of meta data rather than a title of the resource",
-	 *     type="boolean"
-	 * )
-	 *
-	 */
+    /**
+     *
+     * @OA\Property(
+     *     title="tag",
+     *     description="Determines if the current translation being described is an ancillary bit of meta data rather than a title of the resource",
+     *     type="boolean"
+     * )
+     *
+     */
     protected $tag;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="title",
-	 *     description="Serves as the title of the current translation or the name of the tag",
-	 *     type="string",
-	 *     maxLength=191,
-	 *     example="Understanding Biblical Hebrew Verb Forms"
-	 * )
-	 *
-	 */
+    /**
+     *
+     * @OA\Property(
+     *     title="title",
+     *     description="Serves as the title of the current translation or the name of the tag",
+     *     type="string",
+     *     maxLength=191,
+     *     example="Understanding Biblical Hebrew Verb Forms"
+     * )
+     *
+     */
     protected $title;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="description",
-	 *     description="Serves as the description of the current translation",
-	 *     type="string",
-	 *     maxLength=191,
-	 *     example="Understanding Biblical Hebrew Verb Forms"
-	 * )
-	 *
-	 */
+    /**
+     *
+     * @OA\Property(
+     *     title="description",
+     *     description="Serves as the description of the current translation",
+     *     type="string",
+     *     maxLength=191,
+     *     example="Understanding Biblical Hebrew Verb Forms"
+     * )
+     *
+     */
     protected $description;
 
     public function resource()
     {
-    	return $this->belongsTo(Resource::class);
+        return $this->belongsTo(Resource::class);
     }
-
 }

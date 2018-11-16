@@ -27,7 +27,7 @@ use App\Models\Bible\Bible;
  */
 class Translator extends Model
 {
-	protected $connection = 'dbp';
+    protected $connection = 'dbp';
     protected $dates = ['created_at', 'updated_at'];
     protected $hidden = ['pivot','created_at','updated_at'];
     public $incrementing = false;
@@ -37,6 +37,4 @@ class Translator extends Model
     {
         return $this->BelongsToMany(Bible::class);
     }
-
-
 }

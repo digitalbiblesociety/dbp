@@ -38,94 +38,92 @@ use Illuminate\Database\Eloquent\Model;
 class Bookmark extends Model
 {
 
-	protected $table = 'user_bookmarks';
-	protected $fillable = ['id','bible_id', 'user_id', 'book_id', 'chapter', 'verse_start'];
+    protected $table = 'user_bookmarks';
+    protected $fillable = ['id','bible_id', 'user_id', 'book_id', 'chapter', 'verse_start'];
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="id",
-	 *   type="integer",
-	 *   description="The unique incrementing id for each Bookmark",
-	 *   minimum=0
-	 * )
-	 */
-	protected $id;
+    /**
+     *
+     * @OA\Property(
+     *   title="id",
+     *   type="integer",
+     *   description="The unique incrementing id for each Bookmark",
+     *   minimum=0
+     * )
+     */
+    protected $id;
 
-	/**
-	 *
-	 * @OA\Property(ref="#/components/schemas/Book/properties/id")
-	 */
-	protected $book_id;
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/Book/properties/id")
+     */
+    protected $book_id;
 
-	/**
-	 *
-	 * @OA\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
-	 */
-	protected $chapter;
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
+     */
+    protected $chapter;
 
-	/**
-	 *
-	 * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
-	 */
-	protected $verse_start;
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
+     */
+    protected $verse_start;
 
-	/**
-	 *
-	 * @OA\Property(ref="#/components/schemas/User/properties/id")
-	 */
-	protected $user_id;
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/User/properties/id")
+     */
+    protected $user_id;
 
-	/**
-	 *
-	 * @OA\Property(ref="#/components/schemas/Bible/properties/id")
-	 */
-	protected $bible_id;
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/Bible/properties/id")
+     */
+    protected $bible_id;
 
-	/** @OA\Property(
-	 *   title="updated_at",
-	 *   type="string",
-	 *   description="The timestamp the Note was last updated at",
-	 *   nullable=true
-	 * )
-	 *
-	 * @method static Note whereUpdatedAt($value)
-	 * @public Carbon|null $updated_at
-	 */
-	protected $updated_at;
+    /** @OA\Property(
+     *   title="updated_at",
+     *   type="string",
+     *   description="The timestamp the Note was last updated at",
+     *   nullable=true
+     * )
+     *
+     * @method static Note whereUpdatedAt($value)
+     * @public Carbon|null $updated_at
+     */
+    protected $updated_at;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="created_at",
-	 *   type="string",
-	 *   description="The timestamp the note was created at"
-	 * )
-	 *
-	 * @method static Note whereCreatedAt($value)
-	 * @public Carbon $created_at
-	 */
-	protected $created_at;
+    /**
+     *
+     * @OA\Property(
+     *   title="created_at",
+     *   type="string",
+     *   description="The timestamp the note was created at"
+     * )
+     *
+     * @method static Note whereCreatedAt($value)
+     * @public Carbon $created_at
+     */
+    protected $created_at;
 
-	public function user()
-	{
-		return $this->belongsTo(User::class);
-	}
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
-	public function book()
-	{
-		return $this->belongsTo(Book::class);
-	}
+    public function book()
+    {
+        return $this->belongsTo(Book::class);
+    }
 
-	public function bible()
-	{
-		return $this->belongsTo(Bible::class);
-	}
+    public function bible()
+    {
+        return $this->belongsTo(Bible::class);
+    }
 
-	public function tags()
-	{
-		return $this->hasMany(AnnotationTag::class,'bookmark_id','id');
-	}
-
-
+    public function tags()
+    {
+        return $this->hasMany(AnnotationTag::class, 'bookmark_id', 'id');
+    }
 }

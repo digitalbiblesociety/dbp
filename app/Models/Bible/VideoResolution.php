@@ -6,14 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class VideoResolution extends Model
 {
-	protected $connection = 'dbp';
+    protected $connection = 'dbp';
     protected $table = 'bible_file_video_resolutions';
     protected $fillable = ['file_id','file_name','bandwidth','resolution_width','resolution_height','codec','stream'];
 
 
-	public function transportStream()
-	{
-		return $this->hasMany(VideoTransportStream::class);
-	}
-
+    public function transportStream()
+    {
+        return $this->hasMany(VideoTransportStream::class);
+    }
 }

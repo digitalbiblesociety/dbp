@@ -25,12 +25,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ArticleTag extends Model
 {
-	protected $connection = 'dbp_users';
-	protected $fillable = ['iso','name','description'];
+    protected $connection = 'dbp_users';
+    protected $fillable = ['iso','name','description'];
 
-	public function article()
-	{
-		return $this->belongsTo(Article::class);
-	}
-
+    public function article()
+    {
+        return $this->belongsTo(Article::class);
+    }
 }

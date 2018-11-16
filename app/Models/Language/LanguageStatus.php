@@ -27,49 +27,48 @@ use Illuminate\Database\Eloquent\Model;
  */
 class LanguageStatus extends Model
 {
-	protected $connection = 'dbp';
-	protected $table = 'language_status';
-	protected $fillable = ['id','title','description'];
-	protected $keyType = 'string';
-	public $incrementing = false;
+    protected $connection = 'dbp';
+    protected $table = 'language_status';
+    protected $fillable = ['id','title','description'];
+    protected $keyType = 'string';
+    public $incrementing = false;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="id",
-	 *   type="string",
-	 *   description="The id for the language status",
-	 *   minimum=0
-	 * )
-	 *
-	 */
-	protected $id;
+    /**
+     *
+     * @OA\Property(
+     *   title="id",
+     *   type="string",
+     *   description="The id for the language status",
+     *   minimum=0
+     * )
+     *
+     */
+    protected $id;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="title",
-	 *   type="string",
-	 *   description="The title"
-	 * )
-	 *
-	 */
-	protected $title;
+    /**
+     *
+     * @OA\Property(
+     *   title="title",
+     *   type="string",
+     *   description="The title"
+     * )
+     *
+     */
+    protected $title;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="description",
-	 *   type="string",
-	 *   description="The description"
-	 * )
-	 *
-	 */
-	protected $description;
+    /**
+     *
+     * @OA\Property(
+     *   title="description",
+     *   type="string",
+     *   description="The description"
+     * )
+     *
+     */
+    protected $description;
 
-	public function language()
-	{
-		return $this->belongsTo(Language::class);
-	}
-
+    public function language()
+    {
+        return $this->belongsTo(Language::class);
+    }
 }

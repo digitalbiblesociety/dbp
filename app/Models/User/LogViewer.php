@@ -4,7 +4,6 @@ namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
 
-
 /**
  * Class LaravelLogViewer
  * @package Rap2hpoutre\LaravelLogViewer

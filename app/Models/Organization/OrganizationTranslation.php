@@ -38,99 +38,98 @@ use Illuminate\Database\Eloquent\Model;
  */
 class OrganizationTranslation extends Model
 {
-	protected $connection = 'dbp';
+    protected $connection = 'dbp';
     protected $primaryKey = 'organization_id';
     protected $fillable = ['iso', 'name','description'];
     protected $table = 'organization_translations';
     //public $incrementing = "false";
     protected $hidden = ['created_at','updated_at','organization_id','description'];
 
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="language_iso",
-	 *     description="The iso code for the translation language",
-	 *     type="string",
-	 *     minLength=3
-	 * )
-	 *
-	 * @method static OrganizationTranslation whereLanguageIso($value)
-	 *
-	 */
-	protected $language_iso;
+    /**
+     *
+     * @OA\Property(
+     *     title="language_iso",
+     *     description="The iso code for the translation language",
+     *     type="string",
+     *     minLength=3
+     * )
+     *
+     * @method static OrganizationTranslation whereLanguageIso($value)
+     *
+     */
+    protected $language_iso;
 
-	 /**
-	  *
-	  * @OA\Property(
-	  *     title="id",
-	  *     description="The Organization's incrementing id",
-	  *     type="integer",
-	  *     minimum=0
-	  * )
-	  *
-	  */
-	protected $organization_id;
+     /**
+      *
+      * @OA\Property(
+      *     title="id",
+      *     description="The Organization's incrementing id",
+      *     type="integer",
+      *     minimum=0
+      * )
+      *
+      */
+    protected $organization_id;
 
-	 /**
-	  *
-	  * @OA\Property(
-	  *     title="id",
-	  *     description="If the current translation is the primary/vernacular translation",
-	  *     type="boolean"
-	  * )
-	  *
-	  */
-	protected $vernacular;
-	 /**
-	  *
-	  * @OA\Property(
-	  *     title="alt",
-	  *     description="If the current name is a secondary title for the organization",
-	  *     type="boolean"
-	  * )
-	  *
-	  */
-	protected $alt;
-	 /**
-	  *
-	  * @OA\Property(
-	  *     title="name",
-	  *     description="The current translated name for the organization",
-	  *     type="string",
-	  *     maxLength=191
-	  * )
-	  *
-	  */
-	protected $name;
-	 /**
-	  *
-	  * @OA\Property(
-	  *     title="description",
-	  *     description="The current translated description for the organization",
-	  *     type="string"
-	  * )
-	  *
-	  */
-	protected $description;
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="description_short",
-	 *     description="The current translated shortened description for the organization",
-	 *     type="string"
-	 * )
-	 *
-	 * @method static OrganizationTranslation whereDescriptionShort($value)
-	 *
-	 */
-	protected $description_short;
-	protected $created_at;
-	protected $updated_at;
+     /**
+      *
+      * @OA\Property(
+      *     title="id",
+      *     description="If the current translation is the primary/vernacular translation",
+      *     type="boolean"
+      * )
+      *
+      */
+    protected $vernacular;
+     /**
+      *
+      * @OA\Property(
+      *     title="alt",
+      *     description="If the current name is a secondary title for the organization",
+      *     type="boolean"
+      * )
+      *
+      */
+    protected $alt;
+     /**
+      *
+      * @OA\Property(
+      *     title="name",
+      *     description="The current translated name for the organization",
+      *     type="string",
+      *     maxLength=191
+      * )
+      *
+      */
+    protected $name;
+     /**
+      *
+      * @OA\Property(
+      *     title="description",
+      *     description="The current translated description for the organization",
+      *     type="string"
+      * )
+      *
+      */
+    protected $description;
+    /**
+     *
+     * @OA\Property(
+     *     title="description_short",
+     *     description="The current translated shortened description for the organization",
+     *     type="string"
+     * )
+     *
+     * @method static OrganizationTranslation whereDescriptionShort($value)
+     *
+     */
+    protected $description_short;
+    protected $created_at;
+    protected $updated_at;
 
 
     public function organization()
     {
         return $this->belongsTo(Organization::class);
     }
-
 }

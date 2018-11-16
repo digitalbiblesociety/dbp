@@ -30,58 +30,57 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BibleFilesetSize extends Model
 {
-	protected $connection = 'dbp';
+    protected $connection = 'dbp';
     protected $table = 'bible_fileset_sizes';
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="id",
-	 *   type="integer",
-	 *   description="The id",
+    /**
+     *
+     * @OA\Property(
+     *   title="id",
+     *   type="integer",
+     *   description="The id",
 
-	 *   minimum=0,
-	 *   example=4
-	 * )
-	 *
-	 * @method static BibleFilesetSize whereId($value)
-	 * @property int $id
-	 */
-	protected $id;
+     *   minimum=0,
+     *   example=4
+     * )
+     *
+     * @method static BibleFilesetSize whereId($value)
+     * @property int $id
+     */
+    protected $id;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="set_size_code",
-	 *   type="string",
-	 *   description="The id",
-	 *   maxLength=9,
-	 *   example="NTPOTP"
-	 * )
-	 *
-	 * @method static BibleFilesetSize whereSetSizeCode($value)
-	 * property string $set_size_code
-	 */
+    /**
+     *
+     * @OA\Property(
+     *   title="set_size_code",
+     *   type="string",
+     *   description="The id",
+     *   maxLength=9,
+     *   example="NTPOTP"
+     * )
+     *
+     * @method static BibleFilesetSize whereSetSizeCode($value)
+     * property string $set_size_code
+     */
     protected $set_size_code;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="name",
-	 *   type="string",
-	 *   description="The name",
-	 *   maxLength=191,
-	 *   example="New Testament & Old Testament Portions"
-	 * )
-	 *
-	 * @method static BibleFilesetSize whereName($value)
-	 * property string $name
-	 */
+    /**
+     *
+     * @OA\Property(
+     *   title="name",
+     *   type="string",
+     *   description="The name",
+     *   maxLength=191,
+     *   example="New Testament & Old Testament Portions"
+     * )
+     *
+     * @method static BibleFilesetSize whereName($value)
+     * property string $name
+     */
     protected $name;
 
     public function filesetConnection()
-	{
-		return $this->hasOne(BibleFilesetConnection::class);
-	}
-
+    {
+        return $this->hasOne(BibleFilesetConnection::class);
+    }
 }

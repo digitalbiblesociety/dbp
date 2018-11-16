@@ -47,128 +47,127 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Resource extends Model
 {
-	protected $connection = 'dbp';
-	protected $hidden = ['created_at','updated_at'];
-	public $table = 'resources';
+    protected $connection = 'dbp';
+    protected $hidden = ['created_at','updated_at'];
+    public $table = 'resources';
 
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="id",
-	 *     description="The Resource's incrementing id",
-	 *     type="integer",
-	 *     minimum=0
-	 * )
-	 *
-	 */
-	protected $id;
+    /**
+     *
+     * @OA\Property(
+     *     title="id",
+     *     description="The Resource's incrementing id",
+     *     type="integer",
+     *     minimum=0
+     * )
+     *
+     */
+    protected $id;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *     title="iso",
-	 *     description="The Resource's iso",
-	 *     type="string",
-	 *     minLength=3
-	 * )
-	 *
-	 */
-	protected $iso;
+    /**
+     *
+     * @OA\Property(
+     *     title="iso",
+     *     description="The Resource's iso",
+     *     type="string",
+     *     minLength=3
+     * )
+     *
+     */
+    protected $iso;
 
-	/**
-	 *
-	 * @OA\Property(ref="#/components/schemas/Organization/properties/id")
-	 *
-	 */
-	protected $organization_id;
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/Organization/properties/id")
+     *
+     */
+    protected $organization_id;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="source_id",
-	 *   type="string",
-	 *   description="The owning organization's tracking id for the resource",
-	 *   nullable=true
-	 * )
-	 *
-	 */
-	protected $source_id;
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="cover",
-	 *   type="string",
-	 *   description="The url to the main cover art for the resource",
-	 *   nullable=true
-	 * )
-	 *
-	 */
-	protected $cover;
+    /**
+     *
+     * @OA\Property(
+     *   title="source_id",
+     *   type="string",
+     *   description="The owning organization's tracking id for the resource",
+     *   nullable=true
+     * )
+     *
+     */
+    protected $source_id;
+    /**
+     *
+     * @OA\Property(
+     *   title="cover",
+     *   type="string",
+     *   description="The url to the main cover art for the resource",
+     *   nullable=true
+     * )
+     *
+     */
+    protected $cover;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="cover_thumbnail",
-	 *   type="string",
-	 *   description="The url to the thumbnail cover art for the resource",
-	 *   nullable=true
-	 * )
-	 *
-	 */
-	protected $cover_thumbnail;
+    /**
+     *
+     * @OA\Property(
+     *   title="cover_thumbnail",
+     *   type="string",
+     *   description="The url to the thumbnail cover art for the resource",
+     *   nullable=true
+     * )
+     *
+     */
+    protected $cover_thumbnail;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="date",
-	 *   type="string",
-	 *   description="The date the resource was originally published",
-	 *   nullable=true
-	 * )
-	 *
-	 */
-	protected $date;
+    /**
+     *
+     * @OA\Property(
+     *   title="date",
+     *   type="string",
+     *   description="The date the resource was originally published",
+     *   nullable=true
+     * )
+     *
+     */
+    protected $date;
 
-	/**
-	 *
-	 * @OA\Property(
-	 *   title="type",
-	 *   type="string",
-	 *   description="The type of media the resource can be categorized as",
-	 *   nullable=true
-	 * )
-	 *
-	 */
-	protected $type;
+    /**
+     *
+     * @OA\Property(
+     *   title="type",
+     *   type="string",
+     *   description="The type of media the resource can be categorized as",
+     *   nullable=true
+     * )
+     *
+     */
+    protected $type;
 
-	public function language()
-	{
-		return $this->belongsTo(Language::class);
-	}
+    public function language()
+    {
+        return $this->belongsTo(Language::class);
+    }
 
     public function links()
     {
-    	return $this->hasMany(ResourceLink::class);
+        return $this->hasMany(ResourceLink::class);
     }
 
-	public function translations()
-	{
-		return $this->hasMany(ResourceTranslation::class);
-	}
+    public function translations()
+    {
+        return $this->hasMany(ResourceTranslation::class);
+    }
 
-	public function tags()
-	{
-		return $this->hasMany(ResourceTranslation::class)->where('tags',1);
-	}
+    public function tags()
+    {
+        return $this->hasMany(ResourceTranslation::class)->where('tags', 1);
+    }
 
-	public function currentTranslation()
-	{
-		return $this->hasOne(ResourceTranslation::class)->where('language_id',$GLOBALS['i18n_id'])->where('tag',0);
-	}
+    public function currentTranslation()
+    {
+        return $this->hasOne(ResourceTranslation::class)->where('language_id', $GLOBALS['i18n_id'])->where('tag', 0);
+    }
 
-	public function organization()
-	{
-		return $this->belongsTo(Organization::class);
-	}
-
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
 }

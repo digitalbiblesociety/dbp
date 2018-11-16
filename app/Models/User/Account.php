@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
+
 /**
  * App\Models\User\Account
  * @mixin \Eloquent
@@ -17,10 +18,10 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Account extends Model
 {
-	protected $connection = 'dbp_users';
-	protected $table = 'user_accounts';
-	protected $fillable = ['user_id', 'provider_user_id', 'provider_id','created_at'];
-	protected $hidden = ['user_id'];
+    protected $connection = 'dbp_users';
+    protected $table = 'user_accounts';
+    protected $fillable = ['user_id', 'provider_user_id', 'provider_id','created_at'];
+    protected $hidden = ['user_id'];
 
     /**
      *
@@ -104,8 +105,8 @@ class Account extends Model
      */
     protected $updated_at;
 
-	public function user()
-	{
-		return $this->belongsTo(User::class);
-	}
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

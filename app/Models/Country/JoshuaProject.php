@@ -42,17 +42,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 class JoshuaProject extends Model
 {
-	protected $connection = 'dbp';
+    protected $connection = 'dbp';
     public $table = 'country_joshua_project';
 
-	public function country()
-	{
-		return $this->belongsTo(Country::class,'country_id','id');
-	}
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id', 'id');
+    }
 
-	public function translations()
-	{
-		return $this->hasMany(CountryTranslation::class,'country_id','country_id');
-	}
-
+    public function translations()
+    {
+        return $this->hasMany(CountryTranslation::class, 'country_id', 'country_id');
+    }
 }
