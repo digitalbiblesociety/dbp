@@ -91,9 +91,6 @@ class LanguagesController extends APIController
      */
     public function index()
     {
-        if (config('app.env') === 'local') {
-            ini_set('memory_limit', '700M');
-        }
         if (!$this->api) {
             return view('wiki.languages.index');
         }
@@ -105,20 +102,10 @@ class LanguagesController extends APIController
         $show_restricted       = checkParam('show_only_restricted');
         $asset_id              = checkParam('bucket_id|asset_id');
 
-
         $access_control = $this->accessControl($this->key, 'api');
 
         $cache_string = 'v'.$this->v.'_l_'.$country.$code.$GLOBALS['i18n_id'].$sort_by.
                         $show_restricted.$include_alt_names.$asset_id.$access_control->string;
-
-        /*
-         *
-         * App\salesreport::join(DB::RAW('(SELECT company_id, GROUP_CONCAT(periods ORDER BY periods DESC) grouped_periods FROM salesreport GROUP BY company_id ) latest_report'),function($join){
-        $join->on('salesreport.company_id','=','latest_report.company_id');
-        $join->whereBetween(DB::raw('FIND_IN_SET(`salesreport`.`periods`, `latest_report`.`grouped_periods`)'), [1, 2]);
-    })->get();
-         *
-         */
 
         $languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $asset_id, $code, $sort_by, $show_restricted, $access_control) {
             $languages = Language::select([
