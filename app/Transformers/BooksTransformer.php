@@ -136,15 +136,15 @@ class BooksTransformer extends BaseTransformer
             case 'v4_bible.books':
             default:
                 return [
-                    'book_id'         => $book->book->id,
-                    'book_id_usfx'    => $book->book->id_usfx,
-                    'book_id_osis'    => $book->book->id_osis,
+                    'book_id'         => $book->id,
+                    'book_id_usfx'    => $book->id_usfx,
+                    'book_id_osis'    => $book->id_osis,
                     'name'            => $book->name,
-                    'testament'       => $book->book->book_testament,
-                    'testament_order' => $book->book->testament_order,
-                    'book_order'      => $book->book->protestant_order,
-                    'book_group'      => $book->book->book_group,
-                    'chapters'        => $book->chapters,
+                    'testament'       => $book->book_testament,
+                    'testament_order' => $book->testament_order,
+                    'book_order'      => $book->protestant_order,
+                    'book_group'      => $book->book_group,
+                    'chapters'        => array_map('\intval', explode(',', $book->chapters)),
                 ];
         }
     }

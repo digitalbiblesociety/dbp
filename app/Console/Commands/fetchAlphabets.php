@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use PHPHtmlParser\Dom;
+use Sunra\PhpSimple\HtmlDomParser;
 
 class fetchAlphabets extends Command
 {
@@ -39,8 +39,8 @@ class fetchAlphabets extends Command
     public function handle()
     {
 
-        $dom = new Dom;
-        $dom->loadFromUrl('http://scriptsource.org/cms/scripts/page.php?item_id=script_overview');
+        $string_html = file_get_contents('http://scriptsource.org/cms/scripts/page.php?item_id=script_overview');
+        $dom = HtmlDomParser::str_get_html($string_html);
         $contents = $dom->find('.dDataViewTable a');
 
         foreach ($contents as $content) {

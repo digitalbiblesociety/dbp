@@ -193,7 +193,6 @@ return [
     */
 
     'aliases' => [
-
         'App'          => Illuminate\Support\Facades\App::class,
         'Artisan'      => Illuminate\Support\Facades\Artisan::class,
         'Auth'         => Illuminate\Support\Facades\Auth::class,
@@ -227,14 +226,10 @@ return [
         'URL'          => Illuminate\Support\Facades\URL::class,
         'Validator'    => Illuminate\Support\Facades\Validator::class,
         'View'         => Illuminate\Support\Facades\View::class,
-        'Form'         => \Collective\Html\FormFacade::class,
-        'HTML'         => \Collective\Html\HtmlFacade::class,
         'Socialite'    => Laravel\Socialite\Facades\Socialite::class,
         'Input'        => Illuminate\Support\Facades\Input::class,
-        'Gravatar'     => Creativeorange\Gravatar\Facades\Gravatar::class,
         'Image'        => Intervention\Image\Facades\Image::class,
-        'Uuid'         => Webpatser\Uuid\Uuid::class,
-        'i18n'         => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
+        'i18n'         => Lunaweb\Localization\Facades\Localization::class,
     ],
 
 ];
