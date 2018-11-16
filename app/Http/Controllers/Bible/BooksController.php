@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Bible;
 
-use App\Models\Bible\BibleBook;
-use App\Models\Bible\BibleFile;
 use App\Models\Bible\Book;
 use App\Models\Bible\BibleFileset;
 use App\Transformers\BooksTransformer;
@@ -42,14 +40,14 @@ class BooksController extends APIController
      *     )
      * )
      *
-     * @return Book string - A JSON string that contains the status code and error messages if applicable.
+     * @return JsonResponse
      */
     public function index()
     {
         if (!$this->api) {
             return view('docs.books');
         }
-        $books = \Cache::remember('v4_books_index', 2400, function () {
+        $books = \Cache::rememberForever('v4_books_index', function () {
             $books = Book::orderBy('protestant_order')->get();
             return fractal($books, new BooksTransformer(), $this->serializer);
         });
@@ -62,7 +60,7 @@ class BooksController extends APIController
      *
      * @version  4
      * @category v4_bible_filesets.books
-     * @link     https://api.dbp.test/bibles/filesets/TZTWBT/books?key=e8a946a0-d9e2-11e7-bfa7-b1fb2d7f5824&v=4&pretty - V4 Test Access URL
+     * @link     https://api.dbp.test/bibles/filesets/TZTWBT/books?key=e8a946a0-d9e2-11e7-bfa7-b1fb2d7f5824&v=4&pretty
      * @link     https://dbp.test/eng/docs/swagger/v4#/Bible/v4_bible_filesets.books - V4 Test Docs
      *
      * @OA\Get(
@@ -75,10 +73,23 @@ class BooksController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="fileset_id", in="path", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Parameter(name="fileset_type", in="query", description="The type of fileset being queried", @OA\Schema(type="string")),
-     *     @OA\Parameter(name="testament", in="query", description="The testament to filter books by", @OA\Schema(type="string")),
-     *     @OA\Parameter(name="asset_id", in="query", description="The asset id to select the fileset by", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="fileset_id",
+     *         in="path",
+     *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
+     *     ),
+     *     @OA\Parameter(
+     *         name="fileset_type",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code"),
+     *         description="The type of fileset being queried"
+     *     ),
+     *     @OA\Parameter(
+     *         name="asset_id",
+     *         in="query",
+     *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id"),
+     *         description="The asset id to select the fileset by"
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -90,83 +101,73 @@ class BooksController extends APIController
      * )
      *
      * @param $id
-     * @return Book string - A JSON string that contains the status code and error messages if applicable.
+     * @return JsonResponse
      */
     public function show($id)
     {
         $fileset_type = checkParam('fileset_type');
+        $asset_id = checkParam('asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        $asset_id = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
-        $testament = checkParam('testament', null, 'optional');
+        $cache_string = 'bible_books_'.$id.$fileset_type.$asset_id;
+        $books = \Cache::remember($cache_string, 2400, function () use ($fileset_type, $asset_id, $id) {
 
-        $fileset   = BibleFileset::with('bible')->where('id', $id)->where('asset_id', $asset_id)
-                                 ->where('set_type_code', $fileset_type)->first();
-        if (!$fileset) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
-        }
-
-        $bible = $fileset->bible->first();
-        if (!$bible) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.bible_errors_404', ['id' => $id]));
-        }
-
-        // If the bible is stored in the sophia database
-        if ($fileset->set_type_code === 'text_plain') {
-            $sophiaTable = $this->checkForSophiaTable($fileset);
-            if (is_a($sophiaTable, JsonResponse::class)) {
-                return $sophiaTable;
+            $is_plain_text = \Schema::connection('sophia')->hasTable($id . '_vpl');
+            $filesetExists = BibleFileset::uniqueFileset($id, $asset_id, $fileset_type)->first();
+            if (!$filesetExists) {
+                return $this->replyWithError('Fileset Not Found');
             }
-            $booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book', 'chapter')->distinct()->get());
-            $general_books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())->get();
 
-            $books = BibleBook::with('book')
-                ->whereIn('book_id', $general_books->pluck('id'))
-                ->where('bible_id', $bible->id)
-                ->when($testament, function ($q) use ($testament) {
-                    $q->where('book_testament', $testament);
-                })->get();
+            $books = \DB::connection('dbp')->table('dbp.bible_filesets as fileset')
+                ->where('fileset.id', $id)->where('fileset.asset_id', $asset_id)
+                ->leftJoin('dbp.bible_fileset_connections as connection', 'connection.hash_id', 'fileset.hash_id')
+                ->leftJoin('dbp.bibles', 'bibles.id', 'connection.bible_id')
+                ->when($fileset_type, function ($q) use ($fileset_type) {
+                    $q->where('set_type_code', $fileset_type);
+                })
+                ->when($is_plain_text, function ($q) use ($id) {
 
-            // Append Chapters to book object
-            foreach ($books as $book) {
-                $book->chapters = $booksChapters->where('book', $book->book->id_usfx)->pluck('chapter')->toArray();
-            }
-            $books = $books->sortBy('book.'.$bible->versification.'_order');
+                    // If the fileset references sophia.*_vpl than fetch the existing books from that database
+                    $sophia_books = \DB::connection('sophia')->table($id . '_vpl')
+                        ->join('dbp.books', 'books.id_usfx', $id . '_vpl.book')
+                        ->select('books.id')->distinct()->get()->pluck('id');
+
+                    // Join the books for the books returned from Sophia
+                    $q->join('dbp.bible_books', function ($join) use ($sophia_books) {
+                        $join->on('bible_books.bible_id', 'bibles.id')
+                             ->whereIn('bible_books.book_id', $sophia_books);
+                    })->rightJoin('dbp.books', 'books.id', 'bible_books.book_id');
+                }, function ($q) use ($filesetExists) {
+
+                    // If the fileset references dbp.bible_files from that table
+                    $files_books = \DB::connection('dbp')->table('bible_files')
+                        ->where('hash_id', $filesetExists->hash_id)->select(['book_id'])
+                        ->distinct()->get()->pluck('book_id');
+
+                    // Join the books for the books returned from bible_files
+                    $q->join('dbp.bible_books', function ($join) use ($files_books) {
+                        $join->on('bible_books.bible_id', 'bibles.id')
+                             ->whereIn('bible_books.book_id', $files_books);
+                    })->rightJoin('dbp.books', 'books.id', 'bible_books.book_id');
+                })
+                ->orderBy('books.protestant_order')->select([
+                    'books.id',
+                    'books.id_usfx',
+                    'books.id_osis',
+                    'books.book_testament',
+                    'books.testament_order',
+                    'books.protestant_order',
+                    'books.book_group',
+                    'bible_books.chapters',
+                    'bible_books.name'
+                ])->get();
+
+            return fractal($books, new BooksTransformer(), $this->serializer);
+        });
+
+        if (is_a($books, JsonResponse::class)) {
+            return $books;
         }
 
-        // Otherwise select from bible_files table
-        if ($fileset->hash_id === null) {
-            return $this->setStatusCode(404)->replyWithError('Fileset Exists but is not ready for public use');
-        }
-        $bible_files = BibleFile::where('hash_id', $fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
-        $books = BibleBook::with('book')
-            ->whereIn('book_id', $bible_files->pluck('book_id')->unique())
-            ->where('bible_id', $bible->id)
-            ->when($testament, function ($q) use ($testament) {
-                $q->where('book_testament', $testament);
-            })->get();
-
-        // Append Chapters to book object
-        foreach ($books as $book) {
-            $book->chapters = $bible_files->where('book_id', $book->book_id)->pluck('chapter_start')->unique();
-        }
-        $books = $books->sortBy('book.'.$bible->versification.'_order');
-        return $this->reply(fractal($books, new BooksTransformer(), $this->serializer));
-    }
-
-    private function checkForSophiaTable($fileset)
-    {
-        $textExists = \Schema::connection('sophia')->hasTable(substr($fileset->id, 0, -4) . '_vpl');
-
-        if ($textExists) {
-            return substr($fileset->id, 0, -4);
-        }
-        if (!$textExists) {
-            $textExists = \Schema::connection('sophia')->hasTable($fileset->id . '_vpl');
-        }
-        if (!$textExists) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.bible_filesets_errors_checkback', ['id' => $fileset->id]));
-        }
-
-        return $fileset->id;
+        return $this->reply($books);
     }
 }

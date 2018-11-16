@@ -170,4 +170,9 @@ class BibleFileset extends Model
     {
         return $this->hasMany(BibleFilesetTag::class, 'hash_id', 'hash_id');
     }
+
+    public function scopeUniqueFileset($query, $id, $asset_id, $fileset_type)
+    {
+        return $query->where([['id', $id],['asset_id', $asset_id],['set_type_code',$fileset_type]]);
+    }
 }
