@@ -65,5 +65,4 @@ class AdminDetailsController extends APIController
 
         return view('dashboard.admin.phpInfo', compact('phpInfo'));
     }
-
 }

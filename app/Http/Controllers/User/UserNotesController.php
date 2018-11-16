@@ -53,10 +53,14 @@ class UserNotesController extends APIController
     public function index($user_id)
     {
         $user_is_member = $this->compareProjects($user_id, $this->key);
-        if (!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
 
         if (!$this->api) {
-            if (!Auth::user()) return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
+            if (!Auth::user()) {
+                return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
+            }
             return view('dashboard.notes.index');
         }
 
@@ -78,7 +82,9 @@ class UserNotesController extends APIController
                 $q->where('chapter_id', $chapter_id);
             })->paginate($limit);
 
-        if (!$notes) return $this->setStatusCode(404)->replyWithError('No User found for the specified ID');
+        if (!$notes) {
+            return $this->setStatusCode(404)->replyWithError('No User found for the specified ID');
+        }
         return $this->reply(fractal($notes->getCollection(), UserNotesTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($notes)));
     }
 
@@ -119,15 +125,21 @@ class UserNotesController extends APIController
     public function show($user_id, $note_id)
     {
         if (!$this->api) {
-            if (!$this->user->hasRole('admin')) return $this->setStatusCode(401)->replyWithError(trans('api.errors_401'));
+            if (!$this->user->hasRole('admin')) {
+                return $this->setStatusCode(401)->replyWithError(trans('api.errors_401'));
+            }
             return view('dashboard.notes.index');
         }
 
         $user_is_member = $this->compareProjects($user_id, $this->key);
-        if (!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
 
         $note        = Note::where('user_id', $user_id)->where('id', $note_id)->first();
-        if (!$note) return $this->setStatusCode(404)->replyWithError(trans('api.errors_404'));
+        if (!$note) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.errors_404'));
+        }
 
         return $this->reply($note);
     }
@@ -177,10 +189,14 @@ class UserNotesController extends APIController
     public function store(Request $request)
     {
         $user_is_member = $this->compareProjects($request->user_id, $this->key);
-        if (!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
 
         $invalidNote = $this->invalidNote($request);
-        if ($invalidNote) return $invalidNote;
+        if ($invalidNote) {
+            return $invalidNote;
+        }
 
         $note = Note::create([
             'user_id'     => $request->user_id,
@@ -234,13 +250,19 @@ class UserNotesController extends APIController
     public function update(Request $request, $user_id, $note_id)
     {
         $user_is_member = $this->compareProjects($user_id, $this->key);
-        if (!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
 
         $invalidNote = $this->invalidNote($request);
-        if ($invalidNote) return $invalidNote;
+        if ($invalidNote) {
+            return $invalidNote;
+        }
 
         $note = Note::where('user_id', $user_id)->where('id', $note_id)->first();
-        if (!$note) return $this->setStatusCode(404)->replyWithError(trans('api.user_notes_404'));
+        if (!$note) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.user_notes_404'));
+        }
 
         $note->fill($request->only(['bible_id','book_id','chapter','verse_start','verse_end','notes']));
         if (isset($request->notes)) {
@@ -285,10 +307,14 @@ class UserNotesController extends APIController
     public function destroy(int $user_id, int $note_id)
     {
         $user_is_member = $this->compareProjects($user_id, $this->key);
-        if (!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
 
         $note = Note::where('user_id', $user_id)->where('id', $note_id)->first();
-        if (!$note) $this->setStatusCode(404)->replyWithError('Note Not Found');
+        if (!$note) {
+            $this->setStatusCode(404)->replyWithError('Note Not Found');
+        }
         $note->delete();
 
         return $this->reply(['success' => 'Note Deleted']);
@@ -304,10 +330,10 @@ class UserNotesController extends APIController
             'verse_start' => (($request->method === 'POST') ? 'required|' : '') . 'max:177|min:1',
             'notes'       => (($request->method === 'POST') ? 'required|' : '') . '',
         ]);
-        if ($validator->fails()) return ['errors' => $validator->errors()];
+        if ($validator->fails()) {
+            return ['errors' => $validator->errors()];
+        }
 
         return null;
     }
-
-
 }

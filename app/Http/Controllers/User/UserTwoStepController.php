@@ -40,7 +40,9 @@ class UserTwoStepController extends APIController
     private function setUser2StepData()
     {
         $user                       = \Auth::user();
-        if (!$user) return $this->setStatusCode(404)->replyWithError('user not found');
+        if (!$user) {
+            return $this->setStatusCode(404)->replyWithError('user not found');
+        }
 
         $twoStepAuth                = $this->getTwoStepAuthStatus($user->id);
         $authCount                  = $twoStepAuth->authCount;
@@ -83,10 +85,14 @@ class UserTwoStepController extends APIController
      */
     public function showVerification()
     {
-        if (!config('laravel2step.laravel2stepEnabled')) abort(404);
+        if (!config('laravel2step.laravel2stepEnabled')) {
+            abort(404);
+        }
 
         $twoStepAuth = $this->_twoStepAuth;
-        if ($this->checkExceededTime($twoStepAuth->updated_at)) $this->resetExceededTime($twoStepAuth);
+        if ($this->checkExceededTime($twoStepAuth->updated_at)) {
+            $this->resetExceededTime($twoStepAuth);
+        }
 
         $data = [
             'user'              => $this->_user,
@@ -193,7 +199,5 @@ class UserTwoStepController extends APIController
         ];
 
         return response()->json($returnData, 200);
-
     }
-
 }

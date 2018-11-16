@@ -72,7 +72,9 @@ class UserSocialController extends APIController
         $alt_url    = checkParam('alt_url', null, 'optional');
 
         $socialiteProvider = $this->getOauthProvider($project_id, $provider, $alt_url);
-        if (is_a($socialiteProvider, JsonResponse::class)) return $socialiteProvider;
+        if (is_a($socialiteProvider, JsonResponse::class)) {
+            return $socialiteProvider;
+        }
         return $this->reply([
             'data' => [
                 'provider_id'  => $provider,
@@ -90,39 +92,37 @@ class UserSocialController extends APIController
 
     private function getOauthProvider($project_id, $provider, $alt_url = null)
     {
-        if ($provider === 'twitter') return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
+        if ($provider === 'twitter') {
+            return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
+        }
 
         $driverData = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
-        if (!$driverData) return $this->setStatusCode(404)->replyWithError('No oAuth Provider found for the given params');
+        if (!$driverData) {
+            return $this->setStatusCode(404)->replyWithError('No oAuth Provider found for the given params');
+        }
         $driver     = [
             'client_id'     => $driverData->client_id,
             'client_secret' => $driverData->client_secret,
             'redirect'      => $alt_url === null ? $driverData->callback_url : $driverData->callback_url_alt,
         ];
         switch ($provider) {
-            case 'bitbucket': {
+            case 'bitbucket':
                 $providerClass = BitbucketProvider::class;
                 break;
-            }
-            case 'facebook':  {
+            case 'facebook':
                 $providerClass = FacebookProvider::class;
                 break;
-            }
-            case 'twitter':   {
+            case 'twitter':
                 $providerClass = TwitterProvider::class;
                 break;
-            }
-            case 'github':    {
+            case 'github':
                 $providerClass = GithubProvider::class;
                 break;
-            }
-            case 'google':    {
+            case 'google':
                 $providerClass = GoogleProvider::class;
                 break;
-            }
-            default:          {
+            default:
                 $providerClass = null;
-            }
         }
 
         return Socialite::buildProvider($providerClass, $driver)->stateless();
@@ -148,5 +148,4 @@ class UserSocialController extends APIController
         }
         return $account->user;
     }
-
 }

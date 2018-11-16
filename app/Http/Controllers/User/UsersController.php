@@ -53,7 +53,9 @@ class UsersController extends APIController
      */
     public function index()
     {
-        if (!$this->api) return view('dashboard.users.index');
+        if (!$this->api) {
+            return view('dashboard.users.index');
+        }
         $limit = checkParam('limit', null, 'optional') ?? 100;
         $project_id = checkParam('project_id');
 
@@ -103,16 +105,22 @@ class UsersController extends APIController
                 $query->whereIn('project_id', $available_projects);
             });
         })->where('id', $id)->first();
-        if (!$user) return $this->replyWithError(trans('api.users_errors_404', ['param' => $id]));
+        if (!$user) {
+            return $this->replyWithError(trans('api.users_errors_404', ['param' => $id]));
+        }
 
-        if (!$this->api) return view('dashboard.users.show', compact('user'));
+        if (!$this->api) {
+            return view('dashboard.users.show', compact('user'));
+        }
         return $this->reply(fractal($user, UserTransformer::class));
     }
 
     public function edit($id)
     {
         $authorized_user = $this->unauthorizedToAlterUsers();
-        if (!$authorized_user) return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
+        if (!$authorized_user) {
+            return $this->setStatusCode(401)->replyWithError(trans('auth.not_logged_in'));
+        }
         $user = User::with('organizations.currentTranslation')->where('id', $id)->first();
 
         return view('dashboard.users.edit', compact('user'));
@@ -162,9 +170,13 @@ class UsersController extends APIController
     {
         $project_id = checkParam('project_id', null, 'optional');
 
-        if (!$this->api && $request->method() !== 'POST') return view('auth.login');
+        if (!$this->api && $request->method() !== 'POST') {
+            return view('auth.login');
+        }
         $user = User::with('accounts')->where('email', $request->email)->first();
-        if (!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email'));
+        if (!$user) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email'));
+        }
 
         $oldPassword = \Hash::check(md5($request->password), $user->password);
         $newPassword = \Hash::check($request->password, $user->password);
@@ -183,7 +195,9 @@ class UsersController extends APIController
                 }
             }
 
-            if ($this->api) return $user;
+            if ($this->api) {
+                return $user;
+            }
 
             \Auth::guard()->setUser($user);
             return view('dashboard.home', compact('user'));
@@ -232,7 +246,9 @@ class UsersController extends APIController
     public function store(Request $request)
     {
         $invalid = $this->validateUser();
-        if ($invalid) return $invalid;
+        if ($invalid) {
+            return $invalid;
+        }
 
         $user = User::create([
             'avatar'        => $request->avatar,
@@ -247,7 +263,9 @@ class UsersController extends APIController
         ]);
         if ($request->project_id) {
             $user_role = Role::where('slug', 'user')->first();
-            if (!$user_role) return $this->setStatusCode(404)->replyWithError('The Roles table has not been populated');
+            if (!$user_role) {
+                return $this->setStatusCode(404)->replyWithError('The Roles table has not been populated');
+            }
             $user->projectMembers()->create([
                 'project_id' => $request->project_id,
                 'role_id'    => $user_role->id,
@@ -270,7 +288,9 @@ class UsersController extends APIController
                 'provider_user_id' => $request->social_provider_user_id,
             ]);
         }
-        if (!$this->api) return view('dashboard.home', compact('user'));
+        if (!$this->api) {
+            return view('dashboard.home', compact('user'));
+        }
         return $this->reply(fractal($user, new UserTransformer())->addMeta(['success' => 'User created']));
     }
 
@@ -320,25 +340,35 @@ class UsersController extends APIController
         }
         // Validate Request
         $invalidRequest = $this->validateUser();
-        if ($invalidRequest) return $invalidRequest;
+        if ($invalidRequest) {
+            return $invalidRequest;
+        }
 
         // Validate User
         $unauthorized_user = $this->unauthorizedToAlterUsers();
-        if ($unauthorized_user) return $unauthorized_user;
+        if ($unauthorized_user) {
+            return $unauthorized_user;
+        }
 
         // Retrieve User
         $user = User::with('projects')->where('email', request()->email)->first();
-        if (!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => request()->email], $GLOBALS['i18n_iso']));
+        if (!$user) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => request()->email], $GLOBALS['i18n_iso']));
+        }
 
         // If the request does not originate from an admin
         if ($this->projectLimited()) {
             $user_projects = $user->projects->pluck('id');
             $developer_projects = $this->user->developer->pluck('id');
-            if (!$developer_projects->contains(request()->project_id)) return $this->setStatusCode(401)->replyWithError(trans('api.projects_developer_not_a_member', [], $GLOBALS['i18n_iso']));
+            if (!$developer_projects->contains(request()->project_id)) {
+                return $this->setStatusCode(401)->replyWithError(trans('api.projects_developer_not_a_member', [], $GLOBALS['i18n_iso']));
+            }
 
             if ($developer_projects->intersect($user_projects)->count() === 0) {
                 $project = Project::where('id', request()->project_id)->first();
-                if (!$project) return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
+                if (!$project) {
+                    return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
+                }
                 $connection = $user->projectMembers()->create([
                     'user_id'       => $user->id,
                     'project_id'    => $project->id,
@@ -369,7 +399,9 @@ class UsersController extends APIController
         }
 
         $user->fill($input)->save();
-        if ($this->api) return $this->reply(['success' => 'User updated', 'user' => $user]);
+        if ($this->api) {
+            return $this->reply(['success' => 'User updated', 'user' => $user]);
+        }
         return view('dashboard.users.show', $id);
     }
 
@@ -377,7 +409,9 @@ class UsersController extends APIController
     {
         $project_id = checkParam('project_id');
         $connection = ProjectMember::where('user_id', $id)->where('project_id', $project_id)->first();
-        if (!$connection) return $this->setStatusCode(404)->replyWithError('User/Project connection not found');
+        if (!$connection) {
+            return $this->setStatusCode(404)->replyWithError('User/Project connection not found');
+        }
         $connection->delete();
 
         return $this->reply('User Project connection successfully removed');
@@ -430,7 +464,9 @@ class UsersController extends APIController
     public function verify($token)
     {
         $user = User::where('email_token', $token)->first();
-        if (!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404', ['param' => $token]));
+        if (!$user) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404', ['param' => $token]));
+        }
         $user->verified = 1;
         $user->save();
         \Auth::login($user);
@@ -443,16 +479,22 @@ class UsersController extends APIController
      */
     private function unauthorizedToAlterUsers()
     {
-        if ($this->user === null) return $this->setStatusCode(401)->replyWithError(trans('api.auth_key_validation_failed'));
+        if ($this->user === null) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.auth_key_validation_failed'));
+        }
         $developer = $this->user->projectMembers->where('slug', 'developer')->first();
-        if ($developer !== null) return $this->setStatusCode(401)->replyWithError(trans('api.auth_user_validation_failed'));
+        if ($developer !== null) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.auth_user_validation_failed'));
+        }
         return false;
     }
 
     private function projectLimited()
     {
         $this->user = isset($_GET['key']) ? Key::where('key', $_GET['key'])->first()->user : \Auth::user();
-        if ($this->user !== null) return !($this->user->admin or $this->user->archivist);
+        if ($this->user !== null) {
+            return !($this->user->admin or $this->user->archivist);
+        }
         return true;
     }
 
@@ -460,9 +502,13 @@ class UsersController extends APIController
     private function availableProjects()
     {
         $role = Role::where('slug', 'developer')->first();
-        if (!$role) return $this->setStatusCode(404)->replyWithError('The Roles table has not been populated');
+        if (!$role) {
+            return $this->setStatusCode(404)->replyWithError('The Roles table has not been populated');
+        }
         $user = $this->user;
-        if (!$user) $user = Key::whereKey($this->key)->first()->user;
+        if (!$user) {
+            $user = Key::whereKey($this->key)->first()->user;
+        }
         $userWithProjects = $user->load(['projectMembers' => function ($query) use ($role) {
             $query->where('role_id', $role->id);
         }]);
@@ -490,9 +536,9 @@ class UsersController extends APIController
             'verified'                => 'boolean'
         ]);
 
-        if ($validator->fails()) return $this->replyWithError($validator->errors());
+        if ($validator->fails()) {
+            return $this->replyWithError($validator->errors());
+        }
         return false;
     }
-
-
 }

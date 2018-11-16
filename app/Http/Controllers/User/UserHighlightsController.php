@@ -89,9 +89,13 @@ class UserHighlightsController extends APIController
     {
         // Validate Project / User Connection
         $user = User::where('id', $user_id)->select('id')->first();
-        if (!$user) return $this->replyWithError(trans('api.users_errors_404', ['param' => $user_id]));
+        if (!$user) {
+            return $this->replyWithError(trans('api.users_errors_404', ['param' => $user_id]));
+        }
         $user_is_member = $this->compareProjects($user_id, $this->key);
-        if (!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
 
         $bible_id     = checkParam('bible_id', null, 'optional');
         $book_id      = checkParam('book_id', null, 'optional');
@@ -184,11 +188,15 @@ class UserHighlightsController extends APIController
     {
         // Validate Project / User Connection
         $user_is_member = $this->compareProjects(request()->user_id, $this->key);
-        if (!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
 
         // Validate Highlight
         $highlight_validation = $this->validateHighlight();
-        if (\is_array($highlight_validation)) return $highlight_validation;
+        if (\is_array($highlight_validation)) {
+            return $highlight_validation;
+        }
 
         request()->highlighted_color = $this->selectColor(request()->highlighted_color);
         $highlight = Highlight::create([
@@ -240,14 +248,20 @@ class UserHighlightsController extends APIController
     {
         // Validate Project / User Connection
         $user_is_member = $this->compareProjects($user_id, $this->key);
-        if (!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
 
         // Validate Highlight
         $highlight_validation = $this->validateHighlight();
-        if (\is_array($highlight_validation)) return $highlight_validation;
+        if (\is_array($highlight_validation)) {
+            return $highlight_validation;
+        }
 
         $highlight = Highlight::where('user_id', $user_id)->where('id', $id)->first();
-        if (!$highlight) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_highlights'));
+        if (!$highlight) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_highlights'));
+        }
 
         if ($request->highlighted_color) {
             $color = $this->selectColor($request->highlighted_color);
@@ -294,10 +308,14 @@ class UserHighlightsController extends APIController
     {
         // Validate Project / User Connection
         $user_is_member = $this->compareProjects($user_id, $this->key);
-        if (!$user_is_member) return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
 
         $highlight  = Highlight::where('id', $id)->first();
-        if (!$highlight) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_highlights'));
+        if (!$highlight) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_highlights'));
+        }
         $highlight->delete();
 
         return $this->reply(['success' => trans('api.users_highlights_delete_200')]);
@@ -316,7 +334,9 @@ class UserHighlightsController extends APIController
             'highlighted_words' => ((request()->method() === 'POST') ? 'required|' : '') . 'min:1|integer',
             'highlighted_color' => (request()->method() === 'POST') ? 'required' : '',
         ]);
-        if ($validator->fails()) return ['errors' => $validator->errors()];
+        if ($validator->fails()) {
+            return ['errors' => $validator->errors()];
+        }
         return true;
     }
 
@@ -333,20 +353,26 @@ class UserHighlightsController extends APIController
 
         // Try Hex
         preg_match_all('/#[a-zA-Z0-9]{6}/i', $highlightedColor, $matches, PREG_SET_ORDER);
-        if (isset($matches[0][0])) $selectedColor = $this->hexToRgb($color);
+        if (isset($matches[0][0])) {
+            $selectedColor = $this->hexToRgb($color);
+        }
 
         // Try RGB
         if (!$selectedColor) {
             $expression = '/rgb\((?:\s*\d+\s*,){2}\s*[\d]+\)|rgba\((\s*\d+\s*,){3}[\d\.]+\)/i';
             preg_match_all($expression, $highlightedColor, $matches, PREG_SET_ORDER);
-            if (isset($matches[0][0])) $selectedColor = $this->rgbParse($color);
+            if (isset($matches[0][0])) {
+                $selectedColor = $this->rgbParse($color);
+            }
         }
 
         // Try HSL
         if (!$selectedColor) {
             $expression = '/hsl\(\s*\d+\s*(\s*\,\s*\d+\%){2}\)|hsla\(\s*\d+(\s*,\s*\d+\s*\%){2}\s*\,\s*[\d\.]+\)/i';
             preg_match_all($expression, $highlightedColor, $matches, PREG_SET_ORDER);
-            if (isset($matches[0][0])) $selectedColor = $this->hslToRgb($color, 1, 1);
+            if (isset($matches[0][0])) {
+                $selectedColor = $this->hslToRgb($color, 1, 1);
+            }
         }
 
         $highlightColor = HighlightColor::where($selectedColor)->first();
@@ -398,26 +424,26 @@ class UserHighlightsController extends APIController
      */
     private function hslToRgb($hue, $saturation, $lightness)
     {
-        $c = ( 1 - abs( 2 * $lightness - 1 ) ) * $saturation;
-        $x = $c * ( 1 - abs(fmod( $hue / 60, 2 ) - 1 ) );
+        $c = ( 1 - abs(2 * $lightness - 1) ) * $saturation;
+        $x = $c * ( 1 - abs(fmod($hue / 60, 2) - 1) );
         $m = $lightness - ( $c / 2 );
-        if ( $hue < 60 ) {
+        if ($hue < 60) {
             $red = $c;
             $green = $x;
             $blue = 0;
-        } else if ( $hue < 120 ) {
+        } elseif ($hue < 120) {
             $red = $x;
             $green = $c;
             $blue = 0;
-        } else if ( $hue < 180 ) {
+        } elseif ($hue < 180) {
             $red = 0;
             $green = $c;
             $blue = $x;
-        } else if ( $hue < 240 ) {
+        } elseif ($hue < 240) {
             $red = 0;
             $green = $x;
             $blue = $c;
-        } else if ( $hue < 300 ) {
+        } elseif ($hue < 300) {
             $red = $x;
             $green = 0;
             $blue = $c;
@@ -429,8 +455,6 @@ class UserHighlightsController extends APIController
         $red = ( $red + $m ) * 255;
         $green = ( $green + $m ) * 255;
         $blue = ( $blue + $m  ) * 255;
-        return ['red' => floor( $red ), 'green' => floor( $green ), 'blue' => floor( $blue ), 'alpha' => 1];
+        return ['red' => floor($red), 'green' => floor($green), 'blue' => floor($blue), 'alpha' => 1];
     }
-
-
 }

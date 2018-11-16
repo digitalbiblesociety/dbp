@@ -16,7 +16,7 @@ class GRNController extends APIController
      */
     public function index()
     {
-		return json_decode(storage_path('data/connections/grn.json'));
+        return json_decode(storage_path('data/connections/grn.json'));
     }
 
     public function sync()
@@ -27,7 +27,9 @@ class GRNController extends APIController
         $pages   = json_decode($storage->get('connections/grn.json'), true);
 
         foreach ($pages as $page) {
-            if ($storage->exists('connections/grn/' . basename($page) . '.json')) continue;
+            if ($storage->exists('connections/grn/' . basename($page) . '.json')) {
+                continue;
+            }
 
             $dom = HtmlDomParser::file_get_html($page, false, null, 0);
             foreach ($dom->find('.common-list div') as $collection) {
@@ -39,8 +41,7 @@ class GRNController extends APIController
             }
 
             $storage->put('/connections/grn/' . basename($page) . '.json', json_encode($albums, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-	        unset($albums, $dom);
+            unset($albums, $dom);
         }
     }
-
 }

@@ -13,180 +13,207 @@ use App\Http\Controllers\APIController;
 class BooksController extends APIController
 {
 
-	/**
-	 * Gets the book order and code listing for a volume.
-	 *
-	 * @version 2
-	 * @category v2_library_book
-	 * @category v2_library_bookOrder
-	 * @link http://dbt.io/library/bookorder - V2 Access
-	 * @link http://api.dbp.test/library/bookorder?key=1234&v=2&dam_id=AMKWBT&pretty - V2 Test
-	 * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_book - V2 Test Docs
-	 *
-	 * @OA\Get(
-	 *     path="/library/book/",
-	 *     tags={"Library Catalog"},
-	 *     summary="Returns books order",
-	 *     description="Gets the book order and code listing for a volume.",
-	 *     operationId="v2_library_book",
-	 *     @OA\Parameter(name="dam_id",in="query",description="The bible ID",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
-	 *     @OA\Parameter(name="asset_id",in="query",description="The Asset ID", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
-	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OA\Parameter(ref="#/components/parameters/key"),
-	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OA\Parameter(ref="#/components/parameters/format"),
-	 *     @OA\Response(
-	 *         response=200,
-	 *         description="successful operation",
-	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_book"))
-	 *     )
-	 * )
-	 *
-	 * @param dam_id - the volume internal bible_id.
-	 *
-	 * @return Book string - A JSON string that contains the status code and error messages if applicable.
-	 */
-	public function book()
-	{
-		$id        = checkParam('dam_id');
-		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
+    /**
+     * Gets the book order and code listing for a volume.
+     *
+     * @version 2
+     * @category v2_library_book
+     * @category v2_library_bookOrder
+     * @link http://dbt.io/library/bookorder - V2 Access
+     * @link http://api.dbp.test/library/bookorder?key=1234&v=2&dam_id=AMKWBT&pretty - V2 Test
+     * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_book - V2 Test Docs
+     *
+     * @OA\Get(
+     *     path="/library/book/",
+     *     tags={"Library Catalog"},
+     *     summary="Returns books order",
+     *     description="Gets the book order and code listing for a volume.",
+     *     operationId="v2_library_book",
+     *     @OA\Parameter(name="dam_id",in="query",description="The bible ID",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
+     *     @OA\Parameter(name="asset_id",in="query",description="The Asset ID", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_book"))
+     *     )
+     * )
+     *
+     * @param dam_id - the volume internal bible_id.
+     *
+     * @return Book string - A JSON string that contains the status code and error messages if applicable.
+     */
+    public function book()
+    {
+        $id        = checkParam('dam_id');
+        $asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-		$fileset   = BibleFileset::with('bible')->where('asset_id', $asset_id)
-						->where('id', $id)
-						->orWhere('id',substr($id,0,-4))
-						->orWhere('id',substr($id,0,-2))
-						->orWhere('id','LIKE',$id.'%')
-						->first();
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
-		$testament = false;
+        $fileset   = BibleFileset::with('bible')->where('asset_id', $asset_id)
+                        ->where('id', $id)
+                        ->orWhere('id', substr($id, 0, -4))
+                        ->orWhere('id', substr($id, 0, -2))
+                        ->orWhere('id', 'LIKE', $id.'%')
+                        ->first();
+        if (!$fileset) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
+        }
+        $testament = false;
 
-		switch ($id[\strlen($id) - 2]) {
-			case 'O': { $testament = 'OT'; break; }
-			case 'N': { $testament = 'NT'; break; }
-		}
+        switch ($id[\strlen($id) - 2]) {
+            case 'O':
+                $testament = 'OT';
+                break;
 
-		$libraryBook = \Cache::remember('v2_library_book_' . $id . $asset_id . $fileset . $testament, 1600,
-			function () use ($id, $fileset, $testament) {
+            case 'N':
+                $testament = 'NT';
+                break;
+        }
 
-			// If plain text check Sophia
-			if($fileset->set_type_code === 'text_plain') {
-				$sophiaTable = $this->checkForSophiaTable($fileset);
-				if(!\is_string($sophiaTable)) return $sophiaTable;
-				$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
-				$books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
-				             ->when($testament, function ($q) use ($testament) {
-					             $q->where('book_testament',$testament);
-				             })->orderBy('protestant_order')->get();
-				foreach ($books as $key => $book) {
-					$current_chapters[$key] = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
-				}
-			} else {
-				// Otherwise refer to Bible Files
-				$booksChapters = BibleFile::where('hash_id',$fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
-				$books = Book::whereIn('id', $booksChapters->pluck('book_id'))->when($testament, function ($q) use ($testament) {
-					$q->where('book_testament',$testament);
-				})->orderBy('protestant_order')->get();
-				foreach ($books as $key => $book) {
-					$current_chapters[$key] = $booksChapters->where('book_id', $book->id)->pluck('chapter_start');
-				}
-			}
+        $libraryBook = \Cache::remember(
+            'v2_library_book_' . $id . $asset_id . $fileset . $testament,
+            1600,
+            function () use ($id, $fileset, $testament) {
 
-				$bible_id = $fileset->bible->first()->id;
-				foreach ($books as $key => $book) {
-					$books[$key]->source_id       = $id;
-					$books[$key]->bible_id        = $bible_id;
-					$books[$key]->number_chapters = $current_chapters[$key]->count();
-					$books[$key]->chapters        = $current_chapters[$key]->implode(',');
-				}
+            // If plain text check Sophia
+                if ($fileset->set_type_code === 'text_plain') {
+                    $sophiaTable = $this->checkForSophiaTable($fileset);
+                    if (!\is_string($sophiaTable)) {
+                        return $sophiaTable;
+                    }
+                    $booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book', 'chapter')->distinct()->get());
+                    $books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
+                             ->when($testament, function ($q) use ($testament) {
+                                 $q->where('book_testament', $testament);
+                             })->orderBy('protestant_order')->get();
+                    foreach ($books as $key => $book) {
+                        $current_chapters[$key] = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
+                    }
+                } else {
+                    // Otherwise refer to Bible Files
+                    $booksChapters = BibleFile::where('hash_id', $fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
+                    $books = Book::whereIn('id', $booksChapters->pluck('book_id'))->when($testament, function ($q) use ($testament) {
+                        $q->where('book_testament', $testament);
+                    })->orderBy('protestant_order')->get();
+                    foreach ($books as $key => $book) {
+                        $current_chapters[$key] = $booksChapters->where('book_id', $book->id)->pluck('chapter_start');
+                    }
+                }
 
-				return fractal($books, new BookTransformer(),$this->serializer);
-			});
+                $bible_id = $fileset->bible->first()->id;
+                foreach ($books as $key => $book) {
+                    $books[$key]->source_id       = $id;
+                    $books[$key]->bible_id        = $bible_id;
+                    $books[$key]->number_chapters = $current_chapters[$key]->count();
+                    $books[$key]->chapters        = $current_chapters[$key]->implode(',');
+                }
 
-		return $this->reply($libraryBook);
-	}
+                return fractal($books, new BookTransformer(), $this->serializer);
+            }
+        );
 
-	public function bookOrder()
-	{
-		$id        = checkParam('dam_id');
-		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
+        return $this->reply($libraryBook);
+    }
 
-		$fileset   = BibleFileset::with('bible')->where('id', $id)->orWhere('id',substr($id,0,-4))->orWhere('id',substr($id,0,-2))->where('asset_id', $asset_id)->first();
-		if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
+    public function bookOrder()
+    {
+        $id        = checkParam('dam_id');
+        $asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-		$sophiaTable = $this->checkForSophiaTable($fileset);
-		if(!\is_string($sophiaTable)) return $sophiaTable;
+        $fileset   = BibleFileset::with('bible')->where('id', $id)->orWhere('id', substr($id, 0, -4))->orWhere('id', substr($id, 0, -2))->where('asset_id', $asset_id)->first();
+        if (!$fileset) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
+        }
 
-		$testament = false;
+        $sophiaTable = $this->checkForSophiaTable($fileset);
+        if (!\is_string($sophiaTable)) {
+            return $sophiaTable;
+        }
 
-		switch ($id[\strlen($id) - 2]) {
-			case 'O': { $testament = 'OT'; break; }
-			case 'N': { $testament = 'NT'; }
-		}
-		$libraryBook = \Cache::remember('v2_library_book_' . $id . $asset_id . $fileset . $testament, 1600,
-			function () use ($id, $fileset, $testament, $sophiaTable) {
-				$booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book','chapter')->distinct()->get());
-				$books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
-				             ->when($testament, function ($q) use ($testament) {
-					             $q->where('book_testament',$testament);
-				             })->orderBy('protestant_order')->get();
+        $testament = false;
 
-				$bible_id = $fileset->bible->first()->id;
-				foreach ($books as $key => $book) {
-					$chapters                     = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
-					$books[$key]->source_id       = $id;
-					$books[$key]->bible_id        = $bible_id;
-					$books[$key]->chapters        = $chapters->implode(',');
-					$books[$key]->number_chapters = $chapters->count();
-				}
+        switch ($id[\strlen($id) - 2]) {
+            case 'O':
+                $testament = 'OT';
+                break;
 
-				return fractal($books, new BookTransformer())->serializeWith($this->serializer);
-			});
+            case 'N':
+                $testament = 'NT';
+        }
+        $libraryBook = \Cache::remember(
+            'v2_library_book_' . $id . $asset_id . $fileset . $testament,
+            1600,
+            function () use ($id, $fileset, $testament, $sophiaTable) {
+                $booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book', 'chapter')->distinct()->get());
+                $books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
+                             ->when($testament, function ($q) use ($testament) {
+                                 $q->where('book_testament', $testament);
+                             })->orderBy('protestant_order')->get();
 
-		return $this->reply($libraryBook);
-	}
+                $bible_id = $fileset->bible->first()->id;
+                foreach ($books as $key => $book) {
+                    $chapters                     = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
+                    $books[$key]->source_id       = $id;
+                    $books[$key]->bible_id        = $bible_id;
+                    $books[$key]->chapters        = $chapters->implode(',');
+                    $books[$key]->number_chapters = $chapters->count();
+                }
 
-	/**
-	 * Gets the book order and code listing for a volume.
-	 *
-	 * @version 2
-	 * @category v2_library_bookName
-	 * @link http://dbt.io/library/bookname - V2 Access
-	 * @link http://api.dbp.test/library/bookname?key=1234&v=2&language_code=ben - V2 Test Access
-	 * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_bookname - V2 Test Docs
-	 *
-	 * @OA\Get(
-	 *     path="/library/bookname/",
-	 *     tags={"Library Catalog"},
-	 *     summary="Returns book Names",
-	 *     description="Gets the book order and code listing for a volume.",
-	 *     operationId="v2_library_bookName",
-	 *     @OA\Parameter(name="language_code",in="query",description="The language_code",required=true, @OA\Schema(ref="#/components/schemas/Language/properties/iso")),
-	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OA\Parameter(ref="#/components/parameters/key"),
-	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OA\Parameter(ref="#/components/parameters/format"),
-	 *     @OA\Response(
-	 *         response=200,
-	 *         description="successful operation",
-	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/BookName"))
-	 *     )
-	 * )
-	 *
-	 * @param language_code - The language code to filter the books by
-	 *
-	 * @return BookTranslation string - A JSON string that contains the status code and error messages if applicable.
-	 *
-	 */
-	public function bookNames()
-	{
-		if(!$this->api) return view('docs.books.bookNames');
-		$iso = checkParam('language_code');
-		$language = Language::where('iso',$iso)->first();
-		if(!$language) return $this->setStatusCode(404)->replywithError('No language could be found for the iso code specified');
+                return fractal($books, new BookTransformer())->serializeWith($this->serializer);
+            }
+        );
 
-		$libraryBookName = \Cache::remember('v2_library_bookName_' . $iso, 1600, function () use ($language) {
-			$bookTranslations = BookTranslation::where('language_id', $language->id)->with('book')->select(['name', 'book_id'])->get()->pluck('name','book.id_osis');
-			$bookTranslations['AL'] = 'Alternative';
+        return $this->reply($libraryBook);
+    }
+
+    /**
+     * Gets the book order and code listing for a volume.
+     *
+     * @version 2
+     * @category v2_library_bookName
+     * @link http://dbt.io/library/bookname - V2 Access
+     * @link http://api.dbp.test/library/bookname?key=1234&v=2&language_code=ben - V2 Test Access
+     * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_bookname - V2 Test Docs
+     *
+     * @OA\Get(
+     *     path="/library/bookname/",
+     *     tags={"Library Catalog"},
+     *     summary="Returns book Names",
+     *     description="Gets the book order and code listing for a volume.",
+     *     operationId="v2_library_bookName",
+     *     @OA\Parameter(name="language_code",in="query",description="The language_code",required=true, @OA\Schema(ref="#/components/schemas/Language/properties/iso")),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/BookName"))
+     *     )
+     * )
+     *
+     * @param language_code - The language code to filter the books by
+     *
+     * @return BookTranslation string - A JSON string that contains the status code and error messages if applicable.
+     *
+     */
+    public function bookNames()
+    {
+        if (!$this->api) {
+            return view('docs.books.bookNames');
+        }
+        $iso = checkParam('language_code');
+        $language = Language::where('iso', $iso)->first();
+        if (!$language) {
+            return $this->setStatusCode(404)->replywithError('No language could be found for the iso code specified');
+        }
+
+        $libraryBookName = \Cache::remember('v2_library_bookName_' . $iso, 1600, function () use ($language) {
+            $bookTranslations = BookTranslation::where('language_id', $language->id)->with('book')->select(['name', 'book_id'])->get()->pluck('name', 'book.id_osis');
+            $bookTranslations['AL'] = 'Alternative';
             $bookTranslations['ON'] = 'Old and New Testament';
             $bookTranslations['OT'] = 'Old Testament';
             $bookTranslations['NT'] = 'New Testament';
@@ -197,92 +224,105 @@ class BooksController extends APIController
             $bookTranslations['AO'] = 'Armenian Orthodox Canon Additions';
             $bookTranslations['PE'] = 'Peshitta';
             $bookTranslations['CS'] = 'Codex Sinaiticus';
-			return [$bookTranslations];
-		});
+            return [$bookTranslations];
+        });
 
-		return $this->reply($libraryBookName);
-	}
+        return $this->reply($libraryBookName);
+    }
 
-	/**
-	 * This lists the chapters for a book or all books in a standard bible volume.
-	 *
-	 * @version 2
-	 * @category v2_library_chapter
-	 * @link http://dbt.io/library/chapter - V2 Access
-	 * @link https://api.dbp.test/library/chapter?key=1234&v=2&dam_id=AMKWBT&book_id=MAT&pretty - V2 Test Access
-	 * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_chapter - V2 Test Docs
-	 *
-	 * @OA\Get(
-	 *     path="/library/chapter/",
-	 *     tags={"Library Catalog"},
-	 *     summary="Returns chapters for a book",
-	 *     description="Lists the chapters for a book or all books in a standard bible volume.",
-	 *     operationId="v2_library_chapter",
-	 *     @OA\Parameter(name="dam_id",in="query",description="The bible_id",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
-	 *     @OA\Parameter(name="asset_id",in="query",description="The asset_id", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
-	 *     @OA\Parameter(name="book_id",in="query",description="The book_id",required=true, @OA\Schema(ref="#/components/schemas/Book/properties/id")),
-	 *     @OA\Parameter(ref="#/components/parameters/version_number"),
-	 *     @OA\Parameter(ref="#/components/parameters/key"),
-	 *     @OA\Parameter(ref="#/components/parameters/pretty"),
-	 *     @OA\Parameter(ref="#/components/parameters/format"),
-	 *     @OA\Response(
-	 *         response=200,
-	 *         description="successful operation",
-	 *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"}))
-	 *     )
-	 * )
-	 *
-	 * @param dam_id - The Fileset ID to filter by
-	 * @param book_id - The USFM 2.4 or OSIS Book ID code
-	 * @param asset_id - The optional asset ID of the resource, if not given the API will assume FCBH origin
-	 *
-	 * @return mixed $chapters string - A JSON string that contains the status code and error messages if applicable.
-	 *
-	 */
-	public function chapters()
-	{
-		if(!$this->api) return view('docs.books.chapters');
+    /**
+     * This lists the chapters for a book or all books in a standard bible volume.
+     *
+     * @version 2
+     * @category v2_library_chapter
+     * @link http://dbt.io/library/chapter - V2 Access
+     * @link https://api.dbp.test/library/chapter?key=1234&v=2&dam_id=AMKWBT&book_id=MAT&pretty - V2 Test Access
+     * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_chapter - V2 Test Docs
+     *
+     * @OA\Get(
+     *     path="/library/chapter/",
+     *     tags={"Library Catalog"},
+     *     summary="Returns chapters for a book",
+     *     description="Lists the chapters for a book or all books in a standard bible volume.",
+     *     operationId="v2_library_chapter",
+     *     @OA\Parameter(name="dam_id",in="query",description="The bible_id",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
+     *     @OA\Parameter(name="asset_id",in="query",description="The asset_id", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
+     *     @OA\Parameter(name="book_id",in="query",description="The book_id",required=true, @OA\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"}))
+     *     )
+     * )
+     *
+     * @param dam_id - The Fileset ID to filter by
+     * @param book_id - The USFM 2.4 or OSIS Book ID code
+     * @param asset_id - The optional asset ID of the resource, if not given the API will assume FCBH origin
+     *
+     * @return mixed $chapters string - A JSON string that contains the status code and error messages if applicable.
+     *
+     */
+    public function chapters()
+    {
+        if (!$this->api) {
+            return view('docs.books.chapters');
+        }
 
-		$id        = checkParam('dam_id');
-		$asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
-		$book_id   = checkParam('book_id');
+        $id        = checkParam('dam_id');
+        $asset_id  = checkParam('bucket|bucket_id|asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $book_id   = checkParam('book_id');
 
 
-		$chapters = \Cache::remember('v2_library_chapter_' . $id . $asset_id . $book_id, 1600, function () use ($id, $asset_id, $book_id) {
-			$fileset = BibleFileset::where('id', $id)->orWhere('id', substr($id, 0, -4))->where('asset_id', $asset_id)->first();
-			if(!$fileset) return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
+        $chapters = \Cache::remember('v2_library_chapter_' . $id . $asset_id . $book_id, 1600, function () use ($id, $asset_id, $book_id) {
+            $fileset = BibleFileset::where('id', $id)->orWhere('id', substr($id, 0, -4))->where('asset_id', $asset_id)->first();
+            if (!$fileset) {
+                return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
+            }
 
-			$book = Book::where('id_osis', $book_id)->orWhere('id', $book_id)->first();
-			if(!$book) return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404', ['id' => $id]));
+            $book = Book::where('id_osis', $book_id)->orWhere('id', $book_id)->first();
+            if (!$book) {
+                return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404', ['id' => $id]));
+            }
 
-			$sophiaTable = $this->checkForSophiaTable($fileset);
-			if(!\is_string($sophiaTable)) return $sophiaTable;
+            $sophiaTable = $this->checkForSophiaTable($fileset);
+            if (!\is_string($sophiaTable)) {
+                return $sophiaTable;
+            }
 
-			$chapters = \DB::connection('sophia')->table($sophiaTable . '_vpl')
-				->when($book, function ($q) use ($book) {
-				    $q->where('book', $book->id_usfx);
-				})
-				->select(['chapter', 'book'])->distinct()->orderBy('chapter')->get()
-				->map(function ($chapter) use ($id, $book) {
-				    $chapter->book_id  = $book->id_osis;
-				    $chapter->bible_id = $id;
-				    $chapter->source_id = $id;
-				    return $chapter;
-				});
+            $chapters = \DB::connection('sophia')->table($sophiaTable . '_vpl')
+                ->when($book, function ($q) use ($book) {
+                    $q->where('book', $book->id_usfx);
+                })
+                ->select(['chapter', 'book'])->distinct()->orderBy('chapter')->get()
+                ->map(function ($chapter) use ($id, $book) {
+                    $chapter->book_id  = $book->id_osis;
+                    $chapter->bible_id = $id;
+                    $chapter->source_id = $id;
+                    return $chapter;
+                });
 
-				return fractal($chapters, new BookTransformer())->serializeWith($this->serializer);
-			});
+                return fractal($chapters, new BookTransformer())->serializeWith($this->serializer);
+        });
 
-		return $this->reply($chapters);
-	}
+        return $this->reply($chapters);
+    }
 
-	private function checkForSophiaTable($fileset)
-	{
-		$textExists = \Schema::connection('sophia')->hasTable(substr($fileset->id, 0, -4) . '_vpl');
-		if($textExists) return substr($fileset->id, 0, -4);
-		if(!$textExists) $textExists = \Schema::connection('sophia')->hasTable($fileset->id . '_vpl');
-		if(!$textExists) return $this->setStatusCode(404)->replyWithError(trans('api.bible_filesets_errors_checkback', ['id' => $fileset->id]));
-		return $fileset->id;
-	}
-
+    private function checkForSophiaTable($fileset)
+    {
+        $textExists = \Schema::connection('sophia')->hasTable(substr($fileset->id, 0, -4) . '_vpl');
+        if ($textExists) {
+            return substr($fileset->id, 0, -4);
+        }
+        if (!$textExists) {
+            $textExists = \Schema::connection('sophia')->hasTable($fileset->id . '_vpl');
+        }
+        if (!$textExists) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.bible_filesets_errors_checkback', ['id' => $fileset->id]));
+        }
+        return $fileset->id;
+    }
 }

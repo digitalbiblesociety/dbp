@@ -13,7 +13,11 @@ class LogViewerController extends APIController
         $files    = Storage::disk('logs')->files();
 
         // Ensure only logs are returned
-        foreach ($files as $key => $file) if (!ends_with($file, '.log')) unset($files[$key]);
+        foreach ($files as $key => $file) {
+            if (!ends_with($file, '.log')) {
+                unset($files[$key]);
+            }
+        }
 
         // Get the current log and parse it
         $log_file = Storage::disk('logs')->get($log.'.log');
@@ -52,7 +56,9 @@ class LogViewerController extends APIController
 
         preg_match_all($pattern, $file, $headings);
 
-        if (!\is_array($headings)) return $log;
+        if (!\is_array($headings)) {
+            return $log;
+        }
 
         $log_data = preg_split($pattern, $file);
 
@@ -66,7 +72,9 @@ class LogViewerController extends APIController
                     if (stripos($h[$i], '.' . $level) || stripos($h[$i], $level . ':')) {
                         $expression = '/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\](?:.*?(\w+)\.|.*?)' . $level . ': (.*?)( in .*?:[0-9]+)?$/i';
                         preg_match($expression, $h[$i], $current);
-                        if (!isset($current[3])) continue;
+                        if (!isset($current[3])) {
+                            continue;
+                        }
                         $log[] = array(
                             'context' => $current[2],
                             'level' => $level,
@@ -83,6 +91,4 @@ class LogViewerController extends APIController
 
         return array_reverse($log);
     }
-
-
 }

@@ -68,8 +68,12 @@ class CountriesController extends APIController
      */
     public function index()
     {
-        if (!$this->api) return view('wiki.countries.index');
-        if (config('app.env') === 'local') ini_set('memory_limit', '864M');
+        if (!$this->api) {
+            return view('wiki.countries.index');
+        }
+        if (config('app.env') === 'local') {
+            ini_set('memory_limit', '864M');
+        }
 
         $filesets = checkParam('has_filesets', null, 'optional') ?? true;
         $asset_id = checkParam('asset_id', null, 'optional') ?? config('filesystems.disks.s3_fcbh.bucket');
@@ -190,7 +194,9 @@ class CountriesController extends APIController
             }
             return $country;
         });
-        if (!is_a($country, Country::class)) return $country;
+        if (!is_a($country, Country::class)) {
+            return $country;
+        }
         $includes = $this->loadWorldFacts($country);
         return $this->reply(fractal($country, new CountryTransformer(), $this->serializer)->parseIncludes($includes));
     }
@@ -221,5 +227,4 @@ class CountriesController extends APIController
         }
         return $loadedProfiles;
     }
-
 }

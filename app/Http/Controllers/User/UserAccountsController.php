@@ -89,7 +89,9 @@ class UserAccountsController extends APIController
     public function store(Request $request)
     {
         $invalidAccount = $this->invalidAccount();
-        if ($invalidAccount) return $invalidAccount;
+        if ($invalidAccount) {
+            return $invalidAccount;
+        }
 
         $user = $this->verifyProjectUserConnection();
         $account = $user->accounts()->create($request->all());
@@ -182,11 +184,15 @@ class UserAccountsController extends APIController
     public function update(Request $request, $account_id)
     {
         $invalidAccount = $this->invalidAccount();
-        if ($invalidAccount) return $invalidAccount;
+        if ($invalidAccount) {
+            return $invalidAccount;
+        }
 
         $user    = $this->verifyProjectUserConnection();
         $account = Account::where('id', $account_id)->first();
-        if (!$account) return $this->setStatusCode(404)->replyWithError('Account '. $account_id . ' not found');
+        if (!$account) {
+            return $this->setStatusCode(404)->replyWithError('Account '. $account_id . ' not found');
+        }
         $account->update($request->all());
 
         return $this->reply($account);
@@ -262,9 +268,10 @@ class UserAccountsController extends APIController
             'provider_user_id'    => $requiredCondition. 'string',
         ]);
 
-        if ($validator->fails()) return $this->setStatusCode(422)->replyWithError($validator->errors());
+        if ($validator->fails()) {
+            return $this->setStatusCode(422)->replyWithError($validator->errors());
+        }
 
         return null;
     }
-
 }

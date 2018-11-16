@@ -91,8 +91,12 @@ class LanguagesController extends APIController
      */
     public function index()
     {
-        if (config('app.env') === 'local') ini_set('memory_limit', '700M');
-        if (!$this->api) return view('wiki.languages.index');
+        if (config('app.env') === 'local') {
+            ini_set('memory_limit', '700M');
+        }
+        if (!$this->api) {
+            return view('wiki.languages.index');
+        }
 
         $country               = checkParam('country', null, 'optional');
         $code                  = checkParam('code|iso', null, 'optional');
@@ -142,9 +146,9 @@ class LanguagesController extends APIController
 
                     dd($this->key);
 
-                    $query->leftJoin('bibles','bibles.language_id','language.id');
-                    $query->leftJoin('bible_fileset_connections','bibles.id','bible_fileset_connections.bible_id');
-                    $query->leftJoin('access_group_filesets','bible_fileset_connections.hash_id','access_group_filesets.hash_id');
+                    $query->leftJoin('bibles', 'bibles.language_id', 'language.id');
+                    $query->leftJoin('bible_fileset_connections', 'bibles.id', 'bible_fileset_connections.bible_id');
+                    $query->leftJoin('access_group_filesets', 'bible_fileset_connections.hash_id', 'access_group_filesets.hash_id');
 
                     //// Eloquent Model
                     //$query->whereHas('filesets', function ($query) use ($access_control, $asset_id) {
@@ -208,7 +212,9 @@ class LanguagesController extends APIController
     {
         $language = \Cache::remember('single_language_'.$id, 2400, function () use ($id) {
             $language = Language::where('id', $id)->orWhere('iso', $id)->first();
-            if (!$language) return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
+            if (!$language) {
+                return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
+            }
             $language->load(
                 'translations',
                 'codes',
@@ -226,5 +232,4 @@ class LanguagesController extends APIController
 
         return $this->reply($language);
     }
-
 }

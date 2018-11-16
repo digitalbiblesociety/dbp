@@ -45,7 +45,9 @@ class AlphabetsController extends APIController
      */
     public function index()
     {
-        if (!$this->api) return view('wiki.languages.alphabets.index');
+        if (!$this->api) {
+            return view('wiki.languages.alphabets.index');
+        }
 
         $alphabets = \Cache::remember('alphabets', 1600, function () {
             $alphabets = Alphabet::select(['name', 'script', 'family', 'direction', 'type'])->get();
@@ -102,8 +104,9 @@ class AlphabetsController extends APIController
             $alphabet = Alphabet::with('fonts', 'languages', 'bibles.currentTranslation')->find($id);
             return fractal($alphabet, AlphabetTransformer::class, $this->serializer);
         });
-        if (!$alphabet) return $this->setStatusCode(404)->replyWithError(trans('api.alphabets_errors_404'));
+        if (!$alphabet) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.alphabets_errors_404'));
+        }
         return $this->reply($alphabet);
     }
-
 }

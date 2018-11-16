@@ -59,7 +59,9 @@ class NumbersController extends APIController
         $script = checkParam('script');
         $start  = checkParam('start', null, 'optional');
         $end    = checkParam('end', null, 'optional');
-        if (($end - $start) > 2000) return $this->replyWithError(trans('api.numerals_range_error', ['num' => $end]));
+        if (($end - $start) > 2000) {
+            return $this->replyWithError(trans('api.numerals_range_error', ['num' => $end]));
+        }
 
         // Fetch Numbers By Iso Or Script Code
         $numbers = NumeralSystemGlyph::where('numeral_system_id', $script)
@@ -95,7 +97,9 @@ class NumbersController extends APIController
      */
     public function index()
     {
-        if (!$this->api) return view('wiki.languages.alphabets.numerals.index');
+        if (!$this->api) {
+            return view('wiki.languages.alphabets.numerals.index');
+        }
         $numeral_systems = \Cache::remember('v4_numbers.index', 1600, function () {
             $numeral_systems = NumeralSystem::with('alphabets')->get();
             return fractal($numeral_systems, new NumbersTransformer())->serializeWith($this->serializer);
@@ -136,7 +140,9 @@ class NumbersController extends APIController
      */
     public function show($system)
     {
-        if (!$this->api) return view('wiki.languages.alphabets.numerals.show');
+        if (!$this->api) {
+            return view('wiki.languages.alphabets.numerals.show');
+        }
 
         $numerals = NumeralSystem::where('id', $system)->first();
         if (!$numerals) {
@@ -153,5 +159,4 @@ class NumbersController extends APIController
 
         return $this->reply($numerals);
     }
-
 }

@@ -139,7 +139,9 @@ class LaravelLoggerController extends APIController
     public function clearActivityLog()
     {
         $activities = Activity::all();
-        foreach ($activities as $activity) $activity->delete();
+        foreach ($activities as $activity) {
+            $activity->delete();
+        }
         return redirect('activity')->with('success', trans('LaravelLogger::laravel-logger.messages.logClearedSuccessfuly'));
     }
 
@@ -205,7 +207,9 @@ class LaravelLoggerController extends APIController
     private function getClearedActivity($id)
     {
         $activity = Activity::onlyTrashed()->where('id', $id)->get();
-        if (\count($activity) !== 1) return abort(404);
+        if (\count($activity) !== 1) {
+            return abort(404);
+        }
 
         return $activity[0];
     }
@@ -233,7 +237,9 @@ class LaravelLoggerController extends APIController
     public function restoreClearedActivityLog()
     {
         $activities = Activity::onlyTrashed()->get();
-        foreach ($activities as $activity) $activity->restore();
+        foreach ($activities as $activity) {
+            $activity->restore();
+        }
 
         return redirect('activity')->with('success', trans('LaravelLogger::laravel-logger.messages.logRestoredSuccessfuly'));
     }

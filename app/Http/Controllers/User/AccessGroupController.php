@@ -41,7 +41,9 @@ class AccessGroupController extends APIController
      */
     public function index()
     {
-        if (!$this->api) return view('access.groups.index');
+        if (!$this->api) {
+            return view('access.groups.index');
+        }
 
         $access_groups = \Cache::remember('access_groups', 1800, function () {
             $access_groups = AccessGroup::select(['id','name'])->get();
@@ -80,21 +82,31 @@ class AccessGroupController extends APIController
     public function store(Request $request)
     {
         $invalidUser = $this->validateUser();
-        if ($invalidUser) return $invalidUser;
+        if ($invalidUser) {
+            return $invalidUser;
+        }
 
         $invalid = $this->validateAccessGroup($request);
-        if ($invalid) return $this->setStatusCode(400)->reply($invalid);
+        if ($invalid) {
+            return $this->setStatusCode(400)->reply($invalid);
+        }
 
         $access_group = \DB::transaction(function () use ($request) {
             $access_group = AccessGroup::create($request->only(['name','description']));
             if ($request->filesets) {
-                foreach ($request->filesets as $fileset) $access_group->filesets()->create(['hash_id' => $fileset]);
-                foreach ($request->users as $user) $access_group->users()->create(['user_id' => $user]);
+                foreach ($request->filesets as $fileset) {
+                    $access_group->filesets()->create(['hash_id' => $fileset]);
+                }
+                foreach ($request->users as $user) {
+                    $access_group->users()->create(['user_id' => $user]);
+                }
             }
             return $access_group;
         });
 
-        if (!$this->api) return redirect()->route('access.groups.show', ['group_id' => $access_group->id]);
+        if (!$this->api) {
+            return redirect()->route('access.groups.show', ['group_id' => $access_group->id]);
+        }
         return $this->reply($access_group);
     }
 
@@ -137,13 +149,17 @@ class AccessGroupController extends APIController
         $access_group = \Cache::remember('access_group_'.$id, 1800, function () use ($id) {
             $access_group_column = \is_int($id) ? 'id' : 'name';
             $access_group = AccessGroup::with('filesets', 'types', 'keys')->where($access_group_column, $id)->first();
-            if (!$access_group) return $this->setStatusCode(404)->replyWithError(trans('api.access_group_404'));
+            if (!$access_group) {
+                return $this->setStatusCode(404)->replyWithError(trans('api.access_group_404'));
+            }
             $access_group->current_key = $this->key;
             return fractal($access_group, new AccessGroupTransformer());
         });
 
         // If The access group is an error message don't pass it through to reply()
-        if (is_a($access_group, JsonResponse::class)) return $access_group;
+        if (is_a($access_group, JsonResponse::class)) {
+            return $access_group;
+        }
 
         return $this->reply($access_group);
     }
@@ -191,15 +207,25 @@ class AccessGroupController extends APIController
     public function update(Request $request, $id)
     {
         $invalid = $this->validateAccessGroup($request);
-        if ($invalid) return $this->setStatusCode(400)->reply($invalid);
+        if ($invalid) {
+            return $this->setStatusCode(400)->reply($invalid);
+        }
 
         $access_group = AccessGroup::where('id', $id)->orWhere('name', $id)->first();
-        if (!$access_group) return $this->setStatusCode(404)->replyWithError(trans('api.'));
+        if (!$access_group) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.'));
+        }
         $access_group->fill($request->all())->save();
 
-        if (isset($request->filesets)) $access_group->filesets()->createMany($request->filesets);
-        if (isset($request->keys)) $access_group->keys()->createMany($request->keys);
-        if (isset($request->types)) $access_group->keys()->sync($request->types);
+        if (isset($request->filesets)) {
+            $access_group->filesets()->createMany($request->filesets);
+        }
+        if (isset($request->keys)) {
+            $access_group->keys()->createMany($request->keys);
+        }
+        if (isset($request->types)) {
+            $access_group->keys()->sync($request->types);
+        }
 
         return $this->reply($access_group);
     }
@@ -239,10 +265,14 @@ class AccessGroupController extends APIController
     public function destroy($id)
     {
         $invalidUser = $this->validateUser();
-        if ($invalidUser) return $invalidUser;
+        if ($invalidUser) {
+            return $invalidUser;
+        }
 
         $access_group = AccessGroup::where('id', $id)->orWhere('name', $id)->first();
-        if (!$access_group) return $this->setStatusCode(404)->replyWithError('Access Group not Found');
+        if (!$access_group) {
+            return $this->setStatusCode(404)->replyWithError('Access Group not Found');
+        }
         $access_group->delete();
 
         return $this->reply('successfully deleted');
@@ -269,7 +299,9 @@ class AccessGroupController extends APIController
         ]);
 
         if ($validator->fails()) {
-            if (!$this->api) return redirect('access/groups/create')->withErrors($validator)->withInput();
+            if (!$this->api) {
+                return redirect('access/groups/create')->withErrors($validator)->withInput();
+            }
             return $this->setStatusCode(422)->replyWithError($validator->errors());
         }
         return false;
@@ -278,8 +310,9 @@ class AccessGroupController extends APIController
     private function validateUser()
     {
         $is_admin = $this->user->roles->where('slug', 'admin')->first();
-        if ($is_admin) return true;
+        if ($is_admin) {
+            return true;
+        }
         return null;
     }
-
 }

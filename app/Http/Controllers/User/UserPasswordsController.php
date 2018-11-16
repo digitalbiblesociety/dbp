@@ -21,7 +21,9 @@ class UserPasswordsController extends APIController
     public function showResetForm(Request $request, $token = null)
     {
         $reset_request = PasswordReset::where('token', $token)->first();
-        if (!$reset_request) return $this->replyWithError('No matching Token found');
+        if (!$reset_request) {
+            return $this->replyWithError('No matching Token found');
+        }
         return view('auth.passwords.reset', compact('reset_request'));
     }
 
@@ -79,13 +81,19 @@ class UserPasswordsController extends APIController
         ]);
         $user = User::where('email', $request->email)->first();
         $user->token = $generatedToken->token;
-        if (!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
+        if (!$user) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
+        }
 
         $project = Project::where('id', $request->project_id)->first();
-        if (!$project) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project'));
+        if (!$project) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project'));
+        }
 
         \Mail::to($user)->send(new EmailPasswordReset($user, $project));
-        if (!$this->api) return view('auth.verification-required');
+        if (!$this->api) {
+            return view('auth.verification-required');
+        }
         return $this->reply(trans('api.email_send_successful'));
     }
 
@@ -135,14 +143,20 @@ class UserPasswordsController extends APIController
     {
         $new_password = $request->new_password;
         $validated = $this->validatePassword($request);
-        if ($validated !== 'valid') return $validated;
+        if ($validated !== 'valid') {
+            return $validated;
+        }
 
         $user = User::where('email', $request->email)->first();
-        if (!$user) return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
+        if (!$user) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
+        }
         $user->password = \Hash::needsRehash($new_password) ? \Hash::make($new_password) : $new_password;
         $user->save();
 
-        if ($this->api) return $this->reply($user);
+        if ($this->api) {
+            return $this->reply($user);
+        }
 
         \Auth::login($user);
         return redirect()->route('public.home');
@@ -170,10 +184,11 @@ class UserPasswordsController extends APIController
         ]);
 
         if ($validator->fails()) {
-            if ($this->api) return $this->setStatusCode(422)->replyWithError($validator->errors());
+            if ($this->api) {
+                return $this->setStatusCode(422)->replyWithError($validator->errors());
+            }
             return redirect()->back()->with(['errors' => $validator->errors()])->withInput();
         }
         return 'valid';
     }
-
 }

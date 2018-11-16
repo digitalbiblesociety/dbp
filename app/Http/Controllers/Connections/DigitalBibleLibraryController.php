@@ -41,7 +41,9 @@ class DigitalBibleLibraryController extends APIController
         }
 
         $fp = fopen(storage_path('data/bibles/DBL.csv'), 'wb');
-        foreach ($output as $fields) fputcsv($fp, $fields);
+        foreach ($output as $fields) {
+            fputcsv($fp, $fields);
+        }
         fclose($fp);
 
         return null;

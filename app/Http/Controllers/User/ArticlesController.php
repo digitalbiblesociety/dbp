@@ -29,7 +29,9 @@ class ArticlesController extends APIController
      */
     public function index()
     {
-        if (!$this->api) return view('community.articles.index');
+        if (!$this->api) {
+            return view('community.articles.index');
+        }
         $articles = Article::with('translations')->get();
 
         return $this->reply($articles);
@@ -68,10 +70,14 @@ class ArticlesController extends APIController
     public function store(Request $request)
     {
         $invalidUser = $this->invalidUser();
-        if ($invalidUser) return $invalidUser;
+        if ($invalidUser) {
+            return $invalidUser;
+        }
 
         $invalidArticle = $this->invalidArticle($request);
-        if ($invalidArticle) return $invalidArticle;
+        if ($invalidArticle) {
+            return $invalidArticle;
+        }
 
         $article                  = new Article();
         $article->cover           = $request->cover;
@@ -82,7 +88,9 @@ class ArticlesController extends APIController
         $article->translations()->createMany($request->translations);
         $article->tags()->createMany($request->tags);
 
-        if (!$this->api) return redirect()->route('view_articles.show', ['id' => request()->id]);
+        if (!$this->api) {
+            return redirect()->route('view_articles.show', ['id' => request()->id]);
+        }
         return $this->reply($article);
     }
 
@@ -102,7 +110,9 @@ class ArticlesController extends APIController
      */
     public function show($id)
     {
-        if (!$this->api) return view('community.articles.show');
+        if (!$this->api) {
+            return view('community.articles.show');
+        }
         $article = Article::where('id', $id)->orWhere('name', $id)->first();
 
         return $this->reply($article);
@@ -137,10 +147,14 @@ class ArticlesController extends APIController
     public function update(Request $request, $id)
     {
         $invalidUser = $this->invalidUser();
-        if ($invalidUser) return $invalidUser;
+        if ($invalidUser) {
+            return $invalidUser;
+        }
 
         $invalidArticle = $this->invalidArticle($request);
-        if ($invalidArticle) return $invalidArticle;
+        if ($invalidArticle) {
+            return $invalidArticle;
+        }
 
         return view('community.articles.show', compact('request', 'id'));
     }
@@ -156,7 +170,9 @@ class ArticlesController extends APIController
     {
         $this->validateUser();
         $article = Article::find($id);
-        if (!$article) return $this->setStatusCode(404)->replyWithError(trans('api.articles_show_404', ['id' => $id]));
+        if (!$article) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.articles_show_404', ['id' => $id]));
+        }
         $article->delete();
         return view('community.articles.index');
     }
@@ -178,8 +194,12 @@ class ArticlesController extends APIController
         ]);
 
         if ($validator->fails()) {
-            if ($this->api) return $this->setStatusCode(422)->replyWithError($validator->errors());
-            if (!$this->api) return redirect('articles/create')->withErrors($validator)->withInput();
+            if ($this->api) {
+                return $this->setStatusCode(422)->replyWithError($validator->errors());
+            }
+            if (!$this->api) {
+                return redirect('articles/create')->withErrors($validator)->withInput();
+            }
         }
         return null;
     }
@@ -200,5 +220,4 @@ class ArticlesController extends APIController
         }
         return null;
     }
-
 }

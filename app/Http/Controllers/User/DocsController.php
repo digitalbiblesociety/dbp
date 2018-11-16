@@ -6,7 +6,6 @@ use App\Http\Controllers\APIController;
 use App\Models\User\User;
 use database\seeds\SeederHelper;
 
-
 class DocsController extends APIController
 {
     /**
@@ -72,16 +71,24 @@ class DocsController extends APIController
 
         foreach ($swagger->paths as $key => $path) {
             if (isset($path->get->operationId)) {
-                if (strpos($path->get->operationId, $version) !== 0) unset($swagger->paths[$key]);
+                if (strpos($path->get->operationId, $version) !== 0) {
+                    unset($swagger->paths[$key]);
+                }
             }
             if (isset($path->put->operationId)) {
-                if (strpos($path->put->operationId, $version) !== 0) unset($swagger->paths[$key]);
+                if (strpos($path->put->operationId, $version) !== 0) {
+                    unset($swagger->paths[$key]);
+                }
             }
             if (isset($path->post->operationId)) {
-                if (strpos($path->post->operationId, $version) !== 0) unset($swagger->paths[$key]);
+                if (strpos($path->post->operationId, $version) !== 0) {
+                    unset($swagger->paths[$key]);
+                }
             }
             if (isset($path->delete->operationId)) {
-                if (strpos($path->delete->operationId, $version) !== 0) unset($swagger->paths[$key]);
+                if (strpos($path->delete->operationId, $version) !== 0) {
+                    unset($swagger->paths[$key]);
+                }
             }
         }
 
@@ -174,6 +181,4 @@ class DocsController extends APIController
     {
         return view('docs.v2.books.bookOrderListing');
     }
-
-
 }

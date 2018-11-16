@@ -14,7 +14,7 @@
 	Route::name('v2_volume_history')->match(['get','options'],'library/volumehistory',                                      'Connections\V2Controllers\LibraryCatalog\LibraryVolumeController@history');
 	Route::name('v2_library_volumeLanguage')->match(['get','options'],'library/volumelanguage',                             'Connections\V2Controllers\LibraryCatalog\LanguageController@volumeLanguage');
 	Route::name('v2_library_volumeLanguageFamily')->match(['get','options'],'library/volumelanguagefamily',                 'Connections\V2Controllers\LibraryCatalog\LanguageController@volumeLanguageFamily');
-	Route::name('v2_country_lang')->match(['get','options'],'country/countrylang',                                          'Connections\V2Controllers\LibraryCatalog\LanguageController@CountryLang');
+	Route::name('v2_country_lang')->match(['get','options'],'country/countrylang',                                          'Connections\V2Controllers\LibraryCatalog\LanguageController@countryLang');
 	Route::name('v2_library_metadata')->match(['get','options'],'library/metadata',                                         'Connections\V2Controllers\LibraryCatalog\LibraryMetadataController@index');
 	Route::name('v2_library_volume')->match(['get','options'],'library/volume',                                             'Connections\V2Controllers\LibraryCatalog\LibraryVolumeController@libraryVolume');
 	Route::name('v2_volume_organization_list')->match(['get','options'],'library/volumeorganization',                       'Organization\OrganizationsController@index');

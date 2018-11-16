@@ -114,10 +114,10 @@ class UserContactController extends APIController
         ]);
 
         if ($validator->fails()) {
-            if (!$this->api) return redirect('about/contact')->withErrors($validator)->withInput();
+            if (!$this->api) {
+                return redirect('about/contact')->withErrors($validator)->withInput();
+            }
             return $this->setStatusCode(422)->replyWithError($validator->errors());
         }
-
     }
-
 }
