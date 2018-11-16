@@ -9,7 +9,8 @@ use Carbon\Carbon;
 use Curl\Curl;
 use Cache;
 
-trait CallsBucketsTrait {
+trait CallsBucketsTrait
+{
 
     public function authorizeAWS($source)
     {
@@ -20,7 +21,9 @@ trait CallsBucketsTrait {
                 return json_decode(json_encode($response_xml));
             }
         });
-        if (!$security_token->AssumeRoleResult) return $this->setStatusCode(500)->replyWithError('s3 connection currently down');
+        if (!$security_token->AssumeRoleResult) {
+            return $this->setStatusCode(500)->replyWithError('s3 connection currently down');
+        }
 
         if ($source === 'cloudfront') {
             return new CloudFrontClient([
@@ -66,7 +69,6 @@ trait CallsBucketsTrait {
             $signature = base64_encode(hash_hmac('sha1', $data, $temp_secret_key, true));
             return "https://$bucket.s3.amazonaws.com/$file_path?AWSAccessKeyId=$temp_access_key&Signature=".urlencode($signature).'&x-amz-security-token='.urlencode($temp_session_token)."&x-amz-transaction=$transaction&Expires=$timestamp";
         }
-
     }
 
     private function assumeRole()
@@ -109,7 +111,9 @@ trait CallsBucketsTrait {
 
         $request_body = '';
         foreach ($request_params as $request_key => $request_param) {
-            if ($request_key == 'RoleArn') $request_param = urlencode($request_param);
+            if ($request_key == 'RoleArn') {
+                $request_param = urlencode($request_param);
+            }
             $request_body .= $request_key.'='.$request_param.'&';
         }
         $request_body = rtrim($request_body, '&');
@@ -131,6 +135,4 @@ trait CallsBucketsTrait {
 
         return $signature;
     }
-
-
 }

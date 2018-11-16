@@ -17,10 +17,10 @@ class ProjectVerificationEmail extends Mailable
      *
      * @return void
      */
-    public function __construct($connection,$project)
+    public function __construct($connection, $project)
     {
-	    $this->connection = $connection;
-	    $this->project    = $project;
+        $this->connection = $connection;
+        $this->project    = $project;
     }
 
     /**
@@ -30,19 +30,19 @@ class ProjectVerificationEmail extends Mailable
      */
     public function build()
     {
-	    $content = [
-	    	'title'       => trans('api.projects_would_like_to_connect_title'),
-		    'description' => trans('api.projects_would_like_to_connect_description')
-	    ];
-	    $actions = [
-	    	'title'       => trans('api.projects_connect_action_title'),
-		    'url'         => route('projects.connect', ['token' => $this->connection->token],false)
-	    ];
+        $content = [
+            'title'       => trans('api.projects_would_like_to_connect_title'),
+            'description' => trans('api.projects_would_like_to_connect_description')
+        ];
+        $actions = [
+            'title'       => trans('api.projects_connect_action_title'),
+            'url'         => route('projects.connect', ['token' => $this->connection->token], false)
+        ];
 
-	    return $this->view('emails.transaction')->from('info@dbp4.org')->with([
-		    'project' => $this->project,
-		    'content' => $content,
-		    'actions' => $actions
-	    ]);
+        return $this->view('emails.transaction')->from('info@dbp4.org')->with([
+            'project' => $this->project,
+            'content' => $content,
+            'actions' => $actions
+        ]);
     }
 }

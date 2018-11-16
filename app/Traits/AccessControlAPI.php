@@ -5,7 +5,8 @@ namespace App\Traits;
 use App\Models\User\AccessGroup;
 use App\Models\User\AccessType;
 
-trait AccessControlAPI {
+trait AccessControlAPI
+{
 
     /**
      *
@@ -21,8 +22,12 @@ trait AccessControlAPI {
 
         $user_location = checkParam('ip_address', null, 'optional');
         $user_location = geoip($user_location);
-        if (!isset($user_location->iso_code)) $user_location->iso_code   = 'unset';
-        if (!isset($user_location->continent)) $user_location->continent = 'unset';
+        if (!isset($user_location->iso_code)) {
+            $user_location->iso_code   = 'unset';
+        }
+        if (!isset($user_location->continent)) {
+            $user_location->continent = 'unset';
+        }
 
         $access_type = AccessType::where('name', $type)->first();
 
@@ -45,5 +50,4 @@ trait AccessControlAPI {
         $access['string'] = $accessGroups->pluck('name')->implode('_');
         return (object) $access;
     }
-
 }

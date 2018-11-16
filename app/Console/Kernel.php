@@ -15,21 +15,21 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\processDBLBundle::class,
-	    Commands\countSophia::class,
-	    Commands\organizations_dbl_status::class,
-	    Commands\filesystem_update::class,
-	    Commands\checkIDs::class,
-	    Commands\fetch_fcbh_apk::class,
-	    Commands\fetch_beblia_bible::class,
-	    Commands\fetchAlphabets::class,
-	    Commands\fetchLanguageDescriptions::class,
-	    Commands\generate_worldFactbook::class,
-	    Commands\compare_ebible::class,
-	    Commands\sync_users::class,
-	    Commands\dbl_sync::class,
-	    Commands\update_bible_links::class,
-	    Commands\sync_scriptureEarth::class,
-	    Commands\SyncBibleEquivalents\syncEBible::class,
+        Commands\countSophia::class,
+        Commands\organizations_dbl_status::class,
+        Commands\filesystem_update::class,
+        Commands\checkIDs::class,
+        Commands\fetch_fcbh_apk::class,
+        Commands\fetch_beblia_bible::class,
+        Commands\fetchAlphabets::class,
+        Commands\fetchLanguageDescriptions::class,
+        Commands\generate_worldFactbook::class,
+        Commands\compare_ebible::class,
+        Commands\sync_users::class,
+        Commands\dbl_sync::class,
+        Commands\update_bible_links::class,
+        Commands\sync_scriptureEarth::class,
+        Commands\SyncBibleEquivalents\syncEBible::class,
     ];
 
     /**
@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-	    $schedule->command('BackUpLogs')->cron('5 * * * *');
+        $schedule->command('BackUpLogs')->cron('5 * * * *');
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Bible\Bible;
+
 class checkIDs extends Command
 {
     /**
@@ -19,7 +20,7 @@ class checkIDs extends Command
      * @var string
      */
     protected $description = 'Command description';
-	protected $connection;
+    protected $connection;
     /**
      * Create a new command instance.
      *
@@ -37,29 +38,29 @@ class checkIDs extends Command
      */
     public function handle()
     {
-        switch($this->argument('connection')) {
+        switch ($this->argument('connection')) {
+            case "sophiaToBiblesTable": {
+                $tables = collect(\DB::connection('sophia')->select('SHOW TABLES'))->pluck('Tables_in_sophia');
+                $bible_tables = collect($tables)->filter(function ($value) {
+                    return (strpos($value, '_vpl') !== false) ? $value : false;
+                });
 
-	        case "sophiaToBiblesTable": {
-		        $tables = collect(\DB::connection('sophia')->select('SHOW TABLES'))->pluck('Tables_in_sophia');
-		        $bible_tables = collect($tables)->filter(function ($value) {
-			        return (strpos($value, '_vpl') !== false) ? $value : false;
-		        });
+                foreach ($bible_tables as $bible_id) {
+                    $id = substr($bible_id, 0, -4);
+                    $currentBible = Bible::find($id);
+                    if (!$currentBible) {
+                        echo "\n Missing: $id";
+                    }
+                }
+            }
 
-		        foreach ($bible_tables as $bible_id) {
-		        	$id = substr($bible_id,0,-4);
-			        $currentBible = Bible::find($id);
-			        if(!$currentBible) { echo "\n Missing: $id"; }
-		        }
-	        }
-
-	        case "dbt_vs_dbp4": {
-				$context = ["ssl" => ["verify_peer"=> false]];
-		        $dbp4_bibles = collect(json_decode(file_get_contents('https://api.dbp.dev/library/volume?key=809db3bd83c66f3bc41be0cbd6bd1e3f&v=2', false, stream_context_create($context))))->pluck('dam_id')->toArray();
-		        $dbt_bibles =  collect(json_decode(file_get_contents('https://dbt.io/library/volume?key=809db3bd83c66f3bc41be0cbd6bd1e3f&v=2', false, stream_context_create($context))))->pluck('dam_id')->toArray();
-		        $results = array_diff($dbt_bibles,$dbp4_bibles);
-		        dd($results);
-	        }
-
+            case "dbt_vs_dbp4": {
+                $context = ["ssl" => ["verify_peer"=> false]];
+                $dbp4_bibles = collect(json_decode(file_get_contents('https://api.dbp.dev/library/volume?key=809db3bd83c66f3bc41be0cbd6bd1e3f&v=2', false, stream_context_create($context))))->pluck('dam_id')->toArray();
+                $dbt_bibles =  collect(json_decode(file_get_contents('https://dbt.io/library/volume?key=809db3bd83c66f3bc41be0cbd6bd1e3f&v=2', false, stream_context_create($context))))->pluck('dam_id')->toArray();
+                $results = array_diff($dbt_bibles, $dbp4_bibles);
+                dd($results);
+            }
         }
     }
 }

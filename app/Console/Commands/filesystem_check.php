@@ -20,7 +20,7 @@ class filesystem_check extends Command
      * @var string
      */
     protected $description = 'Checks to verify that the file paths in the database point to real files';
-	protected $driver;
+    protected $driver;
 
     /**
      * Create a new command instance.
@@ -29,7 +29,7 @@ class filesystem_check extends Command
      */
     public function __construct()
     {
-	    $this->driver = $this->argument('driver');
+        $this->driver = $this->argument('driver');
         parent::__construct();
     }
 
@@ -40,18 +40,17 @@ class filesystem_check extends Command
      */
     public function handle()
     {
-	    $filesets = BibleFileset::with('files')->get();
-        foreach($filesets as $fileset) {
-        	foreach ($filesets->files as $file) {
-		        $exists = Storage::disk($this->driver)->exists("bibles/$fileset->bible_id/$fileset->set_id/$file->name");
+        $filesets = BibleFileset::with('files')->get();
+        foreach ($filesets as $fileset) {
+            foreach ($filesets->files as $file) {
+                $exists = Storage::disk($this->driver)->exists("bibles/$fileset->bible_id/$fileset->set_id/$file->name");
 
-        		if($exists) {
-        			$this->info("Found: bibles/$fileset->bible_id/$fileset->set_id/$file->name");
-		        } else {
-			        $this->alert("Missing: bibles/$fileset->bible_id/$fileset->set_id/$file->name");
-		        }
-
-	        }
+                if ($exists) {
+                    $this->info("Found: bibles/$fileset->bible_id/$fileset->set_id/$file->name");
+                } else {
+                    $this->alert("Missing: bibles/$fileset->bible_id/$fileset->set_id/$file->name");
+                }
+            }
         }
     }
 }

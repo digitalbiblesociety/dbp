@@ -25,17 +25,20 @@ trait CheckProjectMembership
             $query->whereIn('name', ['admin','developer']);
         }])->where('key', $key)->first();
 
-        if (!$developer->user->projectMembers) return false;
+        if (!$developer->user->projectMembers) {
+            return false;
+        }
 
         $developer_projects = $developer->user->projectMembers->pluck('project_id')->toArray();
         $user = User::where('id', $user_id)->first();
 
-        if (!$user) return false;
+        if (!$user) {
+            return false;
+        }
 
         $user_projects = $user->projectMembers->pluck('project_id')->toArray();
         $membership = \count(array_intersect($developer_projects, $user_projects));
 
         return !$membership ? false : true;
     }
-
 }

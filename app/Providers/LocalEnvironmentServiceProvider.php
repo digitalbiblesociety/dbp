@@ -28,7 +28,7 @@ class LocalEnvironmentServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-    	//
+        //
     }
 
     /**

@@ -37,10 +37,9 @@ class processDBLBundle extends Command
      */
     public function handle()
     {
-    	$bibles = glob();
-    	foreach($bibles as $bible) {
-
-	    }
+        $bibles = glob();
+        foreach ($bibles as $bible) {
+        }
         //file_get_contents('')
     }
 }

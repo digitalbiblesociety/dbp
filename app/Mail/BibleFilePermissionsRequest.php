@@ -13,15 +13,15 @@ class BibleFilePermissionsRequest extends Mailable
 {
     use Queueable, SerializesModels;
 
-	public $user;
-	public $bible;
+    public $user;
+    public $bible;
 
-	/**
-	 * Create a new message instance.
-	 *
-	 * @param User $user
-	 * @param Bible $bible
-	 */
+    /**
+     * Create a new message instance.
+     *
+     * @param User $user
+     * @param Bible $bible
+     */
     public function __construct(User $user, Bible $bible)
     {
         $this->user = $user;

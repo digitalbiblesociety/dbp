@@ -44,51 +44,50 @@ class syncEBible extends Command
     {
 
         $ebible = HtmlDomParser::str_get_html(file_get_contents('http://ebible.org/Scriptures/'));
-	    $links = $ebible->find('a[href^=details.php?id=]');
+        $links = $ebible->find('a[href^=details.php?id=]');
 
-	    foreach($links as $link) {
-	    	$ids[] = substr($link->href,15);
-	    }
+        foreach ($links as $link) {
+            $ids[] = substr($link->href, 15);
+        }
 
-	    $ids = collect($ids)->unique();
-	    $bible_equivalents = BibleEquivalent::where('site','ebible.org')->get();
+        $ids = collect($ids)->unique();
+        $bible_equivalents = BibleEquivalent::where('site', 'ebible.org')->get();
 
-	    $organization = Organization::where('slug','ebible')->first();
+        $organization = Organization::where('slug', 'ebible')->first();
 
-	    foreach($ids as $id) {
-	    	$equivalent_exists = $bible_equivalents->where('equivalent_id',$id)->first();
-	    	if(!$equivalent_exists) {
-	    		BibleEquivalent::create([
-	    			'bible_id'         => 'XXXXXX',
-	    			'equivalent_id'    => $id,
-				    'organization_id'  => $organization->id,
-				    'site'             => 'ebible.org',
-				    'type'             => 'website',
-				    'constructed_url'  => 'http://ebible.org/find/details.php?id='.$id,
-				    'needs_review'     => 1,
-				    'suffix'           => ''
-			    ]);
-		    }
-	    }
+        foreach ($ids as $id) {
+            $equivalent_exists = $bible_equivalents->where('equivalent_id', $id)->first();
+            if (!$equivalent_exists) {
+                BibleEquivalent::create([
+                    'bible_id'         => 'XXXXXX',
+                    'equivalent_id'    => $id,
+                    'organization_id'  => $organization->id,
+                    'site'             => 'ebible.org',
+                    'type'             => 'website',
+                    'constructed_url'  => 'http://ebible.org/find/details.php?id='.$id,
+                    'needs_review'     => 1,
+                    'suffix'           => ''
+                ]);
+            }
+        }
 
 
-	    $seederHelper = new SeederHelper();
-	    $bibleEquivalents = $seederHelper->csv_to_array('https://docs.google.com/spreadsheets/d/1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4/export?format=csv&id=1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4&gid=1002399925');
+        $seederHelper = new SeederHelper();
+        $bibleEquivalents = $seederHelper->csv_to_array('https://docs.google.com/spreadsheets/d/1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4/export?format=csv&id=1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4&gid=1002399925');
 
-	    foreach($bibleEquivalents as $bible_equivalent) {
-		    $current_equivalent = BibleEquivalent::where('site','ebible.org')->where('equivalent_id',$bible_equivalent['equivalent_id'])->first();
+        foreach ($bibleEquivalents as $bible_equivalent) {
+            $current_equivalent = BibleEquivalent::where('site', 'ebible.org')->where('equivalent_id', $bible_equivalent['equivalent_id'])->first();
 
-		    if($current_equivalent) {
-		    	$bible_exists = Bible::where('id',$bible_equivalent['bible_id'])->exists();
-		    	if(!$bible_exists) {
-		    		echo "Missing: ".$bible_equivalent['bible_id'];
-		    		continue;
-			    }
+            if ($current_equivalent) {
+                $bible_exists = Bible::where('id', $bible_equivalent['bible_id'])->exists();
+                if (!$bible_exists) {
+                    echo "Missing: ".$bible_equivalent['bible_id'];
+                    continue;
+                }
 
-			    $current_equivalent->bible_id = $bible_equivalent['bible_id'];
-			    $current_equivalent->save();
-		    }
-	    }
-
+                $current_equivalent->bible_id = $bible_equivalent['bible_id'];
+                $current_equivalent->save();
+            }
+        }
     }
 }

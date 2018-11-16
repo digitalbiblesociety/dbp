@@ -3,6 +3,7 @@ namespace App\Traits;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use League\Fractal\Pagination\PaginatorInterface;
+
 trait FractalPaginationTrait
 {
     public function paginator(PaginatorInterface $adapter): array

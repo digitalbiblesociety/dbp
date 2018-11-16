@@ -78,15 +78,21 @@ class Handler extends ExceptionHandler
             abort(403);
         }
 
-	    if(config('app.env') == 'local') return parent::render($request, $exception);
+        if (config('app.env') == 'local') {
+            return parent::render($request, $exception);
+        }
 
-		$message = $exception->getMessage();
-        if($message === '') $message = 'Something has gone wrong';
-		if(\is_object($message)) $message = $message->toArray();
-	    return response()->json([
-	    	'errors'        => array_wrap($message),
-		    'status_code'   => 500
-	    ], 500);
+        $message = $exception->getMessage();
+        if ($message === '') {
+            $message = 'Something has gone wrong';
+        }
+        if (\is_object($message)) {
+            $message = $message->toArray();
+        }
+        return response()->json([
+            'errors'        => array_wrap($message),
+            'status_code'   => 500
+        ], 500);
     }
 
     /**
