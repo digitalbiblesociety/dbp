@@ -143,23 +143,15 @@ class LanguagesController extends APIController
                 })
 
                 ->when(!$show_restricted, function ($query) use ($access_control, $asset_id) {
-
-                    dd($this->key);
-
-                    $query->leftJoin('bibles', 'bibles.language_id', 'language.id');
-                    $query->leftJoin('bible_fileset_connections', 'bibles.id', 'bible_fileset_connections.bible_id');
-                    $query->leftJoin('access_group_filesets', 'bible_fileset_connections.hash_id', 'access_group_filesets.hash_id');
-
-                    //// Eloquent Model
-                    //$query->whereHas('filesets', function ($query) use ($access_control, $asset_id) {
-                    //    $query->whereIn('hash_id', $access_control->hashes);
-                    //    if ($asset_id) {
-                    //        $asset_id = explode(',', $asset_id);
-                    //        $query->whereHas('fileset', function ($query) use ($asset_id) {
-                    //            $query->whereIn('asset_id', $asset_id);
-                    //        });
-                    //    }
-                    //});
+                    $query->whereHas('filesets', function ($query) use ($access_control, $asset_id) {
+                        $query->whereIn('hash_id', $access_control->hashes);
+                        if ($asset_id) {
+                            $asset_id = explode(',', $asset_id);
+                            $query->whereHas('fileset', function ($query) use ($asset_id) {
+                                $query->whereIn('asset_id', $asset_id);
+                            });
+                        }
+                    });
                 })
                 ->when($include_alt_names, function ($query) {
                     return $query->with('translations');
