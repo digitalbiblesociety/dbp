@@ -13,19 +13,17 @@ class CreateBiblesTable extends Migration
      */
     public function up()
     {
-    	// if(!Schema::connection('dbp')->hasTable('organizations')) {
+    	// if(!\Schema::connection('dbp')->hasTable('organizations')) {
 
-        if(!Schema::connection('dbp')->hasTable('bibles')) {
-	        Schema::connection('dbp')->create('bibles', function (Blueprint $table) {
+        if(!\Schema::connection('dbp')->hasTable('bibles')) {
+	        \Schema::connection('dbp')->create('bibles', function (Blueprint $table) {
 		        $table->string('id', 12)->unique()->onUpdate('cascade')->onDelete('cascade');
-		        $table->char('iso', 3);
-		        $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
 		        $table->integer('language_id')->unsigned();
 		        $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
-		        $table->string('versification', 20);
-		        $table->string('numeral_system_id', 20);
+		        $table->string('versification', 20)->nullable();
+		        $table->string('numeral_system_id', 20)->nullable();
 		        $table->foreign('numeral_system_id')->references('id')->on('numeral_systems')->onDelete('cascade')->onUpdate('cascade');
-		        $table->string('date');
+                $table->string('date')->nullable();
 		        $table->char('scope', 4)->nullable();
 		        $table->char('script', 4)->nullable();
 		        $table->foreign('script')->references('script')->on('alphabets')->onDelete('cascade')->onUpdate('cascade');
@@ -33,13 +31,15 @@ class CreateBiblesTable extends Migration
 		        $table->string('copyright')->nullable();
 		        $table->string('in_progress')->nullable();
 		        $table->tinyInteger('priority')->default(0)->unsigned();
+                $table->tinyInteger('reviewed')->default(0)->unsigned();
 		        $table->timestamp('created_at')->useCurrent();
 		        $table->timestamp('updated_at')->useCurrent();
 	        });
+            \DB::connection('dbp')->statement('ALTER TABLE bibles ADD CONSTRAINT CHECK (reviewed=0 OR (versification IS NOT NULL AND date IS NOT NULL AND script IS NOT NULL))');
         }
 
-        if(!Schema::connection('dbp')->hasTable('bible_translations')) {
-	        Schema::connection('dbp')->create('bible_translations', function (Blueprint $table) {
+        if(!\Schema::connection('dbp')->hasTable('bible_translations')) {
+	        \Schema::connection('dbp')->create('bible_translations', function (Blueprint $table) {
 		        $table->increments('id');
 		        $table->char('iso', 3);
 		        $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
@@ -59,8 +59,8 @@ class CreateBiblesTable extends Migration
 	        });
         }
 
-        if(!Schema::connection('dbp')->hasTable('bible_equivalents')) {
-	        Schema::connection('dbp')->create('bible_equivalents', function (Blueprint $table) {
+        if(!\Schema::connection('dbp')->hasTable('bible_equivalents')) {
+	        \Schema::connection('dbp')->create('bible_equivalents', function (Blueprint $table) {
 		        $table->string('bible_id', 12);
 		        $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
 		        $table->string('equivalent_id');
@@ -74,8 +74,8 @@ class CreateBiblesTable extends Migration
 	        });
         }
 
-        if(!Schema::connection('dbp')->hasTable('bible_organizations')) {
-	        Schema::connection('dbp')->create('bible_organizations', function ($table) {
+        if(!\Schema::connection('dbp')->hasTable('bible_organizations')) {
+	        \Schema::connection('dbp')->create('bible_organizations', function ($table) {
 		        $table->string('bible_id', 12)->nullable();
 		        $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
 		        $table->integer('organization_id')->unsigned()->nullable();
@@ -86,8 +86,8 @@ class CreateBiblesTable extends Migration
 	        });
         }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_links')) {
-		    Schema::connection('dbp')->create('bible_links', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_links')) {
+		    \Schema::connection('dbp')->create('bible_links', function (Blueprint $table) {
 			    $table->increments('id');
 			    $table->string('bible_id', 12);
 			    $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
@@ -103,8 +103,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-        if(!Schema::connection('dbp')->hasTable('books')) {
-	        Schema::connection('dbp')->create('books', function (Blueprint $table) {
+        if(!\Schema::connection('dbp')->hasTable('books')) {
+	        \Schema::connection('dbp')->create('books', function (Blueprint $table) {
 		        $table->char('id', 3)->primary(); // Code USFM
 		        $table->char('id_usfx', 2);
 		        $table->string('id_osis', 12);
@@ -132,8 +132,8 @@ class CreateBiblesTable extends Migration
 	        });
         }
 
-        if(!Schema::connection('dbp')->hasTable('bible_books')) {
-	        Schema::connection('dbp')->create('bible_books', function (Blueprint $table) {
+        if(!\Schema::connection('dbp')->hasTable('bible_books')) {
+	        \Schema::connection('dbp')->create('bible_books', function (Blueprint $table) {
 		        $table->string('bible_id', 12);
 		        $table->foreign('bible_id')->references('id')->on('bibles')->onDelete('cascade')->onUpdate('cascade');
 		        $table->char('book_id', 3);
@@ -146,8 +146,8 @@ class CreateBiblesTable extends Migration
 	        });
         }
 
-        if(!Schema::connection('dbp')->hasTable('book_translations')) {
-	        Schema::connection('dbp')->create('book_translations', function (Blueprint $table) {
+        if(!\Schema::connection('dbp')->hasTable('book_translations')) {
+	        \Schema::connection('dbp')->create('book_translations', function (Blueprint $table) {
 		        $table->integer('language_id')->unsigned();
 		        $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
 		        $table->char('book_id', 3);
@@ -161,21 +161,21 @@ class CreateBiblesTable extends Migration
 	        });
         }
 
-	    if(!Schema::connection('dbp')->hasTable('assets')) {
-		    Schema::connection('dbp')->create('assets', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('assets')) {
+		    \Schema::connection('dbp')->create('assets', function (Blueprint $table) {
 			    $table->string('id', 64)->unique();
 			    $table->integer('organization_id')->unsigned();
 			    $table->foreign('organization_id')->references('id')->on('organizations')->onUpdate('cascade')->onDelete('cascade');
 			    $table->string('asset_type',12);
-			    $table->string('basename');
+                $table->string('base_name')->nullable();
 			    $table->boolean('hidden')->default(0);
 			    $table->timestamp('created_at')->useCurrent();
 			    $table->timestamp('updated_at')->useCurrent();
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_fileset_sizes')) {
-		    Schema::connection('dbp')->create('bible_fileset_sizes', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_fileset_sizes')) {
+		    \Schema::connection('dbp')->create('bible_fileset_sizes', function (Blueprint $table) {
 			    $table->tinyIncrements('id');
 			    $table->char('set_size_code', 9)->unique();
 			    $table->string('name')->unique();
@@ -184,8 +184,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_size_translations')) {
-		    Schema::connection('dbp')->create('bible_size_translations', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_size_translations')) {
+		    \Schema::connection('dbp')->create('bible_size_translations', function (Blueprint $table) {
 			    $table->char('set_size_code', 9)->primary();
 			    $table->foreign('set_size_code')->references('set_size_code')->on('bible_fileset_sizes')->onUpdate('cascade')->onDelete('cascade');
 			    $table->integer('language_id')->unsigned();
@@ -197,8 +197,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_fileset_types')) {
-		    Schema::connection('dbp')->create('bible_fileset_types', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_fileset_types')) {
+		    \Schema::connection('dbp')->create('bible_fileset_types', function (Blueprint $table) {
 			    $table->tinyIncrements('id');
 			    $table->string('set_type_code', 16)->unique();
 			    $table->string('name')->unique();
@@ -207,8 +207,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_filesets')) {
-		    Schema::connection('dbp')->create('bible_filesets', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_filesets')) {
+		    \Schema::connection('dbp')->create('bible_filesets', function (Blueprint $table) {
 			    $table->string('id', 16)->index();
 			    $table->char('hash_id', 12)->index();
 			    $table->string('asset_id', 64);
@@ -224,8 +224,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_fileset_relations')) {
-		    Schema::connection('dbp')->create('bible_fileset_relations', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_fileset_relations')) {
+		    \Schema::connection('dbp')->create('bible_fileset_relations', function (Blueprint $table) {
 			    $table->string('id', 16)->primary();
 			    $table->char('parent_hash_id', 12)->index();
 			    $table->foreign('parent_hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
@@ -237,8 +237,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_fileset_tags')) {
-		    Schema::connection('dbp')->create('bible_fileset_tags', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_fileset_tags')) {
+		    \Schema::connection('dbp')->create('bible_fileset_tags', function (Blueprint $table) {
 			    $table->string('hash_id', 12)->index();
 			    $table->foreign('hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
 			    $table->string('name');
@@ -252,8 +252,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_fileset_connections')) {
-		    Schema::connection('dbp')->create('bible_fileset_connections', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_fileset_connections')) {
+		    \Schema::connection('dbp')->create('bible_fileset_connections', function (Blueprint $table) {
 			    $table->char('hash_id', 12);
 			    $table->foreign('hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
 			    $table->string('bible_id', 12)->index();
@@ -263,8 +263,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_files')) {
-		    Schema::connection('dbp')->create('bible_files', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_files')) {
+		    \Schema::connection('dbp')->create('bible_files', function (Blueprint $table) {
 			    $table->increments('id');
 			    $table->string('hash_id', 12);
 			    $table->foreign('hash_id', 12)->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
@@ -283,8 +283,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_file_titles')) {
-		    Schema::connection('dbp')->create('bible_file_titles', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_file_titles')) {
+		    \Schema::connection('dbp')->create('bible_file_titles', function (Blueprint $table) {
 			    $table->integer('file_id')->unsigned();
 			    $table->foreign('file_id')->references('id')->on('bible_files')->onUpdate('cascade')->onDelete('cascade');
 			    $table->char('iso', 3);
@@ -297,8 +297,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_file_tags')) {
-		    Schema::connection('dbp')->create('bible_file_tags', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_file_tags')) {
+		    \Schema::connection('dbp')->create('bible_file_tags', function (Blueprint $table) {
 			    $table->integer('file_id')->unsigned();
 			    $table->foreign('file_id')->references('id')->on('bible_files')->onUpdate('cascade')->onDelete('cascade');
 			    $table->unique(['file_id', 'tag', 'value'], 'unique_bible_file_tag');
@@ -310,8 +310,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_file_video_resolutions')) {
-		    Schema::connection('dbp')->create('bible_file_video_resolutions', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_file_video_resolutions')) {
+		    \Schema::connection('dbp')->create('bible_file_video_resolutions', function (Blueprint $table) {
 			    $table->increments('id');
 			    $table->integer('bible_file_id')->unsigned();
 			    $table->foreign('bible_file_id')->references('id')->on('bible_files')->onUpdate('cascade')->onDelete('cascade');
@@ -326,8 +326,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_file_video_transport_stream')) {
-		    Schema::connection('dbp')->create('bible_file_video_transport_stream', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_file_video_transport_stream')) {
+		    \Schema::connection('dbp')->create('bible_file_video_transport_stream', function (Blueprint $table) {
 			    $table->increments('id');
 			    $table->integer('video_resolution_id')->unsigned();
 			    $table->foreign('video_resolution_id')->references('id')->on('bible_file_video_resolutions')->onUpdate('cascade')->onDelete('cascade');
@@ -338,11 +338,11 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_file_timestamps')) {
-		    Schema::connection('dbp')->create('bible_file_timestamps', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_file_timestamps')) {
+		    \Schema::connection('dbp')->create('bible_file_timestamps', function (Blueprint $table) {
 			    $table->increments('id');
-			    $table->integer('file_id')->unsigned();
-			    $table->foreign('file_id')->references('id')->on('bible_files')->onUpdate('cascade')->onDelete('cascade');
+			    $table->integer('bible_file_id')->unsigned();
+			    $table->foreign('bible_file_id')->references('id')->on('bible_files')->onUpdate('cascade')->onDelete('cascade');
 			    $table->tinyInteger('verse_start')->unsigned()->nullable();
 			    $table->tinyInteger('verse_end')->unsigned()->nullable();
 			    $table->float('timestamp');
@@ -351,8 +351,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_fileset_copyrights')) {
-		    Schema::connection('dbp')->create('bible_fileset_copyrights', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_fileset_copyrights')) {
+		    \Schema::connection('dbp')->create('bible_fileset_copyrights', function (Blueprint $table) {
 			    $table->increments('id');
 			    $table->string('hash_id', 12);
 			    $table->foreign('hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
@@ -364,8 +364,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_fileset_copyright_roles')) {
-		    Schema::connection('dbp')->create('bible_fileset_copyright_roles', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_fileset_copyright_roles')) {
+		    \Schema::connection('dbp')->create('bible_fileset_copyright_roles', function (Blueprint $table) {
 		    	$table->increments('id');
 			    $table->string('name');
 			    $table->text('description');
@@ -374,8 +374,8 @@ class CreateBiblesTable extends Migration
 		    });
 	    }
 
-	    if(!Schema::connection('dbp')->hasTable('bible_fileset_copyright_organizations')) {
-		    Schema::connection('dbp')->create('bible_fileset_copyright_organizations', function (Blueprint $table) {
+	    if(!\Schema::connection('dbp')->hasTable('bible_fileset_copyright_organizations')) {
+		    \Schema::connection('dbp')->create('bible_fileset_copyright_organizations', function (Blueprint $table) {
 			    $table->increments('id');
 			    $table->string('hash_id', 12);
 			    $table->foreign('hash_id')->references('hash_id')->on('bible_filesets')->onUpdate('cascade')->onDelete('cascade');
@@ -397,29 +397,29 @@ class CreateBiblesTable extends Migration
      */
     public function down()
     {
-	    Schema::connection('dbp')->dropIfExists('bible_file_titles');
-	    Schema::connection('dbp')->dropIfExists('bible_file_timestamps');
-	    Schema::connection('dbp')->dropIfExists('bible_file_translations');
-	    Schema::connection('dbp')->dropIfExists('bible_fileset_relations');
-	    Schema::connection('dbp')->dropIfExists('bible_files');
-	    Schema::connection('dbp')->dropIfExists('bible_fileset_connections');
-	    Schema::connection('dbp')->dropIfExists('bible_size_translations');
-	    Schema::connection('dbp')->dropIfExists('bible_sizes');
-	    Schema::connection('dbp')->dropIfExists('bible_fileset_tags');
-	    Schema::connection('dbp')->dropIfExists('bible_filesets');
-	    Schema::connection('dbp')->dropIfExists('bible_fileset_types');
-	    Schema::connection('dbp')->dropIfExists('bible_fileset_sizes');
-	    Schema::connection('dbp')->dropIfExists('assets');
+	    \Schema::connection('dbp')->dropIfExists('bible_file_titles');
+	    \Schema::connection('dbp')->dropIfExists('bible_file_timestamps');
+	    \Schema::connection('dbp')->dropIfExists('bible_file_translations');
+	    \Schema::connection('dbp')->dropIfExists('bible_fileset_relations');
+	    \Schema::connection('dbp')->dropIfExists('bible_files');
+	    \Schema::connection('dbp')->dropIfExists('bible_fileset_connections');
+	    \Schema::connection('dbp')->dropIfExists('bible_size_translations');
+	    \Schema::connection('dbp')->dropIfExists('bible_sizes');
+	    \Schema::connection('dbp')->dropIfExists('bible_fileset_tags');
+	    \Schema::connection('dbp')->dropIfExists('bible_filesets');
+	    \Schema::connection('dbp')->dropIfExists('bible_fileset_types');
+	    \Schema::connection('dbp')->dropIfExists('bible_fileset_sizes');
+	    \Schema::connection('dbp')->dropIfExists('assets');
 
-        Schema::connection('dbp')->dropIfExists('book_translations');
-	    Schema::connection('dbp')->dropIfExists('bible_books');
-        Schema::connection('dbp')->dropIfExists('book_codes');
+        \Schema::connection('dbp')->dropIfExists('book_translations');
+	    \Schema::connection('dbp')->dropIfExists('bible_books');
+        \Schema::connection('dbp')->dropIfExists('book_codes');
 
-        Schema::connection('dbp')->dropIfExists('books');
-	    Schema::connection('dbp')->dropIfExists('bible_links');
-	    Schema::connection('dbp')->dropIfExists('bible_organizations');
-        Schema::connection('dbp')->dropIfExists('bible_translations');
-        Schema::connection('dbp')->dropIfExists('bible_equivalents');
-        Schema::connection('dbp')->dropIfExists('bibles');
+        \Schema::connection('dbp')->dropIfExists('books');
+	    \Schema::connection('dbp')->dropIfExists('bible_links');
+	    \Schema::connection('dbp')->dropIfExists('bible_organizations');
+        \Schema::connection('dbp')->dropIfExists('bible_translations');
+        \Schema::connection('dbp')->dropIfExists('bible_equivalents');
+        \Schema::connection('dbp')->dropIfExists('bibles');
     }
 }
