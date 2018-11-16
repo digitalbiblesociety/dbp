@@ -48,8 +48,6 @@ class CreateOrganizationsTable extends Migration
 	            Schema::connection('dbp')->create('organization_translations', function (Blueprint $table) {
 		            $table->integer('language_id')->unsigned();
 		            $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
-		            $table->char('language_iso', 3)->index();
-		            $table->foreign('language_iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
 		            $table->integer('organization_id')->unsigned();
 		            $table->foreign('organization_id')->references('id')->on('organizations');
 		            $table->boolean('vernacular')->default(false);
@@ -69,7 +67,6 @@ class CreateOrganizationsTable extends Migration
 				    $table->integer('organization_child_id')->unsigned();
 				    $table->foreign('organization_child_id')->references('id')->on('organizations');
 				    $table->string('type');
-				    $table->string('relationship_id');
 				    $table->timestamp('created_at')->useCurrent();
 				    $table->timestamp('updated_at')->useCurrent();
 			    });
