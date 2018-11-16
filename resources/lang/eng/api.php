@@ -30,15 +30,14 @@ return [
 
 	// Wiki Routes
 	'wiki_authorization_failed'              => 'Your account does not have Archivist level permissions',
-	'alphabets_errors_404'                   => 'No alphabet could be found that has the `:id` id',
+	'alphabets_errors_404'                   => 'No alphabet could be found that has the given id',
 	'languages_errors_404'                   => 'Unable to locate language',
 	'countries_errors_404'                   => 'No Country for the provided id :id Could be Found',
 	'numerals_errors_404'                    => 'Alphabet Numbering System for the provided script `:script` could not be found',
-	'numerals_range_error_maxsize'           => 'Your given range of :num is outside the max size of 2000',
+	'numerals_range_error'                   => 'Your given range of :num is outside the max size of 2000',
 
 	// Community Routes
-	'users_errors_404'                       => 'No user for the provided param `:param` could be found',
-	'users_errors_404_email'                 => 'No user with the email `:email` could be found',
+	'users_errors_404'                       => 'No user for the provided param could be found',
 	'users_errors_422_email_disposable'      => 'Email is disposable',
 	'users_errors_422_email_nonexistent_host'=> 'The provided email host does not exist',
 	'users_errors_401_project'               => 'The user given is not a user of the project_id provided.',
