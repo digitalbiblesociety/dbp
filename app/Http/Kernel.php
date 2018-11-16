@@ -64,7 +64,7 @@ class Kernel extends HttpKernel
 	        LocalizationHandler::class,
         ],
         'api' => [
-            'throttle:120,1',
+            'throttle:500,1',
             'bindings',
 	        Cors::class
         ],
