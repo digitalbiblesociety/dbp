@@ -15,7 +15,9 @@ class GovernmentTransformer extends BaseTransformer
      */
     public function transform($country_government)
     {
-	    if($country_government == null) return [];
+        if ($country_government == null) {
+            return [];
+        }
         return $country_government->toArray();
     }
 }

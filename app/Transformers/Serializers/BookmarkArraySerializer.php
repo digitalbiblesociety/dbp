@@ -10,42 +10,44 @@
  */
 
 namespace App\Transformers\Serializers;
+
 use Spatie\Fractalistic\ArraySerializer;
+
 class BookmarkArraySerializer extends ArraySerializer
 {
-	/**
-	 * Serialize a collection.
-	 *
-	 * @param string $resourceKey
-	 * @param array  $data
-	 *
-	 * @return array
-	 */
-	public function collection($resourceKey, array $data)
-	{
-		return ['bookmarks' => $data];
-	}
+    /**
+     * Serialize a collection.
+     *
+     * @param string $resourceKey
+     * @param array  $data
+     *
+     * @return array
+     */
+    public function collection($resourceKey, array $data)
+    {
+        return ['bookmarks' => $data];
+    }
 
-	/**
-	 * Serialize an item.
-	 *
-	 * @param string $resourceKey
-	 * @param array  $data
-	 *
-	 * @return array
-	 */
-	public function item($resourceKey, array $data)
-	{
-		return ['bookmarks' => $data];
-	}
+    /**
+     * Serialize an item.
+     *
+     * @param string $resourceKey
+     * @param array  $data
+     *
+     * @return array
+     */
+    public function item($resourceKey, array $data)
+    {
+        return ['bookmarks' => $data];
+    }
 
-	/**
-	 * Serialize null resource.
-	 *
-	 * @return array
-	 */
-	public function null()
-	{
-		return ['bookmarks' => []];
-	}
+    /**
+     * Serialize null resource.
+     *
+     * @return array
+     */
+    public function null()
+    {
+        return ['bookmarks' => []];
+    }
 }

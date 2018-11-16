@@ -10,21 +10,22 @@ namespace App\Transformers;
 
 use League\Fractal\TransformerAbstract;
 use Route;
-class BaseTransformer extends TransformerAbstract {
 
-	protected $currentScope = [];
+class BaseTransformer extends TransformerAbstract
+{
 
-	protected $version;
-	protected $route;
-	protected $i10n;
-	protected $continent;
+    protected $currentScope = [];
 
-	public function __construct()
-	{
-		$this->version = checkParam('v');
-		$this->i10n = checkParam('i10n', null, 'optional') ?? 'eng';
-		$this->continent = $_GET['continent'] ?? false;
-		$this->route = Route::currentRouteName() ?? '';
-	}
+    protected $version;
+    protected $route;
+    protected $i10n;
+    protected $continent;
 
+    public function __construct()
+    {
+        $this->version = checkParam('v');
+        $this->i10n = checkParam('i10n', null, 'optional') ?? 'eng';
+        $this->continent = $_GET['continent'] ?? false;
+        $this->route = Route::currentRouteName() ?? '';
+    }
 }

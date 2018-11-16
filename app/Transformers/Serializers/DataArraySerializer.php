@@ -7,5 +7,5 @@ use App\Traits\FractalPaginationTrait;
 
 class DataArraySerializer extends BaseSerializer
 {
-	use FractalPaginationTrait;
+    use FractalPaginationTrait;
 }
