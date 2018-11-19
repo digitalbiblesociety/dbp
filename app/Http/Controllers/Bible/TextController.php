@@ -78,12 +78,12 @@ class TextController extends APIController
         // Fetch and Assign $_GET params
         $fileset_id  = checkParam('dam_id|fileset_id', true, $bible_url_param);
         $book_id     = checkParam('book_id', true, $book_url_param);
-        $chapter     = checkParam('chapter_id', $chapter_url_param, 'optional');
+        $chapter     = checkParam('chapter_id', true, $chapter_url_param);
         $verse_start = checkParam('verse_start') ?? 1;
         $verse_end   = checkParam('verse_end');
-        $asset_id    = checkParam('bucket|bucket_id|asset_id');
+        $asset_id    = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3.bucket');
 
-        $fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id', substr($fileset_id, 0, 6))->where('set_type_code', 'text_plain')->first();
+        $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, 'text_plain')->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
