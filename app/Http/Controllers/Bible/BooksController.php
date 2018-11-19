@@ -163,14 +163,14 @@ class BooksController extends APIController
         // If the fileset references sophia.*_vpl than fetch the existing books from that database
         $dbp_database = config('database.connections.dbp.database');
         $sophia_books = DB::connection('sophia')->table($id . '_vpl')
-                           ->join('dbp.books', 'books.id_usfx', $id . '_vpl.book')
+                           ->join($dbp_database.'.books', 'books.id_usfx', $id . '_vpl.book')
                            ->select('books.id')->distinct()->get()->pluck('id');
 
         // Join the books for the books returned from Sophia
         $query->join($dbp_database.'.bible_books', function ($join) use ($sophia_books) {
             $join->on('bible_books.bible_id', 'bibles.id')
                  ->whereIn('bible_books.book_id', $sophia_books);
-        })->rightJoin('dbp.books', 'books.id', 'bible_books.book_id');
+        })->rightJoin($dbp_database.'.books', 'books.id', 'bible_books.book_id');
     }
 
     /**
@@ -194,6 +194,6 @@ class BooksController extends APIController
         $query->join($dbp_database.'.bible_books', function ($join) use ($fileset_book_ids) {
             $join->on('bible_books.bible_id', 'bibles.id')
                  ->whereIn('bible_books.book_id', $fileset_book_ids);
-        })->rightJoin('dbp.books', 'books.id', 'bible_books.book_id');
+        })->rightJoin($dbp_database.'.books', 'books.id', 'bible_books.book_id');
     }
 }
