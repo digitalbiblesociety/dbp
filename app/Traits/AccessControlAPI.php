@@ -7,47 +7,52 @@ use App\Models\User\AccessType;
 
 trait AccessControlAPI
 {
-
     /**
-     *
-     * Filters out filesets by the access control tables
+     * Returns a list of filesets (represented by their hash IDs) and an underscore-separated list of access group
+     * names for the authenticated user.
      *
      * @param string $api_key - The User's API key
-     * @param string $type
      *
      * @return object
      */
-    public function accessControl($api_key, $type = 'api')
+    public function accessControl($api_key)
     {
+        /** @todo: Move these lines into trait; $user_location = $this->getIp(); */
+        $user_location = geoip(checkParam('ip_address'));
 
-        $user_location = checkParam('ip_address');
-        $user_location = geoip($user_location);
         if (!isset($user_location->iso_code)) {
             $user_location->iso_code   = 'unset';
         }
         if (!isset($user_location->continent)) {
             $user_location->continent = 'unset';
         }
+        /** @todo end trait */
 
-        $access_type = AccessType::where('name', $type)->first();
+        // Defaults to type 'api' because that's the only access type; needs modification once there are multiple
+        $access_type = AccessType::where('name', 'api')
+            ->where(function($query) use ($user_location) {
+                $query->where('country_id', $user_location->iso_code)->orWhere('country_id', '=', null);
+            })
+            ->where(function($query) use ($user_location) {
+                $query->where('continent_id', $user_location->continent)->orWhere('continent_id', '=', null);
+            })
+            ->first();
 
-        $access = [];
+        if (!$access_type) {
+            return (object) ['hashes' => [], 'string' => ''];
+        }
+
         $accessGroups = AccessGroup::with('filesets')
-            ->whereHas('types', function ($query) use ($user_location, $access_type) {
-                $query->where(function ($query) use ($user_location) {
-                    $query->where('country_id', $user_location->iso_code)->orWhere('country_id', '=', null);
-                })->where(function ($query) use ($user_location) {
-                    $query->where('country_id', $user_location->continent)->orWhere('continent_id', '=', null);
-                })->where('access_type_id', $access_type->id);
-            })->whereHas('keys', function ($query) use ($api_key) {
+            ->where('name', '!=', 'RESTRICTED')
+            ->whereHas('keys', function ($query) use ($api_key) {
                 $query->where('key_id', $api_key);
-            })->where('name', '!=', 'RESTRICTED')->get();
+            })->whereHas('types', function($query) use ($access_type) {
+                $query->where('access_types.id', $access_type->id);
+            })->get();
 
-        $access['hashes'] = $accessGroups->map(function ($item, $key) use ($user_location) {
-            return collect($item->filesets)->pluck('hash_id');
-        })->unique()->flatten()->toArray();
-
-        $access['string'] = $accessGroups->pluck('name')->implode('_');
-        return (object) $access;
+        return (object) [
+            'hashes' => $accessGroups->flatMap->filesets->pluck('hash_id')->unique()->toArray(),
+            'string' => $accessGroups->pluck('name')->implode('-'),
+        ];
     }
 }
