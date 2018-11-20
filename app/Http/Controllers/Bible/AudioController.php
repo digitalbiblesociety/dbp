@@ -53,7 +53,6 @@ class AudioController extends APIController
      *     @OA\Parameter(
      *         name="encoding",
      *         in="query",
-     *         depreciated=true,
      *         @OA\Schema(type="string",title="encoding"),
      *         description="The audio encoding format desired (No longer in use as Audio Files default to mp3)."
      *     ),

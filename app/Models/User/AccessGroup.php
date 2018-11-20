@@ -95,4 +95,9 @@ class AccessGroup extends Model
     {
         return $this->belongsTo(Key::class);
     }
+
+    public function scopeFindByIdOrName($query, $id)
+    {
+        return $query->where('id', $id)->orWhere('name', $id);
+    }
 }

@@ -37,7 +37,7 @@ class LanguageListingTransformer extends BaseTransformer
         switch ($this->route) {
             case 'v2_library_volumeLanguage':
                 return [
-                    'language_name'             => (string) $language->autonym,
+                    'language_name'             => $language->autonym->name ?? '',
                     'english_name'              => (string) $language->name,
                     'language_code'             => strtoupper($language->iso),
                     'language_iso'              => (string) $language->iso,

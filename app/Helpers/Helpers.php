@@ -16,10 +16,10 @@ function checkParam(string $param, $required = false, $v4Style = null)
             if ($url_param) {
                 continue;
             }
-            $url_param = $_GET[$current_param] ?? null;
+            $url_param = \Illuminate\Support\Facades\Input::get($current_param) ?? null;
         }
     } else {
-        $url_param = $_GET[$param] ?? false;
+        $url_param = request()->input($param) ?? false;
     }
 
     $url_header = request()->header($param);

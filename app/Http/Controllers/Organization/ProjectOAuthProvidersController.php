@@ -39,9 +39,14 @@ class ProjectOAuthProvidersController extends APIController
      */
     public function index(string $project_id)
     {
+
         $project_id = checkParam('project_id', true, $project_id);
         $provider_id = checkParam('provider_id');
-        $providers  = ProjectOauthProvider::where('project_id', $project_id)->when()->get();
+
+        $providers  = ProjectOauthProvider::where('project_id', $project_id)
+            ->when($provider_id, function ($query) use ($provider_id) {
+                $query->where('name', $provider_id);
+            })->get();
 
         return $this->reply($providers);
     }

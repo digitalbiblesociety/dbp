@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Bible\BibleFileset;
+use App\Models\Bible\Book;
+
 class v4_biblesRoutesTest extends API_V4_Test
 {
 
@@ -83,7 +86,20 @@ class v4_biblesRoutesTest extends API_V4_Test
 	 */
 	public function test_v4_bible_filesets_chapter()
 	{
-		$this->params = array_merge(['fileset_id' => 'ENGKJV','book_id' => 'GEN', 'chapter' => 1], $this->params);
+        $random_bible = collect(\DB::connection('sophia')->select('SHOW TABLES'))
+            ->pluck('Tables_in_sophia')->filter(function ($table) {
+                return str_contains($table, '_vpl');
+            })->random();
+        $reference = \DB::connection('sophia')->table($random_bible)->inRandomOrder()->first();
+        $fileset = BibleFileset::where('id',substr($random_bible,0,-4))->where('set_type_code','text_plain')->first();
+        $book = Book::where('id_usfx',$reference->book)->first();
+
+		$this->params = array_merge([
+		    'fileset_id' => $fileset->id,
+            'book_id'    => $book->id,
+            'chapter'    => $reference->chapter,
+            'asset_id'   => $fileset->asset_id
+        ], $this->params);
 		$path = route('v4_bible_filesets.chapter', $this->params);
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
@@ -155,20 +171,6 @@ class v4_biblesRoutesTest extends API_V4_Test
 	public function test_v4_bible_equivalents_all()
 	{
 		$path = route('v4_bible_equivalents.all', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-	}
-
-	/**
-	 * @category V4_API
-	 * @category Route Name: v4_bible_equivalents.one
-	 * @category Route Path: https://api.dbp.test/bibles/{bible_id}/equivalents?v=4&key=1234
-	 * @see      \App\Http\Controllers\Bible\BibleEquivalentsController::show
-	 */
-	public function test_v4_bible_equivalents_one()
-	{
-		$path = route('v4_bible_equivalents.one', $this->params);
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();

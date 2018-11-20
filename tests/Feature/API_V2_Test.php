@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Bible\Book;
+use App\Models\Language\NumeralSystem;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -240,13 +241,18 @@ class API_V2_Test extends TestCase
 	 */
 	public function test_library_verseInfo() {
 		$path = route('v2_library_verseInfo', [], false);
-		$verse = \DB::connection('sophia')->table('AAIWBT_vpl')->inRandomOrder()->first();
+        $random_bible = collect(\DB::connection('sophia')->select('SHOW TABLES'))
+            ->pluck('Tables_in_sophia')->filter(function ($table) {
+                return str_contains($table, '_vpl');
+            })->random();
+
+		$verse = \DB::connection('sophia')->table($random_bible)->inRandomOrder()->first();
 		$book = Book::where('id_usfx',$verse->book)->first();
 		$chapter = $verse->chapter;
 		$verse_start = $verse->verse_start;
 		$verse_end = $verse->verse_start + 5;
 
-		$this->params['bible_id'] = "AAIWBT";
+		$this->params['bible_id'] = substr($random_bible,0,-4);
 		$this->params['book_id'] = $book->id;
 		$this->params['chapter'] = $chapter;
 		$this->params['verse_start'] = $verse_start;
@@ -271,9 +277,9 @@ class API_V2_Test extends TestCase
 	 * @link Route Path: https://api.dbp.test/library/numbers?v=2&pretty&iso=arb&start=1&end=50&key=1234&script=Arab
 	 *
 	 */
-	public function test_library_numbers()              {
-
-		$this->params['script'] = 'Arabic';
+	public function test_library_numbers() {
+	    $random_script = NumeralSystem::inRandomOrder()->first();
+		$this->params['script'] = $random_script->id;
 		$this->params['start'] = 1;
 		$this->params['end'] = 100;
 

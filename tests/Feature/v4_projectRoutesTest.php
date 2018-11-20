@@ -82,7 +82,8 @@ class v4_projectRoutesTest extends API_V4_Test
 		 * @category Route Path: https://api.dbp.test/projects/{project_id}/oauth-providers/?v=4&key=1234
 		 * @see      \App\Http\Controllers\Organization\ProjectOAuthProvidersController::index
 		 */
-		$path = route('v4_projects_oAuthProvider.index', $this->params);
+        $project = Project::inRandomOrder()->first();
+		$path = route('v4_projects_oAuthProvider.index', array_add($this->params,'project_id',$project->id));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
@@ -120,17 +121,6 @@ class v4_projectRoutesTest extends API_V4_Test
 		$path = route('v4_projects_oAuthProvider.update', array_merge(['project_id' => $project->id,'id' => $project_oAuth_id], $this->params));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->put($path, ['description' => 'Test oAuth updated']);
-		$response->assertSuccessful();
-
-		/**
-		 * @category V4_API
-		 * @category Route Name: v4_projects_oAuthProvider.show
-		 * @category Route Path: https://api.dbp.test/projects/{project_id}/oauth-providers/{id}?v=4&key=1234
-		 * @see      \App\Http\Controllers\Organization\ProjectOAuthProvidersController::show
-		 */
-		$path = route('v4_projects_oAuthProvider.show', array_merge(['project_id' => $project->id,'id' => $project_oAuth_id], $this->params));
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
 
 		/**

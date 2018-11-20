@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\User\AccessGroup;
 use App\Models\User\ProjectMember;
+use App\Models\User\ProjectOauthProvider;
 
 class v4_userRoutesTest extends API_V4_Test
 {
@@ -21,117 +23,17 @@ class v4_userRoutesTest extends API_V4_Test
 		$response->assertSuccessful();
 
 		/**@category V4_API
-		 * @category Route Name: v4_access_groups.store
-		 * @category Route Path: https://api.dbp.test/access/groups/?v=4&key=1234
-		 * @see      \App\Http\Controllers\User\AccessGroupController::store
-		 */
-		$path = route('v4_access_groups.store', $this->params);
-		echo "\nTesting The creation of a new Access Group at: $path";
-		$response = $this->withHeaders($this->params)->post($path, [
-			'name'        => 'TEST_CREATED_BY_TEST',
-			'description' => 'A test Group Created Automatically',
-		]);
-		$response->assertSuccessful();
-
-		/**@category V4_API
 		 * @category Route Name: v4_access_groups.show
-		 * @category Route Path: https://api.dbp.test/access/groups/TEST_CREATED_BY_TEST?v=4&key=1234&pretty
+		 * @category Route Path: https://api.dbp.test/access/groups/{access_group_id}?v=4&key=1234&pretty
 		 * @see      \App\Http\Controllers\User\AccessGroupController::show
 		 */
-		$additional_params = ['id' => 'TEST_CREATED_BY_TEST'];
-		$path              = route('v4_access_groups.show', array_merge($additional_params, $this->params));
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-
-		/**@category V4_API
-		 * @category Route Name: v4_access_groups.update
-		 * @category Route Path: https://api.dbp.test/access/groups/TEST_CREATED_BY_TEST?v=4&key=1234
-		 * @see      \App\Http\Controllers\User\AccessGroupController::update
-		 */
-		$additional_params = ['id' => 'TEST_CREATED_BY_TEST'];
-		$path              = route('v4_access_groups.update', array_merge($additional_params, $this->params));
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->put($path, ['description' => 'Shortened']);
-		$response->assertSuccessful();
-
-		/**@category V4_API
-		 * @category Route Name: v4_access_groups.destroy
-		 * @category Route Path: https://api.dbp.test/access/groups/{group_id}?v=4&key=1234
-		 * @see      \App\Http\Controllers\User\AccessGroupController::destroy
-		 */
-		$additional_params = ['id' => 'TEST_CREATED_BY_TEST'];
-		$path              = route('v4_access_groups.destroy', array_merge($additional_params, $this->params));
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->delete($path);
-		$response->assertSuccessful();
-	}
-
-/**
-	public function test_v4_articles()
-	{
-		/**@category V4_API
-		 * @category Route Name: v4_articles.index
-		 * @category Route Path: https://api.dbp.test/articles?v=4&key=1234
-		 * @see      \App\Http\Controllers\User\ArticlesController::index
-
-		$path = route('v4_articles.index', $this->params);
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-
-		/**@category V4_API
-		 * @category Route Name: v4_articles.store
-		 * @category Route Path: https://api.dbp.test/articles?v=4&key=1234
-		 * @see      \App\Http\Controllers\User\ArticlesController::store
-
-		$path    = route('v4_articles.store', $this->params);
-		$article = [
-			'cover'           => 'www.example.com/url/to/image.jpg',
-			'cover_thumbnail' => 'www.example.com/url/to/image_thumbnail.jpg',
-			'tags'            => [['iso' => 'eng', 'name' => 'Test Tag 1']],
-			'translations'    => [
-				['iso' => 'eng', 'name' => 'Test Title 1', 'body' => 'This is the body of the article'],
-				['iso' => 'spa', 'name' => 'El Testo Articleo', 'body' => 'Soy el Conteno de Article'],
-			],
-		];
-		echo "\nPosting to: $path";
-		$response = $this->withHeaders($this->params)->post($path, $article);
-		$response->assertSuccessful();
-
-		/**@category V4_API
-		 * @category Route Name: v4_articles.show
-		 * @category Route Path: https://api.dbp.test/articles/{article_id}?v=4&key=1234
-		 * @see      \App\Http\Controllers\User\ArticlesController::show
-
-
-		$path = route('v4_articles.show', array_merge(['name' => 'test-title-1'], $this->params));
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->get($path);
-		$response->assertSuccessful();
-
-		/**@category V4_API
-		 * @category Route Name: v4_articles.update
-		 * @category Route Path: https://api.dbp.test/articles/{article_id}?v=4&key=1234
-		 * @see      \App\Http\Controllers\User\ArticlesController::update
-
-		$path = route('v4_articles.update', array_merge(['name' => 'test-title-1'], $this->params));
-		echo "\nTesting: $path";
-		$response = $this->withHeaders($this->params)->put($path,
-			['translations' => ['iso' => 'eng', 'body' => 'Updated Body']]);
-		$response->assertSuccessful();
-
-		/**@category V4_API
-		 * @category Route Name: v4_articles.destroy
-		 * @category Route Path: https://api.dbp.test/articles/{article_id}?v=4&key=1234
-		 * @see      \App\Http\Controllers\User\ArticlesController::destroy
-
-		$path = route('v4_articles.destroy', array_merge(['name' => 'test-title-1'], $this->params));
+		$group = AccessGroup::inRandomOrder()->first();
+		$path              = route('v4_access_groups.show', array_add($this->params, 'id', $group->name));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
 	}
-*/
+
 	public function test_v4_resources()
 	{
 		/**
@@ -298,11 +200,13 @@ class v4_userRoutesTest extends API_V4_Test
 	}
 
 	/**
+     *
+     *
 	 * @category V4_API
 	 * @category Route Name: v4_user.oAuth
 	 * @category Route Path: https://api.dbp.test/users/login/{driver}?v=4&key=1234
 	 * @see      \App\Http\Controllers\User\UsersController::getSocialRedirect
-	 */
+     */
 	public function test_v4_user_oAuth()
 	{
 		$path = route('v4_user.oAuth', $this->params);
@@ -311,20 +215,29 @@ class v4_userRoutesTest extends API_V4_Test
 		$response->assertSuccessful();
 	}
 
+
 	/**
+     *
+     * // TODO: create custom Oauth Providers for external testing
+     *
 	 * @category V4_API
 	 * @category Route Name: v4_user.oAuthCallback
 	 * @category Route Path: https://api.dbp.test/users/login/{driver}/callback?v=4&key=1234
-	 * @see      \App\Http\Controllers\User\UsersController::getSocialHandle
-	 */
+	 * @see      \App\Http\Controllers\User\UserSocialController::handleProviderCallback()
+
 	public function test_v4_user_oAuthCallback()
 	{
-		$path = route('v4_user.oAuthCallback', $this->params);
+	    $projectOauthProvider = ProjectOauthProvider::inRandomOrder()->first();
+	    $additional_params = [
+            'provider'   => $projectOauthProvider->name,
+	        'project_id' => $projectOauthProvider->project_id
+        ];
+		$path = route('v4_user.oAuthCallback', array_merge($this->params, $additional_params));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
 		$response->assertSuccessful();
 	}
-
+     */
 	/**
 	 * @category V4_API
 	 * @category Route Name: v4_user.password_reset

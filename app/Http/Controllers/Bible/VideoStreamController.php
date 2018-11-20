@@ -34,7 +34,7 @@ class VideoStreamController extends APIController
 
         $current_file = '#EXTM3U';
         foreach ($file->videoResolution as $resolution) {
-            $current_file .= "\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=$resolution->bandwidth,RESOLUTION=".$resolution->resolution_width."x$resolution->resolution_height,CODECS=\"$resolution->codec\"\n$resolution->file_name"."?key=".$this->key.'&v=4';
+            $current_file .= "\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=$resolution->bandwidth,RESOLUTION=".$resolution->resolution_width."x$resolution->resolution_height,CODECS=\"$resolution->codec\"\n$resolution->file_name" . '?key=' . $this->key . '&v=4';
         }
         return response($current_file, 200)->header('Content-Disposition', 'attachment; filename="'.$file->file_name.'"')->header('Content-Type', 'application/x-mpegURL');
     }
@@ -56,7 +56,7 @@ class VideoStreamController extends APIController
             return $this->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $fileset_id]));
         }
 
-        $file    = BibleFile::with('videoResolution.transportStream')->where('hash_id', $fileset->hash_id)->where('id', $file_id)->first();
+        $file = BibleFile::with('videoResolution.transportStream')->where('hash_id', $fileset->hash_id)->whereId('id', $file_id)->first();
         if (!$file) {
             return $this->replyWithError(trans('api.bible_file_errors_404', ['id'=> $file_id]));
         }
@@ -65,6 +65,9 @@ class VideoStreamController extends APIController
         $current_file = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-ALLOW-CACHE:YES\n#EXT-X-TARGETDURATION:4";
 
         $currentResolution = $file->videoResolution->where('file_name', $file_name)->first();
+        if (!$currentResolution) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.file_errors_404_size'));
+        }
         $transaction_id = random_int(0, 10000000);
         try {
             apiLogs(request(), $this->getStatusCode(), $transaction_id);

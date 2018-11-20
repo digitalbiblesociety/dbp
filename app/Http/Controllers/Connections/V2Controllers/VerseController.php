@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Connections\V2Controllers;
 
 use App\Models\Bible\Bible;
+use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Book;
 use App\Http\Controllers\APIController;
+use Illuminate\Support\Facades\Schema;
 
 class VerseController extends APIController
 {
@@ -54,7 +56,7 @@ class VerseController extends APIController
         $verse_start = checkParam('verse_start');
         $verse_end   = checkParam('verse_end');
 
-        $bible = Bible::find($bible_id);
+        $bible = BibleFileset::firstOrFail($bible_id);
         $book  = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->first();
         if (!$book) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404'));

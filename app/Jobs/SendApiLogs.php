@@ -1,5 +1,6 @@
 <?php
 namespace App\Jobs;
+
 use App\Traits\CallsBucketsTrait;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -37,7 +38,11 @@ class SendApiLogs implements ShouldQueue
         $current_time = Carbon::now();
         $files = Storage::disk('logs')->files('api');
         // remove any none log files from processing
-        foreach ($files as $key => $file) if (substr($file, -4) !== '.log') unset($files[$key]);
+        foreach ($files as $key => $file) {
+            if (substr($file, -4) !== '.log') {
+                unset($files[$key]);
+            }
+        }
         // If no files exist
         if (\count($files) === 0) {
             $starting_string = ''; //'timestamp∞server_name∞status_code∞path∞user_agent∞params∞ip_addresss∞3_signatures∞lat∞lon∞country∞city∞state_name∞postal_code';
@@ -109,7 +114,5 @@ class SendApiLogs implements ShouldQueue
         } catch (\Exception $e) {
             \Log::error('unable to push logs to s3');
         }
-
     }
-
 }

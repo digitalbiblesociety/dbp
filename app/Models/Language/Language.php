@@ -343,7 +343,9 @@ class Language extends Model
 
     public function autonym()
     {
-        return $this->hasOne(LanguageTranslation::class, 'language_source_id')->where('language_translation_id', $this->id);
+        return $this->hasOne(LanguageTranslation::class, 'language_source_id')
+                    ->where('language_translation_id', $this->id)
+                    ->orderBy('priority', 'desc');
     }
 
     public function currentTranslation()

@@ -223,8 +223,15 @@ class LanguageController extends APIController
             'volumeLanguage' . $root . $iso . $media . $organization_id,
             2400,
             function () use ($root, $iso, $media, $organization_id) {
-                $languages = Language::select(['id', 'iso', 'iso2B', 'iso2T', 'iso1', 'name', 'autonym'])->with('parent')
+                $languages = Language::with(['parent','translations'])
                     ->has('filesets')
+                    // TODO: Get information about referencing this in eager loading
+                    //->leftJoin('language_translations as autonym', function ($join) {
+                    //    $priority_q = \DB::raw('(select max(`priority`) FROM language_translations WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
+                    //    $join->on('autonym.language_source_id', '=', 'languages.id')
+                    //         ->on('autonym.language_translation_id', '=', 'languages.id')
+                    //         ->orderBy('autonym.priority', '=', $priority_q)->limit(1);
+                    //})
                     ->when($iso, function ($query) use ($iso) {
                         return $query->where('iso', $iso);
                     })->when($root, function ($query) use ($root) {
@@ -248,7 +255,7 @@ class LanguageController extends APIController
                                 break;
                         }
                     })->get();
-                return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer)->toArray();
+                return fractal($languages, new LanguageListingTransformer(), $this->serializer);
             }
         );
         return $this->reply($languages);

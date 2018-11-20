@@ -145,10 +145,9 @@ class AccessGroupController extends APIController
      */
     public function show($id)
     {
-
         $access_group = \Cache::remember('access_group_'.$id, 1800, function () use ($id) {
-            $access_group_column = \is_int($id) ? 'id' : 'name';
-            $access_group = AccessGroup::with('filesets', 'types', 'keys')->where($access_group_column, $id)->first();
+
+            $access_group = AccessGroup::with('filesets', 'types', 'keys')->findByIdOrName($id)->first();
             if (!$access_group) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.access_group_404'));
             }
