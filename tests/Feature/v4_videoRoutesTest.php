@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\Bible\VideoStreamController;
+use App\Models\Bible\BibleFile;
+use App\Models\Bible\VideoResolution;
 
 class v4_videoRoutesTest extends API_V4_Test
 {
@@ -15,11 +17,12 @@ class v4_videoRoutesTest extends API_V4_Test
 	 */
 	public function test_v4_video_stream()
 	{
-		$video_stream = [
-			'file_id'    => '1215691',
-			'fileset_id' => 'BOXWYIP2DV',
-			'file_name'  => 'Buamu_MRK_1-1-8_R_stream.m3u8'
-		];
+        $bible_file = BibleFile::with('fileset')->where('file_name','like','%.m3u8')->inRandomOrder()->first();
+        $video_stream = [
+            'file_id'    => $bible_file->id,
+            'fileset_id' => $bible_file->fileset->id,
+            'file_name'  => $bible_file->file_name
+        ];
 		$path = route('v4_video_stream', array_merge($this->params,$video_stream));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
@@ -36,17 +39,18 @@ class v4_videoRoutesTest extends API_V4_Test
 	 * @category Route Path: https://api.dbp.test/bible/filesets/{fileset_id}/stream/{file_id}/{file_name}?v=4&key={key}
 	 * @see      VideoStreamController::transportStream
 	 */
-
 	public function test_v4_video_stream_ts()
 	{
+	    $resolution = VideoResolution::with('file.fileset')->inRandomOrder()->first();
 		$video_stream = [
-			'file_id'    => '1215691',
-			'fileset_id' => 'BOXWYIP2DV',
-			'file_name'  => 'Buamu_MRK_1-1-8_R_stream.m3u8'
+			'file_id'    => $resolution->bible_file_id,
+			'fileset_id' => $resolution->file->fileset->id,
+			'file_name'  => $resolution->file_name
 		];
 		$path = route('v4_video_stream_ts', array_merge($video_stream, $this->params));
 		echo "\nTesting: $path";
 		$response = $this->withHeaders($this->params)->get($path);
+
         $this->assertEquals($response->getStatusCode(), 200);
         $this->assertContains('attachment', $response->headers->get('content-disposition'));
 	}

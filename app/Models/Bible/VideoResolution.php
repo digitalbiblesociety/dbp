@@ -10,6 +10,10 @@ class VideoResolution extends Model
     protected $table = 'bible_file_video_resolutions';
     protected $fillable = ['file_id','file_name','bandwidth','resolution_width','resolution_height','codec','stream'];
 
+    public function file()
+    {
+        return $this->belongsTo(BibleFile::class,'bible_file_id','id');
+    }
 
     public function transportStream()
     {
