@@ -22,9 +22,9 @@ trait CallsBucketsTrait
             }
         });
 
-        if (!$security_token->AssumeRoleResult) {
-            \Cache::forget('iam_assumed_role');
-            return $this->setStatusCode(500)->replyWithError('s3 connection currently down');
+        if (!optional($security_token)->AssumeRoleResult) {
+            Cache::forget('iam_assumed_role');
+            return $this->setStatusCode(424)->replyWithError('s3 connection currently down');
         }
 
         if ($source === 'cloudfront') {
