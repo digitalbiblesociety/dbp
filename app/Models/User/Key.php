@@ -23,6 +23,7 @@ class Key extends Model
     protected $primaryKey = 'key';
     public $incrementing = 'false';
     protected $keyType = 'string';
+    protected $fillable = ['key','name','description'];
 
     /**
      *
@@ -102,4 +103,10 @@ class Key extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function access()
+    {
+        return $this->belongsToMany(AccessGroup::class);
+    }
+
 }
