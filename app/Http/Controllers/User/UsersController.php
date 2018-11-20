@@ -291,7 +291,7 @@ class UsersController extends APIController
         if (!$this->api) {
             return view('dashboard.home', compact('user'));
         }
-        return $this->reply(fractal($user, new UserTransformer())->addMeta(['success' => 'User created']));
+        return $this->setStatusCode(200)->reply(fractal($user, new UserTransformer())->addMeta(['success' => 'User created']));
     }
 
     /**
