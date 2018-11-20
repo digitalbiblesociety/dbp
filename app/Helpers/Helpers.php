@@ -1,54 +1,45 @@
 <?php
 
 /**
- * @param string $param
- * @param null|string $v4Style
+ * Check query parameters for a given parameter name, and check the headers for the same parameter name;
+ * also allow for two or more parameter names to match to the same $paramName using pipes to separate them.
+ * Also check specially for the "key" param to come from the Authorizaiton header.
+ * Finally, allows for values set in paths to override all other values.
+ *
+ * @param string $paramName
  * @param bool $required
+ * @param null|string $inPathValue
  *
  * @return array|bool|null|string
  */
-function checkParam(string $param, $required = false, $v4Style = null)
+function checkParam(string $paramName, $required = false, $inPathValue = null)
 {
-    $url_param = null;
-    if (strpos($param, '|') !== false) {
-        $url_params = explode('|', $param);
-        foreach ($url_params as $current_param) {
-            if ($url_param) {
-                continue;
-            }
-            $url_param = \Illuminate\Support\Facades\Input::get($current_param) ?? null;
+    // Path params
+    if ($inPathValue) {
+        return $inPathValue;
+    }
+
+    // Authorization params (with key => Authorization translation)
+    if ($paramName === 'key' && request()->header('Authorization')) {
+        return request()->header('Authorization');
+    }
+
+    foreach (explode('|', $paramName) as $current_param) {
+        // Header params
+        if ($url_header = request()->header($current_param)) {
+            return $url_header;
         }
-    } else {
-        $url_param = request()->input($param) ?? false;
-    }
 
-    $url_header = request()->header($param);
-    if ($param === 'key' && !$url_header) {
-        $url_header = request()->header('Authorization');
-    }
-
-    if ($v4Style) {
-        return $v4Style;
-    }
-    if (!$url_param && !$url_header) {
-        $body_param = request()->input($param);
-        if (!$body_param) {
-            if ($required) {
-                \Log::channel('errorlog')->error(["Missing Param '$param", 422]);
-                abort(422, "You need to provide the missing parameter '$param'. Please append it to the url or the request Header.");
-            }
-        } else {
+        // GET/JSON/POST body params
+        if ($body_param = request()->input($paramName)) {
             return $body_param;
         }
-        return null;
     }
-    if ($url_param) {
-        return $url_param;
+
+    if ($required) {
+        Log::channel('errorlog')->error(["Missing Param '$paramName", 422]);
+        abort(422, "You need to provide the missing parameter '$paramName'. Please append it to the url or the request Header.");
     }
-    if ($url_header) {
-        return $url_header;
-    }
-    return null;
 }
 
 function fetchBible($bible_id)
