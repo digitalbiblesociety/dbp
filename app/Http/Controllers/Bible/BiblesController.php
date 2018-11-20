@@ -24,49 +24,63 @@ class BiblesController extends APIController
     /**
      * Display a listing of the bibles.
      *
-     * @deprecated status (optional): [live|disabled|incomplete|waiting_review|in_review|discontinued] Publishing status of volume. The default is 'live'.
-     * @deprecated dbp_agreement (optional): [true|false] Whether or not a DBP Agreement has been executed between FCBH and the organization to whom the volume belongs.
-     * @deprecated expired (optional): [true|false] Whether the volume as passed its expiration or not.
-     * @deprecated resolution (optional): [lo|med|hi] Currently used for video volumes as they can be available in different resolutions, basically conforming to the loose general categories of low, medium, and high resolution. Low resolution is geared towards devices with smaller screens.
-     * @deprecated delivery (optional): [web|web_streaming|download|download_text|mobile|sign_language|streaming_url|local_bundled|podcast|mp3_cd|digital_download| bible_stick|subsplash|any|none] a criteria for approved delivery method. It is possible to OR these methods together using '|', such as "delivery=streaming_url|mobile".  'any' means any of the supported methods (this list may change over time) i.e. approved for something. 'none' means volumes that are not approved for any of the supported methods. All volumes are returned by default.
-     *
-     * @param dam_id (optional): the volume internal DAM ID. Can be used to restrict the response to only DAM IDs that contain with 'N2' for example
-     * @param fcbh_id (optional): the volume FCBH DAM ID. Can be used to restrict the response to only FCBH DAM IDs that contain with 'N2' for example
-     * @param media (optional): [text|audio|video] the format of assets the caller is interested in. This specifies if you only want volumes available in text or volumes available in audio.
-     * @param language (optional): Filter the versions returned to a specified native or English language language name. For example return all the 'English' volumes.
-     * @param full_word (optional): [true|false] Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string 'new' is anywhere in the language name, like in "Newari" and "Awa for Papua New Guinea". When true, it will only return volumes where the language name contains the full word 'new', like in "Awa for Papua New Guinea". Default is false.
-     * @param language_code (optional): the three letter language code.
-     * @param language_family_code (optional): the three letter language code for the language family.
-     * @param updated (optional): YYYY-MM-DD. This is used to get volumes that were modified since the specified date.
-     * @param organization_id (optional): Organization id of volumes to return.
-     * @param sort_by (optional): [ dam_id | volume_name | language_name | language_english | language_family_code | language_family_name | version_code | version_name | version_english ] Primary criteria by which to sort.  The default is 'dam_id'.
-     *
      * @OA\Get(
      *     path="/bibles",
      *     tags={"Bibles"},
-     *     summary="",
-     *     description="",
+     *     summary="Returns Bibles",
+     *     description="The base bible route returning by default bibles and filesets that your key has access to",
      *     operationId="v4_bible.all",
-     *     @OA\Parameter(name="bible_id",             in="query", description="The Bible Id", ref="#/components/schemas/Bible/properties/id"),
-     *     @OA\Parameter(name="fcbh_id",              in="query", description="An alternative query name for the bible id", @OA\Schema(type="string")),
-     *     @OA\Parameter(name="media",                in="query", description="If set, will filter results by the type of media for which filesets are available. For a complete list of available media types please see the `/bibles/filesets/media/types` route",
-     *         @OA\Schema(type="string",
-     *              @OA\ExternalDocumentation(
-     *                  description="For a complete list of available media types please see the v4_bible_filesets.types route",
-     *                  url="/docs/swagger/v4#/Bibles/v4_bible_filesets_types"
-     *              )
-     *         )
+     *     @OA\Parameter(name="bible_id", in="query", ref="#/components/schemas/Bible/properties/id"),
+     *     @OA\Parameter(
+     *          name="language",
+     *          in="query",
+     *          @OA\Schema(ref="#/components/schemas/Language/properties/name"),
+     *          description="The language to filter results by",
      *     ),
-     *     @OA\Parameter(name="language",             in="query", description="The language to filter results by", @OA\Schema(ref="#/components/schemas/Language/properties/name")),
-     *     @OA\Parameter(name="language_name",        in="query", description="The language name to filter results by. For a complete list see the `/languages` route", @OA\Schema(ref="#/components/schemas/Language/properties/name")),
-     *     @OA\Parameter(name="language_code",        in="query", description="The iso code to filter results by. This will return results only in the language specified. For a complete list see the `iso` field in the `/languages` route", @OA\Schema(ref="#/components/schemas/Language/properties/iso")),
-     *     @OA\Parameter(name="language_family_code", in="query", description="The iso code of the trade language to filter results by. This will also return all dialects of a language. For a complete list see the `iso` field in the `/languages` route", @OA\Schema(type="string")),
-     *     @OA\Parameter(name="updated",              in="query", description="The last time updated", @OA\Schema(type="string")),
-     *     @OA\Parameter(name="organization_id",      in="query", description="The owning organization to return bibles for. For a complete list of ids see the `/organizations` route", @OA\Schema(type="string")),
-     *     @OA\Parameter(name="sort_by",              in="query", description="The any field to within the bible model may be selected as the value for this `sort_by` param.", @OA\Schema(type="string")),
-     *     @OA\Parameter(name="sort_dir",             in="query", description="The direction to sort by the field specified in `sort_by`. Either `asc` or `desc`", @OA\Schema(type="string")),
-     *     @OA\Parameter(name="asset_id",             in="query", description="The asset_id to filter results by. At the moment there are two buckets provided `dbp.test` & `dbs-web`", @OA\Schema(type="string")),
-     *     @OA\Parameter(name="filter_by_fileset",    in="query", description="This field defaults to true but when set to false will return all Bible entries regardless of whether or not the API has content for that biblical text.", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="language_code",
+     *          in="query",
+     *          @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
+     *          description="The iso code to filter results by. This will return results only in the language specified.
+                    For a complete list see the `iso` field in the `/languages` route",
+     *     ),
+     *     @OA\Parameter(
+     *          name="updated",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="The last time updated"
+     *     ),
+     *     @OA\Parameter(
+     *          name="organization_id",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="The owning organization to return bibles for. For a complete list of ids see the route
+                    `/organizations`."
+     *     ),
+     *     @OA\Parameter(
+     *          name="sort_by",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="The any field to within the bible model may be selected as the value for this `sort_by`."
+     *     ),
+     *     @OA\Parameter(
+     *          name="sort_dir",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="The direction to sort by the field specified in `sort_by`. Either `asc` or `desc`"
+     *     ),
+     *     @OA\Parameter(
+     *          name="asset_id",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="The asset_id to filter results by. There are two buckets provided `dbp.test` & `dbs-web`"
+     *     ),
+     *     @OA\Parameter(
+     *          name="filter_by_fileset",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="This field defaults to true but when set to false will return all Bible entries regardless
+                    of whether or not the API has filesets for that bible. Can be useful for discovery of resources."
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -90,8 +104,6 @@ class BiblesController extends APIController
         }
 
         $dam_id             = checkParam('dam_id|fcbh_id|bible_id');
-        $media              = checkParam('media');
-        $full_word          = checkParam('full_word|language_name');
         $language_code      = checkParam('language_family_code|language_code');
         $updated            = checkParam('updated');
         $organization       = checkParam('organization_id');
@@ -106,7 +118,7 @@ class BiblesController extends APIController
 
         $access_control = $this->accessControl($this->key, 'api');
 
-        $cache_string = 'bibles' . $dam_id . '_' . $media . '_' . $language_code . '_' . $include_regionInfo . $full_word . '_' . '_' . $updated . '_' . $organization . '_' . $sort_by . '_' . $sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $filter;
+        $cache_string = 'bibles'.$dam_id.$language_code.$include_regionInfo.$updated.$organization.$sort_by.$sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $filter;
         $bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language_code, $organization, $country, $asset_id, $access_control) {
             $bibles = Bible::with(['filesets' => function ($q) use ($asset_id, $access_control, $hide_restricted) {
                 if ($asset_id) {
@@ -141,7 +153,8 @@ class BiblesController extends APIController
                 })
                 ->leftJoin('language_translations as language_current', function ($join) {
                     $join->on('language_current.language_source_id', '=', 'bibles.language_id')
-                         ->where('language_current.language_translation_id', '=', $GLOBALS['i18n_id'])->orderBy('priority', 'desc');
+                         ->where('language_current.language_translation_id', '=', $GLOBALS['i18n_id'])
+                         ->orderBy('priority', 'desc');
                 })
                 ->rightJoin('bible_fileset_connections', 'bible_fileset_connections.bible_id', 'bibles.id')
                 ->rightJoin('bible_filesets', 'bible_filesets.hash_id', 'bible_fileset_connections.hash_id')
@@ -287,7 +300,7 @@ class BiblesController extends APIController
      *     summary="",
      *     description="",
      *     operationId="v4_bible.one",
-     *     @OA\Parameter(name="id", in="path", required=true, description="The Bible id", @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
+     *     @OA\Parameter(name="id",in="path",required=true,@OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Response(
@@ -342,8 +355,8 @@ class BiblesController extends APIController
      *     summary="",
      *     description="",
      *     operationId="v4_bible.books",
-     *     @OA\Parameter(name="id", in="path", required=true, description="The Bible id", @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
-     *     @OA\Parameter(name="book_id", in="query", description="The Books id", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OA\Parameter(name="id",in="path",required=true,@OA\Schema(ref="#/components/schemas/Bible/properties/id")),
+     *     @OA\Parameter(name="book_id",in="query",@OA\Schema(ref="#/components/schemas/Book/properties/id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),

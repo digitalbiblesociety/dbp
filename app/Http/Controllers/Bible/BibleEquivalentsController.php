@@ -18,8 +18,8 @@ class BibleEquivalentsController extends APIController
      *     tags={"Bibles"},
      *     summary="Get a list of bible equivalents",
      *     description="Fetch a list of bible equivalents filtered by Type, Organization or Bible.
-     *         This route will allow your apps to connect to other Bible APIs and services without
-     *         introducing duplicate Bible content into your apps and ease migration between APIs.",
+               This route will allow your apps to connect to other Bible APIs and services without
+               introducing duplicate Bible content into your apps and ease migration between APIs.",
      *     operationId="v4_bible.equivalents",
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),

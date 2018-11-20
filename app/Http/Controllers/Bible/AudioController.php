@@ -32,8 +32,8 @@ class AudioController extends APIController
      *     tags={"Library Audio"},
      *     summary="Returns Audio File path information",
      *     description="This call returns the file path information for audio files within a volume
-     *         This information can be used with the response of the /audio/location call to create
-     *         a URI to retrieve the audio files.",
+               This information can be used with the response of the /audio/location call to create
+               a URI to retrieve the audio files.",
      *     operationId="v2_audio_path",
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -125,8 +125,8 @@ class AudioController extends APIController
      *     tags={"Bibles"},
      *     summary="Returns Bible Filesets which have Audio timestamps",
      *     description="This call returns a list of hashes that have timestamp metadata associated
-     *         with them. This data could be used to search audio bibles for a specific term, make
-     *         karaoke verse & audio readings, or to jump to a specific location in an audio file.",
+               with them. This data could be used to search audio bibles for a specific term, make
+               karaoke verse & audio readings, or to jump to a specific location in an audio file.",
      *     operationId="v4_timestamps",
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -161,8 +161,8 @@ class AudioController extends APIController
      *     tags={"Library Audio"},
      *     summary="Returns Audio timestamps for a specific reference",
      *     description="This route will return timestamps restricted to specific book and chapter
-     *         combination for a fileset. Note that the fileset id must be available via the path
-     *         `/timestamps`. At first, only a few filesets may have timestamps metadata applied.",
+               combination for a fileset. Note that the fileset id must be available via the path
+               `/timestamps`. At first, only a few filesets may have timestamps metadata applied.",
      *     operationId="v2_audio_timestamps",
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -215,7 +215,7 @@ class AudioController extends APIController
      *     tags={"Bibles"},
      *     summary="Returns audio timestamps for a specific word",
      *     description="This route will search the text for a specific word or phrase and return a
-     *         collection of timestamps associated with the verse references connected to the term",
+               collection of timestamps associated with the verse references connected to the term",
      *     operationId="v4_timestamps.tag",
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -294,8 +294,8 @@ class AudioController extends APIController
      *     tags={"Library Audio"},
      *     summary="Returns Audio Server Information",
      *     description="This route offers information about the media distribution servers and the
-     *         protocols they support. It is currently depreciated and only remains to account for
-     *         the possibility that someone might still be using this old method of uri generation",
+               protocols they support. It is currently depreciated and only remains to account for
+               the possibility that someone might still be using this old method of uri generation",
      *     operationId="v2_audio_timestamps",
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
