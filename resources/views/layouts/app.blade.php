@@ -47,6 +47,14 @@
             display: none;
         }
     </style>
+    <script>
+        var App = {
+        	apiParams: {
+        		'key': '{{ config('services.bibleIs.key') }}',
+                'v': '4',
+        	}
+        };
+    </script>
 </head>
 <body>
 @include('layouts.partials.nav')

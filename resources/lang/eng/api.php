@@ -27,6 +27,7 @@ return [
 	'bible_filesets_delete_200'              => 'The fileset `:id` has been successfully deleted',
 	'bible_books_errors_404'                 => 'No book found for the given ID',
 	'bible_file_errors_404'                  => 'The specified file id `:id` could not be found.',
+    'file_errors_404_size'                   => 'No video files found for the current resolution',
 
 	// Wiki Routes
 	'wiki_authorization_failed'              => 'Your account does not have Archivist level permissions',

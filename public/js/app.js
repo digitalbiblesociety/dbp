@@ -22431,7 +22431,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 // apiURL
 window.apiURL = global.apiURL = window.location.hostname == "dbp.test" || window.location.hostname == "test" ? "https://api.dbp.test/" : "https://api.dbp4.org/";
-window.apiParams = { 'key': '1234', 'v': '4' };
 window.Vue = __webpack_require__(31);
 
 // Lodash
@@ -22445,8 +22444,8 @@ var _ = __webpack_require__(258);
 
 window.axios = __webpack_require__(259);
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-window.axios.defaults.headers.common['key'] = '1234';
-window.axios.defaults.headers.common['v'] = '4';
+window.axios.defaults.headers.common['key'] = window.apiParams.key;
+window.axios.defaults.headers.common['v'] = window.apiParams.v;
 
 var token = document.head.querySelector('meta[name="csrf-token"]');
 
@@ -42903,14 +42902,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	mounted: function mounted() {
 		var _this2 = this;
 
-		window.axios.get(apiURL + 'bible/equivalents?key=1234&v=4&bible_id=XXXXXX').then(function (response) {
+		window.axios.get(apiURL + 'bible/equivalents?bible_id=XXXXXX').then(function (response) {
 			return _this2.equivalents = response.data;
 		}).catch(function (error) {
 			// handle error
 			console.log(error);
 		});
 
-		window.axios.get(apiURL + 'bibles?key=1234&v=4').then(function (response) {
+		window.axios.get(apiURL + 'bibles').then(function (response) {
 
 			var bibles = [];
 			_.forEach(response.data.data, function (value, key) {

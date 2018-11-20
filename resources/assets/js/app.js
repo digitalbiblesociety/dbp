@@ -6,7 +6,6 @@
 
 // apiURL
 window.apiURL = global.apiURL = ((window.location.hostname == "dbp.test") || (window.location.hostname == "test")) ? "https://api.dbp.test/" : "https://api.dbp4.org/";
-window.apiParams = {'key': '1234', 'v': '4'}
 window.Vue = require('vue');
 
 // Lodash
@@ -20,8 +19,8 @@ var _ = require('lodash');
 
 window.axios = require('axios');
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-window.axios.defaults.headers.common['key'] = '1234';
-window.axios.defaults.headers.common['v'] = '4';
+window.axios.defaults.headers.common['key'] = App.apiParams.key;
+window.axios.defaults.headers.common['v'] = App.apiParams.v;
 
 
 let token = document.head.querySelector('meta[name="csrf-token"]');

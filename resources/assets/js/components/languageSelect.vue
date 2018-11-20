@@ -21,7 +21,7 @@
 			},
 			search() {
 				//
-				window.axios.get(apiURL + 'languages?key=1234&v=4')
+				window.axios.get(apiURL + 'languages')
 				.then(function (response) {
 					console.log(response);
 					this.options = response;

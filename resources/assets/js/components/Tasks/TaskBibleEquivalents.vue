@@ -44,14 +44,14 @@
 
 		},
 		mounted() {
-			window.axios.get(apiURL + 'bible/equivalents?key=1234&v=4&bible_id=XXXXXX')
+			window.axios.get(apiURL + 'bible/equivalents?bible_id=XXXXXX')
 				.then(response => (this.equivalents = response.data))
 				.catch(function (error) {
 					// handle error
 					console.log(error);
 				});
 
-			window.axios.get(apiURL + 'bibles?key=1234&v=4')
+			window.axios.get(apiURL + 'bibles')
 				.then((response) => {
 
 					var bibles = [];
