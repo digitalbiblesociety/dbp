@@ -8,6 +8,7 @@ use Aws\S3\S3Client;
 use Carbon\Carbon;
 use Curl\Curl;
 use Cache;
+use Illuminate\Http\JsonResponse;
 
 trait CallsBucketsTrait
 {
@@ -24,7 +25,7 @@ trait CallsBucketsTrait
 
         if (!optional($security_token)->AssumeRoleResult) {
             Cache::forget('iam_assumed_role');
-            return $this->setStatusCode(424)->replyWithError('s3 connection currently down');
+            throw new \Exception($security_token);
         }
 
         if ($source === 'cloudfront') {
