@@ -78,8 +78,8 @@ class AccessType extends Model
      */
     protected $allowed;
 
-    public function access()
+    public function accessGroups()
     {
-        return $this->belongsTo(AccessGroup::class);
+        return $this->belongsToMany(AccessGroup::class,'access_group_types');
     }
 }
