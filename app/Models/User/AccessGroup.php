@@ -68,22 +68,22 @@ class AccessGroup extends Model
 
     public function types()
     {
-        return $this->BelongsToMany(AccessType::class, 'access_group_types');
+        return $this->belongsToMany(AccessType::class, 'access_group_types');
     }
 
     public function api()
     {
-        return $this->BelongsToMany(AccessType::class, 'access_group_types')->whereIn('name', ['text','use-limit-2000','use-limit-200'])->where('allowed', 1);
+        return $this->belongsToMany(AccessType::class, 'access_group_types')->whereIn('name', ['text','use-limit-2000','use-limit-200'])->where('allowed', 1);
     }
 
     public function download()
     {
-        return $this->BelongsToMany(AccessType::class, 'access_group_types')->whereIn('name', ['download'])->where('allowed', 1);
+        return $this->belongsToMany(AccessType::class, 'access_group_types')->whereIn('name', ['download'])->where('allowed', 1);
     }
 
     public function podcast()
     {
-        return $this->BelongsToMany(AccessType::class, 'access_group_types')->whereIn('name', ['podcast'])->where('allowed', 1);
+        return $this->belongsToMany(AccessType::class, 'access_group_types')->whereIn('name', ['podcast'])->where('allowed', 1);
     }
 
     public function keys()
