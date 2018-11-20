@@ -58,7 +58,7 @@ class User extends Authenticatable
 
     protected $connection = 'dbp_users';
     protected $table     = 'users';
-    protected $fillable  = ['name', 'avatar', 'first_name', 'last_name', 'email', 'password', 'activated', 'token', 'signup_ip_address', 'signup_confirmation_ip_address', 'signup_sm_ip_address', 'admin_ip_address', 'updated_ip_address', 'deleted_ip_address'];
+    protected $fillable  = ['name', 'avatar', 'first_name', 'last_name', 'email', 'password', 'activated', 'token', 'notes', 'signup_ip_address', 'signup_confirmation_ip_address', 'signup_sm_ip_address', 'admin_ip_address', 'updated_ip_address', 'deleted_ip_address'];
     protected $hidden    = ['password', 'remember_token', 'activated', 'token'];
     protected $dates     = ['deleted_at'];
 
