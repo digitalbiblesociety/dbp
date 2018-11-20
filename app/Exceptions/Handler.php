@@ -11,6 +11,7 @@ use Mail;
 use Response;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
+use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
 
 class Handler extends ExceptionHandler
 {
@@ -44,6 +45,8 @@ class Handler extends ExceptionHandler
         if ($enableEmailExceptions === '') {
             $enableEmailExceptions = config('exceptions.emailExceptionEnabledDefault');
         }
+
+        Bugsnag::notifyException($exception);
 
         if ($enableEmailExceptions && $this->shouldReport($exception)) {
             $this->sendEmail($exception);
