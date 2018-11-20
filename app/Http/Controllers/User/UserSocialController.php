@@ -75,17 +75,23 @@ class UserSocialController extends APIController
         if (is_a($socialiteProvider, JsonResponse::class)) {
             return $socialiteProvider;
         }
+
+        $redirect = $socialiteProvider->scopes(['key' => $this->key, 'project_id' => $project_id])
+            ->redirect()->getTargetUrl();
+
         return $this->reply([
             'data' => [
                 'provider_id'  => $provider,
-                'redirect_url' => urldecode($socialiteProvider->redirect()->getTargetUrl()),
+                'redirect_url' => urldecode($redirect),
             ]
         ]);
     }
 
     public function handleProviderCallback($provider)
     {
-        $user = \Socialite::driver($provider)->stateless()->user();
+        $project_id = checkParam('project_id');
+
+        $user = $this->getOauthProvider($project_id, $provider)->user();
         $user = $this->createOrGetUser($user, $provider);
         return $user;
     }
@@ -103,7 +109,7 @@ class UserSocialController extends APIController
         $driver     = [
             'client_id'     => $driverData->client_id,
             'client_secret' => $driverData->client_secret,
-            'redirect'      => $alt_url === null ? $driverData->callback_url : $driverData->callback_url_alt,
+            'redirect'      => !$alt_url ? $driverData->callback_url : $driverData->callback_url_alt,
         ];
         switch ($provider) {
             case 'bitbucket':
