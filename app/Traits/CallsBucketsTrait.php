@@ -52,8 +52,8 @@ trait CallsBucketsTrait
         if ($asset->asset_type === 'cloudfront') {
             $request_array = [
                 'url'         => 'https://content.cdn.'.$asset_id.'.dbp4.org/'.$file_path.'?x-amz-transaction='.$transaction,
-                'key_pair_id' => env('AWS_CLOUDFRONT_KEY_ID'),
-                'private_key' => storage_path('app/'.env('AWS_CLOUDFRONT_KEY_SECRET')),
+                'key_pair_id' => config('filesystems.disks.cloudfront.key'),
+                'private_key' => storage_path('app/'.config('filesystems.disks.cloudfront.secret')),
                 'expires'     => Carbon::now()->addHour()->timestamp,
             ];
             return $client->getSignedUrl($request_array);
@@ -92,7 +92,7 @@ trait CallsBucketsTrait
         $client = new Curl();
         $client->setHeader('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8');
         $client->setHeader('X-Amz-Date', $timestamp);
-        $client->setHeader('Authorization', 'AWS4-HMAC-SHA256 Credential='.env('AWS_KEY')."/$date/us-east-1/sts/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=$credentials");
+        $client->setHeader('Authorization', 'AWS4-HMAC-SHA256 Credential='.config('filesystems.disks.s3.key')."/$date/us-east-1/sts/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=$credentials");
         $client->setHeader('Accept', '');
         $client->setHeader('Accept-Encoding', 'identity');
         $response = $client->post('https://sts.amazonaws.com/', $form_params);

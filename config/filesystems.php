@@ -75,6 +75,12 @@ return [
 			'bucket' => env('AWS_BUCKET') ?? 'dbp-prod',
 		],
 
+        'cloudfront' => [
+            'driver' => 'cloudfront',
+            'key'    => env('AWS_CLOUDFRONT_KEY_ID'),
+            'secret' => env('AWS_CLOUDFRONT_KEY_SECRET')
+        ],
+
 		's3_dbs' => [
 			'driver' => 's3',
 			'key'    => env('DBS_AWS_KEY'),
