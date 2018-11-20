@@ -25,7 +25,7 @@ trait CallsBucketsTrait
 
         if (!optional($security_token)->AssumeRoleResult) {
             Cache::forget('iam_assumed_role');
-            throw new \Exception($security_token);
+            throw new \Exception('Iam role denied',424);
         }
 
         if ($source === 'cloudfront') {
