@@ -14,7 +14,7 @@ trait CallsBucketsTrait
 
     public function authorizeAWS($source)
     {
-        $security_token = Cache::remember('iam_assumed_role', 600, function () {
+        $security_token = Cache::remember('iam_assumed_role', 60, function () {
             $role_call  = $this->assumeRole();
             if ($role_call) {
                 $response_xml   = simplexml_load_string($role_call->response, 'SimpleXMLElement', LIBXML_NOCDATA);
