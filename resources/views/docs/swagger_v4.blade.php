@@ -1,4 +1,4 @@
-@extends('layouts.simple')
+@extends('layouts.app')
 
 @section('head')
     <style>html, body {height: 100%}</style>

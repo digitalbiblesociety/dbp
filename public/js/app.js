@@ -22444,8 +22444,8 @@ var _ = __webpack_require__(258);
 
 window.axios = __webpack_require__(259);
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-window.axios.defaults.headers.common['key'] = window.apiParams.key;
-window.axios.defaults.headers.common['v'] = window.apiParams.v;
+window.axios.defaults.headers.common['key'] = App.apiParams.key;
+window.axios.defaults.headers.common['v'] = App.apiParams.v;
 
 var token = document.head.querySelector('meta[name="csrf-token"]');
 
