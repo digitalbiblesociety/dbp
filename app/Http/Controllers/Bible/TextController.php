@@ -87,8 +87,7 @@ class TextController extends APIController
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
-        $access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? 'download' : 'api';
-        $access_control = $this->accessControl($this->key, $access_control_type);
+        $access_control = $this->accessControl($this->key);
         if (!\in_array($fileset->hash_id, $access_control->hashes)) {
             return $this->setStatusCode(403)->replyWithError('Your API Key does not have access to this fileset');
         }

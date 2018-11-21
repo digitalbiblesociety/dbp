@@ -30,10 +30,10 @@ trait AccessControlAPI
 
         // Defaults to type 'api' because that's the only access type; needs modification once there are multiple
         $access_type = AccessType::where('name', 'api')
-            ->where(function($query) use ($user_location) {
+            ->where(function ($query) use ($user_location) {
                 $query->where('country_id', $user_location->iso_code)->orWhere('country_id', '=', null);
             })
-            ->where(function($query) use ($user_location) {
+            ->where(function ($query) use ($user_location) {
                 $query->where('continent_id', $user_location->continent)->orWhere('continent_id', '=', null);
             })
             ->first();
@@ -46,7 +46,7 @@ trait AccessControlAPI
             ->where('name', '!=', 'RESTRICTED')
             ->whereHas('keys', function ($query) use ($api_key) {
                 $query->where('key_id', $api_key);
-            })->whereHas('types', function($query) use ($access_type) {
+            })->whereHas('types', function ($query) use ($access_type) {
                 $query->where('access_types.id', $access_type->id);
             })->get();
 

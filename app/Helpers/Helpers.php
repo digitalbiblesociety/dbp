@@ -25,7 +25,6 @@ function checkParam(string $paramName, $required = false, $inPathValue = null)
     }
 
     foreach (explode('|', $paramName) as $current_param) {
-
         // Header params
         if ($url_header = request()->header($current_param)) {
             return $url_header;
@@ -38,11 +37,10 @@ function checkParam(string $paramName, $required = false, $inPathValue = null)
             break;
         }
 
-        if($session_param = session()->get($current_param)) {
+        if ($session_param = session()->get($current_param)) {
             return $session_param;
             break;
         }
-
     }
 
     if ($required) {

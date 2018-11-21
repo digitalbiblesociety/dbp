@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\BibleEquivalents;
 
 use App\Models\Organization\Organization;
-use App\Models\Organization\OrganizationRelationship;
 use Illuminate\Console\Command;
 
-class dbl_sync extends Command
+class SyncDigitalBibleLibrary extends Command
 {
     /**
      * The name and signature of the console command.

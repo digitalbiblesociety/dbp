@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Connections;
 
 use App\Http\Controllers\APIController;
-use database\seeds\SeederHelper;
 
 class DigitalBibleLibraryController extends APIController
 {
@@ -45,7 +44,5 @@ class DigitalBibleLibraryController extends APIController
             fputcsv($fp, $fields);
         }
         fclose($fp);
-
-        return null;
     }
 }

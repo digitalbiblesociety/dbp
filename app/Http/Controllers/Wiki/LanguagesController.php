@@ -102,12 +102,13 @@ class LanguagesController extends APIController
         $show_restricted       = checkParam('show_only_restricted');
         $asset_id              = checkParam('bucket_id|asset_id');
 
-        $access_control = $this->accessControl($this->key, 'api');
+        $access_control = $this->accessControl($this->key);
 
         $cache_string = 'v'.$this->v.'_l_'.$country.$code.$GLOBALS['i18n_id'].$sort_by.
                         $show_restricted.$include_alt_names.$asset_id.$access_control->string;
 
-        $languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $asset_id, $code, $sort_by, $show_restricted, $access_control) {
+        $languages = \Cache::remember($cache_string, 1600, function ()
+ use ($country, $include_alt_names, $asset_id, $code, $sort_by, $show_restricted, $access_control) {
             $languages = Language::select([
                     'languages.id',
                     'languages.glotto_id',
@@ -117,13 +118,15 @@ class LanguagesController extends APIController
                     'autonym.name as autonym'
                 ])
                 ->leftJoin('language_translations as autonym', function ($join) {
-                    $priority_q = \DB::raw('(select max(`priority`) FROM language_translations WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
+                    $priority_q = \DB::raw('(select max(`priority`) FROM language_translations
+                        WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
                     $join->on('autonym.language_source_id', '=', 'languages.id')
                              ->on('autonym.language_translation_id', '=', 'languages.id')
                              ->orderBy('autonym.priority', '=', $priority_q)->limit(1);
                 })
                 ->leftJoin('language_translations as current_translation', function ($join) {
-                    $priority_q = \DB::raw('(select max(`priority`) from language_translations WHERE language_source_id = languages.id LIMIT 1)');
+                    $priority_q = \DB::raw('(select max(`priority`) from language_translations
+                        WHERE language_source_id = languages.id LIMIT 1)');
                     $join->on('current_translation.language_source_id', 'languages.id')
                         ->where('current_translation.language_translation_id', '=', $GLOBALS['i18n_id'])
                         ->where('current_translation.priority', '=', $priority_q)->limit(1);

@@ -104,7 +104,7 @@ class BiblesController extends APIController
         }
 
         $dam_id             = checkParam('dam_id|fcbh_id|bible_id');
-        $language_code      = checkParam('language_family_code|language_code');
+        $language_code      = checkParam('language_id|language_code');
         $updated            = checkParam('updated');
         $organization       = checkParam('organization_id');
         $sort_by            = checkParam('sort_by');
@@ -116,10 +116,13 @@ class BiblesController extends APIController
         $hide_restricted    = checkParam('hide_restricted') ?? true;
         $filter             = checkParam('filter') ?? false;
 
-        $access_control = $this->accessControl($this->key, 'api');
+        $access_control = $this->accessControl($this->key);
 
         $cache_string = 'bibles'.$dam_id.$language_code.$include_regionInfo.$updated.$organization.$sort_by.$sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $filter;
+        // TODO: REMOVE ME
+        \Cache::forget($cache_string);
         $bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language_code, $organization, $country, $asset_id, $access_control) {
+
             $bibles = Bible::with(['filesets' => function ($q) use ($asset_id, $access_control, $hide_restricted) {
                 if ($asset_id) {
                     $q->where('asset_id', $asset_id);
@@ -217,7 +220,7 @@ class BiblesController extends APIController
             }
         }
 
-        $cache_string = 'bibles_archival'.@$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id;
+        $cache_string = 'bibles_archival'.$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id;
 
         $bibles = \Cache::remember($cache_string, 1600, function () use ($language, $organization_id, $country, $include_regionInfo, $dialects, $asset_id) {
             $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
@@ -320,7 +323,7 @@ class BiblesController extends APIController
      */
     public function show($id)
     {
-        $access_control = $this->accessControl($this->key, 'api');
+        $access_control = $this->accessControl($this->key);
 
         $bible = Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
             'filesets' => function ($query) use ($access_control) {

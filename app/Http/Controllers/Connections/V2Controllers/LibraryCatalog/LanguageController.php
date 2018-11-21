@@ -313,7 +313,7 @@ class LanguageController extends APIController
         $delivery        = checkParam('delivery');
         $organization_id = checkParam('organization_id');
 
-        $access_control = $this->accessControl($this->key, 'api');
+        $access_control = $this->accessControl($this->key);
 
         $languages = \Cache::remember('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id, 2400, function () use ($root, $iso, $access_control, $media, $delivery, $organization_id) {
                 $languages = Language::with('bibles')->with('dialects')

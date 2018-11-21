@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Wiki;
 
 use Illuminate\Console\Command;
 use Sunra\PhpSimple\HtmlDomParser;
 
-class fetchAlphabets extends Command
+class SyncAlphabets extends Command
 {
     /**
      * The name and signature of the console command.

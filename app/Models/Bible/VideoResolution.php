@@ -12,7 +12,7 @@ class VideoResolution extends Model
 
     public function file()
     {
-        return $this->belongsTo(BibleFile::class,'bible_file_id','id');
+        return $this->belongsTo(BibleFile::class, 'bible_file_id', 'id');
     }
 
     public function transportStream()

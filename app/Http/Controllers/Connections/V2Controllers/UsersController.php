@@ -205,7 +205,7 @@ class UsersController extends APIController
                 ->orWhere('bible_filesets.id', substr(request()->dam_id, 0, -4))
                 ->orWhere('bible_filesets.id', substr(request()->dam_id, 0, -2))->first();
             $bookmark = Bookmark::create([
-                'bible_id'    => @$bibleFileset->bible->first()->id ?? $bibleFileset->id,
+                'bible_id'    => $bibleFileset->id,
                 'book_id'     => $book->id,
                 'chapter'     => request()->chapter_id,
                 'verse_start' => request()->verse_id,

@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Console\Commands\SyncBibleEquivalents;
+namespace App\Console\Commands\BibleEquivalents;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleEquivalent;
 use App\Models\Organization\Organization;
-use database\seeds\SeederHelper;
 use Illuminate\Console\Command;
 use Sunra\PhpSimple\HtmlDomParser;
 
-class syncEBible extends Command
+class SyncEbible extends Command
 {
     /**
      * The name and signature of the console command.

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\BibleEquivalents;
 
 use Illuminate\Console\Command;
 use Sunra\PhpSimple\HtmlDomParser;
 
-class fetch_beblia_bible extends Command
+class SyncBebliaBible extends Command
 {
     /**
      * The name and signature of the console command.

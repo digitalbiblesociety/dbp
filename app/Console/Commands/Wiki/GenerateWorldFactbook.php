@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Wiki;
 
 use App\Models\Country\Country;
 use Illuminate\Console\Command;
 
-class generate_worldFactbook extends Command
+class GenerateWorldFactbook extends Command
 {
     /**
      * The name and signature of the console command.

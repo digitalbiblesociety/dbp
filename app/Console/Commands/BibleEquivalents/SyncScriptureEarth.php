@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\BibleEquivalents;
 
 use App\Models\Language\Language;
 use Illuminate\Console\Command;
 use Sunra\PhpSimple\HtmlDomParser;
 
-class sync_scriptureEarth extends Command
+class SyncScriptureEarth extends Command
 {
     /**
      * The name and signature of the console command.
@@ -48,11 +48,11 @@ class sync_scriptureEarth extends Command
             $items = $language_row->find('td');
             $language = Language::where('iso', $items[2]->plaintext)->first();
             if (!isset($items[2]->plaintext)) {
-                echo "Missing: ".$items[2]->plaintext;
+                echo 'Missing: ' . $items[2]->plaintext;
                 continue;
             }
             if (!isset($language)) {
-                echo "Not Found: ".$items[2]->plaintext;
+                echo 'Not Found: ' . $items[2]->plaintext;
                 continue;
             }
             $language_page = file_get_contents('https://www.scriptureearth.org/00i-Scripture_Index.php?sortby=lang&name='.$items[2]->plaintext.'&ROD_Code=00000&Variant_Code=');
@@ -78,13 +78,13 @@ class sync_scriptureEarth extends Command
                     $current_language = "\n".$generic_links[1];
                 }
 
-                preg_match("/<option.*?value=\"(.*?)\">/", $link_text, $select_links);
+                preg_match('/<option.*?value="(.*?)">/', $link_text, $select_links);
                 if (isset($generic_links[1])) {
                     $current_language = "\n".implode(',', $select_links);
                 }
 
                 if ($current_language) {
-                    file_put_contents(storage_path("data/ScriptureEarth/". $items[2]->plaintext .'.json'), $current_language, FILE_APPEND);
+                    file_put_contents(storage_path('data/ScriptureEarth/' . $items[2]->plaintext . '.json'), $current_language, FILE_APPEND);
                 }
             }
         }

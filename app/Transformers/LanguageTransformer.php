@@ -85,7 +85,7 @@ class LanguageTransformer extends BaseTransformer
                 return [
                     'id'                   => $language->id,
                     'name'                 => $language->name,
-                    'description'          => @$language->translations->where('iso_translation', $this->i10n)->first()->description ?? "",
+                    'description'          => optional($language->translations->where('iso_translation', $this->i10n)->first())->description,
                     'autonym'              => $language->autonym ? $language->autonym->name : '',
                     'glotto_id'            => $language->glotto_id,
                     'iso'                  => $language->iso,

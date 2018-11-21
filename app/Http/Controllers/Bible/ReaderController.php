@@ -20,7 +20,7 @@ class ReaderController extends APIController
         $languages = \Cache::remember('Bible_is_languages', 2400, function () {
 
             $project_key = Key::where('name', 'bible.is')->first();
-            $access_control = $this->accessControl($project_key->key, 'api');
+            $access_control = $this->accessControl($project_key->key);
 
             $languages = Language::select(['languages.id', 'languages.name', 'autonym.name as autonym'])
                                  ->leftJoin('language_translations as autonym', function ($join) {

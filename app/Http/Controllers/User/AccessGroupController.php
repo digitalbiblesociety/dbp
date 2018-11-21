@@ -165,7 +165,7 @@ class AccessGroupController extends APIController
 
     public function current()
     {
-        $current_access = $this->accessControl($this->key, 'api');
+        $current_access = $this->accessControl($this->key);
         $current_access->hash_count = \count($current_access->hashes);
         return $this->reply($current_access);
     }

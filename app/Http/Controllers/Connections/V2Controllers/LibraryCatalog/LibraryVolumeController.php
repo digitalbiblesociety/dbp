@@ -188,7 +188,7 @@ class LibraryVolumeController extends APIController
         $updated            = checkParam('updated');
         $organization       = checkParam('organization_id');
 
-        $access_control = $this->accessControl($this->key, 'api');
+        $access_control = $this->accessControl($this->key);
 
         $language = $iso ? Language::where('iso', $iso)->first() : null;
 

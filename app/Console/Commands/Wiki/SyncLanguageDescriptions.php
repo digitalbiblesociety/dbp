@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Wiki;
 
 use App\Models\Language\Language;
 use database\seeds\SeederHelper;
 use Illuminate\Console\Command;
 
-class fetchLanguageDescriptions extends Command
+class SyncLanguageDescriptions extends Command
 {
     /**
      * The name and signature of the console command.

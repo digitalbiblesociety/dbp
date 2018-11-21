@@ -14,22 +14,22 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\processDBLBundle::class,
-        Commands\countSophia::class,
-        Commands\organizations_dbl_status::class,
-        Commands\filesystem_update::class,
-        Commands\checkIDs::class,
-        Commands\fetch_fcbh_apk::class,
-        Commands\fetch_beblia_bible::class,
-        Commands\fetchAlphabets::class,
-        Commands\fetchLanguageDescriptions::class,
-        Commands\generate_worldFactbook::class,
-        Commands\compare_ebible::class,
-        Commands\sync_users::class,
-        Commands\dbl_sync::class,
-        Commands\update_bible_links::class,
-        Commands\sync_scriptureEarth::class,
-        Commands\SyncBibleEquivalents\syncEBible::class,
+
+        Commands\BibleEquivalents\CompareEbible::class,
+        Commands\BibleEquivalents\SyncBebliaBible::class,
+        Commands\BibleEquivalents\SyncDigitalBibleLibrary::class,
+        Commands\BibleEquivalents\SyncEbible::class,
+        Commands\BibleEquivalents\SyncFcbhApk::class,
+        Commands\BibleEquivalents\SyncScriptureEarth::class,
+        Commands\BibleEquivalents\UpdateBibleLinkOrganizations::class,
+
+        Commands\Wiki\GenerateWorldFactbook::class,
+        Commands\Wiki\SyncAlphabets::class,
+        Commands\Wiki\SyncLanguageDescriptions::class,
+        Commands\Wiki\UpdateOrganizationsDblStatus::class,
+
+        Commands\S3LogBackup::class,
+        Commands\SyncUsers::class,
     ];
 
     /**

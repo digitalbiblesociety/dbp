@@ -82,8 +82,7 @@ class BibleFileSetsController extends APIController
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404_asset', ['asset_id' => $asset_id]));
         }
 
-        $access_control_type = (strpos($fileset->set_type_code, 'audio') !== false) ? 'download' : 'api';
-        $access_control = $this->accessControl($this->key, $access_control_type);
+        $access_control = $this->accessControl($this->key);
         if (!\in_array($fileset->hash_id, $access_control->hashes, true)) {
             return $this->setStatusCode(403)->replyWithError(trans('api.bible_fileset_errors_401'));
         }

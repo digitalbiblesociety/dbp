@@ -89,11 +89,12 @@ class UserSocialController extends APIController
 
     public function handleProviderCallback($provider)
     {
-        $project_id = checkParam('project_id');
-
-        $user = $this->getOauthProvider($project_id, $provider)->user();
+        /**
+        $user = \Socialite::driver($provider)->stateless()->user();
         $user = $this->createOrGetUser($user, $provider);
-        return $user;
+         *
+        */
+        return Socialite::driver($provider)->redirect();
     }
 
     private function getOauthProvider($project_id, $provider, $alt_url = null)

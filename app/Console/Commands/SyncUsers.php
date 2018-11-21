@@ -10,7 +10,7 @@ use App\Models\User\Note;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class sync_users extends Command
+class SyncUsers extends Command
 {
     /**
      * The name and signature of the console command.
@@ -48,18 +48,14 @@ class sync_users extends Command
         $arguments = $this->arguments('info');
 
         switch ($arguments['info']) {
-            case "notes": {
+            case 'notes':
                 $this->syncNotes();
                 break;
-            }
-            case "remove_notes": {
+            case 'remove_notes':
                 break;
-            }
-
-            case "accounts": {
+            case 'accounts':
                 $this->syncAccounts();
                 break;
-            }
         }
     }
 
@@ -68,9 +64,9 @@ class sync_users extends Command
         ini_set('memory_limit', '2064M');
         set_time_limit(-1);
 
-        \DB::statement("SET foreign_key_checks=0");
+        \DB::statement('SET foreign_key_checks=0');
         Account::truncate();
-        \DB::statement("SET foreign_key_checks=1");
+        \DB::statement('SET foreign_key_checks=1');
         $missingUsers = [];
 
         $accounts = \DB::connection('dbp_users_v2')->table('user_remote')->where('remote_type', '!=', 'cookie')->select(['user_id','remote_id','remote_type'])->distinct()->get();

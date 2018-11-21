@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\BibleEquivalents;
 
 use App\Models\Bible\BibleEquivalent;
 use Illuminate\Console\Command;
 use Sunra\PhpSimple\HtmlDomParser;
 
-class compare_ebible extends Command
+class CompareEbible extends Command
 {
     /**
      * The name and signature of the console command.
@@ -39,14 +39,14 @@ class compare_ebible extends Command
      */
     public function handle()
     {
-        $html_string = file_get_contents("http://ebible.org/Scriptures/");
+        $html_string = file_get_contents('http://ebible.org/Scriptures/');
         $html = HtmlDomParser::str_get_html($html_string);
-        $bibles = $html->find("tr.redist");
-        $this->info("Comparing: ".count($bibles). " Bibles");
+        $bibles = $html->find('tr.redist');
+        $this->info('Comparing: ' . count($bibles) . ' Bibles');
 
         foreach ($bibles as $bible) {
-            $id = $bible->find("td a")[2]->href;
-            $eBible_equivalents[] = explode("?id=", $id)[1];
+            $id = $bible->find('td a')[2]->href;
+            $eBible_equivalents[] = explode('?id=', $id)[1];
         }
 
         $recorded_equivalents = BibleEquivalent::whereIn('equivalent_id', $eBible_equivalents)->where('site', 'ebible.org')->get()->pluck('equivalent_id')->toArray();

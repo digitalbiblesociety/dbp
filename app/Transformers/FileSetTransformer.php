@@ -94,13 +94,14 @@ class FileSetTransformer extends BaseTransformer
                 $items = [];
                 $xml_safe_expression = '/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u';
                 foreach ($fileset->files as $file) {
+                    $file_name = optional($fileset->bible->first()->books->where('book_id', $file->book_id)->first())->name;
                     $items[] = [
-                        'title'       => @$fileset->bible->first()->books->where('book_id', $file->book_id)->first()->name.' '.$file->chapter_start,
+                        'title'       => $file_name.' '.$file->chapter_start,
                         'link'        => "http://podcastdownload.faithcomesbyhearing.com/mp3.php/$fileset->id/$file->file_name",
                         'guid'        => "http://podcastdownload.faithcomesbyhearing.com/mp3.php/$fileset->id/$file->file_name",
                         //'description' => ($file->currentTitle) ? htmlspecialchars($file->currentTitle->title) : "",
                         'enclosure'   => [
-                            'name'   => @$file->currentTitle->title ?? '',
+                            'name'   => optional($file->currentTitle)->title,
                             '_attributes' => [
                                 'url'    => "http://podcastdownload.faithcomesbyhearing.com/mp3.php/$fileset->id/$file->file_name.mp3",
                                 'length' => $file->duration ?? 0,

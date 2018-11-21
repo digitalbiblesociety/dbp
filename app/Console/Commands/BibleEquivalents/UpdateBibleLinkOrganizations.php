@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\BibleEquivalents;
 
 use App\Models\Bible\BibleLink;
 use App\Models\Organization\OrganizationTranslation;
 use Illuminate\Console\Command;
 use TomLingham\Searchy\Facades\Searchy;
 
-class update_bible_links extends Command
+class UpdateBibleLinkOrganizations extends Command
 {
     /**
      * The name and signature of the console command.
@@ -40,14 +40,8 @@ class update_bible_links extends Command
      */
     public function handle()
     {
-        $focus = $this->arguments('focus');
-
-        switch ($focus['focus']) {
-            case "organization": {
-                $this->organizationFocus();
-                break;
-            }
-        }
+        //$focus = $this->arguments('focus');
+        $this->organizationFocus();
     }
 
     public function organizationFocus()

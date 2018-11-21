@@ -21,10 +21,10 @@ class ResourcesTransformer extends BaseTransformer
     public function transformForV4($resource)
     {
 
-        $vname = @$resource->translations->where('tag', 0)->where('iso', $resource->iso)->first()->title ?? '';
-        $vname_description = @$resource->translations->where('tag', 0)->where('iso', $resource->iso)->first()->description ?? '';
-        $name = @$resource->translations->where('tag', 0)->where('iso', $this->i10n)->first()->title ?? '';
-        $name_description = @$resource->translations->where('tag', 0)->where('iso', $this->i10n)->first()->description ?? '';
+        $vname = optional($resource->translations->where('tag', 0)->where('iso', $resource->iso)->first())->title;
+        $vname_description = optional($resource->translations->where('tag', 0)->where('iso', $resource->iso)->first())->description;
+        $name = optional($resource->translations->where('tag', 0)->where('iso', $this->i10n)->first())->title;
+        $name_description = optional($resource->translations->where('tag', 0)->where('iso', $this->i10n)->first())->description;
         if ($vname === $name) {
             $name = '';
         }

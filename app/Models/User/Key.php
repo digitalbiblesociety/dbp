@@ -108,5 +108,4 @@ class Key extends Model
     {
         return $this->belongsToMany(AccessGroup::class);
     }
-
 }

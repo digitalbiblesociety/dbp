@@ -80,6 +80,6 @@ class AccessType extends Model
 
     public function accessGroups()
     {
-        return $this->belongsToMany(AccessGroup::class,'access_group_types');
+        return $this->belongsToMany(AccessGroup::class, 'access_group_types');
     }
 }

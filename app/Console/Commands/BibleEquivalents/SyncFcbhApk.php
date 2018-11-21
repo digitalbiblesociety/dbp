@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\BibleEquivalents;
 
-use App\Models\Country\Country;
 use App\Models\Language\Language;
 use App\Models\Language\LanguageTranslation;
 use App\Models\Organization\Organization;
@@ -10,7 +9,7 @@ use App\Models\Resource\Resource;
 use Illuminate\Console\Command;
 use Sunra\PhpSimple\HtmlDomParser;
 
-class fetch_fcbh_apk extends Command
+class SyncFcbhApk extends Command
 {
     /**
      * The name and signature of the console command.
@@ -44,7 +43,7 @@ class fetch_fcbh_apk extends Command
     public function handle()
     {
         // Find and delete current
-        $apps = \Cache::remember("fcbh_apk_list", 1600, function () {
+        $apps = \Cache::remember('fcbh_apk_list', 1600, function () {
             $app = [];
             $html_string = file_get_contents('https://apk.fcbh.org/');
             $html = HtmlDomParser::str_get_html($html_string);
