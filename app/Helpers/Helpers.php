@@ -3,7 +3,7 @@
 /**
  * Check query parameters for a given parameter name, and check the headers for the same parameter name;
  * also allow for two or more parameter names to match to the same $paramName using pipes to separate them.
- * Also check specially for the "key" param to come from the Authorizaiton header.
+ * Also check specially for the "key" param to come from the Authorization header.
  * Finally, allows for values set in paths to override all other values.
  *
  * @param string $paramName
@@ -25,15 +25,24 @@ function checkParam(string $paramName, $required = false, $inPathValue = null)
     }
 
     foreach (explode('|', $paramName) as $current_param) {
+
         // Header params
         if ($url_header = request()->header($current_param)) {
             return $url_header;
+            break;
         }
 
         // GET/JSON/POST body params
-        if ($body_param = request()->input($paramName)) {
-            return $body_param;
+        if ($queryParam = request()->input($current_param)) {
+            return $queryParam;
+            break;
         }
+
+        if($session_param = session()->get($current_param)) {
+            return $session_param;
+            break;
+        }
+
     }
 
     if ($required) {
