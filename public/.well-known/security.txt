@@ -1,0 +1,5 @@
+Contact: https://dbp4.org/contact/
+Encryption: https://dbp4.org/.well-known/pgp-key.txt
+Permission: none
+Policy: https://dbp4.org/about/security-policy
+Signature: https://dbp4.org/about/security-policy/signature
