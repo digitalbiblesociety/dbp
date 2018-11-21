@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands\BibleEquivalents;
 
-use App\Models\Bible\Bible;
 use App\Models\Bible\BibleEquivalent;
 use App\Models\Organization\Organization;
 use Illuminate\Console\Command;
@@ -22,17 +21,7 @@ class SyncEbible extends Command
      *
      * @var string
      */
-    protected $description = 'Sync with the texts of eBible.org';
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+    protected $description = 'Parse the table on eBible.org and compare to the recorded Bible Equivalents';
 
     /**
      * Execute the console command.
@@ -41,52 +30,31 @@ class SyncEbible extends Command
      */
     public function handle()
     {
+        $html_string = file_get_contents('http://ebible.org/Scriptures/');
+        $html = HtmlDomParser::str_get_html($html_string);
+        $bibles = $html->find('tr.redist');
+        $this->info('Comparing: ' . count($bibles) . ' Bibles');
 
-        $ebible = HtmlDomParser::str_get_html(file_get_contents('http://ebible.org/Scriptures/'));
-        $links = $ebible->find('a[href^=details.php?id=]');
-
-        foreach ($links as $link) {
-            $ids[] = substr($link->href, 15);
+        foreach ($bibles as $bible) {
+            $id = $bible->find('td a')[2]->href;
+            $eBible_equivalents[] = explode('?id=', $id)[1];
         }
 
-        $ids = collect($ids)->unique();
-        $bible_equivalents = BibleEquivalent::where('site', 'ebible.org')->get();
+        $organization = Organization::whereSlug('ebible')->first();
+        $recorded_equivalents = BibleEquivalent::whereIn('equivalent_id', $eBible_equivalents)
+            ->where('organization_id', $organization->id)->get()->pluck('equivalent_id')->toArray();
+        $unrecorded_equivalents = array_diff($eBible_equivalents, $recorded_equivalents);
 
-        $organization = Organization::where('slug', 'ebible')->first();
-
-        foreach ($ids as $id) {
-            $equivalent_exists = $bible_equivalents->where('equivalent_id', $id)->first();
-            if (!$equivalent_exists) {
-                BibleEquivalent::create([
-                    'bible_id'         => 'XXXXXX',
-                    'equivalent_id'    => $id,
-                    'organization_id'  => $organization->id,
-                    'site'             => 'ebible.org',
-                    'type'             => 'website',
-                    'constructed_url'  => 'http://ebible.org/find/details.php?id='.$id,
-                    'needs_review'     => 1,
-                    'suffix'           => ''
-                ]);
-            }
+        foreach ($unrecorded_equivalents as $unrecorded_equivalent) {
+            BibleEquivalent::create([
+                'bible_id'        => NULL,
+                'site'            => 'http://ebible.org/find/details.php?id='.$unrecorded_equivalent,
+                'organization_id' => $organization->id,
+                'equivalent_id'   => $unrecorded_equivalent,
+                'type'            => 'website',
+                'suffix'          => NULL
+            ]);
         }
 
-
-        $seederHelper = new SeederHelper();
-        $bibleEquivalents = $seederHelper->csv_to_array('https://docs.google.com/spreadsheets/d/1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4/export?format=csv&id=1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4&gid=1002399925');
-
-        foreach ($bibleEquivalents as $bible_equivalent) {
-            $current_equivalent = BibleEquivalent::where('site', 'ebible.org')->where('equivalent_id', $bible_equivalent['equivalent_id'])->first();
-
-            if ($current_equivalent) {
-                $bible_exists = Bible::where('id', $bible_equivalent['bible_id'])->exists();
-                if (!$bible_exists) {
-                    echo "Missing: ".$bible_equivalent['bible_id'];
-                    continue;
-                }
-
-                $current_equivalent->bible_id = $bible_equivalent['bible_id'];
-                $current_equivalent->save();
-            }
-        }
     }
 }

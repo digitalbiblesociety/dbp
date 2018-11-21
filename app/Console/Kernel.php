@@ -15,9 +15,9 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
 
-        Commands\BibleEquivalents\CompareEbible::class,
         Commands\BibleEquivalents\SyncBebliaBible::class,
         Commands\BibleEquivalents\SyncDigitalBibleLibrary::class,
+        Commands\BibleEquivalents\SyncTalkingBibles::class,
         Commands\BibleEquivalents\SyncEbible::class,
         Commands\BibleEquivalents\SyncFcbhApk::class,
         Commands\BibleEquivalents\SyncScriptureEarth::class,
@@ -40,6 +40,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        // Sync Bible Equivalents
+        $schedule->command('SyncEbible')->daily();
+        $schedule->command('SyncTalkingBibles')->daily();
+
         $schedule->command('BackUpLogs')->cron('5 * * * *');
     }
 
