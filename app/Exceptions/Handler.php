@@ -46,7 +46,9 @@ class Handler extends ExceptionHandler
             $enableEmailExceptions = config('exceptions.emailExceptionEnabledDefault');
         }
 
-        Bugsnag::notifyException($exception);
+        if (config('app.env') === 'production') {
+            Bugsnag::notifyException($exception);
+        }
 
         if ($enableEmailExceptions && $this->shouldReport($exception)) {
             $this->sendEmail($exception);
