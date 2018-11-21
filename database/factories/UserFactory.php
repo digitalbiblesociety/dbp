@@ -1,23 +1,24 @@
 <?php
 
-use jeremykenedy\LaravelRoles\Models\Role;
+use Faker\Generator as Faker;
+use App\Models\User\User;
+use App\Models\User\Profile;
 
-/*
-|--------------------------------------------------------------------------
-| Model Factories
-|--------------------------------------------------------------------------
-|
-| Here you may define all of your model factories. Model factories give
-| you a convenient way to create models for testing and seeding your
-| database. Just tell the factory how a default model should look.
-|
-*/
+$factory->define(\App\Models\User\Key::class, function (Faker\Generator $faker) {
+    return [
+        'key'         => $faker->bankAccountNumber,
+        'name'        => $faker->title,
+        'description' => $faker->paragraph,
+    ];
+});
 
-/* @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\Models\User\User::class, function (Faker\Generator $faker) {
+$factory->afterCreating(\App\Models\User\Key::class, function ($key) {
+    // Keys
+    $key->access()->save(factory(\App\Models\User\AccessGroupKey::class));
+});
+
+$factory->define(User::class, function (Faker\Generator $faker) {
     static $password;
-    $userRole = Role::whereName('User')->first();
-
     return [
         'name'                           => $faker->unique()->userName,
         'first_name'                     => $faker->firstName,
@@ -32,7 +33,7 @@ $factory->define(App\Models\User\User::class, function (Faker\Generator $faker) 
     ];
 });
 
-$factory->define(App\Models\User\Profile::class, function (Faker\Generator $faker) {
+$factory->define(Profile::class, function (Faker\Generator $faker) {
     return [
         'user_id'          => factory(App\Models\User\User::class)->create()->id,
         'theme_id'         => 1,
@@ -41,4 +42,14 @@ $factory->define(App\Models\User\Profile::class, function (Faker\Generator $fake
         'twitter_username' => $faker->userName,
         'github_username'  => $faker->userName,
     ];
+});
+
+$factory->afterCreating(\App\Models\User\User::class, function ($users) {
+    $users->profile()->save(factory(\App\Models\User\User::class)->make());
+
+    // 10 percent chance to be a developer
+    if(rand(1,10) === 10) {
+        $users->keys()->save(factory(\App\Models\User\Key::class)->make());
+    }
+
 });
