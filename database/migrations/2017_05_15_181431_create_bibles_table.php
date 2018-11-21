@@ -27,7 +27,6 @@ class CreateBiblesTable extends Migration
 		        $table->char('scope', 4)->nullable();
 		        $table->char('script', 4)->nullable();
 		        $table->foreign('script')->references('script')->on('alphabets')->onDelete('cascade')->onUpdate('cascade');
-		        $table->text('derived')->nullable();
 		        $table->string('copyright')->nullable();
 		        $table->string('in_progress')->nullable();
 		        $table->tinyInteger('priority')->default(0)->unsigned();
