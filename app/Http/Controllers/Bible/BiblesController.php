@@ -195,9 +195,6 @@ class BiblesController extends APIController
 
     public function archival()
     {
-        if (config('app.env') === 'local') {
-            ini_set('memory_limit', '864M');
-        }
         $iso                = checkParam('iso');
         $organization_id    = checkParam('organization_id');
         $organization = '';
@@ -350,13 +347,14 @@ class BiblesController extends APIController
     }
 
     /**
-     *  Query books with the optional constraints of bible_id, book_id and language translations
      *
      * @OA\Get(
      *     path="/bibles/{id}/book/",
      *     tags={"Bibles"},
-     *     summary="",
-     *     description="",
+     *     summary="Returns a list of translated book names and general information for the given Bible",
+     *     description="The actual list of books may vary from fileset to fileset. For example, a King James Fileset may
+               contain deuterocanonical books that are missing from one of it's sibling filesets nested within the bible
+               parent.",
      *     operationId="v4_bible.books",
      *     @OA\Parameter(name="id",in="path",required=true,@OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(name="book_id",in="query",@OA\Schema(ref="#/components/schemas/Book/properties/id")),
@@ -380,23 +378,22 @@ class BiblesController extends APIController
      */
     public function books($bible_id, $book_id = null)
     {
-        if (!$this->api) {
-            return view('bibles.books.index');
-        }
-
-        $book_id = checkParam('book_id', $book_id, 'optional');
+        $book_id   = checkParam('book_id', false, $book_id);
         $testament = checkParam('testament');
 
         $bible = Bible::find($bible_id);
-        $bible_books = BibleBook::where('bible_id', $bible_id)->select('book_id')->distinct()->get()->pluck('book_id');
-        $books = BookTranslation::with('book')->where('language_id', $bible->language_id)
-                    ->when($testament, function ($q) use ($testament) {
-                        $q->where('book_testament', $testament);
-                    })
-                    ->when($book_id, function ($q) use ($book_id) {
-                        $q->where('book_id', $book_id);
-                    })->whereIn('book_id', $bible_books)->get();
-        $books = $books->sortBy('book.'.$bible->versification.'_order');
+
+        $books = BibleBook::where('bible_id', $bible_id)
+            ->with(['book' => function($query) use($testament) {
+                if($testament) {
+                    $query->where('testament',$testament);
+                }
+            }])
+            ->when($book_id, function($query) use($book_id) {
+                $query->where('book_id', $book_id);
+            })
+            ->get()->sortBy('book.'.$bible->versification.'_order')->flatten();
+
         return $this->reply(fractal($books, new BooksTransformer));
     }
 
