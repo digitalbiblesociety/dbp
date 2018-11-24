@@ -48,8 +48,7 @@ $factory->afterCreating(\App\Models\User\User::class, function ($users) {
     $users->profile()->save(factory(\App\Models\User\User::class)->make());
 
     // 10 percent chance to be a developer
-    if(rand(1,10) === 10) {
+    if (rand(1, 10) === 10) {
         $users->keys()->save(factory(\App\Models\User\Key::class)->make());
     }
-
 });

@@ -13,7 +13,7 @@ $factory->define(\App\Models\Bible\Bible::class, function (Faker $faker) {
         'script'            => factory(App\Models\Language\Alphabet::class)->create()->id,
         'copyright'         => '© '.$faker->company,
         'in_progress'       => $faker->boolean(),
-        'priority'          => rand(0,9),
+        'priority'          => rand(0, 9),
         'reviewed'          => $faker->boolean(75),
     ];
 });
@@ -23,7 +23,7 @@ $factory->define(\App\Models\Bible\BibleTranslation::class, function (Faker $fak
         'language_id' => factory(App\Models\User\Language::class)->create()->id,
         'vernacular'  => false,
         'name'        => $faker->title,
-        'description' => $faker->paragraph(rand(1,3))
+        'description' => $faker->paragraph(rand(1, 3))
     ];
 });
 $factory->state(\App\Models\Bible\BibleTranslation::class, 'vernacular', ['vernacular' => true ]);
@@ -61,18 +61,18 @@ $factory->define(\App\Models\Bible\BibleFile::class, function (Faker $faker) {
     return [
         'id'      => '',
         'hash_id' => '',
-        'chapter_start' => rand(1,150),
-        'chapter_end'   => rand(1,150),
-        'verse_start'   => rand(1,179),
-        'verse_end'   => rand(1,179),
+        'chapter_start' => rand(1, 150),
+        'chapter_end'   => rand(1, 150),
+        'verse_start'   => rand(1, 179),
+        'verse_end'   => rand(1, 179),
     ];
 });
 
 $factory->afterCreating(\App\Models\Bible\Bible::class, function ($bibles) {
     $bibles->translations()->save(factory(\App\Models\Bible\BibleTranslation::class)->state('vernacular')->make());
-    $bibles->translations()->save(factory(\App\Models\Bible\BibleTranslation::class, rand(1,5))->make());
+    $bibles->translations()->save(factory(\App\Models\Bible\BibleTranslation::class, rand(1, 5))->make());
 
-    $bibles->links()->save(factory(\App\Models\Bible\BibleLink::class, rand(1,5))->make());
+    $bibles->links()->save(factory(\App\Models\Bible\BibleLink::class, rand(1, 5))->make());
 });
 
 
