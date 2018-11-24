@@ -47,14 +47,13 @@ class SyncEbible extends Command
 
         foreach ($unrecorded_equivalents as $unrecorded_equivalent) {
             BibleEquivalent::create([
-                'bible_id'        => NULL,
+                'bible_id'        => null,
                 'site'            => 'http://ebible.org/find/details.php?id='.$unrecorded_equivalent,
                 'organization_id' => $organization->id,
                 'equivalent_id'   => $unrecorded_equivalent,
                 'type'            => 'website',
-                'suffix'          => NULL
+                'suffix'          => null
             ]);
         }
-
     }
 }

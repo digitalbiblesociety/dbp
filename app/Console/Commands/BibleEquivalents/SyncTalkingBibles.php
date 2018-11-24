@@ -51,7 +51,7 @@ class SyncTalkingBibles extends Command
             $page      = 1;
             $count     = 25;
 
-            while($count === 25) {
+            while ($count === 25) {
                 $bibles = json_decode(file_get_contents($baseurl . 'recordings.json?page='.$page, false, $context));
                 $count = count($bibles);
                 $bible_equivalents[] = $bibles;
@@ -64,24 +64,20 @@ class SyncTalkingBibles extends Command
         $bible_equivalents = collect($bible_equivalents)->flatten();
 
         $organization = Organization::whereSlug('talking-bibles-international')->first();
-        $recorded_equivalents = BibleEquivalent::whereIn('equivalent_id',$bible_equivalents->pluck('id'))
-            ->where('organization_id',$organization->id)->get()->pluck('equivalent_id');
+        $recorded_equivalents = BibleEquivalent::whereIn('equivalent_id', $bible_equivalents->pluck('id'))
+            ->where('organization_id', $organization->id)->get()->pluck('equivalent_id');
 
-        foreach($bible_equivalents as $bible_equivalent) {
-
-            if(!$recorded_equivalents->contains($bible_equivalent->id)) {
-
+        foreach ($bible_equivalents as $bible_equivalent) {
+            if (!$recorded_equivalents->contains($bible_equivalent->id)) {
                 BibleEquivalent::create([
-                    'bible_id'        => NULL,
+                    'bible_id'        => null,
                     'site'            => $bible_equivalent->href,
                     'organization_id' => $organization->id,
                     'equivalent_id'   => $bible_equivalent->id,
                     'type'            => 'website',
-                    'suffix'          => NULL
+                    'suffix'          => null
                 ]);
-
             }
         }
-
     }
 }

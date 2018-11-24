@@ -8,7 +8,7 @@ use App\Traits\AccessControlAPI;
 use Mockery as m;
 use Torann\GeoIP\GeoIP;
 
-class v4_accessControlTest extends API_V4_Test
+class AccessControlTest extends ApiV4Test
 {
     use AccessControlAPI;
 
@@ -20,11 +20,9 @@ class v4_accessControlTest extends API_V4_Test
     }
 
     /**
-     * A basic test example.
-     *
-     * @return void
+     * @test
      */
-    public function test_v4_access_allowed_basic()
+    public function accessAllowedBasic()
     {
         $access_controls = $this->accessControl(Key::inRandomOrder()->first()->key);
 
@@ -33,7 +31,10 @@ class v4_accessControlTest extends API_V4_Test
         $this->assertTrue(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
     }
 
-    public function test_v4_access_denied_basic()
+    /**
+     * @test
+     */
+    public function accessDeniedBasic()
     {
         $access_controls = $this->accessControl('this-is-not-a-real-api-key');
 
@@ -42,10 +43,13 @@ class v4_accessControlTest extends API_V4_Test
         $this->assertFalse(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
     }
 
-    public function test_v4_access_allowed_country()
+    /**
+     * @test
+     */
+    public function accessAllowedCountry()
     {
         $this->mockIpTest();
-        $key = AccessType::where('country_id','=','US')->first()->accessGroups()->first()->keys()->first()->key_id;
+        $key = AccessType::where('country_id', '=', 'US')->first()->accessGroups()->first()->keys()->first()->key_id;
 
         $access_controls = $this->accessControl($key);
 
@@ -54,10 +58,13 @@ class v4_accessControlTest extends API_V4_Test
         $this->assertTrue(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
     }
 
-    public function test_v4_access_allowed_continent()
+    /**
+     * @test
+     */
+    public function accessAllowedContinent()
     {
         $this->mockIpTest();
-        $key = AccessType::where('continent_id','!=',NULL)->first()->accessGroups()->first()->keys()->first()->key_id;
+        $key = AccessType::where('continent_id', '!=', null)->first()->accessGroups()->first()->keys()->first()->key_id;
 
         $access_controls = $this->accessControl($key);
 
@@ -66,10 +73,13 @@ class v4_accessControlTest extends API_V4_Test
         $this->assertTrue(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
     }
 
-    public function test_v4_access_denied_country()
+    /**
+     * @test
+     */
+    public function accessDeniedCountry()
     {
         $this->mockIpTest();
-        $key = AccessType::where('country_id','=','IN')->first()->accessGroups()->first()->keys()->first()->key_id;
+        $key = AccessType::where('country_id', '=', 'IN')->first()->accessGroups()->first()->keys()->first()->key_id;
 
         $access_controls = $this->accessControl($key);
 
@@ -78,7 +88,10 @@ class v4_accessControlTest extends API_V4_Test
         $this->assertFalse(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
     }
 
-    public function test_v4_access_denied_continent()
+    /**
+     * @test
+     */
+    public function accessDeniedContinent()
     {
         $this->mockIpTest();
         $key = AccessType::where('continent_id', '=', 'AS')->first()->accessGroups()->first()->keys()->first()->key_id;
@@ -89,5 +102,4 @@ class v4_accessControlTest extends API_V4_Test
         $this->assertFalse(str_contains($access_controls->string, 'RESTRICTED'));
         $this->assertFalse(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
     }
-
 }
