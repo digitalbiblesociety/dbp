@@ -102,7 +102,6 @@ class APIController extends Controller
             $keyExists = Key::find($this->key);
             $this->user = $keyExists->user ?? null;
 
-
             if (!$this->user) {
                 abort(401, 'You need to provide a valid API key. To request an api key please email access@dbp4.org');
             }
@@ -172,22 +171,30 @@ class APIController extends Controller
         }
 
         switch ($format) {
+            case 'jsonp':
+                return response()->json($object, $this->getStatusCode())
+                    ->header('Content-Type', 'application/javascript; charset=utf-8')
+                    ->setCallback(request()->input('callback'));
             case 'xml':
                 $formatter = ArrayToXml::convert($object->toArray(), [
                     'rootElementName' => $meta['rootElementName'] ?? 'root',
                     '_attributes'     => $meta['rootAttributes'] ?? []
                 ], true, 'utf-8');
-                return response()->make($formatter, $this->getStatusCode())->header('Content-Type', 'application/xml; charset=utf-8');
+                return response()->make($formatter, $this->getStatusCode())
+                                 ->header('Content-Type', 'application/xml; charset=utf-8');
             case 'yaml':
                 $formatter = Yaml::dump($object->toArray());
-                return response()->make($formatter, $this->getStatusCode())->header('Content-Type', 'text/yaml; charset=utf-8');
+                return response()->make($formatter, $this->getStatusCode())
+                                 ->header('Content-Type', 'text/yaml; charset=utf-8');
             case 'toml':
                 $tomlBuilder = new TomlBuilder();
                 $formatter = $tomlBuilder->addValue('multiple', $object->toArray())->getTomlString();
-                return response()->make($formatter, $this->getStatusCode())->header('Content-Type', 'text/yaml; charset=utf-8');
+                return response()->make($formatter, $this->getStatusCode())
+                                 ->header('Content-Type', 'text/yaml; charset=utf-8');
             case 'csv':
                 $formatter = Formatter::make($object->toArray(), Formatter::ARR);
-                return response()->make($formatter->toCsv(), $this->getStatusCode())->header('Content-Type', 'text/csv; charset=utf-8');
+                return response()->make($formatter->toCsv(), $this->getStatusCode())
+                                 ->header('Content-Type', 'text/csv; charset=utf-8');
             default:
                 if (isset($_GET['pretty'])) {
                     return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
