@@ -88,7 +88,7 @@ class UserSocialController extends APIController
         $oAuthDriver = $this->getOauthProvider($project_id, $provider);
         if(!$oAuthDriver) return $this->setStatusCode(404)->replyWithError('Socialite Provider not found');
 
-        return $this->createOrGetUser($oAuthDriver->user(), $provider);
+        return $this->createOrGetUser($oAuthDriver->user(), $provider, $project_id);
     }
 
     private function getOauthProvider($project_id, $provider)
@@ -120,18 +120,22 @@ class UserSocialController extends APIController
         ])->stateless();
     }
 
-    private function createOrGetUser($providerUser, $provider)
+    private function createOrGetUser($providerUser, $provider, $project_id)
     {
         $account = Account::where('provider_id', $provider)->where('provider_user_id', $providerUser->getId())->first();
         if (!$account) {
-            $account = new Account(['provider_user_id' => $providerUser->getId(), 'provider_id' => $provider]);
-            $user    = User::where('email', $providerUser->getEmail())->first();
+            $account = Account::create([
+                'provider_user_id' => $providerUser->getId(),
+                'provider_id'      => $provider,
+                'project_id'       => $project_id
+            ]);
+            $user = User::where('email', $providerUser->getEmail())->first();
             if (!$user) {
                 $user = User::create([
-                    'id'       => str_random(24),
-                    'email'    => $providerUser->getEmail(),
-                    'name'     => $providerUser->getName(),
-                    'verified' => 1,
+                    'id'        => str_random(24),
+                    'email'     => $providerUser->getEmail(),
+                    'name'      => $providerUser->getName(),
+                    'activated' => 1,
                 ]);
             }
             $account->user()->associate($user);
