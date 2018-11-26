@@ -124,11 +124,7 @@ class UserSocialController extends APIController
     {
         $account = Account::where('provider_id', $provider)->where('provider_user_id', $providerUser->getId())->first();
         if (!$account) {
-            $account = Account::create([
-                'provider_user_id' => $providerUser->getId(),
-                'provider_id'      => $provider,
-                'project_id'       => $project_id
-            ]);
+
             $user = User::where('email', $providerUser->getEmail())->first();
             if (!$user) {
                 $user = User::create([
@@ -138,8 +134,14 @@ class UserSocialController extends APIController
                     'activated' => 1,
                 ]);
             }
-            $account->user()->associate($user);
-            $account->save();
+
+            Account::create([
+                'user_id'          => $user->id,
+                'provider_user_id' => $providerUser->getId(),
+                'provider_id'      => $provider,
+                'project_id'       => $project_id
+            ]);
+
             return $user;
         }
         return $account->user;
