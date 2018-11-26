@@ -37,7 +37,7 @@ class UserSocialController extends APIController
      *          in="path",
      *          required=true,
      *          @OAS\Schema(ref="#/components/schemas/ProjectOauthProvider/properties/name"),
-     *          description="The Provider name, the currently supported providers are: facebook, bitbucket, github, twitter, & google",
+     *          description="The Provider name, the currently supported providers are: facebook, bitbucket, github, & google",
      *     ),
      *     @OAS\Parameter(
      *          name="project_id",
@@ -68,22 +68,15 @@ class UserSocialController extends APIController
     public function getSocialRedirect($provider = null)
     {
         $project_id = checkParam('project_id');
-        $provider   = checkParam('name', true, $provider);
+        $provider   = checkParam('provider', true, $provider);
 
-        $driver = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
-        $socialiteProvider = $this->getOauthProvider($driver, $provider);
-        if (is_a($socialiteProvider, JsonResponse::class)) {
-            return $socialiteProvider;
-        }
-
-        $redirect = $socialiteProvider->stateless()
-            ->redirectUrl($driver->callback_url.'?project_id='.$project_id)
-            ->redirect()->getTargetUrl();
+        $oAuthDriver = $this->getOauthProvider($project_id, $provider);
+        if(!$oAuthDriver) return $this->setStatusCode(404)->replyWithError('Socialite Provider not found');
 
         return $this->reply([
             'data' => [
                 'provider_id'  => $provider,
-                'redirect_url' => urldecode($redirect),
+                'redirect_url' => urldecode($oAuthDriver->stateless()->redirect()->getTargetUrl()),
             ]
         ]);
     }
@@ -92,17 +85,15 @@ class UserSocialController extends APIController
     {
         $project_id = checkParam('project_id', true);
 
-        $driver = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
-        $oAuthDriver = $this->getOauthProvider($driver, $provider, $provider);
+        $oAuthDriver = $this->getOauthProvider($project_id, $provider);
+        if(!$oAuthDriver) return $this->setStatusCode(404)->replyWithError('Socialite Provider not found');
 
-        $user = $oAuthDriver->user();
-        $user = $this->createOrGetUser($user, $provider);
-        return $user;
+        return $this->createOrGetUser($oAuthDriver->user(), $provider);
     }
 
-    private function getOauthProvider($driver, $provider)
+    private function getOauthProvider($project_id, $provider)
     {
-
+        $driver = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
         switch ($provider) {
             case 'bitbucket':
                 $providerClass = BitbucketProvider::class;
@@ -120,10 +111,12 @@ class UserSocialController extends APIController
                 $providerClass = null;
         }
 
+        if(!$providerClass || !$driver) return null;
+
         return Socialite::buildProvider($providerClass, [
             'client_id'     => $driver->client_id,
             'client_secret' => $driver->client_secret,
-            'redirect'      => $driver->callback_url,
+            'redirect'      => $driver->callback_url.'?project_id='.$project_id,
         ])->stateless();
     }
 
