@@ -135,16 +135,17 @@ class LanguageController extends APIController
         $sort_by            = checkParam('sort_by') ?? 'id';
         $lang_code          = checkParam('lang_code');
         $country_code       = checkParam('country_code');
-        $country_additional = checkParam('additional');
         $img_size           = checkParam('img_size');
         $img_type           = checkParam('img_type') ?? 'png';
+        $additional         = checkParam('additional');
 
-        $cache_string       = 'v2_country_lang_' . $sort_by . $lang_code . $country_code . $country_additional;
 
         $access_control = $this->accessControl($this->key);
+        $cache_string   = 'v2_country_lang_' . $sort_by . $lang_code . $country_code . $img_size . $img_type .
+                          $additional . $access_control->string;
 
         $countryLang = \Cache::remember($cache_string, 1600, function ()
-            use ($sort_by, $lang_code, $country_code, $country_additional, $img_size, $img_type, $access_control) {
+            use ($sort_by, $lang_code, $country_code, $additional, $img_size, $img_type, $access_control) {
 
                 // Fetch Languages and add conditional sorting
                 $languages = Language::select([
@@ -164,7 +165,7 @@ class LanguageController extends APIController
                 ->when($country_code, function($query) use ($country_code) {
                     $query->where('country_id',$country_code);
                 })
-                ->when($country_additional, function($query) {
+                ->when($additional, function($query) {
                     $query->with(['countries' => function($query) {
                         $query->select('id');
                     }]);
