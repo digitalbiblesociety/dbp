@@ -22,7 +22,7 @@ class Account extends Model
     protected $table = 'user_accounts';
     protected $fillable = ['user_id', 'provider_user_id', 'provider_id', 'project_id'];
     protected $hidden = ['user_id'];
-    protected $incrementing = false;
+    public $incrementing = false;
 
     /**
      *
