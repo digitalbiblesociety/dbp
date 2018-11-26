@@ -90,9 +90,9 @@ class LanguageListingTransformer extends BaseTransformer
                     'iso_language_code'    => strtoupper($language->iso),
                     'regional_lang_name'   => $language->autonym ?? $language->name,
                     'family_id'            => strtoupper($language->iso),
-                    'primary_country_name' => (string) $language->primaryCountry->name,
-                    'country_image'        => 'https://dbp-mcdn.s3.us-west-2.amazonaws.com/flags/full/80x60/'.strtolower($language->country_id).'.png',
-                    'country_additional'   => strtoupper($language->countries->pluck('id')->implode(': '))
+                    'primary_country_name' => (string) $language->country_name,
+                    'country_image'        => $language->country_image,
+                    'country_additional'   => $language->relationLoaded('countries') ? strtoupper($language->countries->pluck('id')->implode(': ')) : ''
                 ];
 
             /**

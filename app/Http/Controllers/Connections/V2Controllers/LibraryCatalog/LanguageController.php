@@ -67,31 +67,6 @@ class LanguageController extends APIController
         return $this->reply($cached_languages);
     }
 
-    /**
-     *
-     * _method=put : REQUIRED for PUT DBT methods - PUT is not properly supported. To effect DBT methods requiring PUT, use the GET HTTP method and &_method=put.
-     * iso_code: The three letter ISO language code.
-     * glotto_code: the Glottolog code
-     * name: The native language language name.
-     * english_name: The English language language name.
-     * variant (optional): [true|false] Forces the language code creation to be a variant of the ISO code and not the ISO code even if it is available as a DBP language code. This is used when FCBH considers the language being defined to be a variant of an official ISO language.
-     * family_code (optional): The language code of the family to which this language belongs. If left empty or a non-existent language code is entered, the family_code will be set the same as the code entered to create this language.
-     *
-     * @param Request $request
-     * @return User|mixed|null
-     */
-    public function languageCreate(Request $request)
-    {
-        $user = $this->validateUser();
-        if (!is_a($user, new User())) {
-            return $user;
-        }
-        $this->validateLanguage($request);
-
-        Language::create($request->all());
-        return $this->reply(['status' => 'Success']);
-    }
-
 
     /**
      * Handle the Country Lang route for V2
@@ -100,7 +75,9 @@ class LanguageController extends APIController
      *     path="/country/countrylang/",
      *     tags={"Country Language"},
      *     summary="Returns Languages and the countries associated with them",
-     *     description="Filter languages by a specified country code or filter countries by specified language code. Country flags can also be retrieved by requesting one of the permitted image sizes. Languages can be sorted by the country code (default) and the language code.",
+     *     description="Filter languages by a specified country code or filter countries by specified language code.
+               Country flags can also be retrieved by requesting one of the permitted image sizes. Languages can also be
+               sorted by the country code (default) and the language code.",
      *     operationId="v2_country_lang",
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -112,11 +89,37 @@ class LanguageController extends APIController
      *         @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
      *         description="Get records by ISO language code"
      *     ),
-     *     @OA\Parameter(name="country_code",in="query",description="Get records by ISO country code", @OA\Schema(ref="#/components/schemas/Country/properties/id")),
-     *     @OA\Parameter(name="additional",in="query",description="Get colon separated list of optional countries", @OA\Schema(type="integer",enum={0,1},default=0)),
-     *     @OA\Parameter(name="sort_by",in="query",description="Sort by lang_code or country_code", @OA\Schema(type="string",enum={"country_code","lang_code"},default="country_code")),
-     *     @OA\Parameter(name="img_type",in="query",description="Includes a country flag image of the specified file type", @OA\Schema(type="string",enum={"png","svg"},default="png")),
-     *     @OA\Parameter(name="img_size",in="query",description="Include country flag in entries in requested size. Note: This parameter accepts any resolution in the format (width)x(height), however, selecting a resolution with an aspect ratio other than 1:1 or 4:3 will likely result in distortion. We encourage you to use a standard size (40x30, 80x60, 160X120, 320X240, 640X480, or 1280X960) because they can be generated much more quickly than other sizes. If this parameter is provided and img_type is omitted, img_type is assumed to be png. This parameter is ignored when img_type is svg.",@OA\Schema(type="string",example="160X120")),
+     *     @OA\Parameter(
+     *         name="country_code",
+     *         in="query",
+     *         @OA\Schema(ref="#/components/schemas/Country/properties/id"),
+     *         description="Get records by ISO country code",
+     *     ),
+     *     @OA\Parameter(
+     *         name="additional",
+     *         in="query",
+     *         @OA\Schema(type="integer",enum={0,1},default=0),
+     *         description="Get colon separated list of optional countries"
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort_by",
+     *         in="query",
+     *         @OA\Schema(type="string",enum={"country_code","lang_code"},default="country_code"),
+     *         description="Sort by lang_code or country_code"
+     *     ),
+     *     @OA\Parameter(
+     *         name="img_type",
+     *         in="query",
+     *         @OA\Schema(type="string",enum={"png","svg"},default="png"),
+     *         description="Includes a country flag image of the specified file type"
+     *     ),
+     *     @OA\Parameter(
+     *         name="img_size",
+     *         in="query",
+     *         @OA\Schema(type="string",example="160X120",enum={'40x30','80x60','160x120','320x240','640x480','1280x960'}),
+     *         description="Include country flags in entries in requested size. This no longer generates images but
+                   rather selects them from a recommended list: 40x30, 80x60, 160X120, 320X240, 640X480, or 1280X960"
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -129,44 +132,78 @@ class LanguageController extends APIController
      */
     public function countryLang()
     {
-        // If it's not an API route send them to the documentation
-        if (!$this->api) {
-            return view('docs.v2.country_language');
-        }
-
-        if (config('app.env') == 'local') {
-            ini_set('memory_limit', '864M');
-        }
-
-        // Get and set variables from Params. Both are optional.
-        $sort_by            = checkParam('sort_by');
+        $sort_by            = checkParam('sort_by') ?? 'id';
         $lang_code          = checkParam('lang_code');
         $country_code       = checkParam('country_code');
         $country_additional = checkParam('additional');
+        $img_size           = checkParam('img_size');
+        $img_type           = checkParam('img_type') ?? 'png';
+
         $cache_string       = 'v2_country_lang_' . $sort_by . $lang_code . $country_code . $country_additional;
 
-        $countryLang = \Cache::remember(
-            $cache_string,
-            1600,
-            function () use ($sort_by, $lang_code, $country_code, $country_additional) {
+        $access_control = $this->accessControl($this->key);
 
-                // Fetch Languages and add conditional sorting / loading depending on params
-                $languages = Language::has('primaryCountry')->has('bibles.filesets')->with('primaryCountry', 'countries')
-                    ->when($sort_by, function ($q) use ($sort_by) {
-                        return $q->orderBy($sort_by, 'desc');
-                    })->when($lang_code, function ($q) use ($lang_code) {
-                        return $q->where('iso', $lang_code);
-                    })->when($country_code, function ($q) use ($country_code) {
-                        return $q->where('country_id', $country_code);
-                    })->get();
-                if ($country_additional) {
-                    $languages->load('countries');
+        $countryLang = \Cache::remember($cache_string, 1600, function ()
+            use ($sort_by, $lang_code, $country_code, $country_additional, $img_size, $img_type, $access_control) {
+
+                // Fetch Languages and add conditional sorting
+                $languages = Language::select([
+                    'languages.id',
+                    'languages.glotto_id',
+                    'languages.iso',
+                    'languages.area',
+                    'languages.country_id',
+                    'countries.name as country_name',
+                    'languages.name as backup_name',
+                    'current_translation.name as name',
+                    'autonym.name as autonym'
+                ])
+                ->when($lang_code, function($query) use ($lang_code) {
+                    $query->where('iso',$lang_code);
+                })
+                ->when($country_code, function($query) use ($country_code) {
+                    $query->where('country_id',$country_code);
+                })
+                ->when($country_additional, function($query) {
+                    $query->with(['countries' => function($query) {
+                        $query->select('id');
+                    }]);
+                })
+                ->leftJoin('language_translations as autonym', function ($join) {
+                    $priority_q = \DB::raw('(select max(`priority`) FROM language_translations
+                    WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
+                                 $join->on('autonym.language_source_id', '=', 'languages.id')
+                                      ->on('autonym.language_translation_id', '=', 'languages.id')
+                                      ->orderBy('autonym.priority', '=', $priority_q)->limit(1);
+                })
+                ->leftJoin('language_translations as current_translation', function ($join) {
+                    $priority_q = \DB::raw('(select max(`priority`) from language_translations 
+                        WHERE language_source_id = languages.id LIMIT 1)');
+                        $join->on('current_translation.language_source_id', 'languages.id')
+                            ->where('current_translation.language_translation_id', '=', $GLOBALS['i18n_id'])
+                            ->where('current_translation.priority', '=', $priority_q)->limit(1);
+                        })
+                ->whereHas('filesets', function ($query) use ($access_control) {
+                    $query->whereIn('hash_id', $access_control->hashes);
+                })
+                ->leftJoin('countries','countries.id','languages.country_id')
+                ->orderBy($sort_by,'asc')
+                ->get();
+
+                // Add Images
+                if($img_type != 'svg') {
+                    $img_type = 'png';
+                }
+                $flags_path = 'https://dbp-mcdn.s3.us-west-2.amazonaws.com/flags/full';
+                $flags_path .= ($img_type === 'svg') ? '/svg/' : "/$img_size/";
+                foreach($languages as $language) {
+                    $language->country_image = $flags_path.strtoupper($language->country_id).'.'.$img_type;
                 }
 
-                return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer);
+                return fractal($languages, new LanguageListingTransformer(), $this->serializer);
             }
         );
-        // Transform and return JSON
+
         return $this->reply($countryLang);
     }
 
