@@ -69,14 +69,6 @@ Route::post('password/reset',                                   'User\UserPasswo
 Route::name('wiki_bibles.one')->get('/wiki/bibles/{id}',              'Bible\BiblesController@show');
 Route::name('wiki_bibles.all')->get('/wiki/bibles',                   'Bible\BiblesController@index');
 
-Route::group(['prefix' => 'verification','as' => 'laravel2step::','middleware' => ['web']], function() {
-
-	Route::name('verificationNeeded')->get('/needed',           'User\UserTwoStepController@showVerification');
-	Route::name('verify')->post('/verify',                      'User\UserTwoStepController@verify');
-	Route::name('resend')->post('/resend',                      'User\UserTwoStepController@resend');
-
-});
-
 // Public Routes
 Route::group(['middleware' => ['web', 'activity']], function () {
 
