@@ -19,6 +19,7 @@ use Socialite;
 class UserSocialController extends APIController
 {
 
+
     /**
      *
      * @OAS\Get(
@@ -68,14 +69,16 @@ class UserSocialController extends APIController
     {
         $project_id = checkParam('project_id');
         $provider   = checkParam('name', true, $provider);
-        $alt_url    = checkParam('alt_url');
 
-        $socialiteProvider = $this->getOauthProvider($project_id, $provider, $alt_url);
+        $driver = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
+        $socialiteProvider = $this->getOauthProvider($driver, $provider);
         if (is_a($socialiteProvider, JsonResponse::class)) {
             return $socialiteProvider;
         }
 
-        $redirect = $socialiteProvider->stateless()->redirect()->getTargetUrl();
+        $redirect = $socialiteProvider->stateless()
+            ->redirectUrl($driver->callback_url.'?project_id='.$project_id)
+            ->redirect()->getTargetUrl();
 
         return $this->reply([
             'data' => [
@@ -87,22 +90,19 @@ class UserSocialController extends APIController
 
     public function handleProviderCallback($provider)
     {
-        $user = \Socialite::driver($provider)->stateless()->user();
+        $project_id = checkParam('project_id', true);
+
+        $driver = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
+        $oAuthDriver = $this->getOauthProvider($driver, $provider, $provider);
+
+        $user = $oAuthDriver->user();
         $user = $this->createOrGetUser($user, $provider);
         return $user;
     }
 
-    private function getOauthProvider($project_id, $provider, $alt_url = null)
+    private function getOauthProvider($driver, $provider)
     {
-        $driverData = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
-        if (!$driverData) {
-            return $this->setStatusCode(404)->replyWithError('No oAuth Provider found for the given params');
-        }
-        $driver     = [
-            'client_id'     => $driverData->client_id,
-            'client_secret' => $driverData->client_secret,
-            'redirect'      => !$alt_url ? $driverData->callback_url : $driverData->callback_url_alt,
-        ];
+
         switch ($provider) {
             case 'bitbucket':
                 $providerClass = BitbucketProvider::class;
@@ -120,7 +120,11 @@ class UserSocialController extends APIController
                 $providerClass = null;
         }
 
-        return Socialite::buildProvider($providerClass, $driver)->stateless();
+        return Socialite::buildProvider($providerClass, [
+            'client_id'     => $driver->client_id,
+            'client_secret' => $driver->client_secret,
+            'redirect'      => $driver->callback_url,
+        ])->stateless();
     }
 
     private function createOrGetUser($providerUser, $provider)

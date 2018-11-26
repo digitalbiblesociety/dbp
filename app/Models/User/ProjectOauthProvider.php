@@ -107,20 +107,6 @@ class ProjectOauthProvider extends Model
     /**
      *
      * @OA\Property(
-     *   title="callback_url_alt",
-     *   type="string",
-     *   description="An alternative callback_url for an oauth provider",
-     *   maxLength=191
-     * )
-     *
-     * @method static Project whereCallbackUrlAlt($value)
-     * @property string $callback_url_alt
-     */
-    protected $callback_url_alt;
-
-    /**
-     *
-     * @OA\Property(
      *   title="description",
      *   type="string",
      *   description="The description for an oauth provider",
