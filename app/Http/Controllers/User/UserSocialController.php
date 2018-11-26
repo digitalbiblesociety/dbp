@@ -75,8 +75,7 @@ class UserSocialController extends APIController
             return $socialiteProvider;
         }
 
-        $redirect = $socialiteProvider->scopes(['key' => $this->key, 'project_id' => $project_id])
-                                      ->stateless()->redirect()->getTargetUrl();
+        $redirect = $socialiteProvider->stateless()->redirect()->getTargetUrl();
 
         return $this->reply([
             'data' => [
