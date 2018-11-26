@@ -64,7 +64,7 @@ class SyncLanguageDescriptions extends Command
             $alreadyFetched[] = substr($json_file, 47, 3);
         }
         $csv_parser = new SeederHelper();
-        $missing = collect($csv_parser->csv_to_array($missing_url))->pluck('codes');
+        $missing = collect($csv_parser->csvToArray($missing_url))->pluck('codes');
 
         // fetch the right languages
         $languages = Language::whereNotNull('iso')->whereNotIn('iso', $alreadyFetched)->whereNotIn('iso', $missing)->limit(2000)->get();

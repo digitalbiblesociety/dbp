@@ -193,7 +193,7 @@ class Project extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'project_members')->where('role', 'user')->withPivot('role');
+        return $this->hasManyThrough(User::class, ProjectMember::class);
     }
 
     public function notes()

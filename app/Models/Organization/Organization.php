@@ -327,7 +327,6 @@ class Organization extends Model
         return $this->hasMany(BibleLink::class, 'provider', 'slug');
     }
 
-    // TODO FIX This
     public function filesets()
     {
         return $this->hasManyThrough(BibleFilesetConnection::class, BibleFileset::class);

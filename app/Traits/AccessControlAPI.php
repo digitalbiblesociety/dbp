@@ -7,6 +7,8 @@ use App\Models\User\AccessType;
 
 trait AccessControlAPI
 {
+    use CaptureIpTrait;
+
     /**
      * Returns a list of filesets (represented by their hash IDs) and an underscore-separated list of access group
      * names for the authenticated user.
@@ -17,8 +19,7 @@ trait AccessControlAPI
      */
     public function accessControl($api_key)
     {
-        /** @todo: Move these lines into trait; $user_location = $this->getIp(); */
-        $user_location = geoip(checkParam('ip_address'));
+        $user_location = geoip($this->getIpAddress());
 
         if (!isset($user_location->iso_code)) {
             $user_location->iso_code   = 'unset';
@@ -26,7 +27,6 @@ trait AccessControlAPI
         if (!isset($user_location->continent)) {
             $user_location->continent = 'unset';
         }
-        /** @todo end trait */
 
         // Defaults to type 'api' because that's the only access type; needs modification once there are multiple
         $access_type = AccessType::where('name', 'api')

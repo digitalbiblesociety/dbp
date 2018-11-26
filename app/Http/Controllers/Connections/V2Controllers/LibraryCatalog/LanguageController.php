@@ -96,9 +96,6 @@ class LanguageController extends APIController
     /**
      * Handle the Country Lang route for V2
      *
-     * // TODO: backwards compatibility - low priority
-     * // TODO: Generation code for img_type & img_size
-     *
      * @OA\Get(
      *     path="/country/countrylang/",
      *     tags={"Country Language"},
@@ -109,7 +106,12 @@ class LanguageController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="lang_code",in="query",description="Get records by ISO language code", @OA\Schema(ref="#/components/schemas/Language/properties/iso")),
+     *     @OA\Parameter(
+     *         name="lang_code",
+     *         in="query",
+     *         @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
+     *         description="Get records by ISO language code"
+     *     ),
      *     @OA\Parameter(name="country_code",in="query",description="Get records by ISO country code", @OA\Schema(ref="#/components/schemas/Country/properties/id")),
      *     @OA\Parameter(name="additional",in="query",description="Get colon separated list of optional countries", @OA\Schema(type="integer",enum={0,1},default=0)),
      *     @OA\Parameter(name="sort_by",in="query",description="Sort by lang_code or country_code", @OA\Schema(type="string",enum={"country_code","lang_code"},default="country_code")),
@@ -190,13 +192,12 @@ class LanguageController extends APIController
      *     summary="Returns the list of languages",
      *     description="This method retrieves the list of languages for available volumes and the related volume data in the system according to the filter specified.",
      *     operationId="v2_library_volumeLanguageFamily",
-     *     @OA\Parameter(name="language_code",in="query"),
-     *     @OA\Parameter(name="root",in="query"),
-     *     @OA\Parameter(name="media",in="query"),
-     *     @OA\Parameter(name="delivery",in="query"),
-     *     @OA\Parameter(name="full_word",in="query"),
-     *     @OA\Parameter(name="status",in="query"),
-     *     @OA\Parameter(name="resolution",in="query"),
+     *     @OA\Parameter(name="language_code", in="query"),
+     *     @OA\Parameter(name="root", in="query"),
+     *     @OA\Parameter(name="media", in="query"),
+     *     @OA\Parameter(name="full_word", in="query"),
+     *     @OA\Parameter(name="status", in="query"),
+     *     @OA\Parameter(name="resolution", in="query"),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -212,12 +213,10 @@ class LanguageController extends APIController
      */
     public function volumeLanguage()
     {
-        // $delivery =  checkParam('delivery');
         $iso             = checkParam('language_code');
         $root            = checkParam('root');
         $media           = checkParam('media');
         $organization_id = checkParam('organization_id');
-
 
         $languages = \Cache::remember(
             'volumeLanguage' . $root . $iso . $media . $organization_id,
@@ -225,13 +224,12 @@ class LanguageController extends APIController
             function () use ($root, $iso, $media, $organization_id) {
                 $languages = Language::with(['parent','translations'])
                     ->has('filesets')
-                    // TODO: Get information about referencing this in eager loading
-                    //->leftJoin('language_translations as autonym', function ($join) {
-                    //    $priority_q = \DB::raw('(select max(`priority`) FROM language_translations WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
-                    //    $join->on('autonym.language_source_id', '=', 'languages.id')
-                    //         ->on('autonym.language_translation_id', '=', 'languages.id')
-                    //         ->orderBy('autonym.priority', '=', $priority_q)->limit(1);
-                    //})
+                    ->leftJoin('language_translations as autonym', function ($join) {
+                        $priority_q = \DB::raw('(select max(`priority`) FROM language_translations WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
+                        $join->on('autonym.language_source_id', '=', 'languages.id')
+                             ->on('autonym.language_translation_id', '=', 'languages.id')
+                             ->where('autonym.priority', '=', $priority_q)->limit(1);
+                    })
                     ->when($iso, function ($query) use ($iso) {
                         return $query->where('iso', $iso);
                     })->when($root, function ($query) use ($root) {

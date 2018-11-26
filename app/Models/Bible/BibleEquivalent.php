@@ -23,7 +23,7 @@ class BibleEquivalent extends Model
     protected $table = 'bible_equivalents';
     protected $primaryKey = 'equivalent_id';
     protected $hidden = ['created_at','updated_at'];
-    protected $fillable = ['bible_id','equivalent_id','organization_id','type','suffix','needs_review','constructed_url','site'];
+    protected $fillable = ['bible_id','equivalent_id','organization_id','type','suffix','site'];
     public $incrementing = false;
 
     /**

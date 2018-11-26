@@ -119,8 +119,6 @@ class BiblesController extends APIController
         $access_control = $this->accessControl($this->key);
 
         $cache_string = 'bibles'.$dam_id.$language_code.$include_regionInfo.$updated.$organization.$sort_by.$sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $filter;
-        // TODO: REMOVE ME
-        \Cache::forget($cache_string);
         $bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language_code, $organization, $country, $asset_id, $access_control) {
 
             $bibles = Bible::with(['filesets' => function ($q) use ($asset_id, $access_control, $hide_restricted) {
@@ -312,8 +310,6 @@ class BiblesController extends APIController
      *     )
      * )
      *
-     * \\TODO: Move Links
-     *
      * @param  string $id
      *
      * @return \Illuminate\Http\Response
@@ -493,17 +489,5 @@ class BiblesController extends APIController
         });
 
         return redirect()->route('view_bibles.show', ['id' => $bible->id]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        // TODO: Generate Delete Model for Bible
     }
 }

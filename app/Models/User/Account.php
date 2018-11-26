@@ -22,21 +22,7 @@ class Account extends Model
     protected $table = 'user_accounts';
     protected $fillable = ['user_id', 'provider_user_id', 'provider_id', 'project_id'];
     protected $hidden = ['user_id'];
-
-    /**
-     *
-     * @OA\Property(
-     *   title="id",
-     *   type="integer",
-     *   description="The incrementing ID for the account",
-     *   minimum=0,
-     *   example="4"
-     * )
-     *
-     * @method static Account whereId($value)
-     * @property int $id
-     */
-    protected $id;
+    protected $incrementing = false;
 
     /**
      *

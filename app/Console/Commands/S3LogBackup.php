@@ -106,6 +106,7 @@ class S3LogBackup extends Command
             ]);
             // Print the URL to the object.
         } catch (S3Exception $e) {
+            Log::error($e);
         }
     }
 

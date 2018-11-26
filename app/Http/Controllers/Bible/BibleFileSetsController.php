@@ -441,26 +441,6 @@ class BibleFileSetsController extends APIController
     }
 
     /**
-     * TODO: Validation and Save
-     *
-     * @param $id
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function destroy($id)
-    {
-        $this->validateUser(Auth::user());
-
-        $fileset = BibleFileset::find($id);
-        $fileset->delete();
-
-        if ($this->api) {
-            return $this->setStatusCode(200)->reply($fileset);
-        }
-        return view('bibles.filesets.thanks', compact('fileset'));
-    }
-
-    /**
      * Ensure the current User has permissions to alter the alphabets
      *
      * @param null $fileset
