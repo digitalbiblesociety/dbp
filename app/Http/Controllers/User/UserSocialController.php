@@ -11,7 +11,6 @@ use App\Models\User\User;
 
 use Laravel\Socialite\Two\BitbucketProvider;
 use Laravel\Socialite\Two\FacebookProvider;
-use Laravel\Socialite\One\TwitterProvider;
 use Laravel\Socialite\Two\GithubProvider;
 use Laravel\Socialite\Two\GoogleProvider;
 
@@ -77,7 +76,7 @@ class UserSocialController extends APIController
         }
 
         $redirect = $socialiteProvider->scopes(['key' => $this->key, 'project_id' => $project_id])
-            ->redirect()->getTargetUrl();
+                                      ->stateless()->redirect()->getTargetUrl();
 
         return $this->reply([
             'data' => [
@@ -89,20 +88,13 @@ class UserSocialController extends APIController
 
     public function handleProviderCallback($provider)
     {
-        /**
         $user = \Socialite::driver($provider)->stateless()->user();
         $user = $this->createOrGetUser($user, $provider);
-         *
-        */
-        return Socialite::driver($provider)->redirect();
+        return $user;
     }
 
     private function getOauthProvider($project_id, $provider, $alt_url = null)
     {
-        if ($provider === 'twitter') {
-            return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
-        }
-
         $driverData = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
         if (!$driverData) {
             return $this->setStatusCode(404)->replyWithError('No oAuth Provider found for the given params');
@@ -118,9 +110,6 @@ class UserSocialController extends APIController
                 break;
             case 'facebook':
                 $providerClass = FacebookProvider::class;
-                break;
-            case 'twitter':
-                $providerClass = TwitterProvider::class;
                 break;
             case 'github':
                 $providerClass = GithubProvider::class;
