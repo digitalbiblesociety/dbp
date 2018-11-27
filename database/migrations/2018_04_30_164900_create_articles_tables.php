@@ -20,9 +20,9 @@ class CreateArticlesTables extends Migration
             Schema::connection('dbp_users')->create('articles', function (Blueprint $table) {
                 $table->increments('id');
                 $table->char('iso', 3)->index();
-                $table->foreign('iso')->references('iso')->on('dbp.languages')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('iso')->references('iso')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade')->onDelete('cascade');
                 $table->integer('organization_id')->unsigned();
-                $table->foreign('organization_id')->references('id')->on('dbp.organizations')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('organization_id')->references('id')->on(config('database.connections.dbp.database').'.organizations')->onUpdate('cascade')->onDelete('cascade');
                 $table->integer('user_id')->unsigned();
                 $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
                 $table->string('cover')->nullable();
@@ -37,7 +37,7 @@ class CreateArticlesTables extends Migration
                 $table->integer('article_id')->unsigned();
                 $table->foreign('article_id')->references('id')->on('articles')->onUpdate('cascade')->onDelete('cascade');
                 $table->char('iso', 3);
-                $table->foreign('iso')->references('iso')->on('dbp.languages')->onUpdate('cascade');
+                $table->foreign('iso')->references('iso')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->string('name');
                 $table->text('description')->nullable();
                 $table->boolean('vernacular')->default(0);
@@ -52,7 +52,7 @@ class CreateArticlesTables extends Migration
                 $table->integer('article_id')->unsigned();
                 $table->foreign('article_id')->references('id')->on('articles')->onUpdate('cascade')->onDelete('cascade');
                 $table->char('iso', 3);
-                $table->foreign('iso')->references('iso')->on('dbp.languages')->onUpdate('cascade');
+                $table->foreign('iso')->references('iso')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->string('tag');
                 $table->string('name');
                 $table->text('description')->nullable();

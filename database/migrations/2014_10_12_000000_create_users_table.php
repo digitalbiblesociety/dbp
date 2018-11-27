@@ -109,7 +109,7 @@ class CreateUsersTable extends Migration
                 $table->string('state')->nullable();
                 $table->string('zip')->nullable();
                 $table->char('country_id', 2)->nullable();
-                $table->foreign('country_id')->references('id')->on('dbp.countries')->onUpdate('cascade');
+                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->string('avatar')->nullable();
                 $table->tinyInteger('sex')->default(0)->unsigned(); // Aligns to the ISO/IEC 5218 Standards
                 $table->timestamp('birthday')->nullable();

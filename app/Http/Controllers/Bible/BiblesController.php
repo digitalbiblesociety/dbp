@@ -193,7 +193,7 @@ class BiblesController extends APIController
 
     public function archival()
     {
-        $iso                = checkParam('iso');
+        $iso                = checkParam('iso') ?? 'eng';
         $organization_id    = checkParam('organization_id');
         $organization = '';
         if ($organization_id) {
@@ -208,12 +208,7 @@ class BiblesController extends APIController
         $language             = null;
         $asset_id             = checkParam('bucket|bucket_id|asset_id');
 
-        if ($iso) {
-            $language = Language::where('iso', $iso)->with('dialects')->first();
-            if (!$language) {
-                return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
-            }
-        }
+        $language = Language::where('iso', $iso)->with('dialects')->first();
 
         $cache_string = 'bibles_archival'.$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id;
 
@@ -248,10 +243,6 @@ class BiblesController extends APIController
             $language = Language::where('iso', 'eng')->first();
             foreach ($bibles as $bible) {
                 $bible->english_language_id = $language->id;
-            }
-
-            if ($include_regionInfo) {
-                $bibles->load('country');
             }
 
             return fractal($bibles, new BibleTransformer())->serializeWith($this->serializer);

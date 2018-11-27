@@ -78,7 +78,6 @@ class ProjectRoutesTest extends ApiV4Test
             'client_id'        => (string) random_int(0, 1000),
             'client_secret'    => (string) random_int(0, 1000),
             'callback_url'     => 'https://listen.dbp4.org/',
-            'callback_url_alt' => 'http://localhost:3000/',
             'description'      => 'Test oAuth entry'
         ];
         $path = route('v4_projects_oAuthProvider.store', array_merge(['project_id' => $project->id], $this->params));
