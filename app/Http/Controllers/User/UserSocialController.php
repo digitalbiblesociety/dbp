@@ -126,6 +126,7 @@ class UserSocialController extends APIController
                     'email'     => $providerUser->getEmail(),
                     'name'      => $providerUser->getName(),
                     'password'  => bcrypt(str_random(16)),
+                    'token'     => str_random(10),
                     'activated' => 1,
                 ]);
             }
