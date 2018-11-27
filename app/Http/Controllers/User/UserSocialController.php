@@ -46,12 +46,6 @@ class UserSocialController extends APIController
      *          @OAS\Schema(ref="#/components/schemas/Project/properties/id"),
      *          description="The Project id"
      *     ),
-     *     @OAS\Parameter(
-     *          name="alt_url",
-     *          in="query",
-     *          @OAS\Schema(ref="#/components/schemas/ProjectOauthProvider/properties/callback_url_alt"),
-     *          description="When this parameter is set, the return will use the alternative callback url"
-     *     ),
      *     @OAS\Response(
      *         response=200,
      *         description="successful operation",
@@ -131,6 +125,7 @@ class UserSocialController extends APIController
                     'id'        => str_random(24),
                     'email'     => $providerUser->getEmail(),
                     'name'      => $providerUser->getName(),
+                    'password'  => bcrypt(str_random(16)),
                     'activated' => 1,
                 ]);
             }
