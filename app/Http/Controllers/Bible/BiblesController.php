@@ -193,7 +193,7 @@ class BiblesController extends APIController
 
     public function archival()
     {
-        $iso                = checkParam('iso') ?? 'eng';
+        $iso                = checkParam('iso');
         $organization_id    = checkParam('organization_id');
         $organization = '';
         if ($organization_id) {
@@ -208,10 +208,8 @@ class BiblesController extends APIController
         $language             = null;
         $asset_id             = checkParam('bucket|bucket_id|asset_id');
 
-        $language = Language::where('iso', $iso)->with('dialects')->first();
-
-        $cache_string = 'bibles_archival'.$language->id.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id;
-
+        $language = $iso ? Language::where('iso', $iso)->with('dialects')->first() : null;
+        $cache_string = 'bibles_archival'.$iso.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id;
         $bibles = \Cache::remember($cache_string, 1600, function () use ($language, $organization_id, $country, $include_regionInfo, $dialects, $asset_id) {
             $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
