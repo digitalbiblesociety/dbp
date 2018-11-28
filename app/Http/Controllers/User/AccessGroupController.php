@@ -163,10 +163,49 @@ class AccessGroupController extends APIController
         return $this->reply($access_group);
     }
 
+    /**
+     *
+     * @OA\Get(
+     *     path="/access/current",
+     *     tags={"Admin"},
+     *     summary="List filesets available to the current key",
+     *     description="Get the allowed fileset hash_ids for the currently used API key",
+     *     operationId="v4_access_groups.access",
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/AccessCurrentKey")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/AccessCurrentKey")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/AccessCurrentKey"))
+     *     )
+     * )
+     *
+     * @OA\Schema (
+     *   type="object",
+     *   schema="AccessCurrentKey",
+     *   description="",
+     *   title="Current Key Access Response",
+     *   @OA\Xml(name="v4_access_groups.access"),
+     *   @OA\Property(property="hashes", @OA\Items(ref="#/components/schemas/BibleFileset/properties/hash_id")),
+     *   @OA\Property(property="string", type="string"),
+     *   @OA\Property(property="hash_count", type="integer")
+     * )
+     *
+     * @return JsonResponse
+     *
+     */
     public function current()
     {
-        $current_access = $this->accessControl($this->key);
-        $current_access->hash_count = \count($current_access->hashes);
+        $current_access = \Cache::remember('access_current_'.$this->key, function() {
+            $current_access = $this->accessControl($this->key);
+            $current_access->hash_count = \count($current_access->hashes);
+            return $current_access;
+        });
+
         return $this->reply($current_access);
     }
 
