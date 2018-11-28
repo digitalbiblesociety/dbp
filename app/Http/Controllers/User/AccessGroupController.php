@@ -200,7 +200,7 @@ class AccessGroupController extends APIController
      */
     public function current()
     {
-        $current_access = \Cache::remember('access_current_'.$this->key, function() {
+        $current_access = \Cache::remember('access_current_'.$this->key, 2400, function() {
             $current_access = $this->accessControl($this->key);
             $current_access->hash_count = \count($current_access->hashes);
             return $current_access;
