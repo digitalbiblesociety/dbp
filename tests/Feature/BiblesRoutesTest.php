@@ -172,22 +172,6 @@ class BiblesRoutesTest extends ApiV4Test
 
     /**
      * @category V4_API
-     * @category Route Name: v4_text_search'
-     * @category Route Path: https://api.dbp.test/search?v=4&key={key}
-     * @see      \App\Http\Controllers\Bible\TextController::search
-     * @group    V4
-     * @test
-     */
-    public function textSearch()
-    {
-        $path = route('v4_text_search', array_merge(['fileset_id' => 'ENGKJV','query' => 'God'], $this->params));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->get($path);
-        $response->assertSuccessful();
-    }
-
-    /**
-     * @category V4_API
      * @category Route Name: v4_bible_equivalents.all
      * @category Route Path: https://api.dbp.test/bible/equivalents?v=4&key={key}
      * @see      \App\Http\Controllers\Bible\BibleEquivalentsController::index

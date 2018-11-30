@@ -41,14 +41,14 @@ class SyncLanguageDescriptions extends Command
     {
 
         // Base Paths
-        $base_iso2 = "fr";
-        $base_iso3 = "fra";
+        $base_iso2 = 'fr';
+        $base_iso3 = 'fra';
 
         if (!file_exists(storage_path("data/languages/descriptions/$base_iso3"))) {
             mkdir(storage_path("data/languages/descriptions/$base_iso3"));
         }
         if (!file_exists(storage_path("data/languages/descriptions/$base_iso3/missing.csv"))) {
-            $missing_file = fopen(storage_path("data/languages/descriptions/$base_iso3/missing.csv"), "w") or die("couldn't create missing.json");
+            $missing_file = fopen(storage_path("data/languages/descriptions/$base_iso3/missing.csv"), 'w') or die("couldn't create missing.json");
             fwrite($missing_file, "codes\n");
             fclose($missing_file);
         }
@@ -56,20 +56,19 @@ class SyncLanguageDescriptions extends Command
         //https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=ISO_639:eng&redirects
         $base_url = "https://$base_iso2.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&redirects&explaintext=&titles=";
         $missing_url = storage_path("data/languages/descriptions/$base_iso3/missing.csv");
-        $alreadyFetched[] = "eng";
+        $alreadyFetched[] = 'eng';
 
         // Don't fetch languages already fetched
         $json_files = glob(storage_path("data/languages/descriptions/$base_iso3/*.json"));
         foreach ($json_files as $json_file) {
             $alreadyFetched[] = substr($json_file, 47, 3);
         }
-        $csv_parser = new SeederHelper();
-        $missing = collect($csv_parser->csvToArray($missing_url))->pluck('codes');
+        $missing = collect(csvToArray($missing_url))->pluck('codes');
 
         // fetch the right languages
         $languages = Language::whereNotNull('iso')->whereNotIn('iso', $alreadyFetched)->whereNotIn('iso', $missing)->limit(2000)->get();
-        if ($languages->count() == 0) {
-            $this->info("All Languages Fetched");
+        if ($languages->count() === 0) {
+            $this->info('All Languages Fetched');
         }
 
         foreach ($languages as $language) {

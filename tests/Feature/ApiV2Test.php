@@ -559,65 +559,7 @@ class ApiV2Test extends TestCase
      * @group    V4
      * @test
      */
-    /**
-     *
-     * Tests the Text Search
-     *
-     * @category V2_Text
-     * @see \App\Http\Controllers\Bible\TextController::search()
-     * @category Swagger ID: TextSearch
-     * @category Route Name: v2_text_search
-     * @link Route Path: https://api.dbp.test/text/search?v=2&query=God&dam_id=ENGESV&limit=5&pretty&key={key}
-     * @group    V2
-     * @test
-     */
-    public function textSearch()
-    {
-        $public_domain_access_group = \App\Models\User\AccessGroup::with('filesets')->where('name', 'PUBLIC_DOMAIN')->first();
-        $fileset_hashes = $public_domain_access_group->filesets->pluck('hash_id');
-        $fileset = \App\Models\Bible\BibleFileset::with('files')->whereIn('hash_id', $fileset_hashes)->where('set_type_code', 'text_plain')->inRandomOrder()->first();
 
-        $sophia = \DB::connection('sophia')->table(strtoupper($fileset->id).'_vpl')->inRandomOrder()->take(1)->first();
-        $text = collect(explode(' ', $sophia->verse_text))->random(1)->first();
-
-        $this->params['dam_id'] = $fileset->id;
-        $this->params['query']  = $text;
-        $this->params['limit']  = 5;
-
-        echo "\nTesting: " . route('v2_text_search', $this->params);
-        $response = $this->withHeaders($this->params)->get(route('v2_text_search'), $this->params);
-        $response->assertSuccessful();
-    }
-
-    /**
-     *
-     * Tests the Text Search Group
-     *
-     * @category V2_Text
-     * @see \app\Http\Controllers\TextController::searchGroup()
-     * @category Swagger ID: TextSearchGroup
-     * @category Route Name: v2_text_search_group
-     * @link Route Path: https://api.dbp.test/text/searchgroup?v=2&query=God&dam_id=ENGESV&limit=5&pretty&key={key}
-     * @group    V2
-     * @test
-     */
-    public function textSearchGroup()
-    {
-        $public_domain_access_group = \App\Models\User\AccessGroup::with('filesets')->where('name', 'PUBLIC_DOMAIN')->first();
-        $fileset_hashes = $public_domain_access_group->filesets->pluck('hash_id');
-        $fileset = \App\Models\Bible\BibleFileset::with('files')->whereIn('hash_id', $fileset_hashes)->where('set_type_code', 'text_plain')->inRandomOrder()->first();
-
-        $sophia = \DB::connection('sophia')->table(strtoupper($fileset->id).'_vpl')->inRandomOrder()->take(1)->first();
-        $text = collect(explode(' ', $sophia->verse_text))->random(1)->first();
-
-        $this->params['dam_id'] = $fileset->id;
-        $this->params['query']  = $text;
-        $this->params['limit']  = 5;
-
-        echo "\nTesting: " . route('v2_text_search_group', $this->params);
-        $response = $this->withHeaders($this->params)->get(route('v2_text_search_group'), $this->params);
-        $response->assertSuccessful();
-    }
 
     /**
      *
