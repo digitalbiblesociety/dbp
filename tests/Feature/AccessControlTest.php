@@ -20,6 +20,8 @@ class AccessControlTest extends ApiV4Test
     }
 
     /**
+     *
+     * @group v4_access
      * @test
      */
     public function accessAllowedBasic()
@@ -32,6 +34,8 @@ class AccessControlTest extends ApiV4Test
     }
 
     /**
+     *
+     * @group v4_access
      * @test
      */
     public function accessDeniedBasic()
@@ -44,10 +48,13 @@ class AccessControlTest extends ApiV4Test
     }
 
     /**
+     *
+     * @group v4_access
      * @test
      */
     public function accessAllowedCountry()
     {
+        $this->markTestIncomplete('This test can\'t be completed until we have functional seeds');
         $this->mockIpTest();
         $key = AccessType::where('country_id', '=', 'US')->first()->accessGroups()->first()->keys()->first()->key_id;
 
@@ -58,48 +65,54 @@ class AccessControlTest extends ApiV4Test
         $this->assertTrue(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
     }
 
+
     /**
+     * @group v4_access
      * @test
      */
-    public function accessAllowedContinent()
+    public function accessLimitedCountry()
     {
+        $this->markTestIncomplete('This test can\'t be completed until we have functional seeds');
         $this->mockIpTest();
-        $key = AccessType::where('continent_id', '!=', null)->first()->accessGroups()->first()->keys()->first()->key_id;
+        $key = AccessType::where('country_id', 'IN')->first()->accessGroups()->first()->keys()->first()->key_id;
 
         $access_controls = $this->accessControl($key);
-
-        $this->assertTrue(count($access_controls->hashes) > 0);
         $this->assertFalse(str_contains($access_controls->string, 'RESTRICTED'));
-        $this->assertTrue(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
+        $this->assertEquals($access_controls->string, 'PUBLIC_DOMAIN'); // Only public domain group for limited access
     }
 
     /**
+     *
+     * @group v4_access
      * @test
      */
-    public function accessDeniedCountry()
+    public function ContinentLimitedContentCantBeAccessedFromOtherContinents()
     {
+        $this->markTestIncomplete('This test can\'t be completed until we have functional seeds');
+        // Mock IP Test asserts North American Origin by Default
         $this->mockIpTest();
-        $key = AccessType::where('country_id', '=', 'IN')->first()->accessGroups()->first()->keys()->first()->key_id;
 
-        $access_controls = $this->accessControl($key);
+        $limited_fileset = AccessType::where('continent_id', '=', 'AS')->first()->accessGroups()->first()->filesets()->inRandomOrder()->first();
+        $access_controls = $this->accessControl(Key::inRandomOrder()->first());
 
-        $this->assertFalse(count($access_controls->hashes) > 0);
-        $this->assertFalse(str_contains($access_controls->string, 'RESTRICTED'));
-        $this->assertFalse(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
+        $this->assertNotContains($limited_fileset->hash_id, $access_controls->hashes);
     }
 
     /**
+     *
+     * @group v4_access
      * @test
      */
-    public function accessDeniedContinent()
+    public function ContinentLimitedContentCanBeAccessedFromItsContinent()
     {
+        $this->markTestIncomplete('This test can\'t be completed until we have functional seeds');
+        // Mock IP asserts Asian Origin
         $this->mockIpTest();
-        $key = AccessType::where('continent_id', '=', 'AS')->first()->accessGroups()->first()->keys()->first()->key_id;
 
-        $access_controls = $this->accessControl($key);
+        $allowed_fileset = AccessType::where('continent_id', 'NA')->first()->accessGroups()->first()->filesets()->inRandomOrder()->first();
+        $access_controls = $this->accessControl(Key::inRandomOrder()->first());
 
-        $this->assertFalse(count($access_controls->hashes) > 0);
-        $this->assertFalse(str_contains($access_controls->string, 'RESTRICTED'));
-        $this->assertFalse(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
+        $this->assertNotContains($allowed_fileset->hash_id, $access_controls->hashes);
     }
+
 }
