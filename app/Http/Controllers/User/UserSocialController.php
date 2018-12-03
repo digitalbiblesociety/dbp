@@ -78,11 +78,17 @@ class UserSocialController extends APIController
     public function handleProviderCallback($provider)
     {
         $project_id = checkParam('project_id', true);
+        $driver = ProjectOauthProvider::where('project_id', $project_id)->where('name', $provider)->first();
 
         $oAuthDriver = $this->getOauthProvider($project_id, $provider);
         if(!$oAuthDriver) return $this->setStatusCode(404)->replyWithError('Socialite Provider not found');
 
-        return $this->createOrGetUser($oAuthDriver->user(), $provider, $project_id);
+        $user = $this->createOrGetUser($oAuthDriver->user(), $provider, $project_id);
+        return redirect($driver->redirect_url, 302, [
+            'X-Dbp-User-Id'    => $user->id,
+            'X-Dbp-User-Email' => $user->email,
+            'X-Dbp-User-Name'  => $user->first_name.' '.$user->last_name
+        ]);
     }
 
     private function getOauthProvider($project_id, $provider)
