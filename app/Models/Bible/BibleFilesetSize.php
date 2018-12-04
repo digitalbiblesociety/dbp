@@ -39,7 +39,6 @@ class BibleFilesetSize extends Model
      *   title="id",
      *   type="integer",
      *   description="The id",
-
      *   minimum=0,
      *   example=4
      * )

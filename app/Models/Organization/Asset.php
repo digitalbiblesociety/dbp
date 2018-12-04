@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @OA\Schema (
  *     type="object",
- *     description="Bucket",
- *     title="Bucket",
- *     @OA\Xml(name="Bucket")
+ *     description="Asset",
+ *     title="Asset",
+ *     @OA\Xml(name="Asset")
  * )
  *
  * @property-read \App\Models\Organization\Organization $organization
@@ -21,7 +21,6 @@ use Illuminate\Database\Eloquent\Model;
 class Asset extends Model
 {
     protected $connection = 'dbp';
-    public $primaryKey = 'id';
     public $incrementing = false;
     public $keyType = 'string';
     public $hidden = ['created_at','updated_at'];

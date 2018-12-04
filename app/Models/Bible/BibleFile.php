@@ -15,11 +15,32 @@ use App\Models\Language\Language;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\BibleFileTimestamp[] $timestamps
  * @mixin \Eloquent
  * @property-read \App\Models\Bible\BibleFileset $fileset
- * @property string $hash_id
  * @property-read \App\Models\Bible\BibleFileTitle $title
- * @method static BibleFile whereHashId($value)
  * @property-read \App\Models\Bible\BibleFileTitle $currentTitle
  * @property-read \App\Models\Bible\BibleFilesetConnection $connections
+ *
+ * @method static BibleFile whereId($value)
+ * @property $id
+ * @method static BibleFile whereHashId($value)
+ * @property string $hash_id
+ * @method static BibleFile whereBookId($value)
+ * @property $book_id
+ * @method static BibleFile whereChapterStart($value)
+ * @property $chapter_start
+ * @method static BibleFile whereChapterEnd($value)
+ * @property $chapter_end
+ * @method static BibleFile whereVerseStart($value)
+ * @property $verse_start
+ * @method static BibleFile whereVerseEnd($value)
+ * @property $verse_end
+ * @method static BibleFile whereVerseText($value)
+ * @property $verse_text
+ * @method static BibleFile whereFileName($value)
+ * @property $file_name
+ * @method static BibleFile whereFileSize($value)
+ * @property $file_size
+ * @method static BibleFile whereDuration($value)
+ * @property $duration
  *
  * @OA\Schema (
  *     type="object",
@@ -46,8 +67,6 @@ class BibleFile extends Model
      *   example=4
      * )
      *
-     * @method static BibleFile whereId($value)
-     * @property $id
      */
     protected $id;
     /**
@@ -58,8 +77,6 @@ class BibleFile extends Model
      *   description="The hash_id",
      * )
      *
-     * @method static BibleFile whereHashId($value)
-     * @property $hash_id
      */
     protected $hash_id;
     /**
@@ -70,8 +87,6 @@ class BibleFile extends Model
      *   description="The book_id",
      * )
      *
-     * @method static BibleFile whereBookId($value)
-     * @property $book_id
      */
     protected $book_id;
     /**
@@ -85,8 +100,6 @@ class BibleFile extends Model
      *   example=4
      * )
      *
-     * @method static BibleFile whereChapterStart($value)
-     * @property $chapter_start
      */
     protected $chapter_start;
     /**
@@ -101,8 +114,6 @@ class BibleFile extends Model
      *   example=5
      * )
      *
-     * @method static BibleFile whereChapterEnd($value)
-     * @property $chapter_end
      */
     protected $chapter_end;
     /**
@@ -116,8 +127,6 @@ class BibleFile extends Model
      *   example=5
      * )
      *
-     * @method static BibleFile whereVerseStart($value)
-     * @property $verse_start
      */
     protected $verse_start;
 
@@ -133,8 +142,6 @@ class BibleFile extends Model
      *   example=5
      * )
      *
-     * @method static BibleFile whereVerseEnd($value)
-     * @property $verse_end
      */
     protected $verse_end;
 
@@ -147,8 +154,6 @@ class BibleFile extends Model
      *   example="And God said unto Abraham, And as for thee, thou shalt keep my covenant, thou, and thy seed after thee throughout their generations."
      * )
      *
-     * @method static BibleFile whereVerseText($value)
-     * @property $verse_text
      */
     protected $verse_text;
 
@@ -161,8 +166,6 @@ class BibleFile extends Model
      *   maxLength=191
      * )
      *
-     * @method static BibleFile whereFileName($value)
-     * @property $file_name
      */
     protected $file_name;
 
@@ -174,8 +177,6 @@ class BibleFile extends Model
      *   description="The file size in kilobytes"
      * )
      *
-     * @method static BibleFile whereFileSize($value)
-     * @property $file_size
      */
     protected $file_size;
 
@@ -189,8 +190,6 @@ class BibleFile extends Model
      *   minimum=0
      * )
      *
-     * @method static BibleFile whereDuration($value)
-     * @property $duration
      */
     protected $duration;
 

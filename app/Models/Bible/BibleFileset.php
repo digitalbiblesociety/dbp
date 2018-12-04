@@ -61,7 +61,7 @@ class BibleFileset extends Model
      * @OA\Property(
      *   title="hash_id",
      *   type="string",
-     *   description="The hash_id generated from the `bucket_id`, `set_type_code`, and `id`",
+     *   description="The hash_id generated from the `asset_id`, `set_type_code`, and `id`",
      *   minLength=12,
      *   maxLength=12
      * )
@@ -115,6 +115,7 @@ class BibleFileset extends Model
      *
      */
     protected $created_at;
+
     /**
      *
      * @OA\Property(
