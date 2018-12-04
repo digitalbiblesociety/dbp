@@ -58,17 +58,14 @@
 
         <nav class="level is-mobile">
             <div class="level-left is-size-7">
-                {{-- TODO: Correct Phone Number --}}
-                <span><b>Phone:</b> 1-000-000-000 </span>
-                <span><b>Email:</b> &#105;&#110;&#102;&#111;&#64;&#100;&#98;&#112;&#52;&#46;&#111;&#114;&#103; </span>
+                <div><b>Phone:</b> 936-494-4442 </div>
+            </div>
+            <div class="level-right is-size-7">
+                <div><b>Email:</b> &#105;&#110;&#102;&#111;&#64;&#100;&#98;&#112;&#52;&#46;&#111;&#114;&#103; </div>
             </div>
         </nav>
 
 
     </div>
 
-@endsection
-
-@section('footer')
-    {!! app('captcha')->render('en'); !!}
 @endsection
