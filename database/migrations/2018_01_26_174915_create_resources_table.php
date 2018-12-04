@@ -20,48 +20,48 @@ class CreateResourcesTable extends Migration
                 $table->increments('id');
                 $table->string('slug')->nullable();
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onDelete('cascade')->onUpdate('cascade');
                 $table->char('iso', 3)->index();
-                $table->foreign('iso')->references('iso')->on('languages')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('iso')->references('iso')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade')->onDelete('cascade');
                 $table->integer('organization_id')->unsigned();
-                $table->foreign('organization_id')->references('id')->on('organizations')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('organization_id')->references('id')->on(config('database.connections.dbp.database').'.organizations')->onUpdate('cascade')->onDelete('cascade');
                 $table->string('source_id')->nullable();
                 $table->string('cover')->nullable();
                 $table->string('cover_thumbnail')->nullable();
                 $table->string('date')->nullable();
                 $table->string('type');
-                $table->timestamp('created_at')->useCurrent();
-                $table->timestamp('updated_at')->useCurrent();
+                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('resource_links')) {
             Schema::connection('dbp')->create('resource_links', function (Blueprint $table) {
                 $table->integer('resource_id')->unsigned();
-                $table->foreign('resource_id')->references('id')->on('resources')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('resource_id')->references('id')->on(config('database.connections.dbp.database').'.resources')->onUpdate('cascade')->onDelete('cascade');
                 $table->string('title');
                 $table->string('size')->nullable();
                 $table->string('type');
                 $table->string('url');
-                $table->timestamp('created_at')->useCurrent();
-                $table->timestamp('updated_at')->useCurrent();
+                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('resource_translations')) {
             Schema::connection('dbp')->create('resource_translations', function (Blueprint $table) {
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onDelete('cascade')->onUpdate('cascade');
                 $table->char('iso', 3)->index();
-                $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('iso')->references('iso')->on(config('database.connections.dbp.database').'.languages')->onDelete('cascade')->onUpdate('cascade');
                 $table->integer('resource_id')->unsigned();
-                $table->foreign('resource_id')->references('id')->on('resources')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('resource_id')->references('id')->on(config('database.connections.dbp.database').'.resources')->onUpdate('cascade')->onDelete('cascade');
                 $table->boolean('vernacular');
                 $table->boolean('tag');
                 $table->string('title');
                 $table->text('description')->nullable();
-                $table->timestamp('created_at')->useCurrent();
-                $table->timestamp('updated_at')->useCurrent();
+                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
@@ -69,39 +69,39 @@ class CreateResourcesTable extends Migration
             Schema::connection('dbp')->create('connections', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('organization_id')->unsigned();
-                $table->foreign('organization_id')->references('id')->on('organizations')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('organization_id')->references('id')->on(config('database.connections.dbp.database').'.organizations')->onUpdate('cascade')->onDelete('cascade');
                 $table->string('site_url');
                 $table->string('title');
                 $table->string('cover_thumbnail')->nullable();
                 $table->string('date')->nullable();
                 $table->string('type');
-                $table->timestamp('created_at')->useCurrent();
-                $table->timestamp('updated_at')->useCurrent();
+                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('connection_translations')) {
             Schema::connection('dbp')->create('connection_translations', function (Blueprint $table) {
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onDelete('cascade')->onUpdate('cascade');
                 $table->char('iso', 3)->index();
-                $table->foreign('iso')->references('iso')->on('languages')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('iso')->references('iso')->on(config('database.connections.dbp.database').'.languages')->onDelete('cascade')->onUpdate('cascade');
                 $table->integer('resource_id')->unsigned();
-                $table->foreign('resource_id')->references('id')->on('resources')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('resource_id')->references('id')->on(config('database.connections.dbp.database').'.resources')->onUpdate('cascade')->onDelete('cascade');
                 $table->boolean('vernacular');
                 $table->boolean('tag');
                 $table->string('title');
                 $table->text('description')->nullable();
-                $table->timestamp('created_at')->useCurrent();
-                $table->timestamp('updated_at')->useCurrent();
+                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('resource_connections')) {
             Schema::connection('dbp')->create('resource_connections', function (Blueprint $table) {
 
-                $table->timestamp('created_at')->useCurrent();
-                $table->timestamp('updated_at')->useCurrent();
+                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
     }
