@@ -133,10 +133,8 @@ class BibleTransformer extends BaseTransformer
                     'organizations'     => '',
                     'types'             => $bible->filesets->pluck('set_type_code')->unique()->implode(',')
                 ];
-                if ($bible->langauge) {
-                    if ($bible->langauge->relationLoaded('translations')) {
-                        $output['language_altNames'] = $bible->language->translations->pluck('name');
-                    }
+                if ($bible->langauge && $bible->langauge->relationLoaded('translations')) {
+                    $output['language_altNames'] = $bible->language->translations->pluck('name');
                 }
                 if ($bible->relationLoaded('filesets')) {
                     $output_organizations = [];

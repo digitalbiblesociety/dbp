@@ -79,15 +79,45 @@ function apiLogs($request, $status_code, $s3_string = false, $ip_address = null)
     }
 }
 
+if (! function_exists('csvToArray')) {
+    function csvToArray($csvfile)
+    {
+        $csv      = [];
+        $rowcount = 0;
+        if (($handle = fopen($csvfile, 'r')) !== false) {
+            $max_line_length = defined('MAX_LINE_LENGTH') ? MAX_LINE_LENGTH : 10000;
+            $header          = fgetcsv($handle, $max_line_length);
+            $header_colcount = count($header);
+            while (($row = fgetcsv($handle, $max_line_length)) !== false) {
+                $row_colcount = count($row);
+                if ($row_colcount == $header_colcount) {
+                    $entry = array_combine($header, $row);
+                    $csv[] = $entry;
+                } else {
+                    error_log('csvreader: Invalid number of columns at line ' . ($rowcount + 2) . ' (row ' . ($rowcount + 1) . "). Expected=$header_colcount Got=$row_colcount");
+                    return null;
+                }
+                $rowcount++;
+            }
+//echo "Totally $rowcount rows found\n";
+            fclose($handle);
+        } else {
+            error_log("csvreader: Could not read CSV \"$csvfile\"");
+            return null;
+        }
+        return $csv;
+    }
+}
+
 if (! function_exists('unique_random')) {
     /**
      *
      * Generate a unique random string of characters
      * uses str_random() helper for generating the random string
      *
-     * @param     $table - name of the table
-     * @param     $col - name of the column that needs to be tested
-     * @param int $chars - length of the random string
+     * @param      $table - name of the table
+     * @param      $col   - name of the column that needs to be tested
+     * @param int  $chars - length of the random string
      *
      * @return string
      */

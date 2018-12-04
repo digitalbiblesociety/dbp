@@ -12,7 +12,6 @@ class BibleEquivalentsController extends APIController
     /**
      *
      * @link https://api.dbp.test/bibles/equivalents?key=1234&v=4&pretty
-     *
      * @OA\Get(
      *     path="/bible/equivalents",
      *     tags={"Bibles"},

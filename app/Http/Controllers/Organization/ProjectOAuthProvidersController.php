@@ -72,7 +72,6 @@ class ProjectOAuthProvidersController extends APIController
      *              @OA\Property(property="client_id",        ref="#/components/schemas/ProjectOauthProvider/properties/client_id"),
      *              @OA\Property(property="client_secret",    ref="#/components/schemas/ProjectOauthProvider/properties/client_secret"),
      *              @OA\Property(property="callback_url",     ref="#/components/schemas/ProjectOauthProvider/properties/callback_url"),
-     *              @OA\Property(property="callback_url_alt", ref="#/components/schemas/ProjectOauthProvider/properties/callback_url_alt"),
      *              @OA\Property(property="description",      ref="#/components/schemas/ProjectOauthProvider/properties/description"),
      *          )
      *     )),
@@ -209,8 +208,7 @@ class ProjectOAuthProvidersController extends APIController
             'name'             => (($request->method() === 'POST') ? 'required|' : '') . 'string|max:191|in:facebook,twitter,linkedin,google,github,bitbucket,test_provider',
             'client_id'        => (($request->method() === 'POST') ? 'required|' : '') . 'string|max:191|different:client_secret',
             'client_secret'    => (($request->method() === 'POST') ? 'required|' : '') . 'string|different:client_id',
-            'callback_url'     => (($request->method() === 'POST') ? 'required|' : '') . 'string|max:191|url|different:callback_url_alt',
-            'callback_url_alt' => 'string|max:191|url|different:callback_url|nullable',
+            'callback_url'     => (($request->method() === 'POST') ? 'required|' : '') . 'string|max:191|url'
         ]);
 
         if ($validator->fails()) {

@@ -41,10 +41,6 @@ class AccessGroupController extends APIController
      */
     public function index()
     {
-        if (!$this->api) {
-            return view('access.groups.index');
-        }
-
         $access_groups = \Cache::remember('access_groups', 1800, function () {
             $access_groups = AccessGroup::select(['id','name'])->get();
             return $access_groups->pluck('name', 'id');

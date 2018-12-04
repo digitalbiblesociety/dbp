@@ -90,7 +90,7 @@ class UserHighlightsController extends APIController
         // Validate Project / User Connection
         $user = User::where('id', $user_id)->select('id')->first();
         if (!$user) {
-            return $this->replyWithError(trans('api.users_errors_404', ['param' => $user_id]));
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
         }
         $user_is_member = $this->compareProjects($user_id, $this->key);
         if (!$user_is_member) {
@@ -131,16 +131,6 @@ class UserHighlightsController extends APIController
         $highlight_collection = $highlights->getCollection();
         $highlight_pagination = new IlluminatePaginatorAdapter($highlights);
         return $this->reply(fractal($highlight_collection, UserHighlightsTransformer::class)->paginateWith($highlight_pagination));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('dashboard.highlights.create');
     }
 
     /**

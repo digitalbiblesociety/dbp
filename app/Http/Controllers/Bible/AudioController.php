@@ -14,18 +14,17 @@ use App\Transformers\AudioTransformer;
 
 class AudioController extends APIController
 {
-
     use CallsBucketsTrait;
 
     /**
      *
      * Returns an array of signed audio urls
      *
-     * @version 4
+     * @version  4
      * @category v2_audio_path
-     * @link http://api.dbp4.org/audio/path - V4 Access
-     * @link https://api.dbp.test/audio/path?key=1234&v=4&pretty - V4 Test Access
-     * @link https://dbp.test/eng/docs/swagger/gen#/Version_2/v4_alphabets.one - V4 Test Docs
+     * @link     http://api.dbp4.org/audio/path - V4 Access
+     * @link     https://api.dbp.test/audio/path?key=1234&v=4&pretty - V4 Test Access
+     * @link     https://dbp.test/eng/docs/swagger/gen#/Version_2/v4_alphabets.one - V4 Test Docs
      *
      * @OA\Get(
      *     path="/audio/path",
@@ -75,7 +74,7 @@ class AudioController extends APIController
      * )
      *
      * @return mixed
-     *
+     * @throws \Exception
      */
     public function index()
     {
@@ -105,7 +104,7 @@ class AudioController extends APIController
                                   ->when($chapter_id, function ($query) use ($chapter_id) {
                                       return $query->where('chapter_start', $chapter_id);
                                   })->when($book_id, function ($query) use ($book_id) {
-                                    return $query->where('book_id', $book_id);
+                                      return $query->where('book_id', $book_id);
                                   })->orderBy('file_name')->get();
 
         // Transaction id to be passed to signedUrl
@@ -260,7 +259,7 @@ class AudioController extends APIController
                      ->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))
                      ->when($book_id, function ($query) use ($books, $book_id) {
                          $current_book = $books->where('id', $book_id)->first();
-                        return $query->where('book', $current_book->id_usfx);
+                         return $query->where('book', $current_book->id_usfx);
                      })
                      ->select(['book', 'chapter'])
                      ->take(50)

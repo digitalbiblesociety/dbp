@@ -18,7 +18,6 @@ use App\Http\Controllers\APIController;
 
 class BiblesController extends APIController
 {
-
     use AccessControlAPI;
 
     /**
@@ -31,15 +30,9 @@ class BiblesController extends APIController
      *     description="The base bible route returning by default bibles and filesets that your key has access to",
      *     operationId="v4_bible.all",
      *     @OA\Parameter(name="bible_id", in="query", ref="#/components/schemas/Bible/properties/id"),
-     *     @OA\Parameter(
-     *          name="language",
-     *          in="query",
-     *          @OA\Schema(ref="#/components/schemas/Language/properties/name"),
-     *          description="The language to filter results by",
-     *     ),
      *     @OA\Parameter(name="language_code",
      *          in="query",
-     *          @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
+     *          @OA\S0chema(ref="#/components/schemas/Language/properties/iso"),
      *          description="The iso code to filter results by. This will return results only in the language specified.
                     For a complete list see the `iso` field in the `/languages` route",
      *     ),
@@ -120,7 +113,6 @@ class BiblesController extends APIController
 
         $cache_string = 'bibles'.$dam_id.$language_code.$include_regionInfo.$updated.$organization.$sort_by.$sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $filter;
         $bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language_code, $organization, $country, $asset_id, $access_control) {
-
             $bibles = Bible::with(['filesets' => function ($q) use ($asset_id, $access_control, $hide_restricted) {
                 if ($asset_id) {
                     $q->where('asset_id', $asset_id);
@@ -255,7 +247,6 @@ class BiblesController extends APIController
      */
     public function store()
     {
-
         request()->validate([
             'id'                  => 'required|unique:dbp.bibles,id|max:24',
             'iso'                 => 'required|exists:dbp.languages,iso',
@@ -369,12 +360,12 @@ class BiblesController extends APIController
         $bible = Bible::find($bible_id);
 
         $books = BibleBook::where('bible_id', $bible_id)
-            ->with(['book' => function($query) use($testament) {
-                if($testament) {
-                    $query->where('testament',$testament);
+            ->with(['book' => function ($query) use ($testament) {
+                if ($testament) {
+                    $query->where('testament', $testament);
                 }
             }])
-            ->when($book_id, function($query) use($book_id) {
+            ->when($book_id, function ($query) use ($book_id) {
                 $query->where('book_id', $book_id);
             })
             ->get()->sortBy('book.'.$bible->versification.'_order')->flatten();
@@ -424,7 +415,6 @@ class BiblesController extends APIController
      */
     public function update($id)
     {
-
         request()->validate([
             'id'                  => 'required|max:24',
             'iso'                 => 'required|exists:dbp.languages,iso',

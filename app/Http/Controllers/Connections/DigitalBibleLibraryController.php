@@ -15,8 +15,7 @@ class DigitalBibleLibraryController extends APIController
      */
     public function index()
     {
-        $seederHelper = new SeederHelper();
-        $oldRecords   = $seederHelper->csvToArray('https://docs.google.com/spreadsheets/d/1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4/export?format=csv&id=1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4&gid=2021834900');
+        $oldRecords   = csvToArray('https://docs.google.com/spreadsheets/d/1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4/export?format=csv&id=1pEYc-iYGRdkPpCuzKf4x8AgYJfK4rbTCcrHfRD7TsW4&gid=2021834900');
         $oldKeys      = collect($oldRecords)->pluck('equivalent_id')->toArray();
         $oldRecords   = collect($oldRecords)->keyBy('equivalent_id')->toArray();
 

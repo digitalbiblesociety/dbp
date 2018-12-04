@@ -134,17 +134,16 @@ class UserAccountsController extends APIController
      *     )
      * )
      *
-     * @param $account_id
      *
      * @return \Illuminate\Http\Response
      * @internal param int $id
      *
      */
-    public function show($account_id)
+    public function show()
     {
         $user = $this->verifyProjectUserConnection();
 
-        return $this->reply($user->accounts->where('id', $account_id)->first());
+        return $this->reply($user->accounts);
     }
 
 

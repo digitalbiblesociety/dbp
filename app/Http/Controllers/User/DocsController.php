@@ -35,8 +35,7 @@ class DocsController extends APIController
 
     public function codeAnalysis()
     {
-        $csv_helper = new SeederHelper();
-        $analysis = $csv_helper->csvToArray(storage_path('app/code_analysis.csv'));
+        $analysis = csvToArray(storage_path('app/code_analysis.csv'));
         $analysis = $analysis[0];
 
         return view('docs.code_analysis', compact('analysis'));

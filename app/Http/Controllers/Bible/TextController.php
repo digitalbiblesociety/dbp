@@ -289,9 +289,6 @@ class TextController extends APIController
                 'glyph_end.glyph as verse_end_vernacular',
             ])->get();
 
-        if ($verses->count() === 0) {
-            return $this->setStatusCode(404)->replyWithError('No results found');
-        }
         return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
     }
 

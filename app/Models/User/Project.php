@@ -193,7 +193,7 @@ class Project extends Model
 
     public function users()
     {
-        return $this->hasManyThrough(User::class, ProjectMember::class);
+        return $this->hasManyThrough(User::class, ProjectMember::class, 'project_id','id','project_id','user_id');
     }
 
     public function notes()

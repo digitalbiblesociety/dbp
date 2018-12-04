@@ -3,10 +3,9 @@ namespace App\Http\Controllers\Connections\V2Controllers\LibraryCatalog;
 
 use App\Http\Controllers\APIController;
 use App\Models\Language\Language;
-use App\Models\User\User;
 use App\Traits\AccessControlAPI;
 use App\Transformers\V2\LibraryCatalog\LanguageListingTransformer;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class LanguageController extends APIController
 {
@@ -37,6 +36,7 @@ class LanguageController extends APIController
      *     )
      * )
      *
+     * return JsonResponse
      */
     public function languageListing()
     {
@@ -116,7 +116,7 @@ class LanguageController extends APIController
      *     @OA\Parameter(
      *         name="img_size",
      *         in="query",
-     *         @OA\Schema(type="string",example="160X120",enum={'40x30','80x60','160x120','320x240','640x480','1280x960'}),
+     *         @OA\Schema(type="string",example="160X120",enum={"40x30","80x60","160x120","320x240","640x480","1280x960"}),
      *         description="Include country flags in entries in requested size. This no longer generates images but
                    rather selects them from a recommended list: 40x30, 80x60, 160X120, 320X240, 640X480, or 1280X960"
      *     ),
@@ -128,7 +128,7 @@ class LanguageController extends APIController
      * )
      *
      *
-     * @return View|JSON
+     * @return JsonResponse
      */
     public function countryLang()
     {
@@ -138,7 +138,6 @@ class LanguageController extends APIController
         $img_size           = checkParam('img_size');
         $img_type           = checkParam('img_type') ?? 'png';
         $additional         = checkParam('additional');
-
 
         $access_control = $this->accessControl($this->key);
         $cache_string   = 'v2_country_lang_' . $sort_by . $lang_code . $country_code . $img_size . $img_type .
@@ -192,7 +191,7 @@ class LanguageController extends APIController
                 ->get();
 
                 // Add Images
-                if($img_type != 'svg') {
+                if($img_type !== 'svg') {
                     $img_type = 'png';
                 }
                 $flags_path = 'https://dbp-mcdn.s3.us-west-2.amazonaws.com/flags/full';
@@ -209,33 +208,58 @@ class LanguageController extends APIController
     }
 
     /**
-     * API V2:
-     * Returns a List of Languages that contain resources and if the
-     * language is a dialect, returns the parent language as well.
-     *
-     * @param root (optional): the native language or English language language name root. Can be used to restrict the response to only languages that start with 'Quechua' for example
-     * @param full_word (optional): [true|false] Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string 'new' is anywhere in the language name, like in "Newari" and "Awa for Papua New Guinea". When true, it will only return volumes where the language name contains the full word 'new', like in "Awa for Papua New Guinea". Default is false.
-     * @param language_code (optional): the three letter language code.
-     * @param media (optional): [text|audio|video] - the format of languages the caller is interested in. This specifies if you want languages available in text or languages available in audio.
-     *
-     * @deprecated delivery (optional): [streaming|web_streaming|download|download_text|mobile|sign_language|local_bundled|podcast|mp3_cd|digital_download|bible_stick|subsplash|any|none] a criteria for approved delivery method. It is possible to OR these methods together using '|', such as "delivery=streaming|mobile". 'any' means any of the supported methods (this list may change over time). 'none' means assets that are not approved for any of the supported methods. All returned by default.
-     *
-     * @param status (optional): [live|disabled|incomplete|waiting_review|in_review|discontinued] Publishing status of volume. The default is 'live'.
-     * @param resolution (optional): [lo|med|hi] Currently used for video volumes as they can be available in different resolutions, basically conforming to the loose general categories of low, medium, and high resolution. Low resolution is geared towards devices with smaller screens.
-     * @param organization_id : The id of an organization by which to filter the languages of available volumes.
      *
      * @OA\Get(
      *     path="/library/volumelanguage/",
      *     tags={"Library Catalog"},
      *     summary="Returns the list of languages",
-     *     description="This method retrieves the list of languages for available volumes and the related volume data in the system according to the filter specified.",
+     *     description="This method retrieves the list of languages for available volumes and the related volume data in
+               the system according to the filter specified.",
      *     operationId="v2_library_volumeLanguageFamily",
-     *     @OA\Parameter(name="language_code", in="query"),
-     *     @OA\Parameter(name="root", in="query"),
-     *     @OA\Parameter(name="media", in="query"),
-     *     @OA\Parameter(name="full_word", in="query"),
-     *     @OA\Parameter(name="status", in="query"),
-     *     @OA\Parameter(name="resolution", in="query"),
+     *     @OA\Parameter(
+     *         name="language_code",
+     *         in="query",
+     *         @OA\Schema(type="string"),
+     *         description="The three letter language code"
+     *     ),
+     *     @OA\Parameter(
+     *         name="root",
+     *         in="query",
+     *         @OA\Schema(type="string"),
+     *         description="Can be used to restrict the response to only languages that start with Quechua for example."
+     *     ),
+     *     @OA\Parameter(
+     *         name="media",
+     *         in="query",
+     *         @OA\Schema(type="string",enum={"text","audio","video"}),
+     *         description="The format of languages the caller is interested in."
+     *     ),
+     *     @OA\Parameter(
+     *         name="full_word",
+     *         in="query",
+     *         @OA\Schema(type="boolean"),
+     *         description="Consider the language name as being a full word. For instance, when false, `cat` will return
+                   volumes where the string cat is anywhere in the language name like `catalan` and `Cuicatec, Teutila`.
+                   This value defaults to false."
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         @OA\Schema(type="string"),
+     *         description="Publishing status of volume. The default is live"
+     *     ),
+     *     @OA\Parameter(
+     *         name="resolution",
+     *         in="query",
+     *         @OA\Schema(type="string"),
+     *         description=""
+     *     ),
+     *     @OA\Parameter(
+     *         name="organization_id",
+     *         in="query",
+     *         @OA\Schema(type="string"),
+     *         description="The organization id to filter languages by."
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -247,26 +271,30 @@ class LanguageController extends APIController
      *     )
      * )
      *
-     * @return View|JSON
+     * @return JsonResponse
      */
     public function volumeLanguage()
     {
         $iso             = checkParam('language_code');
         $root            = checkParam('root');
         $media           = checkParam('media');
+        $full_word       = (boolean) checkParam('full_word');
         $organization_id = checkParam('organization_id');
 
-        $languages = \Cache::remember(
-            'volumeLanguage' . $root . $iso . $media . $organization_id,
-            2400,
-            function () use ($root, $iso, $media, $organization_id) {
+        $languages = \Cache::remember('volumeLanguage' . $root . $iso . $media . $organization_id, 2400, function ()
+            use ($root, $iso, $media, $full_word, $organization_id) {
+
                 $languages = Language::with(['parent','translations'])
                     ->has('filesets')
                     ->leftJoin('language_translations as autonym', function ($join) {
-                        $priority_q = \DB::raw('(select max(`priority`) FROM language_translations WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
+                        $priority_q = \DB::raw('(select max(`priority`) FROM language_translations
+                          WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
                         $join->on('autonym.language_source_id', '=', 'languages.id')
                              ->on('autonym.language_translation_id', '=', 'languages.id')
                              ->where('autonym.priority', '=', $priority_q)->limit(1);
+                    })
+                    ->when($full_word, function($query) use ($full_word) {
+                        $query->where('name', 'LIKE', '%'.$full_word.'%');
                     })
                     ->when($iso, function ($query) use ($iso) {
                         return $query->where('iso', $iso);
@@ -281,16 +309,15 @@ class LanguageController extends APIController
                             case 'audio':
                                 return $query->has('bibles.filesetAudio');
                                 break;
-
                             case 'video':
                                 return $query->has('bibles.filesetFilm');
                                 break;
-
                             case 'text':
                                 return $query->has('bibles.filesets');
                                 break;
                         }
                     })->get();
+
                 return fractal($languages, new LanguageListingTransformer(), $this->serializer);
             }
         );
@@ -318,15 +345,52 @@ class LanguageController extends APIController
      *     path="/library/volumelanguagefamily/",
      *     tags={"Library Catalog"},
      *     summary="Returns the list of languages",
-     *     description="This method retrieves the list of language families for available volumes and the related volume data in the system according to the filter specified.",
+     *     description="This method retrieves the list of language families for available volumes and the related volume
+               data in the system according to the filter specified.",
      *     operationId="v2_library_volumeLanguageFamily",
-     *     @OA\Parameter(name="language_code",in="query"),
-     *     @OA\Parameter(name="root",in="query"),
-     *     @OA\Parameter(name="media",in="query"),
-     *     @OA\Parameter(name="delivery",in="query"),
-     *     @OA\Parameter(name="full_word",in="query"),
-     *     @OA\Parameter(name="status",in="query"),
-     *     @OA\Parameter(name="resolution",in="query"),
+     *     @OA\Parameter(
+     *         name="language_code",
+     *         in="query",
+     *         @OA\Schema(type="string"),
+     *         description=""
+     *     ),
+     *     @OA\Parameter(
+     *         name="root",
+     *         in="query",
+     *         @OA\Schema(type="string"),
+     *         description=""
+     *     ),
+     *     @OA\Parameter(
+     *         name="media",
+     *         in="query",
+     *         @OA\Schema(type="string"),
+     *         description=""
+     *     ),
+     *     @OA\Parameter(
+     *         name="delivery",
+     *         in="query",
+     *         deprecated=true,
+     *         @OA\Schema(type="string"),
+     *         description=""
+     *     ),
+     *     @OA\Parameter(
+     *         name="full_word",
+     *         in="query",
+     *         @OA\Schema(type="string"),
+     *         description=""
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         @OA\Schema(type="string"),
+     *         description=""
+     *     ),
+     *     @OA\Parameter(
+     *         name="resolution",
+     *         in="query",
+     *         @OA\Schema(type="string"),
+     *         description=""
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/l10n"),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -339,86 +403,47 @@ class LanguageController extends APIController
      *     )
      * )
      *
-     * @return mixed
+     * @return JsonResponse
      */
     public function volumeLanguageFamily()
     {
         $iso             = checkParam('language_code');
         $root            = checkParam('root');
         $media           = checkParam('media');
-        $delivery        = checkParam('delivery');
         $organization_id = checkParam('organization_id');
 
         $access_control = $this->accessControl($this->key);
 
-        $languages = \Cache::remember('volumeLanguageFamily' . $root . $iso . $media . $delivery . $organization_id, 2400, function () use ($root, $iso, $access_control, $media, $delivery, $organization_id) {
+        $cache_string = 'volumeLanguageFamily' . $root . $iso . $media . $organization_id;
+        $languages = \Cache::remember($cache_string, 2400, function () use ($root, $iso, $access_control, $media, $organization_id) {
                 $languages = Language::with('bibles')->with('dialects')
-                    ->whereHas('filesets', function ($query) use ($access_control) {
+                    ->whereHas('filesets', function ($query) use ($access_control,$organization_id,$media) {
                         $query->whereIn('hash_id', $access_control->hashes);
+
+                        if($organization_id) {
+                            $query->whereHas('copyright', function($query) use ($organization_id) {
+                                $query->where('organization_id', $organization_id);
+                            });
+                        }
+
+                        if($media) {
+                            $query->where('set_type_code','LIKE',$media.'%');
+                        }
+
                     })
                     ->with(['dialects.childLanguage' => function ($query) {
                         $query->select(['id', 'iso']);
                     }])
                     ->when($iso, function ($query) use ($iso) {
                         return $query->where('iso', $iso);
-                    })->when($root, function ($query) use ($root) {
+                    })
+                    ->when($root, function ($query) use ($root) {
                         return $query->where('name', 'LIKE', '%' . $root . '%');
-                    })->when($root, function ($query) use ($root) {
-                        return $query->where('name', 'LIKE', '%' . $root . '%');
-                    })->get();
+                    })
+                    ->get();
                 return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer);
         });
         return $this->reply($languages);
     }
 
-    /**
-     * Ensure the current User has permissions to alter the alphabets
-     *
-     * @return \App\Models\User\User|mixed|null
-     */
-    private function validateUser()
-    {
-        $user = Auth::user();
-        if (!$user) {
-            $key = Key::where('key', $this->key)->first();
-            if (!isset($key)) {
-                return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
-            }
-            $user = $key->user;
-        }
-        if (!$user->archivist and !$user->admin) {
-            return $this->setStatusCode(401)->replyWithError("You don't have permission to edit the wiki");
-        }
-
-        return $user;
-    }
-
-    public function validateLanguage(Request $request)
-    {
-        $latLongRegex = '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$';
-        $validator    = Validator::make($request->all(), [
-            'glotto_id'  => ($request->method() == 'POST') ? 'alpha_num|unique:dbp.languages,glotto_id|max:8|required_if:iso,null|nullable' : 'alpha_num|exists:dbp.languages,glotto_id|max:8|required_if:iso,null|nullable',
-            'iso'        => ($request->method() == 'POST') ? 'alpha|unique:dbp.languages,iso|max:3|required_if:glotto_code,null|nullable' : 'alpha|exists:dbp.languages,iso|max:3|required_if:glotto_code,null|nullable',
-            'iso2B'      => ($request->method() == 'POST') ? 'alpha|max:3|unique:dbp.languages,iso2B' : 'alpha|max:3',
-            'iso2T'      => ($request->method() == 'POST') ? 'alpha|max:3|unique:dbp.languages,iso2T' : 'alpha|max:3',
-            'iso1'       => ($request->method() == 'POST') ? 'alpha|max:2|unique:dbp.languages,iso1' : 'alpha|max:2',
-            'name'       => 'required|string|max:191',
-            'autonym'    => 'required|string|max:191',
-            'level'      => 'string|max:191|nullable',
-            'maps'       => 'string|max:191|nullable',
-            'population' => 'integer',
-            'latitude'   => 'regex:' . $latLongRegex,
-            'longitude'  => 'regex:' . $latLongRegex,
-            'country_id' => 'alpha|max:2|exists:dbp.countries,id',
-        ]);
-
-        if ($validator->fails()) {
-            if ($this->api) {
-                return $this->setStatusCode(422)->replyWithError($validator->errors());
-            }
-            if (!$this->api) {
-                return redirect('dashboard/alphabets/create')->withErrors($validator)->withInput();
-            }
-        }
-    }
 }

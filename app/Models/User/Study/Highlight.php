@@ -2,6 +2,7 @@
 
 namespace App\Models\User\Study;
 
+use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFileset;
 use Illuminate\Database\Eloquent\Model;
@@ -44,7 +45,7 @@ class Highlight extends Model
 {
     protected $connection = 'dbp_users';
     public $table = 'user_highlights';
-    protected $fillable = ['user_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','highlight_start','highlighted_words','highlighted_color','reference'];
+    protected $fillable = ['user_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','highlight_start','highlighted_words','highlighted_color'];
     protected $hidden = ['user_id','project_id'];
 
      /**
@@ -70,7 +71,7 @@ class Highlight extends Model
     protected $user_id;
      /**
       *
-      * @OA\Property(ref="#/components/schemas/BibleFileset/properties/id")
+      * @OA\Property(ref="#/components/schemas/Bible/properties/id")
       */
     protected $bible_id;
      /**
@@ -141,9 +142,9 @@ class Highlight extends Model
         return $this->belongsTo(HighlightColor::class, 'highlighted_color', 'id');
     }
 
-    public function fileset()
+    public function bible()
     {
-        return $this->belongsTo(BibleFileset::class);
+        return $this->belongsTo(Bible::class);
     }
 
     public function book()

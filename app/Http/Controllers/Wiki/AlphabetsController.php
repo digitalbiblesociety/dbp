@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Wiki;
 
 use App\Http\Controllers\APIController;
 
+use App\Models\Bible\BibleVerse;
 use App\Models\Language\Alphabet;
+use App\Models\User\AccessGroup;
 use App\Transformers\AlphabetTransformer;
 
 class AlphabetsController extends APIController
@@ -54,10 +56,6 @@ class AlphabetsController extends APIController
      */
     public function index()
     {
-        if (!$this->api) {
-            return view('wiki.languages.alphabets.index');
-        }
-
         $alphabets = \Cache::remember('alphabets', 1600, function () {
             $alphabets = Alphabet::select(['name', 'script', 'family', 'direction', 'type'])->get();
             return fractal($alphabets, new AlphabetTransformer())->serializeWith($this->serializer);

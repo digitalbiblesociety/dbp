@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use App\Models\Bible\BibleFileset;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -63,7 +64,7 @@ class AccessGroup extends Model
 
     public function filesets()
     {
-        return $this->hasMany(AccessGroupFileset::class)->select('hash_id', 'access_group_id');
+        return $this->belongsToMany(BibleFileset::class, 'access_group_filesets', 'hash_id', 'access_group_id', 'id', 'hash_id');
     }
 
     public function types()
