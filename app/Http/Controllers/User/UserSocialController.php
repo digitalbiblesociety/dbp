@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use Illuminate\Encryption\Encrypter;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\APIController;
 
@@ -18,7 +19,6 @@ use Socialite;
 
 class UserSocialController extends APIController
 {
-
 
     /**
      *
@@ -93,7 +93,9 @@ class UserSocialController extends APIController
         }
 
         $user = $this->createOrGetUser($oAuthDriver->user(), $provider, $project_id);
-        $queryParam = hash_hmac('sha256', "$user->id,$user->email,$user->first_name $user->last_name", $this->key.$project_id);
+        $crypt = new Encrypter(substr(hash('SHA256', $this->key.$project_id), 0, 32), 'AES-256-CBC');
+        $queryParam = $crypt->encrypt("$user->id,$user->email,$user->first_name $user->last_name");
+
         return redirect($driver->redirect_url.'?code='.$queryParam, 302);
     }
 
