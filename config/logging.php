@@ -36,6 +36,10 @@ return [
             'channels' => ['single', 'daily', 'bugsnag'],
         ],
 
+        'bugsnag' => [
+            'driver' => 'bugsnag',
+        ],
+
         'single' => [
             'driver' => 'single',
             'path'   => storage_path('logs/laravel.log'),
@@ -43,9 +47,9 @@ return [
         ],
 
         'seed_errors' => [
-	        'driver' => 'single',
-	        'path'   => storage_path('logs/seed_errors.log'),
-	        'level'  => 'debug'
+            'driver' => 'single',
+            'path'   => storage_path('logs/seed_errors.log'),
+            'level'  => 'debug'
         ],
 
         'daily' => [
@@ -56,9 +60,9 @@ return [
         ],
 
         'api' => [
-	        'driver'         => 'daily',
-	        'formatter'      => \App\Logs\EmptyLineFormatter::class,
-	        'path'           => storage_path('logs/api/api.log')
+            'driver'         => 'daily',
+            'formatter'      => \App\Logs\EmptyLineFormatter::class,
+            'path'           => storage_path('logs/api/api.log')
         ],
 
         'slack' => [

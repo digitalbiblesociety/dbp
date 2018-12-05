@@ -228,6 +228,7 @@ return [
         'Input'        => Illuminate\Support\Facades\Input::class,
         'Image'        => Intervention\Image\Facades\Image::class,
         'i18n'         => Lunaweb\Localization\Facades\Localization::class,
+        'Bugsnag'      => Bugsnag\BugsnagLaravel\Facades\Bugsnag::class,
     ],
 
 ];
