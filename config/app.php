@@ -175,8 +175,7 @@ return [
         App\Providers\ComposerServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         App\Providers\LocalEnvironmentServiceProvider::class,
-        jeremykenedy\laravelexceptionnotifier\LaravelExceptionNotifier::class,
-        Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
+        jeremykenedy\laravelexceptionnotifier\LaravelExceptionNotifier::class
     ],
 
     /*
@@ -228,7 +227,6 @@ return [
         'Input'        => Illuminate\Support\Facades\Input::class,
         'Image'        => Intervention\Image\Facades\Image::class,
         'i18n'         => Lunaweb\Localization\Facades\Localization::class,
-        'Bugsnag'      => Bugsnag\BugsnagLaravel\Facades\Bugsnag::class,
     ],
 
 ];

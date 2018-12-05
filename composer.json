@@ -9,7 +9,6 @@
         "algolia/algoliasearch-client-php": "^1.27",
         "appstract/laravel-opcache": "^2.0",
         "aws/aws-sdk-php-laravel": "^3.1",
-        "bugsnag/bugsnag-laravel": "^2.0",
         "curl/curl": "^1.9",
         "darkaonline/l5-swagger": "5.7.*",
         "doctrine/dbal": "^2.5",
