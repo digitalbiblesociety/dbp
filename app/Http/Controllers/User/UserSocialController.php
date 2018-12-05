@@ -93,10 +93,7 @@ class UserSocialController extends APIController
         }
 
         $user = $this->createOrGetUser($oAuthDriver->user(), $provider, $project_id);
-        $crypt = new Encrypter(substr(hash('SHA256', date('y-m-d').'-'.$project_id), 0, 32), 'AES-256-CBC');
-        $queryParam = $crypt->encrypt("$user->id,$user->email,$user->first_name $user->last_name");
-
-        return redirect($driver->redirect_url.'?code='.$queryParam, 302);
+        return redirect($driver->redirect_url.'?code='.base64_encode("$user->id,$user->email,$user->first_name $user->last_name"), 302);
     }
 
     private function getOauthProvider($project_id, $provider)
