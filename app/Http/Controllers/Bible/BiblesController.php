@@ -91,11 +91,6 @@ class BiblesController extends APIController
      */
     public function index()
     {
-        // Return the documentation if it's not an API request
-        if (!$this->api) {
-            return view('bibles.index');
-        }
-
         $dam_id             = checkParam('dam_id|fcbh_id|bible_id');
         $language_code      = checkParam('language_id|language_code');
         $updated            = checkParam('updated');
@@ -121,14 +116,7 @@ class BiblesController extends APIController
                     $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
                 }
             }])
-                    ->whereHas('filesets', function ($q) use ($asset_id, $access_control, $hide_restricted) {
-                        if ($asset_id) {
-                            $q->where('asset_id', $asset_id);
-                        }
-                        if ($hide_restricted) {
-                            $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
-                        }
-                    })
+                ->whereHas('filesetConnections')
                 ->leftJoin('bible_translations as ver_title', function ($join) {
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
                 })
@@ -149,8 +137,6 @@ class BiblesController extends APIController
                          ->where('language_current.language_translation_id', '=', $GLOBALS['i18n_id'])
                          ->orderBy('priority', 'desc');
                 })
-                ->rightJoin('bible_fileset_connections', 'bible_fileset_connections.bible_id', 'bibles.id')
-                ->rightJoin('bible_filesets', 'bible_filesets.hash_id', 'bible_fileset_connections.hash_id')
                 ->when($language_code, function ($q) use ($language_code) {
                     $language = Language::where('iso', $language_code)->orWhere('id', $language_code)->first();
                     $q->where('bibles.language_id', $language->id);
