@@ -261,6 +261,11 @@ class Bible extends Model
         return $this->hasMany(BibleEquivalent::class);
     }
 
+    public function filesetConnections()
+    {
+        return $this->hasMany(BibleFilesetConnection::class);
+    }
+
     public function filesets()
     {
         return $this->hasManyThrough(BibleFileset::class, BibleFilesetConnection::class, 'bible_id', 'hash_id', 'id', 'hash_id');
