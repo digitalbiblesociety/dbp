@@ -20,8 +20,6 @@ class SeedBibleStrongs extends Seeder
             $strong = [
                 'strong_number'     => basename($strong_path, '.json'),
                 'root_word'         => $strong_reference->lemma,
-                'transliteration'   => null,
-                'pronunciation'     => null,
                 'definition'        => $strong_reference->strongs_def,
                 'usage'             => $strong_reference->outline,
             ];

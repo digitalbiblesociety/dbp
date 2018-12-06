@@ -360,4 +360,27 @@ class Bible extends Model
     {
         return $this->hasMany(Video::class)->orderBy('order', 'asc');
     }
+
+    public function scopeWithRequiredFilesets($query, $asset_id, $access_control, $hide_restricted)
+    {
+        return $query->whereHas('filesets', function ($q) use ($asset_id,$access_control,$hide_restricted) {
+            if ($asset_id) {
+                $q->where('asset_id', $asset_id);
+            }
+            if ($hide_restricted) {
+                $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
+            }
+        })->with(['filesets' => function ($q) use ($asset_id,$access_control,$hide_restricted) {
+            if ($asset_id) {
+                $q->where('asset_id', $asset_id);
+            }
+            if ($hide_restricted) {
+                $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
+            }
+        }]);
+    }
+
+
+
+
 }

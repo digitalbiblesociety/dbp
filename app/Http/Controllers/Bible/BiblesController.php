@@ -32,7 +32,7 @@ class BiblesController extends APIController
      *     @OA\Parameter(name="bible_id", in="query", ref="#/components/schemas/Bible/properties/id"),
      *     @OA\Parameter(name="language_code",
      *          in="query",
-     *          @OA\S0chema(ref="#/components/schemas/Language/properties/iso"),
+     *          @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
      *          description="The iso code to filter results by. This will return results only in the language specified.
                     For a complete list see the `iso` field in the `/languages` route",
      *     ),
@@ -108,17 +108,10 @@ class BiblesController extends APIController
             return $this->accessControl($this->key);
         });
 
-        $cache_string = 'bibles'.$dam_id.$language_code.$include_regionInfo.$updated.$organization.$sort_by.$sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $filter;
+        $cache_string = 'bibles'.$dam_id.$language_code.$include_regionInfo.$updated.$organization.$sort_by.$sort_dir.
+                        $fileset_filter.$country.$asset_id.$access_control->string.$filter;
         $bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language_code, $organization, $country, $asset_id, $access_control) {
-            $bibles = Bible::with(['filesets' => function ($q) use ($asset_id, $access_control, $hide_restricted) {
-                if ($asset_id) {
-                    $q->where('asset_id', $asset_id);
-                }
-                if ($hide_restricted) {
-                    $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
-                }
-            }])
-                ->whereHas('filesetConnections')
+            $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $hide_restricted)
                 ->leftJoin('bible_translations as ver_title', function ($join) {
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
                 })
