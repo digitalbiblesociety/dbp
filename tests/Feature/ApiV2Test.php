@@ -281,7 +281,6 @@ class ApiV2Test extends TestCase
         echo "\nTesting: " . route('v2_library_verseInfo', $this->params);
         $response = $this->withHeaders($this->params)->get(route('v2_library_verseInfo'), $this->params);
         $response->assertSuccessful();
-        // TODO: Get a working example of v2
         // $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('LibraryVerseInfo')]);
         // $this->compareToOriginal($path,[$this->withHeaders($this->params)->getSchemaKeys('LibraryVerseInfo')]);
     }
@@ -485,31 +484,6 @@ class ApiV2Test extends TestCase
 
     /**
      *
-     * Tests the Audio Timestamps
-     *
-     * @category V2_Audio
-     * @see \app\Http\Controllers\AudioController::timestampsByReference()
-     * @category Swagger ID:
-     * @category Route Name: v2_audio_timestamps
-     * @link Route Path: https://api.dbp.test/audio/versestart?v=2&fileset_id=CHNUNVN2DA&chapter=1&book=MAT&pretty&key={key}
-     * @group    V2
-     * @test
-     */
-    //public function audio_timestamps() {
-//
-    //  $this->params['fileset_id'] = 'CHNUNVN2DA';
-    //  $this->params['chapter'] = '1';
-    //  $this->params['book'] = 'MAT';
-//
-    //  // TODO: AUDIO TIMESTAMPS
-    //  //echo "\nTesting: " . route('v2_audio_timestamps', $this->params);
-    //  //$response = $this->withHeaders($this->params)->get(route('v2_audio_timestamps'), $this->params);
-    //  //$response->assertSuccessful();
-    //  //$response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('AudioTimestamp')]);
-    //}
-
-    /**
-     *
      * Tests the Text Font
      *
      * @category V2_Text
@@ -528,37 +502,6 @@ class ApiV2Test extends TestCase
         $response = $this->withHeaders($this->params)->get(route('v2_text_font'), $this->params);
         $response->assertSuccessful();
     }
-
-    /**
-     * \\ TODO:Tests the Text Verse
-     *
-     * @category V2_Text
-     * @see \app\Http\Controllers\TextController::index()
-     * @category Swagger ID: TextVerse
-     * @category Route Name: v2_text_verse
-     * @link Route Path: https://api.dbp.test/text/verse?v=2&key={key}&dam_id=ENGESV&book_id=GEN&chapter_id=1&verse_start=1&verse_end=10
-     *
-
-    public function text_verse_allowed() {
-        $public_domain_access_group = \App\Models\User\AccessGroup::with('filesets')->where('name','PUBLIC_DOMAIN')->first();
-        $fileset_hashes = $public_domain_access_group->filesets->pluck('hash_id');
-        $fileset = \App\Models\Bible\BibleFileset::with('files')->whereIn('hash_id',$fileset_hashes)->where('set_type_code','text_plain')->inRandomOrder()->first();
-
-        $file = \DB::connection('sophia')->table(strtoupper($fileset->id).'_vpl')->inRandomOrder()->take(1)->first();
-
-        $this->params['dam_id']      = $fileset->id;
-        $this->params['book_id']     = $file->book_id;
-        $this->params['chapter_id']  = $file->chapter_start;
-        $this->params['verse_start'] = 1;
-        $this->params['verse_end']   = 10;
-
-        echo "\nTesting: " . route('v2_text_verse', $this->params);
-        $response = $this->withHeaders($this->params)->get(route('v2_text_verse', $this->params));
-        $response->assertSuccessful();
-    }
-     * @group    V4
-     * @test
-     */
 
 
     /**

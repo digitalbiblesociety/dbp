@@ -176,30 +176,6 @@ class UserRoutesTest extends ApiV4Test
         $response->assertSuccessful();
     }
 
-
-    /**
-     *
-     * // TODO: create custom Oauth Providers for external testing
-     *
-     * @category V4_API
-     * @category Route Name: v4_user.oAuthCallback
-     * @category Route Path: https://api.dbp.test/users/login/{driver}/callback?v=4&key={key}
-     * @see      \App\Http\Controllers\User\UserSocialController::handleProviderCallback()
-
-    public function user_oAuthCallback()
-    {
-        $projectOauthProvider = ProjectOauthProvider::inRandomOrder()->first();
-        $additional_params = [
-            'provider'   => $projectOauthProvider->name,
-            'project_id' => $projectOauthProvider->project_id
-        ];
-        $path = route('v4_user.oAuthCallback', array_merge($this->params, $additional_params));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->get($path);
-        $response->assertSuccessful();
-    }
-     */
-
     /**
      * @category V4_API
      * @category Route Name: v4_user.password_reset
@@ -404,54 +380,6 @@ class UserRoutesTest extends ApiV4Test
         $response->assertSuccessful();
 
         $path = route('v4_bookmarks.destroy', array_merge(['user_id' => 5,'bookmark_id' =>$test_bookmark->id], $this->params));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->delete($path);
-        $response->assertSuccessful();
-    }
-
-
-    /**
-     * @category V4_API
-     * @category Route Name: v4_highlights
-     * @category Route Path: https://api.dbp.test/users/{user_id}/highlights?v=4&key={key}
-     * @see      \App\Http\Controllers\User\UserHighlightsController
-     * @group    V4
-     * @test
-     */
-    public function highlights()
-    {
-        $path = route('v4_highlights.index', array_add($this->params, 'user_id', 5));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->get($path);
-        $response->assertSuccessful();
-
-        $test_highlight_post = [
-            'bible_id'          => 'ENGESV',
-            'user_id'           => 5,
-            'book_id'           => 'GEN',
-            'chapter'           => '1',
-            'verse_start'       => '1',
-            'reference'         => 'Genesis 1:1',
-            'highlight_start'   => '10',
-            'highlighted_words' => '40',
-            'highlighted_color' => '#fff000',
-        ];
-
-        $path = route('v4_highlights.store', array_add($this->params, 'user_id', 5));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->post($path, $test_highlight_post);
-        $response->assertSuccessful();
-
-        $test_highlight = json_decode($response->getContent())->data;
-
-
-        $path = route('v4_highlights.update', array_merge(['user_id' => 5,'highlight_id' => $test_highlight->id], $this->params));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->put($path, ['highlighted_color' => '#ff1100']);
-        $response->assertSuccessful();
-
-
-        $path = route('v4_highlights.destroy', array_merge(['user_id' => 5,'highlight_id' => $test_highlight->id], $this->params));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->delete($path);
         $response->assertSuccessful();

@@ -1,12 +1,13 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Bible;
 
-use App\Models\Bible\BibleFileset;
-use App\Models\Bible\Book;
+use Tests\Feature\ApiV4Test;
 
 class BiblesRoutesTest extends ApiV4Test
 {
+
+
 
     /**
      * @category V4_API
@@ -20,6 +21,7 @@ class BiblesRoutesTest extends ApiV4Test
     {
         $path = route('v4_bible_filesets.types', $this->params);
         echo "\nTesting: $path";
+
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
     }
@@ -36,6 +38,7 @@ class BiblesRoutesTest extends ApiV4Test
     {
         $path = route('v4_bible_filesets.podcast', $this->params);
         echo "\nTesting: $path";
+
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
     }
@@ -52,6 +55,7 @@ class BiblesRoutesTest extends ApiV4Test
     {
         $path = route('v4_bible_filesets.download', $this->params);
         echo "\nTesting: $path";
+
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
     }
@@ -69,6 +73,7 @@ class BiblesRoutesTest extends ApiV4Test
         $params = array_merge(['fileset_id' => 'UBUANDP2DA','type' => 'audio_drama'], $this->params);
         $path = route('v4_bible_filesets.copyright', $params);
         echo "\nTesting: $path";
+
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
     }
@@ -86,41 +91,11 @@ class BiblesRoutesTest extends ApiV4Test
         $params = array_merge(['fileset_id' => 'ENGESV', 'fileset_type' => 'text_plain'], $this->params);
         $path = route('v4_bible_filesets.books', $params);
         echo "\nTesting: $path";
+
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
     }
 
-    /**
-     * @category V4_API
-     * @category Route Name: v4_bible_filesets.chapter
-     * @category Route Path: https://api.dbp.test/bibles/filesets/ENGKJV/GEN/1?v=4&key={key}
-     * @see      \App\Http\Controllers\Bible\TextController::index
-     * @group    V4
-     * @test
-     */
-    public function bibleFilesetsChapter()
-    {
-        $random_bible = collect(\DB::connection('sophia')->select('SHOW TABLES'))
-            ->pluck('Tables_in_sophia')->filter(function ($table) {
-                return str_contains($table, '_vpl');
-            })->random();
-        $reference = \DB::connection('sophia')->table($random_bible)->inRandomOrder()->first();
-        $fileset = BibleFileset::where('id', substr($random_bible, 0, -4))
-            ->where('set_type_code', 'text_plain')->first();
-        $book = Book::where('id_usfx', $reference->book)->first();
-
-        $this->params = array_merge([
-            'fileset_id' => $fileset->id,
-            'book_id'    => $book->id,
-            'chapter'    => $reference->chapter,
-            'asset_id'   => $fileset->asset_id
-        ], $this->params);
-
-        $path = route('v4_bible_filesets.chapter', $this->params);
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->get($path);
-        $response->assertSuccessful();
-    }
 
     /**
      * @category V4_API

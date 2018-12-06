@@ -32,7 +32,7 @@ class TextSearchTest extends TestCase
 
         $this->assertNotEmpty($results);
         foreach ($results as $result) {
-            $this->assertContains('God',$result->verse_text);
+            $this->assertContains('God', $result->verse_text);
         }
     }
 
