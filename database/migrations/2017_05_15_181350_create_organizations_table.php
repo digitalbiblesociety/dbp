@@ -34,7 +34,7 @@ class CreateOrganizationsTable extends Migration
                 $table->string('state')->nullable();
                 $table->string('country')->nullable();
                 $table->foreign('country')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
-                $table->string('zip');
+                $table->string('zip')->nullable();
                 $table->string('phone')->nullable();
                 $table->string('email')->nullable();
                 $table->string('email_director')->nullable();

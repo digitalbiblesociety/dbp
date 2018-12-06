@@ -67,6 +67,7 @@ class CreateLanguagesTable extends Migration
                 $table->char('status_id', 2)->nullable();
                 $table->foreign('status_id')->references('id')->on(config('database.connections.dbp.database').'.language_status')->onUpdate('cascade');
                 $table->text('status_notes')->nullable();
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             });
             DB::connection('dbp')->statement('ALTER TABLE languages ADD CONSTRAINT CHECK (iso IS NOT NULL OR glotto_id IS NOT NULL)');

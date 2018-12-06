@@ -18,12 +18,12 @@ class BibleLinksController extends APIController
         $bible_id        = checkParam('bible_id');
 
         if ($organization !== null) {
-            $organization = Organization::where('id', $organization)->orWhere('slug', $organization)->first();
+            $organization = Organization::where('id', $organization)->orWhere('slug', $organization)->select('id')->first();
             if (!$organization) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404'));
             }
         }
-        $language = Language::where('iso', $iso)->first();
+        $language = Language::where('iso', $iso)->select('id')->first();
         if (!$language) {
             return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
         }
