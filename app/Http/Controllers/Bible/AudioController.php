@@ -79,28 +79,25 @@ class AudioController extends APIController
     public function index()
     {
         // Check Params
-        $fileset_id = checkParam('dam_id');
-        $chapter_id = checkParam('chapter_id');
+        $fileset_id = checkParam('dam_id', true);
         $book_id    = checkParam('book_id');
+        $chapter_id = checkParam('chapter_id');
         $asset_id   = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
         // Account for various book ids
-        if ($book_id) {
-            $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
-            $book_id = $book->id;
-        }
+        $book_id = optional(Book::where('id', $book_id)
+            ->orWhere('id_osis', $book_id)
+            ->orWhere('id_usfx', $book_id)
+            ->select('id')->first())->id;
 
         // Fetch the Fileset
-        $fileset = BibleFileset::where('id', $fileset_id)->where('asset_id', $asset_id)->where('set_type_code', 'like', '%audio%')->first();
-        if (!$fileset) {
-            $fileset = BibleFileset::where('id', substr($fileset_id, 0, -4))->where('asset_id', $asset_id)->where('set_type_code', 'like', '%audio%')->first();
-        }
-        if (!$fileset) {
-            return $this->setStatusCode(404)->replyWithError('No Audio Fileset could be found for the code: ' . $fileset_id);
+        $hash_id = optional(BibleFileset::where('id', $fileset_id)->where('asset_id', $asset_id)->where('set_type_code', 'like', '%audio%')->select('hash_id')->first())->hash_id;
+        if (!$hash_id) {
+            return $this->setStatusCode(404)->replyWithError('No Audio Fileset could be found for the code: ' . $hash_id);
         }
 
         // Fetch The files
-        $audioChapters = BibleFile::with('book', 'bible')->where('hash_id', $fileset->hash_id)
+        $audioChapters = BibleFile::with('book', 'bible')->where('hash_id', $hash_id)
                                   ->when($chapter_id, function ($query) use ($chapter_id) {
                                       return $query->where('chapter_start', $chapter_id);
                                   })->when($book_id, function ($query) use ($book_id) {
