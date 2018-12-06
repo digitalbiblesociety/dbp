@@ -10,7 +10,6 @@ use App\Traits\AccessControlAPI;
 
 class LanguagesController extends APIController
 {
-
     use AccessControlAPI;
 
     /**
@@ -109,8 +108,7 @@ class LanguagesController extends APIController
         $cache_string = 'v'.$this->v.'_l_'.$country.$code.$GLOBALS['i18n_id'].$sort_by.
                         $show_restricted.$include_alt_names.$asset_id.$access_control->string;
 
-        $languages = \Cache::remember($cache_string, 1600, function ()
- use ($country, $include_alt_names, $asset_id, $code, $sort_by, $show_restricted, $access_control) {
+        $languages = \Cache::remember($cache_string, 1600, function () use ($country, $include_alt_names, $asset_id, $code, $sort_by, $show_restricted, $access_control) {
             $languages = Language::select([
                     'languages.id',
                     'languages.glotto_id',
