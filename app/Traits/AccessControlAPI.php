@@ -21,38 +21,29 @@ trait AccessControlAPI
     {
         $user_location = geoip($this->getIpAddress());
 
-        if (!isset($user_location->iso_code)) {
-            $user_location->iso_code   = 'unset';
-        }
-        if (!isset($user_location->continent)) {
-            $user_location->continent = 'unset';
-        }
+        $country_code = (!isset($user_location->iso_code)) ? $user_location->iso_code : null;
+        $continent = (!isset($user_location->continent)) ? $user_location->continent : null;
 
-        // Defaults to type 'api' because that's the only access type; needs modification once there are multiple
-        $access_type = AccessType::where('name', 'api')
-            ->where(function ($query) use ($user_location) {
-                $query->where('country_id', $user_location->iso_code)->orWhere('country_id', '=', null);
+        $accessGroups = \DB::connection('dbp')->table('access_groups')
+            ->where('access_groups.name', '!=', 'RESTRICTED')
+            ->leftJoin(config('database.connections.dbp_users.database').'.access_group_keys as keys', function ($join) use ($api_key) {
+                $join->on('keys.access_group_id', '=', 'access_groups.id')->where('keys.key_id', '=', $api_key);
             })
-            ->where(function ($query) use ($user_location) {
-                $query->where('continent_id', $user_location->continent)->orWhere('continent_id', '=', null);
+            ->leftJoin('access_group_filesets', 'access_group_filesets.access_group_id', 'access_groups.id')
+            ->leftJoin('access_group_types as group_type', function ($join) {
+                $join->on('group_type.access_group_id', 'access_groups.id');
             })
-            ->first();
-
-        if (!$access_type) {
-            return (object) ['hashes' => [], 'string' => ''];
-        }
-
-        $accessGroups = AccessGroup::with('filesets')
-            ->where('name', '!=', 'RESTRICTED')
-            ->whereHas('keys', function ($query) use ($api_key) {
-                $query->where('key_id', $api_key);
-            })->whereHas('types', function ($query) use ($access_type) {
-                $query->where('access_types.id', $access_type->id);
-            })->get();
+            ->leftJoin('access_types', function ($join) use ($continent,$country_code) {
+                $join->on('group_type.access_type_id', 'access_types.id')
+                    ->where('access_types.name', 'api')
+                    ->where('country_id', $country_code)
+                    ->where('continent_id', $continent);
+            })
+            ->select(['access_group_filesets.hash_id'])->orderBy('hash_id')->distinct()->get()->pluck('hash_id');
 
         return (object) [
-            'hashes' => $accessGroups->flatMap->filesets->pluck('hash_id')->unique()->toArray(),
-            'string' => $accessGroups->pluck('name')->implode('-'),
+            'hashes' => $accessGroups,
+            'string' => md5($accessGroups)
         ];
     }
 }
