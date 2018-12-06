@@ -12,6 +12,8 @@ use Response;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
 
+use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
+
 class Handler extends ExceptionHandler
 {
     /**
@@ -36,6 +38,7 @@ class Handler extends ExceptionHandler
      * @param \Exception $exception
      *
      * @return void
+     * @throws Exception
      */
     public function report(Exception $exception)
     {
@@ -43,10 +46,6 @@ class Handler extends ExceptionHandler
 
         if ($enableEmailExceptions === '') {
             $enableEmailExceptions = config('exceptions.emailExceptionEnabledDefault');
-        }
-
-        if (config('app.env') === 'production') {
-            //Bugsnag::notifyException($exception);
         }
 
         if ($enableEmailExceptions && $this->shouldReport($exception)) {

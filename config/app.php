@@ -175,7 +175,8 @@ return [
         App\Providers\ComposerServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         App\Providers\LocalEnvironmentServiceProvider::class,
-        jeremykenedy\laravelexceptionnotifier\LaravelExceptionNotifier::class
+        jeremykenedy\laravelexceptionnotifier\LaravelExceptionNotifier::class,
+        Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class
     ],
 
     /*

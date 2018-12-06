@@ -111,8 +111,8 @@ rm -rf /var/www/$site_com/public
 ```bash
 git clone https://github.com/digitalbiblesociety/dbp.git /var/www/$site_com
 cd /var/www/$site_com
-composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
-npm install
+sudo composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+sudo npm install
 ```
 
 #### Permissions
