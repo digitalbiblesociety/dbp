@@ -24,26 +24,34 @@ trait AccessControlAPI
         $country_code = (!isset($user_location->iso_code)) ? $user_location->iso_code : null;
         $continent = (!isset($user_location->continent)) ? $user_location->continent : null;
 
-        $accessGroups = \DB::connection('dbp')->table('access_groups')
-            ->where('access_groups.name', '!=', 'RESTRICTED')
-            ->leftJoin(config('database.connections.dbp_users.database').'.access_group_keys as keys', function ($join) use ($api_key) {
-                $join->on('keys.access_group_id', '=', 'access_groups.id')->where('keys.key_id', '=', $api_key);
+        // Defaults to type 'api' because that's the only access type; needs modification once there are multiple
+        $access_type = AccessType::where('name', 'api')
+            ->where(function ($query) use ($country_code) {
+                $query->where('country_id', $country_code);
             })
-            ->leftJoin('access_group_filesets', 'access_group_filesets.access_group_id', 'access_groups.id')
-            ->leftJoin('access_group_types as group_type', function ($join) {
-                $join->on('group_type.access_group_id', 'access_groups.id');
+            ->where(function ($query) use ($continent) {
+                $query->where('continent_id', $continent);
             })
-            ->leftJoin('access_types', function ($join) use ($continent,$country_code) {
-                $join->on('group_type.access_type_id', 'access_types.id')
-                    ->where('access_types.name', 'api')
-                    ->where('country_id', $country_code)
-                    ->where('continent_id', $continent);
-            })
-            ->select(['access_group_filesets.hash_id'])->orderBy('hash_id')->distinct()->get()->pluck('hash_id');
+            ->first();
+
+        if (!$access_type) {
+            return (object) ['hashes' => [], 'string' => ''];
+        }
+
+        $accessGroups = AccessGroup::where('name', '!=', 'RESTRICTED')
+            ->whereHas('keys', function ($query) use ($api_key) {
+                $query->where('key_id', $api_key);
+            })->whereHas('types', function ($query) use ($access_type) {
+                $query->where('access_types.id', $access_type->id);
+            })->select(['name'])->getQuery()->get();
+
+        // Use Eloquent everywhere except for this giant request
+        $filesets = \DB::connection('dbp')->table('access_group_filesets')->select('hash_id')
+            ->whereIn('access_group_id', $accessGroups->pluck('id'))->distinct()->get()->pluck('hash_id');
 
         return (object) [
-            'hashes' => $accessGroups,
-            'string' => md5($accessGroups)
+            'hashes' => $filesets,
+            'string' => $accessGroups->pluck('name')->implode('-'),
         ];
     }
 }
