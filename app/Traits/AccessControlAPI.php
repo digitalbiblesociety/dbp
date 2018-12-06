@@ -43,7 +43,7 @@ trait AccessControlAPI
                 $query->where('key_id', $api_key);
             })->whereHas('types', function ($query) use ($access_type) {
                 $query->where('access_types.id', $access_type->id);
-            })->select(['name'])->getQuery()->get();
+            })->select(['name','id'])->getQuery()->get();
 
         // Use Eloquent everywhere except for this giant request
         $filesets = \DB::connection('dbp')->table('access_group_filesets')->select('hash_id')
