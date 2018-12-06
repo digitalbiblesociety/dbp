@@ -139,7 +139,9 @@ class LanguageController extends APIController
         $img_type           = checkParam('img_type') ?? 'png';
         $additional         = checkParam('additional');
 
-        $access_control = $this->accessControl($this->key);
+        $access_control = \Cache::remember($this->key.'_access_control', 2400, function () {
+            return $this->accessControl($this->key);
+        });
         $cache_string   = 'v2_country_lang_' . $sort_by . $lang_code . $country_code . $img_size . $img_type .
                           $additional . $access_control->string;
 
@@ -412,7 +414,9 @@ class LanguageController extends APIController
         $media           = checkParam('media');
         $organization_id = checkParam('organization_id');
 
-        $access_control = $this->accessControl($this->key);
+        $access_control = \Cache::remember($this->key.'_access_control', 2400, function () {
+            return $this->accessControl($this->key);
+        });
 
         $cache_string = 'volumeLanguageFamily' . $root . $iso . $media . $organization_id;
         $languages = \Cache::remember($cache_string, 2400, function () use ($root, $iso, $access_control, $media, $organization_id) {

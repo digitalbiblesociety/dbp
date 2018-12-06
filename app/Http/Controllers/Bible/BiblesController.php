@@ -104,7 +104,9 @@ class BiblesController extends APIController
         $hide_restricted    = checkParam('hide_restricted') ?? true;
         $filter             = checkParam('filter') ?? false;
 
-        $access_control = $this->accessControl($this->key);
+        $access_control = \Cache::remember($this->key.'_access_control', 2400, function () {
+            return $this->accessControl($this->key);
+        });
 
         $cache_string = 'bibles'.$dam_id.$language_code.$include_regionInfo.$updated.$organization.$sort_by.$sort_dir . '_' . $fileset_filter . '_' . $country . '_' . $asset_id . $access_control->string . $filter;
         $bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language_code, $organization, $country, $asset_id, $access_control) {
@@ -282,7 +284,10 @@ class BiblesController extends APIController
      */
     public function show($id)
     {
-        $access_control = $this->accessControl($this->key);
+
+        $access_control = \Cache::remember($this->key.'_access_control', 2400, function () {
+            return $this->accessControl($this->key);
+        });
 
         $bible = Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
             'filesets' => function ($query) use ($access_control) {

@@ -18,9 +18,10 @@ class ReaderController extends APIController
     public function languages()
     {
         $languages = \Cache::remember('Bible_is_languages', 2400, function () {
-
             $project_key = Key::where('name', 'bible.is')->first();
-            $access_control = $this->accessControl($project_key->key);
+            $access_control = \Cache::remember($project_key->key.'_access_control', 2400, function () use ($project_key) {
+                return $this->accessControl($project_key->key);
+            });
 
             $languages = Language::select(['languages.id', 'languages.name', 'autonym.name as autonym'])
                                  ->leftJoin('language_translations as autonym', function ($join) {
@@ -44,7 +45,9 @@ class ReaderController extends APIController
     public function bibles($language_id)
     {
         $project_key = Key::where('name', 'bible.is')->first();
-        $access_control = $this->accessControl($project_key->key, 'api');
+        $access_control = \Cache::remember($project_key->key.'_access_control', 2400, function () use ($project_key) {
+            return $this->accessControl($project_key->key);
+        });
 
         $bibles = Bible::with('translations')->whereHas('filesets', function ($q) use ($access_control) {
             $q->whereIn('bible_filesets.hash_id', $access_control->hashes)->where('set_type_code', 'text_plain');
