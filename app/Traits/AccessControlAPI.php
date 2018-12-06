@@ -50,7 +50,7 @@ trait AccessControlAPI
             ->whereIn('access_group_id', $accessGroups->pluck('id'))->distinct()->get()->pluck('hash_id');
 
         return (object) [
-            'hashes' => $filesets,
+            'hashes' => $filesets->toArray(),
             'string' => $accessGroups->pluck('name')->implode('-'),
         ];
     }
