@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Connections;
 
 use App\Http\Controllers\APIController;
 use App\Models\Bible\BibleFile;
+use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleVerse;
 use App\Models\Bible\Book;
 use App\Transformers\BooksTransformer;
 use App\Transformers\FileTransformer;
@@ -21,10 +23,8 @@ class V3Controller extends APIController
         }
 
         if ($action_type === 'books') {
-            $booksChapters = collect(\DB::connection('sophia')->table($bible_id . '_vpl')->select(
-                'book',
-                'chapter'
-            )->distinct()->get());
+            $fileset       = BibleFileset::where('id', $bible_id)->where('set_type_code', 'text_plain')->firstOrFail();
+            $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select(['book', 'chapter'])->distinct()->get();
             $books         = $booksChapters->pluck('book')->toArray();
             $chapters      = [];
             foreach ($booksChapters as $books_chapter) {
@@ -63,31 +63,20 @@ class V3Controller extends APIController
     {
         $bible_id = checkParam('dam_id');
         $children = checkParam('children');
-        $bible    = fetchBible($bible_id);
-        if (!$bible) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $bible_id]));
-        }
+        $fileset = BibleFileset::where('id', $bible_id)->firstOrFail();
 
-        $files         = $children ? BibleFile::where('set_id', $bible->id)->orWhere('set_id', $bible_id)->select([
+        $files = $children ? BibleFile::where('hash_id', $fileset->hash_id)->orWhere('set_id', $bible_id)->select([
             'chapter_start as number',
             'chapter_start as order',
             'set_id as dam_id',
             'file_name as audio_path',
             'book_id as book_code',
         ])->get()->groupBy('book_code') : [];
-        $booksChapters = collect(\DB::connection('sophia')->table($bible->id . '_vpl')->select(
-            'book',
-            'chapter'
-        )->distinct()->get());
-        $books         = $booksChapters->pluck('book')->toArray();
-        $books         = Book::whereIn('id_usfx', $books)->orderBy('protestant_order')->get()->map(function ($book) use
-            (
-            $bible_id,
-            $files
-        ) {
+        $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select(['book_id', 'chapter'])->distinct()->get();
+        $books = $booksChapters->pluck('book_id')->toArray();
+        $books = Book::whereIn('id', $books)->orderBy('protestant_order')->get()->map(function ($book) use ($bible_id, $files) {
             $book['bible_id'] = $bible_id;
             $book['chapters'] = $files[$book->id] ?? [];
-
             return $book;
         });
 

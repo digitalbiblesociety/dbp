@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Connections\V2Controllers\LibraryCatalog;
 
 use App\Models\Bible\BibleFile;
+use App\Models\Bible\BibleVerse;
 use App\Models\Bible\Book;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BookTranslation;
@@ -79,11 +80,8 @@ class BooksController extends APIController
 
             // If plain text check Sophia
                 if ($fileset->set_type_code === 'text_plain') {
-                    $sophiaTable = $this->checkForSophiaTable($fileset);
-                    if (!\is_string($sophiaTable)) {
-                        return $sophiaTable;
-                    }
-                    $booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book', 'chapter')->distinct()->get());
+
+                    $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select('book', 'chapter')->distinct()->get();
                     $books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
                              ->when($testament, function ($q) use ($testament) {
                                  $q->where('book_testament', $testament);
@@ -126,12 +124,6 @@ class BooksController extends APIController
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
-
-        $sophiaTable = $this->checkForSophiaTable($fileset);
-        if (!\is_string($sophiaTable)) {
-            return $sophiaTable;
-        }
-
         $testament = false;
 
         switch ($id[\strlen($id) - 2]) {
@@ -145,8 +137,8 @@ class BooksController extends APIController
         $libraryBook = \Cache::remember(
             'v2_library_book_' . $id . $asset_id . $fileset . $testament,
             1600,
-            function () use ($id, $fileset, $testament, $sophiaTable) {
-                $booksChapters = collect(\DB::connection('sophia')->table($sophiaTable . '_vpl')->select('book', 'chapter')->distinct()->get());
+            function () use ($id, $fileset, $testament) {
+                $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select('book', 'chapter')->distinct()->get();
                 $books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
                              ->when($testament, function ($q) use ($testament) {
                                  $q->where('book_testament', $testament);
@@ -288,12 +280,7 @@ class BooksController extends APIController
                 return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404', ['id' => $id]));
             }
 
-            $sophiaTable = $this->checkForSophiaTable($fileset);
-            if (!\is_string($sophiaTable)) {
-                return $sophiaTable;
-            }
-
-            $chapters = \DB::connection('sophia')->table($sophiaTable . '_vpl')
+            $chapters = BibleVerse::where('hash_id', $fileset->hash_id)
                 ->when($book, function ($q) use ($book) {
                     $q->where('book', $book->id_usfx);
                 })
@@ -305,24 +292,9 @@ class BooksController extends APIController
                     return $chapter;
                 });
 
-                return fractal($chapters, new BookTransformer())->serializeWith($this->serializer);
+            return fractal($chapters, new BookTransformer())->serializeWith($this->serializer);
         });
 
         return $this->reply($chapters);
-    }
-
-    private function checkForSophiaTable($fileset)
-    {
-        $textExists = \Schema::connection('sophia')->hasTable(substr($fileset->id, 0, -4) . '_vpl');
-        if ($textExists) {
-            return substr($fileset->id, 0, -4);
-        }
-        if (!$textExists) {
-            $textExists = \Schema::connection('sophia')->hasTable($fileset->id . '_vpl');
-        }
-        if (!$textExists) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.bible_filesets_errors_checkback', ['id' => $fileset->id]));
-        }
-        return $fileset->id;
     }
 }

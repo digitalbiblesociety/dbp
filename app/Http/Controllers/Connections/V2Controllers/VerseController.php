@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Connections\V2Controllers;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleVerse;
 use App\Models\Bible\Book;
 use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Schema;
@@ -56,13 +57,13 @@ class VerseController extends APIController
         $verse_start = checkParam('verse_start');
         $verse_end   = checkParam('verse_end');
 
-        $bible = BibleFileset::firstOrFail($bible_id);
+        $fileset = BibleFileset::firstOrFail($bible_id);
         $book  = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->first();
         if (!$book) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404'));
         }
 
-        $verse_info = \DB::connection('sophia')->table($bible->id . '_vpl')->where([
+        $verse_info = BibleVerse::where('hash_id', $fileset->hash_id)->where([
             ['book', '=', $book->id_usfx],
             ['chapter', '=', $chapter_id],
             ['verse_start', '>=', $verse_start],
@@ -77,7 +78,7 @@ class VerseController extends APIController
             'canon_order as id',
         ])->get();
         foreach ($verse_info as $key => $verse) {
-            $verse_info[$key]->bible_id           = $bible->id;
+            $verse_info[$key]->bible_id           = $fileset->id;
             $verse_info[$key]->bible_variation_id = null;
         }
 

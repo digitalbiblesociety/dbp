@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Bible;
 
 use App\Http\Controllers\APIController;
 
+use App\Models\Bible\BibleVerse;
 use App\Models\Bible\Book;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
@@ -252,11 +253,10 @@ class AudioController extends APIController
 
         // Create Sophia Query
         $query  = \DB::connection()->getPdo()->quote('+' . str_replace(' ', ' +', $query));
-        $verses = \DB::connection('sophia')->table($text_fileset->id.'_vpl')
+        $verses = BibleVerse::where('hash_id', $text_fileset->hash_id)
                      ->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))
-                     ->when($book_id, function ($query) use ($books, $book_id) {
-                         $current_book = $books->where('id', $book_id)->first();
-                         return $query->where('book', $current_book->id_usfx);
+                     ->when($book_id, function ($query) use ($book_id) {
+                         return $query->where('book', $book_id);
                      })
                      ->select(['book', 'chapter'])
                      ->take(50)

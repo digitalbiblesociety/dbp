@@ -1,5 +1,18 @@
 @extends('layouts.app')
 
+@section('head')
+    <style>
+        .text-wrapper {
+            width:80%;
+            margin:0 auto;
+            text-align: justify;
+        }
+        .text-wrapper b {
+            margin-right:10px;
+        }
+    </style>
+@endsection
+
 @section('content')
 
 
@@ -12,11 +25,11 @@
 
     <div class="container box">
 
-        <h3>{{ $verses->first()->chapter }}</h3>
-
+        <div class="text-wrapper">
         @foreach($verses as $verse)
             <p><b>{{ $verse->verse_start }}</b>{{ $verse->verse_text }}</p>
         @endforeach
+        </div>
 
     </div>
 

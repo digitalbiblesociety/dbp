@@ -12,8 +12,16 @@
 
     <div class="container box">
 
-        @foreach($bibles as $bible)
-            <a href="{{ route('reader.books',['bible_id' => $bible->id]) }}">{{ $bible->translations->pluck('name')->implode(',') }}</a>
+        @foreach($filesets as $fileset)
+            <a href="{{ route('reader.books',['fileset_id' => $fileset->id]) }}">
+                @if($fileset->bible->first())
+                    @foreach($fileset->bible->first()->translations as $translation)
+                        {{ $translation->name }}
+                    @endforeach
+                @else
+                    {{ $fileset->id }}
+                @endif
+            </a>
         @endforeach
 
     </div>

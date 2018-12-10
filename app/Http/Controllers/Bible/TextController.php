@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Bible;
 
+use App\Models\Bible\BibleVerse;
 use DB;
 
 use Illuminate\Http\Response;
@@ -84,73 +85,43 @@ class TextController extends APIController
         $asset_id    = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3.bucket');
 
         $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, 'text_plain')->first();
+        $bible = optional($fileset->bible)->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
-        $access_control = $this->accessControl($this->key);
+
+        $access_control = \Cache::remember($this->key.'_access_control', 2400, function () {
+            return $this->accessControl($this->key);
+        });
         if (!\in_array($fileset->hash_id, $access_control->hashes)) {
             return $this->setStatusCode(403)->replyWithError('Your API Key does not have access to this fileset');
         }
-        $bible = $fileset->bible->first();
 
-        $book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
-        if (!$book) {
-            return $this->setStatusCode(422)->replyWithError('Missing or Invalid Book ID');
-        }
-        $book->push('name_vernacular', $book->translation($bible->language_id));
+        $verses = BibleVerse::withVernacularMetaData($bible)
+            ->where('hash_id', $fileset->hash_id)
+            ->where('bible_verses.book_id', $book_id)
+            ->when($verse_start, function ($query) use ($verse_start) {
+                return $query->where('verse_end', '>=', $verse_start);
+            })
+            ->when($chapter, function ($query) use ($chapter) {
+                return $query->where('chapter', $chapter);
+            })
+            ->when($verse_end, function ($query) use ($verse_end) {
+                return $query->where('verse_end', '<=', $verse_end);
+            })
+            ->select([
+                'bible_verses.book_id as book_id',
+                'books.name as book_name',
+                'bible_books.name as book_vernacular_name',
+                'bible_verses.chapter',
+                'bible_verses.verse_start',
+                'bible_verses.verse_end',
+                'bible_verses.verse_text',
+                'glyph_chapter.glyph as chapter_vernacular',
+                'glyph_start.glyph as verse_start_vernacular',
+                'glyph_end.glyph as verse_end_vernacular',
+            ])->get();
 
-
-        // Fetch Verses
-        $table = strtoupper($fileset->id) . '_vpl';
-        $verses = DB::connection('sophia')->table($table)
-                    ->where('book', $book->id_usfx)
-                    ->when($verse_start, function ($query) use ($verse_start) {
-                        return $query->where('verse_end', '>=', $verse_start);
-                    })
-                    ->when($chapter, function ($query) use ($chapter) {
-                        return $query->where('chapter', $chapter);
-                    })
-                    ->when($verse_end, function ($query) use ($verse_end) {
-                        return $query->where('verse_end', '<=', $verse_end);
-                    })
-                    ->join(config('database.connections.dbp.database').'.books as books', function ($join) use ($book) {
-                        $join->where('books.id', '=', $book->id);
-                    })
-                    ->join(config('database.connections.dbp.database').'.bible_books as bb', function ($join) use ($bible, $book) {
-                        $join->where('bb.book_id', '=', $book->id)
-                             ->where('bb.bible_id', '=', $bible->id);
-                    })
-                    ->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_chapter', function ($join) use ($table, $bible) {
-                        $join->on("$table.chapter", '=', 'glyph_chapter.value')
-                             ->where('glyph_chapter.numeral_system_id', '=', $bible->numeral_system_id);
-                    })
-                    ->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_start', function ($join) use ($table, $bible) {
-                        $join->on("$table.verse_start", '=', 'glyph_start.value')
-                             ->where('glyph_start.numeral_system_id', '=', $bible->numeral_system_id);
-                    })
-                    ->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_end', function ($join) use ($table, $bible) {
-                        $join->on("$table.verse_end", '=', 'glyph_end.value')
-                             ->where('glyph_end.numeral_system_id', '=', $bible->numeral_system_id);
-                    })
-                    ->select([
-                        'canon_order',
-                        'books.name as book_name',
-                        'bb.name as book_vernacular_name',
-                        'book as book_id',
-                        'books.id_osis as osis_id',
-                        'books.protestant_order as protestant_order',
-                        'chapter',
-                        'verse_start',
-                        'verse_end',
-                        'verse_text',
-                        'glyph_chapter.glyph as chapter_vernacular',
-                        'glyph_start.glyph as verse_start_vernacular',
-                        'glyph_end.glyph as verse_end_vernacular',
-                    ])->get();
-
-        if (\count($verses) === 0) {
-            return $this->setStatusCode(404)->replyWithError('No Verses Were found with the provided params');
-        }
         return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)->toArray());
     }
 
@@ -235,61 +206,38 @@ class TextController extends APIController
         }
 
         $query   = checkParam('query', true);
-        $exclude = checkParam('exclude') ?? false;
-        if ($exclude) {
-            $exclude = ' -' . $exclude;
-        }
         $fileset_id = checkParam('fileset_id');
         $limit    = checkParam('limit') ?? 15;
         $book_id  = checkParam('book|book_id');
+        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
 
-        $book = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->orWhere('id_osis', $book_id)->first();
-
-        $fileset = BibleFileset::with('bible')->where('id', $fileset_id)->orWhere('id', substr($fileset_id, 0, -4))->orWhere('id', substr($fileset_id, 0, -2))->first();
+        $fileset = BibleFileset::with('bible')->where('id', $fileset_id)->where('set_type_code', 'text_plain')
+                                                                        ->where('asset_id', $asset_id)->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
         $bible = $fileset->bible->first();
 
-        $table = strtoupper($fileset->id) . '_vpl';
-        $query  = DB::connection('sophia')->getPdo()->quote('+' . str_replace(' ', ' +', $query) . $exclude);
-        $verses = DB::connection('sophia')->table($table)
-            ->join(config('database.connections.dbp.database').'.books', 'books.id_usfx', 'book')
-            ->join(config('database.connections.dbp.database').'.bible_books as bb', function ($join) use ($bible) {
-                $join->on('bb.book_id', 'books.id')->where('bible_id', $bible->id);
+        $verses = BibleVerse::where('hash_id', $fileset->hash_id)
+            ->withVernacularMetaData($bible)
+            ->when($book_id, function ($query) use ($book_id) {
+                $query->where('book_id', $book_id);
             })
-            ->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_chapter', function ($join) use ($table, $bible) {
-                $join->on("$table.chapter", '=', 'glyph_chapter.value')
-                     ->where('glyph_chapter.numeral_system_id', '=', $bible->numeral_system_id);
-            })
-            ->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_start', function ($join) use ($table, $bible) {
-                $join->on("$table.verse_start", '=', 'glyph_start.value')
-                     ->where('glyph_start.numeral_system_id', '=', $bible->numeral_system_id);
-            })
-            ->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_end', function ($join) use ($table, $bible) {
-                $join->on("$table.verse_end", '=', 'glyph_end.value')
-                     ->where('glyph_end.numeral_system_id', '=', $bible->numeral_system_id);
-            })
-            ->when($book, function ($q) use ($book) {
-                $q->whereIn('book', $book->id_usfx);
-            })
-            ->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->limit($limit)
+            ->whereRaw(DB::raw("MATCH (verse_text) AGAINST(\"$query\" IN NATURAL LANGUAGE MODE)"))
             ->select([
-                'canon_order',
+                'bible_verses.book_id as book_id',
                 'books.name as book_name',
-                'books.protestant_order as protestant_order',
-                'bb.name as book_vernacular_name',
-                'books.id as book_id',
-                'chapter',
-                'verse_start',
-                'verse_end',
-                'verse_text',
+                'bible_books.name as book_vernacular_name',
+                'bible_verses.chapter',
+                'bible_verses.verse_start',
+                'bible_verses.verse_end',
+                'bible_verses.verse_text',
                 'glyph_chapter.glyph as chapter_vernacular',
                 'glyph_start.glyph as verse_start_vernacular',
                 'glyph_end.glyph as verse_end_vernacular',
-            ])->get();
+            ])->limit($limit)->get();
 
-        return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer));
+        return $this->reply(fractal($verses, new TextTransformer(), $this->serializer));
     }
 
     /**
@@ -331,43 +279,41 @@ class TextController extends APIController
      */
     public function searchGroup()
     {
-        // If it's not an API route send them to the documentation
-        if (!$this->api) {
-            return view('docs.v2.text_search_group');
+        $query      = checkParam('query', true);
+        $fileset_id = checkParam('dam_id');
+        $asset_id   = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
+
+        $hash_id = optional(BibleFileset::with('bible')->where('id', $fileset_id)
+            ->where('set_type_code', 'text_plain')->where('asset_id', $asset_id)
+            ->select('hash_id')->first())->hash_id;
+        if (!$hash_id) {
+            return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
 
-        $query    = checkParam('query', true);
-        $bible_id = checkParam('dam_id');
-
-        $tableExists = \Schema::connection('sophia')->hasTable($bible_id . '_vpl');
-        if (!$tableExists) {
-            $bible_id    = substr($bible_id, 0, 6);
-            $tableExists = \Schema::connection('sophia')->hasTable($bible_id . '_vpl');
-        }
-        if (!$tableExists) {
-            return $this->setStatusCode(404)->replyWithError('Table does not exist');
-        }
-
-        $query  = DB::connection('sophia')->getPdo()->quote('+' . str_replace(' ', ' +', $query));
-        $verses = DB::connection('sophia')->table($bible_id . '_vpl')->select(DB::raw('MIN(verse_text) as verse_text, COUNT(verse_text) as resultsCount, book, chapter, verse_start, canon_order'))
-                    ->whereRaw(DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))->orderBy('canon_order')->groupBy('book')->get();
-
-        $books  = Book::with([
-            'bibleBooks' => function ($query) use ($bible_id) {
-                $query->where('bible_id', $bible_id);
-            }])->whereIn('id_usfx', $verses->pluck('book'))->get();
-
-        $verses->map(function ($item) use ($bible_id, $books) {
-            $current_book           = $books->where('id_usfx', $item->book)->first();
-            $item->book_name        = $current_book->name ?? '';
-            $item->id_osis          = $current_book->id_osis ?? '';
-            $item->protestant_order = $current_book->protestant_order ?? '';
-            $item->bible_id         = $bible_id;
-            return $item;
-        });
+        $verses = \DB::connection('dbp')->table('bible_verses')
+            ->where('bible_verses.hash_id', $hash_id)
+            ->join('bible_filesets', 'bible_filesets.hash_id', 'bible_verses.hash_id')
+            ->join('books', 'bible_verses.book_id', 'books.id')
+            ->select(
+                DB::raw(
+                   'MIN(verse_text) as verse_text,
+                    MIN(verse_start) as verse_start,
+                    COUNT(verse_text) as resultsCount,
+                    MIN(verse_start),
+                    MIN(chapter) as chapter,
+                    MIN(bible_filesets.id) as bible_id,
+                    MIN(books.id_usfx) as book_id,
+                    MIN(books.name) as book_name,
+                    MIN(books.protestant_order) as protestant_order'
+                )
+            )
+            ->whereRaw(DB::raw("MATCH (verse_text) AGAINST(\"$query\" IN NATURAL LANGUAGE MODE)"))
+            ->groupBy('book_id')->orderBy('protestant_order')->get();
 
         return $this->reply([
-            [['total_results' => $verses->sum('resultsCount')]],
+            [
+                ['total_results' => $verses->sum('resultsCount')]
+            ],
             fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer),
         ]);
     }

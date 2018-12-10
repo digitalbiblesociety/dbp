@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Connections\V2Controllers;
 
 use App\Http\Controllers\APIController;
 use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleVerse;
 use App\Models\Bible\Book;
 use App\Models\User\Account;
 use App\Models\User\Study\Bookmark;
@@ -270,6 +271,7 @@ class UsersController extends APIController
      * The Highlight Store
      *
      * @return $this|\Illuminate\Database\Eloquent\Model
+     * @throws \Exception
      */
     public function annotationHighlightAlter()
     {
@@ -280,8 +282,9 @@ class UsersController extends APIController
             }
 
             $book = Book::where('id_osis', request()->book_id)->first();
-            $bible_id = BibleFileset::where('id', request()->dam_id)->first()->id ?? strtoupper(substr(request()->dam_id, 0, 6));
-            $chapter = \DB::connection('sophia')->table($bible_id.'_vpl')->where('chapter', request()->chapter_id)->where('book', $book->id_usfx)->where('verse_start', request()->verse_id)->first();
+            $fileset = BibleFileset::where('id', request()->dam_id)->first();
+            $chapter = BibleVerse::where('hash_id', $fileset->hash_id)->where('chapter', request()->chapter_id)
+                        ->where('book_id', $book->id_usfx)->where('verse_start', request()->verse_id)->first();
             if (!$chapter) {
                 return $this->setStatusCode(404)->replyWithError('No bible_fileset found');
             }
@@ -289,7 +292,7 @@ class UsersController extends APIController
             $highlight = Highlight::create([
                 'user_id'           => request()->user_id,
                 'book_id'           => $book->id,
-                'bible_id'          => $bible_id,
+                'bible_id'          => $fileset->id,
                 'chapter'           => request()->chapter_id,
                 'verse_start'       => request()->verse_id,
                 'highlight_start'   => 1,

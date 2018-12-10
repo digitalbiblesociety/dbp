@@ -24,7 +24,7 @@
                 <td>{{ $book->name }}</td>
                 <td>
                     @foreach(explode(',',$book->existing_chapters) as $chapter)
-                        <a href="{{ route('reader.chapter',['bible_id' => $bible_id,'book_id'=>$book->id_usfx,'chapter'=>$chapter]) }}">{{ $chapter }}</a>
+                        <a href="{{ route('reader.chapter',['bible_id' => $bible_id,'book_id'=>$book->id,'chapter'=>$chapter]) }}">{{ $chapter }}</a>
                     @endforeach
                 </td>
             </tr>

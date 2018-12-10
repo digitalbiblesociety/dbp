@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Bible;
 
+use App\Models\Bible\Bible;
+use App\Models\Bible\BibleVerse;
 use App\Models\Bible\Book;
 use App\Models\Bible\BibleFileset;
 use App\Transformers\BooksTransformer;
@@ -45,9 +47,6 @@ class BooksController extends APIController
      */
     public function index()
     {
-        if (!$this->api) {
-            return view('docs.books');
-        }
         $books = \Cache::rememberForever('v4_books_index', function () {
             $books = Book::orderBy('protestant_order')->get();
             return fractal($books, new BooksTransformer(), $this->serializer);
@@ -111,8 +110,8 @@ class BooksController extends APIController
 
         $cache_string = 'bible_books_'.$id.$fileset_type.$asset_id;
         $books = \Cache::remember($cache_string, 2400, function () use ($fileset_type, $asset_id, $id) {
-            $is_plain_text = \Schema::connection('sophia')->hasTable($id . '_vpl');
-            $fileset = BibleFileset::uniqueFileset($id, $asset_id, $fileset_type)->first();
+            $fileset = BibleFileset::where('id', $id)->where('asset_id', $asset_id)->where('set_type_code', $fileset_type)->first();
+            $is_plain_text = BibleVerse::where('hash_id', $fileset->hash_id)->exists();
 
             if (!$fileset) {
                 return $this->replyWithError('Fileset Not Found');
@@ -126,8 +125,8 @@ class BooksController extends APIController
                 ->when($fileset_type, function ($q) use ($fileset_type) {
                     $q->where('set_type_code', $fileset_type);
                 })
-                ->when($is_plain_text, function ($query) use ($id) {
-                    $this->compareFilesetToSophiaBooks($query, $id);
+                ->when($is_plain_text, function ($query) use ($fileset) {
+                    $this->compareFilesetToSophiaBooks($query, $fileset->hash_id);
                 }, function ($query) use ($fileset) {
                     $this->compareFilesetToFileTableBooks($query, $fileset->hash_id);
                 })
@@ -158,18 +157,16 @@ class BooksController extends APIController
      * @param $query
      * @param $id
      */
-    private function compareFilesetToSophiaBooks($query, $id)
+    private function compareFilesetToSophiaBooks($query, $fileset)
     {
         // If the fileset references sophia.*_vpl than fetch the existing books from that database
         $dbp_database = config('database.connections.dbp.database');
-        $sophia_books = DB::connection('sophia')->table($id . '_vpl')
-                           ->join($dbp_database.'.books', 'books.id_usfx', $id . '_vpl.book')
-                           ->select('books.id')->distinct()->get()->pluck('id');
+        $sophia_books = BibleVerse::where('hash_id', $fileset->hash_id)->select('book_id')->distinct()->get();
 
         // Join the books for the books returned from Sophia
         $query->join($dbp_database.'.bible_books', function ($join) use ($sophia_books) {
             $join->on('bible_books.bible_id', 'bibles.id')
-                 ->whereIn('bible_books.book_id', $sophia_books);
+                 ->whereIn('bible_books.book_id', $sophia_books->pluck('book_id'));
         })->rightJoin($dbp_database.'.books', 'books.id', 'bible_books.book_id');
     }
 
