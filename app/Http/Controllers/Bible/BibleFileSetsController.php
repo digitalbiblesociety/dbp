@@ -22,7 +22,6 @@ use App\Transformers\FileSetTransformer;
 
 class BibleFileSetsController extends APIController
 {
-
     use AccessControlAPI;
     use CallsBucketsTrait;
 
@@ -38,12 +37,20 @@ class BibleFileSetsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="fileset_id", in="path", description="The fileset ID", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Parameter(name="book_id", in="query", description="If provided will filter the results by the given book", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
-     *     @OA\Parameter(name="chapter_id", in="query", description="If provided will filter the results by the given chapter", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
-     *     @OA\Parameter(name="asset_id", in="query", description="If provided will filter the results by the given Asset", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
-     *     @OA\Parameter(name="versification", in="query", description="The versification system", @OA\Schema(ref="#/components/schemas/Bible/properties/versification")),
-     *     @OA\Parameter(name="type", in="query", description="The fileset type", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code")),
+     *     @OA\Parameter(name="fileset_id", in="path", description="The fileset ID", required=true,
+     *                                      @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+     *     @OA\Parameter(name="book_id", in="query", description="If provided will filter the results by the given
+     *                                   book", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OA\Parameter(name="chapter_id", in="query", description="If provided will filter the results by the given
+     *                                      chapter",
+     *                                      @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+     *     @OA\Parameter(name="asset_id", in="query", description="If provided will filter the results by the given
+     *                                    Asset",
+     *                                    @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
+     *     @OA\Parameter(name="versification", in="query", description="The versification system",
+     *                                         @OA\Schema(ref="#/components/schemas/Bible/properties/versification")),
+     *     @OA\Parameter(name="type", in="query", description="The fileset type",
+     *                                @OA\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code")),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -57,6 +64,7 @@ class BibleFileSetsController extends APIController
      * @param null $id
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
+     * @throws \Exception
      */
     public function show($id = null)
     {
@@ -239,7 +247,12 @@ class BibleFileSetsController extends APIController
         }
 
         $rootElementName = 'rss';
-        $rootAttributes  = ['xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd', 'xmlns:atom' => 'http://www.w3.org/2005/Atom', 'xmlns:media' => 'http://search.yahoo.com/mrss/', 'version' => '2.0'];
+        $rootAttributes  = [
+            'xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd',
+            'xmlns:atom' => 'http://www.w3.org/2005/Atom',
+            'xmlns:media' => 'http://search.yahoo.com/mrss/',
+            'version' => '2.0'
+        ];
         $podcast         = fractal($fileset, new FileSetTransformer(), $this->serializer);
         return $this->reply($podcast, ['rootElementName' => $rootElementName, 'rootAttributes' => $rootAttributes]);
     }
@@ -258,15 +271,33 @@ class BibleFileSetsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="fileset_id", in="path", required=true, description="The fileset ID", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Parameter(name="asset_id", in="query", required=true, description="The asset id", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
-     *     @OA\Parameter(name="type", in="query", required=true, description="The set type code", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code")),
+     *     @OA\Parameter(
+     *          name="fileset_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id"),
+     *          description="The fileset ID to retrieve the copyright information for"
+     *     ),
+     *     @OA\Parameter(
+     *          name="asset_id",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id"),
+     *          description="The asset id which contains the Fileset"
+     *     ),
+     *     @OA\Parameter(
+     *          name="type",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code"),
+     *          description="The set type code for the fileset"
+     *     ),
      *     @OA\Parameter(
      *         name="id",
      *         in="query",
-     *         description="The fileset ID",
      *         required=true,
-     *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
+     *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id"),
+     *         description="The fileset ID",
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -275,8 +306,8 @@ class BibleFileSetsController extends APIController
      *     )
      * )
      *
+     * @see https://api.dbp.test/bibles/filesets/ENGESV/copyright?key=API_KEY&v=4&type=text_plain&pretty
      * @param string $id
-     *
      * @return mixed
      */
     public function copyright($id)
@@ -285,22 +316,21 @@ class BibleFileSetsController extends APIController
         $type = checkParam('type', true);
         $asset_id = checkParam('bucket|bucket_id|asset_id') ?? 'dbp-prod';
 
-        $language = Language::where('iso', $iso)->first();
-        if (!$language) {
-            return $this->setStatusCode(400)->replyWithError(trans('api.languages_errors_404'));
-        }
-
-        $fileset = BibleFileset::where('id', $id)->with([
-            'copyright.organizations.logos',
-            'copyright.organizations.translations' => function ($q) use ($language) {
-                $q->where('language_id', $language->id);
-            }])
-            ->when($asset_id, function ($q) use ($asset_id) {
-                $q->where('asset_id', $asset_id);
-            })
-            ->when($type, function ($q) use ($type) {
-                $q->where('set_type_code', $type);
-            })->select(['hash_id','id','asset_id','set_type_code as type','set_size_code as size'])->first();
+        $cache_string = 'bible_fileset_copyright'.$iso.$type.$asset_id;
+        $fileset = \Cache::remember($cache_string, 2400, function () use ($iso, $type, $asset_id, $id) {
+            $language_id = optional(Language::where('iso', $iso)->select('id')->first())->id;
+            return BibleFileset::where('id', $id)->with([
+                'copyright.organizations.logos',
+                'copyright.organizations.translations' => function ($q) use ($language_id) {
+                    $q->where('language_id', $language_id);
+                }])
+                ->when($asset_id, function ($q) use ($asset_id) {
+                    $q->where('asset_id', $asset_id);
+                })
+                ->when($type, function ($q) use ($type) {
+                    $q->where('set_type_code', $type);
+                })->select(['hash_id','id','asset_id','set_type_code as type','set_size_code as size'])->first();
+        });
 
         return $this->reply($fileset);
     }
