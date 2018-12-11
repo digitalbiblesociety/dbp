@@ -109,6 +109,7 @@ class TextController extends APIController
             ->when($verse_end, function ($query) use ($verse_end) {
                 return $query->where('verse_end', '<=', $verse_end);
             })
+            ->orderBy('verse_start')
             ->select([
                 'bible_verses.book_id as book_id',
                 'books.name as book_name',
