@@ -12,9 +12,9 @@ return [
     | any other location as required by the application or its packages.
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
-	'server_name' => env('APP_SERVER_NAME'),
-	'contact'     => env('APP_SITE_CONTACT'),
+    'name'        => env('APP_NAME', 'Laravel'),
+    'server_name' => env('APP_SERVER_NAME'),
+    'contact'     => env('APP_SITE_CONTACT'),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,8 +54,8 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-	'url_podcast' => env('APP_URL_PODCAST', 'https://dbp4.org'),
-	'api_url' => env('API_URL'),
+    'url_podcast' => env('APP_URL_PODCAST', 'https://dbp4.org'),
+    'api_url' => env('API_URL'),
 
     /*
     |--------------------------------------------------------------------------
@@ -111,10 +111,10 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
-	'deploy' => [
-		'secret' => env('APP_DEPLOY_SECRET'),
-		'path'   => env('APP_DEPLOY_SCRIPT_PATH')
-	],
+    'deploy' => [
+        'secret' => env('APP_DEPLOY_SECRET'),
+        'path'   => env('APP_DEPLOY_SCRIPT_PATH')
+    ],
 
     /*
     |--------------------------------------------------------------------------

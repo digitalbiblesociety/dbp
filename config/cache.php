@@ -30,10 +30,6 @@ return [
 
     'stores' => [
 
-        'apc' => [
-            'driver' => 'apc',
-        ],
-
         'array' => [
             'driver' => 'array',
         ],
@@ -66,11 +62,6 @@ return [
                     'weight' => 100,
                 ],
             ],
-        ],
-
-        'redis' => [
-            'driver'     => 'redis',
-            'connection' => 'default',
         ],
 
     ],
