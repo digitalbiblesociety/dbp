@@ -24,7 +24,7 @@ class CreateStreamTables extends Migration
                 $table->string('filename', 64)->primary();
                 $table->string('properties', 128);
                 $table->string('stream_parent', 64);
-                $table->foreign('stream_parent', 'fk_stream_parent')->references('name')->on('stream')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('stream_parent', 'FK_stream_parent_stream_res')->references('name')->on('stream')->onDelete('cascade')->onUpdate('cascade');
             });
         }
 
@@ -33,7 +33,7 @@ class CreateStreamTables extends Migration
                 $table->string('filename', 64)->primary();
                 $table->string('properties', 64);
                 $table->string('stream_res', 64);
-                $table->foreign('stream_res', 'fk_stream_res')->references('filename')->on('stream_res')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('stream_res', 'FK_stream_res_stream_ts')->references('filename')->on('stream_res')->onDelete('cascade')->onUpdate('cascade');
             });
         }
     }

@@ -40,7 +40,7 @@ class CreateUsersTable extends Migration
         if (!Schema::connection('dbp_users')->hasTable('user_keys')) {
             Schema::connection('dbp_users')->create('user_keys', function (Blueprint $table) {
                 $table->integer('user_id')->unsigned();
-                $table->foreign('user_id')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onUpdate('cascade');
+                $table->foreign('user_id', 'FK_users_user_keys')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onUpdate('cascade');
                 $table->string('key', 64)->unique();
                 $table->string('name')->nullable();
                 $table->text('description')->nullable();
@@ -64,7 +64,7 @@ class CreateUsersTable extends Migration
             Schema::connection('dbp_users')->create('activations', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('user_id')->unsigned()->index();
-                $table->foreign('user_id')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onDelete('cascade');
+                $table->foreign('user_id', 'FK_users_activations')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onDelete('cascade');
                 $table->string('token');
                 $table->ipAddress('ip_address');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
@@ -75,7 +75,7 @@ class CreateUsersTable extends Migration
         if (!Schema::connection('dbp_users')->hasTable('profiles')) {
             Schema::connection('dbp_users')->create('profiles', function (Blueprint $table) {
                 $table->integer('user_id')->unsigned()->index();
-                $table->foreign('user_id')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('user_id', 'FK_users_profiles')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onDelete('cascade')->onUpdate('cascade');
                 $table->text('bio')->nullable();
                 $table->string('address_1')->nullable();
                 $table->string('address_2')->nullable();
@@ -84,7 +84,7 @@ class CreateUsersTable extends Migration
                 $table->string('state')->nullable();
                 $table->string('zip')->nullable();
                 $table->char('country_id', 2)->nullable();
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_profiles')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->string('avatar')->nullable();
                 $table->tinyInteger('sex')->default(0)->unsigned(); // Aligns to the ISO/IEC 5218 Standards
                 $table->string('phone', 22)->nullable();

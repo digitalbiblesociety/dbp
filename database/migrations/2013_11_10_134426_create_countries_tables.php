@@ -13,11 +13,10 @@ class CreateCountriesTables extends Migration
      */
     public function up()
     {
-
         if (!Schema::connection('dbp')->hasTable('country_geography')) {
             Schema::connection('dbp')->create('country_geography', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_geography')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->text('location_description')->nullable();
                 $table->decimal('latitude', 10, 7)->nullable();
                 $table->decimal('longitude', 10, 7)->nullable();
@@ -32,26 +31,26 @@ class CreateCountriesTables extends Migration
                 $table->text('hazards')->nullable();
                 $table->text('notes')->nullable();
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('country_maps')) {
             Schema::connection('dbp')->create('country_maps', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_maps')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->string('name');
                 $table->string('thumbnail_url');
                 $table->string('map_url');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('country_people')) {
             Schema::connection('dbp')->create('country_people', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_people')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->text('languages');                                                          // Languages moved to country_language
                 $table->text('religions');                                                          // Religions moved to country_religion
                 $table->integer('population')->unsigned()->nullable();                              // "Population"
@@ -121,38 +120,38 @@ $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CU
                 $table->decimal('unemployment_youth_male', 4, 2)->unsigned()->nullable();           // "Unemployment, youth ages 15-24" | "male"
                 $table->decimal('unemployment_youth_female', 4, 2)->unsigned()->nullable();         // "Unemployment, youth ages 15-24" | "female"
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('country_people_ethnicities')) {
             Schema::connection('dbp')->create('country_people_ethnicities', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_people_ethnicities')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->string('name');
                 $table->decimal('population_percentage', 5, 2)->unsigned();
                 $table->tinyInteger('date')->unsigned()->nullable();
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('country_religions')) {
             Schema::connection('dbp')->create('country_religions', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_religions')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->string('name');
                 $table->decimal('population_percentage', 5, 2)->unsigned()->nullable();
                 $table->tinyInteger('date')->unsigned()->nullable();
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('country_government')) {
             Schema::connection('dbp')->create('country_government', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_government')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->string('name');                                       // "Country name" | "conventional long form"
                 $table->text('name_etymology');                               // "Country name" | "etymology"
                 $table->string('conventional_long_form');                     // "Country name" | "conventional long form"
@@ -190,14 +189,14 @@ $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CU
                 $table->text('national_symbols');                             // "National symbol(s)"
                 $table->string('national_anthem');                            // "National anthem"
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('country_economy')) {
             Schema::connection('dbp')->create('country_economy', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_economy')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->text('overview');                             // "Economy - overview"
                 $table->string('gdp_power_parity');                   // "GDP (purchasing power parity)"
                 $table->string('gdp_real_growth');                    // "GDP - real growth rate"
@@ -244,14 +243,14 @@ $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CU
                 $table->string('imports_partners');                   // "Imports - partners"
                 $table->string('exchange_rates');                     // "Exchange rates"
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('country_energy')) {
             Schema::connection('dbp')->create('country_energy', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_energy')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->string('electricity_production');           // "Electricity - production"
                 $table->string('electricity_consumption');          // "Electricity - consumption"
                 $table->string('electricity_exports');              // "Electricity - exports"
@@ -276,14 +275,14 @@ $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CU
                 $table->string('natural_gas_reserves');             // "Natural gas - proved reserves"
                 $table->string('co2_output');                       // "Carbon dioxide emissions from consumption of energy"
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('country_communications')) {
             Schema::connection('dbp')->create('country_communications', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_communications')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->string('fixed_phones_total');                           // "Telephones - fixed lines" | "total subscriptions"
                 $table->string('fixed_phones_subs_per_100');                    // "Telephones - fixed lines" | "subscriptions per 100 inhabitants"
                 $table->string('mobile_phones_total');                          // "Telephones - mobile cellular" | "total"
@@ -294,20 +293,16 @@ $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CU
                 $table->text('broadcast_media');                                // "Broadcast media"
                 $table->char('internet_country_code', 2);                       // "Internet country code"
                 $table->string('internet_total_users');                         // "Internet users" | "total"
-                $table->decimal(
-                    'internet_population_percent',
-                    4,
-                    1
-                )->unsigned(); // "Internet users" | "percent of population"
+                $table->decimal('internet_population_percent', 4, 1)->unsigned(); // "Internet users" | "percent of population"
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('country_transportation')) {
             Schema::connection('dbp')->create('country_transportation', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_transportation')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->integer('air_carriers')->unsigned()->nullable();            // "National air transport system" | "number of registered air carriers"
                 $table->integer('aircraft')->unsigned()->nullable();                // "National air transport system" | "inventory of registered aircraft operated by air carriers"
                 $table->integer('aircraft_passengers')->nullable()->unsigned();     // "annual passenger traffic on registered air carriers"
@@ -320,7 +315,7 @@ $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CU
                 $table->string('oil_terminals')->nullable();                        // "oil terminal(s)"
                 $table->string('cruise_ports')->nullable();                         // "cruise port(s)"
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
@@ -328,21 +323,21 @@ $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CU
         if (!Schema::connection('dbp')->hasTable('country_issues')) {
             Schema::connection('dbp')->create('country_issues', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_issues')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->text('international_disputes');   // "Disputes - international"
                 $table->text('illicit_drugs');            // "Illicit drugs"
                 $table->text('refugees');                 // "Refugees and internally displaced persons" | "refugees (country of origin)"
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
         if (!Schema::connection('dbp')->hasTable('country_joshua_project')) {
             Schema::connection('dbp')->create('country_joshua_project', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_joshua_project')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->char('language_official_iso', 3);
-                $table->foreign('language_official_iso')->references('iso')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
+                $table->foreign('language_official_iso', 'FK_languages_country_joshua_project')->references('iso')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->string('language_official_name')->nullable();
                 $table->bigInteger('population')->unsigned()->default(0);
                 $table->bigInteger('population_unreached')->unsigned()->default(0);
@@ -354,7 +349,7 @@ $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CU
                 $table->boolean('resistant_belt')->default(0);
                 $table->float('percent_literate')->nullable();
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
     }

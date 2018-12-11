@@ -22,7 +22,7 @@ class CreateRolesTable extends Migration
                 $table->string('description')->nullable();
                 $table->integer('level')->default(1);
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
@@ -30,13 +30,13 @@ $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CU
             Schema::connection('dbp_users')->create('role_user', function (Blueprint $table) {
                 $table->increments('id')->unsigned();
                 $table->tinyInteger('role_id')->unsigned()->index();
-                $table->foreign('role_id')->references('id')->on(config('database.connections.dbp_users.database').'.roles')->onDelete('cascade');
+                $table->foreign('role_id', 'FK_roles_role_user')->references('id')->on(config('database.connections.dbp_users.database').'.roles')->onDelete('cascade');
                 $table->integer('user_id')->unsigned()->index();
-                $table->foreign('user_id')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onDelete('cascade');
+                $table->foreign('user_id', 'FK_users_role_user')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onDelete('cascade');
                 $table->integer('organization_id')->unsigned();
-                $table->foreign('organization_id')->references('id')->on(config('database.connections.dbp.database').'.organizations');
+                $table->foreign('organization_id', 'FK_organizations_role_user')->references('id')->on(config('database.connections.dbp.database').'.organizations');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
@@ -48,7 +48,7 @@ $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CU
                 $table->string('description')->nullable();
                 $table->string('model')->nullable();
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
@@ -56,11 +56,11 @@ $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CU
             Schema::connection('dbp_users')->create('permission_role', function (Blueprint $table) {
                 $table->increments('id')->unsigned();
                 $table->integer('permission_id')->unsigned()->index();
-                $table->foreign('permission_id')->references('id')->on(config('database.connections.dbp_users.database').'.permissions')->onDelete('cascade');
+                $table->foreign('permission_id', 'FK_permissions_permission_role')->references('id')->on(config('database.connections.dbp_users.database').'.permissions')->onDelete('cascade');
                 $table->tinyInteger('role_id')->unsigned()->index();
-                $table->foreign('role_id')->references('id')->on(config('database.connections.dbp_users.database').'.roles')->onDelete('cascade');
+                $table->foreign('role_id', 'FK_roles_permission_role')->references('id')->on(config('database.connections.dbp_users.database').'.roles')->onDelete('cascade');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
 
@@ -68,11 +68,11 @@ $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CU
             Schema::connection('dbp_users')->create('permission_user', function (Blueprint $table) {
                 $table->increments('id')->unsigned();
                 $table->integer('permission_id')->unsigned()->index();
-                $table->foreign('permission_id')->references('id')->on(config('database.connections.dbp_users.database').'.permissions')->onDelete('cascade');
+                $table->foreign('permission_id', 'FK_permissions_permission_user')->references('id')->on(config('database.connections.dbp_users.database').'.permissions')->onDelete('cascade');
                 $table->integer('user_id')->unsigned()->index();
-                $table->foreign('user_id')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onDelete('cascade');
+                $table->foreign('user_id', 'FK_users_permission_user')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onDelete('cascade');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-$table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
     }

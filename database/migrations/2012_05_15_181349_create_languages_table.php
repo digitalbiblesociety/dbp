@@ -63,9 +63,9 @@ class CreateLanguagesTable extends Migration
                 $table->float('latitude', 11, 7)->nullable();
                 $table->float('longitude', 11, 7)->nullable();
                 $table->char('country_id', 2)->nullable()->default(null);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_languages_countries')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->char('status_id', 2)->nullable();
-                $table->foreign('status_id')->references('id')->on(config('database.connections.dbp.database').'.language_status')->onUpdate('cascade');
+                $table->foreign('status_id', 'FK_languages_language_status')->references('id')->on(config('database.connections.dbp.database').'.language_status')->onUpdate('cascade');
                 $table->text('status_notes')->nullable();
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
@@ -77,9 +77,9 @@ class CreateLanguagesTable extends Migration
             Schema::connection('dbp')->create('language_translations', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('language_source_id')->unsigned();
-                $table->foreign('language_source_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
+                $table->foreign('language_source_id', 'FK_languages_language_translations_language_source_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->integer('language_translation_id')->unsigned();
-                $table->foreign('language_translation_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
+                $table->foreign('language_translation_id', 'FK_languages_language_translations_language_translation_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->string('name');
                 $table->tinyInteger('priority')->nullable()->default(0);
                 $table->unique(['language_source_id', 'language_translation_id', 'name'], 'unq_language_translations');
@@ -91,7 +91,7 @@ class CreateLanguagesTable extends Migration
         if (!Schema::connection('dbp')->hasTable('language_bibleInfo')) {
             Schema::connection('dbp')->create('language_bibleInfo', function (Blueprint $table) {
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
+                $table->foreign('language_id', 'FK_languages_language_bibleInfo')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->tinyInteger('bible_status')->nullable();
                 $table->boolean('bible_translation_need')->nullable();
                 $table->integer('bible_year')->nullable();
@@ -108,7 +108,7 @@ class CreateLanguagesTable extends Migration
             Schema::connection('dbp')->create('language_dialects', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
+                $table->foreign('language_id', 'FK_languages_language_dialects')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->char('dialect_id', 8)->index()->nullable()->default(null);
                 $table->text('name');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
@@ -120,7 +120,7 @@ class CreateLanguagesTable extends Migration
             Schema::connection('dbp')->create('language_classifications', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
+                $table->foreign('language_id', 'FK_languages_language_classifications')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->char('classification_id', 8);
                 $table->tinyInteger('order')->unsigned();
                 $table->string('name');
@@ -133,7 +133,7 @@ class CreateLanguagesTable extends Migration
             Schema::connection('dbp')->create('language_codes', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
+                $table->foreign('language_id', 'FK_languages_language_codes')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->string('source');
                 $table->string('code');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
@@ -184,9 +184,9 @@ class CreateLanguagesTable extends Migration
         if (!Schema::connection('dbp')->hasTable('alphabet_numeral_systems')) {
             Schema::connection('dbp')->create('alphabet_numeral_systems', function (Blueprint $table) {
                 $table->char('numeral_system_id', 20)->index();
-                $table->foreign('numeral_system_id')->references('id')->on(config('database.connections.dbp.database').'.numeral_systems')->onUpdate('cascade');
+                $table->foreign('numeral_system_id', 'FK_numeral_systems_alphabet_numeral_systems')->references('id')->on(config('database.connections.dbp.database').'.numeral_systems')->onUpdate('cascade');
                 $table->char('script_id', 4)->nullable();
-                $table->foreign('script_id')->references('script')->on(config('database.connections.dbp.database').'.alphabets')->onUpdate('cascade');
+                $table->foreign('script_id', 'FK_alphabets_alphabet_numeral_systems')->references('script')->on(config('database.connections.dbp.database').'.alphabets')->onUpdate('cascade');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
@@ -195,7 +195,7 @@ class CreateLanguagesTable extends Migration
         if (!Schema::connection('dbp')->hasTable('numeral_system_glyphs')) {
             Schema::connection('dbp')->create('numeral_system_glyphs', function (Blueprint $table) {
                 $table->char('numeral_system_id', 20)->index();
-                $table->foreign('numeral_system_id')->references('id')->on(config('database.connections.dbp.database').'.numeral_systems')->onUpdate('cascade');
+                $table->foreign('numeral_system_id', 'FK_numeral_systems_numeral_system_glyphs')->references('id')->on(config('database.connections.dbp.database').'.numeral_systems')->onUpdate('cascade');
                 $table->tinyInteger('value')->unsigned();
                 $table->string('glyph', 8);
                 $table->string('numeral_written', 8)->nullable();
@@ -209,9 +209,9 @@ class CreateLanguagesTable extends Migration
             Schema::connection('dbp')->create('alphabet_language', function (Blueprint $table) {
                 $table->increments('id');
                 $table->char('script_id', 4)->index();
-                $table->foreign('script_id')->references('script')->on(config('database.connections.dbp.database').'.alphabets')->onUpdate('cascade');
+                $table->foreign('script_id', 'FK_alphabets_alphabet_language')->references('script')->on(config('database.connections.dbp.database').'.alphabets')->onUpdate('cascade');
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
+                $table->foreign('language_id', 'FK_languages_alphabet_language')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
@@ -221,7 +221,7 @@ class CreateLanguagesTable extends Migration
             Schema::connection('dbp')->create('alphabet_fonts', function (Blueprint $table) {
                 $table->increments('id');
                 $table->char('script_id', 4);
-                $table->foreign('script_id')->references('script')->on(config('database.connections.dbp.database').'.alphabets')->onUpdate('cascade');
+                $table->foreign('script_id', 'FK_alphabets_alphabet_fonts')->references('script')->on(config('database.connections.dbp.database').'.alphabets')->onUpdate('cascade');
                 $table->string('font_name');
                 $table->string('font_filename');
                 $table->integer('font_weight')->unsigned()->nullable()->default(null);
@@ -237,9 +237,9 @@ class CreateLanguagesTable extends Migration
         if (!Schema::connection('dbp')->hasTable('country_translations')) {
             Schema::connection('dbp')->create('country_translations', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_translations')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
+                $table->foreign('language_id', 'FK_languages_country_translations')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->string('name');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
@@ -249,9 +249,9 @@ class CreateLanguagesTable extends Migration
         if (!Schema::connection('dbp')->hasTable('country_regions')) {
             Schema::connection('dbp')->create('country_regions', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_regions')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
+                $table->foreign('language_id', 'FK_languages_country_regions')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->string('name');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
@@ -261,9 +261,9 @@ class CreateLanguagesTable extends Migration
         if (!Schema::connection('dbp')->hasTable('country_language')) {
             Schema::connection('dbp')->create('country_language', function (Blueprint $table) {
                 $table->char('country_id', 2);
-                $table->foreign('country_id')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country_id', 'FK_countries_country_language')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
+                $table->foreign('language_id', 'FK_languages_country_language')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->integer('population')->default(0);
             });
             DB::connection('dbp')->statement('ALTER TABLE country_language ADD CONSTRAINT uq_country_language UNIQUE(country_id, language_id)');

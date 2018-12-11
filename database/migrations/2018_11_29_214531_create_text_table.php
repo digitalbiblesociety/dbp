@@ -17,9 +17,9 @@ class CreateTextTable extends Migration
             Schema::connection('dbp')->create('bible_verses', function (Blueprint $table) {
                 $table->increments('id');
                 $table->char('hash_id', 12)->index();
-                $table->foreign('hash_id')->references('hash_id')->on(config('database.connections.dbp.database') . '.bible_filesets')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('hash_id', 'FK_bible_filesets_bible_verses')->references('hash_id')->on(config('database.connections.dbp.database') . '.bible_filesets')->onUpdate('cascade')->onDelete('cascade');
                 $table->char('book_id', 3);
-                $table->foreign('book_id')->references('id')->on(config('database.connections.dbp.database') . '.books')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('book_id', 'FK_books_bible_verses')->references('id')->on(config('database.connections.dbp.database') . '.books')->onUpdate('cascade')->onDelete('cascade');
                 $table->tinyInteger('chapter')->unsigned();
                 $table->tinyInteger('verse_start')->unsigned();
                 $table->tinyInteger('verse_end')->unsigned();
@@ -42,7 +42,11 @@ class CreateTextTable extends Migration
         if (!Schema::connection('dbp')->hasTable('bible_concordance')) {
             Schema::connection('dbp')->create('bible_concordance', function (Blueprint $table) {
                 $table->increments('id');
-                $table->string('key_word')->unique();
+                $table->char('hash_id', 12);
+                $table->foreign('hash_id', 'FK_bible_filesets_bible_concordance')->references('hash_id')->on(config('database.connections.dbp.database') . '.bible_filesets')->onUpdate('cascade')->onDelete('cascade');
+                $table->string('key_word');
+                $table->unique(['hash_id', 'key_word']);
+                $table->index(['hash_id', 'key_word']);
             });
         }
 
@@ -50,11 +54,11 @@ class CreateTextTable extends Migration
             Schema::connection('dbp')->create('bible_verse_concordance', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('bible_verse_id')->unsigned();
-                $table->foreign('bible_verse_id')->references('id')->on(config('database.connections.dbp.database') . '.bible_verses')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('bible_verse_id', 'FK_bible_verses_bible_verse_concordance')->references('id')->on(config('database.connections.dbp.database') . '.bible_verses')->onUpdate('cascade')->onDelete('cascade');
                 $table->integer('bible_concordance')->unsigned();
-                $table->foreign('bible_concordance')->references('id')->on(config('database.connections.dbp.database') . '.bible_concordance')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('bible_concordance', 'FK_bible_concordance_bible_verse_concordance')->references('id')->on(config('database.connections.dbp.database') . '.bible_concordance')->onUpdate('cascade')->onDelete('cascade');
                 $table->char('strong_number', 6)->nullable();
-                $table->foreign('strong_number')->references('strong_number')->on(config('database.connections.dbp.database') . '.bible_strongs')->onUpdate('cascade');
+                $table->foreign('strong_number', 'FK_bible_strongs_bible_verse_concordance')->references('strong_number')->on(config('database.connections.dbp.database') . '.bible_strongs')->onUpdate('cascade');
             });
         }
     }

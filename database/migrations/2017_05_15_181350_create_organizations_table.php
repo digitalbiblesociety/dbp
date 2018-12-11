@@ -33,7 +33,7 @@ class CreateOrganizationsTable extends Migration
                 $table->string('city')->nullable();
                 $table->string('state')->nullable();
                 $table->string('country')->nullable();
-                $table->foreign('country')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
+                $table->foreign('country', 'FK_countries_organizations')->references('id')->on(config('database.connections.dbp.database').'.countries')->onUpdate('cascade');
                 $table->string('zip')->nullable();
                 $table->string('phone')->nullable();
                 $table->string('email')->nullable();
@@ -48,9 +48,9 @@ class CreateOrganizationsTable extends Migration
         if (!Schema::connection('dbp')->hasTable('organization_translations')) {
             Schema::connection('dbp')->create('organization_translations', function (Blueprint $table) {
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('language_id', 'FK_languages_organization_translations')->references('id')->on(config('database.connections.dbp.database').'.languages')->onDelete('cascade')->onUpdate('cascade');
                 $table->integer('organization_id')->unsigned();
-                $table->foreign('organization_id')->references('id')->on(config('database.connections.dbp.database').'.organizations');
+                $table->foreign('organization_id', 'FK_organizations_organization_translations')->references('id')->on(config('database.connections.dbp.database').'.organizations');
                 $table->boolean('vernacular')->default(false);
                 $table->boolean('alt')->default(false);
                 $table->string('name');
@@ -65,9 +65,9 @@ class CreateOrganizationsTable extends Migration
         if (!Schema::connection('dbp')->hasTable('organization_relationships')) {
             Schema::connection('dbp')->create('organization_relationships', function ($table) {
                 $table->integer('organization_parent_id')->unsigned();
-                $table->foreign('organization_parent_id')->references('id')->on(config('database.connections.dbp.database').'.organizations');
+                $table->foreign('organization_parent_id', 'FK_organizations_organization_relationships_organization_parent_id')->references('id')->on(config('database.connections.dbp.database').'.organizations');
                 $table->integer('organization_child_id')->unsigned();
-                $table->foreign('organization_child_id')->references('id')->on(config('database.connections.dbp.database').'.organizations');
+                $table->foreign('organization_child_id', 'FK_organizations_organization_relationships_organization_child_id')->references('id')->on(config('database.connections.dbp.database').'.organizations');
                 $table->string('type');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
@@ -78,11 +78,9 @@ class CreateOrganizationsTable extends Migration
         if (!Schema::connection('dbp')->hasTable('organization_logos')) {
             Schema::connection('dbp')->create('organization_logos', function ($table) {
                 $table->integer('organization_id')->unsigned();
-                $table->foreign('organization_id')->references('id')->on(config('database.connections.dbp.database').'.organizations');
+                $table->foreign('organization_id', 'FK_organizations_organization_logos')->references('id')->on(config('database.connections.dbp.database').'.organizations');
                 $table->integer('language_id')->unsigned();
-                $table->foreign('language_id')->references('id')->on(config('database.connections.dbp.database').'.languages')->onDelete('cascade')->onUpdate('cascade');
-                $table->char('language_iso', 3)->nullable();
-                $table->foreign('language_iso')->references('iso')->on(config('database.connections.dbp.database').'.languages');
+                $table->foreign('language_id', 'FK_languages_organization_logos')->references('id')->on(config('database.connections.dbp.database').'.languages')->onDelete('cascade')->onUpdate('cascade');
                 $table->string('url')->nullable();
                 $table->boolean('icon')->default(false);
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
@@ -94,11 +92,11 @@ class CreateOrganizationsTable extends Migration
         if (!Schema::connection('dbp_users')->hasTable('user_organizations')) {
             Schema::connection('dbp_users')->create('user_organizations', function (Blueprint $table) {
                 $table->integer('user_id')->unsigned()->primary();
-                $table->foreign('user_id')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('user_id', 'FK_users_user_organizations')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onDelete('cascade')->onUpdate('cascade');
                 $table->string('title');
                 $table->string('role');
                 $table->integer('organization_id')->unsigned();
-                $table->foreign('organization_id')->references('id')->on(config('database.connections.dbp.database').'.organizations');
+                $table->foreign('organization_id', 'FK_organizations_user_organizations')->references('id')->on(config('database.connections.dbp.database').'.organizations');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
