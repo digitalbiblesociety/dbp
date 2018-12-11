@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Integration;
 
 use App\Models\Country\Country;
 use App\Models\Language\Alphabet;
@@ -15,7 +15,8 @@ class WikiRoutesTest extends ApiV4Test
      * @category Route Name: v4_countries
      * @category Route Path: https://api.dbp.test/countries?v=4&key={key}
      * @see      \App\Http\Controllers\Wiki\CountriesController
-     * @group    V4
+     * @group V4
+     * @group V4_wiki
      * @test
      */
     public function countries()
@@ -43,7 +44,8 @@ class WikiRoutesTest extends ApiV4Test
      * @category Route Name: v4_languages.all
      * @category Route Path: https://api.dbp.test/languages?v=4&key={key}
      * @see      \App\Http\Controllers\Wiki\LanguagesController::index
-     * @group    V4
+     * @group V4
+     * @group V4_wiki
      * @test
      */
     public function languages()
@@ -65,7 +67,8 @@ class WikiRoutesTest extends ApiV4Test
      * @category Route Name: v4_alphabets
      * @category Route Path: https://api.dbp.test/alphabets?v=4&key={key}
      * @see      \App\Http\Controllers\Wiki\AlphabetsController
-     * @group    V4
+     * @group V4
+     * @group V4_wiki
      * @test
      */
     public function wikiAlphabets()
@@ -88,7 +91,8 @@ class WikiRoutesTest extends ApiV4Test
      * @category Route Name: v4_numbers
      * @category Route Path: https://api.dbp.test/numbers/?v=4&key={key}
      * @see      \App\Http\Controllers\Wiki\NumbersController
-     * @group    V4
+     * @group V4
+     * @group V4_wiki
      * @test
      */
     public function wikiNumbers()

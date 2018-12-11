@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Integration;
 
 class TimestampsRoutesTest extends ApiV4Test
 {

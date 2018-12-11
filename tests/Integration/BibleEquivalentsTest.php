@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Bible;
+namespace Tests\Integration;
 
 use App\Models\Bible\Bible;
 use Tests\TestCase;

@@ -1,12 +1,10 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Integration;
 
-use App\Models\Bible\BibleFileset;
-use App\Models\User\AccessGroup;
-use Tests\TestCase;
+use App\Models\Bible\BibleVerse;
 
-class TextSearchTest extends TestCase
+class TextSearchTest extends ApiV4Test
 {
     public $params = [];
 
@@ -80,7 +78,6 @@ class TextSearchTest extends TestCase
     public function v4SwaggerForTextSearch()
     {
         $path = route('v4_text_search', array_merge(['fileset_id' => 'ENGKJV','query' => 'God'], $this->params));
-        echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
     }
@@ -96,21 +93,25 @@ class TextSearchTest extends TestCase
      */
     public function v2SwaggerForTextSearch()
     {
-        $public_domain_access_group = AccessGroup::with('filesets')->where('name', 'PUBLIC_DOMAIN')->first();
-        $fileset_hashes = $public_domain_access_group->filesets->pluck('hash_id');
-        $fileset = BibleFileset::with('files')->whereIn('hash_id', $fileset_hashes)->where('set_type_code', 'text_plain')->inRandomOrder()->first();
+        $this->params['v'] = 2;
+        $bible_verse = BibleVerse::with('fileset')->where('id', random_int(1, BibleVerse::count()))->first();
+        $word = $this->selectSearchableWord($bible_verse);
 
-        $sophia = \DB::connection('sophia')->table(strtoupper($fileset->id).'_vpl')->inRandomOrder()->take(1)->first();
-        $text = collect(explode(' ', $sophia->verse_text))->random(1)->first();
+        $this->params['dam_id'] = $bible_verse->fileset->id;
+        $this->params['asset_id'] = $bible_verse->fileset->asset_id;
+        $this->params['query']  = preg_replace("/(?![.=$'€%-])\p{P}/u", '', $word);
+        $this->params['limit']  = 6;
 
-        $this->params['dam_id'] = $fileset->id;
-        $this->params['query']  = $text;
-        $this->params['limit']  = 5;
-
-        echo "\nTesting: " . route('v2_text_search', $this->params);
         $response = $this->withHeaders($this->params)->get(route('v2_text_search'), $this->params);
-
+        $response_content = json_decode($response->getContent());
         $response->assertSuccessful();
+
+        echo "\n Testing ".route('v2_text_search', $this->params);
+
+        $this->assertLessThanOrEqual($this->params['limit'], count($response_content[1]));
+        foreach ($response_content[1] as $verse) {
+            $this->assertContains($word, $verse->verse_text, 'Search Term Not Present in Result', 1);
+        }
     }
 
 
@@ -125,19 +126,36 @@ class TextSearchTest extends TestCase
      */
     public function v2SwaggerForTextSearchGroup()
     {
-        $public_domain_access_group = \App\Models\User\AccessGroup::with('filesets')->where('name', 'PUBLIC_DOMAIN')->first();
-        $fileset_hashes = $public_domain_access_group->filesets->pluck('hash_id');
-        $fileset = \App\Models\Bible\BibleFileset::with('files')->whereIn('hash_id', $fileset_hashes)->where('set_type_code', 'text_plain')->inRandomOrder()->first();
+        $this->params['v'] = 2;
+        $bible_verse = BibleVerse::with('fileset')->where('id', random_int(1, BibleVerse::count()))->first();
+        $word = $this->selectSearchableWord($bible_verse);
 
-        $sophia = \DB::connection('sophia')->table(strtoupper($fileset->id).'_vpl')->inRandomOrder()->take(1)->first();
-        $text = collect(explode(' ', $sophia->verse_text))->random(1)->first();
-
-        $this->params['dam_id'] = $fileset->id;
-        $this->params['query']  = $text;
+        $this->params['dam_id'] = $bible_verse->fileset->id;
+        $this->params['asset_id'] = $bible_verse->fileset->asset_id;
+        $this->params['query']  = preg_replace("/(?![.=$'€%-])\p{P}/u", '', $word);
         $this->params['limit']  = 5;
 
-        echo "\nTesting: " . route('v2_text_search_group', $this->params);
+        echo "\n Testing ".route('v2_text_search_group', $this->params);
+
         $response = $this->withHeaders($this->params)->get(route('v2_text_search_group'), $this->params);
+        $response_content = json_decode($response->getContent());
         $response->assertSuccessful();
+
+        foreach ($response_content[1] as $verse) {
+            $this->assertContains($word, $verse->verse_text, 'Search Term Not Present in Result', 1);
+        }
+    }
+
+    private function selectSearchableWord($bible_verse)
+    {
+        $words = explode(' ', $bible_verse->verse_text);
+
+        // sort values by longest
+        usort($words, function ($a, $b) {
+            return \strlen($b) <=> \strlen($a);
+        });
+
+        // return one word taken from the top 5 longest, stripped of punctuation
+        return preg_replace("/(?![.=$'€%-])\p{P}/u", '', collect($words)->take(5)->random(1)->first());
     }
 }

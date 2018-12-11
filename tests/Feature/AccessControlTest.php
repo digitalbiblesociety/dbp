@@ -10,12 +10,11 @@ use App\Traits\AccessControlAPI;
 use Mockery as m;
 use Torann\GeoIP\GeoIP;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Integration\ApiV4Test;
 
 class AccessControlTest extends ApiV4Test
 {
     use AccessControlAPI;
-    use RefreshDatabase;
 
     /**
      *

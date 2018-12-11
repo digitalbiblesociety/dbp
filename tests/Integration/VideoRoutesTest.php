@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Integration;
 
 use App\Http\Controllers\Bible\VideoStreamController;
 use App\Models\Bible\BibleFile;

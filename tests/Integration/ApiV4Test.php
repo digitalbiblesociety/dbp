@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Integration;
 
 use Tests\TestCase;
 
@@ -18,7 +18,7 @@ class ApiV4Test extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->key    = '1234';
+        $this->key    = Key::inRandomOrder()->first()->key;
         $this->params = ['v' => 4, 'key' => $this->key, 'pretty'];
 
         // Fetch the Swagger Docs for Structure Validation

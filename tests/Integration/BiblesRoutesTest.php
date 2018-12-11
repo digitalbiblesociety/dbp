@@ -1,8 +1,6 @@
 <?php
 
-namespace Tests\Feature\Bible;
-
-use Tests\Feature\ApiV4Test;
+namespace Tests\Integration;
 
 class BiblesRoutesTest extends ApiV4Test
 {

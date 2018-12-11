@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Integration;
 
 class ApiMetaRoutesTest extends ApiV4Test
 {

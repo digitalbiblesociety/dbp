@@ -1,14 +1,13 @@
 <?php
 
-namespace Tests\Feature\Bible;
+namespace Tests\Integration;
 
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleVerse;
 use App\Models\Bible\Book;
 use App\Models\User\AccessGroup;
-use Tests\TestCase;
 
-class BibleTextTest extends TestCase
+class BibleTextTest extends ApiV4Test
 {
     protected $params = ['key' => 'tighten_37518dau8gb891ub', 'v' => '4'];
 
