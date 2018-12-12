@@ -3,6 +3,7 @@
 namespace Tests\Integration;
 
 use Tests\TestCase;
+use App\Models\User\Key;
 
 class ApiV4Test extends TestCase
 {
@@ -18,7 +19,7 @@ class ApiV4Test extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->key    = Key::inRandomOrder()->first()->key;
+        $this->key    = Key::where('name', 'test-key')->first()->key;
         $this->params = ['v' => 4, 'key' => $this->key, 'pretty'];
 
         // Fetch the Swagger Docs for Structure Validation
