@@ -82,13 +82,13 @@ class CountriesController extends APIController
         $cache_string = 'countries' . $GLOBALS['i18n_iso'] . $filesets . $asset_id . $languages;
 
         $countries = \Cache::remember($cache_string, 1600, function () use ($filesets, $asset_id, $languages) {
-                $countries = Country::with('currentTranslation')->when($filesets, function ($query) use ($asset_id) {
-                    $query->whereHas('languages.bibles.filesets', function ($query) use ($asset_id) {
-                        if ($asset_id) {
-                            $query->where('asset_id', $asset_id);
-                        }
-                    });
-                })->get();
+            $countries = Country::with('currentTranslation')->when($filesets, function ($query) use ($asset_id) {
+                $query->whereHas('languages.bibles.filesets', function ($query) use ($asset_id) {
+                    if ($asset_id) {
+                        $query->where('asset_id', $asset_id);
+                    }
+                });
+            })->get();
             if ($languages !== null) {
                 $countries->load([
                     'languagesFiltered' => function ($query) use ($languages) {
@@ -119,7 +119,6 @@ class CountriesController extends APIController
      */
     public function joshuaProjectIndex()
     {
-
         $joshua_project_countries = \Cache::remember('countries_jp_' . $GLOBALS['i18n_iso'], 1600, function () {
             $countries = JoshuaProject::with(['country',
                 'translations' => function ($query) {

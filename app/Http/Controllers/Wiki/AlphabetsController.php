@@ -56,7 +56,7 @@ class AlphabetsController extends APIController
     {
         $alphabets = \Cache::remember('alphabets', 1600, function () {
             $alphabets = Alphabet::select(['name', 'script', 'family', 'direction', 'type'])->get();
-            return fractal($alphabets, new AlphabetTransformer())->serializeWith($this->serializer);
+            return fractal($alphabets, new AlphabetTransformer(), $this->serializer);
         });
 
         return $this->reply($alphabets);
