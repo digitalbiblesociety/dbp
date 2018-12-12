@@ -49,18 +49,6 @@ function checkParam(string $paramName, $required = false, $inPathValue = null)
     }
 }
 
-function fetchBible($bible_id)
-{
-    $bibleEquivalent = \App\Models\Bible\BibleEquivalent::where('equivalent_id', $bible_id)->orWhere('equivalent_id', substr($bible_id, 0, 7))->first();
-    if ($bibleEquivalent === null) {
-        return \App\Models\Bible\Bible::find($bible_id);
-    }
-    if ($bibleEquivalent !== null) {
-        return $bibleEquivalent->bible;
-    }
-    return [];
-}
-
 function apiLogs($request, $status_code, $s3_string = false, $ip_address = null)
 {
     $log_string = time().'∞'.config('app.server_name').'∞'.$status_code.'∞'.$request->path().'∞';

@@ -9,7 +9,6 @@ use Illuminate\Http\JsonResponse;
 
 class LanguageController extends APIController
 {
-
     use AccessControlAPI;
 
     /**
@@ -145,8 +144,10 @@ class LanguageController extends APIController
         $cache_string   = 'v2_country_lang_' . $sort_by . $lang_code . $country_code . $img_size . $img_type .
                           $additional . $access_control->string;
 
-        $countryLang = \Cache::remember($cache_string, 1600, function ()
-            use ($sort_by, $lang_code, $country_code, $additional, $img_size, $img_type, $access_control) {
+        $countryLang = \Cache::remember(
+            $cache_string,
+            1600,
+            function () use ($sort_by, $lang_code, $country_code, $additional, $img_size, $img_type, $access_control) {
 
                 // Fetch Languages and add conditional sorting
                 $languages = Language::select([
@@ -160,45 +161,45 @@ class LanguageController extends APIController
                     'current_translation.name as name',
                     'autonym.name as autonym'
                 ])
-                ->when($lang_code, function($query) use ($lang_code) {
-                    $query->where('iso',$lang_code);
+                ->when($lang_code, function ($query) use ($lang_code) {
+                    $query->where('iso', $lang_code);
                 })
-                ->when($country_code, function($query) use ($country_code) {
-                    $query->where('country_id',$country_code);
+                ->when($country_code, function ($query) use ($country_code) {
+                    $query->where('country_id', $country_code);
                 })
-                ->when($additional, function($query) {
-                    $query->with(['countries' => function($query) {
+                ->when($additional, function ($query) {
+                    $query->with(['countries' => function ($query) {
                         $query->select('id');
                     }]);
                 })
                 ->leftJoin('language_translations as autonym', function ($join) {
                     $priority_q = \DB::raw('(select max(`priority`) FROM language_translations
                     WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
-                                 $join->on('autonym.language_source_id', '=', 'languages.id')
+                    $join->on('autonym.language_source_id', '=', 'languages.id')
                                       ->on('autonym.language_translation_id', '=', 'languages.id')
                                       ->orderBy('autonym.priority', '=', $priority_q)->limit(1);
                 })
                 ->leftJoin('language_translations as current_translation', function ($join) {
                     $priority_q = \DB::raw('(select max(`priority`) from language_translations 
                         WHERE language_source_id = languages.id LIMIT 1)');
-                        $join->on('current_translation.language_source_id', 'languages.id')
+                    $join->on('current_translation.language_source_id', 'languages.id')
                             ->where('current_translation.language_translation_id', '=', $GLOBALS['i18n_id'])
                             ->where('current_translation.priority', '=', $priority_q)->limit(1);
-                        })
+                })
                 ->whereHas('filesets', function ($query) use ($access_control) {
                     $query->whereIn('hash_id', $access_control->hashes);
                 })
-                ->leftJoin('countries','countries.id','languages.country_id')
-                ->orderBy($sort_by,'asc')
+                ->leftJoin('countries', 'countries.id', 'languages.country_id')
+                ->orderBy($sort_by, 'asc')
                 ->get();
 
                 // Add Images
-                if($img_type !== 'svg') {
+                if ($img_type !== 'svg') {
                     $img_type = 'png';
                 }
                 $flags_path = 'https://dbp-mcdn.s3.us-west-2.amazonaws.com/flags/full';
                 $flags_path .= ($img_type === 'svg') ? '/svg/' : "/$img_size/";
-                foreach($languages as $language) {
+                foreach ($languages as $language) {
                     $language->country_image = $flags_path.strtoupper($language->country_id).'.'.$img_type;
                 }
 
@@ -283,9 +284,10 @@ class LanguageController extends APIController
         $full_word       = (boolean) checkParam('full_word');
         $organization_id = checkParam('organization_id');
 
-        $languages = \Cache::remember('volumeLanguage' . $root . $iso . $media . $organization_id, 2400, function ()
-            use ($root, $iso, $media, $full_word, $organization_id) {
-
+        $languages = \Cache::remember(
+            'volumeLanguage' . $root . $iso . $media . $organization_id,
+            2400,
+            function () use ($root, $iso, $media, $full_word, $organization_id) {
                 $languages = Language::with(['parent','translations'])
                     ->has('filesets')
                     ->leftJoin('language_translations as autonym', function ($join) {
@@ -295,7 +297,7 @@ class LanguageController extends APIController
                              ->on('autonym.language_translation_id', '=', 'languages.id')
                              ->where('autonym.priority', '=', $priority_q)->limit(1);
                     })
-                    ->when($full_word, function($query) use ($full_word) {
+                    ->when($full_word, function ($query) use ($full_word) {
                         $query->where('name', 'LIKE', '%'.$full_word.'%');
                     })
                     ->when($iso, function ($query) use ($iso) {
@@ -420,20 +422,19 @@ class LanguageController extends APIController
 
         $cache_string = 'volumeLanguageFamily' . $root . $iso . $media . $organization_id;
         $languages = \Cache::remember($cache_string, 2400, function () use ($root, $iso, $access_control, $media, $organization_id) {
-                $languages = Language::with('bibles')->with('dialects')
+            $languages = Language::with('bibles')->with('dialects')
                     ->whereHas('filesets', function ($query) use ($access_control,$organization_id,$media) {
                         $query->whereIn('hash_id', $access_control->hashes);
 
-                        if($organization_id) {
-                            $query->whereHas('copyright', function($query) use ($organization_id) {
+                        if ($organization_id) {
+                            $query->whereHas('copyright', function ($query) use ($organization_id) {
                                 $query->where('organization_id', $organization_id);
                             });
                         }
 
-                        if($media) {
-                            $query->where('set_type_code','LIKE',$media.'%');
+                        if ($media) {
+                            $query->where('set_type_code', 'LIKE', $media.'%');
                         }
-
                     })
                     ->with(['dialects.childLanguage' => function ($query) {
                         $query->select(['id', 'iso']);
@@ -445,9 +446,9 @@ class LanguageController extends APIController
                         return $query->where('name', 'LIKE', '%' . $root . '%');
                     })
                     ->get();
-                return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer);
+
+            return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer);
         });
         return $this->reply($languages);
     }
-
 }

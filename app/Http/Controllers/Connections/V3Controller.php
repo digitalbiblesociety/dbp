@@ -17,13 +17,9 @@ class V3Controller extends APIController
     {
         $bible_id    = checkParam('dam_id');
         $action_type = checkParam('resource', true);
-        $bible       = fetchBible($bible_id);
-        if (!$bible) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $bible_id]));
-        }
 
+        $fileset       = BibleFileset::where('id', $bible_id)->where('set_type_code', 'text_plain')->firstOrFail();
         if ($action_type === 'books') {
-            $fileset       = BibleFileset::where('id', $bible_id)->where('set_type_code', 'text_plain')->firstOrFail();
             $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select(['book', 'chapter'])->distinct()->get();
             $books         = $booksChapters->pluck('book')->toArray();
             $chapters      = [];
@@ -48,7 +44,7 @@ class V3Controller extends APIController
         }
 
         if ($action_type === 'chapters') {
-            $files = BibleFile::where('set_id', $bible->id)->orWhere('set_id', $bible_id)->get();
+            $files = BibleFile::where('hash_id', $fileset->hash_id)->orWhere('set_id', $bible_id)->get();
 
             return $this->reply([
                 '_links'      => ['self' => ['href' => 'http://v3.dbt.io/search']],

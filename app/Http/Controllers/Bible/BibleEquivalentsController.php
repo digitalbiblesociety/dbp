@@ -43,13 +43,16 @@ class BibleEquivalentsController extends APIController
         $bible_id = checkParam('bible_id');
 
         // Fetch Bible Equivalents
-        $bible_equivalents = BibleEquivalent::when($type, function ($q) use ($type) {
-            $q->where('type', $type);
-        })->when($org_id, function ($q) use ($org_id) {
-            $q->where('organization_id', $org_id);
-        })->when($bible_id, function ($q) use ($bible_id) {
-            $q->where('bible_id', $bible_id);
-        })->get();
+        $cache_string = 'bible_equivalents_'.$type.$org_id.$bible_id;
+        $bible_equivalents = \DB::cache($cache_string, 2400, function () use ($type, $org_id, $bible_id) {
+            return BibleEquivalent::when($type, function ($q) use ($type) {
+                $q->where('type', $type);
+            })->when($org_id, function ($q) use ($org_id) {
+                $q->where('organization_id', $org_id);
+            })->when($bible_id, function ($q) use ($bible_id) {
+                $q->where('bible_id', $bible_id);
+            })->get();
+        });
 
         if (!$bible_equivalents) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_equivalents_errors_404'));

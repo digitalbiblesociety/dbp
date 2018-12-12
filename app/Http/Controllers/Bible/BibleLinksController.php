@@ -17,7 +17,7 @@ class BibleLinksController extends APIController
         $type            = checkParam('type');
         $bible_id        = checkParam('bible_id');
 
-        $cache_string = 'bible_links'.$iso.$limit.$organization.$type.$bible_id;
+        $cache_string = 'bible_links' . $iso . $limit . $organization . $type . $bible_id;
         $bibleLinks = \Cache::remember($cache_string, 2400, function () use ($iso,$limit,$organization,$type,$bible_id) {
             if ($organization !== null) {
                 $organization = Organization::where('id', $organization)->orWhere('slug', $organization)->select('id')->first();

@@ -78,15 +78,16 @@ class BibleVerse extends Model
 
     public function scopeWithVernacularMetaData($query, $bible)
     {
-        $query->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_chapter', function ($join) use ($bible) {
+        $dbp = config('database.connections.dbp.database');
+        $query->join($dbp.'.numeral_system_glyphs as glyph_chapter', function ($join) use ($bible) {
             $join->on('bible_verses.chapter', 'glyph_chapter.value')
              ->where('glyph_chapter.numeral_system_id', $bible->numeral_system_id);
         })
-        ->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_start', function ($join) use ($bible) {
+        ->join($dbp.'.numeral_system_glyphs as glyph_start', function ($join) use ($bible) {
             $join->on('bible_verses.verse_start', 'glyph_start.value')
                  ->where('glyph_start.numeral_system_id', $bible->numeral_system_id);
         })
-        ->join(config('database.connections.dbp.database').'.numeral_system_glyphs as glyph_end', function ($join) use ($bible) {
+        ->join($dbp.'.numeral_system_glyphs as glyph_end', function ($join) use ($bible) {
             $join->on('bible_verses.verse_end', 'glyph_end.value')
                  ->where('glyph_end.numeral_system_id', $bible->numeral_system_id);
         })

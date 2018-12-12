@@ -74,6 +74,7 @@ class AudioController extends APIController
      *     )
      * )
      *
+     * @see https://api.dbp.test/audio/path?key=1234&v=2&dam_id=ABIWBTN1DA&book_id=LUK
      * @return mixed
      * @throws \Exception
      */
@@ -85,25 +86,33 @@ class AudioController extends APIController
         $chapter_id = checkParam('chapter_id');
         $asset_id   = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        // Account for various book ids
-        $book_id = optional(Book::where('id', $book_id)
-            ->orWhere('id_osis', $book_id)
-            ->orWhere('id_usfx', $book_id)
-            ->select('id')->first())->id;
+        $cache_string = 'audio_index_'.$fileset_id.$book_id.$chapter_id.$asset_id;
+        $audioChapters = \Cache::remember($cache_string, 2400, function () use ($fileset_id, $book_id, $chapter_id, $asset_id) {
+            // Account for various book ids
+            $book_id = optional(Book::where('id', $book_id)
+                ->orWhere('id_osis', $book_id)
+                ->orWhere('id_usfx', $book_id)
+                ->select('id')->first())->id;
 
-        // Fetch the Fileset
-        $hash_id = optional(BibleFileset::where('id', $fileset_id)->where('asset_id', $asset_id)->where('set_type_code', 'like', '%audio%')->select('hash_id')->first())->hash_id;
-        if (!$hash_id) {
-            return $this->setStatusCode(404)->replyWithError('No Audio Fileset could be found for the code: ' . $hash_id);
-        }
+            // Fetch the Fileset
+            $hash_id = optional(BibleFileset::where('id', $fileset_id)
+                ->where('asset_id', $asset_id)
+                ->where('set_type_code', 'like', '%audio%')
+                ->select('hash_id')->first())->hash_id;
 
-        // Fetch The files
-        $audioChapters = BibleFile::with('book', 'bible')->where('hash_id', $hash_id)
-                                  ->when($chapter_id, function ($query) use ($chapter_id) {
-                                      return $query->where('chapter_start', $chapter_id);
-                                  })->when($book_id, function ($query) use ($book_id) {
-                                      return $query->where('book_id', $book_id);
-                                  })->orderBy('file_name')->get();
+            if (!$hash_id) {
+                return $this->setStatusCode(404)->replyWithError('No Audio Fileset could be found for: ' . $hash_id);
+            }
+
+            // Fetch The files
+            return BibleFile::with('book', 'bible')->where('hash_id', $hash_id)
+                ->when($chapter_id, function ($query) use ($chapter_id) {
+                    return $query->where('chapter_start', $chapter_id);
+                })->when($book_id, function ($query) use ($book_id) {
+                    return $query->where('book_id', $book_id);
+                })->orderBy('file_name')->get();
+        });
+
 
         // Transaction id to be passed to signedUrl
         $transaction_id = random_int(0, 10000000);
@@ -111,7 +120,7 @@ class AudioController extends APIController
             $audioChapters[$key]->file_name = $this->signedUrl('audio/' . $audio_chapter->bible->first()->id . '/' . $fileset_id . '/' . $audio_chapter->file_name, $asset_id, $transaction_id);
         }
 
-        return $this->reply(fractal($audioChapters, new AudioTransformer())->serializeWith($this->serializer), [], $transaction_id);
+        return $this->reply(fractal($audioChapters, new AudioTransformer(), $this->serializer), [], $transaction_id);
     }
 
     /**
@@ -143,7 +152,9 @@ class AudioController extends APIController
      */
     public function availableTimestamps()
     {
-        $hashes = BibleFile::has('timestamps')->select('hash_id')->distinct()->get();
+        $hashes = \Cache::remember('timestamp_hashes', 4800, function () {
+            return BibleFile::has('timestamps')->select('hash_id')->distinct()->get();
+        });
         if ($hashes->count() === 0) {
             return $this->setStatusCode(204)->replyWithError('No timestamps are available at this time');
         }
