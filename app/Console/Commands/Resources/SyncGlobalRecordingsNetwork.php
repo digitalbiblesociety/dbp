@@ -1,19 +1,45 @@
 <?php
 
-namespace App\Http\Controllers\Connections;
+namespace App\Console\Commands;
 
-use App\Http\Controllers\APIController;
-use Sunra\PhpSimple\HtmlDomParser;
+use Illuminate\Console\Command;
 
-use Storage;
-
-class GRNController extends APIController
+class SyncGlobalRecordingsNetwork extends Command
 {
     /**
-     * Display a listing of the resource.
+     * The name and signature of the console command.
      *
-     * @return \Illuminate\Http\Response
+     * @var string
      */
+    protected $signature = 'sync:grn';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Syncs the Listed Resources from the GRN Partner Organization';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        //
+    }
+
     public function index()
     {
         return json_decode(storage_path('data/connections/grn.json'));
