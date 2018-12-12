@@ -50,7 +50,7 @@
                     </div>
                 </div>
                 <footer class="card-footer">
-                    <a href="{{ route('docs.getting_started') }}" class="card-footer-item">{{ trans('app.learn_more_action') }}</a>
+                    <a href="{{ route('docs.getting_started') }}" class="card-footer-item">{{ trans('app.open_api_action') }}</a>
                 </footer>
             </div>
         </div>

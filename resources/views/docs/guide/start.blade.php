@@ -27,23 +27,6 @@
             text-indent: 35px;
         }
 
-        section {
-            width: 800px;
-            margin: 0 auto;
-        }
-
-        section p {
-            font-size: 14px;
-            text-align: justify;
-            line-height: 1.8;
-        }
-
-        section a {
-            background: #f0f2f1;
-            padding: 1px 5px;
-            border-radius: 3px;
-        }
-
         section code {
             font-family: "Operator Mono", "Fira Code", Consolas, Monaco, "Andale Mono", monospace;
         }
@@ -57,33 +40,31 @@
 @endsection
 
 @section('content')
+
+    @include('layouts.partials.banner', [
+        'title' => 'Getting Started',
+    ])
+
     <div class="container">
     <div class="columns">
     <div class="column is-3-desktop">
     <div class="box">
-    @include('layouts.partials.side-menu', [
-    'menu_items' => [
-    'title_start' => 'Getting Started',
-    'section_start' => [
-        '/start' => 'First Call',
-        '/customers' => 'Customers',
-    ],
-    'title_team' => 'Team Settings',
-    'section_team' => [
-        '/team' => 'Manage Your Team',
-        'submenu' => [
-            'Members',
-            'Plugins',
-            'Add a member',
-        ],
-        '/customers' => 'Customers',
-    ],
-    'title_general' => 'General',
-    'section_general' => [
-        '/dashboard' => 'Dashboard',
-        '/customers' => 'Customers',
-    ],
-]])
+        <aside class="menu">
+            <p class="menu-label">Getting Started</p>
+            <ul class="menu-list">
+                <li><a class="is-disabled has-text-grey-light">First Call</a></li>
+                <li><a class="is-disabled has-text-grey-light">Building a Menu</a></li>
+                <li><a class="is-disabled has-text-grey-light">Getting Bible Text</a></li>
+            </ul>
+            <p class="menu-label has-text-grey-light">
+                Annotations
+            </p>
+            <ul class="menu-list">
+                <li><a class="is-disabled has-text-grey-light">Getting Started</a></li>
+                <li><a class="is-disabled has-text-grey-light">Creating Highlights, Bookmarks, and Notes</a></li>
+                <li><a class="is-disabled has-text-grey-light">Sharing</a></li>
+            </ul>
+        </aside>
     </div>
     </div>
 
@@ -94,9 +75,9 @@
                 <h4 class="title">The API Structure</h4>
                 <h2 class="subtitle">Bibles and Filesets</h2>
 
-                <div class="ribbon">If you want to jump right in to queries you can check out the <a href="#">API reference documentation.</a></div>
+                <div class="ribbon">If you want to jump right in to queries you can check out the <a href="{{ route('swagger_v4') }}">API reference documentation.</a></div>
 
-                <p>Your first call to the DBP will probably be to <a href="#v4">/bibles</a>. All Biblical content whether it be Audio, Video, or text is nested within bible_id.</p>
+                <p>Your first call to the DBP will probably be to /bibles. All Biblical content whether it be Audio, Video, or text is nested within bible_id.</p>
                 <pre>
     - ENGKJV
         - Filesets:
@@ -125,8 +106,8 @@
                 <ul>
                     <p>
                         Most user password changes require a verification email to be sent to the user. The only exception to this rule is if the `old_password`
-                        field is supplied to the <a href="/docs/swagger/v4#/Community/v4_user_reset2">/users/reset/password</a> route.
-                        You can trigger a password reset email by sending the <a href="/docs/swagger/v4#/Community/v4_user_reset1">/users/reset/password</a> user's email.
+                        field is supplied to the /users/reset/password route.
+                        You can trigger a password reset email by sending the /users/reset/password user's email.
                     </p>
                 </ul>
 
