@@ -2,6 +2,8 @@
 /aletheia
 
 /node_modules
+/public/report/*
+/public/.report/*
 /public/hot
 /public/maps/*
 /public/storage
