@@ -159,7 +159,7 @@ class BibleTransformer extends BaseTransformer
                 return $output;
 
             case 'v4_bible.all':
-                $output = [
+                return [
                     'abbr'              => $bible->id,
                     'name'              => $bible->ctitle,
                     'vname'             => $bible->vtitle,
@@ -168,23 +168,8 @@ class BibleTransformer extends BaseTransformer
                     'language_id'       => $bible->language_id,
                     'iso'               => $bible->iso ?? null,
                     'date'              => $bible->date,
-                    'filesets'          => $bible->filesets->mapToGroups(function ($item, $key) {
-                        return [$item['asset_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
-                    })
+                    'filesets'          => $bible->filesets->groupBy('asset_id')
                 ];
-                if ($bible->langauge && $bible->langauge->relationLoaded('translations')) {
-                    $output['language_altNames'] = $bible->language->translations->pluck('name');
-                }
-
-                if ($bible->relationLoaded('country')) {
-                    $output['country_id']   = '';
-                    $output['continent_id'] = '';
-                    if (isset($bible->country[0])) {
-                        $output['country_id'] = $bible->country[0]->id;
-                        $output['continent_id'] = $bible->country[0]->continent;
-                    }
-                }
-                return $output;
 
             /**
              * @OA\Schema (

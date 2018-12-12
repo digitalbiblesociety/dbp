@@ -377,6 +377,7 @@ class Bible extends Model
             if ($hide_restricted) {
                 $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
             }
+            $q->select(['id','set_type_code','set_size_code','asset_id']);
         }]);
     }
 

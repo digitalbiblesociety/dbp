@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Bible;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
+use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BookTranslation;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
@@ -91,26 +92,20 @@ class BiblesController extends APIController
      */
     public function index()
     {
-        $dam_id             = checkParam('dam_id|fcbh_id|bible_id');
         $language_code      = checkParam('language_id|language_code');
-        $updated            = checkParam('updated');
         $organization       = checkParam('organization_id');
-        $sort_by            = checkParam('sort_by');
-        $sort_dir           = checkParam('sort_dir') ?? 'asc';
-        $fileset_filter     = checkParam('filter_by_fileset') ?? true;
-        $include_regionInfo = checkParam('include_region_info');
         $country            = checkParam('country');
         $asset_id           = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $hide_restricted    = checkParam('hide_restricted') ?? true;
-        $filter             = checkParam('filter') ?? false;
 
         $access_control = \Cache::remember($this->key.'_access_control', 2400, function () {
             return $this->accessControl($this->key);
         });
 
-        $cache_string = 'bibles'.$dam_id.$language_code.$include_regionInfo.$updated.$organization.$sort_by.$sort_dir.
-                        $fileset_filter.$country.$asset_id.$access_control->string.$filter;
+        $cache_string = 'bibles'.$language_code.$organization.$country.$asset_id.$access_control->string;
+
         $bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language_code, $organization, $country, $asset_id, $access_control) {
+
             $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $hide_restricted)
                 ->leftJoin('bible_translations as ver_title', function ($join) {
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
@@ -147,20 +142,24 @@ class BiblesController extends APIController
                     })->get();
                 })
                 ->select(
-                    'current_title.name as ctitle',
-                    'ver_title.name as vtitle',
-                    'bibles.language_id',
-                    'languages.iso',
-                    'bibles.date',
-                    'language_autonym.name as language_autonym',
-                    'language_current.name as language_current',
-                    'bibles.priority',
-                    'bibles.id'
+                    \DB::raw(
+                        'MIN(current_title.name) as ctitle,
+                        MIN(ver_title.name) as vtitle,
+                        MIN(bibles.language_id) as language_id,
+                        MIN(languages.iso) as iso,
+                        MIN(bibles.date) as date,
+                        MIN(language_autonym.name) as language_autonym,
+                        MIN(language_current.name) as language_current,
+                        MIN(bibles.priority) as priority,
+                        MIN(bibles.id) as id'
+                    )
                 )
-                ->orderBy('priority', 'desc')->distinct()->get();
+                ->orderBy('bibles.priority', 'desc')->groupBy('bibles.id')->get();
 
-            return fractal($bibles->unique(), new BibleTransformer(), new DataArraySerializer());
+
+            return fractal($bibles, new BibleTransformer(), new DataArraySerializer());
         });
+
         return $this->reply($bibles);
     }
 
@@ -277,7 +276,6 @@ class BiblesController extends APIController
      */
     public function show($id)
     {
-
         $access_control = \Cache::remember($this->key.'_access_control', 2400, function () {
             return $this->accessControl($this->key);
         });
