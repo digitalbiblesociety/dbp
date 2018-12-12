@@ -171,8 +171,6 @@
     Route::name('v4_connections_jfm.sync')->match(['get','options'], 'connections/jesus-film/sync', 'Connections\ArclightController@sync');
     Route::name('v4_connections_jfm.index')->match(['get','options'], 'connections/jesus-film/{iso}', 'Connections\ArclightController@index');
     Route::name('v4_connections_app.deeplink')->match(['get','options'], 'connections/app/deeplinking', 'Connections\MobileAppsController@redirecDeepLink');
-    Route::name('v4_connections_grn.sync')->match(['get','options'], 'connections/grn/sync', 'Connections\GRNController@sync');
-    Route::name('v4_connections_grn.index')->match(['get','options'], 'connections/grn/{iso}', 'Connections\GRNController@index');
     Route::name('v4_resources.index')->match(['get','options'], 'resources', 'Organization\ResourcesController@index');
     Route::name('v4_resources.show')->match(['get','options'], 'resources/{resource_id}', 'Organization\ResourcesController@show');
     Route::name('v4_resources.update')->match(['put','options'], 'resources/{resource_id}', 'Organization\ResourcesController@update');
