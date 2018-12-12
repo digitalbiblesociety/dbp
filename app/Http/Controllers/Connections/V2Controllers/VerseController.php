@@ -51,32 +51,44 @@ class VerseController extends APIController
      */
     public function info()
     {
-        $bible_id    = checkParam('dam_id');
+        $bible_id    = checkParam('dam_id|bible_id', true);
         $book_id     = checkParam('book_id');
         $chapter_id  = checkParam('chapter|chapter_id');
-        $verse_start = checkParam('verse_start');
+        $verse_start = checkParam('verse_start') ?? 1;
         $verse_end   = checkParam('verse_end');
+        $asset_id    = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
 
-        $fileset = BibleFileset::firstOrFail($bible_id);
-        $book  = Book::where('id', $book_id)->orWhere('id_usfx', $book_id)->first();
-        if (!$book) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404'));
+        $fileset = BibleFileset::where([['id', $bible_id],['asset_id', $asset_id],['set_type_code', 'text_plain']])->first();
+        if (!$fileset) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.fileset_errors_404'));
         }
 
+        /**
+         * @OA\Schema (
+         *   type="array",
+         *   schema="v2_library_verseInfo",
+         *   description="The v2_audio_timestamps response",
+         *   title="v2_library_verseInfo",
+         *   @OA\Xml(name="v2_library_verseInfo"),
+         *   @OA\Items(
+         *     @OA\Property(property="book_id",        ref="#/components/schemas/BibleVerse/properties/book_id"),
+         *     @OA\Property(property="chapter_number", ref="#/components/schemas/BibleVerse/properties/chapter"),
+         *     @OA\Property(property="verse_start",    ref="#/components/schemas/BibleVerse/properties/verse_number"),
+         *     @OA\Property(property="verse_end",      @OA\Schema(type="integer")),
+         *     @OA\Property(property="verse_text",     ref="#/components/schemas/BibleVerse/properties/verse_text"),
+         *     )
+         *   )
+         * )
+         */
+
         $verse_info = BibleVerse::where('hash_id', $fileset->hash_id)->where([
-            ['book', '=', $book->id_usfx],
+            ['book_id', '=', $book_id],
             ['chapter', '=', $chapter_id],
             ['verse_start', '>=', $verse_start],
         ])->when($verse_end, function ($query) use ($verse_end) {
             return $query->where('verse_start', '<=', $verse_end);
-        })->select([
-            'book as book_id',
-            'chapter as chapter_number',
-            'verse_start',
-            'verse_end',
-            'verse_text',
-            'canon_order as id',
-        ])->get();
+        })->select(['book_id', 'chapter as chapter_number', 'verse_start', 'verse_end', 'verse_text'])->get();
+
         foreach ($verse_info as $key => $verse) {
             $verse_info[$key]->bible_id           = $fileset->id;
             $verse_info[$key]->bible_variation_id = null;

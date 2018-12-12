@@ -17,7 +17,6 @@ use Illuminate\Http\Request;
 
 class UserHighlightsController extends APIController
 {
-
     use AnnotationTags;
     use CheckProjectMembership;
 
@@ -92,6 +91,7 @@ class UserHighlightsController extends APIController
         if (!$user) {
             return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
         }
+
         $user_is_member = $this->compareProjects($user_id, $this->key);
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
@@ -415,9 +415,9 @@ class UserHighlightsController extends APIController
      */
     private function hslToRgb($hue, $saturation, $lightness)
     {
-        $c = ( 1 - abs(2 * $lightness - 1) ) * $saturation;
-        $x = $c * ( 1 - abs(fmod($hue / 60, 2) - 1) );
-        $m = $lightness - ( $c / 2 );
+        $c = (1 - abs(2 * $lightness - 1)) * $saturation;
+        $x = $c * (1 - abs(fmod($hue / 60, 2) - 1));
+        $m = $lightness - ($c / 2);
         if ($hue < 60) {
             $red = $c;
             $green = $x;
@@ -443,9 +443,9 @@ class UserHighlightsController extends APIController
             $green = 0;
             $blue = $x;
         }
-        $red = ( $red + $m ) * 255;
-        $green = ( $green + $m ) * 255;
-        $blue = ( $blue + $m  ) * 255;
+        $red = ($red + $m) * 255;
+        $green = ($green + $m) * 255;
+        $blue = ($blue + $m) * 255;
         return ['red' => floor($red), 'green' => floor($green), 'blue' => floor($blue), 'alpha' => 1];
     }
 }

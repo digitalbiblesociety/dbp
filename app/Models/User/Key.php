@@ -8,6 +8,19 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\User\Key
  * @mixin \Eloquent
  *
+ * @method static Key whereUserId($value)
+ * @property string $user_id
+ * @method static Key whereKey($value)
+ * @property string $key
+ * @method static Key whereName($value)
+ * @property string $name
+ * @method static Key whereDescription($value)
+ * @property string $description
+ * @method static Key whereCreatedAt($value)
+ * @property \Carbon\Carbon|null $created_at
+ * @method static Key whereUpdatedAt($value)
+ * @property \Carbon\Carbon|null $updated_at
+ *
  * @OA\Schema (
  *     type="object",
  *     description="The Key's model",
@@ -28,8 +41,6 @@ class Key extends Model
     /**
      *
      * @OA\Property(ref="#/components/schemas/User/properties/id")
-     * @method static Key whereUserId($value)
-     * @property string $user_id
      */
     protected $user_id;
     /**
@@ -41,8 +52,6 @@ class Key extends Model
      *   maxLength=64
      * )
      *
-     * @method static Key whereKey($value)
-     * @property string $key
      */
     protected $key;
     /**
@@ -54,8 +63,6 @@ class Key extends Model
      *   maxLength=191
      * )
      *
-     * @method static Key whereName($value)
-     * @property string $name
      */
     protected $name;
     /**
@@ -66,8 +73,6 @@ class Key extends Model
      *   description="Any additional identifying information about the key provided and it's use can be stored here"
      * )
      *
-     * @method static Key whereDescription($value)
-     * @property string $description
      */
     protected $description;
     /**
@@ -78,8 +83,6 @@ class Key extends Model
      *   description="The timestamp at which the key was created at"
      * )
      *
-     * @method static Key whereCreatedAt($value)
-     * @property \Carbon\Carbon|null $created_at
      */
     protected $created_at;
     /**
@@ -90,8 +93,6 @@ class Key extends Model
      *   description="The timestamp at which the key was last updated at"
      * )
      *
-     * @method static Key whereUpdatedAt($value)
-     * @property \Carbon\Carbon|null $updated_at
      */
     protected $updated_at;
 

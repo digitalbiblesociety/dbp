@@ -33,6 +33,22 @@ class OrganizationTransformer extends BaseTransformer
     public function transformForV2(Organization $organization)
     {
         switch ($this->route) {
+            /**
+             *
+             * @OA\Schema (
+             *     type="array",
+             *     schema="v2_volume_organization_list",
+             *     description="",
+             *     title="The v2_volume_organization_list response",
+             *     @OA\Xml(name="v2_volume_organization_list"),
+             *     @OA\Items(
+             *          @OA\Property(property="organization_id",   ref="#/components/schemas/Organization/properties/id"),
+             *          @OA\Property(property="organization_name", ref="#/components/schemas/OrganizationTranslation/properties/name"),
+             *          @OA\Property(property="number_volumes",    @OA\Schema(type="string")),
+             *     )
+             * )
+             *
+             */
             case 'v2_volume_organization_list':
                 return [
                     'organization_id'   => (string) $organization->id,

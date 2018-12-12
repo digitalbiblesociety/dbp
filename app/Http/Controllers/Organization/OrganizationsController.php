@@ -15,7 +15,56 @@ class OrganizationsController extends APIController
     /**
      * Display a listing of the organizations.
      *
-     * @return mixed
+     * @version 2
+     * @category v2_library_book
+     * @category v2_library_bookOrder
+     * @link http://dbt.io/library/volumeorganization - V2 Access
+     * @link http://api.dbp.test/library/volumeorganization?v=2&dam_id=AMKWBT&pretty&key={key} - V2 Test
+     *
+     * @OA\Get(
+     *     path="/library/volumeorganization/",
+     *     tags={"Library Volume Organization"},
+     *     summary="",
+     *     description="",
+     *     operationId="v2_volume_organization_list",
+     *     @OA\Parameter(
+     *          name="membership",
+     *          in="query",
+     *          description="",
+     *          @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *          name="has_content",
+     *          in="query",
+     *          description="",
+     *          @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *          name="bibles",
+     *          in="query",
+     *          description="",
+     *          @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *          name="resources",
+     *          in="query",
+     *          description="",
+     *          @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_volume_organization_list"))
+     *     )
+     * )
+     *
+     * @param dam_id - the volume internal bible_id.
+     *
+     * @return Book string - A JSON string that contains the status code and error messages if applicable.
      */
     public function index()
     {
@@ -67,7 +116,7 @@ class OrganizationsController extends APIController
                             );
                         }
                     )->when($bibles, function ($q) {
-                            $q->has('bibles')->orHas('links');
+                        $q->has('bibles')->orHas('links');
                     })->when($resources, function ($q) {
                         $q->has('resources');
                     })->when($content, function ($q) {

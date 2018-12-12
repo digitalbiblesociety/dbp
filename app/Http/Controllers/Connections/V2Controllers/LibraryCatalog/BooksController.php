@@ -78,26 +78,21 @@ class BooksController extends APIController
             1600,
             function () use ($id, $fileset, $testament) {
 
-            // If plain text check Sophia
                 if ($fileset->set_type_code === 'text_plain') {
-
-                    $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select('book', 'chapter')->distinct()->get();
-                    $books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
-                             ->when($testament, function ($q) use ($testament) {
-                                 $q->where('book_testament', $testament);
-                             })->orderBy('protestant_order')->get();
-                    foreach ($books as $key => $book) {
-                        $current_chapters[$key] = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
-                    }
+                    // If plain text check BibleVerse
+                    $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select('book_id', 'chapter')->distinct()->get();
+                    $chapter_field = 'chapter';
                 } else {
                     // Otherwise refer to Bible Files
                     $booksChapters = BibleFile::where('hash_id', $fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
-                    $books = Book::whereIn('id', $booksChapters->pluck('book_id'))->when($testament, function ($q) use ($testament) {
-                        $q->where('book_testament', $testament);
-                    })->orderBy('protestant_order')->get();
-                    foreach ($books as $key => $book) {
-                        $current_chapters[$key] = $booksChapters->where('book_id', $book->id)->pluck('chapter_start');
-                    }
+                    $chapter_field = 'chapter_start';
+                }
+
+                $books = Book::whereIn('id', $booksChapters->pluck('book_id'))->when($testament, function ($q) use ($testament) {
+                    $q->where('book_testament', $testament);
+                })->orderBy('protestant_order')->get();
+                foreach ($books as $key => $book) {
+                    $current_chapters[$key] = $booksChapters->where('book_id', $book->id)->pluck($chapter_field);
                 }
 
                 $bible_id = $fileset->bible->first()->id;
@@ -138,8 +133,8 @@ class BooksController extends APIController
             'v2_library_book_' . $id . $asset_id . $fileset . $testament,
             1600,
             function () use ($id, $fileset, $testament) {
-                $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select('book', 'chapter')->distinct()->get();
-                $books = Book::whereIn('id_usfx', $booksChapters->pluck('book')->unique()->toArray())
+                $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select('book_id', 'chapter')->distinct()->get();
+                $books = Book::whereIn('id', $booksChapters->pluck('book_id')->unique()->toArray())
                              ->when($testament, function ($q) use ($testament) {
                                  $q->where('book_testament', $testament);
                              })->orderBy('protestant_order')->get();

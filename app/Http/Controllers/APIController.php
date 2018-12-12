@@ -98,9 +98,10 @@ class APIController extends Controller
         if (str_contains($subdomain, 'api')) {
             $this->api = true;
             $this->v   = (int) checkParam('v', true);
-            $this->key = checkParam('key', true);
-            $keyExists = \Cache::remember('key_'.$this->key, 2000, function() {
-                return Key::with('user')->where('key',$this->key)->first();
+            $this->key = checkParam('key');
+
+            $keyExists = \Cache::remember('key_'.$this->key, 2000, function () {
+                return Key::with('user')->where('key', $this->key)->first();
             });
             $this->user = $keyExists->user ?? null;
 
@@ -167,7 +168,7 @@ class APIController extends Controller
         
         // Status Code, Headers, Params, Body, Time
         try {
-            if(config('app.env') != 'local') {
+            if (config('app.env') != 'local') {
                 apiLogs(request(), $this->getStatusCode(), $s3_transaction_id, $this->getIpAddress());
             }
         } catch (\Exception $e) {
@@ -218,7 +219,7 @@ class APIController extends Controller
         $status = $this->getStatusCode();
 
         try {
-            if(config('app.env') != 'local') {
+            if (config('app.env') != 'local') {
                 apiLogs(request(), $status);
             }
         } catch (\Exception $e) {
