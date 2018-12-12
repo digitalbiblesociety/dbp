@@ -1,11 +1,11 @@
 <?php
 
-namespace database\seeds;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 
-use Noodlehaus\FileParser\Yaml;
+use Symfony\Component\Yaml\Yaml;
+
+
 
 use App\Models\Country\Country;
 use App\Models\Country\CountryTranslation;
@@ -16,6 +16,7 @@ use App\Models\Language\LanguageStatus;
 use App\Models\Language\LanguageTranslation;
 use App\Models\Language\LanguageBibleInfo;
 use App\Models\Language\Alphabet;
+use App\Models\Language\NumeralSystem;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleTranslation;
@@ -26,11 +27,21 @@ use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleOrganization;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileTimestamp;
+use App\Models\Bible\Book;
+use App\Models\Bible\BibleFilesetSize;
+use App\Models\Bible\BibleFilesetType;
 
+use App\Models\Organization\Asset;
 use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationTranslation;
 use App\Models\Organization\OrganizationLogo;
 use App\Models\Organization\OrganizationRelationship;
+
+use App\Models\User\AccessGroupFileset;
+use App\Models\User\AccessGroupType;
+use App\Models\User\AccessGroup;
+use App\Models\User\AccessType;
+
 
 // Users
 
@@ -46,47 +57,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Model::unguard();
+        ini_set('memory_limit', '2500M');
 
-        //$this->seedData('/countries/countries',                         Country::class);
-        //$this->seedData('/languages/language_status',                   LanguageStatus::class);
-        //$this->seedData('/languages/languages',                         Language::class);
-        //$this->seedData('/languages/language_translations',             LanguageTranslation::class);
-        //$this->seedData('/languages/language_bibleInfo',                LanguageBibleInfo::class);
-        //$this->seedData('/languages/alphabets',                         Alphabet::class);
-        //$this->seedData('/countries/country_translations',              CountryTranslation::class);
-        //$this->seedData('/countries/country_languages',                 CountryLanguage::class);
-        //$this->seedData('/bibles/bibles',                               Bible::class);
-        //$this->seedData('/bibles/bibles_translations',                  BibleTranslation::class);
-        //$this->seedData('/bibles/bible_links',                          BibleLink::class);
-        //$this->seedData('/bibles/bible_books',                          BibleBook::class);
-        //$this->seedData('/bibles/organizations',                        BibleOrganization::class);
-        //$this->seedData('/bibles/bible_filesets',                       BibleFileset::class);
-        //$this->seedData('/bibles/bible_files',                          BibleFile::class);
-        //$this->seedData('/bibles/bible_file_timestamps',                BibleFileTimestamp::class);
-        //$this->seedData('/organizations/organizations',                 Organization::class);
-        //$this->seedData('/organizations/organization_translations',     OrganizationTranslation::class);
-        //$this->seedData('/organizations/organization_logos',            OrganizationLogo::class);
-        //$this->seedData('/organizations/organizations_relationships',   OrganizationRelationship::class);
-        //$this->seedData('/bibles/bible_organization',                   BibleOrganization::class);
-        //$this->seedData('/bibles/equivalents/bible-gateway',            BibleEquivalent::class);
-        //$this->seedData('/bibles/equivalents/crosswire',                BibleEquivalent::class);
-        //$this->seedData('/bibles/equivalents/digital-bible-library',    BibleEquivalent::class);
-        //$this->seedData('/bibles/equivalents/talking-bibles',           BibleEquivalent::class);
-        $this->seedData('/bibles/equivalents/talking-bibles', BibleEquivalent::class);
+        $this->call(UserRoleSeeder::class);
+        $this->call(UserHighlightColorSeeder::class);
 
-        $this->call(UserDatabaseSeeder::class);
+        $this->call(ProjectsSeeder::class);
+        $this->call(UsersSeeder::class);
+        $this->call(AnnotationSeeder::class);
 
-        Model::reguard();
-    }
+        $this->call(AccessKeySeeder::class);
+        $this->call(ArticlesSeeder::class);
 
-    public function seedData($path, $object)
-    {
-        //$path = "https://raw.githubusercontent.com/digitalbiblesociety/dbp-seeds/master/$path.yaml";
-
-        $entries = Yaml::parse(file_get_contents('../../dbp-seeds/'.$path));
-        foreach ($entries as $entry) {
-            $object->create($entry);
-        }
     }
 }

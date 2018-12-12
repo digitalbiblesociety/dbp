@@ -13,19 +13,19 @@ class UserRoleSeeder extends Seeder
      */
     public function run()
     {
-        Role::create([
+        \DB::connection('dbp_users')->table('roles')->insert([
             'name' => 'User',
             'slug' => 'user',
         ]);
-        Role::create([
+        \DB::connection('dbp_users')->table('roles')->insert([
             'name' => 'Developer',
             'slug' => 'developer',
         ]);
-        Role::create([
+        \DB::connection('dbp_users')->table('roles')->insert([
             'name' => 'Archivist',
             'slug' => 'archivist',
         ]);
-        Role::create([
+        \DB::connection('dbp_users')->table('roles')->insert([
             'name' => 'Admin',
             'slug' => 'admin',
         ]);
