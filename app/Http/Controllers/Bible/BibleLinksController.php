@@ -6,12 +6,13 @@ use App\Models\Language\Language;
 use App\Transformers\BibleLinksTransformer;
 use App\Models\Organization\Organization;
 use App\Http\Controllers\APIController;
+use Illuminate\Http\JsonResponse;
 
 class BibleLinksController extends APIController
 {
     public function index()
     {
-        $iso             = checkParam('iso') ?? 'eng';
+        $iso             = checkParam('iso', true);
         $limit           = checkParam('limit');
         $organization    = checkParam('organization_id');
         $type            = checkParam('type');
@@ -29,6 +30,7 @@ class BibleLinksController extends APIController
             if (!$language) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
             }
+
             $bibleLinks = \DB::table(config('database.connections.dbp.database').'.bible_links')
                 ->join(config('database.connections.dbp.database').'.bible_translations', function ($q) use ($language) {
                     $q->on('bible_links.bible_id', 'bible_translations.bible_id')->where('language_id', $language->id);
@@ -45,6 +47,10 @@ class BibleLinksController extends APIController
                 })->where('visible', 1)->get();
             return fractal($bibleLinks, new BibleLinksTransformer());
         });
+
+        if (is_a($bibleLinks, JsonResponse::class)) {
+            return $bibleLinks;
+        }
 
         return $this->reply($bibleLinks);
     }

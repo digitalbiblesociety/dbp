@@ -209,11 +209,11 @@ class CreateBiblesTable extends Migration
             \Schema::connection('dbp')->create('bible_filesets', function (Blueprint $table) {
                 $table->string('id', 16)->index();
                 $table->char('hash_id', 12)->index();
-                $table->string('asset_id', 64);
+                $table->string('asset_id', 64)->index();
                 $table->foreign('asset_id', 'FK_assets_bible_filesets')->references('id')->on(config('database.connections.dbp.database').'.assets')->onUpdate('cascade')->onDelete('cascade');
-                $table->string('set_type_code', 16);
+                $table->string('set_type_code', 16)->index();
                 $table->foreign('set_type_code', 'FK_bible_fileset_types_bible_filesets')->references('set_type_code')->on(config('database.connections.dbp.database').'.bible_fileset_types')->onUpdate('cascade')->onDelete('cascade');
-                $table->char('set_size_code', 9);
+                $table->char('set_size_code', 9)->index();
                 $table->foreign('set_size_code', 'FK_bible_fileset_sizes_bible_filesets')->references('set_size_code')->on(config('database.connections.dbp.database').'.bible_fileset_sizes')->onUpdate('cascade')->onDelete('cascade');
                 $table->boolean('hidden')->default(0);
                 $table->unique(['id', 'asset_id', 'set_type_code'], 'unique_prefix_for_s3');
