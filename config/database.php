@@ -33,6 +33,20 @@ return [
 
     'connections' => [
 
+        'mysql' => [
+            'driver'    => 'mysql',
+            'host'      => env('DBP_USERS_HOST', '127.0.0.1'),
+            'port'      => env('DBP_USERS_PORT', '3306'),
+            'database'  => env('DBP_USERS_DATABASE', 'dbp_users'),
+            'username'  => env('DBP_USERS_USERNAME', 'root'),
+            'password'  => env('DBP_USERS_PASSWORD', ''),
+            'charset'   => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix'    => '',
+            'strict'    => false,
+            'engine'    => null,
+        ],
+
         'dbp' => [
             'driver' => 'mysql',
             'host' => env('DBP_HOST', '127.0.0.1'),
