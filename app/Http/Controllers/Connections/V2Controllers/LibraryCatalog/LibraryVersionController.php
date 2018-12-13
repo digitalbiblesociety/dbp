@@ -100,7 +100,7 @@ class LibraryVersionController extends APIController
                     'eng_title.name as eng_title',
                     'ver_title.name as ver_title',
                     'bible_filesets.id'
-                ])->get();
+                ])->getQuery()->get();
 
             if ($name) {
                 $subsetVersions = $versions->where('eng_title', $name)->first();
