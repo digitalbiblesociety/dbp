@@ -12,7 +12,6 @@ use Illuminate\Auth\Authenticatable as AuthenticableTrait;
 use App\Models\Organization\Organization;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use jeremykenedy\LaravelRoles\Traits\HasRoleAndPermission;
 
 /**
  * App\Models\User\User

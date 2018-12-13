@@ -19,16 +19,6 @@ use \Illuminate\View\Middleware\ShareErrorsFromSession;
 use \Illuminate\Routing\Middleware\SubstituteBindings;
 use \App\Http\Middleware\VerifyCsrfToken;
 use \App\Http\Middleware\Laravel2step;
-use \Illuminate\Auth\Middleware\Authenticate;
-use \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
-use \Illuminate\Http\Middleware\SetCacheHeaders;
-use \Illuminate\Auth\Middleware\Authorize;
-use \App\Http\Middleware\RedirectIfAuthenticated;
-use \Illuminate\Routing\Middleware\ThrottleRequests;
-use \jeremykenedy\LaravelRoles\Middleware\VerifyRole;
-use \jeremykenedy\LaravelRoles\Middleware\VerifyPermission;
-use \jeremykenedy\LaravelRoles\Middleware\VerifyLevel;
-use \App\Http\Middleware\CheckCurrentUser;
 use \Lunaweb\Localization\Middleware\LocalizationHandler;
 
 class Kernel extends HttpKernel
