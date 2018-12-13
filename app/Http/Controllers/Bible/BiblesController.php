@@ -30,18 +30,12 @@ class BiblesController extends APIController
      *     summary="Returns Bibles",
      *     description="The base bible route returning by default bibles and filesets that your key has access to",
      *     operationId="v4_bible.all",
-     *     @OA\Parameter(name="bible_id", in="query", ref="#/components/schemas/Bible/properties/id"),
-     *     @OA\Parameter(name="language_code",
+     *     @OA\Parameter(
+     *          name="language_code",
      *          in="query",
      *          @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
      *          description="The iso code to filter results by. This will return results only in the language specified.
                     For a complete list see the `iso` field in the `/languages` route",
-     *     ),
-     *     @OA\Parameter(
-     *          name="updated",
-     *          in="query",
-     *          @OA\Schema(type="string"),
-     *          description="The last time updated"
      *     ),
      *     @OA\Parameter(
      *          name="organization_id",
@@ -51,29 +45,10 @@ class BiblesController extends APIController
                     `/organizations`."
      *     ),
      *     @OA\Parameter(
-     *          name="sort_by",
-     *          in="query",
-     *          @OA\Schema(type="string"),
-     *          description="The any field to within the bible model may be selected as the value for this `sort_by`."
-     *     ),
-     *     @OA\Parameter(
-     *          name="sort_dir",
-     *          in="query",
-     *          @OA\Schema(type="string"),
-     *          description="The direction to sort by the field specified in `sort_by`. Either `asc` or `desc`"
-     *     ),
-     *     @OA\Parameter(
      *          name="asset_id",
      *          in="query",
      *          @OA\Schema(type="string"),
      *          description="The asset_id to filter results by. There are two buckets provided `dbp.test` & `dbs-web`"
-     *     ),
-     *     @OA\Parameter(
-     *          name="filter_by_fileset",
-     *          in="query",
-     *          @OA\Schema(type="string"),
-     *          description="This field defaults to true but when set to false will return all Bible entries regardless
-                    of whether or not the API has filesets for that bible. Can be useful for discovery of resources."
      *     ),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
