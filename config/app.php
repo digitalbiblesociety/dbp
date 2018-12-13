@@ -171,11 +171,9 @@ return [
         SocialiteProviders\Manager\ServiceProvider::class,
         SocialiteProviders\Generators\GeneratorsServiceProvider::class,
         Illuminate\Notifications\NotificationServiceProvider::class,
-        jeremykenedy\LaravelRoles\RolesServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         App\Providers\LocalEnvironmentServiceProvider::class,
-        jeremykenedy\laravelexceptionnotifier\LaravelExceptionNotifier::class,
         Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class
     ],
 
@@ -227,6 +225,7 @@ return [
         'Socialite'    => Laravel\Socialite\Facades\Socialite::class,
         'Input'        => Illuminate\Support\Facades\Input::class,
         'Image'        => Intervention\Image\Facades\Image::class,
+        'Localization' => Lunaweb\Localization\Facades\Localization::class,
         'i18n'         => Lunaweb\Localization\Facades\Localization::class,
     ],
 
