@@ -168,7 +168,13 @@ class BibleTransformer extends BaseTransformer
                     'language_id'       => $bible->language_id,
                     'iso'               => $bible->iso ?? null,
                     'date'              => $bible->date,
-                    'filesets'          => $bible->filesets->groupBy('asset_id')
+                    'filesets'          => $bible->filesets->mapToGroups(function ($item, $key) {
+                        return [$item['asset_id'] => [
+                            'id' => $item['id'],
+                            'type' => $item->set_type_code,
+                            'size' => $item->set_size_code
+                        ]];
+                    })
                 ];
 
             /**
