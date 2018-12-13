@@ -51,7 +51,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasRoleAndPermission;
     use Notifiable;
     use SoftDeletes;
 
