@@ -81,14 +81,12 @@ class LibraryVersionController extends APIController
         $name = checkParam('name');
         $sort = checkParam('sort_by');
 
-        $versions = \Cache::remember('libraryVersion'.$code.$name.$sort,2800, function() use($code, $sort, $name) {
+        $versions = \Cache::remember('libraryVersion'.$code.$name.$sort, 2800, function () use ($code, $sort, $name) {
+            $english_id = Language::where('iso', 'eng')->first()->id ?? '6414';
 
-            $english_id = Language::where('iso','eng')->first()->id ?? '6414';
-
-            $versions = \DB::connection(config('database.connections.dbp.database'))->table('bible_filesets')
-                ->where('asset_id', config('filesystems.disks.s3_fcbh.bucket'))
+            $versions = BibleFileset::where('asset_id', config('filesystems.disks.s3_fcbh.bucket'))
                 ->rightJoin('bible_fileset_connections as bibles', 'bibles.hash_id', 'bible_filesets.hash_id')
-                ->join('bible_translations as ver_title', function ($join) use($name) {
+                ->join('bible_translations as ver_title', function ($join) use ($name) {
                     $join->on('ver_title.bible_id', 'bibles.bible_id')->where('ver_title.vernacular', 1);
                 })
                 ->join('bible_translations as eng_title', function ($join) use ($english_id, $name) {
@@ -97,7 +95,7 @@ class LibraryVersionController extends APIController
                 ->when($code, function ($q) use ($code) {
                     $q->where('id', $code);
                 })->when($sort, function ($q) use ($sort) {
-                    $q->orderBy($sort,'asc');
+                    $q->orderBy($sort, 'asc');
                 })->select([
                     'eng_title.name as eng_title',
                     'ver_title.name as ver_title',
@@ -105,9 +103,9 @@ class LibraryVersionController extends APIController
                 ])->get();
 
             if ($name) {
-                $subsetVersions = $versions->where('eng_title',$name)->first();
-                if(!$subsetVersions) {
-                    $subsetVersions = $versions->where('ver_title',$name)->first();
+                $subsetVersions = $versions->where('eng_title', $name)->first();
+                if (!$subsetVersions) {
+                    $subsetVersions = $versions->where('ver_title', $name)->first();
                 }
                 $versions = $subsetVersions;
             }
