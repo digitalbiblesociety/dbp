@@ -111,11 +111,10 @@ class BooksController extends APIController
         $cache_string = 'bible_books_'.$id.$fileset_type.$asset_id;
         $books = \Cache::remember($cache_string, 2400, function () use ($fileset_type, $asset_id, $id) {
             $fileset = BibleFileset::where('id', $id)->where('asset_id', $asset_id)->where('set_type_code', $fileset_type)->first();
-            $is_plain_text = BibleVerse::where('hash_id', $fileset->hash_id)->exists();
-
             if (!$fileset) {
                 return $this->replyWithError('Fileset Not Found');
             }
+            $is_plain_text = BibleVerse::where('hash_id', $fileset->hash_id)->exists();
 
             $dbp_database = config('database.connections.dbp.database');
             $books = \DB::connection('dbp')->table($dbp_database.'.bible_filesets as fileset')
