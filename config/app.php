@@ -227,6 +227,7 @@ return [
         'Image'        => Intervention\Image\Facades\Image::class,
         'Localization' => Lunaweb\Localization\Facades\Localization::class,
         'i18n'         => Lunaweb\Localization\Facades\Localization::class,
+        'Bugsnag'      => Bugsnag\BugsnagLaravel\Facades\Bugsnag::class,
     ],
 
 ];
