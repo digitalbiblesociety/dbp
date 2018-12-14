@@ -131,7 +131,6 @@ class BiblesController extends APIController
                 )
                 ->orderBy('bibles.priority', 'desc')->groupBy('bibles.id')->get();
 
-
             return fractal($bibles, new BibleTransformer(), new DataArraySerializer());
         });
 
@@ -255,10 +254,12 @@ class BiblesController extends APIController
             return $this->accessControl($this->key);
         });
 
-        $bible = Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
-            'filesets' => function ($query) use ($access_control) {
-                $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
-            }])->find($id);
+        $bible = \Cache::remember('bible_show_response'.$id.$access_control->string, 2400, function() use($access_control,$id) {
+            return Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
+                'filesets' => function ($query) use ($access_control) {
+                    $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
+                }])->find($id);
+        });
         if (!$bible) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id]));
         }
