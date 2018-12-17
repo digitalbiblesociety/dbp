@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Traits\AnnotationTags;
 
-class BookmarksController extends APIController
+class UserBookmarksController extends APIController
 {
 
     use AnnotationTags;

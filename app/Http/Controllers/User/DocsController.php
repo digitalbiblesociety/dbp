@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
 use App\Models\User\User;
+use database\seeds\SeederHelper;
 
 class DocsController extends APIController
 {

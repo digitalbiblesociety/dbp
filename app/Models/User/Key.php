@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Model;
 class Key extends Model
 {
     protected $connection = 'dbp_users';
-    protected $table = 'user_keys';
+    public $table = 'user_keys';
     protected $primaryKey = 'key';
     public $incrementing = 'false';
     protected $keyType = 'string';

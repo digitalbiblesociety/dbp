@@ -35,86 +35,6 @@
             color: #88bb44;
         }
 
-        #signup {
-            position: relative;
-            display: inline-block;
-        }
-
-        #signup #request {
-            line-height: normal;
-            display: inline-block;
-            background: #c83c64;
-            border-radius: 3px;
-            padding: 10px 14px;
-            border: none;
-            cursor: pointer;
-            color: white;
-            font-size: 15px;
-            width: 180px;
-            text-align: center;
-            position: relative;
-            transition: all 350ms cubic-bezier(0.23, 1 ,0.32, 1);
-            -webkit-transition: all 350ms cubic-bezier(0.23, 1 ,0.32, 1);
-            -moz-transition: all 350ms cubic-bezier(0.23, 1 ,0.32, 1);
-
-        }
-
-        #signup #request:hover {
-            background: #d34a5b;
-        }
-
-        #signup #request:focus {
-            outline: none;
-        }
-
-        #signup #request.email {
-            width: 280px;
-            text-align: left;
-            cursor: text;
-            padding-right: 34px;
-        }
-
-        #signup .email-send {
-            position: absolute;
-            top: 7px;
-            right: 10px;
-            width: 24px;
-            height: 24px;
-            background: url(http://journal.mathieurobert.fr/img/icon-send.svg);
-            background-color: white;
-            background-size: 24px;
-            border-radius: 3px;
-            cursor: pointer;
-            opacity: 0;
-            transform: scale(0.5);
-            -webkit-transform: scale(0.5);
-            -moz-transform: scale(0.5);
-            -webkit-transition: all 200ms cubic-bezier(0.175, 0.885 ,0.32, 1.275) 50ms;
-            -moz-transition: all 200ms cubic-bezier(0.175, 0.885 ,0.32, 1.275) 50ms;
-        }
-
-        #signup .email-send.email-send-show {
-            opacity: 0.6;
-            transform: scale(1);
-            -webkit-transform: scale(1);
-            -moz-transform: scale(1);
-        }
-
-        #signup .email-send.email-send-show:hover {
-            opacity: 0.8;
-        }
-
-        ::-webkit-input-placeholder { color: white;}
-        :-moz-placeholder { color: white;}
-        ::-moz-placeholder { color: white;}
-        :-ms-input-placeholder { color: white;}
-
-        .email::-webkit-input-placeholder { color: rgba(255,255,255,0.6);}
-        .email:-moz-placeholder { color: rgba(255,255,255,0.6);}
-        .email::-moz-placeholder { color: rgba(255,255,255,0.6);}
-        .email:-ms-input-placeholder { color: rgba(255,255,255,0.6);}
-
-
     </style>
 
 @endsection
@@ -132,7 +52,7 @@
         <aside class="menu">
             <p class="menu-label">Getting Started</p>
             <ul class="menu-list">
-                <li><a class="is-disabled has-text-grey-light">First Call & Getting an API key</a></li>
+                <li><a class="is-disabled has-text-grey-light">First Call</a></li>
                 <li><a class="is-disabled has-text-grey-light">Building a Menu</a></li>
                 <li><a class="is-disabled has-text-grey-light">Getting Bible Text</a></li>
             </ul>
@@ -152,28 +72,20 @@
 
             <section class="box">
 
-                <h4 class="title">Generating and Confirming your API Key</h4>
-
-                <div class="columns">
-                    <div class="is-6-desktop">
-                        <p>We'll send you an email with a confirmation email that'll provide a link to your API key and you'll be up in running in less than a minute.</p>
-                    </div>
-                </div>
-
-                <form action="{{ route('api_key_email') }}" method="POST">
-                    {{ csrf_field() }}
-                    <div id="signup">
-                        <input id="request" placeholder="Request Api Access" spellcheck="false" type="email">
-                        <div class="email-send"></div>
-                    </div>
-                </form>
-
                 <h4 class="title">The API Structure</h4>
                 <h2 class="subtitle">Bibles and Filesets</h2>
 
                 <div class="ribbon">If you want to jump right in to queries you can check out the <a href="{{ route('swagger_v4') }}">API reference documentation.</a></div>
 
                 <p>Your first call to the DBP will probably be to /bibles. All Biblical content whether it be Audio, Video, or text is nested within bible_id.</p>
+                <pre>
+    - ENGKJV
+        - Filesets:
+            - ENGKJVE2CT
+                -
+            - 3149021394
+            - ENGKJVE2DA
+</pre>
 
                 <p>All calls within version 4 of the API are separated into three general categories: Bibles, Wiki, and Community.</p>
 
@@ -181,7 +93,7 @@
                 <p>The routes categorized under the Bibles tag are generally focused on querying information about bibles and audio or text content of those Bibles.</p>
 
                 <h4>Wiki</h4>
-                <p>Languages, Countries, and alphabet Data</p>
+                <p></p>
 
                 <h4>Community</h4>
                 <p>
@@ -212,24 +124,5 @@
     </div>
 
     </div>
-
-@endsection
-
-@section('footer')
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    <script>
-	    $('#request').click(function(event){
-		    event.stopPropagation();
-		    $(this).addClass("email");
-		    $('.email-send').addClass("email-send-show");
-		    $(this).attr("placeholder", "Enter your email...");
-	    });
-
-	    $('html').click(function() {
-		    $('#request').removeClass("email");
-		    $('.email-send').removeClass("email-send-show");
-		    $('#request').attr("placeholder", "Request Early Access");
-	    });
-    </script>
 
 @endsection

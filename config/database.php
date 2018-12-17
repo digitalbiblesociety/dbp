@@ -51,7 +51,7 @@ return [
             'driver' => 'mysql',
             'host' => env('DBP_HOST', '127.0.0.1'),
             'port' => env('DBP_PORT', '3306'),
-            'database' => env('DBP_DATABASE', 'dbp'),
+            'database' => env('DBP_DATABASE', 'dbp_staging'),
             'username' => env('DBP_USERNAME', 'root'),
             'password' => env('DBP_PASSWORD', ''),
             'unix_socket' => env('DBP_SOCKET', ''),

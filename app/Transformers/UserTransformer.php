@@ -22,7 +22,7 @@ class UserTransformer extends BaseTransformer
         switch ($this->route) {
             /**
              *
-             * @see Controller: \App\Http\Controllers\User\UsersControllerV2::index
+             * @see Controller: \App\Http\Controllers\User\UsersController::index
              * @see https://api.dbp.test/users?key=test_key&v=4
              *
              * @OA\Schema (

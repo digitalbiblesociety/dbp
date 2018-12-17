@@ -20,7 +20,7 @@ class BookTransformer extends BaseTransformer
 
             /**
              *
-             * @see Controller: \App\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksControllerV2::bookOrder
+             * @see Controller: \App\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::bookOrder
              * @see Old Route:  https://dbt.io/library/bookorder?key=test_key&dam_id=ENGESVN1ET&v=2
              * @see New Route:  https://api.dbp.localhost/library/bookorder?key=test_key&v=2&dam_id=ENGESV
              *
@@ -50,7 +50,7 @@ class BookTransformer extends BaseTransformer
 
             /**
              *
-             * @see Controller: \App\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksControllerV2::book
+             * @see Controller: \App\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::book
              * @see Old Route:  https://dbt.io/library/book?key=test_key&v=2&dam_id=ENGESVN1ET
              * @see New Route:  https://api.dbp.localhost/library/book?key=test_key&pretty&v=2&dam_id=ENGESVN1ET
              *
@@ -85,7 +85,7 @@ class BookTransformer extends BaseTransformer
 
             /**
              *
-             * @see Controller: \App\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksControllerV2::chapters
+             * @see Controller: \App\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::chapters
              * @see Old Route:  https://dbt.io/library/book?key=test_key&v=2&dam_id=ENGESVN1ET
              * @see New Route:  https://api.dbp.localhost/library/book?key=test_key&pretty&v=2&dam_id=ENGESVN1ET
              *

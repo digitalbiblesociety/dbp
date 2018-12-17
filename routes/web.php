@@ -65,15 +65,12 @@ Localization::localizedRoutesGroup(function () {
     Route::name('password.reset')->get('password/reset/{token}', 'User\UserPasswordsController@showResetForm');
     Route::post('password/reset', 'User\UserPasswordsController@reset');
 
-    Route::name('api_key_email')->post('keys/email',                     'User\KeyController@sendKeyEmail');
-    Route::name('api_key_generate')->get('keys/generate/{email_token}',  'User\KeyController@generateAPIKey');
-
 
     Route::name('wiki_bibles.one')->get('/wiki/bibles/{id}', 'Bible\BiblesController@show');
     Route::name('wiki_bibles.all')->get('/wiki/bibles', 'Bible\BiblesController@index');
 
     // Public Routes
-    Route::group(['middleware' => ['web']], function () {
+    Route::group(['middleware' => ['web', 'activity']], function () {
         Route::name('notes')->get('notes', 'User\UserNotesController@index');
 
         // Getting Started
@@ -107,10 +104,14 @@ Localization::localizedRoutesGroup(function () {
         Route::name('projects.connect')->get('/connect/{token}', 'Organization\ProjectsController@connect');
 
         // Socialite Register Routes
-        Route::name('social.redirect')->get('/login/redirect/{provider}', 'User\SocialController@redirect');
-        Route::name('social.handle')->get('/login/{provider}/callback',   'User\SocialController@callback');
+        Route::name('social.redirect')->get('/login/redirect/{provider}', 'User\UserSocialController@getSocialRedirect');
+        Route::name('social.handle')->get('/login/{provider}/callback', 'User\UserSocialController@handleProviderCallback');
     });
 
+    // Registered and Activated User Routes
+    Route::group(['middleware' => ['auth', 'activity']], function () {
+        Route::name('public.home')->get('/home', 'User\Dashboard\DashboardController@home');       //  Homepage Route - Redirect based on user role is in controller.
+    });
 });
 
 // VERSION 4 | DEPLOYMENT

@@ -132,7 +132,7 @@ class ApiV2Test extends TestCase
      * Test Library Book Order Route
      *
      * @category V2_Library
-     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksControllerV2::bookOrder
+     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::bookOrder
      * @category Swagger ID: v2_library_bookOrder
      * @category Route Name: v2_library_bookOrder
      * @link Route Path: https://api.dbp.test/library/bookorder?v=2&dam_id=ENGESV&pretty&key={key}
@@ -157,7 +157,7 @@ class ApiV2Test extends TestCase
      * Test Library Book
      *
      * @category V2_Library
-     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksControllerV2::book
+     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::book
      * @category Swagger ID: v2_library_book
      * @category Route Name: v2_library_book
      * @link Test Route Path: https://api.dbp.test/library/book?v=2&dam_id=AAIWBTN2ET&key={key}&pretty
@@ -180,7 +180,7 @@ class ApiV2Test extends TestCase
      * Tests the Library Book Name Route
      *
      * @category V2_Library
-     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksControllerV2::bookNames()
+     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::bookNames()
      * @category Swagger ID: BookName
      * @category Route Name: v2_library_bookName
      * @link Route Path: https://api.dbp.test/library/bookname?v=2&language_code=eng&pretty&key={key}
@@ -206,7 +206,7 @@ class ApiV2Test extends TestCase
      * Tests the Library Chapter Route
      *
      * @category V2_Library
-     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksControllerV2::chapters()
+     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\BooksController::chapters()
      * @category Swagger ID: BookName
      * @category Route Name: v2_library_bookName
      * @link Route Path: https://api.dbp.test/library/chapter?v=2&dam_id=AAIWBTN2ET&book_id=GEN&pretty&key={key}
@@ -230,7 +230,7 @@ class ApiV2Test extends TestCase
      * Tests the Library Language Route
      *
      * @category V2_Library
-     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LanguageControllerV2::languageListing()
+     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LanguageController::languageListing()
      * @category Swagger ID: LibraryLanguage
      * @category Route Name: v2_library_language
      * @link Route Path: https://api.dbp.test/library/language?v=2&pretty&key={key}
@@ -374,7 +374,7 @@ class ApiV2Test extends TestCase
      * Tests the Volume Language Route
      *
      * @category V2_Library
-     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LanguageControllerV2::volumeLanguage()
+     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LanguageController::volumeLanguage()
      * @category Swagger ID: LibraryVolume
      * @category Route Name: v2_library_volumeLanguage
      * @link Route Path: https://api.dbp.test/library/volumelanguage?v=2&pretty&key={key}
@@ -397,7 +397,7 @@ class ApiV2Test extends TestCase
      * Tests the Volume Language Family
      *
      * @category V2_Library
-     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LanguageControllerV2::volumeLanguage()
+     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LanguageController::volumeLanguage()
      * @category Swagger ID: LibraryVolumeLanguageFamily
      * @category Route Name: v2_library_volumeLanguageFamily
      * @link Route Path: https://api.dbp.test/library/volumelanguagefamily?v=2&pretty&key={key}
@@ -550,7 +550,7 @@ class ApiV2Test extends TestCase
      * Tests the Video Path
      *
      * @category V2_Meta
-     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LanguageControllerV2::countryLang()
+     * @see \app\Http\Controllers\Connections\V2Controllers\LibraryCatalog\LanguageController::countryLang()
      * @category Swagger ID: CountryLang
      * @category Route Name: v2_country_lang
      * @link Route Path: https://api.dbp.test/country/countrylang?v=2&pretty

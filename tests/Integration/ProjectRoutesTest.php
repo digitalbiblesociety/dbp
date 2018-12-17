@@ -56,7 +56,7 @@ class ProjectRoutesTest extends ApiV4Test
      * @category V4_API
      * @category Route Name: v4_projects_oAuthProvider
      * @category Route Path: https://api.dbp.test/projects/{project_id}/oauth-providers/?v=4&key={key}
-     * @see      \App\Http\Controllers\Organization\OAuthProvidersController
+     * @see      \App\Http\Controllers\Organization\ProjectOAuthProvidersController
      * @group    V4
      * @test
      */

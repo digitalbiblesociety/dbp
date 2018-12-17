@@ -15,7 +15,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
-class PasswordsController extends APIController
+class UserPasswordsController extends APIController
 {
 
     public function showResetForm(Request $request, $token = null)

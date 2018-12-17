@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\Connections\V2Controllers;
 
 use App\Http\Controllers\APIController;
 use App\Models\Bible\BibleFileset;
@@ -21,7 +21,7 @@ use App\Transformers\V2\Annotations\NoteTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Carbon\Carbon;
 
-class UsersControllerV2 extends APIController
+class UsersController extends APIController
 {
 
     public function __construct()
@@ -160,7 +160,7 @@ class UsersControllerV2 extends APIController
      *
      * @return mixed
      */
-    public function bookmark()
+    public function annotationBookmark()
     {
         $limit   = checkParam('limit') ?? 1000;
         $offset  = checkParam('offset') ?? 0;
@@ -197,7 +197,7 @@ class UsersControllerV2 extends APIController
     /**
      * @return mixed
      */
-    public function bookmarkStore()
+    public function annotationBookmarkStore()
     {
         if (request()->hash === $this->hash) {
             $book = Book::where('id_osis', request()->book_id)->first();
@@ -229,7 +229,7 @@ class UsersControllerV2 extends APIController
      *
      *
      */
-    public function highlight()
+    public function annotationHighlight()
     {
         $fileset_id = checkParam('dam_id');
         $bible_id = BibleFileset::where('id', $fileset_id)->first()->id ?? strtoupper(substr($fileset_id, 0, 6));
@@ -273,7 +273,7 @@ class UsersControllerV2 extends APIController
      * @return $this|\Illuminate\Database\Eloquent\Model
      * @throws \Exception
      */
-    public function highlightAlter()
+    public function annotationHighlightAlter()
     {
         if ($this->hash === request()->hash) {
             if (request()->method() == 'DELETE') {
@@ -316,7 +316,7 @@ class UsersControllerV2 extends APIController
     /**
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function note()
+    public function annotationNote()
     {
         if ($this->hash === checkParam('hash', true)) {
             $user_id = checkParam('user_id');
@@ -332,7 +332,7 @@ class UsersControllerV2 extends APIController
      *
      * @return $this|\Illuminate\Database\Eloquent\Model
      */
-    public function noteStore()
+    public function annotationNoteStore()
     {
         if ($this->hash === request()->hash) {
             $book = Book::where('id_osis', request()->book_id)->first();

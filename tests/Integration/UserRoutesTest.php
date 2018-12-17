@@ -163,7 +163,7 @@ class UserRoutesTest extends ApiV4Test
      * @category V4_API
      * @category Route Name: v4_user.oAuth
      * @category Route Path: https://api.dbp.test/users/login/{driver}?v=4&key={key}
-     * @see      \App\Http\Controllers\User\SocialController::getSocialRedirect
+     * @see      \App\Http\Controllers\User\UserSocialController::getSocialRedirect
      * @group    V4
      * @test
      */
@@ -180,7 +180,7 @@ class UserRoutesTest extends ApiV4Test
      * @category V4_API
      * @category Route Name: v4_user.password_reset
      * @category Route Path: https://api.dbp.test/users/password/reset?v=4&key={key}
-     * @see      \App\Http\Controllers\User\PasswordsController::validatePasswordReset
+     * @see      \App\Http\Controllers\User\UserPasswordsController::validatePasswordReset
      * @group    V4
      * @test
      */
@@ -203,7 +203,7 @@ class UserRoutesTest extends ApiV4Test
      * @category V4_API
      * @category Route Name: v4_user.password_email
      * @category Route Path: https://api.dbp.test/users/password/email?v=4&key={key}
-     * @see      \App\Http\Controllers\User\PasswordsController::triggerPasswordResetEmail
+     * @see      \App\Http\Controllers\User\UserPasswordsController::triggerPasswordResetEmail
      * @group    V4
      * @test
      */
@@ -221,7 +221,7 @@ class UserRoutesTest extends ApiV4Test
      * @category V4_API
      * @category Route Name: v4_user_accounts.index
      * @category Route Path: https://api.dbp.test/accounts?v=4&key={key}
-     * @see      \App\Http\Controllers\User\AccountsController::index
+     * @see      \App\Http\Controllers\User\UserAccountsController::index
      * @group    V4
      * @test
      */
@@ -271,7 +271,7 @@ class UserRoutesTest extends ApiV4Test
      * @category V4_API
      * @category Route Name: v4_notes
      * @category Route Path: https://api.dbp.test/users/5/notes?v=4&key={key}
-     * @see      \App\Http\Controllers\User\NotesController
+     * @see      \App\Http\Controllers\User\UserNotesController
      * @group    V4
      * @test
      */
@@ -318,30 +318,30 @@ class UserRoutesTest extends ApiV4Test
      * @category V4_API
      * @category Route Name: v4_messages.index
      * @category Route Path: https://api.dbp.test/users/messages?v=4&key={key}
-     * @see      \App\Http\Controllers\User\ContactController::index
- *
-* public function messages_index()
-    * {
-        * $path = route('v4_messages.index', $this->params);
-        * echo "\nTesting: $path";
-        * $response = $this->withHeaders($this->params)->get($path);
-        * $response->assertSuccessful();
-    * }
+     * @see      \App\Http\Controllers\User\UserContactController::index
+
+    public function messages_index()
+    {
+        $path = route('v4_messages.index', $this->params);
+        echo "\nTesting: $path";
+        $response = $this->withHeaders($this->params)->get($path);
+        $response->assertSuccessful();
+    }
      */
 
     /**
      * @category V4_API
      * @category Route Name: v4_messages.show
      * @category Route Path: https://api.dbp.test/users/messages/{note_id}?v=4&key={key}
-     * @see      \App\Http\Controllers\User\ContactController::show
- *
-* public function messages_show()
-    * {
-        * $path = route('v4_messages.show', $this->params);
-        * echo "\nTesting: $path";
-        * $response = $this->withHeaders($this->params)->get($path);
-        * $response->assertSuccessful();
-    * }
+     * @see      \App\Http\Controllers\User\UserContactController::show
+
+    public function messages_show()
+    {
+        $path = route('v4_messages.show', $this->params);
+        echo "\nTesting: $path";
+        $response = $this->withHeaders($this->params)->get($path);
+        $response->assertSuccessful();
+    }
      * */
 
 
@@ -349,7 +349,7 @@ class UserRoutesTest extends ApiV4Test
      * @category V4_API
      * @category Route Name: v4_bookmarks.index
      * @category Route Path: https://api.dbp.test/users/{user_id}/bookmarks?v=4&key={key}
-     * @see      \App\Http\Controllers\User\BookmarksController::index
+     * @see      \App\Http\Controllers\User\UserBookmarksController::index
      * @group    V4
      * @test
      */

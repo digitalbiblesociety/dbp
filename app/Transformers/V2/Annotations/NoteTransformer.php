@@ -11,7 +11,7 @@ class NoteTransformer extends TransformerAbstract
      * the expected return for the old Version 2 DBP api route
      * and regenerates the old dam_id from the new bible_id
      *
-     * @see Controller: \App\Http\Controllers\Connections\V2Controllers\UsersControllerV2::annotationNote
+     * @see Controller: \App\Http\Controllers\Connections\V2Controllers\UsersController::annotationNote
      * @see Old Route:  http://api.bible.is/annotations/note?dbt_data=1&dbt_version=2&hash=test_hash&key=test_key&reply=json&user_id=313117&v=1
      * @see New Route:  https://api.dbp.test/v2/annotations/note?key=test_key&pretty&v=2&user_id=5
      *

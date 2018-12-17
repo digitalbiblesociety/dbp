@@ -7,7 +7,7 @@ use App\Models\User\Message;
 use Illuminate\Http\Request;
 use Validator;
 
-class ContactController extends APIController
+class UserContactController extends APIController
 {
     /**
      * Display a listing of the resource.

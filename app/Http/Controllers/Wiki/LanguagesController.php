@@ -101,7 +101,9 @@ class LanguagesController extends APIController
         $show_restricted       = checkParam('show_only_restricted');
         $asset_id              = checkParam('bucket_id|asset_id');
 
-        $access_control = $this->accessControl($this->key);
+        $access_control = \Cache::remember($this->key.'_access_control', 2400, function () {
+            return $this->accessControl($this->key);
+        });
 
         $cache_string = 'v'.$this->v.'_l_'.$country.$code.$GLOBALS['i18n_id'].$sort_by.
                         $show_restricted.$include_alt_names.$asset_id.$access_control->string;

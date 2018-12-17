@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Connections\V2Controllers;
 
 use App\Http\Controllers\APIController;
 use App\Models\Bible\BibleFileset;
@@ -26,7 +26,7 @@ class ApiMetadataController extends APIController
         if (\is_array($params)) {
             $params = implode('&', array_map(function ($v, $k) {
                 if ($k === 'key') {
-                    return 'key='.config('services.bibleIs.key');
+                    return 'key=53355c32fca5f3cac4d7a670d2df2e09';
                 }
                 if ($k === 0) {
                     return $v;
@@ -82,7 +82,7 @@ class ApiMetadataController extends APIController
      *
      * @return mixed
      */
-    public function assets()
+    public function libraryAsset()
     {
         $dam_id   = checkParam('dam_id|fileset_id');
         $asset_id = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
@@ -190,7 +190,7 @@ class ApiMetadataController extends APIController
      *
      * @return mixed
      */
-    public function replyTypes()
+    public function versionReplyTypes()
     {
         $versionReplies = [
             '2' => ['json', 'jsonp', 'html'],
