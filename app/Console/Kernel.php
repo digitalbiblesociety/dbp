@@ -29,6 +29,7 @@ class Kernel extends ConsoleKernel
         Commands\Wiki\UpdateOrganizationsDblStatus::class,
 
         Commands\loaderPush::class,
+        Commands\loaderGetResults::class,
 
         Commands\S3LogBackup::class,
         Commands\SyncUsers::class,

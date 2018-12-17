@@ -17,7 +17,7 @@ use Laravel\Socialite\Two\GoogleProvider;
 
 use Socialite;
 
-class UserSocialController extends APIController
+class SocialController extends APIController
 {
 
     /**
@@ -59,7 +59,7 @@ class UserSocialController extends APIController
      * @return mixed
      *
      */
-    public function getSocialRedirect($provider = null)
+    public function redirect($provider = null)
     {
         $project_id = checkParam('project_id');
         $provider   = checkParam('provider', true, $provider);
@@ -82,7 +82,7 @@ class UserSocialController extends APIController
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function handleProviderCallback($provider)
+    public function callback($provider)
     {
         $project_id = checkParam('project_id', true);
 

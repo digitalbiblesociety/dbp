@@ -6,6 +6,8 @@ use App\Http\Controllers\APIController;
 
 use App\Models\Language\Alphabet;
 use App\Transformers\AlphabetTransformer;
+use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
+use mysql_xdevapi\Exception;
 
 class AlphabetsController extends APIController
 {

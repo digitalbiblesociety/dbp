@@ -11,7 +11,7 @@ class HighlightTransformer extends TransformerAbstract
      * the expected return for the old Version 2 DBP api routes
      * and regenerates the aged dam_id from the new bible_id
      *
-     * @see Controller: \App\Http\Controllers\Connections\V2Controllers\UsersController::annotationHighlight
+     * @see Controller: \App\Http\Controllers\Connections\V2Controllers\UsersControllerV2::annotationHighlight
      * @see Old Route:  http://api.bible.is/annotations/highlight?dbt_data=1&dbt_version=2&hash=test_hash&key=test_key&reply=json&user_id=313117&v=1
      * @see New Route:  https://api.dbp.test/v2/annotations/highlight?key=test_key&pretty&v=2&user_id=5
      *

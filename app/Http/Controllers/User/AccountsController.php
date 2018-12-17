@@ -9,7 +9,7 @@ use App\Models\User\ProjectMember;
 use Illuminate\Http\Request;
 use Validator;
 
-class UserAccountsController extends APIController
+class AccountsController extends APIController
 {
     /**
      *

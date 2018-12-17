@@ -12,7 +12,7 @@ use Auth;
 use App\Traits\CheckProjectMembership;
 use App\Traits\AnnotationTags;
 
-class UserNotesController extends APIController
+class NotesController extends APIController
 {
     use AnnotationTags;
     use CheckProjectMembership;

@@ -15,7 +15,7 @@ use Validator;
 
 use Illuminate\Http\Request;
 
-class UserHighlightsController extends APIController
+class HighlightsController extends APIController
 {
     use AnnotationTags;
     use CheckProjectMembership;

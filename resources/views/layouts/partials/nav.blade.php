@@ -61,21 +61,6 @@
             </div>
             <a class="navbar-item" href="{{ route('wiki_bibles.all') }}">Bibles</a>
             <a class="navbar-item has-text-grey-light" disabled>Resources</a>
-
-            @role('admin')
-            <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link" href="{{ route('public.home') }}">{!! trans('app.adminDropdownNav') !!}</a>
-                <div class="navbar-dropdown">
-                    <a class="navbar-item" href="{{ url('/users') }}">@lang('app.adminUserList')</a>
-                    <a class="navbar-item" href="{{ url('/users/create') }}">@lang('app.adminNewUser')</a>
-                    <a class="navbar-item" href="{{ url('/logs') }}">@lang('app.adminLogs')</a>
-                    <a class="navbar-item" href="{{ url('/activity') }}">@lang('app.adminActivity')</a>
-                    <a class="navbar-item" href="{{ url('/php-info') }}">@lang('app.adminPHP')</a>
-                    <a class="navbar-item" href="{{ url('/routes') }}">@lang('app.adminRoutes')</a>
-                    <a class="navbar-item" href="{{ url('/active-users') }}">@lang('app.activeUsers')</a>
-                </div>
-            </div>
-            @endrole
         </div>
 
         <div class="navbar-end">
