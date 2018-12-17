@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Models\User\ProjectMember;
+use App\Models\User\Role;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\APIController;
@@ -148,6 +150,12 @@ class SocialController extends APIController
                 'provider_user_id' => $providerUser->getId(),
                 'provider_id'      => $provider,
                 'project_id'       => $project_id
+            ]);
+
+            ProjectMember::create([
+               'user_id'    => $user->id,
+               'project_id' => $project_id,
+               'role_id'    => Role::where('slug','user')->first()->id
             ]);
 
             return $user;
