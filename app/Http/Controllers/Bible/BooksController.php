@@ -156,11 +156,11 @@ class BooksController extends APIController
      * @param $query
      * @param $id
      */
-    private function compareFilesetToSophiaBooks($query, $fileset)
+    private function compareFilesetToSophiaBooks($query, $hash_id)
     {
         // If the fileset references sophia.*_vpl than fetch the existing books from that database
         $dbp_database = config('database.connections.dbp.database');
-        $sophia_books = BibleVerse::where('hash_id', $fileset->hash_id)->select('book_id')->distinct()->get();
+        $sophia_books = BibleVerse::where('hash_id', $hash_id)->select('book_id')->distinct()->get();
 
         // Join the books for the books returned from Sophia
         $query->join($dbp_database.'.bible_books', function ($join) use ($sophia_books) {
