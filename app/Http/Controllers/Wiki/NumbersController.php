@@ -56,18 +56,16 @@ class NumbersController extends APIController
      */
     public function customRange()
     {
-        $script = checkParam('script|script_id', true);
+        $script = checkParam('script', true);
         $start  = checkParam('start');
         $end    = checkParam('end');
-        if (($end - $start) > 200) {
+        if (($end - $start) > 2000) {
             return $this->replyWithError(trans('api.numerals_range_error', ['num' => $end]));
         }
 
         // Fetch Numbers By Iso Or Script Code
         $numbers = NumeralSystemGlyph::where('numeral_system_id', $script)
-                    ->where('value', '>=', $start)
-                    ->where('value', '<=', $end)->select('value as numeral', 'glyph as numeral_vernacular')->get();
-
+                                     ->select('value as numeral', 'glyph as numeral_vernacular')->get();
         return $this->reply($numbers);
     }
 
