@@ -27,7 +27,7 @@ class loaderPush extends Command
      */
     public function __construct()
     {
-        $this->loaderIoKey = env('LOADER_IO');
+        $this->loaderIoKey = config('services.loaderIo.key');
         parent::__construct();
     }
 

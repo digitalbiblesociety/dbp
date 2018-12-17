@@ -8,7 +8,7 @@ use App\Models\User\ProjectOauthProvider;
 use Illuminate\Http\Request;
 use Validator;
 
-class ProjectOAuthProvidersController extends APIController
+class OAuthProvidersController extends APIController
 {
     /**
      * Display a listing of the resource.

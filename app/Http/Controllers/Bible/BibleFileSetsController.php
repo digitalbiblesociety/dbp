@@ -80,19 +80,14 @@ class BibleFileSetsController extends APIController
         if ($book !== null) {
             $book_id = $book->id;
         }
-        $fileset = BibleFileset::with('bible')->where('id', $fileset_id)->when(
-            $asset_id,
-            function ($query) use ($asset_id) {
+        $fileset = BibleFileset::with('bible')->where('id', $fileset_id)->when($asset_id, function ($query) use ($asset_id) {
                 return $query->where('asset_id', $asset_id);
-            }
-        )->where('set_type_code', $type)->first();
+            })->where('set_type_code', $type)->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404_asset', ['asset_id' => $asset_id]));
         }
 
-        $access_control = \Cache::remember($this->key.'_access_control', 2400, function () {
-            return $this->accessControl($this->key);
-        });
+        $access_control = $this->accessControl($this->key);
         if (!\in_array($fileset->hash_id, $access_control->hashes, true)) {
             return $this->setStatusCode(403)->replyWithError(trans('api.bible_fileset_errors_401'));
         }

@@ -73,9 +73,7 @@ class BiblesController extends APIController
         $asset_id           = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $hide_restricted    = checkParam('hide_restricted') ?? true;
 
-        $access_control = \Cache::remember($this->key.'_access_control', 2400, function () {
-            return $this->accessControl($this->key);
-        });
+        $access_control = $this->accessControl($this->key);
 
         $cache_string = 'bibles'.$language_code.$organization.$country.$asset_id.$access_control->string;
 
@@ -250,9 +248,7 @@ class BiblesController extends APIController
      */
     public function show($id)
     {
-        $access_control = \Cache::remember($this->key.'_access_control', 2400, function () {
-            return $this->accessControl($this->key);
-        });
+        $access_control = $this->accessControl($this->key);
 
         $bible = \Cache::remember('bible_show_response'.$id.$access_control->string, 2400, function() use($access_control,$id) {
             return Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
@@ -267,7 +263,7 @@ class BiblesController extends APIController
             return view('bibles.show', compact('bible'));
         }
 
-        return $this->reply(fractal($bible, new BibleTransformer())->serializeWith($this->serializer));
+        return $this->reply(fractal($bible, new BibleTransformer(), $this->serializer));
     }
 
     public function manage($id)

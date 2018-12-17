@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Connections\V2Controllers\LibraryCatalog;
+namespace App\Http\Controllers\Bible;
 
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleVerse;
@@ -11,7 +11,7 @@ use App\Models\Language\Language;
 use App\Transformers\V2\LibraryCatalog\BookTransformer;
 use App\Http\Controllers\APIController;
 
-class BooksController extends APIController
+class BooksControllerV2 extends APIController
 {
 
     /**
@@ -277,9 +277,9 @@ class BooksController extends APIController
 
             $chapters = BibleVerse::where('hash_id', $fileset->hash_id)
                 ->when($book, function ($q) use ($book) {
-                    $q->where('book', $book->id_usfx);
+                    $q->where('book_id', $book->id);
                 })
-                ->select(['chapter', 'book'])->distinct()->orderBy('chapter')->get()
+                ->select(['chapter', 'book_id'])->distinct()->orderBy('chapter')->get()
                 ->map(function ($chapter) use ($id, $book) {
                     $chapter->book_id  = $book->id_osis;
                     $chapter->bible_id = $id;

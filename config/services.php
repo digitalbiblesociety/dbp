@@ -71,7 +71,13 @@ return [
 
 	'arclight' => [
 		'key' => env('ARCLIGHT_API')
-	]
+	],
+
+    // Testing
+
+    'loaderIo' => [
+        'key' => env('LOADER_IO')
+    ]
 
 
 ];

@@ -12,7 +12,7 @@ class UserHighlightTest extends ApiV4Test
      * @category V4_API
      * @category Route Name: v4_highlights.index
      * @category Route Path: https://api.dbp.test/users/{user_id}/highlights?v=4&key={key}
-     * @see      \App\Http\Controllers\User\UserHighlightsController::index
+     * @see      \App\Http\Controllers\User\HighlightsController::index
      * @group    V4
      * @test
      */
@@ -37,7 +37,7 @@ class UserHighlightTest extends ApiV4Test
      * @category V4_API
      * @category Route Name: v4_highlights.index
      * @category Route Path: https://api.dbp.test/users/{user_id}/highlights?v=4&key={key}
-     * @see      \App\Http\Controllers\User\UserHighlightsController::index
+     * @see      \App\Http\Controllers\User\HighlightsController::index
      * @group    V4
      * @test
      */
@@ -73,7 +73,7 @@ class UserHighlightTest extends ApiV4Test
      * @category V4_API
      * @category Route Name: v4_highlights
      * @category Route Path: https://api.dbp.test/users/{user_id}/highlights?v=4&key={key}
-     * @see      \App\Http\Controllers\User\UserHighlightsController
+     * @see      \App\Http\Controllers\User\HighlightsController
      * @group    V4
      * @test
      */
