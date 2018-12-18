@@ -12,6 +12,7 @@ use App\Models\Bible\BibleFileTimestamp;
 
 use App\Traits\CallsBucketsTrait;
 use App\Transformers\AudioTransformer;
+use Illuminate\Http\JsonResponse;
 
 class AudioController extends APIController
 {
@@ -53,7 +54,7 @@ class AudioController extends APIController
      *     @OA\Parameter(
      *         name="encoding",
      *         in="query",
-     *         @OA\Schema(type="string",title="encoding"),
+     *         @OA\Schema(type="string",title="encoding",deprecated=true),
      *         description="The audio encoding format desired (No longer in use as Audio Files default to mp3)."
      *     ),
      *     @OA\Parameter(
@@ -113,6 +114,9 @@ class AudioController extends APIController
                 })->orderBy('file_name')->get();
         });
 
+        if (is_a($audioChapters, JsonResponse::class)) {
+            return $audioChapters;
+        }
 
         // Transaction id to be passed to signedUrl
         $transaction_id = random_int(0, 10000000);
