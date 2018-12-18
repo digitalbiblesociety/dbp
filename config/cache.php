@@ -77,6 +77,6 @@ return [
     |
     */
 
-    'prefix' => 'laravel',
+    'prefix' => 'laravel-'.env('APP_URL'),
 
 ];
