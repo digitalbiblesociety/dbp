@@ -53,7 +53,8 @@ trait CaptureIpTrait
      */
     public function validIp($ip)
     {
-        $ip = $_SERVER[$ip];
+        // Allow for passing in both Server Header Keys and Ip Address Strings
+        $ip = $_SERVER[$ip] ?? $ip;
         if (strtolower($ip) === 'unknown') {
             return false;
         }
