@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Bible;
 
 use Illuminate\Http\Request;
 use App\Traits\AccessControlAPI;
@@ -13,6 +13,7 @@ use App\Transformers\V2\LibraryVolumeTransformer;
 use App\Transformers\V2\LibraryCatalog\LibraryCatalogTransformer;
 use App\Transformers\V2\LibraryCatalog\LibraryMetadataTransformer;
 
+use App\Http\Controllers\APIController;
 use Cache;
 
 class LibraryController extends APIController
