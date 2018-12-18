@@ -20,6 +20,8 @@ class BibleEquivalentsController extends APIController
                This route will allow your apps to connect to other Bible APIs and services without
                introducing duplicate Bible content into your apps and ease migration between APIs.",
      *     operationId="v4_bible.equivalents",
+     *     @OA\Parameter(name="organization_id",in="query",@OA\Schema(ref="#/components/schemas/Organization/properties/id")),
+     *     @OA\Parameter(name="bible_id",in="query",@OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -38,16 +40,13 @@ class BibleEquivalentsController extends APIController
     public function index()
     {
         // Check Params
-        $type     = checkParam('type');
         $org_id   = checkParam('organization_id');
         $bible_id = checkParam('bible_id');
 
         // Fetch Bible Equivalents
-        $cache_string = 'bible_equivalents_'.$type.$org_id.$bible_id;
-        $bible_equivalents = \DB::cache($cache_string, 2400, function () use ($type, $org_id, $bible_id) {
-            return BibleEquivalent::when($type, function ($q) use ($type) {
-                $q->where('type', $type);
-            })->when($org_id, function ($q) use ($org_id) {
+        $cache_string = 'bible_equivalents_'.$org_id.$bible_id;
+        $bible_equivalents = \Cache::remember($cache_string, 2400, function () use ($org_id, $bible_id) {
+            return BibleEquivalent::when($org_id, function ($q) use ($org_id) {
                 $q->where('organization_id', $org_id);
             })->when($bible_id, function ($q) use ($bible_id) {
                 $q->where('bible_id', $bible_id);
