@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Connections\V2Controllers\LibraryCatalog;
+namespace App\Http\Controllers\Wiki;
 
 use App\Http\Controllers\APIController;
 use App\Models\Language\Language;
