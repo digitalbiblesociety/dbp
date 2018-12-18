@@ -13,10 +13,11 @@
 |
 */
 
-
 Localization::localizedRoutesGroup(function () {
 
-// Homepage Route
+    Route::get('/single-page-app/{path}', function () { return view('index'); })->where('path', '(.*)');
+
+    // Homepage Route
     Route::get('/', 'WelcomeController@welcome')->name('welcome');
 
     // Overview Page
@@ -38,8 +39,8 @@ Localization::localizedRoutesGroup(function () {
     Route::get('/about/privacy-policy', 'WelcomeController@privacyPolicy')->name('privacy_policy');
     Route::get('/acerca-de/politica-de-privacidad', 'WelcomeController@privacyPolicy')->name('es.privacy_policy')->localization('es');
 
-    Route::get('/about/contact', 'User\UserContactController@create')->name('contact.create');
-    Route::post('/about/contact', 'User\UserContactController@store')->name('contact.store');
+    Route::get('/about/contact', 'User\ContactController@create')->name('contact.create');
+    Route::post('/about/contact', 'User\ContactController@store')->name('contact.store');
 
     // About
     Route::get('/about/relations', 'WelcomeController@relations')->name('relations');
