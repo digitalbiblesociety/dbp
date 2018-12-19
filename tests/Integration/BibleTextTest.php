@@ -6,9 +6,13 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleVerse;
 use App\Models\Bible\Book;
 use App\Models\User\AccessGroup;
+use App\Traits\AccessControlAPI;
 
 class BibleTextTest extends ApiV4Test
 {
+
+    use AccessControlAPI;
+
     protected $params = ['key' => 'tighten_37518dau8gb891ub', 'v' => '4'];
 
     /* - Feature -------------------------*/
@@ -38,24 +42,21 @@ class BibleTextTest extends ApiV4Test
      */
     public function bibleFilesetsChapter()
     {
-        $random_bible = collect(\DB::connection('sophia')->select('SHOW TABLES'))
-            ->pluck('Tables_in_sophia')->filter(function ($table) {
-                return str_contains($table, '_vpl');
-            })->random();
-        $reference = \DB::connection('sophia')->table($random_bible)->inRandomOrder()->first();
-        $fileset = BibleFileset::where('id', substr($random_bible, 0, -4))
-                               ->where('set_type_code', 'text_plain')->first();
-        $book = Book::where('id_usfx', $reference->book)->first();
+        $access_control = $this->accessControl($this->params['key']);
+        $fileset = BibleFileset::with('files')->whereIn('hash_id', $access_control->hashes)->where('set_type_code', 'text_plain')->inRandomOrder()->first();
+        $bible_verse = BibleVerse::where('hash_id',$fileset->hash_id)->inRandomOrder()->first();
 
         $this->params = array_merge([
             'fileset_id' => $fileset->id,
-            'book_id'    => $book->id,
-            'chapter'    => $reference->chapter,
+            'book_id'    => @$bible_verse->book_id,
+            'chapter'    => @$bible_verse->chapter,
             'asset_id'   => $fileset->asset_id
         ], $this->params);
 
-        $path = route('v4_bible_filesets.chapter', $this->params);
+        $path = route('v4_filesets.chapter', $this->params);
+
         echo "\nTesting: $path";
+
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
     }
@@ -72,17 +73,15 @@ class BibleTextTest extends ApiV4Test
     */
     public function text_verse_allowed()
     {
-        $public_domain_access_group = AccessGroup::with('filesets')->where('name', 'PUBLIC_DOMAIN')->first();
-        $fileset_hashes = $public_domain_access_group->filesets->pluck('hash_id');
-        $fileset = BibleFileset::with('files')->whereIn('hash_id', $fileset_hashes)->where('set_type_code', 'text_plain')->inRandomOrder()->first();
-
-        $file = \DB::connection('sophia')->table(strtoupper($fileset->id).'_vpl')->inRandomOrder()->take(1)->first();
+        $access_control = $this->accessControl($this->params['key']);
+        $fileset = BibleFileset::with('files')->whereIn('hash_id', $access_control->hashes)->where('set_type_code', 'text_plain')->inRandomOrder()->first();
+        $bible_verse = BibleVerse::where('hash_id',$fileset->hash_id)->inRandomOrder()->first();
 
         $this->params['dam_id']      = $fileset->id;
-        $this->params['book_id']     = $file->book;
-        $this->params['chapter_id']  = $file->chapter;
-        $this->params['verse_start'] = $file->verse_start;
-        $this->params['verse_end']   = $file->verse_end;
+        $this->params['book_id']     = $bible_verse->book;
+        $this->params['chapter_id']  = $bible_verse->chapter;
+        $this->params['verse_start'] = $bible_verse->verse_start;
+        $this->params['verse_end']   = $bible_verse->verse_end;
 
         echo "\nTesting: " . route('v2_text_verse', $this->params);
         $response = $this->get(route('v2_text_verse', $this->params));

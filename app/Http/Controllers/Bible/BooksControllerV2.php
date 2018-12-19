@@ -30,8 +30,8 @@ class BooksControllerV2 extends APIController
      *     summary="Returns books order",
      *     description="Gets the book order and code listing for a volume.",
      *     operationId="v2_library_book",
-     *     @OA\Parameter(name="dam_id",in="query",description="The bible ID",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
-     *     @OA\Parameter(name="asset_id",in="query",description="The Asset ID", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
+     *     @OA\Parameter(name="dam_id",in="query",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
+     *     @OA\Parameter(name="asset_id",in="query", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -53,11 +53,11 @@ class BooksControllerV2 extends APIController
         $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
         $fileset   = BibleFileset::with('bible')->where('asset_id', $asset_id)
-                        ->where('id', $id)
-                        ->orWhere('id', substr($id, 0, -4))
-                        ->orWhere('id', substr($id, 0, -2))
-                        ->orWhere('id', 'LIKE', $id.'%')
-                        ->first();
+            ->where('id', $id)
+            ->orWhere('id', substr($id, 0, -4))
+            ->orWhere('id', substr($id, 0, -2))
+            ->orWhere('id', 'LIKE', $id.'%')
+            ->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
@@ -73,9 +73,7 @@ class BooksControllerV2 extends APIController
                 break;
         }
 
-        $libraryBook = \Cache::remember(
-            'v2_library_book_' . $id . $asset_id . $fileset . $testament,
-            1600,
+        $libraryBook = \Cache::remember('v2_library_book_' . $id . $asset_id . $fileset . $testament, 1600,
             function () use ($id, $fileset, $testament) {
 
                 if ($fileset->set_type_code === 'text_plain') {
@@ -129,9 +127,7 @@ class BooksControllerV2 extends APIController
             case 'N':
                 $testament = 'NT';
         }
-        $libraryBook = \Cache::remember(
-            'v2_library_book_' . $id . $asset_id . $fileset . $testament,
-            1600,
+        $libraryBook = \Cache::remember('v2_library_book_' . $id . $asset_id . $fileset . $testament, 1600,
             function () use ($id, $fileset, $testament) {
                 $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select('book_id', 'chapter')->distinct()->get();
                 $books = Book::whereIn('id', $booksChapters->pluck('book_id')->unique()->toArray())

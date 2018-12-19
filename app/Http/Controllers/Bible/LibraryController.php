@@ -329,7 +329,7 @@ class LibraryController extends APIController
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
      */
-    public function libraryVolume()
+    public function volume()
     {
         if (config('app.env') == 'local') {
             ini_set('memory_limit', '864M');

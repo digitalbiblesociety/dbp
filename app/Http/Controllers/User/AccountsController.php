@@ -6,6 +6,7 @@ use App\Http\Controllers\APIController;
 
 use App\Models\User\Account;
 use App\Models\User\ProjectMember;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -97,55 +98,6 @@ class AccountsController extends APIController
         $account = $user->accounts()->create($request->all());
         return $this->reply($account);
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @OA\Get(
-     *     path="/accounts/{account_id}",
-     *     tags={"Users"},
-     *     summary="List the Accounts",
-     *     description="",
-     *     operationId="v4_user_accounts.show",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(
-     *          name="account_id",
-     *          in="path",
-     *          required=true,
-     *          description="The account_id",
-     *          @OA\Schema(ref="#/components/schemas/Account/properties/id")
-     *     ),
-     *     @OA\Parameter(
-     *          name="project_id",
-     *          in="query",
-     *          required=true,
-     *          description="The Project ID",
-     *          @OA\Schema(ref="#/components/schemas/Project/properties/id")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Account")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/Account")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/Account"))
-     *     )
-     * )
-     *
-     *
-     * @return \Illuminate\Http\Response
-     * @internal param int $id
-     *
-     */
-    public function show()
-    {
-        $user = $this->verifyProjectUserConnection();
-
-        return $this->reply($user->accounts);
-    }
-
 
     /**
      * Update the specified resource in storage.

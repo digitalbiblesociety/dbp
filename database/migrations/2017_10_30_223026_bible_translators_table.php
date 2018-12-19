@@ -41,9 +41,9 @@ class BibleTranslatorsTable extends Migration
         if (!Schema::connection('dbp')->hasTable('translator_relations')) {
             Schema::connection('dbp')->create('translator_relations', function (Blueprint $table) {
                 $table->string('translator_id', 191);
-                $table->foreign('translator_id', 'FK_translators_translator_relations.translator_id')->references('id')->on(config('database.connections.dbp.database').'.translators')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('translator_id', 'FK_translators_translator_relations_translator_id')->references('id')->on(config('database.connections.dbp.database').'.translators')->onDelete('cascade')->onUpdate('cascade');
                 $table->string('translator_relation_id', 191);
-                $table->foreign('translator_relation_id', 'FK_translators_translator_relations.translator_relation_id')->references('id')->on(config('database.connections.dbp.database').'.translators')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('translator_relation_id', 'FK_translators_translator_relations_translator_relation_id')->references('id')->on(config('database.connections.dbp.database').'.translators')->onUpdate('cascade')->onDelete('cascade');
                 $table->integer('organization_id')->unsigned()->nullable();
                 $table->foreign('organization_id', 'FK_organizations_translator_relations')->references('id')->on(config('database.connections.dbp.database').'.organizations');
                 $table->string('type');

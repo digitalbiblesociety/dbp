@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\APIController;
 use App\Models\User\Project;
+use App\Models\User\ProjectMember;
 use App\Models\User\ProjectOauthProvider;
+use App\Models\User\Role;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -182,14 +184,21 @@ class OAuthProvidersController extends APIController
             return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
         }
 
-        $access_allowed = $project->admins->where('user_id', $this->user->id)->first();
+        $admin_role = Role::where('slug','admin')->first();
+
+        echo "attempting project_id".$project_id.': user_id: '.$this->user->id.': role_id'.$admin_role->id;
+
+        $access_allowed = ProjectMember::where('project_id',$project_id)
+            ->where('user_id', $this->user->id)
+            ->where('role_id', $admin_role->id)->first();
         if (!$access_allowed) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_destroy_401'));
         }
 
         $provider   = ProjectOauthProvider::where('project_id', $project_id)->where('id', $id)->first();
         $provider->delete();
-        return $this->reply(trans('api.projects_destroy_200', []));
+
+        return $this->setStatusCode(200)->reply(trans('api.projects_destroy_200'));
     }
 
     /**

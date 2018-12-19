@@ -8,12 +8,6 @@ class TextSearchTest extends ApiV4Test
 {
     public $params = [];
 
-    public function setUp()
-    {
-        parent::setUp();
-        $this->params = ['v' => 4, 'key' => '1234'];
-    }
-
     /* - Feature -------------------------*/
     /**
      * @category V4_API

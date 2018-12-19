@@ -23,14 +23,6 @@ class UserHighlightTest extends ApiV4Test
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertStatus(404);
-
-        // Project 401
-        $user_id = User::inRandomOrder()->select('id')->first()->id;
-        $new_params = ['user_id' => $user_id, 'project_id' => 'not-a-real-project'];
-        $path = route('v4_highlights.index', array_merge($this->params, $new_params));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->get($path);
-        $response->assertStatus(401);
     }
 
     /**

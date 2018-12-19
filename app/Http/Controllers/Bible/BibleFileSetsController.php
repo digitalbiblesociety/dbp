@@ -38,19 +38,23 @@ class BibleFileSetsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(name="fileset_id", in="path", description="The fileset ID", required=true,
-     *                                      @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Parameter(name="book_id", in="query", description="If provided will filter the results by the given
-     *                                   book", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
-     *     @OA\Parameter(name="chapter_id", in="query", description="If provided will filter the results by the given
-     *                                      chapter",
-     *                                      @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
-     *     @OA\Parameter(name="asset_id", in="query", description="If provided will filter the results by the given
-     *                                    Asset",
-     *                                    @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
+     *     ),
+     *     @OA\Parameter(name="book_id", in="query", description="Will filter the results by the given book",
+     *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
+     *     ),
+     *     @OA\Parameter(name="chapter_id", in="query", description="Will filter the results by the given chapter",
+     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
+     *     ),
+     *     @OA\Parameter(name="asset_id", in="query", description="Will filter the results by the given Asset",
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")
+     *     ),
      *     @OA\Parameter(name="versification", in="query", description="The versification system",
-     *                                         @OA\Schema(ref="#/components/schemas/Bible/properties/versification")),
+     *          @OA\Schema(ref="#/components/schemas/Bible/properties/versification")
+     *     ),
      *     @OA\Parameter(name="type", in="query", description="The fileset type",
-     *                                @OA\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code")),
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -169,7 +173,17 @@ class BibleFileSetsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="fileset_id", in="path", required=true, description="The fileset ID", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+     *     @OA\Parameter(name="fileset_id", in="path", required=true, description="The fileset ID",
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
+     *     ),
+     *     @OA\Parameter(name="asset_id", in="path", required=true, description="The fileset ID",
+     *          @OA\Schema(ref="#/components/schemas/Asset/properties/id")
+     *     ),
+     *     @OA\Parameter(name="book_ids", in="path", required=true,
+     *          description="The list of book ids to download content for seperated by commas",
+     *          example="GEN,EXO,MAT,REV",
+     *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="The requested fileset as a zipped download",
@@ -311,7 +325,7 @@ class BibleFileSetsController extends APIController
         $type = checkParam('type', true);
         $asset_id = checkParam('bucket|bucket_id|asset_id') ?? 'dbp-prod';
 
-        $cache_string = 'bible_fileset_copyright'.$iso.$type.$asset_id;
+        $cache_string = 'bible_fileset_copyright'.$iso.$type.$asset_id.$id;
         $fileset = \Cache::remember($cache_string, 2400, function () use ($iso, $type, $asset_id, $id) {
             $language_id = optional(Language::where('iso', $iso)->select('id')->first())->id;
             return BibleFileset::where('id', $id)->with([

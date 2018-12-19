@@ -136,12 +136,24 @@ class TextController extends APIController
      *     summary="Returns utilized fonts",
      *     description="Some languages used by the Digital Bible Platform utilize character sets that are not supported by `standard` fonts. This call provides a list of custom fonts that have been made available.",
      *     operationId="v2_text_font",
-     *     @OA\Parameter(name="id", in="query", description="The numeric ID of the font to retrieve",
-     *          @OA\Schema(type="string")),
-     *     @OA\Parameter(name="name", in="query", description="Search for a specific font by name",
-     *          @OA\Schema(type="string")),
-     *     @OA\Parameter(name="platform", in="query", description="Only return fonts that have been authorized for the specified platform. Available values are: `android`, `ios`, `web`, or `all`",
-     *          @OA\Schema(type="string",enum={"android","ios","web","all"},default="all")),
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="query",
+     *          description="The numeric ID of the font to retrieve",
+     *          @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *          name="name",
+     *          in="query",
+     *          description="Search for a specific font by name",
+     *          @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *          name="platform",
+     *          in="query",
+     *          description="Only return fonts that have been authorized for the specified platform. Available values are: `android`, `ios`, `web`, or `all`. All the current fonts are available cross-platform",
+     *          @OA\Schema(type="string",enum={"android","ios","web","all"},default="all")
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -159,8 +171,8 @@ class TextController extends APIController
      */
     public function fonts()
     {
-        $id       = checkParam('id');
-        $name     = checkParam('name');
+        $id   = checkParam('id');
+        $name = checkParam('name');
 
         $fonts = AlphabetFont::when($name, function ($q) use ($name) {
             $q->where('name', $name);
@@ -243,7 +255,6 @@ class TextController extends APIController
     }
 
     /**
-     * This one actually departs from Version 2 and only returns the book ID and the integer count
      *
      * @OA\Get(
      *     path="/text/searchgroup",
@@ -251,7 +262,8 @@ class TextController extends APIController
      *     summary="trans_v2_text_search_group.summary",
      *     description="trans_v2_text_search_group.description",
      *     operationId="v2_text_search_group",
-     *     @OA\Parameter(name="query",
+     *     @OA\Parameter(
+     *          name="query",
      *          in="query",
      *          description="trans_v2_text_search_group.param_query",
      *          required=true,
@@ -343,11 +355,37 @@ class TextController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="dam_id", in="query", description="the DAM ID of the verse info", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Parameter(name="book_id", in="path", description="If specified returns verse text ONLY for the specified book", required=true, @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
-     *     @OA\Parameter(name="chapter", in="path", description=" If specified returns verse text ONLY for the specified chapter", required=true, @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
-     *     @OA\Parameter(name="verse_start", in="path", description="Returns all verse text for the specified book, chapter, and verse range from 'verse_start' until either the end of chapter or 'verse_end'", required=true, @OA\Schema(ref="#/components/schemas/BibleFile/properties/verse_start")),
-     *     @OA\Parameter(name="verse_end", in="path", description="If specified returns of all verse text for the specified book, chapter, and verse range from 'verse_start' to 'verse_end'.", required=false, @OA\Schema(ref="#/components/schemas/BibleFile/properties/verse_end")),
+     *     @OA\Parameter(
+     *          name="dam_id",
+     *          in="query",
+     *          required=true,
+     *          description="the DAM ID of the verse info",
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
+     *     ),
+     *     @OA\Parameter(
+     *          name="book_id",
+     *          in="path",
+     *          description="If specified returns verse text ONLY for the specified book",
+     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
+     *     ),
+     *     @OA\Parameter(
+     *          name="chapter",
+     *          in="path",
+     *          description=" If specified returns verse text ONLY for the specified chapter",
+     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
+     *     ),
+     *     @OA\Parameter(
+     *          name="verse_start",
+     *          in="path",
+     *          description="Returns all verse text for the specified book, chapter, and verse range from 'verse_start' until either the end of chapter or 'verse_end'",
+     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/verse_start")
+     *     ),
+     *     @OA\Parameter(
+     *          name="verse_end",
+     *          in="path",
+     *          description="If specified returns of all verse text for the specified book, chapter, and verse range from 'verse_start' to 'verse_end'.",
+     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/verse_end")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -389,7 +427,6 @@ class TextController extends APIController
          *   )
          * )
          */
-
         $verse_info = BibleVerse::where('hash_id', $fileset->hash_id)->where([
             ['book_id', '=', $book_id],
             ['chapter', '=', $chapter_id],

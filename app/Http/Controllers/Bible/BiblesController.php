@@ -71,15 +71,14 @@ class BiblesController extends APIController
         $organization       = checkParam('organization_id');
         $country            = checkParam('country');
         $asset_id           = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
-        $hide_restricted    = checkParam('hide_restricted') ?? true;
+        $show_restricted    = checkParam('show_restricted') ?? false;
+        $media              = checkParam('media');
 
         $access_control = $this->accessControl($this->key);
 
-        $cache_string = 'bibles'.$language_code.$organization.$country.$asset_id.$access_control->string;
-
-        $bibles = \Cache::remember($cache_string, 1600, function () use ($hide_restricted, $language_code, $organization, $country, $asset_id, $access_control) {
-
-            $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $hide_restricted)
+        $cache_string = 'bibles'.$language_code.$organization.$country.$asset_id.$access_control->string.$media;
+        $bibles = \Cache::remember($cache_string, 1600, function () use ($show_restricted, $language_code, $organization, $country, $asset_id, $access_control, $media) {
+            $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $show_restricted, $media)
                 ->leftJoin('bible_translations as ver_title', function ($join) {
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
                 })
@@ -128,7 +127,6 @@ class BiblesController extends APIController
                     )
                 )
                 ->orderBy('bibles.priority', 'desc')->groupBy('bibles.id')->get();
-
             return fractal($bibles, new BibleTransformer(), new DataArraySerializer());
         });
 
@@ -249,7 +247,6 @@ class BiblesController extends APIController
     public function show($id)
     {
         $access_control = $this->accessControl($this->key);
-
         $bible = \Cache::remember('bible_show_response'.$id.$access_control->string, 2400, function() use($access_control,$id) {
             return Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
                 'filesets' => function ($query) use ($access_control) {

@@ -273,7 +273,7 @@ class AudioController extends APIController
                      ->when($book_id, function ($query) use ($book_id) {
                          return $query->where('book', $book_id);
                      })
-                     ->select(['book', 'chapter'])
+                     ->select(['book_id', 'chapter'])
                      ->take(50)
                      ->get();
 
@@ -281,7 +281,7 @@ class AudioController extends APIController
         $bible_files = BibleFile::query();
         $bible_files->where('hash_id', $audio_fileset->hash_id)->has('timestamps')->with('timestamps');
         foreach ($verses as $verse) {
-            $current_book = $books->where('id_usfx', $verse->book)->first();
+            $current_book = $books->where('id', $verse->book_id)->first();
             $bible_files->orWhere([
                 ['book_id', $current_book->id],
                 ['chapter_start', $verse->chapter]

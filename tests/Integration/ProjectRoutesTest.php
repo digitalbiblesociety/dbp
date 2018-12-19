@@ -54,7 +54,7 @@ class ProjectRoutesTest extends ApiV4Test
 
     /**
      * @category V4_API
-     * @category Route Name: v4_projects_oAuthProvider
+     * @category Route Name: v4_oAuth
      * @category Route Path: https://api.dbp.test/projects/{project_id}/oauth-providers/?v=4&key={key}
      * @see      \App\Http\Controllers\Organization\OAuthProvidersController
      * @group    V4
@@ -62,13 +62,27 @@ class ProjectRoutesTest extends ApiV4Test
      */
     public function projectsOAuthProvider()
     {
-        $project = Project::inRandomOrder()->first();
-        $path = route('v4_projects_oAuthProvider.index', array_add($this->params, 'project_id', $project->id));
+        \DB::connection('dbp_users')->table('projects')->where('name', 'Test Project Title')->delete();
+
+        $test_project = [
+            'name'            => 'Test Project Title',
+            'url_avatar'      => 'example.com/avatar.jpg',
+            'url_avatar_icon' => 'example.com/avatar_icon.jpg',
+            'url_site'        => 'example.com',
+            'description'     => '',
+        ];
+        $path = route('v4_projects.store', $this->params);
+        echo "\nTesting: $path";
+        $response = $this->withHeaders($this->params)->post($path, $test_project);
+        $project = Project::where('name', 'Test Project Title')->first();
+
+        $response->assertSuccessful();
+
+        $path = route('v4_oAuth.index', array_add($this->params, 'project_id', $project->id));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
 
-        $project = Project::inRandomOrder()->first();
         $project_oAuth_id = random_int(0, 1000);
         $project_oAuth_test = [
             'project_id'       => $project->id,
@@ -80,19 +94,25 @@ class ProjectRoutesTest extends ApiV4Test
             'callback_url'     => 'https://listen.dbp4.org/',
             'description'      => 'Test oAuth entry'
         ];
-        $path = route('v4_projects_oAuthProvider.store', array_merge(['project_id' => $project->id], $this->params));
+        $path = route('v4_oAuth.store', array_merge(['project_id' => $project->id], $this->params));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->post($path, $project_oAuth_test);
         $response->assertSuccessful();
 
-        $path = route('v4_projects_oAuthProvider.update', array_merge(['project_id' => $project->id,'id' => $project_oAuth_id], $this->params));
+        $path = route('v4_oAuth.update', array_merge(['project_id' => $project->id,'id' => $project_oAuth_id], $this->params));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->put($path, ['description' => 'Test oAuth updated']);
         $response->assertSuccessful();
 
-        $path = route('v4_projects_oAuthProvider.destroy', array_merge(['project_id' => $project->id,'id' => $project_oAuth_id], $this->params));
+        $path = route('v4_oAuth.destroy', array_merge(['project_id' => $project->id,'id' => $project_oAuth_id], $this->params));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->delete($path);
         $response->assertSuccessful();
+
+        $path = route('v4_projects.destroy', array_merge(['id' => $project->id], $this->params));
+        echo "\nTesting: $path";
+        $response = $this->withHeaders($this->params)->delete($path);
+        $response->assertSuccessful();
+
     }
 }

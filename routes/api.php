@@ -79,14 +79,15 @@ Route::name('v4_video_stream_ts')->get('bible/filesets/{fileset_id}/{file_id}/{f
 
 // VERSION 4 | Bible
 Route::name('v4_bible.books')->get('bibles/{bible_id}/book/{book?}',               'Bible\BiblesController@books');
+Route::name('v4_bible_equivalents.all')->get('bible/equivalents',                  'Bible\BibleEquivalentsController@index');
 Route::name('v4_bible.archival')->get('bibles/archival',                           'Bible\BiblesController@archival');
+Route::name('v4_bible.links')->get('bibles/links',                                 'Bible\BibleLinksController@index');
+Route::name('v4_bible_books_all')->get('bibles/books/',                                  'Bible\BooksController@index');
 Route::name('v4_bible.one')->get('bibles/{bible_id}',                              'Bible\BiblesController@show');
 Route::name('v4_bible.all')->get('bibles',                                         'Bible\BiblesController@index');
-Route::name('v4_bible.links')->get('bibles/links',                                 'Bible\BibleLinksController@index');
-Route::name('v4_bible_equivalents.all')->get('bible/equivalents',                  'Bible\BibleEquivalentsController@index');
 
 // VERSION 4 | Filesets
-Route::name('v4_bible_filesets.types')->get('bibles/filesets/media/types',         'Bible\BibleFileSetsController@mediaTypes');
+Route::name('v4_filesets.types')->get('bibles/filesets/media/types',               'Bible\BibleFileSetsController@mediaTypes');
 Route::name('v4_filesets.podcast')->get('bibles/filesets/{fileset_id}/podcast',    'Bible\BibleFileSetsController@podcast');
 Route::name('v4_filesets.download')->get('bibles/filesets/{fileset_id}/download',  'Bible\BibleFileSetsController@download');
 Route::name('v4_filesets.copyright')->get('bibles/filesets/{fileset_id}/copyright','Bible\BibleFileSetsController@copyright');
@@ -96,7 +97,6 @@ Route::name('v4_filesets.books')->get('bibles/filesets/{fileset_id}/books',     
 // VERSION 4 | Text
 Route::name('v4_filesets.chapter')->get('bibles/filesets/{fileset_id}/{book}/{chapter}', 'Bible\TextController@index');
 Route::name('v4_text_search')->get('search',                                             'Bible\TextController@search');
-Route::name('v4_bible_books_all')->get('bibles/books/',                                  'Bible\BooksController@index');
 
 // VERSION 4 | Timestamps
 Route::name('v4_timestamps')->get('timestamps',                                    'Bible\AudioController@availableTimestamps');
@@ -132,11 +132,6 @@ Route::name('v4_user.oAuth')->get('/login/{driver}',                            
 Route::name('v4_user.oAuthCallback')->get('/login/{driver}/callback',              'User\SocialController@callback');
 Route::name('v4_user.password_reset')->post('users/password/reset/{token?}',       'User\PasswordsController@validatePasswordReset');
 Route::name('v4_user.password_email')->post('users/password/email',                'User\PasswordsController@triggerPasswordResetEmail');
-Route::name('v4_user_accounts.index')->get('/accounts',                            'User\AccountsController@index');
-Route::name('v4_user_accounts.show')->get('/accounts/{id}',                        'User\AccountsController@show');
-Route::name('v4_user_accounts.store')->post('/accounts',                           'User\AccountsController@store');
-Route::name('v4_user_accounts.update')->put('/accounts/{id}',                      'User\AccountsController@update');
-Route::name('v4_user_accounts.destroy')->delete('/accounts/{id}',                  'User\AccountsController@destroy');
 
 // VERSION 4 | Annotations
 Route::name('v4_notes.index')->get('users/{user_id}/notes',                        'User\NotesController@index');
@@ -159,8 +154,9 @@ Route::name('v4_articles.show')->get('articles/{id}',                           
 Route::name('v4_articles.update')->put('articles/{id}',                            'User\ArticlesController@update');
 Route::name('v4_articles.store')->post('articles',                                 'User\ArticlesController@store');
 Route::name('v4_articles.destroy')->delete('articles/{id}',                        'User\ArticlesController@destroy');
-Route::name('v4_organizations.all')->get('organizations/',                         'Organization\OrganizationsController@index');
+Route::name('v4_organizations.compare')->get('organizations/compare/',             'Organization\OrganizationsController@compare');
 Route::name('v4_organizations.one')->get('organizations/{organization_id}',        'Organization\OrganizationsController@show');
+Route::name('v4_organizations.all')->get('organizations/',                         'Organization\OrganizationsController@index');
 Route::name('v4_projects.index')->get('projects',                                  'Organization\ProjectsController@index');
 Route::name('v4_projects.show')->get('projects/{project_id}',                      'Organization\ProjectsController@show');
 Route::name('v4_projects.update')->put('projects/{project_id}',                    'Organization\ProjectsController@update');

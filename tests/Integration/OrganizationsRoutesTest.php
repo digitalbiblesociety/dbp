@@ -49,7 +49,10 @@ class OrganizationsRoutesTest extends ApiV4Test
     public function organizationsCompare()
     {
         $organizations = Organization::inRandomOrder()->take(2)->get();
-        $path = route('v4_organizations.compare', array_merge(['org1' => $organizations->first()->slug, 'org2' => $organizations->last()->slug], $this->params));
+        $path = route('v4_organizations.compare', array_merge([
+            'source_organization'      => $organizations->first()->slug,
+            'destination_organization' => $organizations->last()->slug
+        ], $this->params));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();

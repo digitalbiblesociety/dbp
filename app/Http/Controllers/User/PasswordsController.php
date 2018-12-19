@@ -154,6 +154,8 @@ class PasswordsController extends APIController
         $user->password = \Hash::needsRehash($new_password) ? \Hash::make($new_password) : $new_password;
         $user->save();
 
+        PasswordReset::where('email',$user->email)->where('token', $request->token_id)->delete();
+
         if ($this->api) {
             return $this->reply($user);
         }

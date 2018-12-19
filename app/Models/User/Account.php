@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Account extends Model
 {
+    public $incrementing = false;
     protected $connection = 'dbp_users';
     protected $table = 'user_accounts';
     protected $fillable = ['user_id', 'provider_user_id', 'provider_id', 'project_id'];

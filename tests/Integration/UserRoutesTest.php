@@ -3,6 +3,8 @@
 namespace Tests\Integration;
 
 use App\Models\User\AccessGroup;
+use App\Models\User\Account;
+use App\Models\User\PasswordReset;
 use App\Models\User\Project;
 use App\Models\User\ProjectMember;
 use App\Models\User\ProjectOauthProvider;
@@ -169,7 +171,7 @@ class UserRoutesTest extends ApiV4Test
      */
     public function userOAuth()
     {
-        $projectOAuth = ProjectOauthProvider::inRandomOrder()->first();
+        $projectOAuth = ProjectOauthProvider::whereIn('name',['google','github','facebook'])->inRandomOrder()->first();
         $path = route('v4_user.oAuth', array_merge($this->params, ['driver' => $projectOAuth->name, 'project_id' => $projectOAuth->project_id]));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
@@ -186,12 +188,18 @@ class UserRoutesTest extends ApiV4Test
      */
     public function userPasswordReset()
     {
+        $password_reset = PasswordReset::create([
+            'email' => 'jonbitgood@gmail.com',
+            'token' => unique_random('password_resets','token')
+        ]);
+
         $account = [
             'new_password'              => 'test_password123',
             'new_password_confirmation' => 'test_password123',
             'token_id'                  => '12345',
             'email'                     => 'jonbitgood@gmail.com',
             'project_id'                => '52341',
+            'token_id'                     => $password_reset->token
         ];
         $path = route('v4_user.password_reset', $this->params);
         echo "\nTesting: $path";
@@ -215,57 +223,6 @@ class UserRoutesTest extends ApiV4Test
         $response = $this->withHeaders($this->params)->post($path, ['email' => 'jonbitgood@gmail.com', 'project_id' => '52341']);
         $response->assertSuccessful();
     }
-
-
-    /**
-     * @category V4_API
-     * @category Route Name: v4_user_accounts.index
-     * @category Route Path: https://api.dbp.test/accounts?v=4&key={key}
-     * @see      \App\Http\Controllers\User\AccountsController::index
-     * @group    V4
-     * @test
-     */
-    public function userAccounts()
-    {
-        $project_connection = ProjectMember::inRandomOrder()->first();
-        $project_fields = ['project_id' => $project_connection->project_id, 'user_id' => $project_connection->user_id];
-        $path = route('v4_user_accounts.index', array_merge($project_fields, $this->params));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->get($path);
-        $response->assertSuccessful();
-
-        // Create a new account
-        $path = route('v4_user_accounts.store', array_merge($project_fields, $this->params));
-        echo "\nTesting: $path";
-        $account = [
-            'user_id' => '5',
-            'provider_id' => 'test',
-            'provider_user_id' => '8179004',
-        ];
-        $response = $this->withHeaders($this->params)->post($path, $account);
-        $response->assertSuccessful();
-        $test_account = json_decode($response->getContent());
-
-        // Show the newly created account
-        $project_fields = array_add($project_fields, 'account_id', $test_account->id);
-        $path = route('v4_user_accounts.show', array_merge($project_fields, $this->params));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->get($path);
-        $response->assertSuccessful();
-
-        // Update the updated account
-        $path = route('v4_user_accounts.update', array_merge($project_fields, $this->params));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->put($path, ['provider_user_id' => 'aiorniga']);
-        $response->assertSuccessful();
-
-        // Destroy the created account
-        $path = route('v4_user_accounts.destroy', array_merge($project_fields, $this->params));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->delete($path);
-        $response->assertSuccessful();
-    }
-
 
     /**
      * @category V4_API

@@ -299,7 +299,7 @@ class CreateBiblesTable extends Migration
         if (!\Schema::connection('dbp')->hasTable('bible_file_tags')) {
             \Schema::connection('dbp')->create('bible_file_tags', function (Blueprint $table) {
                 $table->integer('file_id')->unsigned();
-                $table->foreign('file_id', 'FK_languages_bible_file_titles')->references('id')->on(config('database.connections.dbp.database').'.bible_files')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('file_id', 'FK_bible_files_bible_file_tags')->references('id')->on(config('database.connections.dbp.database').'.bible_files')->onUpdate('cascade')->onDelete('cascade');
                 $table->unique(['file_id', 'tag', 'value'], 'unique_bible_file_tag');
                 $table->string('tag', 4);
                 $table->string('value');
@@ -383,7 +383,7 @@ class CreateBiblesTable extends Migration
                 $table->integer('organization_id')->unsigned();
                 $table->foreign('organization_id', 'FK_organizations_bible_fileset_copyright_organizations')->references('id')->on(config('database.connections.dbp.database').'.organizations');
                 $table->integer('organization_role')->unsigned();
-                $table->foreign('organization_role', 'FK_bible_fileset_copyright_roles_bible_fileset_copyright_organizations')->references('id')->on(config('database.connections.dbp.database').'.bible_fileset_copyright_roles');
+                $table->foreign('organization_role', 'FK_bible_fileset_copyright_roles')->references('id')->on(config('database.connections.dbp.database').'.bible_fileset_copyright_roles');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
