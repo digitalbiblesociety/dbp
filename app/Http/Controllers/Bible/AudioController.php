@@ -87,7 +87,7 @@ class AudioController extends APIController
         $chapter_id = checkParam('chapter_id');
         $asset_id   = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        $cache_string = 'audio_index_'.$fileset_id.$book_id.$chapter_id.$asset_id;
+        $cache_string = strtolower('audio_index_'.$fileset_id.$book_id.$chapter_id.$asset_id);
         $audioChapters = \Cache::remember($cache_string, 2400, function () use ($fileset_id, $book_id, $chapter_id, $asset_id) {
             // Account for various book ids
             $book_id = optional(Book::where('id', $book_id)
@@ -156,7 +156,8 @@ class AudioController extends APIController
      */
     public function availableTimestamps()
     {
-        $hashes = \Cache::remember('timestamp_hashes', 4800, function () {
+        $cache_string = 'timestamp_hashes';
+        $hashes = \Cache::remember($cache_string, 4800, function () {
             return BibleFile::has('timestamps')->select('hash_id')->distinct()->get();
         });
         if ($hashes->count() === 0) {

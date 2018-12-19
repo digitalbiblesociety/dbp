@@ -108,7 +108,7 @@ class BooksController extends APIController
         $fileset_type = checkParam('fileset_type');
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        $cache_string = 'bible_books_'.$id.$fileset_type.$asset_id;
+        $cache_string = strtolower('bible_books_'.$id.$fileset_type.$asset_id);
         $books = \Cache::remember($cache_string, 2400, function () use ($fileset_type, $asset_id, $id) {
             $fileset = BibleFileset::where('id', $id)->where('asset_id', $asset_id)->where('set_type_code', $fileset_type)->first();
             if (!$fileset) {

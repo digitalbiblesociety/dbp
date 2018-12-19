@@ -100,7 +100,8 @@ class APIController extends Controller
             $this->v   = (int) checkParam('v', true);
             $this->key = checkParam('key');
 
-            $keyExists = \Cache::remember('key_'.$this->key, 2000, function () {
+            $cache_string = 'key_'.$this->key;
+            $keyExists = \Cache::remember($cache_string, 2000, function () {
                 return Key::with('user')->where('key', $this->key)->first();
             });
             $this->user = $keyExists->user ?? null;
@@ -111,7 +112,9 @@ class APIController extends Controller
 
             // i18n
             $i18n = checkParam('i18n') ?? 'eng';
-            $current_language = \Cache::remember('selected_api_language_'.$i18n, 2000, function () use ($i18n) {
+
+            $cache_string = 'selected_api_language_'.strtolower($i18n);
+            $current_language = \Cache::remember($cache_string, 2000, function () use ($i18n) {
                 $language = Language::where('iso', $i18n)->select(['iso','id'])->first();
                 return [
                     'i18n_iso' => $language->iso,

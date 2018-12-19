@@ -46,7 +46,7 @@ class LanguageControllerV2 extends APIController
         $sort_by               = checkParam('sort_by') ?? 'name';
 
         // Caching Logic
-        $cache_string = 'v' . $this->v . '_languages_' . $code.$full_word.$name.$sort_by;
+        $cache_string = strtolower('v' . $this->v . '_languages_' . $code.$full_word.$name.$sort_by);
         $cached_languages = \Cache::remember($cache_string, 1600, function () use ($code, $full_word, $name, $sort_by) {
             $languages = Language::select(['id', 'iso2B', 'iso', 'name'])->orderBy($sort_by)
                 ->when($code, function ($query) use ($code) {
@@ -142,10 +142,7 @@ class LanguageControllerV2 extends APIController
         $cache_string   = 'v2_country_lang_' . $sort_by . $lang_code . $country_code . $img_size . $img_type .
                           $additional . $access_control->string;
 
-        $countryLang = \Cache::remember(
-            $cache_string,
-            1600,
-            function () use ($sort_by, $lang_code, $country_code, $additional, $img_size, $img_type, $access_control) {
+        $countryLang = \Cache::remember($cache_string, 1600, function () use ($sort_by, $lang_code, $country_code, $additional, $img_size, $img_type, $access_control) {
 
                 // Fetch Languages and add conditional sorting
                 $languages = Language::select([
@@ -282,10 +279,8 @@ class LanguageControllerV2 extends APIController
         $full_word       = (boolean) checkParam('full_word');
         $organization_id = checkParam('organization_id');
 
-        $languages = \Cache::remember(
-            'volumeLanguage' . $root . $iso . $media . $organization_id,
-            2400,
-            function () use ($root, $iso, $media, $full_word, $organization_id) {
+        $cache_string = strtolower('volumeLanguage' . $root . $iso . $media . $organization_id);
+        $languages = \Cache::remember($cache_string, 2400, function () use ($root, $iso, $media, $full_word, $organization_id) {
                 $languages = Language::with(['parent','translations'])
                     ->has('filesets')
                     ->leftJoin('language_translations as autonym', function ($join) {
@@ -416,7 +411,7 @@ class LanguageControllerV2 extends APIController
 
         $access_control = $this->accessControl($this->key);
 
-        $cache_string = 'volumeLanguageFamily' . $root . $iso . $media . $organization_id;
+        $cache_string = strtolower('volumeLanguageFamily' . $root . $iso . $media . $organization_id);
         $languages = \Cache::remember($cache_string, 2400, function () use ($root, $iso, $access_control, $media, $organization_id) {
             $languages = Language::with('bibles')->with('dialects')
                     ->whereHas('filesets', function ($query) use ($access_control,$organization_id,$media) {

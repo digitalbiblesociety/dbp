@@ -76,7 +76,7 @@ class BiblesController extends APIController
 
         $access_control = $this->accessControl($this->key);
 
-        $cache_string = 'bibles'.$language_code.$organization.$country.$asset_id.$access_control->string.$media;
+        $cache_string = strtolower('bibles'.$language_code.$organization.$country.$asset_id.$access_control->string.$media);
         $bibles = \Cache::remember($cache_string, 1600, function () use ($show_restricted, $language_code, $organization, $country, $asset_id, $access_control, $media) {
             $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $show_restricted, $media)
                 ->leftJoin('bible_translations as ver_title', function ($join) {
@@ -151,7 +151,7 @@ class BiblesController extends APIController
         $asset_id             = checkParam('bucket|bucket_id|asset_id');
 
         $language = $iso ? Language::where('iso', $iso)->with('dialects')->first() : null;
-        $cache_string = 'bibles_archival'.$iso.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id;
+        $cache_string = strtolower('bibles_archival'.$iso.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id);
         $bibles = \Cache::remember($cache_string, 1600, function () use ($language, $organization_id, $country, $include_regionInfo, $dialects, $asset_id) {
             $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
@@ -247,7 +247,8 @@ class BiblesController extends APIController
     public function show($id)
     {
         $access_control = $this->accessControl($this->key);
-        $bible = \Cache::remember('bible_show_response'.$id.$access_control->string, 2400, function() use($access_control,$id) {
+        $cache_string = strtolower('bible_show_response'.$id.$access_control->string);
+        $bible = \Cache::remember($cache_string, 2400, function() use($access_control,$id) {
             return Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
                 'filesets' => function ($query) use ($access_control) {
                     $query->whereIn('bible_filesets.hash_id', $access_control->hashes);

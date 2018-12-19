@@ -79,7 +79,7 @@ class CountriesController extends APIController
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $languages = checkParam('include_languages');
 
-        $cache_string = 'countries' . $GLOBALS['i18n_iso'] . $filesets . $asset_id . $languages;
+        $cache_string = strtolower('countries' . $GLOBALS['i18n_iso'] . $filesets . $asset_id . $languages);
 
         $countries = \Cache::remember($cache_string, 1600, function () use ($filesets, $asset_id, $languages) {
             $countries = Country::with('currentTranslation')->when($filesets, function ($query) use ($asset_id) {
@@ -119,7 +119,8 @@ class CountriesController extends APIController
      */
     public function joshuaProjectIndex()
     {
-        $joshua_project_countries = \Cache::remember('countries_jp_' . $GLOBALS['i18n_iso'], 1600, function () {
+        $cache_string = 'countries_jp_' . strtolower($GLOBALS['i18n_iso']);
+        $joshua_project_countries = \Cache::remember($cache_string, 1600, function () {
             $countries = JoshuaProject::with(['country',
                 'translations' => function ($query) {
                     $query->where('language_id', $GLOBALS['i18n_id']);
@@ -185,7 +186,7 @@ class CountriesController extends APIController
      */
     public function show($id)
     {
-        $cache_string = 'countries_'. $id . $GLOBALS['i18n_iso'];
+        $cache_string = strtolower('countries_'. $id . $GLOBALS['i18n_iso']);
         $country = \Cache::remember($cache_string, 1600, function () use ($id) {
             $country = Country::with('languagesFiltered.bibles.translations')->find($id);
             if (!$country) {

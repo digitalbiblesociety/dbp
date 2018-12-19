@@ -85,12 +85,9 @@ class OrganizationsController extends APIController
         $bibles      = checkParam('bibles');
         $resources   = checkParam('resources');
 
-        $cache_string = $this->v . 'organizations' . $i10n . $membership . $content . $bibles .$resources;
+        $cache_string = strtolower($this->v . 'organizations' . $i10n . $membership . $content . $bibles .$resources);
 
-        $organizations = \Cache::remember(
-            $cache_string,
-            2400,
-            function () use ($i10n_language, $membership, $content, $bibles, $resources) {
+        $organizations = \Cache::remember($cache_string, 2400, function () use ($i10n_language, $membership, $content, $bibles, $resources) {
                 if ($membership) {
                     $membership = Organization::where('slug', $membership)->first();
                     if (!$membership) {

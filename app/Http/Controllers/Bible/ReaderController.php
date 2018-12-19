@@ -24,7 +24,8 @@ class ReaderController extends APIController
      */
     public function languages()
     {
-        $languages = \Cache::remember('Bible_is_languages', 2400, function () {
+        $cache_string = 'Bible_is_languages';
+        $languages = \Cache::remember($cache_string, 2400, function () {
             $project_key = optional(Key::where('name', 'bible.is')->first())->key;
             $access_control = \Cache::remember($project_key.'_access_control', 2400, function () use ($project_key) {
                 return $this->accessControl($project_key);

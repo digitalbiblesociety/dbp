@@ -102,7 +102,8 @@ class NumbersController extends APIController
         if (!$this->api) {
             return view('wiki.languages.alphabets.numerals.index');
         }
-        $numeral_systems = \Cache::remember('v4_numbers.index', 1600, function () {
+        $cache_string = 'v4_numbers.index';
+        $numeral_systems = \Cache::remember($cache_string, 1600, function () {
             $numeral_systems = NumeralSystem::with('alphabets')->get();
             return fractal($numeral_systems, new NumbersTransformer())->serializeWith($this->serializer);
         });
@@ -152,7 +153,7 @@ class NumbersController extends APIController
             return $this->setStatusCode(404)->replyWithError($error_message);
         }
 
-        $cache_string = 'v4_numbers.show'.$system;
+        $cache_string = strtolower('v4_numbers.show'.$system);
 
         $numerals = \Cache::remember($cache_string, 1600, function () use ($numerals) {
             $numerals->load('alphabets', 'numerals');

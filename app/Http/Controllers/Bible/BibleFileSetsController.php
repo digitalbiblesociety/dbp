@@ -325,7 +325,7 @@ class BibleFileSetsController extends APIController
         $type = checkParam('type', true);
         $asset_id = checkParam('bucket|bucket_id|asset_id') ?? 'dbp-prod';
 
-        $cache_string = 'bible_fileset_copyright'.$iso.$type.$asset_id.$id;
+        $cache_string = strtolower('bible_fileset_copyright'.$iso.$type.$asset_id.$id);
         $fileset = \Cache::remember($cache_string, 2400, function () use ($iso, $type, $asset_id, $id) {
             $language_id = optional(Language::where('iso', $iso)->select('id')->first())->id;
             return BibleFileset::where('id', $id)->with([

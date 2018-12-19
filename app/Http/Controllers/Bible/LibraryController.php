@@ -53,10 +53,8 @@ class LibraryController extends APIController
         $fileset_id = checkParam('dam_id');
         $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        if (config('app.env') === 'local') {
-            Cache::forget('v2_library_metadata' . $fileset_id);
-        }
-        $metadata = Cache::remember('v2_library_metadata' . $fileset_id, 1600, function () use ($fileset_id, $asset_id) {
+        $cache_string = 'v2_library_metadata' . strtolower($fileset_id);
+        $metadata = Cache::remember($cache_string, 1600, function () use ($fileset_id, $asset_id) {
 
             $metadata = BibleFileset::with('copyright.organizations.translations', 'copyright.role.roleTitle')->has('copyright')
                                     ->when($fileset_id, function ($q) use ($fileset_id) {
@@ -139,7 +137,8 @@ class LibraryController extends APIController
         $name = checkParam('name');
         $sort = checkParam('sort_by');
 
-        $versions = \Cache::remember('libraryVersion'.$code.$name.$sort, 2800, function () use ($code, $sort, $name) {
+        $cache_string = strtolower('libraryVersion'.$code.$name.$sort);
+        $versions = \Cache::remember($cache_string, 2800, function () use ($code, $sort, $name) {
             $english_id = Language::where('iso', 'eng')->first()->id ?? '6414';
 
             $versions = BibleFileset::where('asset_id', config('filesystems.disks.s3_fcbh.bucket'))

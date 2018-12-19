@@ -190,7 +190,8 @@ class LanguagesController extends APIController
      */
     public function show($id)
     {
-        $language = \Cache::remember('single_language_'.$id, 2400, function () use ($id) {
+        $cache_string = 'single_language_'. strtolower($id);
+        $language = \Cache::remember($cache_string, 2400, function () use ($id) {
             $language = Language::where('id', $id)->orWhere('iso', $id)->first();
             if (!$language) {
                 return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");

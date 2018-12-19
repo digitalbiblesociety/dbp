@@ -44,7 +44,7 @@ class BibleEquivalentsController extends APIController
         $bible_id = checkParam('bible_id');
 
         // Fetch Bible Equivalents
-        $cache_string = 'bible_equivalents_'.$org_id.$bible_id;
+        $cache_string = strtolower('bible_equivalents_'.$org_id.$bible_id);
         $bible_equivalents = \Cache::remember($cache_string, 2400, function () use ($org_id, $bible_id) {
             return BibleEquivalent::when($org_id, function ($q) use ($org_id) {
                 $q->where('organization_id', $org_id);
