@@ -23,8 +23,6 @@ class ApiV2Test extends TestCase
     public function setUp()
     {
         parent::setUp();
-        config(['app.url' => 'https://api.dbp.test']);
-
         $this->key = Key::where('name', 'test-key')->first()->key;
         $this->params = ['v' => 2,'key' => $this->key,'pretty'];
 
@@ -78,7 +76,7 @@ class ApiV2Test extends TestCase
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
         $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_library_asset')]);
-        ////$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_asset')]);
+        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_asset')]);
     }
 
     /**
@@ -126,7 +124,7 @@ class ApiV2Test extends TestCase
         $response = $this->withHeaders([$params])->get(route('v2_api_versionLatest'), $this->params);
         $response->assertSuccessful();
         $response->assertJsonStructure($this->withHeaders($this->params)->getSchemaKeys('v2_api_versionLatest'));
-        ////$this->compareToOriginal($path, $this->withHeaders($this->params)->getSchemaKeys('v2_api_versionLatest'));
+        //$this->compareToOriginal($path, $this->withHeaders($this->params)->getSchemaKeys('v2_api_versionLatest'));
     }
 
     /**
@@ -178,7 +176,7 @@ class ApiV2Test extends TestCase
         $response = $this->withHeaders($this->params)->get(route('v2_library_book'), $this->params);
         $response->assertSuccessful();
         $response->assertJsonStructure([$this->getSchemaKeys('v2_library_book')]);
-        ////$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_book')]);
+        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_book')]);
     }
 
     /**
@@ -226,7 +224,7 @@ class ApiV2Test extends TestCase
         $response = $this->withHeaders($this->params)->get(route('v2_library_chapter'), $this->params);
         $response->assertSuccessful();
         $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_library_chapter')]);
-        ////$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_chapter')]);
+        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_chapter')]);
     }
 
     /**
@@ -281,7 +279,7 @@ class ApiV2Test extends TestCase
         $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_library_verseInfo')]);
 
         // This cannot be compared reliably as too many new bibles have been added to the bible_filesets table
-        ////$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_verseInfo')]);
+        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_verseInfo')]);
     }
 
     /**
@@ -313,7 +311,7 @@ class ApiV2Test extends TestCase
         }
 
         // DBT.io version is broken
-        // ////$this->compareToOriginal($path,[$this->withHeaders($this->params)->getSchemaKeys('v4_numbers_range')]);
+        // //$this->compareToOriginal($path,[$this->withHeaders($this->params)->getSchemaKeys('v4_numbers_range')]);
     }
 
     /**
@@ -361,7 +359,7 @@ class ApiV2Test extends TestCase
         $response = $this->withHeaders($this->params)->get(route('v2_library_volume'), $this->params);
         $response->assertSuccessful();
         $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_library_volume')]);
-        ////$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_volume')]);
+        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_volume')]);
     }
 
     /**
