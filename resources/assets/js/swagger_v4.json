@@ -170,7 +170,7 @@
                         }
                     },
                     {
-                        "name": "organization_id",
+                        "name": "bible_id",
                         "in": "query",
                         "schema": {
                             "$ref": "#/components/schemas/Bible/properties/id"
@@ -246,7 +246,7 @@
                     {
                         "name": "book_id",
                         "in": "query",
-                        "description": "If provided will filter the results by the given\n     *                                   book",
+                        "description": "Will filter the results by the given book",
                         "schema": {
                             "$ref": "#/components/schemas/Book/properties/id"
                         }
@@ -254,7 +254,7 @@
                     {
                         "name": "chapter_id",
                         "in": "query",
-                        "description": "If provided will filter the results by the given\n     *                                      chapter",
+                        "description": "Will filter the results by the given chapter",
                         "schema": {
                             "$ref": "#/components/schemas/BibleFile/properties/chapter_start"
                         }
@@ -262,7 +262,7 @@
                     {
                         "name": "asset_id",
                         "in": "query",
-                        "description": "If provided will filter the results by the given\n     *                                    Asset",
+                        "description": "Will filter the results by the given Asset",
                         "schema": {
                             "$ref": "#/components/schemas/BibleFileset/properties/asset_id"
                         }
@@ -370,6 +370,25 @@
                         "schema": {
                             "$ref": "#/components/schemas/BibleFileset/properties/id"
                         }
+                    },
+                    {
+                        "name": "asset_id",
+                        "in": "path",
+                        "description": "The fileset ID",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Asset/properties/id"
+                        }
+                    },
+                    {
+                        "name": "book_ids",
+                        "in": "path",
+                        "description": "The list of book ids to download content for seperated by commas",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Book/properties/id"
+                        },
+                        "example": "GEN,EXO,MAT,REV"
                     }
                 ],
                 "responses": {
@@ -2055,68 +2074,6 @@
             }
         },
         "/accounts/{account_id}": {
-            "get": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "List the Accounts",
-                "description": "",
-                "operationId": "v4_user_accounts.show",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/version_number"
-                    },
-                    {
-                        "$ref": "#/components/parameters/key"
-                    },
-                    {
-                        "$ref": "#/components/parameters/pretty"
-                    },
-                    {
-                        "$ref": "#/components/parameters/format"
-                    },
-                    {
-                        "name": "account_id",
-                        "in": "path",
-                        "description": "The account_id",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/components/schemas/Account/properties/id"
-                        }
-                    },
-                    {
-                        "name": "project_id",
-                        "in": "query",
-                        "description": "The Project ID",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/components/schemas/Project/properties/id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Account"
-                                }
-                            },
-                            "application/xml": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Account"
-                                }
-                            },
-                            "text/x-yaml": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Account"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "put": {
                 "tags": [
                     "Users"
@@ -3495,9 +3452,6 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "avatar": {
-                                        "$ref": "#/components/schemas/User/properties/avatar"
-                                    },
                                     "email": {
                                         "$ref": "#/components/schemas/User/properties/email"
                                     },

@@ -8,26 +8,6 @@ class TextSearchTest extends ApiV4Test
 {
     public $params = [];
 
-    /* - Feature -------------------------*/
-
-    /**
-     *
-     * @category V4_API
-     * @category Route Name: v4_text_search
-     * @category Route Path: https://api.dbp.test/search?v=4&key={key}
-     * @see      \App\Http\Controllers\Bible\TextController::search
-     * @group    V4
-     * @test
-     */
-    public function onlyOneResultReturnsForAbaddon()
-    {
-        $this->markTestIncomplete('Integration tests not working off real bible text.');
-
-        $path = route('v4_text_search', ['fileset_id' => 'ENGKJV', 'query' => 'Abaddon', 'limit' => 5] + $this->params);
-        $results = json_decode($this->get($path)->getContent())->data;
-        $this->assertCount(1, $results);
-    }
-
     /**
      *
      * @category V4_API

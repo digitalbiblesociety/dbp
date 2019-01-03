@@ -30,7 +30,7 @@ class ApiV2Test extends TestCase
 
         // Fetch the Swagger Docs for Structure Validation
         $arrContextOptions = ['ssl' => ['verify_peer' =>false, 'verify_peer_name' =>false]];
-        $swagger_url       = base_path('resources/assets/js/swagger_v4.json');
+        $swagger_url       = base_path('resources/assets/js/swagger_v2.json');
         $this->swagger = json_decode(file_get_contents($swagger_url, false, stream_context_create($arrContextOptions)), true);
         $this->schemas = $this->swagger['components']['schemas'];
         ini_set('memory_limit', '1264M');
@@ -474,29 +474,6 @@ class ApiV2Test extends TestCase
         echo "\nTesting: " . route('v2_audio_path', $this->params);
         $response = $this->withHeaders($this->params)->get(route('v2_audio_path'), $this->params);
         $response->assertSuccessful();
-    }
-
-    /**
-     *
-     * Tests the Text Font
-     *
-     * @category V2_Text
-     * @see TextController::fonts()
-     * @category Swagger ID: TextFont
-     * @category Route Name: v2_text_font
-     * @link Route Path: https://api.dbp.test/text/font?v=2&platform=web&key={key}&pretty
-     * @group    V2
-     * @test
-     */
-    public function textFont()
-    {
-        $this->markTestIncomplete('No fonts are currently set to required');
-        $this->params['platform'] = 'web';
-
-        echo "\nTesting: " . route('v2_text_font', $this->params);
-        $response = $this->withHeaders($this->params)->get(route('v2_text_font'), $this->params);
-        $response->assertSuccessful();
-        $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('font_response')]);
     }
 
 
