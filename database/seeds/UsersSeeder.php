@@ -5,8 +5,6 @@ use Illuminate\Database\Seeder;
 use App\Models\User\Project;
 use App\Models\User\Role;
 use App\Models\User\User;
-
-use Faker\Provider\Base;
 use Faker\Generator as Faker;
 
 class UsersSeeder extends Seeder
