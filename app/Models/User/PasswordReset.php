@@ -18,7 +18,7 @@ use Carbon\Carbon;
 class PasswordReset extends Model
 {
     protected $connection = 'dbp_users';
-    protected $table = 'dbp_users.password_resets';
+    protected $table = 'password_resets';
     protected $fillable = ['email','token','reset_path','created_at'];
     public $incrementing = false;
     public $keyType = 'string';

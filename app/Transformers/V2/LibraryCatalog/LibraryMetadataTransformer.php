@@ -57,19 +57,19 @@ class LibraryMetadataTransformer extends TransformerAbstract
     {
         $output = [
             'dam_id'         => $bible_fileset->dam_id,
-            'mark'           => $bible_fileset->copyright->copyright,
-            'volume_summary' => $bible_fileset->copyright->copyright_description,
+            'mark'           => optional($bible_fileset->copyright)->copyright,
+            'volume_summary' => optional($bible_fileset->copyright)->copyright_description,
             'font_copyright' => null,
             'font_url'       => null
         ];
 
-        $organization = optional($bible_fileset->copyright->organizations)->first();
+        $organization = optional(optional($bible_fileset->copyright)->organizations)->first();
         if ($organization) {
             $output['organization'][] = [
                 'organization_id'       => (string) $organization->id,
                 'organization'          => (string) optional($organization->translations->where('vernacular', 1)->first())->name,
                 'organization_english'  => optional($organization->translations->where('language_id', $GLOBALS['i18n_id'])->first())->name ?? $organization->slug,
-                'organization_role'     => $bible_fileset->copyright->role->roleTitle->name,
+                'organization_role'     => optional($bible_fileset->copyright)->role->roleTitle->name,
                 'organization_url'      => $organization->url_website,
                 'organization_donation' => $organization->url_donate,
                 'organization_address'  => $organization->address,

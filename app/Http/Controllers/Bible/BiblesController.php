@@ -75,7 +75,6 @@ class BiblesController extends APIController
         $media              = checkParam('media');
 
         $access_control = $this->accessControl($this->key);
-
         $cache_string = strtolower('bibles'.$language_code.$organization.$country.$asset_id.$access_control->string.$media);
         $bibles = \Cache::remember($cache_string, 1600, function () use ($show_restricted, $language_code, $organization, $country, $asset_id, $access_control, $media) {
             $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $show_restricted, $media)
@@ -100,7 +99,7 @@ class BiblesController extends APIController
                          ->orderBy('priority', 'desc');
                 })
                 ->when($language_code, function ($q) use ($language_code) {
-                    $language = Language::where('iso', $language_code)->orWhere('id', $language_code)->first();
+                    $language = Language::where('iso', $language_code)->orWhere('id', $language_code)->firstOrFail();
                     $q->where('bibles.language_id', $language->id);
                 })
                 ->when($country, function ($q) use ($country) {

@@ -77,6 +77,6 @@ return [
     |
     */
 
-    'prefix' => 'laravel-'.env('APP_URL'),
+    'prefix' => env('CACHE_PREFIX'),
 
 ];

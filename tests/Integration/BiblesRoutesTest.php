@@ -2,6 +2,7 @@
 
 namespace Tests\Integration;
 
+use App\Models\Bible\BibleEquivalent;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
 use App\Traits\AccessControlAPI;
@@ -193,13 +194,14 @@ class BiblesRoutesTest extends ApiV4Test
     /** @test */
     public function bibleEquivalentsCanBeFilteredByOrganization()
     {
-        $org_path = route('v4_bible_equivalents.all', array_merge(['organization_id' => '9'], $this->params));
+        $bible_equivalents = BibleEquivalent::inRandomOrder()->first();
+        $org_path = route('v4_bible_equivalents.all', array_merge(['organization_id' => $bible_equivalents->organization_id], $this->params));
         $response = $this->withHeaders($this->params)->get($org_path);
         $response->assertSuccessful();
 
         $content = collect(json_decode($response->getContent()))->pluck('organization_id')->unique();
         $this->assertEquals($content->count(), 1);
-        $this->assertEquals($content[0], 9);
+        $this->assertEquals($content[0], $bible_equivalents->organization_id);
     }
 
 

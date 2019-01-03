@@ -33,10 +33,9 @@ class Key extends Model
 {
     protected $connection = 'dbp_users';
     protected $table = 'user_keys';
+    public $incrementing = false;
     protected $primaryKey = 'key';
-    public $incrementing = 'false';
-    protected $keyType = 'string';
-    protected $fillable = ['key','name','description'];
+    protected $fillable = ['key','name','description','user_id'];
 
     /**
      *

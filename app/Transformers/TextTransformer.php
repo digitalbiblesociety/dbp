@@ -42,7 +42,7 @@ class TextTransformer extends BaseTransformer
             */
             case 'v2_text_search':
                 return [
-                    'dam_id'           => (string) $_GET['dam_id'],
+                    'dam_id'           => (string) $text->dam_id,
                     'book_name'        => (string) $text->book_name,
                     'book_id'          => (string) $text->book_id,
                     'chapter_id'       => (string) $text->chapter,

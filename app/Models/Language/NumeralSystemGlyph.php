@@ -12,6 +12,7 @@ class NumeralSystemGlyph extends Model
     protected $keyType = 'string';
     public $incrementing = false;
     public $hidden = ['created_at','updated_at','numeral_system_id'];
+    public $fillable = ['glyph','value','numeral_system_id'];
 
 
     public function numeralSystem()

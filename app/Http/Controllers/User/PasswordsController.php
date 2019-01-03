@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
 use App\Models\User\Project;
+use App\Models\User\ProjectMember;
 use Illuminate\Http\Request;
 
 use App\Models\User\User;
@@ -74,26 +75,24 @@ class PasswordsController extends APIController
      */
     public function triggerPasswordResetEmail(Request $request)
     {
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
+        }
+
+        $connection = ProjectMember::with('project')->where('project_id',$request->project_id)->where('user_id',$user->id)->first();
+        if (!$connection) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project'));
+        }
+
         $generatedToken = PasswordReset::create([
             'email' => $request->email,
             'token' => str_random(64),
             'created_at' => Carbon::now()
         ]);
-        $user = User::where('email', $request->email)->first();
         $user->token = $generatedToken->token;
-        if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
-        }
 
-        $project = Project::where('id', $request->project_id)->first();
-        if (!$project) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project'));
-        }
-
-        \Mail::to($user)->send(new EmailPasswordReset($user, $project));
-        if (!$this->api) {
-            return view('auth.verification-required');
-        }
+        \Mail::to($user)->send(new EmailPasswordReset($user, $connection->project));
         return $this->reply(trans('api.email_send_successful'));
     }
 

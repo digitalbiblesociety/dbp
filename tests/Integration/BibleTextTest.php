@@ -6,14 +6,13 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleVerse;
 use App\Models\Bible\Book;
 use App\Models\User\AccessGroup;
+use App\Models\User\Key;
 use App\Traits\AccessControlAPI;
 
 class BibleTextTest extends ApiV4Test
 {
 
     use AccessControlAPI;
-
-    protected $params = ['key' => 'tighten_37518dau8gb891ub', 'v' => '4'];
 
     /* - Feature -------------------------*/
 
@@ -42,7 +41,8 @@ class BibleTextTest extends ApiV4Test
      */
     public function bibleFilesetsChapter()
     {
-        $access_control = $this->accessControl($this->params['key']);
+        $access_control = $this->accessControl($this->key);
+
         $fileset = BibleFileset::with('files')->whereIn('hash_id', $access_control->hashes)->where('set_type_code', 'text_plain')->inRandomOrder()->first();
         $bible_verse = BibleVerse::where('hash_id',$fileset->hash_id)->inRandomOrder()->first();
 
@@ -50,7 +50,8 @@ class BibleTextTest extends ApiV4Test
             'fileset_id' => $fileset->id,
             'book_id'    => @$bible_verse->book_id,
             'chapter'    => @$bible_verse->chapter,
-            'asset_id'   => $fileset->asset_id
+            'asset_id'   => $fileset->asset_id,
+            'type'       => 'text_plain'
         ], $this->params);
 
         $path = route('v4_filesets.chapter', $this->params);

@@ -178,24 +178,20 @@ class OAuthProvidersController extends APIController
     public function destroy($project_id, $id)
     {
         $project_id = checkParam('project_id', true, $project_id);
-
-        $project = Project::where('id', $project_id)->first();
+        $project    = Project::where('id', $project_id)->first();
         if (!$project) {
             return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
         }
 
-        $admin_role = Role::where('slug','admin')->first();
-
-        echo "attempting project_id".$project_id.': user_id: '.$this->user->id.': role_id'.$admin_role->id;
-
+        $roles = Role::where('slug','admin')->orWhere('slug','developer')->select('id')->get()->pluck('id')->toArray();
         $access_allowed = ProjectMember::where('project_id',$project_id)
             ->where('user_id', $this->user->id)
-            ->where('role_id', $admin_role->id)->first();
+            ->whereIn('role_id', $roles)->first();
         if (!$access_allowed) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_destroy_401'));
         }
 
-        $provider   = ProjectOauthProvider::where('project_id', $project_id)->where('id', $id)->first();
+        $provider = ProjectOauthProvider::where('project_id', $project_id)->where('id', $id)->first();
         $provider->delete();
 
         return $this->setStatusCode(200)->reply(trans('api.projects_destroy_200'));

@@ -24,7 +24,7 @@ class CreateUsersBiblesTable extends Migration
                 $table->string('url_site')->nullable();
                 $table->text('description')->nullable();
                 $table->boolean('sensitive')->default(false);
-                $table->timestamp('deleted_at')->default(null);
+                $table->timestamp('deleted_at')->nullable()->default(NULL);
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });

@@ -25,7 +25,6 @@ class CountryTransformer extends BaseTransformer
         'energy',
         'geography',
         'government',
-        'government',
         'issues',
         'language',
         'people',

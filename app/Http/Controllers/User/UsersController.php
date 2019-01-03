@@ -220,7 +220,6 @@ class UsersController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\RequestBody(required=true, description="Information supplied for user creation", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
-     *              @OA\Property(property="avatar",                  ref="#/components/schemas/User/properties/avatar"),
      *              @OA\Property(property="email",                   ref="#/components/schemas/User/properties/email"),
      *              @OA\Property(property="name",                    ref="#/components/schemas/User/properties/name"),
      *              @OA\Property(property="password",                ref="#/components/schemas/User/properties/password"),
@@ -251,7 +250,6 @@ class UsersController extends APIController
         }
 
         $user = User::create([
-            'avatar'        => $request->avatar,
             'email'         => $request->email,
             'name'          => $request->name,
             'first_name'    => $request->first_name,
@@ -271,25 +269,12 @@ class UsersController extends APIController
                 'role_id'    => $user_role->id,
                 'subscribed' => $request->subscribed ?? 0,
             ]);
-
-            $dbp_project = Project::where('name', 'Digital Bible Platform')->first();
-
-            if ($request->project_id === $dbp_project->id) {
-                $user->keys()->create([
-                    'key' => unique_random('user_keys', 'key', 24),
-                    'name' => 'DBP Generated',
-                    'description' => 'An Auto-Generated Key'
-                ]);
-            }
         }
         if ($request->social_provider_id) {
             $user->accounts()->create([
                 'provider_id'      => $request->social_provider_id,
                 'provider_user_id' => $request->social_provider_user_id,
             ]);
-        }
-        if (!$this->api) {
-            return view('dashboard.home', compact('user'));
         }
         return $this->setStatusCode(200)->reply(fractal($user, new UserTransformer())->addMeta(['success' => 'User created']));
     }

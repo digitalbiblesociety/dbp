@@ -27,7 +27,7 @@ class AnnotationSeeder extends Seeder
                     'book_id'     => $books->random()->id,
                     'chapter'     => random_int(1, 25),
                     'verse_start' => random_int(1, 40),
-                    'notes'       => $faker->paragraph()
+                    'notes'       => encrypt($faker->paragraph())
                 ]);
                 $note_count--;
             }
@@ -54,7 +54,7 @@ class AnnotationSeeder extends Seeder
                     'chapter'           => random_int(1, 25),
                     'verse_start'       => random_int(1, 40)
                 ]);
-                $highlight_count--;
+                $bookmark_count--;
             }
         }
 

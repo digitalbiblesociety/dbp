@@ -356,7 +356,7 @@ class CreateBiblesTable extends Migration
                 $table->increments('id');
                 $table->char('hash_id', 12);
                 $table->foreign('hash_id', 'FK_bible_filesets_bible_fileset_copyrights')->references('hash_id')->on(config('database.connections.dbp.database').'.bible_filesets')->onUpdate('cascade')->onDelete('cascade');
-                $table->string('description_date');
+                $table->integer('copyright_date')->nullable();
                 $table->text('copyright');
                 $table->text('copyright_description');
                 $table->boolean('open_access')->default(1);

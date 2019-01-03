@@ -106,7 +106,7 @@ class HighlightsController extends APIController
 
         $highlights = Highlight::with('color')->with('tags')->where('user_id', $user_id)
             ->join($dbp_database.'.bibles as bibles', 'bibles.id', '=', $dbp_users_database.'.user_highlights.bible_id')
-            ->join($dbp_database.'.bible_books as book', function ($join) {
+            ->leftjoin($dbp_database.'.bible_books as book', function ($join) {
                 $join->on('bibles.id', '=', 'book.bible_id')
                      ->on('book.book_id', '=', 'user_highlights.book_id');
             })
@@ -128,8 +128,10 @@ class HighlightsController extends APIController
                 'user_highlights.highlighted_color'
             ])->orderBy('user_highlights.updated_at')->paginate($limit);
 
+
         $highlight_collection = $highlights->getCollection();
         $highlight_pagination = new IlluminatePaginatorAdapter($highlights);
+
         return $this->reply(fractal($highlight_collection, UserHighlightsTransformer::class)->paginateWith($highlight_pagination));
     }
 

@@ -4,8 +4,6 @@ use Illuminate\Database\Seeder;
 
 use Symfony\Component\Yaml\Yaml;
 
-
-
 use App\Models\Country\Country;
 use App\Models\Country\CountryTranslation;
 use App\Models\Country\CountryLanguage;
@@ -14,6 +12,7 @@ use App\Models\Language\Language;
 use App\Models\Language\LanguageStatus;
 use App\Models\Language\LanguageTranslation;
 use App\Models\Language\LanguageBibleInfo;
+use App\Models\Language\NumeralSystemGlyph;
 use App\Models\Language\Alphabet;
 use App\Models\Language\NumeralSystem;
 
@@ -27,8 +26,13 @@ use App\Models\Bible\BibleOrganization;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileTimestamp;
 use App\Models\Bible\Book;
+use App\Models\Bible\BookTranslation;
 use App\Models\Bible\BibleFilesetSize;
 use App\Models\Bible\BibleFilesetType;
+use App\Models\Bible\BibleFilesetConnection;
+use App\Models\Bible\BibleFilesetCopyright;
+use App\Models\Bible\BibleFilesetCopyrightRole;
+use App\Models\Bible\BibleFilesetCopyrightOrganization;
 
 use App\Models\Organization\Asset;
 use App\Models\Organization\Organization;
@@ -63,6 +67,8 @@ class RealDataSeeder extends Seeder
         $this->seedData('/languages/language_bibleInfo', LanguageBibleInfo::class);
         echo "\n Seeding numeral_systems";
         $this->seedData('/languages/numeral_systems', NumeralSystem::class);
+        echo "\n Seeding Numeral Systems Glyphs";
+        $this->seedData('/languages/numeral_system_glyphs', NumeralSystemGlyph::class);
         echo "\n Seeding alphabets";
         $this->seedData('/languages/alphabets', Alphabet::class);
         echo "\n Seeding country_translations";
@@ -87,6 +93,8 @@ class RealDataSeeder extends Seeder
         $this->seedData('/bibles/bible_links', BibleLink::class);
         echo "\n Seeding books";
         $this->seedData('/bibles/books', Book::class);
+        echo "\n Seeding book translations";
+        $this->seedData('/bibles/book_translations', BookTranslation::class);
         echo "\n Seeding bible_books";
         $this->seedData('/bibles/bible_books', BibleBook::class);
         echo "\n Seeding bible_organization";
@@ -97,8 +105,27 @@ class RealDataSeeder extends Seeder
         $this->seedData('/bibles/bible_fileset_types', BibleFilesetType::class);
         echo "\n Seeding bible_filesets";
         $this->seedData('/bibles/bible_filesets', BibleFileset::class);
+        echo "\n Seeding bible_fileset_connections";
+        $this->seedData('/bibles/bible_fileset_connections', BibleFilesetConnection::class);
+
+        echo "\n Seeding bible_fileset_copyright roles";
+        $this->seedData('/bibles/bible_fileset_copyright_roles', \App\Models\Bible\BibleFilesetCopyrightRole::class);
+
+        echo "\n Seeding bible_fileset_copyrights";
+        $this->seedData('/bibles/bible_fileset_copyrights', BibleFilesetCopyright::class);
+
+        echo "\n Seeding bible_fileset_copyrights";
+        $this->seedData('/bibles/bible_fileset_copyright_organizations', BibleFilesetCopyrightOrganization::class);
+
         echo "\n Seeding bible_files";
         $this->seedData('/bibles/bible_files', BibleFile::class);
+
+        echo "\n Seeding bible_file_video_resolutions";
+        $this->seedData('/bibles/bible_file_video_resolutions',      \App\Models\Bible\VideoResolution::class);
+
+        echo "\n Seeding bible_file_video_transport_stream";
+        $this->seedData('/bibles/bible_file_video_transport_stream', \App\Models\Bible\VideoTransportStream::class);
+
         echo "\n Seeding bible_organization";
         $this->seedData('/bibles/bible_organization', BibleOrganization::class);
         echo "\n Seeding equivalents";

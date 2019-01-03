@@ -117,7 +117,7 @@ class BibleFilesetCopyright extends Model
 
     public function fileset()
     {
-        return $this->belongsTo(Organization::class());
+        return $this->belongsTo(BibleFileset::class, 'hash_id', 'hash_id');
     }
 
     public function roles()

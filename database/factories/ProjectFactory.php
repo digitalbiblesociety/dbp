@@ -15,7 +15,8 @@ $factory->define(Project::class, function (Faker $faker) {
         'url_avatar_icon'  => $faker->url,
         'url_site'         => $faker->url,
         'description'      => $faker->paragraph(3, true),
-        'sensitive'        => false
+        'sensitive'        => false,
+        'deleted_at'       => null
     ];
 });
 

@@ -2,7 +2,11 @@
 
 namespace Tests\Integration;
 
+use App\Models\User\Key;
 use App\Models\User\Project;
+use App\Models\User\ProjectMember;
+use App\Models\User\Role;
+use App\Models\User\User;
 
 class ProjectRoutesTest extends ApiV4Test
 {
@@ -62,21 +66,14 @@ class ProjectRoutesTest extends ApiV4Test
      */
     public function projectsOAuthProvider()
     {
-        \DB::connection('dbp_users')->table('projects')->where('name', 'Test Project Title')->delete();
-
-        $test_project = [
-            'name'            => 'Test Project Title',
-            'url_avatar'      => 'example.com/avatar.jpg',
-            'url_avatar_icon' => 'example.com/avatar_icon.jpg',
-            'url_site'        => 'example.com',
-            'description'     => '',
-        ];
-        $path = route('v4_projects.store', $this->params);
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->post($path, $test_project);
-        $project = Project::where('name', 'Test Project Title')->first();
-
-        $response->assertSuccessful();
+        $project = factory(Project::class)->create();
+        $user = Key::where('key',$this->key)->first()->user;
+        $admin_role = Role::where('slug','admin')->first();
+        ProjectMember::create([
+           'project_id' => $project->id,
+           'user_id' => $user->id,
+           'role_id' => $admin_role->id,
+        ]);
 
         $path = route('v4_oAuth.index', array_add($this->params, 'project_id', $project->id));
         echo "\nTesting: $path";
@@ -105,11 +102,6 @@ class ProjectRoutesTest extends ApiV4Test
         $response->assertSuccessful();
 
         $path = route('v4_oAuth.destroy', array_merge(['project_id' => $project->id,'id' => $project_oAuth_id], $this->params));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->delete($path);
-        $response->assertSuccessful();
-
-        $path = route('v4_projects.destroy', array_merge(['id' => $project->id], $this->params));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->delete($path);
         $response->assertSuccessful();

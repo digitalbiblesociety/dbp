@@ -38,12 +38,17 @@ trait AccessControlAPI
                 return (object) ['hashes' => [], 'string' => ''];
             }
 
-            $accessGroups = AccessGroup::where('name', '!=', 'RESTRICTED')
-                ->whereHas('keys', function ($query) use ($api_key) {
-                    $query->where('key_id', $api_key);
-                })->whereHas('types', function ($query) use ($access_type) {
-                    $query->where('access_types.id', $access_type->id);
-                })->select(['name','id'])->getQuery()->get();
+            $dbp_connection = config('database.connections.dbp.database');
+            $dbp_users_connection = config('database.connections.dbp_users.database');
+            $accessGroups = \DB::connection('dbp')
+               ->table('access_groups')
+               ->where('name', '!=', 'RESTRICTED')
+                ->join($dbp_users_connection.'.access_group_keys as keys', function($join) use($api_key) {
+                    $join->on('keys.access_group_id', 'access_groups.id')->where('key_id', $api_key);
+                })
+               ->join($dbp_connection.'.access_group_types as types', function($join) use($api_key) {
+                   $join->on('types.access_group_id', 'access_groups.id')->where('key_id', $api_key);
+               })->select(['access_groups.name','access_groups.id'])->get();
 
             // Use Eloquent everywhere except for this giant request
             $filesets = \DB::connection('dbp')->table('access_group_filesets')->select('hash_id')

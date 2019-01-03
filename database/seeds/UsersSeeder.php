@@ -14,8 +14,40 @@ class UsersSeeder extends Seeder
     public function run(Faker $faker)
     {
         $countries = \DB::connection('dbp')->table('countries')->get();
-        $projects  = \DB::connection('dbp_users')->table('projects')->get();
+        $projects  = Project::all();
         $role_id   = Role::where('slug', 'user')->first()->id;
+
+        $user = User::create([
+            'name' => 'FCBH Test Developer',
+            'first_name'                     => $faker->firstName,
+            'last_name'                      => $faker->lastName,
+            'email'                          => $faker->unique()->safeEmail,
+            'password'                       => bcrypt('password'),
+            'token'                          => str_random(64),
+            'activated'                      => true,
+            'signup_ip_address'              => $faker->ipv4,
+            'signup_confirmation_ip_address' => $faker->ipv4,
+        ]);
+
+        $key = \App\Models\User\Key::create([
+            'user_id' => $user->id,
+            'key'     => $faker->bankAccountNumber,
+            'name'    => 'test-key'
+        ]);
+        $key->access()->sync([1,2,3,4,6]);
+
+        \App\Models\User\ProjectMember::create([
+           'user_id' => $user->id,
+           'project_id' => $projects->random()->id,
+           'role_id' => 2
+        ]);
+
+        \App\Models\User\ProjectMember::create([
+            'user_id'    => $user->id,
+            'project_id' => $projects->random()->id,
+            'role_id'    => 1
+        ]);
+
 
         for ($user_count = 0; $user_count <= 300; $user_count++) {
             $user = User::create([

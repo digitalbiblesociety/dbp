@@ -21,7 +21,7 @@ class AccessKeySeeder extends Seeder
             while ($key_count > 0) {
                 AccessGroupKey::create([
                     'key_id'          => $key->key,
-                    'access_group_id' => ($key_count === 1) ? '1234' : $access_groups->random()->first()->id
+                    'access_group_id' => $access_groups->random()->first()->id
                 ]);
                 $key_count--;
             }

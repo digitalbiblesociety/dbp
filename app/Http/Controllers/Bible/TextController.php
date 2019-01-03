@@ -220,10 +220,10 @@ class TextController extends APIController
         }
 
         $query   = checkParam('query', true);
-        $fileset_id = checkParam('fileset_id');
+        $fileset_id = checkParam('fileset_id|dam_id', true);
         $limit    = checkParam('limit') ?? 15;
         $book_id  = checkParam('book|book_id');
-        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
+        $asset_id = checkParam('asset_id') ?? 'dbp-prod';
 
         $fileset = BibleFileset::with('bible')->where('id', $fileset_id)->where('set_type_code', 'text_plain')
                                                                         ->where('asset_id', $asset_id)->first();
@@ -405,9 +405,22 @@ class TextController extends APIController
         $verse_end   = checkParam('verse_end');
         $asset_id    = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
 
-        $fileset = BibleFileset::where([['id', $bible_id],['asset_id', $asset_id],['set_type_code', 'text_plain']])->first();
+        $fileset = BibleFileset::where([['id', $bible_id], ['asset_id', $asset_id], ['set_type_code', 'text_plain']])->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError(trans('api.fileset_errors_404'));
+        }
+
+        $verse_info = BibleVerse::where('hash_id', $fileset->hash_id)->where([
+            ['book_id', '=', $book_id],
+            ['chapter', '=', $chapter_id],
+            ['verse_start', '>=', $verse_start],
+        ])->when($verse_end, function ($query) use ($verse_end) {
+            return $query->where('verse_start', '<=', $verse_end);
+        })->select(['book_id', 'chapter as chapter_number', 'verse_start', 'verse_end', 'verse_text'])->get();
+
+        foreach ($verse_info as $key => $verse) {
+            $verse_info[$key]->bible_id           = $fileset->id;
+            $verse_info[$key]->bible_variation_id = null;
         }
 
         /**
@@ -427,19 +440,6 @@ class TextController extends APIController
          *   )
          * )
          */
-        $verse_info = BibleVerse::where('hash_id', $fileset->hash_id)->where([
-            ['book_id', '=', $book_id],
-            ['chapter', '=', $chapter_id],
-            ['verse_start', '>=', $verse_start],
-        ])->when($verse_end, function ($query) use ($verse_end) {
-            return $query->where('verse_start', '<=', $verse_end);
-        })->select(['book_id', 'chapter as chapter_number', 'verse_start', 'verse_end', 'verse_text'])->get();
-
-        foreach ($verse_info as $key => $verse) {
-            $verse_info[$key]->bible_id           = $fileset->id;
-            $verse_info[$key]->bible_variation_id = null;
-        }
-
         return $this->reply($verse_info);
     }
 

@@ -56,14 +56,21 @@ class LibraryController extends APIController
         $cache_string = 'v2_library_metadata' . strtolower($fileset_id);
         $metadata = Cache::remember($cache_string, 1600, function () use ($fileset_id, $asset_id) {
 
-            $metadata = BibleFileset::with('copyright.organizations.translations', 'copyright.role.roleTitle')->has('copyright')
-                                    ->when($fileset_id, function ($q) use ($fileset_id) {
-                                        $q->where('id', $fileset_id)->orWhere('id', substr($fileset_id, 0, -4))->orWhere('id', substr($fileset_id, 0, -2));
-                                    })->where('asset_id', $asset_id)->first();
+            $metadata = BibleFileset::where('asset_id', $asset_id)
+                ->when($fileset_id, function ($q) use ($fileset_id) {
+                    $q->where('id', $fileset_id)->orWhere('id', substr($fileset_id, 0, -4))->orWhere('id', substr($fileset_id, 0, -2));
+                })->with('copyright.organizations.translations', 'copyright.role.roleTitle')->has('copyright')->first();
 
-            $metadata->dam_id = $fileset_id;
-            return fractal([$metadata], new LibraryMetadataTransformer())->serializeWith($this->serializer);
+            if(!$metadata) {
+                return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $fileset_id]));
+            }
+
+            return [fractal($metadata, new LibraryMetadataTransformer())->serializeWith($this->serializer)];
         });
+
+        if(is_a($metadata, JsonResponse::class)) {
+            return $metadata;
+        }
 
         return $this->reply($metadata);
     }
@@ -372,7 +379,7 @@ class LibraryController extends APIController
                         break;
                 }
             })
-                       ->join('bible_fileset_tags', function ($q) {
+                       ->leftJoin('bible_fileset_tags', function ($q) {
                            $q->on('bible_fileset_tags.hash_id', 'bible_filesets.hash_id')->where('name', 'volume');
                        })
                        ->join('bible_fileset_connections as connection', 'connection.hash_id', 'bible_filesets.hash_id')

@@ -1,9 +1,8 @@
 dist: trusty
 language: php
-sudo: required
 
 php:
-  - '7.2'
+  - 7.2
 
 branches:
   only:
@@ -16,18 +15,17 @@ addons:
 before_install:
   - mysql -e 'CREATE DATABASE dbp;'
   - mysql -e 'CREATE DATABASE dbp_users;'
-  - mysql -e 'CREATE DATABASE sophia;'
 
 before_script:
+  - phpenv config-add travis.php.ini
   - cp .env.travis .env
   - composer self-update
-  - travis_retry composer install --no-interaction --prefer-dist --no-suggest
-  - composer dump-autoload
-  - sudo chgrp -R www-data storage bootstrap/cache
-  - sudo chmod -R ug+rwx storage bootstrap/cache
+  - composer install --no-interaction --prefer-dist --no-suggest --no-dev
   - npm install
   - php artisan key:generate
   - php artisan migrate --seed
+
+script: phpunit tests/Integration
 
 services:
   - mysql
