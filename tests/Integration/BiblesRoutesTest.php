@@ -118,15 +118,16 @@ class BiblesRoutesTest extends ApiV4Test
     public function bibleFilesetsShow()
     {
         $access_control = $this->accessControl($this->key);
-        $fileset = BibleFileset::whereIn('hash_id',$access_control->hashes)->where('set_type_code', 'text_format')->inRandomOrder()->first();
-        $random_file = BibleFile::where('hash_id',$fileset->hash_id)->first();
+        $file = BibleFile::with('fileset')->whereIn('hash_id', $access_control->hashes)->inRandomOrder()->first();
+
         $path = route('v4_filesets.show', array_merge([
-            'fileset_id' => $fileset->id,
-            'book_id'    => $random_file->book_id,
-            'chapter' => $random_file->chapter_start,
-            'type' => 'text_format',
-            'bucket' => $fileset->asset_id
+            'fileset_id' => $file->fileset->id,
+            'book_id'    => $file->book_id,
+            'chapter'    => $file->chapter_start,
+            'type'       => $file->fileset->set_type_code,
+            'bucket'     => $file->fileset->asset_id
         ], $this->params));
+
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();

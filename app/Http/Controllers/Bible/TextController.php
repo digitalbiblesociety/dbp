@@ -85,10 +85,10 @@ class TextController extends APIController
         $asset_id    = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3.bucket');
 
         $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, 'text_plain')->first();
-        $bible = optional($fileset->bible)->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
+        $bible = optional($fileset->bible)->first();
 
         $access_control = $this->accessControl($this->key);
         if (!\in_array($fileset->hash_id, $access_control->hashes)) {

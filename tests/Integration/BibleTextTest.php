@@ -66,7 +66,7 @@ class BibleTextTest extends ApiV4Test
     /**
      *
      * @category V2_Text
-     * @see \app\Http\Controllers\TextController::index()
+     * @see \app\Http\Controllers\Bible\TextController::index()
      * @category Swagger ID: TextVerse
      * @category Route Name: v2_text_verse
      * @link Route Path: https://api.dbp.test/text/verse?v=2&key=1234&dam_id=ENGESV&book_id=GEN&chapter_id=1&verse_start=1&verse_end=10
@@ -79,6 +79,7 @@ class BibleTextTest extends ApiV4Test
         $bible_verse = BibleVerse::where('hash_id',$fileset->hash_id)->inRandomOrder()->first();
 
         $this->params['dam_id']      = $fileset->id;
+        $this->params['asset_id']    = $fileset->asset_id;
         $this->params['book_id']     = $bible_verse->book;
         $this->params['chapter_id']  = $bible_verse->chapter;
         $this->params['verse_start'] = $bible_verse->verse_start;

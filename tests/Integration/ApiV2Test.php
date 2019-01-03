@@ -143,10 +143,14 @@ class ApiV2Test extends TestCase
      */
     public function libraryBookOrder()
     {
-        $this->params['dam_id'] = BibleFileset::where('set_type_code','text_plain')->where('asset_id','dbp-prod')->inRandomOrder()->first()->id;
+        $hash_id = BibleVerse::where('id', random_int(1, BibleVerse::count()))->select('hash_id')->first()->hash_id;
+        $bible_fileset = BibleFileset::where('hash_id',$hash_id)->first();
+
+        $this->params['asset_id'] = $bible_fileset->asset_id;
+        $this->params['dam_id']   = $bible_fileset->id;
+
         $path = route('v2_library_bookOrder', $this->params);
         echo "\nTesting: $path";
-
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
         $response->assertJsonStructure([$this->getSchemaKeys('v2_library_bookOrder')]);

@@ -114,7 +114,10 @@ class BooksControllerV2 extends APIController
         $id        = checkParam('dam_id', true);
         $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? 'dbp-prod';
 
-        $fileset   = BibleFileset::with('bible')->where('id', $id)->orWhere('id', substr($id, 0, -4))->orWhere('id', substr($id, 0, -2))->where('asset_id', $asset_id)->where('set_type_code', 'text_plain')->first();
+        $fileset   = BibleFileset::with('bible')
+            ->where(function($query) use ($id) {
+                $query->where('id', $id)->orWhere('id', substr($id, 0, -4))->orWhere('id', substr($id, 0, -2));
+            })->where('asset_id', $asset_id)->where('set_type_code', 'text_plain')->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
@@ -138,6 +141,7 @@ class BooksControllerV2 extends APIController
                              })->orderBy('protestant_order')->get();
 
                 $bible_id = $fileset->bible()->first()->id;
+
                 foreach ($books as $key => $book) {
                     $chapters                     = $booksChapters->where('book', $book->id_usfx)->pluck('chapter');
                     $books[$key]->source_id       = $id;
