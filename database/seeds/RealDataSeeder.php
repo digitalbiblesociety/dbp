@@ -33,6 +33,8 @@ use App\Models\Bible\BibleFilesetConnection;
 use App\Models\Bible\BibleFilesetCopyright;
 use App\Models\Bible\BibleFilesetCopyrightRole;
 use App\Models\Bible\BibleFilesetCopyrightOrganization;
+use App\Models\Bible\VideoResolution;
+use App\Models\Bible\VideoTransportStream;
 
 use App\Models\Organization\Asset;
 use App\Models\Organization\Organization;
@@ -109,7 +111,7 @@ class RealDataSeeder extends Seeder
         $this->seedData('/bibles/bible_fileset_connections', BibleFilesetConnection::class);
 
         echo "\n Seeding bible_fileset_copyright roles";
-        $this->seedData('/bibles/bible_fileset_copyright_roles', \App\Models\Bible\BibleFilesetCopyrightRole::class);
+        $this->seedData('/bibles/bible_fileset_copyright_roles', BibleFilesetCopyrightRole::class);
 
         echo "\n Seeding bible_fileset_copyrights";
         $this->seedData('/bibles/bible_fileset_copyrights', BibleFilesetCopyright::class);
@@ -121,32 +123,36 @@ class RealDataSeeder extends Seeder
         $this->seedData('/bibles/bible_files', BibleFile::class);
 
         echo "\n Seeding bible_file_video_resolutions";
-        $this->seedData('/bibles/bible_file_video_resolutions',      \App\Models\Bible\VideoResolution::class);
+        $this->seedData('/bibles/bible_file_video_resolutions',      VideoResolution::class);
 
         echo "\n Seeding bible_file_video_transport_stream";
-        $this->seedData('/bibles/bible_file_video_transport_stream', \App\Models\Bible\VideoTransportStream::class);
+        $this->seedData('/bibles/bible_file_video_transport_stream', VideoTransportStream::class);
 
         echo "\n Seeding bible_organization";
         $this->seedData('/bibles/bible_organization', BibleOrganization::class);
+
         echo "\n Seeding equivalents";
         $this->seedData('/bibles/equivalents/bible-gateway', BibleEquivalent::class);
+
         echo "\n Seeding equivalents";
         echo "\n Seeding access_groups";
         $this->seedData('/access/access_groups', AccessGroup::class);
+
         echo "\n Seeding access_types";
         $this->seedData('/access/access_types', AccessType::class);
+
         echo "\n Seeding access_group_filesets";
         $this->seedData('/access/access_group_filesets', AccessGroupFileset::class);
+
         echo "\n Seeding access_group_types";
         $this->seedData('/access/access_group_types', AccessGroupType::class);
     }
 
     public function seedData($path, $object)
     {
-        $path = (config('app.server_name') != 'Travis') ? '/Sites/dbp-seeds'.$path.'.yaml' : "https://raw.githubusercontent.com/digitalbiblesociety/dbp-seeds/master/$path.yaml";
         $parser = new Yaml();
         $current_object = new $object;
-        $entries = $parser->parse(file_get_contents($path));
+        $entries = $parser->parse(file_get_contents("https://raw.githubusercontent.com/digitalbiblesociety/dbp-seeds/master/$path.yaml"));
         foreach ($entries as $entry) {
             $current_object->create($entry);
         }
