@@ -143,7 +143,7 @@ class RealDataSeeder extends Seeder
 
     public function seedData($path, $object)
     {
-        $path = (config('app.env') === 'local') ? '/Sites/dbp-seeds'.$path.'.yaml' : "https:raw.githubusercontent.com/digitalbiblesociety/dbp-seeds/master/$path.yaml";
+        $path = (config('app.server_name') != 'Travis') ? '/Sites/dbp-seeds'.$path.'.yaml' : "https://raw.githubusercontent.com/digitalbiblesociety/dbp-seeds/master/$path.yaml";
         $parser = new Yaml();
         $current_object = new $object;
         $entries = $parser->parse(file_get_contents($path));
