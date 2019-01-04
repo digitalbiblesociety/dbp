@@ -12,6 +12,7 @@ class OrganizationsRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/organizations/?v=4&key={key}
      * @see      \App\Http\Controllers\Organization\OrganizationsController::index
      * @group    V4
+     * @group    travis
      * @test
      */
     public function organizationsAll()
@@ -28,6 +29,7 @@ class OrganizationsRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/organizations/{organization_id}?v=4&key={key}
      * @see      \App\Http\Controllers\Organization\OrganizationsController::show
      * @group    V4
+     * @group    travis
      * @test
      */
     public function organizationsOne()
@@ -44,6 +46,7 @@ class OrganizationsRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/organizations/compare/{org1}/to/{org2}?v=4&key={key}
      * @see      \App\Http\Controllers\Organization\OrganizationsController::compare
      * @group    V4
+     * @group    travis
      * @test
      */
     public function organizationsCompare()

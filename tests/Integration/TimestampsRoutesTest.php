@@ -11,6 +11,7 @@ class TimestampsRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/timestamps?v=4&key={key}
      * @see      \App\Http\Controllers\Bible\AudioController::availableTimestamps
      * @group    V4
+     * @group    travis
      * @test
      */
     public function timestamps()
@@ -27,6 +28,7 @@ class TimestampsRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/timestamps/{fileset_id}/{query}?v=4&key={key}
      * @see      \App\Http\Controllers\Bible\AudioController::timestampsByTag
      * @group    V4
+     * @group    travis
      * @test
      */
     public function timestampsTag()

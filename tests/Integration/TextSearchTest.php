@@ -15,6 +15,7 @@ class TextSearchTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/search?v=4&key={key}
      * @see      \App\Http\Controllers\Bible\TextController::search
      * @group    V4
+     * @group    travis
      * @test
      */
     public function nonMatchingSearchResultsReturnsEmpty()
@@ -36,6 +37,7 @@ class TextSearchTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/search?v=4&key={key}
      * @see      \App\Http\Controllers\Bible\TextController::search
      * @group    V4
+     * @group    travis
      * @test
      */
     public function v4SwaggerForTextSearch()
@@ -61,6 +63,7 @@ class TextSearchTest extends ApiV4Test
      * @category Route Name: v2_text_search
      * @link Route Path: https://api.dbp.test/text/search?v=2&query=God&dam_id=ENGESV&limit=5&pretty&key={key}
      * @group    V2
+     * @group    travis
      * @test
      */
     public function v2SwaggerForTextSearch()
@@ -95,6 +98,7 @@ class TextSearchTest extends ApiV4Test
      * @category Route Name: v2_text_search_group
      * @link Route Path: https://api.dbp.test/text/searchgroup?v=2&query=God&dam_id=ENGESV&limit=5&pretty&key={key}
      * @group    V2
+     * @group    travis
      * @test
      */
     public function v2SwaggerForTextSearchGroup()

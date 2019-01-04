@@ -15,6 +15,7 @@ class VideoRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/?v=4&key={key}/stream/{file_id}/playlist.m3u8
      * @see      VideoStreamController::index
      * @group    V4
+     * @group    travis
      * @test
      */
     public function videoStream()
@@ -41,6 +42,7 @@ class VideoRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/bible/filesets/{fileset_id}/stream/{file_id}/{file_name}?v=4&key={key}
      * @see      VideoStreamController::transportStream
      * @group    V4
+     * @group    non-travis | File downloads aren't testing properly
      * @test
      */
     public function videoStreamTs()

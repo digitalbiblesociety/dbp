@@ -17,6 +17,7 @@ class WikiRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Wiki\CountriesController
      * @group V4
      * @group V4_wiki
+     * @group    travis
      * @test
      */
     public function countries()
@@ -46,6 +47,7 @@ class WikiRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Wiki\LanguagesController::index
      * @group V4
      * @group V4_wiki
+     * @group    travis
      * @test
      */
     public function languages()
@@ -69,6 +71,7 @@ class WikiRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Wiki\AlphabetsController
      * @group V4
      * @group V4_wiki
+     * @group    travis
      * @test
      */
     public function wikiAlphabets()
@@ -93,6 +96,7 @@ class WikiRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Wiki\NumbersController
      * @group V4
      * @group V4_wiki
+     * @group    travis
      * @test
      */
     public function wikiNumbers()

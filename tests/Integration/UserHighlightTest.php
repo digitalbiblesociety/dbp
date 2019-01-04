@@ -15,6 +15,7 @@ class UserHighlightTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/users/{user_id}/highlights?v=4&key={key}
      * @see      \App\Http\Controllers\User\HighlightsController::index
      * @group    V4
+     * @group    travis
      * @test
      */
     public function highlightIndexErrors()
@@ -32,6 +33,7 @@ class UserHighlightTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/users/{user_id}/highlights?v=4&key={key}
      * @see      \App\Http\Controllers\User\HighlightsController
      * @group    V4
+     * @group    travis
      * @test
      */
     public function highlights()

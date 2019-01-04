@@ -44,6 +44,7 @@ class ApiV4Test extends TestCase
      * @category Route Path: https://api.dbp.test/api/versions?v=4&key={key}
      * @see      \App\Http\Controllers\HomeController::versions
      * @group    V4
+     * @group    travis
      * @test
      */
     public function versionsReturnSuccessful()
@@ -60,6 +61,7 @@ class ApiV4Test extends TestCase
      * @category Route Path: https://api.dbp.test/api/buckets?v=4&key={key}
      * @see      \App\Http\Controllers\HomeController::buckets
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bucketsReturnSuccessful()
@@ -76,6 +78,7 @@ class ApiV4Test extends TestCase
      * @category Route Path: https://api.dbp.test/stats?v=4&key={key}
      * @see      \App\Http\Controllers\HomeController::stats
      * @group    V4
+     * @group    travis
      * @test
      */
     public function statsReturnSuccessful()

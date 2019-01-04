@@ -5,6 +5,7 @@ namespace Tests\Integration;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFilesetCopyright;
 use App\Models\Bible\BibleVerse;
+use App\Models\Bible\Book;
 use App\Models\Language\NumeralSystem;
 use App\Models\User\Key;
 use App\Models\Bible\Video;
@@ -67,6 +68,7 @@ class ApiV2Test extends TestCase
      * @link Route Path: https://api.dbp.test/library/asset?v=2&key={key}&pretty
      * @link V2 Route Path: https://dbt.io/library/asset?v=2&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
      * @group    V2
+     * @group    non-travis | S3 won't interact with Travis
      * @test
      */
     public function libraryAsset()
@@ -75,8 +77,8 @@ class ApiV2Test extends TestCase
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_library_asset')]);
-        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_asset')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('v2_library_asset')]);
+        //$this->compareToOriginal($path, [$this->getSchemaKeys('v2_library_asset')]);
     }
 
     /**
@@ -90,6 +92,7 @@ class ApiV2Test extends TestCase
      * @link Route Path: https://api.dbp.test/api/reply?v=2&pretty&key={key}
      * @link V2 Route Path: https://dbt.io/api/reply?v=2&key={key}&pretty
      * @group    V2
+     * @group    travis
      * @test
      */
     public function apiReplyReturnsSuccessful()
@@ -113,6 +116,7 @@ class ApiV2Test extends TestCase
      * @category Route Name: v2_library_asset
      * @link Route Path: https://api.dbp.test/api/apiversion?v=2&pretty&key={key}
      * @group    V2
+     * @group    travis
      * @test
      */
     public function libraryVersion()
@@ -123,8 +127,8 @@ class ApiV2Test extends TestCase
         //echo "\nTesting: " . route('v2_api_versionLatest', $this->params),'light_cyan',true);
         $response = $this->withHeaders([$params])->get(route('v2_api_versionLatest'), $this->params);
         $response->assertSuccessful();
-        $response->assertJsonStructure($this->withHeaders($this->params)->getSchemaKeys('v2_api_versionLatest'));
-        //$this->compareToOriginal($path, $this->withHeaders($this->params)->getSchemaKeys('v2_api_versionLatest'));
+        $response->assertJsonStructure($this->getSchemaKeys('v2_api_versionLatest'));
+        //$this->compareToOriginal($path, $this->getSchemaKeys('v2_api_versionLatest'));
     }
 
     /**
@@ -137,6 +141,7 @@ class ApiV2Test extends TestCase
      * @link Route Path: https://api.dbp.test/library/bookorder?v=2&dam_id=ENGESV&pretty&key={key}
      * @link V2 Route Path: https://dbt.io/library/bookorder?v=2&dam_id=AAIWBTN2ET&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
      * @group    V2
+     * @group    travis
      * @test
      */
     public function libraryBookOrder()
@@ -152,7 +157,7 @@ class ApiV2Test extends TestCase
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
         $response->assertJsonStructure([$this->getSchemaKeys('v2_library_bookOrder')]);
-        //$this->compareToOriginal(route('v2_library_bookOrder', $this->params, false), [$this->withHeaders($this->params)->getSchemaKeys('v2_library_bookOrder')]);
+        //$this->compareToOriginal(route('v2_library_bookOrder', $this->params, false), [$this->getSchemaKeys('v2_library_bookOrder')]);
     }
 
     /**
@@ -166,6 +171,7 @@ class ApiV2Test extends TestCase
      * @link Test Route Path: https://api.dbp.test/library/book?v=2&dam_id=AAIWBTN2ET&key={key}&pretty
      * @link V2 Route Path: https://dbt.io/library/book?v=2&dam_id=AAIWBTN2ET&key=3e0eed1a69fc6e012fef51b8a28cc6ff&pretty
      * @group    V2
+     * @group    travis
      * @test
      */
     public function libraryBook()
@@ -176,7 +182,7 @@ class ApiV2Test extends TestCase
         $response = $this->withHeaders($this->params)->get(route('v2_library_book'), $this->params);
         $response->assertSuccessful();
         $response->assertJsonStructure([$this->getSchemaKeys('v2_library_book')]);
-        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_book')]);
+        //$this->compareToOriginal($path, [$this->getSchemaKeys('v2_library_book')]);
     }
 
     /**
@@ -188,6 +194,7 @@ class ApiV2Test extends TestCase
      * @category Route Name: v2_library_bookName
      * @link Route Path: https://api.dbp.test/library/bookname?v=2&language_code=eng&pretty&key={key}
      * @group    V2
+     * @group    travis
      * @test
      */
     public function libraryBookName()
@@ -198,33 +205,40 @@ class ApiV2Test extends TestCase
         echo "\nTesting: " . route('v2_library_bookName', $this->params);
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('BookName')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('BookName')]);
 
         $this->params['language_code'] = strtoupper($this->params['language_code']);
-        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('BookName')]);
+        //$this->compareToOriginal($path, [$this->getSchemaKeys('BookName')]);
     }
 
     /**
      * Tests the Library Chapter Route
      *
      * @category V2_Library
-     * @see \app\Http\Controllers\BooksControllerV2::chapters()
+     * @see \app\Http\Controllers\Bible\BooksControllerV2::chapters()
      * @category Swagger ID: BookName
      * @category Route Name: v2_library_bookName
      * @link Route Path: https://api.dbp.test/library/chapter?v=2&dam_id=AAIWBTN2ET&book_id=GEN&pretty&key={key}
+     * @link V2 Route Path: https://dbt.io/library/chapter?v=2&dam_id=AAIWBTN2ET&key=3e0eed1a69fc6e012fef51b8a28cc6ff
      * @group    V2
-     * @test@link V2 Route Path: https://dbt.io/library/chapter?v=2&dam_id=AAIWBTN2ET&key=3e0eed1a69fc6e012fef51b8a28cc6ff
+     * @group    travis
+     * @test
      */
     public function libraryChapter()
     {
-        $this->params['dam_id'] = 'AAIWBTN2ET';
-        $this->params['book_id'] = 'Matt';
+        $verse = BibleVerse::where('id', random_int(1, BibleVerse::count()))->first();
+        $bible_fileset = BibleFileset::where('hash_id',$verse->hash_id)->first();
+        $book = Book::where('id',$verse->book_id)->first();
+
+        $this->params['dam_id'] = $bible_fileset->id;
+        $this->params['asset_id'] = $bible_fileset->asset_id;
+        $this->params['book_id'] = $book->id_osis;
 
         echo "\nTesting: " . route('v2_library_chapter', $this->params);
         $response = $this->withHeaders($this->params)->get(route('v2_library_chapter'), $this->params);
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_library_chapter')]);
-        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_chapter')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('v2_library_chapter')]);
+        //$this->compareToOriginal($path, [$this->getSchemaKeys('v2_library_chapter')]);
     }
 
     /**
@@ -237,6 +251,7 @@ class ApiV2Test extends TestCase
      * @category Route Name: v2_library_language
      * @link Route Path: https://api.dbp.test/library/language?v=2&pretty&key={key}
      * @group    V4
+     * @group    travis
      * @test
      */
     public function libraryLanguage()
@@ -246,8 +261,8 @@ class ApiV2Test extends TestCase
         echo "\nTesting: " . route('v2_library_language');
         $response = $this->withHeaders($this->params)->get(route('v2_library_language'), $this->params);
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_library_language')]);
-        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_language')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('v2_library_language')]);
+        //$this->compareToOriginal($path, [$this->getSchemaKeys('v2_library_language')]);
     }
 
     /**
@@ -261,6 +276,7 @@ class ApiV2Test extends TestCase
      * @link Route Path: https://api.dbp.test/library/verseinfo?v=2&pretty&bible_id=ENGESV&book_id=GEN&chapter=1&verse_start=1&key={key}
      * @link https://dbt.io/library/verseinfo?v=2&pretty&bible_id=ENGESV&book_id=GEN&chapter=1&verse_start=1
      * @group    V4
+     * @group    travis
      * @test
      */
     public function libraryVerseInfo()
@@ -276,10 +292,10 @@ class ApiV2Test extends TestCase
         echo "\nTesting: " . $path;
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_library_verseInfo')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('v2_library_verseInfo')]);
 
         // This cannot be compared reliably as too many new bibles have been added to the bible_filesets table
-        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_verseInfo')]);
+        //$this->compareToOriginal($path, [$this->getSchemaKeys('v2_library_verseInfo')]);
     }
 
     /**
@@ -292,6 +308,7 @@ class ApiV2Test extends TestCase
      * @category Route Name: v2_library_numbers
      * @link Route Path: https://api.dbp.test/library/numbers?v=2&pretty&iso=arb&start=1&end=50&key={key}&script=Arab
      * @group    V2
+     * @group    travis
      * @test
      */
     public function libraryNumbers()
@@ -307,11 +324,11 @@ class ApiV2Test extends TestCase
             echo "\nTesting: " . route('v2_library_numbers', $this->params);
             $response = $this->withHeaders($this->params)->get($path);
             $response->assertSuccessful();
-            //$response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v4_numbers_range')]);
+            //$response->assertJsonStructure([$this->getSchemaKeys('v4_numbers_range')]);
         }
 
         // DBT.io version is broken
-        // //$this->compareToOriginal($path,[$this->withHeaders($this->params)->getSchemaKeys('v4_numbers_range')]);
+        // //$this->compareToOriginal($path,[$this->getSchemaKeys('v4_numbers_range')]);
     }
 
     /**
@@ -325,6 +342,7 @@ class ApiV2Test extends TestCase
      * @link Route Path: https://api.dbp.test/library/metadata?v=2&dam_id=ENGESVN1ET&key={key}
      * @link Source Path: https://dbt.io/library/metadata?v=2&dam_id=ENGESVN1ET&key=53355c32fca5f3cac4d7a670d2df2e09
      * @group    V2
+     * @group    travis
      * @test
      */
     public function libraryMetadata()
@@ -335,8 +353,8 @@ class ApiV2Test extends TestCase
         echo "\n".$path;
         $response = $this->withHeaders($this->params)->get(route('v2_library_metadata'), $this->params);
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_library_metadata')]);
-        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_metadata')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('v2_library_metadata')]);
+        //$this->compareToOriginal($path, [$this->getSchemaKeys('v2_library_metadata')]);
     }
 
     /**
@@ -350,6 +368,7 @@ class ApiV2Test extends TestCase
      * @link Route Path: https://api.dbp.test/library/volume?v=2&pretty&key={key}
      * @link Route:
      * @group    V2
+     * @group    travis
      * @test
      */
     public function libraryVolume()
@@ -358,8 +377,8 @@ class ApiV2Test extends TestCase
         echo "\nTesting: " . route('v2_library_volume', $this->params);
         $response = $this->withHeaders($this->params)->get(route('v2_library_volume'), $this->params);
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_library_volume')]);
-        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_volume')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('v2_library_volume')]);
+        //$this->compareToOriginal($path, [$this->getSchemaKeys('v2_library_volume')]);
     }
 
     /**
@@ -372,6 +391,7 @@ class ApiV2Test extends TestCase
      * @category Route Name: v2_library_volumeLanguage
      * @link Route Path: https://api.dbp.test/library/volumelanguage?v=2&pretty&key={key}
      * @group    V2
+     * @group    travis
      * @test
      */
     public function libraryVolumeLanguage()
@@ -381,8 +401,8 @@ class ApiV2Test extends TestCase
         echo "\nTesting: " . route('v2_library_volumeLanguage', $this->params);
         $response = $this->withHeaders($this->params)->get(route('v2_library_volumeLanguage'), $this->params);
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_library_language')]);
-        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_language')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('v2_library_language')]);
+        //$this->compareToOriginal($path, [$this->getSchemaKeys('v2_library_language')]);
     }
 
     /**
@@ -396,6 +416,7 @@ class ApiV2Test extends TestCase
      * @link Route Path: https://api.dbp.test/library/volumelanguagefamily?v=2&pretty&key={key}
      * @link Route Path: https://dbt.io/library/volumelanguagefamily?v=2&key=53355c32fca5f3cac4d7a670d2df2e09
      * @group    V2
+     * @group    travis
      * @test
      */
     public function libraryVolumeLanguageFamily()
@@ -405,8 +426,8 @@ class ApiV2Test extends TestCase
         echo "\nTesting: " . route('v2_library_volumeLanguageFamily', $this->params);
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_library_volumeLanguageFamily')]);
-        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_library_volumeLanguageFamily')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('v2_library_volumeLanguageFamily')]);
+        //$this->compareToOriginal($path, [$this->getSchemaKeys('v2_library_volumeLanguageFamily')]);
     }
 
     /**
@@ -419,6 +440,7 @@ class ApiV2Test extends TestCase
      * @category Route Name: v2_volume_organization_list
      * @link Route Path: https://api.dbp.test/library/volumeorganization?v=2&pretty&key={key}
      * @group    V2
+     * @group    travis
      * @test
      */
     public function volumeOrganizationList()
@@ -428,8 +450,8 @@ class ApiV2Test extends TestCase
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path, $this->params);
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_volume_organization_list')]);
-        //$this->compareToOriginal($path, [$this->withHeaders($this->params)->getSchemaKeys('v2_volume_organization_list')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('v2_volume_organization_list')]);
+        //$this->compareToOriginal($path, [$this->getSchemaKeys('v2_volume_organization_list')]);
     }
 
     /**
@@ -442,6 +464,7 @@ class ApiV2Test extends TestCase
      * @category Route Name: v2_volume_history
      * @link Route Path: https://api.dbp.test/library/volumehistory?v=2&pretty&key={key}
      * @group    V2
+     * @group    travis
      * @test
      */
     public function volumeHistory()
@@ -463,13 +486,16 @@ class ApiV2Test extends TestCase
      * @category Route Name: v2_audio_path
      * @link Route Path: https://api.dbp.test/audio/path?v=2&dam_id=AFRNVVN2DA&pretty&key={key}
      * @group    V2
+     * @group    non-travis | S3 won't sign routes from travis
      * @test
      */
     public function audioPath()
     {
-        $this->params['dam_id'] = 'AFRNVVN2DA';
+        $fileset = BibleFileset::where('set_type_code','audio')->orWhere('set_type_code','audio_drama')->inRandomOrder()->first();
+        $this->params['dam_id'] = $fileset->id;
 
         echo "\nTesting: " . route('v2_audio_path', $this->params);
+
         $response = $this->withHeaders($this->params)->get(route('v2_audio_path'), $this->params);
         $response->assertSuccessful();
     }
@@ -485,9 +511,9 @@ class ApiV2Test extends TestCase
      * @category Route Name: v2_video_location
      * @link Route Path: https://api.dbp.test/video/location?v=2&dam_id=ENGESV
      * @link Old Path: https://dbt.io/video/location?v=2&dam_id=ENGESV
+     * @group    travis
      * @test
      */
-
     public function videoLocation()
     {
         $response = $this->withHeaders($this->params)->get(route('v2_video_location'), ['v' => 2]);
@@ -504,9 +530,9 @@ class ApiV2Test extends TestCase
      * @category Swagger ID: VideoPath
      * @category Route Name: v2_video_video_path
      * @link Route Path: https://api.dbp.test/video/path?v=2&dam_id=ENGESV&pretty
+     * @group    travis
      * @test
      */
-
     public function videoPath()
     {
         $fileset = BibleFileset::where('set_type_code', 'video_stream')->inRandomOrder()->first();
@@ -524,15 +550,15 @@ class ApiV2Test extends TestCase
      * @category Swagger ID: CountryLang
      * @category Route Name: v2_country_lang
      * @link Route Path: https://api.dbp.test/country/countrylang?v=2&pretty
+     * @group    travis
      * @test
      */
-
     public function countryLang()
     {
         $response = $this->withHeaders($this->params)->get(route('v2_country_lang'), ['v' => 2, 'country_additional' => true, 'sort_by' => 'name']);
         echo "\nTesting: " . route('v2_country_lang', ['v' => 2, 'country_additional' => true, 'sort_by' => 'name']);
 
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->withHeaders($this->params)->getSchemaKeys('v2_country_lang')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('v2_country_lang')]);
     }
 }

@@ -25,7 +25,7 @@ before_script:
   - php artisan key:generate
   - php artisan migrate --seed
 
-script: phpunit tests/Integration
+script: phpunit --group=travis
 
 services:
   - mysql

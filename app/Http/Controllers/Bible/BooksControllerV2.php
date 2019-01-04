@@ -268,7 +268,9 @@ class BooksControllerV2 extends APIController
 
         $cache_string = strtolower('v2_library_chapter_' . $id . $asset_id . $book_id);
         $chapters = \Cache::remember($cache_string, 1600, function () use ($id, $asset_id, $book_id) {
-            $fileset = BibleFileset::where('id', $id)->orWhere('id', substr($id, 0, -4))->where('asset_id', $asset_id)->first();
+            $fileset = BibleFileset::where(function ($query) use($id) {
+                $query->where('id', $id)->orWhere('id', substr($id, 0, -4));
+            })->where('set_type_code', 'text_plain')->where('asset_id', $asset_id)->first();
             if (!$fileset) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
             }
@@ -277,7 +279,6 @@ class BooksControllerV2 extends APIController
             if (!$book) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404', ['id' => $id]));
             }
-
             $chapters = BibleVerse::where('hash_id', $fileset->hash_id)
                 ->when($book, function ($q) use ($book) {
                     $q->where('book_id', $book->id);

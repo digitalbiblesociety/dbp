@@ -17,6 +17,7 @@ class ProjectRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/projects?v=4&key={key}
      * @see      \App\Http\Controllers\Organization\ProjectsController
      * @group    V4
+     * @group    travis
      * @test
      */
     public function projects()
@@ -62,6 +63,7 @@ class ProjectRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/projects/{project_id}/oauth-providers/?v=4&key={key}
      * @see      \App\Http\Controllers\Organization\OAuthProvidersController
      * @group    V4
+     * @group    travis
      * @test
      */
     public function projectsOAuthProvider()

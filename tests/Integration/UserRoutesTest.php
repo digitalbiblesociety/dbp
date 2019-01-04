@@ -22,6 +22,7 @@ class UserRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/access/groups?v=4&key={key}
      * @see      \App\Http\Controllers\User\AccessGroupController::index
      * @group    V4
+     * @group    travis
      * @test
      */
     public function accessGroups()
@@ -44,6 +45,7 @@ class UserRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/resources?v=4&key={key}
      * @see      \App\Http\Controllers\Organization\ResourcesController
      * @group    V4
+     * @group    travis
      * @test
      */
     public function resources()
@@ -80,6 +82,7 @@ class UserRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/users?v=4&key={key}
      * @see      \App\Http\Controllers\User\UsersController
      * @group    V4
+     * @group    travis
      * @test
      */
     public function users()
@@ -132,6 +135,7 @@ class UserRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/users/login?v=4&key={key}
      * @see      \App\Http\Controllers\User\UsersController::login
      * @group    V4
+     * @group    travis
      * @test
      */
     public function userLogin()
@@ -153,6 +157,7 @@ class UserRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/users/geolocate?v=4&key={key}
      * @see      \App\Http\Controllers\User\UsersController::geoLocate
      * @group    V4
+     * @group    travis
      * @test
      */
     public function userGeolocate()
@@ -169,6 +174,7 @@ class UserRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/users/login/{driver}?v=4&key={key}
      * @see      \App\Http\Controllers\User\SocialController::getSocialRedirect
      * @group    V4
+     * @group    travis
      * @test
      */
     public function userOAuth()
@@ -186,6 +192,7 @@ class UserRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/users/password/reset?v=4&key={key}
      * @see      \App\Http\Controllers\User\PasswordsController::validatePasswordReset
      * @group    V4
+     * @group    travis
      * @test
      */
     public function userPasswordReset()
@@ -216,6 +223,7 @@ class UserRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/users/password/email?v=4&key={key}
      * @see      \App\Http\Controllers\User\PasswordsController::triggerPasswordResetEmail
      * @group    V4
+     * @group    non-travis | Need Mailtrap.io setup
      * @test
      */
     public function userPasswordEmail()
@@ -223,7 +231,7 @@ class UserRoutesTest extends ApiV4Test
         $project_member = ProjectMember::with('user')->where('role_id',1)->inRandomOrder()->first();
 
         $path = route('v4_user.password_email', array_merge([
-            'email' => $project_member->user->email,
+            'email'      => $project_member->user->email,
             'project_id' => $project_member->project_id
         ], $this->params));
         echo "\nTesting: $path";
@@ -238,6 +246,7 @@ class UserRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/users/5/notes?v=4&key={key}
      * @see      \App\Http\Controllers\User\NotesController
      * @group    V4
+     * @group    travis
      * @test
      */
     public function notes()
@@ -287,6 +296,7 @@ class UserRoutesTest extends ApiV4Test
      * @category Route Path: https://api.dbp.test/users/{user_id}/bookmarks?v=4&key={key}
      * @see      \App\Http\Controllers\User\BookmarksController::index
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bookmarks()

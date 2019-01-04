@@ -20,6 +20,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BibleFileSetsController::mediaTypes
      * @group    BibleRoutes
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bibleFilesetsTypes()
@@ -38,6 +39,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BibleFileSetsController::podcast
      * @group    BibleRoutes
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bibleFilesetsPodcast()
@@ -56,6 +58,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BibleFileSetsController::download
      * @group    BibleRoutes
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bibleFilesetsDownload()
@@ -74,6 +77,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BibleFileSetsController::copyright
      * @group    BibleRoutes
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bibleFilesetsCopyright()
@@ -93,6 +97,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BooksController::show
      * @group    BibleRoutes
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bibleFilesetsBooks()
@@ -113,6 +118,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BibleFileSetsController::show
      * @group    BibleRoutes
      * @group    V4
+     * @group    non-travis
      * @test
      */
     public function bibleFilesetsShow()
@@ -140,6 +146,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BibleLinksController::index
      * @group    BibleRoutes
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bibleLinks()
@@ -157,6 +164,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BooksController::index
      * @group    BibleRoutes
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bibleBooksAll()
@@ -174,6 +182,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BibleEquivalentsController::index
      * @group    BibleRoutes
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bibleEquivalentsAll()
@@ -184,7 +193,8 @@ class BiblesRoutesTest extends ApiV4Test
         $response->assertSuccessful();
     }
 
-    /** @test */
+    /*     * @group    travis
+     * @test */
     public function bibleEquivalentsCanBeFilteredByBible()
     {
         $bible_path = route('v4_bible_equivalents.all', array_merge(['bible_id' => 'ENGESV'], $this->params));
@@ -192,7 +202,8 @@ class BiblesRoutesTest extends ApiV4Test
         $response->assertSuccessful();
     }
 
-    /** @test */
+    /*     * @group    travis
+     * @test */
     public function bibleEquivalentsCanBeFilteredByOrganization()
     {
         $bible_equivalents = BibleEquivalent::inRandomOrder()->first();
@@ -213,6 +224,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BiblesController::books
      * @group    BibleRoutes
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bibleBooks()
@@ -230,6 +242,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BiblesController::archival
      * @group    BibleRoutes
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bibleArchival()
@@ -247,6 +260,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BiblesController::show
      * @group    BibleRoutes
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bibleOne()
@@ -264,6 +278,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @see      \App\Http\Controllers\Bible\BiblesController::index
      * @group    BibleRoutes
      * @group    V4
+     * @group    travis
      * @test
      */
     public function bibleAll()
