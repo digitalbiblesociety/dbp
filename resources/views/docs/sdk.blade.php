@@ -2,43 +2,62 @@
 
 @section('head')
     <style>
-        h1,h3 {
-            text-align: center;
-        }
-
-        .icon {
-            width:50px;
-            height:50px;
-            display: block;
-            fill:#000;
-            float:left;
-        }
 
         .sdk-links a {
-            line-height:50px;
-            text-indent:10px;
+            height:150px;
+            text-align: center;
             color:#222;
-            font-size:1.2rem;
+        }
+
+        .panel-icon {
+            font-size:30px;
+        }
+
+
+        .sdk-links img {
+            width:50px;
+            margin:10px auto;
+            display: block;
         }
     </style>
 @endsection
 
 @section('content')
 
-    @include('layouts.banner', ['title' => "SDKs"])
+    @include('layouts.partials.banner', ['title' => "SDKs"])
 
+    <div class="container">
     <div class="row">
-        <code><pre>swagger-codegen generate -i https://bible.build/swagger2_v4.json -l php -o /Sites/dbp/public/sdk/</pre></code>
-    </div>
-    <div class="row sdk-links">
-        <h3>Downloads <small>2.1.5</small></h3>
-        <a href="/sdk/php.zip" class="medium-3 columns"><svg class="icon"><use xlink:href="/img/icons/icons-programming.svg#php"></use></svg> PHP </a>
-        <a href="/sdk/java.zip" class="medium-3 columns"><svg class="icon"><use xlink:href="/img/icons/icons-programming.svg#java"></use></svg> Java </a>
-        <a href="/sdk/python.zip" class="medium-3 columns"><svg class="icon"><use xlink:href="/img/icons/icons-programming.svg#python"></use></svg> Python </a>
-        <a href="/sdk/ruby.zip" class="medium-3 columns"><svg class="icon"><use xlink:href="/img/icons/icons-programming.svg#ruby"></use></svg> Ruby </a>
+
     </div>
 
-    <div class="row example-links">
+        <div class="box">
+
+            <div>
+                <p>You can generate your own SDK using our swagger specifications located here: <span></span>. In order to do so you'll need to swagger-codegen.</p>
+                <code><pre>swagger-codegen generate -i https://bible.build/swagger2_v4.json -l php -o /Sites/dbp/public/sdk/</pre></code>
+                <p>Or use one of pre generated SDKs for commonly used programming languages.</p>
+            </div>
+
+
+            <div class="columns">
+                <nav class="panel column">
+                    <p class="panel-heading">Generated SDKs</p>
+                    <a class="panel-block" href="/builds/sdks/current/java.zip"><svg class="panel-icon icon"><use xlink:href="/images/icons-programming.svg#java"></use></svg> Java</a>
+                    <a class="panel-block" href="/builds/sdks/current/python.zip"><svg class="panel-icon icon"><use xlink:href="/images/icons-programming.svg#python"></use></svg> Python</a>
+                    <a class="panel-block" href="/builds/sdks/current/php.zip"><svg class="panel-icon icon"><use xlink:href="/images/icons-programming.svg#php"></use></svg> php</a>
+                    <a class="panel-block" href="/builds/sdks/current/ruby.zip"><svg class="panel-icon icon"><use xlink:href="/images/icons-programming.svg#ruby"></use></svg> Ruby</a>
+                </nav>
+                <nav class="panel column">
+                    <p class="panel-heading">Examples</p>
+                    <a class="panel-block"><span class="panel-icon"></span>Coming Soon</a>
+                </nav>
+            </div>
+            <div class="columns">
+                <a href="" class="has-text-centered has-text-grey column is-size-6">Older Versions</a>
+            </div>
+
+        </div>
 
     </div>
 

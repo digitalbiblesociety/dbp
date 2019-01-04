@@ -2,19 +2,36 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
+use \Closure;
+use \Illuminate\Http\Request;
 
 class Cors
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  Request $request
+     * @param  Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
     {
-        return $next($request)->header('Access-Control-Allow-Origin', '*')->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        if ($request->getMethod() === 'OPTIONS') {
+            return response(['OK'], 204)->withHeaders([
+                'Access-Control-Allow-Origin'      => '*',
+                'Access-Control-Allow-Methods'     => 'GET, POST, PUT, OPTIONS, DELETE',
+                'Access-Control-Allow-Credentials' => true,
+                'Access-Control-Allow-Headers'     => 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range',
+                'Access-Control-Max-Age'           => 1728000,
+                'Content-type'                     => 'text/plain; charset=utf-8',
+                'Content-Length'                   => 0
+            ]);
+        }
+
+        $response = $next($request);
+        $response->header('Access-Control-Allow-Methods', 'HEAD, GET, POST, PUT, PATCH, DELETE');
+        $response->header('Access-Control-Allow-Headers', '*');
+        $response->header('Access-Control-Allow-Origin', '*');
+        return $response;
     }
 }

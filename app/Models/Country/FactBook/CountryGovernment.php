@@ -7,30 +7,31 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Country\FactBook\CountryGovernment
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="CountryGovernment",
  *     title="CountryGovernment",
- *     @OAS\Xml(name="CountryGovernment")
+ *     @OA\Xml(name="CountryGovernment")
  * )
  *
  * @mixin \Eloquent
  */
 class CountryGovernment extends Model
 {
-	public $incrementing = false;
-	public $table = "country_government";
+    protected $connection = 'dbp';
+    public $incrementing = false;
+    public $table = 'country_government';
 
  /**
   *
-  * @OAS\Property(ref="#/components/schemas/Country/properties/id")
+  * @OA\Property(ref="#/components/schemas/Country/properties/id")
   * @method static CountryGovernment whereCountryId($value)
   * @property string $country_id
   */
- protected $country_id;
+    protected $country_id;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="name",
  *     description="",
  *     type="string"
@@ -39,10 +40,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereName($value)
  * @property string $name
  */
- protected $name;
+    protected $name;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="name_etymology",
  *     description="",
  *     type="string"
@@ -51,10 +52,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereNameEtymology($value)
  * @property string $name_etymology
  */
- protected $name_etymology;
+    protected $name_etymology;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="conventional_long_form",
  *     description="",
  *     type="string"
@@ -63,10 +64,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereConventionalLongForm($value)
  * @property string $conventional_long_form
  */
- protected $conventional_long_form;
+    protected $conventional_long_form;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="conventional_short_form",
  *     description="",
  *     type="string"
@@ -75,10 +76,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereConventionalShortForm($value)
  * @property string $conventional_short_form
  */
- protected $conventional_short_form;
+    protected $conventional_short_form;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="dependency_status",
  *     description="",
  *     type="string"
@@ -87,10 +88,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereDependencyStatus($value)
  * @property string $dependency_status
  */
- protected $dependency_status;
+    protected $dependency_status;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="government_type",
  *     description="",
  *     type="string"
@@ -99,10 +100,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereGovernmentType($value)
  * @property string $government_type
  */
- protected $government_type;
+    protected $government_type;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="capital",
  *     description="",
  *     type="string"
@@ -111,10 +112,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereCapital($value)
  * @property string $capital
  */
- protected $capital;
+    protected $capital;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="capital_coordinates",
  *     description="",
  *     type="string"
@@ -123,10 +124,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereCapitalCoordinates($value)
  * @property string $capital_coordinates
  */
- protected $capital_coordinates;
+    protected $capital_coordinates;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="capital_time_zone",
  *     description="",
  *     type="string"
@@ -135,10 +136,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereCapitalTimeZone($value)
  * @property string $capital_time_zone
  */
- protected $capital_time_zone;
+    protected $capital_time_zone;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="administrative_divisions",
  *     description="",
  *     type="string"
@@ -147,10 +148,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereAdministrativeDivisions($value)
  * @property string $administrative_divisions
  */
- protected $administrative_divisions;
+    protected $administrative_divisions;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="administrative_divisions_note",
  *     description="",
  *     type="string"
@@ -159,10 +160,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereAdministrativeDivisionsNote($value)
  * @property string $administrative_divisions_note
  */
- protected $administrative_divisions_note;
+    protected $administrative_divisions_note;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="independence",
  *     description="",
  *     type="string"
@@ -171,10 +172,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereIndependence($value)
  * @property string $independence
  */
- protected $independence;
+    protected $independence;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="national_holiday",
  *     description="",
  *     type="string"
@@ -183,10 +184,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereNationalHoliday($value)
  * @property string $national_holiday
  */
- protected $national_holiday;
+    protected $national_holiday;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="constitution",
  *     description="",
  *     type="string"
@@ -195,10 +196,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereConstitution($value)
  * @property string $constitution
  */
- protected $constitution;
+    protected $constitution;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legal_system",
  *     description="",
  *     type="string"
@@ -207,10 +208,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereLegalSystem($value)
  * @property string $legal_system
  */
- protected $legal_system;
+    protected $legal_system;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="citizenship",
  *     description="",
  *     type="string"
@@ -219,10 +220,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereCitizenship($value)
  * @property string $citizenship
  */
- protected $citizenship;
+    protected $citizenship;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="suffrage",
  *     description="",
  *     type="string"
@@ -231,10 +232,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereSuffrage($value)
  * @property string $suffrage
  */
- protected $suffrage;
+    protected $suffrage;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="executive_chief_of_state",
  *     description="",
  *     type="string"
@@ -243,10 +244,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereExecutiveChiefOfState($value)
  * @property string $executive_chief_of_state
  */
- protected $executive_chief_of_state;
+    protected $executive_chief_of_state;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="executive_head_of_government",
  *     description="",
  *     type="string"
@@ -255,10 +256,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereExecutiveHeadOfGovernment($value)
  * @property string $executive_head_of_government
  */
- protected $executive_head_of_government;
+    protected $executive_head_of_government;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="executive_cabinet",
  *     description="",
  *     type="string"
@@ -267,10 +268,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereExecutiveCabinet($value)
  * @property string $executive_cabinet
  */
- protected $executive_cabinet;
+    protected $executive_cabinet;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="executive_elections",
  *     description="",
  *     type="string"
@@ -279,10 +280,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereExecutiveElections($value)
  * @property string $executive_elections
  */
- protected $executive_elections;
+    protected $executive_elections;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="executive_election_results",
  *     description="",
  *     type="string"
@@ -291,10 +292,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereExecutiveElectionResults($value)
  * @property string $executive_election_results
  */
- protected $executive_election_results;
+    protected $executive_election_results;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legislative_description",
  *     description="",
  *     type="string"
@@ -303,10 +304,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereLegislativeDescription($value)
  * @property string $legislative_description
  */
- protected $legislative_description;
+    protected $legislative_description;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legislative_elections",
  *     description="",
  *     type="string"
@@ -315,10 +316,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereLegislativeElections($value)
  * @property string $legislative_elections
  */
- protected $legislative_elections;
+    protected $legislative_elections;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legislative_election_results",
  *     description="",
  *     type="string"
@@ -327,10 +328,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereLegislativeElectionResults($value)
  * @property string $legislative_election_results
  */
- protected $legislative_election_results;
+    protected $legislative_election_results;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legislative_highest_courts",
  *     description="",
  *     type="string"
@@ -339,10 +340,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereLegislativeHighestCourts($value)
  * @property string $legislative_highest_courts
  */
- protected $legislative_highest_courts;
+    protected $legislative_highest_courts;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legislative_judge_selection",
  *     description="",
  *     type="string"
@@ -351,10 +352,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereLegislativeJudgeSelection($value)
  * @property string $legislative_judge_selection
  */
- protected $legislative_judge_selection;
+    protected $legislative_judge_selection;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="legislative_subordinate_courts",
  *     description="",
  *     type="string"
@@ -363,10 +364,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereLegislativeSubordinateCourts($value)
  * @property string $legislative_subordinate_courts
  */
- protected $legislative_subordinate_courts;
+    protected $legislative_subordinate_courts;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="political_parties",
  *     description="",
  *     type="string"
@@ -375,10 +376,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment wherePoliticalParties($value)
  * @property string $political_parties
  */
- protected $political_parties;
+    protected $political_parties;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="political_pressure",
  *     description="",
  *     type="string"
@@ -387,10 +388,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment wherePoliticalPressure($value)
  * @property string $political_pressure
  */
- protected $political_pressure;
+    protected $political_pressure;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="international_organization_participation",
  *     description="",
  *     type="string"
@@ -399,10 +400,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereInternationalOrganizationParticipation($value)
  * @property string $international_organization_participation
  */
- protected $international_organization_participation;
+    protected $international_organization_participation;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="diplomatic_representation_in_usa",
  *     description="",
  *     type="string"
@@ -411,10 +412,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereDiplomaticRepresentationInUsa($value)
  * @property string $diplomatic_representation_in_usa
  */
- protected $diplomatic_representation_in_usa;
+    protected $diplomatic_representation_in_usa;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="diplomatic_representation_from_usa",
  *     description="",
  *     type="string"
@@ -423,10 +424,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereDiplomaticRepresentationFromUsa($value)
  * @property string $diplomatic_representation_from_usa
  */
- protected $diplomatic_representation_from_usa;
+    protected $diplomatic_representation_from_usa;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="flag_description",
  *     description="",
  *     type="string"
@@ -435,10 +436,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereFlagDescription($value)
  * @property string $flag_description
  */
- protected $flag_description;
+    protected $flag_description;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="national_symbols",
  *     description="",
  *     type="string"
@@ -447,10 +448,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereNationalSymbols($value)
  * @property string $national_symbols
  */
- protected $national_symbols;
+    protected $national_symbols;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="national_anthem",
  *     description="",
  *     type="string"
@@ -459,10 +460,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereNationalAnthem($value)
  * @property string $national_anthem
  */
- protected $national_anthem;
+    protected $national_anthem;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="created_at",
  *     description="",
  *     type="string"
@@ -471,10 +472,10 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereCreatedAt($value)
  * @property \Carbon\Carbon|null $created_at
  */
- protected $created_at;
+    protected $created_at;
  /**
   *
- * @OAS\Property(
+ * @OA\Property(
  *     title="updated_at",
  *     description="",
  *     type="string"
@@ -483,6 +484,5 @@ class CountryGovernment extends Model
  * @method static CountryGovernment whereUpdatedAt($value)
  * @property \Carbon\Carbon|null $updated_at
  */
- protected $updated_at;
-
+    protected $updated_at;
 }

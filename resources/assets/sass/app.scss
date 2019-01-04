@@ -1,31 +1,106 @@
-// Global styles and variables
-//@import "global";
+// Header
+@charset "utf-8";
 
-@import "global";
+// Set your brand colors
+$purple: rgb(200, 60, 100);
+$pink: #FA7C91;
+$brown: #757763;
+$beige-light: #D0D1CD;
+$beige-lighter: #EFF0EB;
 
-@import "partials/nav";
+// Update Bulma's global variables
+$family-sans-serif: "Nunito", sans-serif;
+$grey-dark: $brown;
+$grey-light: $beige-light;
+$primary: rgb(200, 60, 100);
+$link: rgb(100, 60, 100);
+//$widescreen-enabled: true;
+//$fullhd-enabled: false;
 
-@import "components/datatables";
-@import "components/dropzone";
-@import "components/tabs";
-@import "components/forms";
-@import "swagger/main";
+// Update some of Bulma's component variables
+$body-background-color: $beige-lighter;
+$control-border-width: 2px;
+$input-border-color: #ddd;
+$input-shadow: none;
 
-@import "pages/languages";
+// Import only what you need from Bulma
+@import "../../../node_modules/bulma/sass/utilities/_all";
+@import "../../../node_modules/bulma/sass/base/_all";
+@import "../../../node_modules/bulma/sass/elements/_all";
+@import "../../../node_modules/bulma/sass/components/_all";
+@import "../../../node_modules/bulma/sass/grid/_all";
+@import "../../../node_modules/bulma/sass/layout/_all";
 
-nav[role="navigation"] {
-  background-color: #fff;
-  border-bottom:thin solid #f8f8f8;
+// forms
+
+#docs-nav .menu-list a {
+  position: relative;
 }
 
-section[role="banner"] {
-  background-color:#F8F8FA;
-  color:#222;
-  z-index: 0;
+#docs-nav .menu-list a .entry {
+  position: absolute;
+  left: -18px;
+  top:8px;
+  display: inline-block;
 }
 
-.centered {
-  margin: 0 auto!important;
+.select,
+.select select,
+.v-select,
+.dropdown-toggle {
+  width:100%;
+}
+
+.icon {width: 1em; height: 1em;vertical-align: -0.15em;fill: currentColor;overflow: hidden}
+
+small {
   display: block;
-  float: none!important;
 }
+
+.hero.is-primary {
+  margin-bottom:25px;
+}
+
+// Footer
+
+
+// Menu
+.navbar-item.is-mega {
+  position: static;
+
+  .is-mega-menu-title {
+    margin-bottom: 0;
+    padding: .375rem 1rem;
+  }
+}
+
+/* Margin Top */
+
+.mt5		{margin-top:5px}
+.mt10		{margin-top:10px}
+.mt20		{margin-top:20px}
+.mt30		{margin-top:30px}
+.mt40		{margin-top:40px}
+.mt50		{margin-top:50px}
+.mt60		{margin-top:60px}
+
+.mb5		{margin-bottom:5px}
+.mb10		{margin-bottom:10px}
+.mb15		{margin-bottom:15px}
+.mb20		{margin-bottom:20px}
+.mb30		{margin-bottom:30px}
+.mb40		{margin-bottom:40px}
+.mb50		{margin-bottom:50px}
+.mb60		{margin-bottom:60px}
+
+
+// search
+
+.hit                          {height:150px;position:relative}
+.hit:hover                    {box-shadow: none}
+.active-link .pagination-link {background:$primary}
+.hit .subtitle, .hit .title   {text-align: center}
+.hit .subtitle .ais-highlight {text-overflow: ellipsis;overflow: hidden;white-space: nowrap;display: block}
+.hit time                     {position: absolute;bottom:5px;right:5px}
+.hit .iso                     {position: absolute;bottom:5px;left:5px}
+.hit em                       {font-style: normal;background:$primary;color:#FFF}

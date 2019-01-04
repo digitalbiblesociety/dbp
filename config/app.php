@@ -12,7 +12,9 @@ return [
     | any other location as required by the application or its packages.
     */
 
-    'name' => env('APP_NAME', 'DBP'),
+    'name'        => env('APP_NAME', 'Laravel'),
+    'server_name' => env('APP_SERVER_NAME'),
+    'contact'     => env('APP_SITE_CONTACT'),
 
     /*
     |--------------------------------------------------------------------------
@@ -52,6 +54,8 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'url_podcast' => env('APP_URL_PODCAST', 'https://dbp4.org'),
+    'api_url' => env('API_URL'),
 
     /*
     |--------------------------------------------------------------------------
@@ -107,22 +111,10 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
-    /*
-    |--------------------------------------------------------------------------
-    | Logging Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Here you may configure the log settings for your application. Out of
-    | the box, Laravel uses the Monolog PHP logging library. This gives
-    | you a variety of powerful log handlers / formatters to utilize.
-    |
-    | Available Settings: "single", "daily", "syslog", "errorlog"
-    |
-    */
-
-    'log' => env('APP_LOG', 'single'),
-
-    'log_level' => env('APP_LOG_LEVEL', 'debug'),
+    'deploy' => [
+        'secret' => env('APP_DEPLOY_SECRET'),
+        'path'   => env('APP_DEPLOY_SCRIPT_PATH')
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -166,38 +158,23 @@ return [
         /*
          * Package Service Providers...
          */
-        Laravel\Tinker\TinkerServiceProvider::class,
 
         /*
          * Application Service Providers...
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
-	    /*
-	     * API Service Providers
-	     */
-	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
-	    //Laravel\Socialite\SocialiteServiceProvider::class,
-	    SocialiteProviders\Manager\ServiceProvider::class,
-	    Intouch\LaravelNewrelic\NewrelicServiceProvider::class,
-	    //Lanin\Laravel\ApiDebugger\ServiceProvider::class,
-	    Yajra\DataTables\DataTablesServiceProvider::class,
-
-	    // AWS Packages
-	    Aws\Laravel\AwsServiceProvider::class,
-	    jdavidbakr\SignedS3Filesystem\SignedS3FilesystemServiceProvider::class,
-
-	    /*
-	     * Site Packages
-	     */
-	    Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
-	    AlbertCht\InvisibleReCaptcha\InvisibleReCaptchaServiceProvider::class,
-
-
+        // Laravel\Socialite\SocialiteServiceProvider::class,
+        SocialiteProviders\Manager\ServiceProvider::class,
+        SocialiteProviders\Generators\GeneratorsServiceProvider::class,
+        Illuminate\Notifications\NotificationServiceProvider::class,
+        App\Providers\ComposerServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
+        App\Providers\LocalEnvironmentServiceProvider::class,
+        Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class
     ],
 
     /*
@@ -212,51 +189,45 @@ return [
     */
 
     'aliases' => [
-
-        'App' => Illuminate\Support\Facades\App::class,
-        'Artisan' => Illuminate\Support\Facades\Artisan::class,
-        'Auth' => Illuminate\Support\Facades\Auth::class,
-        'Blade' => Illuminate\Support\Facades\Blade::class,
-        'Broadcast' => Illuminate\Support\Facades\Broadcast::class,
-        'Bus' => Illuminate\Support\Facades\Bus::class,
-        'Cache' => Illuminate\Support\Facades\Cache::class,
-        'Config' => Illuminate\Support\Facades\Config::class,
-        'Cookie' => Illuminate\Support\Facades\Cookie::class,
-        'Crypt' => Illuminate\Support\Facades\Crypt::class,
-        'DB' => Illuminate\Support\Facades\DB::class,
-        'Eloquent' => Illuminate\Database\Eloquent\Model::class,
-        'Event' => Illuminate\Support\Facades\Event::class,
-        'File' => Illuminate\Support\Facades\File::class,
-        'Gate' => Illuminate\Support\Facades\Gate::class,
-        'Hash' => Illuminate\Support\Facades\Hash::class,
-        'Lang' => Illuminate\Support\Facades\Lang::class,
-        'Log' => Illuminate\Support\Facades\Log::class,
-        'Mail' => Illuminate\Support\Facades\Mail::class,
+        'App'          => Illuminate\Support\Facades\App::class,
+        'Artisan'      => Illuminate\Support\Facades\Artisan::class,
+        'Auth'         => Illuminate\Support\Facades\Auth::class,
+        'Blade'        => Illuminate\Support\Facades\Blade::class,
+        'Broadcast'    => Illuminate\Support\Facades\Broadcast::class,
+        'Bus'          => Illuminate\Support\Facades\Bus::class,
+        'Cache'        => Illuminate\Support\Facades\Cache::class,
+        'Config'       => Illuminate\Support\Facades\Config::class,
+        'Cookie'       => Illuminate\Support\Facades\Cookie::class,
+        'Crypt'        => Illuminate\Support\Facades\Crypt::class,
+        'DB'           => Illuminate\Support\Facades\DB::class,
+        'Eloquent'     => Illuminate\Database\Eloquent\Model::class,
+        'Event'        => Illuminate\Support\Facades\Event::class,
+        'File'         => Illuminate\Support\Facades\File::class,
+        'Gate'         => Illuminate\Support\Facades\Gate::class,
+        'Hash'         => Illuminate\Support\Facades\Hash::class,
+        'Lang'         => Illuminate\Support\Facades\Lang::class,
+        'Log'          => Illuminate\Support\Facades\Log::class,
+        'Mail'         => Illuminate\Support\Facades\Mail::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
-        'Password' => Illuminate\Support\Facades\Password::class,
-        'Queue' => Illuminate\Support\Facades\Queue::class,
-        'Redirect' => Illuminate\Support\Facades\Redirect::class,
-        'Redis' => Illuminate\Support\Facades\Redis::class,
-        'Request' => Illuminate\Support\Facades\Request::class,
-        'Response' => Illuminate\Support\Facades\Response::class,
-        'Route' => Illuminate\Support\Facades\Route::class,
-        'Schema' => Illuminate\Support\Facades\Schema::class,
-        'Session' => Illuminate\Support\Facades\Session::class,
-        'Storage' => Illuminate\Support\Facades\Storage::class,
-        'URL' => Illuminate\Support\Facades\URL::class,
-        'Validator' => Illuminate\Support\Facades\Validator::class,
-        'View' => Illuminate\Support\Facades\View::class,
-        'Fractal' => Spatie\Fractal\FractalFacade::class,
-        'i18n' => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
-        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
-        'AWS' => Aws\Laravel\AwsFacade::class,
-	    'Bucket' => \Helpers\AWS\bucket::class,
-        'i18n' => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
-        'Newrelic' => Intouch\LaravelNewrelic\Facades\Newrelic::class,
-        'Datatables' => Yajra\Datatables\Facades\Datatables::class,
-        'Uuid' => Webpatser\Uuid\Uuid::class,
-        //'Debugger' => Lanin\Laravel\ApiDebugger\Facade::class,
-
+        'Password'     => Illuminate\Support\Facades\Password::class,
+        'Queue'        => Illuminate\Support\Facades\Queue::class,
+        'Redirect'     => Illuminate\Support\Facades\Redirect::class,
+        'Redis'        => Illuminate\Support\Facades\Redis::class,
+        'Request'      => Illuminate\Support\Facades\Request::class,
+        'Response'     => Illuminate\Support\Facades\Response::class,
+        'Route'        => Illuminate\Support\Facades\Route::class,
+        'Schema'       => Illuminate\Support\Facades\Schema::class,
+        'Session'      => Illuminate\Support\Facades\Session::class,
+        'Storage'      => Illuminate\Support\Facades\Storage::class,
+        'URL'          => Illuminate\Support\Facades\URL::class,
+        'Validator'    => Illuminate\Support\Facades\Validator::class,
+        'View'         => Illuminate\Support\Facades\View::class,
+        'Socialite'    => Laravel\Socialite\Facades\Socialite::class,
+        'Input'        => Illuminate\Support\Facades\Input::class,
+        'Image'        => Intervention\Image\Facades\Image::class,
+        'Localization' => Lunaweb\Localization\Facades\Localization::class,
+        'i18n'         => Lunaweb\Localization\Facades\Localization::class,
+        'Bugsnag'      => Bugsnag\BugsnagLaravel\Facades\Bugsnag::class,
     ],
 
 ];

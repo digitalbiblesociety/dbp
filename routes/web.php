@@ -1,167 +1,118 @@
 <?php
 
-Route::group(['prefix' => i18n::setLocale(), 'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]], function()
-{
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+| Middleware options can be located in `app/Http/Kernel.php`
+|
+*/
 
-	Route::name('history')->get('docs/history',                             'DocsController@history');
-	Route::name('docs.sdk')->get('docs/sdk',                                'DocsController@sdk');
-	Route::name('docs_team')->get('docs/getting-started',                   'DocsController@getting_started');
-	Route::name('docs_team')->get('docs/team',                              'DocsController@team');
-	Route::name('docs_bible_equivalents')->get('docs/bibles/equivalents',   'DocsController@bibleEquivalents');
-	Route::name('docs_bible_books')->get('docs/bibles/books',               'DocsController@books');
-	Route::name('docs_bibles')->get('docs/bibles',                          'DocsController@bibles');
-	Route::name('docs_language_create')->get('docs/language/create',        'DocsController@languages');
-	Route::name('docs_language_update')->get('docs/language/update',        'DocsController@languages');
-	Route::name('docs_languages')->get('docs/languages',                    'DocsController@languages');
-	Route::name('docs_countries')->get('docs/countries',                    'DocsController@countries');
-	Route::name('docs_alphabets')->get('docs/alphabets',                    'DocsController@alphabets');
-	Route::name('swagger_v4')->get('docs/swagger/v4',                        'DocsController@swagger_v4');
-	Route::name('swagger_v2')->get('docs/swagger/v2',                        'DocsController@swagger_v2');
-	Route::name('docs')->get('docs',                                        'DocsController@index');
+Localization::localizedRoutesGroup(function () {
 
-	Route::name('docs_analysis')->get('docs/code-analysis',                 'DocsController@code_analysis');
-Route::name('docs_books_BookOrderListing')->get('docs/v2/books/book-order-listing',  'BooksController@show');
-Route::name('v2_docs_text_search')->get('docs/v2/text/search',  'TextController@search');
-Route::name('data_library_volumeLanguage')->get('library/volumelanguage', 'LanguagesController@volumeLanguage');
-Route::name('projects')->resource('projects',                     'ProjectsController');
+    Route::get('/single-page-app/{path}', function () { return view('index'); })->where('path', '(.*)');
 
+    // Homepage Route
+    Route::get('/', 'WelcomeController@welcome')->name('welcome');
 
-Route::name('swagger_docs_gen')->get('swagger_docs',                     'DocsController@swagger_docs_gen');
-Route::name('swagger_database')->get('docs/swagger/database',            'DocsController@swagger_database');
-Route::name('swagger_database_model')->get('docs/swagger/database/{id}', 'DocsController@swagger_database_model');
+    // Overview Page
+    Route::get('/about/', 'WelcomeController@overview')->name('overview');
 
+    // Legal Overview
+    Route::get('/about/legal', 'WelcomeController@legal')->name('legal');
+    Route::get('/acerca-de/legal', 'WelcomeController@legal')->name('es.legal')->localization('es');
 
-Route::get('bibles/audio/uploads/thanks',   'AudioProcessingController@thanks')->name('bibles_audio_uploads.thanks');
-Route::resource('bibles/audio/uploads',     'AudioProcessingController');
-Route::resource('bibles/ocr',               'PrintProcesses');
-Route::resource('dbl',                      'Connections\DigitalBibleLibraryController');
+    // Legal | Eula Page
+    Route::get('/about/eula', 'WelcomeController@eula')->name('eula');
+    Route::get('/acerca-de/eula', 'WelcomeController@eula')->name('es.eula')->localization('es');
 
-// This Collection of routes handles the javascript-less reader fallback
+    // Legal | License Page
+    Route::get('/about/license', 'WelcomeController@license')->name('license');
+    Route::get('/acerca-de/licencia', 'WelcomeController@license')->name('es.license')->localization('es');
 
-Route::name('ui_bibleDisplay_read.index')->get('/read/',                          'BibleDisplayController@index');
-Route::name('ui_bibleDisplay_read.bible')->get('/read/{id}',                      'BibleDisplayController@navigation');
-Route::name('ui_bibleDisplay_read.results')->get('/read/{id}/search',             'BibleDisplayController@search');
-Route::name('ui_bibleDisplay_read.search')->post('/read/{id}/search',             'BibleDisplayController@search');
-Route::name('ui_bibleDisplay_read.chapter')->get('/read/{id}/{book}/{chapter}',   'BibleDisplayController@chapter');
+    // Legal | Privacy Policy
+    Route::get('/about/privacy-policy', 'WelcomeController@privacyPolicy')->name('privacy_policy');
+    Route::get('/acerca-de/politica-de-privacidad', 'WelcomeController@privacyPolicy')->name('es.privacy_policy')->localization('es');
 
+    Route::get('/about/contact', 'User\ContactController@create')->name('contact.create');
+    Route::post('/about/contact', 'User\ContactController@store')->name('contact.store');
 
-Route::get('/permissions',                                'BibleFileSetPermissionsController@user')->name('view_bible_filesets_permissions.user');
-Route::resource('bibles/filesets/{id}/permissions',       'BibleFileSetPermissionsController', ['names' => [
-	'index'   => 'view_bible_filesets_permissions.index',
-	'edit'    => 'view_bible_filesets_permissions.edit',
-	'create'  => 'view_bible_filesets_permissions.create',
-	'store'   => 'view_bible_filesets_permissions.store',
-	'show'    => 'view_bible_filesets_permissions.show',
-	'update'  => 'view_bible_filesets_permissions.update'
-]]);
-Route::resource('bibles/files',       'BibleFileSetsController', ['names' => [
-	'index'   => 'view_bible_filesets.index',
-	'edit'    => 'view_bible_filesets.edit',
-	'create'  => 'view_bible_filesets.create',
-	'show'    => 'view_bible_filesets.show',
-]]);
+    // About
+    Route::get('/about/relations', 'WelcomeController@relations')->name('relations');
+    Route::get('/organizations', 'Organization\OrganizationsController@index')->name('organizations.index');
 
-Route::get('bibles/{id}/manage',            'BiblesController@manage')->name('view_bibles.manage');
-Route::resource('bibles',                   'BiblesController', ['names' => [
-	'index'   => 'view_bibles.index',
-	'edit'    => 'view_bibles.edit',
-	'create'  => 'view_bibles.create',
-	'update'  => 'view_bibles.update',
-	'store'   => 'view_bibles.store',
-	'show'    => 'view_bibles.show',
-]]);
-Route::resource('articles',                   'ArticlesController', ['names' => [
-	'index'   => 'view_articles.index',
-	'edit'    => 'view_articles.edit',
-	'create'  => 'view_articles.create',
-	'update'  => 'view_articles.update',
-	'store'   => 'view_articles.store',
-	'show'    => 'view_articles.show',
-]]);
-Route::resource('books',                    'BooksController', ['names' => [
-	'index'   => 'view_books.index',
-	'edit'    => 'view_books.edit',
-	'create'  => 'view_books.create',
-	'show'    => 'view_books.show',
-]]);
-Route::resource('languages',                'LanguagesController', ['names' => [
-	'index'   => 'view_languages.index',
-	'edit'    => 'view_languages.edit',
-	'create'  => 'view_languages.create',
-	'show'    => 'view_languages.show',
-]]);
-Route::resource('numbers',                  'NumbersController', ['names' => [
-	'index'   => 'view_numbers.index',
-	'edit'    => 'view_numbers.edit',
-	'create'  => 'view_numbers.create',
-	'show'    => 'view_numbers.show',
-]]);
-Route::resource('alphabets',                'AlphabetsController', ['names' => [
-	'index'   => 'view_alphabets.index',
-	'edit'    => 'view_alphabets.edit',
-	'create'  => 'view_alphabets.create',
-	'show'    => 'view_alphabets.show',
-	'update'  => 'view_alphabets.update',
-]]);
-Route::resource('resources',                'ResourcesController', ['names' => [
-	'index'   => 'view_resources.index',
-	'edit'    => 'view_resources.edit',
-	'create'  => 'view_resources.create',
-	'show'    => 'view_resources.show',
-]]);
-Route::resource('organizations', 'OrganizationsController',['names' => [
-	'index'   => 'view_organizations.index',
-	'edit'    => 'view_organizations.edit',
-	'create'  => 'view_organizations.create',
-	'show'    => 'view_organizations.show',
-]]);
+    // About | Joining
+    Route::get('/about/join', 'WelcomeController@join')->name('about.join');
+    Route::get('/about/partnering', 'WelcomeController@partnering')->name('about.partnering');
 
-Route::resource('countries',                'CountriesController', [
-	'only' => ['index','show'],
-	'names'=> ['index' => 'view_countries.index','show'  => 'view_countries.show']
-]);
+    // Reader
+    Route::get('/reader', 'Bible\ReaderController@languages')->name('reader.languages');
+    Route::get('/reader/languages/{language_id}', 'Bible\ReaderController@bibles')->name('reader.bibles');
+    Route::get('/reader/bibles/{id}/', 'Bible\ReaderController@books')->name('reader.books');
+    Route::get('/reader/bibles/{id}/{book}/{chapter}', 'Bible\ReaderController@chapter')->name('reader.chapter');
 
-Route::get('login/{provider}',          'Auth\LoginController@redirectToProvider')->name('login.social_redirect');
-Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback')->name('login.social_callback');
-Auth::routes();
+    // Authentication Routes | Passwords
+    Route::name('login')->match(['get','post'], 'login', 'User\UsersController@login');
+    Route::name('logout')->post('logout', 'User\UsersController@logout');
+    Route::name('register')->get('register', 'User\UsersController@create');
+    Route::post('register', 'User\UsersController@store');
+    Route::name('password.request')->get('password/reset', 'User\UserPasswordsController@showRequestForm');
+    Route::name('password.email')->post('password/email', 'User\UserPasswordsController@triggerPasswordResetEmail');
+    Route::name('password.reset')->get('password/reset/{token}', 'User\UserPasswordsController@showResetForm');
+    Route::post('password/reset', 'User\UserPasswordsController@reset');
+
+    Route::name('api_key_email')->post('keys/email',                     'User\KeyController@sendKeyEmail');
+    Route::name('api_key_generate')->get('keys/generate/{email_token}',  'User\KeyController@generateAPIKey');
 
 
-Route::get('dashboard', 'Dashboard\DashboardController@index')->name('home');
-Route::get('admin',     'Dashboard\DashboardController@admin')->name('admin');
-Route::resource('dashboard/users',    'UsersController');
-Route::resource('/projects',          'ProjectsController');
+    Route::name('wiki_bibles.one')->get('/wiki/bibles/{id}', 'Bible\BiblesController@show');
+    Route::name('wiki_bibles.all')->get('/wiki/bibles', 'Bible\BiblesController@index');
 
-Route::get('/verify-email/{token}', 'Auth\LoginController@verify');
-Route::get('/dashboard/users/notes', 'UserNotesController@index')->name('users.notes_index');
+    // Public Routes
+    Route::group(['middleware' => ['web']], function () {
+        Route::name('notes')->get('notes', 'User\UserNotesController@index');
 
-// Organizations Dashboard
-Route::resource('dashboard/organizations/roles',       'Dashboard\Organizations\OrganizationRolesController', ['names' => [
-	'index'   => 'dashboard_organization_roles.index',
-	'edit'    => 'dashboard_organization_roles.edit',
-	'create'  => 'dashboard_organization_roles.create',
-	'show'    => 'dashboard_organization_roles.show',
-]]);
-Route::resource('dashboard/organizations', 'OrganizationsController', ['names' => [
-	'index'   => 'dashboard_organizations.index',
-	'edit'    => 'dashboard_organizations.edit',
-	'create'  => 'dashboard_organizations.create',
-	'show'    => 'dashboard_organizations.show',
-]]);
+        // Getting Started
+        Route::name('apiDocs_bible_equivalents')->get('/api/bible/bible-equivalents', 'Bible\BibleEquivalentsController@index');
 
-Route::get('/',     'HomeController@welcome')->name('welcome');
+
+        // Docs Routes
+        Route::name('docs')->get('docs', 'User\DocsController@index');
+        Route::name('swagger_v4')->get('docs/swagger/v4', 'User\DocsController@swaggerV4');
+        Route::name('swagger_v2')->get('docs/swagger/v2', 'User\DocsController@swaggerV2');
+        Route::name('history')->get('docs/history', 'User\DocsController@history');
+        Route::name('docs.sdk')->get('sdk', 'User\DocsController@sdk');
+        Route::name('docs.getting_started')->get('guides/getting-started', 'User\DocsController@start');
+        Route::name('docs_team')->get('docs/team', 'User\DocsController@team');
+        Route::name('docs_bible_equivalents')->get('docs/bibles/equivalents', 'User\DocsController@bibleEquivalents');
+        Route::name('docs_bible_books')->get('docs/bibles/books', 'User\DocsController@books');
+        Route::name('docs_bibles')->get('docs/bibles', 'User\DocsController@bibles');
+        Route::name('docs_language_create')->get('docs/language/create', 'User\DocsController@languages');
+        Route::name('docs_language_update')->get('docs/language/update', 'User\DocsController@languages');
+        Route::name('docs_languages')->get('docs/languages', 'User\DocsController@languages');
+        Route::name('docs_countries')->get('docs/countries', 'User\DocsController@countries');
+        Route::name('docs_alphabets')->get('docs/alphabets', 'User\DocsController@alphabets');
+        Route::name('docs_analysis')->get('docs/code-analysis', 'User\DocsController@codeAnalysis');
+
+        // Docs Generator Routes
+        Route::name('swagger_docs_gen')->get('swagger_docs', 'User\DocsController@swaggerDocsGen');
+        Route::name('swagger_database')->get('docs/swagger/database', 'User\DocsController@swaggerDatabase');
+        Route::name('swagger_database_model')->get('docs/swagger/database/{id}', 'User\DocsController@swaggerDatabase_model');
+
+        // Activation Routes
+        Route::name('projects.connect')->get('/connect/{token}', 'Organization\ProjectsController@connect');
+
+        // Socialite Register Routes
+        Route::name('social.redirect')->get('/login/redirect/{provider}', 'User\SocialController@redirect');
+        Route::name('social.handle')->get('/login/{provider}/callback',   'User\SocialController@callback');
+    });
 
 });
-/**
-Route::get('/test-armor', function () {
-	$locations = ['/bin','/home','/etc','/home/forge/aaTrap/'];
-	foreach ( $locations as $location ) {
-		echo "\nAttempting: ".$location;
-		@file_put_contents("$location/armorTest.txt","Hi, \nI'm a test for app Armor");
-		if(file_exists("$location/armorTest.txt")) {
-			echo "\n File Successfully created";
-		} else {
-			echo "\n File was not created";
-		}
-	}
-});
- */
+
+// VERSION 4 | DEPLOYMENT
+Route::name('deployments.github')->post('/deploy/github', 'Connections\GitDeployController@deploy');

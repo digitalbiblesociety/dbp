@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 /**
  * App\Models\User\ArticleTranslation
@@ -10,20 +11,33 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $article_id
  * @property string $iso
  * @property string $name
- * @property string|null $description
+ * @property string $description
  * @property int $vernacular
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTranslation whereArticleId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTranslation whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTranslation whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTranslation whereIso($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTranslation whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTranslation whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User\ArticleTranslation whereVernacular($value)
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ *
+ * @method static ArticleTranslation whereArticleId($value)
+ * @method static ArticleTranslation whereCreatedAt($value)
+ * @method static ArticleTranslation whereDescription($value)
+ * @method static ArticleTranslation whereIso($value)
+ * @method static ArticleTranslation whereName($value)
+ * @method static ArticleTranslation whereUpdatedAt($value)
+ * @method static ArticleTranslation whereVernacular($value)
+ *
  * @mixin \Eloquent
  */
 class ArticleTranslation extends Model
 {
-    //
+    protected $connection = 'dbp_users';
+    public $fillable = ['iso','name','body'];
+
+    public function getSlugAttribute()
+    {
+        return str_slug($this->name);
+    }
+
+    public function article()
+    {
+        return $this->belongsTo(Article::class);
+    }
 }

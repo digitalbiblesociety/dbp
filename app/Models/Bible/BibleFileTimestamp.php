@@ -10,87 +10,90 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Bible\Book $book
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Bible File Timestamp tag model partitions the file into verse by verse sections",
  *     title="Bible File Timestamp",
- *     @OAS\Xml(name="BibleFileTimestamp")
+ *     @OA\Xml(name="BibleFileTimestamp")
  * )
  *
  */
 
 class BibleFileTimestamp extends Model
 {
-	protected $table = 'bible_file_timestamps';
-	public $primaryKey = 'bible_file_id';
+    protected $connection = 'dbp';
+    protected $table = 'bible_file_timestamps';
 
-
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="file_id",
-	 *   type="integer",
-	 *   description="The incrementing id of the file timestamp",
-	 *   minimum=1
-	 * )
-	 *
+    /**
+     *
+     * @OA\Property(
+     *   title="file_id",
+     *   type="integer",
+     *   description="The incrementing id of the file timestamp",
+     *   minimum=1
+     * )
+     *
      * @method static BibleFileTimestamp whereFileId($value)
-	 * @property int $id
-	 */
-	protected $id;
+     * @property int $id
+     */
+    protected $id;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="verse_start",
-	 *   type="integer",
-	 *   description="The starting verse for the file timestamp",
-	 *   minimum=1
-	 * )
-	 *
-	 * @method static BibleFileTimestamp whereVerseStart($value)
-	 * @property int|null $verse_start
-	 *
-	 */
-	protected $verse_start;
+    /**
+     *
+     * @OA\Property(
+     *   title="verse_start",
+     *   type="integer",
+     *   description="The starting verse for the file timestamp",
+     *   minimum=1
+     * )
+     *
+     * @method static BibleFileTimestamp whereVerseStart($value)
+     * @property int|null $verse_start
+     *
+     */
+    protected $verse_start;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="verse_end",
-	 *   type="integer",
-	 *   description="The ending verse for the file timestamp",
-	 *   minimum=1
-	 * )
-	 *
-	 * @method static BibleFileTimestamp whereVerseEnd($value)
-	 * @property int|null $verse_end
-	 *
-	 */
-	protected $verse_end;
+    /**
+     *
+     * @OA\Property(
+     *   title="verse_end",
+     *   type="integer",
+     *   description="The ending verse for the file timestamp",
+     *   minimum=1
+     * )
+     *
+     * @method static BibleFileTimestamp whereVerseEnd($value)
+     * @property int|null $verse_end
+     *
+     */
+    protected $verse_end;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="timestamp",
-	 *   type="integer",
-	 *   description="The ending verse for the file timestamp",
-	 *   minimum=1
-	 * )
-	 *
+    /**
+     *
+     * @OA\Property(
+     *   title="timestamp",
+     *   type="integer",
+     *   description="The ending verse for the file timestamp",
+     *   minimum=1
+     * )
+     *
      * @method static BibleFileTimestamp whereTimestamp($value)
-	 * @property float $timestamp
-	 *
-	 */
-	protected $timestamp;
+     * @property float $timestamp
+     *
+     */
+    protected $timestamp;
 
 
 
-	public $incrementing = false;
+    public $incrementing = false;
 
-	public function book()
-	{
-		return $this->belongsTo(Book::class);
-	}
+    public function book()
+    {
+        return $this->belongsTo(Book::class);
+    }
 
+    public function fileset()
+    {
+        return $this->belongsTo(BibleFileset::class, 'hash_id', 'hash_id');
+    }
 }

@@ -3,28 +3,30 @@
 namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User\User;
+
 /**
  * App\Models\User\Account
  * @mixin \Eloquent
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Account Model describes the connections between Users and their social accounts",
  *     title="Account",
- *     @OAS\Xml(name="Account")
+ *     @OA\Xml(name="Account")
  * )
  *
  */
 class Account extends Model
 {
-	public $incrementing = false;
-	protected $table = 'user_accounts';
-	protected $fillable = ['user_id', 'provider_user_id', 'provider_id'];
+    public $incrementing = false;
+    protected $connection = 'dbp_users';
+    protected $table = 'user_accounts';
+    protected $fillable = ['user_id', 'provider_user_id', 'provider_id', 'project_id'];
+    protected $hidden = ['user_id'];
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="id",
      *   type="integer",
      *   description="The incrementing ID for the account",
@@ -39,7 +41,7 @@ class Account extends Model
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="user_id",
      *   type="string",
      *   description="The user id for the user who has the account being described"
@@ -52,7 +54,7 @@ class Account extends Model
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="provider_id",
      *   type="string",
      *   description="The social account provider that the user has logged in with",
@@ -66,7 +68,7 @@ class Account extends Model
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="provider_user_id",
      *   type="string",
      *   description="The key of the provider for the account being described",
@@ -80,7 +82,7 @@ class Account extends Model
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="created_at",
      *   type="string",
      *   description="The time the social account was originally connected to the user"
@@ -93,7 +95,7 @@ class Account extends Model
 
     /**
      *
-     * @OAS\Property(
+     * @OA\Property(
      *   title="updated_at",
      *   type="string",
      *   description="The time the social account was last updated"
@@ -104,8 +106,8 @@ class Account extends Model
      */
     protected $updated_at;
 
-	public function user()
-	{
-		return $this->belongsTo(User::class);
-	}
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -2,12 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to the Semantic Version system.
 
-## [Unreleased]
-### A look at the future updates for 2.2
-  - Style Updates
-  - API Connections to Resource Providers Like Jesus Film
-  - AudioController Updated for changes to V2 Functionality
-  - Fallback for javascript-less browsers
+## [2.2.0] - 2018-08-14
+### Separated dbp & dbp_users databases
+  - Added new user login system
+  - Added vue based documentation
 
 ## [2.1.6] - 2018-03-21
 ### Documentation Updated

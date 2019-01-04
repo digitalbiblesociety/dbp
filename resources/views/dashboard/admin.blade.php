@@ -1,13 +1,45 @@
-<form>
-    @foreach($user->admin->organization->members as $user)
-        <div class="medium-4 columns user shadow">
-            <img class="user_avatar" src="/img/users/knight.svg" />
-            <label>User Name: <input type="text" name="user_name" value="{{ $user->name or old('user_name') }}"/></label>
-            @foreach($user->roles->where('organization_id',$user->admin->organization->id) as $role)
-                <label>User Role:
-                    <input type="text" name="user_role" value="{{ $role->role }}">
-                </label>
-            @endforeach
+@extends('layouts.app')
+
+@section('head')
+    <style>
+        .card-header-title {flex-direction: column;align-items:left;-webkit-box-align:left}
+    </style>
+@endsection
+
+
+@section('content')
+
+    @include('layouts.partials.banner', [
+        'title'     => 'Welcome '. $user->name,
+        'subtitle'  => 'Admin Access'
+    ])
+
+    @include('dashboard.organizations.partials.sync-dbl-message',$user)
+    <div class="container">
+
+        <div class="columns">
+            <a href="{{ route('profile.home') }}"> Profile </a>
         </div>
-    @endforeach
-</form>
+
+        <div class="columns">
+
+            <div class="column">
+
+                @foreach($user->roles as $role)
+                    <a class="button" href="{{ route('dashboard.tasks', ['role' => $role->slug]) }}">{{ $role->name }} Tasks</a>
+                @endforeach
+
+            </div>
+
+        </div>
+
+</div>
+
+@endsection
+
+
+@section('footer')
+    <script>
+
+    </script>
+@endsection

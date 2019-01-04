@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class VideoSource extends Model
 {
-	protected $table = "video_sources";
+    protected $connection = 'dbp';
+    protected $table = 'video_sources';
 
-	public function video()
-	{
-		$this->belongsTo(Video::class);
-	}
-
+    public function video()
+    {
+        $this->belongsTo(Video::class);
+    }
 }

@@ -7,74 +7,87 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class ProjectMember
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="The Project member's model",
  *     title="ProjectMember",
- *     @OAS\Xml(name="ProjectMember")
+ *     @OA\Xml(name="ProjectMember")
  * )
  *
  *
  */
 class ProjectMember extends Model
 {
-    protected $fillable = ['project_id','role','subscribed'];
+    protected $connection = 'dbp_users';
+    protected $table = 'project_members';
+    protected $fillable = ['project_id','user_id','role_id','subscribed','token'];
     public $incrementing = false;
     public $keyType = 'string';
     public $primaryKey = 'user_id';
+    public $timestamps = false;
 
-	/**
-	 *
-     * @OAS\Property(
+    /**
+     *
+     * @OA\Property(
      *   title="user_id",
      *   type="integer",
      *   description="The incrementing ID for the account",
      *   minimum=0,
      *   example="4"
      * )
-	 *
-	 */
-	protected $user_id;
-	/**
-	 *
-     * @OAS\Property(
+     *
+     */
+    protected $user_id;
+    /**
+     *
+     * @OA\Property(
      *   title="project_id",
      *   type="integer",
      *   description="The incrementing ID for the account",
      *   minimum=0,
      *   example="4"
      * )
-	 *
-	 */
-	protected $project_id;
-	/**
-	 *
-     * @OAS\Property(
-     *   title="role",
+     *
+     */
+    protected $project_id;
+    /**
+     *
+     * @OA\Property(
+     *   title="Role ID",
      *   type="integer",
      *   description="The incrementing ID for the account",
      *   minimum=0,
      *   example="4"
      * )
-	 *
-	 */
-	protected $role;
-	/**
-	 *
-     * @OAS\Property(
+     *
+     */
+    protected $role_id;
+    /**
+     *
+     * @OA\Property(
      *   title="subscribed",
      *   type="integer",
      *   description="The incrementing ID for the account",
      *   minimum=0,
      *   example="4"
      * )
-	 *
-	 */
-	protected $subscribed;
+     *
+     */
+    protected $subscribed;
 
 
-	public function user()
-	{
-		return $this->hasOne(User::class,'id','user_id');
-	}
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
 }

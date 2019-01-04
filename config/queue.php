@@ -35,33 +35,41 @@ return [
         ],
 
         'database' => [
-            'driver' => 'database',
-            'table' => 'jobs',
-            'queue' => 'default',
+            'driver'      => 'database',
+	        'connection'  => env('DBP_USERS_DATABASE'),
+            'table'       => 'jobs',
+            'queue'       => 'default',
             'retry_after' => 90,
         ],
 
         'beanstalkd' => [
-            'driver' => 'beanstalkd',
-            'host' => 'localhost',
-            'queue' => 'default',
+            'driver'      => 'beanstalkd',
+            'host'        => 'localhost',
+            'queue'       => 'default',
             'retry_after' => 90,
         ],
 
         'sqs' => [
             'driver' => 'sqs',
-            'key' => 'your-public-key',
-            'secret' => 'your-secret-key',
-            'prefix' => 'https://sqs.us-east-1.amazonaws.com/your-account-id',
-            'queue' => 'your-queue-name',
-            'region' => 'us-east-1',
+            'key'    => env('AWS_SQS_KEY'),
+            'secret' => env('AWS_SQS_SECRET'),
+            'prefix' => env('AWS_SQS_PREFIX'),
+            'queue'  => env('AWS_SQS_QUEUE'),
+            'region' => env('AWS_SQS_REGION') ?? 'us-east-1',
         ],
 
         'redis' => [
-            'driver' => 'redis',
-            'connection' => 'default',
-            'queue' => 'default',
+            'driver'      => 'redis',
+            'connection'  => 'default',
+            'queue'       => 'default',
             'retry_after' => 90,
+        ],
+
+        'social' => [
+            'driver'     => 'redis',
+            'connection' => 'default',
+            'queue'      => 'social',
+            'expire'     => 60,
         ],
 
     ],
@@ -78,8 +86,8 @@ return [
     */
 
     'failed' => [
-        'database' => env('DB_CONNECTION', 'dbp'),
-        'table' => 'failed_jobs',
+        'database' => env('DB_CONNECTION', 'mysql'),
+        'table'    => 'failed_jobs',
     ],
 
 ];

@@ -23,159 +23,160 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Bible\Bible $bible
  * @property-read \App\Models\Language\Language $language
  * @mixin \Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereBibleId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereBibleVariationId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereFeatures($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereIso($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereNotes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereVernacular($value)
+ * @method static BibleTranslation whereBibleId($value)
+ * @method static BibleTranslation whereBibleVariationId($value)
+ * @method static BibleTranslation whereCreatedAt($value)
+ * @method static BibleTranslation whereDescription($value)
+ * @method static BibleTranslation whereFeatures($value)
+ * @method static BibleTranslation whereId($value)
+ * @method static BibleTranslation whereIso($value)
+ * @method static BibleTranslation whereName($value)
+ * @method static BibleTranslation whereNotes($value)
+ * @method static BibleTranslation whereType($value)
+ * @method static BibleTranslation whereUpdatedAt($value)
+ * @method static BibleTranslation whereVernacular($value)
  * @property int $vernacular_trade
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Bible\BibleTranslation whereVernacularTrade($value)
+ * @method static BibleTranslation whereVernacularTrade($value)
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="BibleTranslation",
  *     title="BibleTranslation",
- *     @OAS\Xml(name="BibleTranslation")
+ *     @OA\Xml(name="BibleTranslation")
  * )
  *
  */
 class BibleTranslation extends Model
 {
-    protected $hidden = ["created_at","updated_at","bible_id","id","notes"];
+    protected $connection = 'dbp';
+    protected $hidden = ['created_at','updated_at','bible_id','id','notes','pivot','language'];
     protected $fillable = ['name','description','bible_id','iso'];
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="id",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleTranslation whereId($value)
-	 * @property increments $id
-	 */
-	protected $id;
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="iso",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleTranslation whereIso($value)
-	 * @property char $iso
-	 */
-	protected $iso;
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="iso",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleTranslation whereIso($value)
-	 * @property foreign $iso
-	 */
-	protected $bible_id;
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="bible_id",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleTranslation whereBibleId($value)
-	 * @property string $bible_id
-	 */
-	protected $vernacular;
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="bible_id",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleTranslation whereVernacular($value)
-	 * @property foreign $bible_id
-	 */
-	protected $vernacular_trade;
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="vernacular",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleTranslation whereVernacularTrade($value)
-	 * @property boolean $vernacular
-	 */
-	protected $name;
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="vernacular_trade",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleTranslation whereName($value)
-	 * @property boolean $vernacular_trade
-	 */
-	protected $type;
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="name",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleTranslation whereType($value)
-	 * @property string $name
-	 */
-	protected $features;
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="type",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleTranslation whereFeatures($value)
-	 * @property string $type
-	 */
-	protected $description;
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="features",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleTranslation where($value)
-	 * @property string $features
-	 */
-	protected $notes;
+    /**
+     *
+     * @OA\Property(
+     *   title="id",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleTranslation whereId($value)
+     * @property increments $id
+     */
+    protected $id;
+    /**
+     *
+     * @OA\Property(
+     *   title="iso",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleTranslation whereIso($value)
+     * @property char $iso
+     */
+    protected $iso;
+    /**
+     *
+     * @OA\Property(
+     *   title="iso",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleTranslation whereIso($value)
+     * @property foreign $iso
+     */
+    protected $bible_id;
+    /**
+     *
+     * @OA\Property(
+     *   title="bible_id",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleTranslation whereBibleId($value)
+     * @property string $bible_id
+     */
+    protected $vernacular;
+    /**
+     *
+     * @OA\Property(
+     *   title="bible_id",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleTranslation whereVernacular($value)
+     * @property foreign $bible_id
+     */
+    protected $vernacular_trade;
+    /**
+     *
+     * @OA\Property(
+     *   title="vernacular",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleTranslation whereVernacularTrade($value)
+     * @property boolean $vernacular
+     */
+    protected $name;
+    /**
+     *
+     * @OA\Property(
+     *   title="vernacular_trade",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleTranslation whereName($value)
+     * @property boolean $vernacular_trade
+     */
+    protected $type;
+    /**
+     *
+     * @OA\Property(
+     *   title="name",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleTranslation whereType($value)
+     * @property string $name
+     */
+    protected $features;
+    /**
+     *
+     * @OA\Property(
+     *   title="type",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleTranslation whereFeatures($value)
+     * @property string $type
+     */
+    protected $description;
+    /**
+     *
+     * @OA\Property(
+     *   title="features",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleTranslation where($value)
+     * @property string $features
+     */
+    protected $notes;
 
-	public function getIsoAttribute()
-	{
-		return $this->language->iso;
-	}
+    public function getIsoAttribute()
+    {
+        return $this->language->iso;
+    }
 
     public function bible()
     {
@@ -186,5 +187,4 @@ class BibleTranslation extends Model
     {
         return $this->belongsTo(Language::class)->select(['iso','id']);
     }
-
 }

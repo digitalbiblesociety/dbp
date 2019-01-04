@@ -1,87 +1,38 @@
 @extends('layouts.app')
 
-@section('head')
-    <style>
-        .auth-option-wrap {
-            display: flex;
-            height:100%;
-        }
-        .auth-option {
-            flex:1;
-            transition: all 150ms ease-in-out;
-        }
-        .auth-option:hover {
-            flex-grow: 1.2;
-        }
-        .auth-option img {
-            width: 100px;
-            margin:0 auto;
-            display: block;
-            fill: white;
-        }
-
-        .auth-option-action {
-
-        }
-
-        .sign-in {}
-        .sign-up {}
-
-        .social-auth {
-            background-color:#222;
-            font-size:2rem;
-            text-align: center;
-        }
-        .social-auth .icon {
-            color:#FFF;
-        }
-    </style>
-@endsection
-
 @section('content')
 
-    @include('layouts.partials.banner', [
-        'title' => "",
-        'tabs' => [
-            'login-tab'    => 'Login',
-            'register-tab' => 'Sign Up'
-		]
-    ])
-    <nav class="social-auth">
-        <a href="{{ route('login.social_redirect', ['provider' => 'google']) }}"><svg class="icon"><use xlink:href="/img/icons/icons-social.svg#google"></use></svg></a>
-        <a href="{{ route('login.social_redirect', ['provider' => 'facebook']) }}"><svg class="icon"><use xlink:href="/img/icons/icons-social.svg#facebook"></use></svg></a>
-        <a href="{{ route('login.social_redirect', ['provider' => 'twitter']) }}"><svg class="icon"><use xlink:href="/img/icons/icons-social.svg#twitter"></use></svg></a>
-        <a href="{{ route('login.social_redirect', ['provider' => 'github']) }}" href=""><svg class="icon"><use xlink:href="/img/icons/icons-social.svg#github"></use></svg></a>
-    </nav>
-    <section role="tabpanel" aria-hidden="false" id="login-tab">
-        @if($errors->any())
-            <div class="medium-6 columns centered">
-                <div data-abide-error class="alert callout">@foreach($errors->all() as $error) <p>{{ $error }}</p> @endforeach</div>
+    @include('layouts.partials.banner', ['title' => __('Login')])
+
+<div class="container">
+    <div class="column is-8-tablet is-offset-2-tablet">
+        <div class="tabs is-centered">
+            <ul>
+                <li class="is-active"><a href="#">{{ __('Login') }}</a></li>
+                <li><a href="{{ route('register') }}">Register</a></li>
+            </ul>
+        </div>
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+            <div class="field">
+                <label class="label" for="email">{{ __('E-Mail Address') }}</label>
+                <div class="control"><input class="input" id="email" type="text" autocomplete="email" name="email" value="{{ old('email') }}" required autofocus placeholder="Email"></div>
+                @if($errors->has('email')) <p class="help is-danger">{{ $errors->first('email') }}</p> @endif
             </div>
-        @endif
-        <form role="form" method="POST" action="{{ route('login') }}" class="medium-6 columns centered">
-            {{ csrf_field() }}
-            <h3 class="text-center">Sign in</h3>
-            <a class="login-box-submit-button" href="login/facebook">Facebook</a> |
-            <a class="login-box-submit-button" href="login/github">Github</a> |
-            <a class="login-box-submit-button" href="login/google">Google</a>
-            <input class="login-box-input" type="text" name="email" placeholder="Email" value="{{ old('email') }}" autocomplete="email" required />
-            <input class="login-box-input" type="password" name="password" placeholder="Password" autocomplete="current-password" required />
-            <input class="login-box-submit-button" type="submit" name="signup_submit" value="Sign In" />
-            <a href="{{ route('register') }}">Register</a> | <a href="{{ route('password.request') }}">Forgot Password?</a>
-        </form>
-    </section>
-    <section role="tabpanel" aria-hidden="true" id="register-tab">
-        <form class="medium-6 columns centered" role="form" method="POST" action="{{ route('register') }}">
-                {{ csrf_field() }}
-                <h3 class="text-center">Register</h3>
-                <label>Name <input id="name" type="text" name="name" value="{{ old('name') }}" autocomplete='name' required autofocus></label>
-                <label>E-Mail Address <input id="email" type="email" name="email" autocomplete="email" value="{{ old('email') }}" required></label>
-                <label>Password <input id="password" type="password" name="password" autocomplete="new-password" required></label>
-                <label>Confirm Password <input id="password-confirm" type="password" name="password_confirmation" autocomplete="new-password" required></label>
-                {!! app('captcha')->render() !!}
-                <button type="submit" class="button expand">Register</button>
+            <div class="field">
+                <label class="label" for="email">{{ __('Password') }}</label>
+                <div class="control"><input class="input" id="password" type="password" name="password" required placeholder="Password"></div>
+                @if($errors->has('password')) <p class="help is-danger">{{ $errors->first('password') }}</p> @endif
             </div>
+            <div class="field">
+                <div class="control"><label id="remember" name="remember" class="checkbox"><input type="checkbox" {{ old('remember') ? 'checked' : '' }}> {{ __('Remember Me') }}</label></div>
+                <a href="{{ route('password.request') }}">Forgot Password?</a>
+            </div>
+            <div class="field is-grouped">
+                <div class="control"><button type="submit" class="button is-link">{{ __('Login') }}</button></div>
+            </div>
+            @include('layouts.partials.socials')
         </form>
-    </section>
+    </div>
+</div>
 @endsection

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('DBP_CONNECTION', 'dbp'),
+    'default' => env('DB_CONNECTION', 'dbp_users'),
 
     /*
     |--------------------------------------------------------------------------
@@ -33,33 +33,47 @@ return [
 
     'connections' => [
 
-        'dbp' => [
-	        'driver' => 'mysql',
-	        'host' => env('DBP_HOST', '127.0.0.1'),
-	        'port' => env('DBP_PORT', '3306'),
-	        'database' => env('DBP_DATABASE', 'dbp'),
-	        'username' => env('DBP_USERNAME', 'forge'),
-	        'password' => env('DBP_PASSWORD', ''),
-	        'unix_socket' => env('DBP_SOCKET', ''),
-	        'charset' => 'utf8mb4',
-	        'collation' => 'utf8mb4_unicode_ci',
-	        'prefix' => '',
-	        'strict' => true,
-	        'engine' => null,
+        'mysql' => [
+            'driver'    => 'mysql',
+            'host'      => env('DBP_USERS_HOST', '127.0.0.1'),
+            'port'      => env('DBP_USERS_PORT', '3306'),
+            'database'  => env('DBP_USERS_DATABASE', 'dbp_users'),
+            'username'  => env('DBP_USERS_USERNAME', 'root'),
+            'password'  => env('DBP_USERS_PASSWORD', ''),
+            'charset'   => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix'    => '',
+            'strict'    => false,
+            'engine'    => null,
         ],
 
-        'sophia' => [
-	        'driver'    => 'mysql',
-	        'host'      => env('SOPHIA_DB_HOST', 'localhost'),
-	        'database'  => env('SOPHIA_DB_DATABASE', 'sophia'),
-	        'username'  => env('SOPHIA_DB_USERNAME', 'forge'),
-	        'port'      => env('SOPHIA_DB_PORT', '3306'),
-	        'password'  => env('SOPHIA_DB_PASSWORD', ''),
-	        'charset'   => 'utf8',
-	        'collation' => 'utf8_unicode_ci',
-	        'prefix'    => '',
-	        'strict'    => false,
-	        'engine'    => null,
+        'dbp' => [
+            'driver' => 'mysql',
+            'host' => env('DBP_HOST', '127.0.0.1'),
+            'port' => env('DBP_PORT', '3306'),
+            'database' => env('DBP_DATABASE', 'dbp'),
+            'username' => env('DBP_USERNAME', 'root'),
+            'password' => env('DBP_PASSWORD', ''),
+            'unix_socket' => env('DBP_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ],
+
+        'dbp_users' => [
+            'driver'    => 'mysql',
+            'host'      => env('DBP_USERS_HOST', '127.0.0.1'),
+            'port'      => env('DBP_USERS_PORT', '3306'),
+            'database'  => env('DBP_USERS_DATABASE', 'dbp_users'),
+            'username'  => env('DBP_USERS_USERNAME', 'root'),
+            'password'  => env('DBP_USERS_PASSWORD', ''),
+            'charset'   => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix'    => '',
+            'strict'    => false,
+            'engine'    => null,
         ],
 
     ],
@@ -93,9 +107,9 @@ return [
         'client' => 'predis',
 
         'default' => [
-            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'host'     => env('REDIS_HOST', '127.0.0.1'),
             'password' => env('REDIS_PASSWORD', null),
-            'port' => env('REDIS_PORT', 6379),
+            'port'     => env('REDIS_PORT', 6379),
             'database' => 0,
         ],
 

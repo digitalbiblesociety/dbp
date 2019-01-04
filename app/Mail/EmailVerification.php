@@ -11,15 +11,18 @@ class EmailVerification extends Mailable
 {
     use Queueable, SerializesModels;
 
-	protected $user;
+    protected $user;
+    protected $key_request;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($user)
+    public function __construct($user, $key_request)
     {
-	    $this->user = $user;
+        $this->user = $user;
+        $this->key_request = $key_request;
     }
 
     /**
@@ -29,6 +32,6 @@ class EmailVerification extends Mailable
      */
     public function build()
     {
-	    return $this->view('emails.verify')->from("info@dbs.org")->with(['email_token' => $this->user->email_token]);
+        return $this->view('emails.verify')->from("info@dbp4.org")->with(['email_token' => $this->user->email_token]);
     }
 }

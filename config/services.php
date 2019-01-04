@@ -14,35 +14,70 @@ return [
     |
     */
 
-    'github' => [
-	    'client_id'     => env('GITHUB_CLIENT_ID'),
-	    'client_secret' => env('GITHUB_CLIENT_SECRET'),
-	    'redirect'      => env('APP_URL').'/login/github/callback',
+    'mailgun' => [
+        'domain' => env('MAILGUN_DOMAIN'),
+        'secret' => env('MAILGUN_SECRET'),
     ],
 
-	'facebook' => [
-		'client_id'     => env('FACEBOOK_CLIENT_ID'),
-		'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
-		'redirect'      => env('APP_URL').'/login/facebook/callback',
-	],
+    'ses' => [
+        'key'    => env('SES_KEY'),
+        'secret' => env('SES_SECRET'),
+        'region' => 'us-east-1',
+    ],
+
+    'sparkpost' => [
+        'secret' => env('SPARKPOST_SECRET'),
+    ],
+
+    'facebook' => [
+        'client_id'     => env('FB_ID'),
+        'client_secret' => env('FB_SECRET'),
+        'redirect'      => env('FB_REDIRECT'),
+    ],
 
     'twitter' => [
-	    'client_id'     => env('TWITTER_CLIENT_ID') ?? env('DEV_TWITTER_CLIENT_ID'),
-	    'client_secret' => env('TWITTER_CLIENT_SECRET') ?? env('DEV_TWITTER_CLIENT_SECRET'),
-	    'redirect'      => env('APP_URL').'/login/twitter/callback',
+        'client_id'     => env('TW_ID'),
+        'client_secret' => env('TW_SECRET'),
+        'redirect'      => env('TW_REDIRECT'),
     ],
 
     'google' => [
-	    'client_id'     => env('GOOGLE_CLIENT_ID') ?? env('DEV_GOOGLE_CLIENT_ID'),
-	    'client_secret' => env('GOOGLE_CLIENT_SECRET') ?? env('DEV_GOOGLE_CLIENT_SECRET'),
-	    'redirect'      => env('APP_URL').'/login/google/callback',
+        'client_id'     => env('GOOGLE_ID'),
+        'client_secret' => env('GOOGLE_SECRET'),
+        'redirect'      => env('GOOGLE_REDIRECT'),
     ],
 
-    'reddit' => [
-	    'client_id'     => env('REDDIT_CLIENT_ID'),
-	    'client_secret' => env('REDDIT_CLIENT_SECRET'),
-	    'redirect'      => env('APP_URL').'/login/reddit/callback',
+    'github' => [
+        'client_id'     => env('GITHUB_ID'),
+        'client_secret' => env('GITHUB_SECRET'),
+        'redirect'      => env('GITHUB_REDIRECT'),
     ],
+
+    'twitch' => [
+        'client_id'     => env('TWITCH_KEY'),
+        'client_secret' => env('TWITCH_SECRET'),
+        'redirect'      => env('TWITCH_REDIRECT_URI'),
+    ],
+
+	// Bible APIs
+	'bibleIs' => [
+		'key' => env('BIS_API_KEY'),
+		'secret' => env('BIS_API_SECRET')
+	],
+
+    'talkingBibles' => [
+        'key' => env('TALKING_BIBLES_API')
+    ],
+
+	'arclight' => [
+		'key' => env('ARCLIGHT_API')
+	],
+
+    // Testing
+
+    'loaderIo' => [
+        'key' => env('LOADER_IO')
+    ]
 
 
 ];

@@ -20,16 +20,17 @@ use Illuminate\Database\Eloquent\Model;
  * @method static BibleLink whereUpdatedAt($value)
  * @method static BibleLink whereUrl($value)
  *
- * @OAS\Schema (
+ * @OA\Schema (
  *     type="object",
  *     description="BibleLink",
  *     title="BibleLink",
- *     @OAS\Xml(name="BibleLink")
+ *     @OA\Xml(name="BibleLink")
  * )
  *
  */
 class BibleLink extends Model
 {
+    protected $connection = 'dbp';
     /**
      * BibleLinks will only be called from the Bibles Model. So we don't need ID or Abbr.
      *
@@ -45,121 +46,121 @@ class BibleLink extends Model
 
 
     /**
-	 *
-	 * @OAS\Property(
-	 *   title="id",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleLink whereId($value)
-	 * @property int $id
-	 */
-	protected $id;
+     *
+     * @OA\Property(
+     *   title="id",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleLink whereId($value)
+     * @property int $id
+     */
+    protected $id;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="bible_id",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleLink whereBibleId($value)
-	 * @property string|null $bible_id
-	 */
-	protected $bible_id;
+    /**
+     *
+     * @OA\Property(
+     *   title="bible_id",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleLink whereBibleId($value)
+     * @property string|null $bible_id
+     */
+    protected $bible_id;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="type",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleLink whereType($value)
-	 * @property string $type
-	 */
-	protected $type;
+    /**
+     *
+     * @OA\Property(
+     *   title="type",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleLink whereType($value)
+     * @property string $type
+     */
+    protected $type;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="url",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleLink whereUrl($value)
-	 * @property string $url
-	 */
-	protected $url;
+    /**
+     *
+     * @OA\Property(
+     *   title="url",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleLink whereUrl($value)
+     * @property string $url
+     */
+    protected $url;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="title",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleLink whereTitle($value)
-	 * @property string $title
-	 */
-	protected $title;
+    /**
+     *
+     * @OA\Property(
+     *   title="title",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleLink whereTitle($value)
+     * @property string $title
+     */
+    protected $title;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="organization_id",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleLink whereOrganizationId($value)
-	 * @property int|null $organization_id
-	 */
-	protected $organization_id;
+    /**
+     *
+     * @OA\Property(
+     *   title="organization_id",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleLink whereOrganizationId($value)
+     * @property int|null $organization_id
+     */
+    protected $organization_id;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="created_at",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleLink whereCreatedAt($value)
-	 * @property \Carbon\Carbon $created_at
-	 */
-	protected $created_at;
+    /**
+     *
+     * @OA\Property(
+     *   title="created_at",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleLink whereCreatedAt($value)
+     * @property \Carbon\Carbon $created_at
+     */
+    protected $created_at;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="updated_at",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleLink whereUpdatedAt($value)
-	 * @property \Carbon\Carbon $updated_at
-	 */
-	protected $updated_at;
+    /**
+     *
+     * @OA\Property(
+     *   title="updated_at",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleLink whereUpdatedAt($value)
+     * @property \Carbon\Carbon $updated_at
+     */
+    protected $updated_at;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="provider",
-	 *   type="string",
-	 *   description=""
-	 * )
-	 *
-	 * @method static BibleLink whereProvider($value)
-	 * @property string|null $provider
-	 */
-	protected $provider;
+    /**
+     *
+     * @OA\Property(
+     *   title="provider",
+     *   type="string",
+     *   description=""
+     * )
+     *
+     * @method static BibleLink whereProvider($value)
+     * @property string|null $provider
+     */
+    protected $provider;
 
     /**
      * The Organization who Provides that link [not necessarily the publisher]
@@ -168,12 +169,11 @@ class BibleLink extends Model
      */
     public function organization()
     {
-        return $this->HasOne(Organization::class, 'id');
+        return $this->hasOne(Organization::class, 'id');
     }
 
     public function bible()
     {
-    	return $this->belongsTo(Bible::class);
+        return $this->belongsTo(Bible::class);
     }
-
 }

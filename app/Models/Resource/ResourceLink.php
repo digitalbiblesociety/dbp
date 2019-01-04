@@ -7,103 +7,92 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Resource\ResourceLink
  *
- * @OAS\Schema (
+ * @property int $resource_id
+ * @property string $title
+ * @property string|null $size
+ * @property string $type
+ * @property string $url
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ *
+ * @method static ResourceLink whereResourceId($value)
+ * @method static ResourceLink whereTitle($value)
+ * @method static ResourceLink whereSize($value)
+ * @method static ResourceLink whereType($value)
+ * @method static ResourceLink whereUrl($value)
+ * @method static ResourceLink whereCreatedAt($value)
+ * @method static ResourceLink whereUpdatedAt($value)
+ *
+ * @OA\Schema (
  *     type="object",
  *     description="ResourceLink",
  *     title="Resource Link",
- *     @OAS\Xml(name="ResourceLink")
+ *     @OA\Xml(name="ResourceLink")
  * )
  *
  * @mixin \Eloquent
  */
 class ResourceLink extends Model
 {
-	protected $hidden = ['created_at','updated_at', 'resource_id'];
+    protected $connection = 'dbp';
+    protected $hidden = ['created_at','updated_at', 'resource_id'];
 
-	/**
-	 *
-	 * @OAS\Property(ref="#/components/schemas/Resource/properties/id")
-	 *
-	 * @method static ResourceLink whereResourceId($value)
-	 * @property int $resource_id
-	 *
-	 */
-	protected $resource_id;
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/Resource/properties/id")
+     *
+     */
+    protected $resource_id;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="type",
-	 *   type="string",
-	 *   description="The type of media the resource can be categorized as",
-	 *   nullable=true
-	 * )
-	 *
-	 * @method static ResourceLink whereTitle($value)
-	 * @property string $title
-	 *
-	 */
-	protected $title;
+    /**
+     *
+     * @OA\Property(
+     *   title="type",
+     *   type="string",
+     *   description="The type of media the resource can be categorized as",
+     *   nullable=true
+     * )
+     *
+     */
+    protected $title;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="size",
-	 *   type="string",
-	 *   description="The size of the resource measured in kilobytes",
-	 *   nullable=true
-	 * )
-	 *
-	 * @method static ResourceLink whereSize($value)
-	 * @property string|null $size
-	 *
-	 */
-	protected $size;
+    /**
+     *
+     * @OA\Property(
+     *   title="size",
+     *   type="string",
+     *   description="The size of the resource measured in kilobytes",
+     *   nullable=true
+     * )
+     *
+     */
+    protected $size;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="type",
-	 *   type="string",
-	 *   description="The destination type for the url",
-	 *   nullable=true
-	 * )
-	 *
-	 * @method static ResourceLink whereType($value)
-	 * @property string $type
-	 *
-	 */
-	protected $type;
+    /**
+     *
+     * @OA\Property(
+     *   title="type",
+     *   type="string",
+     *   description="The destination type for the url",
+     *   nullable=true
+     * )
+     *
+     */
+    protected $type;
 
-	/**
-	 *
-	 * @OAS\Property(
-	 *   title="url",
-	 *   type="string",
-	 *   description="The link for the url"
-	 * )
-	 *
-	 * @method static ResourceLink whereUrl($value)
-	 * @property string $url
-	 *
-	 */
-	protected $url;
+    /**
+     *
+     * @OA\Property(
+     *   title="url",
+     *   type="string",
+     *   description="The link for the url"
+     * )
+     *
+     */
+    protected $url;
 
-	/**
-	 *
-	 *
-	 * @method static ResourceLink whereCreatedAt($value)
-	 * @property \Carbon\Carbon|null $created_at
-	 *
-	 */
-	protected $created_at;
-
-	/**
-	 *
-	 * @method static ResourceLink whereUpdatedAt($value)
-	 * @property \Carbon\Carbon|null $updated_at
-	 *
-	 */
-	protected $updated_at;
-
+    public function resource()
+    {
+        return $this->belongsTo(Resource::class);
+    }
 }

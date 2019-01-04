@@ -1,115 +1,81 @@
 @extends('layouts.app')
 
-@section('head')
-    <script src='https://www.google.com/recaptcha/api.js'></script>
-    <style>
-        .g-recaptcha div {
-            margin:0 auto;
-        }
-
-    </style>
-@endsection
-
 @section('content')
 
-    @if($errors->any())
-        <div class="row">
-        <div data-abide-error class="alert callout">
-            <p><i class="fi-alert"></i> There are some errors in your form:</p>
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-        </div>
-    @endif
+    @include('layouts.partials.banner', ['title' => __('Register')])
 
-    <form class="row register" role="form" method="POST" action="{{ route('register') }}">
-        {{ csrf_field() }}
-        <div class="medium-5 columns g-recaptcha-wrapper">
-        <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                 viewBox="0 0 512.005 512.005" style="enable-background:new 0 0 512.005 512.005;" xml:space="preserve">
-<path style="fill:#82889D;" d="M317.823,344.202v-35.326H211.845v35.326c0,14.633-11.862,26.494-26.494,26.494l0,0v79.483h158.967
-	v-79.483l0,0C329.685,370.696,317.823,358.834,317.823,344.202z"/>
-                <path style="fill:#D7DEED;" d="M165.066,257.129l0.718,10.155c1.074,15.209,8.118,29.176,19.329,38.328l34.288,27.993
-	c8.426,6.879,18.675,10.598,29.207,10.598h32.452c10.533,0,20.782-3.719,29.208-10.598l34.288-27.993
-	c11.21-9.152,18.254-23.119,19.328-38.326l0.718-10.156L165.066,257.129L165.066,257.129z"/>
-                <path style="fill:#82889D;" d="M70.541,432.517v61.82c0,9.755,7.907,17.663,17.663,17.663h52.989v-79.483H70.541z"/>
-                <path style="fill:#C7CFE2;" d="M137.862,128.601l3.332,56.634h247.282l3.332-56.634c2.984-50.726-37.348-93.501-88.163-93.501
-	h-77.62C175.21,35.1,134.878,77.875,137.862,128.601z"/>
-                <path style="fill:#959CB3;" d="M158.856,238.224l-9.619-4.809c-5.055-2.527-8.594-7.32-9.524-12.894l-5.468-32.806
-	c-0.987-5.922,3.579-11.312,9.582-11.312h15.027v61.82H158.856z"/>
-                <path style="fill:#E4EAF6;" d="M312.179,61.594h-6.561c-3.345,0-6.404,1.89-7.9,4.882l-3.95,7.9
-	c-1.496,2.992-4.554,4.882-7.899,4.882h-42.072c-3.345,0-6.403-1.89-7.899-4.882l-3.951-7.901c-1.496-2.992-4.554-4.882-7.899-4.882
-	h-6.561c-41.156,0-73.601,35.037-70.444,76.071l8.164,106.122c0.607,7.89,6.387,14.413,14.147,15.965l16.961,3.392
-	c5.129,1.026,9.839,3.547,13.538,7.245l13.063,13.063c4.969,4.969,11.708,7.761,18.736,7.761h66.363
-	c7.028,0,13.767-2.792,18.736-7.761l13.063-13.063c3.698-3.698,8.409-6.22,13.538-7.245l16.961-3.392
-	c7.76-1.552,13.54-8.075,14.147-15.965l8.164-106.122C385.779,96.631,353.335,61.594,312.179,61.594z"/>
-                <path style="fill:#D7DEED;" d="M300.16,211.729l-7.207,50.447c-0.933,6.526-6.522,11.374-13.114,11.374h-30.01
-	c-6.593,0-12.182-4.847-13.114-11.374l-7.206-50.447l8.831-26.494h52.989L300.16,211.729z"/>
-                <path style="fill:#C7CFE2;" d="M264.834,512v-44.157l-79.483-88.315h-44.157l-73.415,22.77c-8.756,2.189-14.9,10.056-14.9,19.083
-	c0,6.91,3.625,13.312,9.549,16.867l65.902,39.541c7.98,4.788,12.863,13.412,12.863,22.719v11.494h123.642V512z"/>
-                <g>
-                    <path style="fill:#D7DEED;" d="M264.834,429.431c-5.96,0-11.92-3.093-15.014-9.279l-16.837-33.674
-		c-2.213-4.429-6.185-7.724-10.946-9.084l-46.496-13.285c-4.982-1.424-10.338-0.587-14.65,2.286l-19.699,13.132
-		c0,0,26.494,70.652,123.641,97.146V429.431L264.834,429.431z"/>
-                    <path style="fill:#D7DEED;" d="M176.519,202.898h19.684v-17.663h-19.684c-4.877,0-8.831,3.954-8.831,8.831l0,0
-		C167.688,198.944,171.641,202.898,176.519,202.898z"/>
-                </g>
-                <path style="fill:#B8BFD4;" d="M229.508,202.898h17.663c4.877,0,8.831,3.954,8.831,8.831v35.326c0,4.877,3.954,8.831,8.831,8.831
-	l0,0c4.877,0,8.831-3.954,8.831-8.831v-35.326c0-4.877,3.954-8.831,8.831-8.831h17.663v-17.663h-70.652L229.508,202.898
-	L229.508,202.898z"/>
-                <path style="fill:#00b09b;" d="M236.082,218.977l-42.391-6.056c-4.786-0.683-8.34-4.782-8.34-9.617v-8.355
-	c0-5.365,4.35-9.715,9.715-9.715h42.391c5.365,0,9.715,4.35,9.715,9.715v14.411C247.171,215.272,241.934,219.813,236.082,218.977z"
-                />
-                <path style="fill:#C7CFE2;" d="M282.497,317.707h-35.326c-4.877,0-8.831-3.954-8.831-8.831l0,0c0-4.877,3.954-8.831,8.831-8.831
-	h35.326c4.877,0,8.832,3.954,8.832,8.831l0,0C291.329,313.753,287.374,317.707,282.497,317.707z"/>
-                <circle style="fill:#D7DEED;" cx="264.836" cy="476.679" r="35.326"/>
-                <circle style="fill:#00b09b;" cx="264.836" cy="476.679" r="17.663"/>
-                <g>
-                    <path style="fill:#B8BFD4;" d="M211.845,485.505c-4.877,0-8.831,3.954-8.831,8.831V512h17.663v-17.663
-		C220.677,489.46,216.722,485.505,211.845,485.505z"/>
-                    <path style="fill:#B8BFD4;" d="M176.519,485.505c-4.877,0-8.831,3.954-8.831,8.831V512h17.663v-17.663
-		C185.351,489.46,181.396,485.505,176.519,485.505z"/>
-                    <path style="fill:#B8BFD4;" d="M291.329,52.763H238.34c-4.877,0-8.831-3.954-8.831-8.831V35.1h70.652v8.831
-		C300.16,48.808,296.206,52.763,291.329,52.763z"/>
-                </g>
-                <path style="fill:#959CB3;" d="M264.834,61.594L264.834,61.594c-9.755,0-17.663-7.907-17.663-17.663V35.1
-	c0-4.877,3.954-8.831,8.831-8.831h17.663c4.877,0,8.831,3.954,8.831,8.831v8.831C282.497,53.687,274.589,61.594,264.834,61.594z"/>
-                <path style="fill:#5A4146;" d="M264.834,8.849v397.174c61.616,0,117.3-11.538,157.343-30.124c6.334-2.94,10.462-9.174,10.435-16.157
-	C431.971,192.816,415.524,7.554,273.911,0.012C268.946-0.253,264.834,3.877,264.834,8.849z"/>
-                <path style="fill:#E6AF78;" d="M428.932,395.957l-84.162-28.054c-10.819-3.607-18.117-13.731-18.117-25.136v-42.725h-61.82v211.956
-	h176.63c9.754,0,17.663-7.909,17.663-17.663v-56.488C459.127,418.842,446.964,401.968,428.932,395.957z"/>
-                <path style="fill:#00b09b;" d="M428.932,395.957l-68.771-22.923c-14.751,20.012-30.613,36.045-45.822,48.346
-	c-14.401,11.648-31.953,17.472-49.505,17.472V512h176.63c9.754,0,17.663-7.909,17.663-17.663v-56.488
-	C459.127,418.842,446.964,401.967,428.932,395.957z"/>
-                <path style="fill:#F0C087;" d="M379.015,185.235h-0.034c-0.256,0-0.504,0.031-0.757,0.042c0.927-13.796,1.42-27.617,1.42-41.445
-	v-38.08H264.834v245.766h0.013c11.489,0,22.699-3.534,32.11-10.122l53.331-37.332c12.993-9.095,21.229-23.533,22.445-39.345
-	l0.644-9.3c0.984,0.3,2.023,0.468,3.1,0.468l0,0c4.872,0,9.119-3.316,10.301-8.042l9.973-39.894
-	C399.636,196.412,390.909,185.235,379.015,185.235z"/>
-                <path style="fill:#E6AF78;" d="M264.834,105.865v54.55c28.377-7.331,51.107-15.832,66.046-22.429
-	c17.037,28.163,44.75,38.64,47.659,39.635l0.142,0.032c0.62-11.226,0.962-22.465,0.962-33.709v-38.079H264.834z"/>
-                <path style="fill:#00b09b;" d="M398.821,457.496l48.992-48.992c7.063,7.912,11.313,18.227,11.313,29.345v56.488
-	c0,9.755-7.908,17.663-17.663,17.663h-52.989v-29.526C388.475,473.106,392.196,464.121,398.821,457.496z"/>
-                <path style="fill:#5A4146;" d="M264.834,96.92v45.194c39.785-10.735,66.727-23.474,73.978-27.848
-	c14.337,35.643,40.17,44.474,40.17,44.474h9.494V96.92H264.834z"/>
-                <path style="fill:#00b09b;" d="M379.656,379.532l-19.494-6.498c-14.751,20.012-30.613,36.045-45.822,48.346 c-14.401,11.648-31.953,17.472-49.505,17.472v17.666c24.201,0,47.806-8.754,66.478-24.649 C348.829,416.969,364.997,399.301,379.656,379.532z"/>
-                <path style="fill:#5A4146;" d="M317.823,220.561L317.823,220.561c-4.877,0-8.831-3.954-8.831-8.831v-8.831 c0-4.877,3.954-8.831,8.831-8.831l0,0c4.877,0,8.832,3.954,8.832,8.831v8.831C326.655,216.607,322.7,220.561,317.823,220.561z"/>
-                <path style="fill:#D2A073;" d="M299.564,279.199c-1.76-4.545-6.891-6.822-11.419-5.054c-7.063,2.726-15.188,4.088-23.312,4.088 v17.74c10.341,0,20.604-1.855,29.677-5.356C299.056,288.867,301.324,283.752,299.564,279.199z"/>
-</svg>
-
-        </div>
-            <div class="medium-7 columns">
-                <h3 class="text-center">Register</h3>
-                <label>Name <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus></label>
-                <label>E-Mail Address <input id="email" type="email" name="email" value="{{ old('email') }}" required></label>
-                <label>Password <input id="password" type="password" name="password" required></label>
-                <label>Confirm Password <input id="password-confirm" type="password" name="password_confirmation" required></label>
-                <button type="submit" class="button expand">Register</button>
+    <div class="container">
+        <div class="column is-8-tablet is-offset-2-tablet">
+            <div class="tabs is-centered">
+                <ul>
+                    <li><a href="{{ route('login') }}">{{ __('Login') }}</a></li>
+                    <li class="is-active"><a href="#">{{ __('Register') }}</a></li>
+                </ul>
             </div>
-        </div>
-    </form>
 
+            <form method="POST" action="{{ route('register') }}">
+                @csrf
+                <input type="hidden" name="v" value="4">
+                <input type="hidden" name="project_id" value="{{ $project->id }}">
+                <div class="columns">
+                <div class="field column">
+                    <label class="label" for="email">{{ __('Username') }}</label>
+                    <div class="control"><input class="input" type="text" name="name" value="{{ old('name') }}" required autofocus placeholder="username"></div>
+                    @if($errors->has('name')) <p class="help is-danger">{{ $errors->first('name') }}</p> @endif
+                </div>
+
+                <div class="field column">
+                    <label class="label" for="email">{{ __('E-Mail Address') }}</label>
+                    <div class="control"><input class="input" type="text" name="email" value="{{ old('email') }}" required placeholder="Email"></div>
+                    @if($errors->has('email')) <p class="help is-danger">{{ $errors->first('email') }}</p> @endif
+                </div>
+                </div>
+
+                <div class="columns">
+                <div class="field column">
+                    <label class="label" for="email">{{ __('First Name') }}</label>
+                    <div class="control"><input class="input" type="text" name="first_name" value="{{ old('first_name') }}" required placeholder="First Name"></div>
+                    @if($errors->has('first_name')) <p class="help is-danger">{{ $errors->first('first_name') }}</p> @endif
+                </div>
+
+                <div class="field column">
+                    <label class="label" for="email">{{ __('Last Name') }}</label>
+                    <div class="control"><input class="input" type="text" name="last_name" value="{{ old('last_name') }}" required placeholder="Last Name"></div>
+                    @if($errors->has('last_name')) <p class="help is-danger">{{ $errors->first('last_name') }}</p> @endif
+                </div>
+                </div>
+                <div class="columns">
+                <div class="field column">
+                    <label class="label" for="email">{{ __('Password') }}</label>
+                    <div class="control"><input class="input" type="password" name="password" required placeholder="Password"></div>
+                    @if($errors->has('password')) <p class="help is-danger">{{ $errors->first('password') }}</p> @endif
+                </div>
+
+                <div class="field column">
+                    <label class="label" for="email">{{ __('Confirm Password') }}</label>
+                    <div class="control"><input class="input" type="password" name="password_confirmation" required placeholder="Password"></div>
+                    @if($errors->has('password_confirmation')) <p class="help is-danger">{{ $errors->first('password_confirmation') }}</p> @endif
+                </div>
+                </div>
+
+                    @if(config('settings.reCaptchStatus'))
+                        <div class="form-group">
+                            <div class="col-sm-6 col-sm-offset-4">
+                                <div class="g-recaptcha" data-sitekey="{{ config('settings.reCaptchSite') }}"></div>
+                            </div>
+                        </div>
+                    @endif
+
+                <button type="submit" class="button is-primary">{{ __('Register') }}</button>
+                @include('layouts.partials.socials')
+
+            </form>
+        </div>
+    </div>
+@endsection
+
+@section('footer_scripts')
+    @if(config('settings.reCaptchStatus'))
+        <script src='https://www.google.com/recaptcha/api.js'></script>
+    @endif
 @endsection

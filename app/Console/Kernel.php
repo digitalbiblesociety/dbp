@@ -2,7 +2,6 @@
 
 namespace App\Console;
 
-use App\Console\Commands\testArmor;
 use Aws\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -15,19 +14,25 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\processDBLBundle::class,
-	    Commands\testArmor::class,
-	    Commands\countSophia::class,
-	    Commands\organizations_dbl_status::class,
-	    Commands\filesystem_update::class,
-	    Commands\checkIDs::class,
-	    Commands\fetch_s3_audio_length::class,
-	    Commands\fetch_fcbh_apk::class,
-	    Commands\fetch_beblia_bible::class,
-	    Commands\fetchAlphabets::class,
-	    Commands\fetchLanguageDescriptions::class,
-	    Commands\generate_worldFactbook::class,
-	    Commands\compare_ebible::class,
+
+        Commands\BibleEquivalents\SyncBebliaBible::class,
+        Commands\BibleEquivalents\SyncDigitalBibleLibrary::class,
+        Commands\BibleEquivalents\SyncTalkingBibles::class,
+        Commands\BibleEquivalents\SyncEbible::class,
+        Commands\BibleEquivalents\SyncFcbhApk::class,
+        Commands\BibleEquivalents\SyncScriptureEarth::class,
+        Commands\BibleEquivalents\UpdateBibleLinkOrganizations::class,
+
+        Commands\Wiki\GenerateWorldFactbook::class,
+        Commands\Wiki\SyncAlphabets::class,
+        Commands\Wiki\SyncLanguageDescriptions::class,
+        Commands\Wiki\UpdateOrganizationsDblStatus::class,
+
+        Commands\loaderPush::class,
+        Commands\loaderGetResults::class,
+
+        Commands\S3LogBackup::class,
+        Commands\SyncUsers::class,
     ];
 
     /**
@@ -38,7 +43,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(testArmor::class)->weekly();
+        // Sync Bible Equivalents
+        $schedule->command('SyncEbible')->daily();
+        $schedule->command('SyncTalkingBibles')->daily();
+
+        $schedule->command('BackUpLogs')->cron('5 * * * *');
     }
 
     /**

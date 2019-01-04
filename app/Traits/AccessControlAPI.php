@@ -3,42 +3,62 @@
 namespace App\Traits;
 
 use App\Models\User\AccessGroup;
+use App\Models\User\AccessType;
 
-trait AccessControlAPI {
+trait AccessControlAPI
+{
+    use CaptureIpTrait;
 
-	/**
-	 *
-	 * Filters out filesets by the access control tables
-	 *
-	 * @param $api_key - The User's API key
-	 * @param string $type
-	 *
-	 * @return object
-	 */
-	public function accessControl($api_key,$type = "api") {
+    /**
+     * Returns a list of filesets (represented by their hash IDs) and an dash-separated list of access group
+     * names for the authenticated user.
+     *
+     * @param string $api_key - The User's API key
+     *
+     * @return object
+     */
+    public function accessControl($api_key)
+    {
+        return \Cache::remember($api_key.'_access_control', 2400, function () use($api_key) {
+            $user_location = geoip($this->getIpAddress());
+            $country_code = (!isset($user_location->iso_code)) ? $user_location->iso_code : null;
+            $continent = (!isset($user_location->continent)) ? $user_location->continent : null;
 
-		$user_location = checkParam('ip_address', null, 'optional');
-		$user_location = geoip($user_location);
-		if(!isset($user_location->iso_code)) $user_location->iso_code = "unset";
-		if(!isset($user_location->continent)) $user_location->continent = "unset";
+            // Defaults to type 'api' because that's the only access type; needs modification once there are multiple
+            $access_type = AccessType::where('name', 'api')
+                ->where(function ($query) use ($country_code) {
+                    $query->where('country_id', $country_code);
+                })
+                ->where(function ($query) use ($continent) {
+                    $query->where('continent_id', $continent);
+                })
+                ->first();
 
-		$access = [];
-		$accessGroups = AccessGroup::with('filesets')
-			->whereHas('types', function ($query) use ($user_location,$type) {
-				$query->where(function($query) use ($user_location) {
-					$query->where('country_id', $user_location->iso_code)->orWhere('country_id', '=', null);
-				})->where(function($query) use ($user_location) {
-					$query->where('country_id', $user_location->continent)->orWhere('continent_id', '=', null);
-				})->where('name',$type);
-			})->whereHas('keys', function ($query) use ($api_key) {
-				$query->where('key_id', $api_key);
-			})->get();
+            if (!$access_type) {
+                return (object) ['hashes' => [], 'string' => ''];
+            }
 
-		$access['hashes'] = $accessGroups->map(function ($item, $key) use($user_location) {
-			return collect($item->filesets)->pluck('hash_id');
-		})->unique()->flatten()->toArray();
-		$access['string'] = $accessGroups->pluck('name')->implode('_');
-		return (object) $access;
-	}
+            $dbp_connection = config('database.connections.dbp.database');
+            $dbp_users_connection = config('database.connections.dbp_users.database');
+            $accessGroups = \DB::connection('dbp')
+               ->table('access_groups')
+               ->where('name', '!=', 'RESTRICTED')
+                ->join($dbp_users_connection.'.access_group_keys as keys', function($join) use($api_key) {
+                    $join->on('keys.access_group_id', 'access_groups.id')->where('key_id', $api_key);
+                })
+               ->join($dbp_connection.'.access_group_types as types', function($join) use($api_key) {
+                   $join->on('types.access_group_id', 'access_groups.id')->where('key_id', $api_key);
+               })->select(['access_groups.name','access_groups.id'])->get();
 
+            // Use Eloquent everywhere except for this giant request
+            $filesets = \DB::connection('dbp')->table('access_group_filesets')->select('hash_id')
+                ->whereIn('access_group_id', $accessGroups->pluck('id'))->distinct()->get()->pluck('hash_id');
+
+            return (object) [
+                'hashes' => $filesets->toArray(),
+                'string' => $accessGroups->pluck('name')->implode('-'),
+            ];
+        });
+
+    }
 }
