@@ -342,7 +342,7 @@ class ApiV2Test extends TestCase
      * @link Route Path: https://api.dbp.test/library/metadata?v=2&dam_id=ENGESVN1ET&key={key}
      * @link Source Path: https://dbt.io/library/metadata?v=2&dam_id=ENGESVN1ET&key=53355c32fca5f3cac4d7a670d2df2e09
      * @group    V2
-     * @group    travis
+     * @group    non-travis
      * @test
      */
     public function libraryMetadata()
