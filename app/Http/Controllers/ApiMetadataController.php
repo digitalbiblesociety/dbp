@@ -80,16 +80,14 @@ class ApiMetadataController extends APIController
         $dir = getcwd();
         chdir(base_path());
 
-        $head = shell_exec('git rev-parse HEAD');
-        $tags = shell_exec('git describe --tags');
-        $message = shell_exec('git show --oneline');
+        $head    = shell_exec('git rev-parse HEAD');
+        $tags    = shell_exec('git describe --tags');
 
         chdir($dir);
 
         return $this->reply([
-            'message' => trim($message),
-            'head'    => trim($head),
-            'tags'    => trim($tags)
+            'head' => $head,
+            'tags' => $tags
         ]);
     }
 
