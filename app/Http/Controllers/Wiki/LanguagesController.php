@@ -129,30 +129,11 @@ class LanguagesController extends APIController
                         ->where('current_translation.language_translation_id', '=', $GLOBALS['i18n_id'])
                         ->where('current_translation.priority', '=', $priority_q)->limit(1);
                 })
-
-                ->when(!$show_restricted, function ($query) use ($access_control, $asset_id) {
-                    $query->whereHas('filesets', function ($query) use ($access_control, $asset_id) {
-                        $query->whereIn('hash_id', $access_control->hashes);
-                        if ($asset_id) {
-                            $asset_id = explode(',', $asset_id);
-                            $query->whereHas('fileset', function ($query) use ($asset_id) {
-                                $query->whereIn('asset_id', $asset_id);
-                            });
-                        }
-                    });
-                })
-                ->when($include_alt_names, function ($query) {
-                    return $query->with('translations');
-                })
-                ->when($country, function ($query) use ($country) {
-                    return $query->whereHas('countries', function ($query) use ($country) {
-                        $query->where('country_id', $country);
-                    });
-                })->when($code, function ($query) use ($code) {
-                    return $query->where('iso', $code);
-                })->when($sort_by, function ($query) use ($sort_by) {
-                    return $query->orderBy($sort_by);
-                })->withCount('bibles')->withCount('filesets')->get();
+                ->includeExtraLanguages($show_restricted, $access_control, $asset_id)
+                ->includeExtraLanguageTranslations($include_alt_names)
+                ->filterableByCountry($country)
+                ->filterableByIsoCode($code)
+                ->orderBy($sort_by)->withCount('bibles')->withCount('filesets')->get();
 
             return fractal($languages, new LanguageTransformer(), $this->serializer);
         });

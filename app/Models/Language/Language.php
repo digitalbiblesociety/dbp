@@ -318,6 +318,44 @@ class Language extends Model
      */
     protected $country_id;
 
+    public function scopeIncludeExtraLanguageTranslations($query, $include_alt_names)
+    {
+        return $query->when($include_alt_names, function ($query) {
+            $query->with('translations');
+        });
+    }
+
+    public function scopeIncludeExtraLanguages($query, $show_restricted, $access_control, $asset_id)
+    {
+        return $query->when(!$show_restricted, function ($query) use ($access_control, $asset_id) {
+            $query->whereHas('filesets', function ($query) use ($access_control, $asset_id) {
+            $query->whereIn('hash_id', $access_control->hashes);
+            if ($asset_id) {
+                $asset_id = explode(',', $asset_id);
+                $query->whereHas('fileset', function ($query) use ($asset_id) {
+                    $query->whereIn('asset_id', $asset_id);
+                });
+            }
+            });
+        });
+    }
+
+    public function scopeFilterableByIsoCode($query, $code)
+    {
+        return $query->when($code, function ($query) use ($code) {
+            $query->where('iso', $code);
+        });
+    }
+
+    public function scopeFilterableByCountry($query, $country)
+    {
+        return $query->when($country, function ($query) use ($country) {
+            $query->whereHas('countries', function ($query) use ($country) {
+                $query->where('country_id', $country);
+            });
+        });
+    }
+
     public function population()
     {
         return CountryLanguage::where('language_id', $this->id)->select('language_id', 'population')->count();
