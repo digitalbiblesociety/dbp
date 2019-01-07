@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
 @section('head')
-    <title>{{ trans('wiki.bibles_title') }}</title>
-    <meta type="description" property="og:description" content="{{ trans('wiki.bibles_description') }}" />
+    <title>{{ trans('app.bibles_title') }}</title>
+    <meta type="description" property="og:description" content="{{ trans('app.bibles_description') }}" />
     @include('layouts.partials.ogp')
 @endsection
 
 @section('content')
 
     @include('layouts.partials.banner', [
-        'title' => trans('wiki.bibles_title'),
+        'title' => trans('app.bibles_title'),
         'breadcrumbs' => [
             '/'     => 'Home',
-            '/wiki' => trans('wiki.overview_title'),
-            '#'     => trans('wiki.bibles_title')
+            '/wiki' => trans('app.wiki_title'),
+            '#'     => trans('app.bibles_title')
         ]
     ])
 

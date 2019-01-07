@@ -18,6 +18,9 @@ return [
     'editProfile'       => 'Edit Profile',
     'createProfile'     => 'Create Profile',
 
+    'wiki_title'        => 'Wiki',
+    'bibles_title'      => 'Bibles',
+
     'adminDropdownNav'  => 'Admin',
     'archivistDropdownNav'  => 'Archivist',
 
