@@ -1,6 +1,7 @@
 # DBP v4 API
 
 [![Build Status](https://travis-ci.com/digitalbiblesociety/dbp.svg?branch=dev)](https://travis-ci.com/digitalbiblesociety/dbp)
+[![Maintainability](https://api.codeclimate.com/v1/badges/2ab7c8df0b523bc9d3fd/maintainability)](https://codeclimate.com/github/digitalbiblesociety/dbp/maintainability)
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/DigitalBibleSociety/StrapDown.js/blob/master/LICENSE)
 
 #### Description
