@@ -38,6 +38,61 @@ class ApiMetadataController extends APIController
         return response()->json($contents);
     }
 
+
+    /**
+     *
+     * @category v4_api.gitVersion
+     * @link http://api.dbp.test/api/git/version?key={key}&v=4
+     *
+     * @OA\Get(
+     *     path="/api/git/version",
+     *     tags={"API"},
+     *     summary="Git Version",
+     *     description="Returns the Current Git Commit Message and SHA",
+     *     operationId="v4_api.gitVersion",
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_api.gitVersion")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v4_api.gitVersion"))
+     *     )
+     * )
+     *
+     * @OA\Schema (
+     *     type="object",
+     *     schema="v4_api.gitVersion",
+     *     description="v4_api.gitVersion",
+     *     title="v4_api.gitVersion",
+     *     @OA\Xml(name="v4_api.gitVersion"),
+     *     @OA\Property(property="message",type="string",example="0adc0ef Merge branch 'dev' into master"),
+     *     @OA\Property(property="head",type="string",example="0adc0ef27473be2d7fe5846cf9ab56b49362a3a8"),
+     *     @OA\Property(property="tags",type="string")
+     * )
+     *
+     * @return mixed
+     */
+    public function gitVersion()
+    {
+        $dir = getcwd();
+        chdir(base_path());
+
+        $head = shell_exec('git rev-parse HEAD');
+        $tags = shell_exec('git describe --tags');
+        $message = shell_exec('git show --oneline');
+
+        chdir($dir);
+
+        return $this->reply([
+            'message' => trim($message),
+            'head'    => trim($head),
+            'tags'    => trim($tags)
+        ]);
+    }
+
     /**
      *
      * Returns an array of signed audio urls

@@ -179,3 +179,4 @@ Route::name('v4_resources.destroy')->delete('resources/{resource_id}',          
 Route::name('v4_api.versions')->get('/api/versions',                               'HomeController@versions');
 Route::name('v4_api.buckets')->get('/api/buckets',                                 'HomeController@buckets');
 Route::name('v4_api.stats')->get('/stats',                                         'HomeController@stats');
+Route::name('v4_api.gitVersion')->get('/api/git/version',                          'ApiMetadataController@gitVersion');
