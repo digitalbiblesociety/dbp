@@ -15,8 +15,6 @@
 
 Localization::localizedRoutesGroup(function () {
 
-    Route::get('/single-page-app/{path}', function () { return view('index'); })->where('path', '(.*)');
-
     // Homepage Route
     Route::get('/', 'WelcomeController@welcome')->name('welcome');
 
