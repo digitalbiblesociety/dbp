@@ -23,6 +23,8 @@ class Kernel extends ConsoleKernel
         Commands\BibleEquivalents\SyncScriptureEarth::class,
         Commands\BibleEquivalents\UpdateBibleLinkOrganizations::class,
 
+        Commands\BibleFormats\FormatGetBible::class,
+
         Commands\Wiki\GenerateWorldFactbook::class,
         Commands\Wiki\SyncAlphabets::class,
         Commands\Wiki\SyncLanguageDescriptions::class,
