@@ -67,6 +67,10 @@ class BiblesController extends APIController
      */
     public function index()
     {
+        if(!$this->api) {
+            return view('bibles.index');
+        }
+
         $language_code      = checkParam('language_id|language_code');
         $organization       = checkParam('organization_id');
         $country            = checkParam('country');
@@ -82,8 +86,10 @@ class BiblesController extends APIController
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
                 })
                 ->leftJoin('bible_translations as current_title', function ($join) {
-                    $join->on('current_title.bible_id', '=', 'bibles.id')
-                         ->where('current_title.language_id', '=', $GLOBALS['i18n_id']);
+                    $join->on('current_title.bible_id', '=', 'bibles.id');
+                    if(isset($GLOBALS['i18n_id'])) {
+                        $join->where('current_title.language_id', '=', $GLOBALS['i18n_id']);
+                    }
                 })
                 ->leftJoin('languages as languages', function ($join) {
                     $join->on('languages.id', '=', 'bibles.language_id');
@@ -95,8 +101,10 @@ class BiblesController extends APIController
                 })
                 ->leftJoin('language_translations as language_current', function ($join) {
                     $join->on('language_current.language_source_id', '=', 'bibles.language_id')
-                         ->where('language_current.language_translation_id', '=', $GLOBALS['i18n_id'])
                          ->orderBy('priority', 'desc');
+                    if(isset($GLOBALS['i18n_id'])) {
+                        $join->where('language_current.language_translation_id', '=', $GLOBALS['i18n_id']);
+                    }
                 })
                 ->when($language_code, function ($q) use ($language_code) {
                     $language = Language::where('iso', $language_code)->orWhere('id', $language_code)->firstOrFail();
