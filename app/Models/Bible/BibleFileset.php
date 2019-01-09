@@ -174,6 +174,8 @@ class BibleFileset extends Model
 
     public function scopeUniqueFileset($query, $id, $asset_id, $fileset_type)
     {
-        return $query->where([['id', $id],['asset_id', $asset_id],['set_type_code',$fileset_type]]);
+        return $query->where(function($query) use ($id) {
+            $query->where('id', $id)->orWhere('id', substr($id, 0, -4))->orWhere('id', substr($id, 0, -2));
+        })->where('asset_id', $asset_id)->where('set_type_code',$fileset_type);
     }
 }
