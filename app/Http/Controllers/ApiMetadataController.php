@@ -86,8 +86,8 @@ class ApiMetadataController extends APIController
         chdir($dir);
 
         return $this->reply([
-            'head' => $head,
-            'tags' => $tags
+            'head' => trim($head),
+            'tags' => trim($tags)
         ]);
     }
 
