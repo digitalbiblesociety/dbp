@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\APIController;
+use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
 use App\Models\Organization\Asset;
 use App\Traits\CallsBucketsTrait;
@@ -89,6 +90,33 @@ class ApiMetadataController extends APIController
             'head' => trim($head),
             'tags' => trim($tags)
         ]);
+    }
+
+    public function getStatus()
+    {
+        try {
+            \DB::connection('dbp_users')->getPdo();
+            $user_connection_message = 'Live';
+        } catch (\Exception $e) {
+            $user_connection_message = $e;
+        }
+
+        try {
+            \DB::connection('dbp')->getPdo();
+            $dbp_connection_message = 'Live';
+        } catch (\Exception $e) {
+            $dbp_connection_message = $e;
+        }
+
+        $connection = [
+            'bibles_count' => Bible::count(),
+            'database'  => [
+                'users' => $user_connection_message,
+                'dbp'   => $dbp_connection_message
+            ]
+        ];
+
+        return $connection;
     }
 
     /**
