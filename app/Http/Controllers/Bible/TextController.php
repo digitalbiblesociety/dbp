@@ -84,6 +84,11 @@ class TextController extends APIController
         $verse_end   = checkParam('verse_end');
         $asset_id    = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3.bucket');
 
+        $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->first();
+        if(!$book) {
+            return $this->setStatusCode(404)->replyWithError('No book could be found for the given ID');
+        }
+
         $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, 'text_plain')->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
@@ -96,10 +101,10 @@ class TextController extends APIController
         }
 
         $cache_string = strtolower('bible_text'.$fileset_id.$book_id.$chapter.$verse_start.$verse_end.$asset_id);
-        $verses = \Cache::remember($cache_string, 2400, function() use ($fileset,$bible,$book_id,$chapter,$verse_start,$verse_end) {
+        $verses = \Cache::remember($cache_string, 2400, function() use ($fileset,$bible,$book,$chapter,$verse_start,$verse_end) {
            return BibleVerse::withVernacularMetaData($bible)
                 ->where('hash_id', $fileset->hash_id)
-                ->where('bible_verses.book_id', $book_id)
+                ->where('bible_verses.book_id', $book->id)
                 ->when($verse_start, function ($query) use ($verse_start) {
                     return $query->where('verse_end', '>=', $verse_start);
                 })
