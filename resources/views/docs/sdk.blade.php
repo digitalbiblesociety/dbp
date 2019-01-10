@@ -19,6 +19,15 @@
             margin:10px auto;
             display: block;
         }
+
+        .swift4 {
+            color:#fe4216;
+        }
+
+        .swift3 {
+            color:#444;
+        }
+
     </style>
 @endsection
 
@@ -35,7 +44,7 @@
 
             <div>
                 <p>You can generate your own SDK using our swagger specifications located here: <span></span>. In order to do so you'll need to swagger-codegen.</p>
-                <code><pre>swagger-codegen generate -i https://bible.build/swagger2_v4.json -l php -o /Sites/dbp/public/sdk/</pre></code>
+                <code><pre>swagger-codegen generate -i {{ route('swagger_v4') }} -l php -o /Sites/dbp/public/sdk/</pre></code>
                 <p>Or use one of pre generated SDKs for commonly used programming languages.</p>
             </div>
 
@@ -43,10 +52,11 @@
             <div class="columns">
                 <nav class="panel column">
                     <p class="panel-heading">Generated SDKs</p>
-                    <a class="panel-block" href="/builds/sdks/current/java.zip"><svg class="panel-icon icon"><use xlink:href="/images/icons-programming.svg#java"></use></svg> Java</a>
-                    <a class="panel-block" href="/builds/sdks/current/python.zip"><svg class="panel-icon icon"><use xlink:href="/images/icons-programming.svg#python"></use></svg> Python</a>
-                    <a class="panel-block" href="/builds/sdks/current/php.zip"><svg class="panel-icon icon"><use xlink:href="/images/icons-programming.svg#php"></use></svg> php</a>
-                    <a class="panel-block" href="/builds/sdks/current/ruby.zip"><svg class="panel-icon icon"><use xlink:href="/images/icons-programming.svg#ruby"></use></svg> Ruby</a>
+                    <a class="panel-block" href="https://github.com/digitalbiblesociety/dbp-sdks/tree/master/java"><svg class="panel-icon icon"><use xlink:href="/images/icons-programming.svg#java"></use></svg>Java</a>
+                    <a class="panel-block" href="https://github.com/digitalbiblesociety/dbp-sdks/tree/master/php"><svg class="panel-icon icon"><use xlink:href="/images/icons-programming.svg#php"></use></svg>php</a>
+                    <a class="panel-block" href="https://github.com/digitalbiblesociety/dbp-sdks/tree/master/swift3"><svg class="panel-icon icon swift3"><use xlink:href="/images/icons-programming.svg#swift"></use></svg> Swift 3</a>
+                    <a class="panel-block" href="https://github.com/digitalbiblesociety/dbp-sdks/tree/master/swift4"><svg class="panel-icon icon swift4"><use xlink:href="/images/icons-programming.svg#swift"></use></svg> Swift 4</a>
+                    <a class="panel-block" href="https://github.com/digitalbiblesociety/dbp-sdks/tree/master/typescript"><svg class="panel-icon icon swift4"><use xlink:href="/images/icons-programming.svg#typescript"></use></svg> typescript</a>
                 </nav>
                 <nav class="panel column">
                     <p class="panel-heading">Examples</p>
@@ -54,7 +64,7 @@
                 </nav>
             </div>
             <div class="columns">
-                <a href="" class="has-text-centered has-text-grey column is-size-6">Older Versions</a>
+                <a href="https://github.com/digitalbiblesociety/dbp-sdks/releases" class="has-text-centered has-text-grey column is-size-6">Older Versions</a>
             </div>
 
         </div>
