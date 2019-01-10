@@ -67,6 +67,7 @@ Localization::localizedRoutesGroup(function () {
     Route::name('api_key_email')->post('keys/email',                     'User\KeyController@sendKeyEmail');
     Route::name('api_key_generate')->get('keys/generate/{email_token}',  'User\KeyController@generateAPIKey');
 
+    Route::name('v4_api.gitVersion')->get('/api/status', 'ApiMetadataController@getStatus');
 
     Route::name('wiki_bibles.one')->get('/wiki/bibles/{id}', 'Bible\BiblesController@show');
     Route::name('wiki_bibles.all')->get('/wiki/bibles', 'Bible\BiblesController@index');

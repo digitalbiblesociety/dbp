@@ -94,29 +94,47 @@ class ApiMetadataController extends APIController
 
     public function getStatus()
     {
+        $status_code = 200;
         try {
             \DB::connection('dbp_users')->getPdo();
-            $user_connection_message = 'Live';
+            $user_connection_message = 'live';
         } catch (\Exception $e) {
             $user_connection_message = $e;
+            $status_code = 417;
         }
 
         try {
             \DB::connection('dbp')->getPdo();
-            $dbp_connection_message = 'Live';
+            $dbp_connection_message = 'live';
         } catch (\Exception $e) {
             $dbp_connection_message = $e;
+            $status_code = 417;
         }
+
+        try {
+            \Cache::forget('cache_test');
+            \Cache::add('cache_test', 'live', 5);
+            $cache_test = \Cache::get('cache_test', 'fail');
+        } catch (\Exception $e) {
+            $cache_test = 'fail';
+            $status_code = 417;
+        }
+
+        //$cache_test =
 
         $connection = [
             'bibles_count' => Bible::count(),
+            'systems' => [
+                'status_code' => $status_code,
+                'cache' => $cache_test
+            ],
             'database'  => [
                 'users' => $user_connection_message,
                 'dbp'   => $dbp_connection_message
             ]
         ];
 
-        return $connection;
+        return $this->setStatusCode($status_code)->reply($connection);
     }
 
     /**
