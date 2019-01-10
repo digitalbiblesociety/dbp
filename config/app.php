@@ -55,7 +55,7 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
     'url_podcast' => env('APP_URL_PODCAST', 'https://dbp4.org'),
-    'api_url' => env('API_URL'),
+    'api_url' => env('API_URL', 'https://api.dbp4.org'),
 
     /*
     |--------------------------------------------------------------------------
