@@ -162,7 +162,6 @@ class CountriesController extends APIController
      *     @OA\Parameter(name="energy",in="query",@OA\Schema(ref="#/components/schemas/CountryEnergy")),
      *     @OA\Parameter(name="geography",in="query",@OA\Schema(ref="#/components/schemas/CountryGeography")),
      *     @OA\Parameter(name="government",in="query",@OA\Schema(ref="#/components/schemas/CountryGovernment")),
-     *     @OA\Parameter(name="government",in="query",@OA\Schema(ref="#/components/schemas/CountryGovernment")),
      *     @OA\Parameter(name="issues",in="query",@OA\Schema(ref="#/components/schemas/CountryIssues")),
      *     @OA\Parameter(name="people",in="query",@OA\Schema(ref="#/components/schemas/CountryPeople")),
      *     @OA\Parameter(name="ethnicities",in="query",@OA\Schema(ref="#/components/schemas/CountryEthnicity")),

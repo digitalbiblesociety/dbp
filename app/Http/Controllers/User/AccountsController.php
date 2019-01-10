@@ -112,6 +112,8 @@ class AccountsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(name="account_id", in="path", required=true, description="The Account ID", required=true,
+     *          @OA\Schema(ref="#/components/schemas/Account/properties/id")),
      *     @OA\Parameter(name="project_id", in="query", description="The Project ID", required=true,
      *          @OA\Schema(ref="#/components/schemas/Project/properties/id")),
      *     @OA\Parameter(name="user_id", in="query", description="The User ID", required=true,
@@ -119,9 +121,9 @@ class AccountsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Account")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/Account")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/Account"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible.one")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible.one")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible.one"))
      *     )
      * )
      *
@@ -162,6 +164,8 @@ class AccountsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(name="account_id", in="path", required=true, description="The Account ID", required=true,
+     *          @OA\Schema(ref="#/components/schemas/Account/properties/id")),
      *     @OA\Parameter(name="project_id", in="query", description="The Project ID", required=true,
      *          @OA\Schema(ref="#/components/schemas/Project/properties/id")),
      *     @OA\Parameter(name="user_id", in="query", description="The User ID", required=true,

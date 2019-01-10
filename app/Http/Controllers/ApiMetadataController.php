@@ -99,7 +99,7 @@ class ApiMetadataController extends APIController
             \DB::connection('dbp_users')->getPdo();
             $user_connection_message = 'live';
         } catch (\Exception $e) {
-            $user_connection_message = $e;
+            $user_connection_message = $e->getMessage();
             $status_code = 417;
         }
 
@@ -107,20 +107,18 @@ class ApiMetadataController extends APIController
             \DB::connection('dbp')->getPdo();
             $dbp_connection_message = 'live';
         } catch (\Exception $e) {
-            $dbp_connection_message = $e;
+            $dbp_connection_message = $e->getMessage();
             $status_code = 417;
         }
 
         try {
             \Cache::forget('cache_test');
             \Cache::add('cache_test', 'live', 5);
-            $cache_test = \Cache::get('cache_test', 'fail');
+            $cache_test = \Cache::get('cache_test', 'failed by default');
         } catch (\Exception $e) {
-            $cache_test = 'fail';
+            $cache_test = $e->getMessage();
             $status_code = 417;
         }
-
-        //$cache_test =
 
         $connection = [
             'bibles_count' => Bible::count(),

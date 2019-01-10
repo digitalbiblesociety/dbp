@@ -75,6 +75,7 @@ class BooksController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(name="fileset_id",
      *         in="path",
+     *         required=true,
      *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
      *     ),
      *     @OA\Parameter(

@@ -370,24 +370,28 @@ class TextController extends APIController
      *     @OA\Parameter(
      *          name="book_id",
      *          in="path",
+     *          required=true,
      *          description="If specified returns verse text ONLY for the specified book",
      *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
      *     ),
      *     @OA\Parameter(
      *          name="chapter",
      *          in="path",
+     *          required=true,
      *          description=" If specified returns verse text ONLY for the specified chapter",
      *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
      *     ),
      *     @OA\Parameter(
      *          name="verse_start",
      *          in="path",
+     *          required=true,
      *          description="Returns all verse text for the specified book, chapter, and verse range from 'verse_start' until either the end of chapter or 'verse_end'",
      *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/verse_start")
      *     ),
      *     @OA\Parameter(
      *          name="verse_end",
      *          in="path",
+     *          required=true,
      *          description="If specified returns of all verse text for the specified book, chapter, and verse range from 'verse_start' to 'verse_end'.",
      *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/verse_end")
      *     ),

@@ -5,6 +5,7 @@
 /public/report/*
 /public/.report/*
 /public/hot
+/public/sdk/*
 /public/maps/*
 /public/storage
 /public/bibles

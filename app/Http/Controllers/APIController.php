@@ -70,10 +70,20 @@ class APIController extends Controller
     /**
      * Version 4 Tags
      *
-     * @OA\Tag(name="Languages",       description="v4 ")
-     * @OA\Tag(name="Countries",       description="v4 ")
-     * @OA\Tag(name="Bibles",          description="v4 ")
-     * @OA\Tag(name="Users",           description="v4 ")
+     * @OA\Tag(name="Languages",       description="v4 Routes for obtaining Languages Data",
+     *     @OA\ExternalDocumentation(
+     *         description="For more info please refer to the Ethnologue Registration Authority",
+     *         url="https://www.iso.org/iso-639-language-codes.html"
+     *     )
+     * )
+     * @OA\Tag(name="Countries",       description="v4 Routes for obtaining Countries Data",
+     *     @OA\ExternalDocumentation(
+     *         description="For more info please refer to the Iso Registration Authority",
+     *         url="https://www.iso.org/iso-3166-country-codes.html"
+     *     )
+     * )
+     * @OA\Tag(name="Bibles",          description="v4 Routes for obtaining Bibles Data")
+     * @OA\Tag(name="Users",           description="v4 Routes for obtaining Users Data")
      *
      */
 

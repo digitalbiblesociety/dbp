@@ -20,14 +20,14 @@ class AccessGroupController extends APIController
      *
      * @OA\Get(
      *     path="/access/groups/",
-     *     tags={"Admin"},
+     *     tags={"Bibles"},
      *     summary="Update the specified Access group",
      *     description="",
      *     operationId="v4_access_groups.index",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(name="version_number",ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(name="key",ref="#/components/parameters/key"),
+     *     @OA\Parameter(name="pretty",ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(name="format",ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -55,14 +55,14 @@ class AccessGroupController extends APIController
      *
      * @OA\Post(
      *     path="/access/groups/",
-     *     tags={"Admin"},
+     *     tags={"Bibles"},
      *     summary="Create the specified Access group",
      *     description="",
      *     operationId="v4_access_groups.store",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(name="version_number",ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(name="key",ref="#/components/parameters/key"),
+     *     @OA\Parameter(name="pretty",ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(name="format",ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -113,14 +113,14 @@ class AccessGroupController extends APIController
      *
      * @OA\Get(
      *     path="/access/groups/{group_id}",
-     *     tags={"Admin"},
+     *     tags={"Bibles"},
      *     summary="Update the specified Access group",
      *     description="",
      *     operationId="v4_access_groups.show",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(name="version_number",ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(name="key",ref="#/components/parameters/key"),
+     *     @OA\Parameter(name="pretty",ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(name="format",ref="#/components/parameters/format"),
      *     @OA\Parameter(
      *          name="group_id",
      *          in="path",
@@ -165,7 +165,7 @@ class AccessGroupController extends APIController
      *
      * @OA\Get(
      *     path="/access/current",
-     *     tags={"Admin"},
+     *     tags={"Bibles"},
      *     summary="List filesets available to the current key",
      *     description="Get the allowed fileset hash_ids for the currently used API key",
      *     operationId="v4_access_groups.access",
@@ -211,31 +211,6 @@ class AccessGroupController extends APIController
     /**
      * Update the specified resource in storage.
      *
-     * @OA\Put(
-     *     path="/access/groups/{group_id}",
-     *     tags={"Admin"},
-     *     summary="Update the specified Access group",
-     *     description="",
-     *     operationId="v4_access_groups.update",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(
-     *          name="access_group_id",
-     *          in="path",
-     *          required=true,
-     *          @OA\Schema(ref="#/components/schemas/AccessGroup/properties/id")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/AccessGroup")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/AccessGroup")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/AccessGroup"))
-     *     )
-     * )
-     *
      * @param  \Illuminate\Http\Request $request
      * @param  int $id
      *
@@ -270,34 +245,10 @@ class AccessGroupController extends APIController
     /**
      * Update the specified resource in storage.
      *
-     * @OA\Delete(
-     *     path="/access/groups/{group_id}",
-     *     tags={"Admin"},
-     *     summary="Remove the specified Access group",
-     *     description="",
-     *     operationId="v4_access_groups.destroy",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(
-     *          name="access_group_id",
-     *          in="path",
-     *          required=true,
-     *          @OA\Schema(ref="#/components/schemas/AccessGroup/properties/id")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/AccessGroup")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/AccessGroup")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/AccessGroup"))
-     *     )
-     * )
-     *
      * @param  int $id
      *
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function destroy($id)
     {
