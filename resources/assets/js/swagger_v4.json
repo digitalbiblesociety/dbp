@@ -40,6 +40,47 @@
         }
     ],
     "paths": {
+        "/api/git/version": {
+            "get": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "Git Version",
+                "description": "Returns the Current Git Commit Message and SHA",
+                "operationId": "v4_api.gitVersion",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/version_number"
+                    },
+                    {
+                        "$ref": "#/components/parameters/key"
+                    },
+                    {
+                        "$ref": "#/components/parameters/pretty"
+                    },
+                    {
+                        "$ref": "#/components/parameters/format"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v4_api.gitVersion"
+                                }
+                            },
+                            "application/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/v4_api.gitVersion"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/timestamps": {
             "get": {
                 "tags": [
@@ -862,6 +903,7 @@
                     {
                         "name": "fileset_id",
                         "in": "path",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/BibleFileset/properties/id"
                         }
@@ -1487,6 +1529,7 @@
                         "name": "project_id",
                         "in": "path",
                         "description": "The project id",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/Project/properties/id"
                         }
@@ -1539,6 +1582,7 @@
                         "name": "project_id",
                         "in": "path",
                         "description": "The project id",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/Project/properties/id"
                         }
@@ -1591,6 +1635,7 @@
                         "name": "project_id",
                         "in": "path",
                         "description": "The project id",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/Project/properties/id"
                         }
@@ -1635,22 +1680,26 @@
         "/access/groups/": {
             "get": {
                 "tags": [
-                    "Admin"
+                    "Bibles"
                 ],
                 "summary": "Update the specified Access group",
                 "description": "",
                 "operationId": "v4_access_groups.index",
                 "parameters": [
                     {
+                        "name": "version_number",
                         "$ref": "#/components/parameters/version_number"
                     },
                     {
+                        "name": "key",
                         "$ref": "#/components/parameters/key"
                     },
                     {
+                        "name": "pretty",
                         "$ref": "#/components/parameters/pretty"
                     },
                     {
+                        "name": "format",
                         "$ref": "#/components/parameters/format"
                     }
                 ],
@@ -1679,22 +1728,26 @@
             },
             "post": {
                 "tags": [
-                    "Admin"
+                    "Bibles"
                 ],
                 "summary": "Create the specified Access group",
                 "description": "",
                 "operationId": "v4_access_groups.store",
                 "parameters": [
                     {
+                        "name": "version_number",
                         "$ref": "#/components/parameters/version_number"
                     },
                     {
+                        "name": "key",
                         "$ref": "#/components/parameters/key"
                     },
                     {
+                        "name": "pretty",
                         "$ref": "#/components/parameters/pretty"
                     },
                     {
+                        "name": "format",
                         "$ref": "#/components/parameters/format"
                     }
                 ],
@@ -1725,130 +1778,30 @@
         "/access/groups/{group_id}": {
             "get": {
                 "tags": [
-                    "Admin"
+                    "Bibles"
                 ],
                 "summary": "Update the specified Access group",
                 "description": "",
                 "operationId": "v4_access_groups.show",
                 "parameters": [
                     {
+                        "name": "version_number",
                         "$ref": "#/components/parameters/version_number"
                     },
                     {
+                        "name": "key",
                         "$ref": "#/components/parameters/key"
                     },
                     {
+                        "name": "pretty",
                         "$ref": "#/components/parameters/pretty"
                     },
                     {
+                        "name": "format",
                         "$ref": "#/components/parameters/format"
                     },
                     {
                         "name": "group_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/components/schemas/AccessGroup/properties/id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AccessGroup"
-                                }
-                            },
-                            "application/xml": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AccessGroup"
-                                }
-                            },
-                            "text/x-yaml": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AccessGroup"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Update the specified Access group",
-                "description": "",
-                "operationId": "v4_access_groups.update",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/version_number"
-                    },
-                    {
-                        "$ref": "#/components/parameters/key"
-                    },
-                    {
-                        "$ref": "#/components/parameters/pretty"
-                    },
-                    {
-                        "$ref": "#/components/parameters/format"
-                    },
-                    {
-                        "name": "access_group_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/components/schemas/AccessGroup/properties/id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AccessGroup"
-                                }
-                            },
-                            "application/xml": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AccessGroup"
-                                }
-                            },
-                            "text/x-yaml": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AccessGroup"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Remove the specified Access group",
-                "description": "",
-                "operationId": "v4_access_groups.destroy",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/version_number"
-                    },
-                    {
-                        "$ref": "#/components/parameters/key"
-                    },
-                    {
-                        "$ref": "#/components/parameters/pretty"
-                    },
-                    {
-                        "$ref": "#/components/parameters/format"
-                    },
-                    {
-                        "name": "access_group_id",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -1883,7 +1836,7 @@
         "/access/current": {
             "get": {
                 "tags": [
-                    "Admin"
+                    "Bibles"
                 ],
                 "summary": "List filesets available to the current key",
                 "description": "Get the allowed fileset hash_ids for the currently used API key",
@@ -2095,6 +2048,15 @@
                         "$ref": "#/components/parameters/format"
                     },
                     {
+                        "name": "account_id",
+                        "in": "path",
+                        "description": "The Account ID",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Account/properties/id"
+                        }
+                    },
+                    {
                         "name": "project_id",
                         "in": "query",
                         "description": "The Project ID",
@@ -2119,17 +2081,17 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Account"
+                                    "$ref": "#/components/schemas/v4_bible.one"
                                 }
                             },
                             "application/xml": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Account"
+                                    "$ref": "#/components/schemas/v4_bible.one"
                                 }
                             },
                             "text/x-yaml": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Account"
+                                    "$ref": "#/components/schemas/v4_bible.one"
                                 }
                             }
                         }
@@ -2155,6 +2117,15 @@
                     },
                     {
                         "$ref": "#/components/parameters/format"
+                    },
+                    {
+                        "name": "account_id",
+                        "in": "path",
+                        "description": "The Account ID",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Account/properties/id"
+                        }
                     },
                     {
                         "name": "project_id",
@@ -2402,6 +2373,7 @@
                         "name": "user_id",
                         "in": "path",
                         "description": "The user who created the highlights",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/User/properties/id"
                         }
@@ -2503,6 +2475,7 @@
                     {
                         "name": "user_id",
                         "in": "path",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/User/properties/id"
                         }
@@ -2626,6 +2599,7 @@
                     {
                         "name": "user_id",
                         "in": "path",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/User/properties/id"
                         }
@@ -2633,6 +2607,7 @@
                     {
                         "name": "highlight_id",
                         "in": "path",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/Highlight/properties/id"
                         }
@@ -2684,6 +2659,7 @@
                     {
                         "name": "user_id",
                         "in": "path",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/User/properties/id"
                         }
@@ -2691,6 +2667,7 @@
                     {
                         "name": "highlight_id",
                         "in": "path",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/Highlight/properties/id"
                         }
@@ -2745,6 +2722,7 @@
                         "name": "user_id",
                         "in": "path",
                         "description": "The user who created the note",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/User/properties/id"
                         }
@@ -2847,6 +2825,7 @@
                         "name": "user_id",
                         "in": "path",
                         "description": "The user who created the note",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/User/properties/id"
                         }
@@ -2855,6 +2834,7 @@
                         "name": "note_id",
                         "in": "path",
                         "description": "The note currently being altered",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/Note/properties/id"
                         }
@@ -2948,6 +2928,7 @@
                         "name": "user_id",
                         "in": "path",
                         "description": "The user who created the note",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/User/properties/id"
                         }
@@ -2956,6 +2937,7 @@
                         "name": "note_id",
                         "in": "path",
                         "description": "The note currently being altered",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/Note/properties/id"
                         }
@@ -3041,6 +3023,7 @@
                         "name": "user_id",
                         "in": "path",
                         "description": "The user who created the note",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/User/properties/id"
                         }
@@ -3049,6 +3032,7 @@
                         "name": "note_id",
                         "in": "path",
                         "description": "The note currently being deleted",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/Note/properties/id"
                         }
@@ -3103,6 +3087,7 @@
                         "name": "user_id",
                         "in": "path",
                         "description": "The user who is creating the note",
+                        "required": true,
                         "schema": {
                             "$ref": "#/components/schemas/User/properties/id"
                         }
@@ -3576,6 +3561,15 @@
                     },
                     {
                         "$ref": "#/components/parameters/format"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The user ID for which to retrieve info.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/User/properties/id"
+                        }
                     }
                 ],
                 "requestBody": {
@@ -3984,13 +3978,6 @@
                         }
                     },
                     {
-                        "name": "government",
-                        "in": "query",
-                        "schema": {
-                            "$ref": "#/components/schemas/CountryGovernment"
-                        }
-                    },
-                    {
                         "name": "issues",
                         "in": "query",
                         "schema": {
@@ -4359,6 +4346,27 @@
     },
     "components": {
         "schemas": {
+            "v4_api.gitVersion": {
+                "title": "v4_api.gitVersion",
+                "description": "v4_api.gitVersion",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "0adc0ef Merge branch 'dev' into master"
+                    },
+                    "head": {
+                        "type": "string",
+                        "example": "0adc0ef27473be2d7fe5846cf9ab56b49362a3a8"
+                    },
+                    "tags": {
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "v4_api.gitVersion"
+                }
+            },
             "v4_api_assets": {
                 "title": "The assets response",
                 "description": "The aws assets currently being used by the api",
@@ -10088,19 +10096,27 @@
     "tags": [
         {
             "name": "Languages",
-            "description": " "
+            "description": " Routes for obtaining Languages Data",
+            "externalDocs": {
+                "description": "For more info please refer to the Ethnologue Registration Authority",
+                "url": "https://www.iso.org/iso-639-language-codes.html"
+            }
         },
         {
             "name": "Countries",
-            "description": " "
+            "description": " Routes for obtaining Countries Data",
+            "externalDocs": {
+                "description": "For more info please refer to the Iso Registration Authority",
+                "url": "https://www.iso.org/iso-3166-country-codes.html"
+            }
         },
         {
             "name": "Bibles",
-            "description": " "
+            "description": " Routes for obtaining Bibles Data"
         },
         {
             "name": "Users",
-            "description": " "
+            "description": " Routes for obtaining Users Data"
         }
     ]
 }
