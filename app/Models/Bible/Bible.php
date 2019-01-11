@@ -373,11 +373,11 @@ class Bible extends Model
             if($media) {
                 $q->where('bible_filesets.set_type_code',$media);
             }
-        })->with(['filesets' => function ($q) use ($asset_id,$access_control,$show_restricted) {
+        })->with(['filesets' => function ($q) use ($asset_id,$access_control,$hide_restricted) {
             if ($asset_id) {
                 $q->where('asset_id', $asset_id);
             }
-            if ($show_restricted) {
+            if ($hide_restricted) {
                 $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
             }
             $q->select(['id','set_type_code','set_size_code','asset_id']);
