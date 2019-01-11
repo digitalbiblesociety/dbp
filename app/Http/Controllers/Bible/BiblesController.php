@@ -75,13 +75,12 @@ class BiblesController extends APIController
         $organization       = checkParam('organization_id');
         $country            = checkParam('country');
         $asset_id           = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
-        $show_restricted    = checkParam('show_restricted') ?? false;
         $media              = checkParam('media');
 
         $access_control = $this->accessControl($this->key);
         $cache_string = strtolower('bibles'.$language_code.$organization.$country.$asset_id.$access_control->string.$media);
-        $bibles = \Cache::remember($cache_string, 1600, function () use ($show_restricted, $language_code, $organization, $country, $asset_id, $access_control, $media) {
-            $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $show_restricted, $media)
+        $bibles = \Cache::remember($cache_string, 1600, function () use ($language_code, $organization, $country, $asset_id, $access_control, $media) {
+            $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $media)
                 ->leftJoin('bible_translations as ver_title', function ($join) {
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
                 })
