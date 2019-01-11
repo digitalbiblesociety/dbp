@@ -185,7 +185,7 @@ class APIController extends Controller
                 apiLogs(request(), $this->getStatusCode(), $s3_transaction_id, $this->getIpAddress());
             }
         } catch (\Exception $e) {
-            Log::error($e);
+            Log::error($e->getMessage());
         }
 
         switch ($format) {
