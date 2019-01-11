@@ -317,6 +317,9 @@ class BiblesController extends APIController
         $testament = checkParam('testament');
 
         $bible = Bible::find($bible_id);
+        if(!$bible) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $bible_id]));
+        }
 
         $books = BibleBook::where('bible_id', $bible_id)
             ->with(['book' => function ($query) use ($testament) {
