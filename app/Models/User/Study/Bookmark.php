@@ -39,7 +39,7 @@ class Bookmark extends Model
 {
 
     protected $table = 'user_bookmarks';
-    protected $fillable = ['id','bible_id', 'user_id', 'book_id', 'chapter', 'verse_start'];
+    protected $fillable = ['id','bible_id', 'v2_id', 'user_id', 'book_id', 'chapter', 'verse_start'];
 
     /**
      *

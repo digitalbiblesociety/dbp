@@ -34,7 +34,7 @@ class Note extends Model
     protected $connection = 'dbp_users';
     protected $table = 'user_notes';
     protected $hidden = ['user_id'];
-    protected $fillable = ['id','user_id','bible_id','book_id','chapter','verse_start','verse_end','notes','created_at','updated_at'];
+    protected $fillable = ['id','v2_id','user_id','bible_id','book_id','chapter','verse_start','verse_end','notes','created_at','updated_at'];
 
     /**
      *
