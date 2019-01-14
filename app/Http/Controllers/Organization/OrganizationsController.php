@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\APIController;
+use App\Models\Bible\Bible;
 use App\Models\Bible\BibleLink;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
@@ -203,7 +204,10 @@ class OrganizationsController extends APIController
         $destination_links = BibleLink::where('organization_id', $destination_organization->id)->get()->pluck('bible_id');
         $destination = $destination_bibles->merge($destination_links);
 
-        return $this->reply(array_flatten(array_sort($destination->diff($source)->unique())));
+        $bible_array = array_flatten(array_sort($destination->diff($source)->unique()));
+        $bibles = Bible::with('translations')->whereIn('id',$bible_array)->get();
+
+        return $this->reply($bibles);
     }
 
     /**
