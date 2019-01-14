@@ -26,7 +26,6 @@ class EmailPasswordReset extends Mailable
             $project = new Project();
             $project->iso = 'eng';
             $project->name = 'Digital Bible Platform';
-            $project->url_reset = url('/users/password/reset');
         }
 
         $this->user = $user;
