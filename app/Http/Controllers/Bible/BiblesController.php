@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bible;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleFilesetType;
 use App\Models\Bible\BookTranslation;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
@@ -76,6 +77,14 @@ class BiblesController extends APIController
         $country            = checkParam('country');
         $asset_id           = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $media              = checkParam('media');
+
+        if($media) {
+            $media_types = BibleFilesetType::select('set_type_code')->get();
+            $media_type_exists = $media_types->where('name',$media);
+            if($media_type_exists->isEmpty()) {
+                return $this->setStatusCode(404)->replyWithError('media type not found. must be one of ' . $media_types->pluck('set_type_code')->implode(','));
+            }
+        }
 
         $access_control = $this->accessControl($this->key);
         $cache_string = strtolower('bibles'.$language_code.$organization.$country.$asset_id.$access_control->string.$media);
