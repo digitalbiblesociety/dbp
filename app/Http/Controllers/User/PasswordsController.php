@@ -89,6 +89,7 @@ class PasswordsController extends APIController
         $generatedToken = PasswordReset::create([
             'email' => $request->email,
             'token' => str_random(64),
+            'reset_path' => $request->reset_path,
             'created_at' => Carbon::now()
         ]);
         $user->token = $generatedToken->token;
@@ -141,7 +142,6 @@ class PasswordsController extends APIController
      */
     public function validatePasswordReset(Request $request)
     {
-        $new_password = $request->new_password;
         $validated = $this->validatePassword($request);
         if ($validated !== 'valid') {
             return $validated;
@@ -151,6 +151,8 @@ class PasswordsController extends APIController
         if (!$user) {
             return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
         }
+
+        $new_password = $request->new_password;
         $user->password = \Hash::needsRehash($new_password) ? \Hash::make($new_password) : $new_password;
         $user->save();
 
@@ -162,7 +164,7 @@ class PasswordsController extends APIController
             return $this->reply($user);
         }
 
-        if($reset->path) {
+        if($reset_path) {
             return redirect()->to($reset_path);
         }
 
