@@ -25,7 +25,8 @@ class PasswordsController extends APIController
         if (!$reset_request) {
             return $this->replyWithError('No matching Token found');
         }
-        return view('auth.passwords.reset', compact('reset_request'));
+
+        return view('auth.passwords.reset', compact('token'));
     }
 
     public function showRequestForm()
@@ -153,14 +154,19 @@ class PasswordsController extends APIController
         $user->password = \Hash::needsRehash($new_password) ? \Hash::make($new_password) : $new_password;
         $user->save();
 
-        PasswordReset::where('email',$user->email)->where('token', $request->token_id)->delete();
+        $reset = PasswordReset::where('email',$user->email)->where('token', $request->token_id)->first();
+        $reset_path = $reset->reset_path;
+        $reset->delete();
 
         if ($this->api) {
             return $this->reply($user);
         }
 
-        \Auth::login($user);
-        return redirect()->route('public.home');
+        if($reset->path) {
+            return redirect()->to($reset_path);
+        }
+
+        return view('auth.passwords.reset-successful');
     }
 
 
