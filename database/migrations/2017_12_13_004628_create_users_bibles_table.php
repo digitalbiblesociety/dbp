@@ -73,6 +73,7 @@ class CreateUsersBiblesTable extends Migration
         if (!Schema::connection('dbp_users')->hasTable('user_notes')) {
             Schema::connection('dbp_users')->create('user_notes', function (Blueprint $table) {
                 $table->increments('id');
+                $table->integer('v2_id')->unsigned();
                 $table->integer('user_id')->unsigned();
                 $table->foreign('user_id', 'FK_users_user_notes')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onUpdate('cascade')->onDelete('cascade');
                 $table->string('bible_id', 12);
@@ -92,6 +93,7 @@ class CreateUsersBiblesTable extends Migration
         if (!Schema::connection('dbp_users')->hasTable('user_bookmarks')) {
             Schema::connection('dbp_users')->create('user_bookmarks', function (Blueprint $table) {
                 $table->increments('id');
+                $table->integer('v2_id')->unsigned();
                 $table->integer('user_id')->unsigned();
                 $table->foreign('user_id', 'FK_users_user_bookmarks')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onUpdate('cascade')->onDelete('cascade');
                 $table->string('bible_id', 12);
@@ -120,6 +122,7 @@ class CreateUsersBiblesTable extends Migration
         if (!Schema::connection('dbp_users')->hasTable('user_highlights')) {
             Schema::connection('dbp_users')->create('user_highlights', function (Blueprint $table) {
                 $table->increments('id');
+                $table->integer('v2_id')->unsigned();
                 $table->integer('user_id')->unsigned();
                 $table->foreign('user_id', 'FK_users_user_highlights')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onUpdate('cascade')->onDelete('cascade');
                 $table->string('bible_id', 12);

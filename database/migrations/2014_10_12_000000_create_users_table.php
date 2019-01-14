@@ -16,6 +16,7 @@ class CreateUsersTable extends Migration
         if (!Schema::connection('dbp_users')->hasTable('users')) {
             Schema::connection('dbp_users')->create('users', function (Blueprint $table) {
                 $table->increments('id');
+                $table->integer('v2_id')->unsigned();
                 $table->string('name');
                 $table->string('first_name')->nullable();
                 $table->string('last_name')->nullable();
