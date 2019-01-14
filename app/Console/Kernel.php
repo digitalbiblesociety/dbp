@@ -24,6 +24,7 @@ class Kernel extends ConsoleKernel
         Commands\BibleEquivalents\UpdateBibleLinkOrganizations::class,
 
         Commands\BibleFormats\FormatGetBible::class,
+        Commands\BibleFormats\FormatRunberg::class,
 
         Commands\Wiki\GenerateWorldFactbook::class,
         Commands\Wiki\SyncAlphabets::class,
@@ -32,6 +33,8 @@ class Kernel extends ConsoleKernel
 
         Commands\loaderPush::class,
         Commands\loaderGetResults::class,
+
+        Commands\syncV2::class,
 
         Commands\S3LogBackup::class,
         Commands\SyncUsers::class,
