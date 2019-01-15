@@ -142,10 +142,20 @@ class PasswordsController extends APIController
      */
     public function validatePasswordReset(Request $request)
     {
-        $validated = $this->validatePassword($request);
-        if ($validated !== 'valid') {
+
+        $validator = Validator::make($request->all(), [
+            'new_password'     => 'confirmed|required|min:8',
+            'email'            => 'required|email',
+            'project_id'       => 'exists:dbp_users.projects,id',
+            'token_id'         => ['required',
+            Rule::exists('password_resets', 'token')->where(function ($query) use ($request) {
+                $query->where('email', $request->email);
+            })]
+        ]);
+
+        if ($validator->fails()) {
             $token = $request->token_id;
-            $errors = $validated->errors();
+            $errors = $validator->errors();
             return view('auth.passwords.reset', compact('token','errors'));
         }
 
@@ -174,30 +184,4 @@ class PasswordsController extends APIController
         return view('auth.passwords.reset-successful');
     }
 
-
-    /**
-     * Ensure the current alphabet change is valid
-     *
-     * @param Request $request
-     *
-     * @return mixed
-     */
-    private function validatePassword(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'new_password'     => 'confirmed|required|min:8',
-            'email'            => 'required|email',
-            'project_id'       => 'exists:dbp_users.projects,id',
-            'token_id'         => ['required',
-                Rule::exists('password_resets', 'token')
-                    ->where(function ($query) use ($request) {
-                        $query->where('email', $request->email);
-                    })]
-        ]);
-
-        if ($validator->fails()) {
-            return $validator->errors();
-        }
-        return 'valid';
-    }
 }

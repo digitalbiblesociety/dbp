@@ -14,12 +14,12 @@
                 @csrf
                 <div class="box">
 
-                    @if ($errors->any())
-                            <div class="alert alert-error has-text-centered">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </div>
+                    @if ($errors)
+                        <div class="alert alert-error has-text-centered">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </div>
                     @endif
 
                     <input type="hidden" name="token_id" value="{{ $token }}">
