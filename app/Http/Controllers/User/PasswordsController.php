@@ -160,10 +160,6 @@ class PasswordsController extends APIController
         $reset_path = $reset->reset_path;
         $reset->delete();
 
-        if ($this->api) {
-            return $this->reply($user);
-        }
-
         if($reset_path) {
             return redirect()->to($reset_path);
         }
