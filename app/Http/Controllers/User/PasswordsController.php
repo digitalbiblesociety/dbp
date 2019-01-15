@@ -144,7 +144,9 @@ class PasswordsController extends APIController
     {
         $validated = $this->validatePassword($request);
         if ($validated !== 'valid') {
-            return redirect('password/reset/'.$request->token_id, '302', [], false)->with(['errors' => $validated->errors()])->withInput();
+            $token = $request->token_id;
+            $errors = $validated->errors();
+            return view('auth.passwords.reset', compact('token','errors'));
         }
 
         $user = User::where('email', $request->email)->first();
