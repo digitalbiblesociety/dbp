@@ -161,7 +161,8 @@ class PasswordsController extends APIController
         $reset->delete();
 
         if($reset_path) {
-            return redirect()->to($reset_path);
+            header('Location: '.$reset_path);
+            exit;
         }
 
         return view('auth.passwords.reset-successful');
