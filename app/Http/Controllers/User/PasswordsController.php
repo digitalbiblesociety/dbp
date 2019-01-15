@@ -161,10 +161,10 @@ class PasswordsController extends APIController
         $reset->delete();
 
         if($reset_path) {
-            //return redirect($reset_path, 302, [
-            //    'Cache-Control' => 'no-cache, must-revalidate',
-            //    'Location'      => $reset_path
-            //], true);
+            return redirect($reset_path, 302, [
+                'Cache-Control' => 'no-cache, must-revalidate',
+                'Location'      => $reset_path
+            ], true);
             header('Location: '.$reset_path);
             exit();
         }
@@ -182,7 +182,6 @@ class PasswordsController extends APIController
      */
     private function validatePassword(Request $request)
     {
-        return 'valid';
         $validator = Validator::make($request->all(), [
             'new_password'     => 'confirmed|required|min:8',
             'email'            => 'required|email',
@@ -198,7 +197,7 @@ class PasswordsController extends APIController
             if ($this->api) {
                 return $this->setStatusCode(422)->replyWithError($validator->errors());
             }
-            return redirect()->back()->with(['errors' => $validator->errors()])->withInput();
+            return redirect()->to('password/reset/'.$request->token_id)->with(['errors' => $validator->errors()])->withInput();
         }
         return 'valid';
     }

@@ -31,11 +31,11 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
+        TrustProxies::class,
         CheckForMaintenanceMode::class,
         ValidatePostSize::class,
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
-        TrustProxies::class,
     ];
 
     /**
