@@ -144,7 +144,7 @@ class PasswordsController extends APIController
     {
         $validated = $this->validatePassword($request);
         if ($validated !== 'valid') {
-            return $validated;
+            return redirect('password/reset/'.$request->token_id, '302', [], false)->with(['errors' => $validated->errors()])->withInput();
         }
 
         $user = User::where('email', $request->email)->first();
@@ -194,10 +194,7 @@ class PasswordsController extends APIController
         ]);
 
         if ($validator->fails()) {
-            if ($this->api) {
-                return $this->setStatusCode(422)->replyWithError($validator->errors());
-            }
-            return redirect()->to('password/reset/'.$request->token_id)->with(['errors' => $validator->errors()])->withInput();
+            return $validator->errors();
         }
         return 'valid';
     }
