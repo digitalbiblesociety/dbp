@@ -343,7 +343,7 @@ class Language extends Model
     public function scopeFilterableByIsoCode($query, $code)
     {
         return $query->when($code, function ($query) use ($code) {
-            $query->where('iso', $code);
+            $query->whereIn('iso', explode(',',$code));
         });
     }
 
@@ -353,6 +353,13 @@ class Language extends Model
             $query->whereHas('countries', function ($query) use ($country) {
                 $query->where('country_id', $country);
             });
+        });
+    }
+
+    public function scopeFilterableByName($query, $name)
+    {
+        return $query->when($name, function ($query) use ($name) {
+            $query->where('name', 'like', $name.'%');
         });
     }
 
