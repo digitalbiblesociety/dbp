@@ -35,7 +35,7 @@ Route::name('v2_text_search')->get('text/search',                               
 Route::name('v2_text_search_group')->get('text/searchgroup',                       'Bible\TextController@searchGroup');
 
 // VERSION 2 | Audio
-Route::name('v2_audio_location')->get('audio/location',                            'ApiMetadataController@libraryAsset');
+Route::name('v2_audio_location')->get('audio/location',                            'ApiMetadataController@assets');
 Route::name('v2_audio_path')->get('audio/path',                                    'Bible\AudioController@index');
 Route::name('v2_audio_timestamps')->get('audio/versestart',                        'Bible\AudioController@timestampsByReference');
 
