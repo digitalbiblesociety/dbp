@@ -59,9 +59,9 @@ Localization::localizedRoutesGroup(function () {
     Route::name('logout')->post('logout', 'User\UsersController@logout');
     Route::name('register')->get('register', 'User\UsersController@create');
     Route::post('register', 'User\UsersController@store');
+    Route::name('password.reset')->get('password/reset/{token}', 'User\PasswordsController@showResetForm');
     Route::name('password.request')->get('password/reset', 'User\PasswordsController@showRequestForm');
     Route::name('password.email')->post('password/email', 'User\PasswordsController@triggerPasswordResetEmail');
-    Route::name('password.reset')->get('password/reset/{token?}', 'User\PasswordsController@showResetForm');
     Route::name('password.reset')->post('password/reset', 'User\PasswordsController@validatePasswordReset');
 
     Route::name('api_key_email')->post('keys/email',                     'User\KeyController@sendKeyEmail');
