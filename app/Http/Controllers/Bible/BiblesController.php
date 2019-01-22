@@ -114,10 +114,7 @@ class BiblesController extends APIController
                         $join->where('language_current.language_translation_id', '=', $GLOBALS['i18n_id']);
                     }
                 })
-                ->when($language_code, function ($q) use ($language_code) {
-                    $language = Language::where('iso', $language_code)->orWhere('id', $language_code)->firstOrFail();
-                    $q->where('bibles.language_id', $language->id);
-                })
+                ->filterByLanguage()
                 ->when($country, function ($q) use ($country) {
                     $q->whereHas('country', function ($query) use ($country) {
                         $query->where('countries.id', $country);
@@ -154,7 +151,7 @@ class BiblesController extends APIController
         $organization_id    = checkParam('organization_id');
         $organization = '';
         if ($organization_id) {
-            $organization = (!is_numeric($organization_id)) ? Organization::with('relationships')->orWhere('slug', $organization_id)->first() : Organization::with('relationships')->where('id', $organization_id)->first();
+            $organization = Organization::with('relationships')->where('slug', $organization_id)->orWhere('id', $organization_id)->first();
             $organization_id = $organization->relationships->where('type', 'member')->pluck('organization_child_id');
             $organization_id->push($organization->id);
         }
