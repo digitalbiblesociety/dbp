@@ -25,17 +25,17 @@
 
         <section class="box">
 
-            <h3>Guiding Principles</h3>
+            <h3 class="is-size-4">Guiding Principles</h3>
 
-            These guiding principles form the basis of this agreement:
-            1) Honor the intellectual property and copyrights that protect the Licensors of Bible Content.
-            2) Provide the Content in a way that brings glory to God.
-            3) Get God’s Word to every person.
+            <p>These guiding principles form the basis of this agreement:
+            <br> 1) Honor the intellectual property and copyrights that protect the Licensors of Bible Content.
+            <br> 2) Provide the Content in a way that brings glory to God.
+            <br> 3) Get God’s Word to every person.</p>
 
-            <h3>End User License Agreement (EULA)</h3>
+            <h3 class="is-size-4">End User License Agreement (EULA)</h3>
 
-            The Digital Bible Platform (DBP) is a standardized web-based system that allows access to and management of Bible Content using multiple media, formats, and partners. The vision of the DBP is to combine the best technology with the richest Bible Content available in one usable, accessible platform, to reach audiences around the world with the truth of Scripture in every available language.
-            The DBP is made possible by strong partnerships between Hosanna/Faith Comes By Hearing , Bible Agencies and Bible Cause donors. The DBP’s Application Programming Interface (API) allows approved USERS (you) to integrate its database of rich Bible content with your software, applications, and/or websites. These services are free to use and available to approved users.
+            <p>The Digital Bible Platform (DBP) is a standardized web-based system that allows access to and management of Bible Content using multiple media, formats, and partners. The vision of the DBP is to combine the best technology with the richest Bible Content available in one usable, accessible platform, to reach audiences around the world with the truth of Scripture in every available language.</p>
+            <p>The DBP is made possible by strong partnerships between Hosanna/Faith Comes By Hearing , Bible Agencies and Bible Cause donors. The DBP’s Application Programming Interface (API) allows approved USERS (you) to integrate its database of rich Bible content with your software, applications, and/or websites. These services are free to use and available to approved users.</p>
 
         </section>
         {{--
