@@ -158,6 +158,13 @@ class PasswordsController extends APIController
         $user->password = \Hash::needsRehash($new_password) ? \Hash::make($new_password) : $new_password;
         $user->save();
         $password_reset->delete();
+
+        return view('auth.passwords.reset-successful', compact('reset_path'));
+    }
+
+    public function passwordAttempt()
+    {
+        $reset_path = checkParam('reset_path');
         return view('auth.passwords.reset-successful', compact('reset_path'));
     }
 

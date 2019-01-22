@@ -61,7 +61,8 @@ Localization::localizedRoutesGroup(function () {
     Route::post('register', 'User\UsersController@store');
     Route::name('password.reset')->get('password/reset/{reset_token?}', 'User\PasswordsController@showResetForm');
     Route::name('password.email')->post('password/email',               'User\PasswordsController@triggerPasswordResetEmail');
-    Route::name('password.reset')->post('password/reset',               'User\PasswordsController@validatePasswordReset');
+    Route::name('password.attempt')->post('password/reset/attempt',       'User\PasswordsController@validatePasswordReset');
+    Route::name('password.attemptPage')->get('password/reset/attempt',        'User\PasswordsController@passwordAttempt');
 
     Route::name('api_key_email')->post('keys/email',                     'User\KeyController@sendKeyEmail');
     Route::name('api_key_generate')->get('keys/generate/{email_token}',  'User\KeyController@generateAPIKey');
