@@ -162,16 +162,7 @@ class PasswordsController extends APIController
         $reset_path = $reset->reset_path;
         $reset->delete();
 
-        if($reset_path) {
-            return redirect($reset_path, 302, [
-                'Cache-Control' => 'no-cache, must-revalidate',
-                'Location'      => $reset_path
-            ], true);
-            header('Location: '.$reset_path);
-            exit();
-        }
-
-        return view('auth.passwords.reset-successful');
+        return view('auth.passwords.reset-successful', compact('reset_path'));
     }
 
 }
