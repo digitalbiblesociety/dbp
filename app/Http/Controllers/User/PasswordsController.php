@@ -142,10 +142,10 @@ class PasswordsController extends APIController
      */
     public function validatePasswordReset(Request $request)
     {
-
-        $password_reset = PasswordReset::where('email', $request->email)->where('token',$request->token_id)->first();
+        $token = checkParam('token_id');
+        $password_reset = PasswordReset::where('email', $request->email)->where('token',$token)->first();
         if(!$password_reset) {
-            return $this->setStatusCode(401)->replyWithError("No password reset has been created for this account");
+            return $this->setStatusCode(401)->replyWithError('No password reset has been created for this account');
         }
 
         $user = User::where('email', $request->email)->first();
@@ -157,7 +157,7 @@ class PasswordsController extends APIController
         $user->password = \Hash::needsRehash($new_password) ? \Hash::make($new_password) : $new_password;
         $user->save();
 
-        $reset = PasswordReset::where('email',$user->email)->where('token', $request->token_id)->first();
+        $reset = PasswordReset::where('email',$user->email)->where('token', $token)->first();
         $reset_path = $reset->reset_path;
         $reset->delete();
 
