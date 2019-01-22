@@ -143,7 +143,7 @@ class PasswordsController extends APIController
     public function validatePasswordReset(Request $request)
     {
 
-        $password_reset = PasswordReset::where('email', $request->email)->where('token_id',$request->token_id)->first();
+        $password_reset = PasswordReset::where('email', $request->email)->where('token',$request->token_id)->first();
         if(!$password_reset) {
             return $this->setStatusCode(401)->replyWithError("No password reset has been created for this account");
         }
