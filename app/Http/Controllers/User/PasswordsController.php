@@ -159,8 +159,9 @@ class PasswordsController extends APIController
         $user->save();
 
         $password_reset->delete();
-
-        return view('auth.passwords.reset-successful', compact('reset_path'));
+        echo "Password reset successful";
+        header('Location: '.$reset_path);
+        exit();
     }
 
 }
