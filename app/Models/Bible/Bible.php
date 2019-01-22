@@ -219,8 +219,8 @@ class Bible extends Model
     {
         $query->when($language_codes, function ($q) use ($language_codes) {
             $language_codes = explode(',',$language_codes);
-            $language = Language::whereIn('iso', $language_codes)->orWhereIn('id', $language_codes)->get();
-            $q->whereIn('bibles.language_id', $language->id);
+            $languages = Language::whereIn('iso', $language_codes)->orWhereIn('id', $language_codes)->get();
+            $q->whereIn('bibles.language_id', $languages->pluck('id'));
         });
     }
 
