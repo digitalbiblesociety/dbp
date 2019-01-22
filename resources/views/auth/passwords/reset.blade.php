@@ -22,7 +22,7 @@
                         </div>
                     @endif
 
-                    <input type="hidden" name="token_id" value="{{ $token }}">
+                    <input type="hidden" name="token_id" value="{{ $reset_token }}">
                     <div class="field">
                         <label class="label" for="email">{{ __('E-Mail Address') }}</label>
                         <div class="control"><input class="input is-medium" name="email" type="email" autocomplete="email" value="{{ $email ?? old('email') }}"></div>
