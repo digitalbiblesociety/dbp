@@ -46,6 +46,12 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 |
 */
 
+Request::setTrustedProxies(
+// trust *all* requests
+    ['127.0.0.1', $request->server->get('REMOTE_ADDR')],
+    Request::HEADER_X_FORWARDED_AWS_ELB
+);
+
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
 $response = $kernel->handle(
