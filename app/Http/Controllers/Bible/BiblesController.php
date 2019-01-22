@@ -114,7 +114,7 @@ class BiblesController extends APIController
                         $join->where('language_current.language_translation_id', '=', $GLOBALS['i18n_id']);
                     }
                 })
-                ->filterByLanguage()
+                ->filterByLanguage($language_code)
                 ->when($country, function ($q) use ($country) {
                     $q->whereHas('country', function ($query) use ($country) {
                         $query->where('countries.id', $country);
