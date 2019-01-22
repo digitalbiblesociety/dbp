@@ -10,7 +10,7 @@
         @if (session('status'))<div class="alert alert-success">{{ session('status') }}</div> @endif
 
         <div class="columns">
-            <form class="column is-half is-offset-one-quarter" method="POST" action="/password/reset">
+            <form class="column is-half is-offset-one-quarter" method="POST" action="/password/reset/action">
                 @csrf
                 <div class="box">
 

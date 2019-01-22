@@ -148,6 +148,7 @@ class PasswordsController extends APIController
         if(!$password_reset) {
             return $this->setStatusCode(401)->replyWithError('No password reset has been created for this account');
         }
+        $reset_path = $password_reset->reset_path;
 
         $user = User::where('email', $request->email)->first();
         if (!$user) {
@@ -158,11 +159,12 @@ class PasswordsController extends APIController
         $user->password = \Hash::needsRehash($new_password) ? \Hash::make($new_password) : $new_password;
         $user->save();
 
-        $reset = PasswordReset::where('email',$user->email)->where('token', $token)->first();
-        $reset_path = $reset->reset_path;
-        $reset->delete();
-
         return view('auth.passwords.reset-successful', compact('reset_path'));
+    }
+
+    public function resetSuccessful()
+    {
+        return view('auth.passwords.reset-successful');
     }
 
 }
