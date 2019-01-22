@@ -75,9 +75,10 @@ class Handler extends ExceptionHandler
             $message = $message->toArray();
         }
         return response()->json([
-            'errors'        => array_wrap($message),
-            'status_code'   => 500
-        ], 500);
+            'errors'      => array_wrap($message),
+            'status_code' => http_response_code(),
+            'server_addr' => request()->server('SERVER_ADDR', '127.0.0.1')
+        ], http_response_code());
     }
 
     /**
