@@ -21,7 +21,7 @@ class PasswordsController extends APIController
 
     public function showResetForm(Request $request)
     {
-        $token = checkParam('token_id');
+        $token = checkParam('token_id') ?? $request->token;
         $reset_request = PasswordReset::where('token', $token)->first();
         if (!$reset_request) {
             return $this->replyWithError('No matching Token found');
@@ -155,7 +155,9 @@ class PasswordsController extends APIController
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator);
+            $token = $request->token_id;
+            $errors = $validator->errors();
+            return view('auth.passwords.reset', compact('token','errors'));
         }
 
         $user = User::where('email', $request->email)->first();
