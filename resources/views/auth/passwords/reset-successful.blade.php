@@ -1,11 +1,7 @@
 @extends('layouts.app')
 
 @section('head')
-    <style>
-        .reset-successful {
-            margin-top: 50px;
-        }
-    </style>
+    <meta http-equiv="refresh" content="0; URL='{{$reset_path}}'" />
 @endsection
 
 @section('content')
