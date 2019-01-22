@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,900" rel="stylesheet">
     <link rel="stylesheet" href="{{ mix('css/app.css') }}" />
-
-
     <meta property="og:site_name" content="{{ trans('app.site_name') }}" />
 
     @if(env('APP_DEBUG') == 'true')
@@ -21,7 +19,7 @@
     @if(Localization::isLocalizedRoute())
         @foreach(Localization::getLocales() as $localeCode => $properties)
 
-            @if(Route::current()->getLocalization() == $localeCode)
+            @if(Route::current()->getLocalization() === $localeCode)
                 <meta property="og:locale" content="{{ $localeCode }}" />
             @else
                 <meta property="og:locale:alternate" content="{{ $localeCode }}" />

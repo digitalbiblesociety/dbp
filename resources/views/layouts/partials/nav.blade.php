@@ -1,8 +1,7 @@
 <nav class="navbar ">
     <div class="navbar-brand">
-        <a class="navbar-item" href="{{ url('/') }}">{!! config('app.name', trans('app.app')) !!}</a>
         <a class="navbar-item is-hidden-desktop" href="https://github.com/digitalbiblesociety/dbp" target="_blank"><span class="icon" style="color: #333;"><i class="fa fa-github"></i></span></a>
-        <a class="navbar-item is-hidden-desktop" href="https://twitter.com/dbp" target="_blank"><span class="icon" style="color: #55acee;"><i class="fa fa-twitter"></i></span></a>
+        <a class="navbar-item is-hidden-desktop" href="https://twitter.com/dbp" target="_blank"><span class="icon" style="color: #5ae;"><i class="fa fa-twitter"></i></span></a>
 
         <div class="navbar-burger burger" data-target="navMenubd-example">
             <span></span>
@@ -64,7 +63,11 @@
         </div>
 
         <div class="navbar-end">
-
+            @if(!Auth::user())
+            <a class="navbar-link" href="/login">Login</a>
+            @else
+                <a class="navbar-link" href="/home">Home</a>
+            @endif
             <div id="translation-dropdown" class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link">
                     <svg class="panel-icon icon"><use xlink:href="/images/icons.svg#translate"></use></svg>
