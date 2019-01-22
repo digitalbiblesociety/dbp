@@ -19,9 +19,8 @@ use Carbon\Carbon;
 class PasswordsController extends APIController
 {
 
-    public function showResetForm(Request $request)
+    public function showResetForm(Request $request, $token)
     {
-        $token = checkParam('token_id');
         $reset_request = PasswordReset::where('token', $token)->first();
         if (!$reset_request) {
             return $this->replyWithError('No matching Token found');
