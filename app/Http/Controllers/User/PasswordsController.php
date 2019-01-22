@@ -143,20 +143,9 @@ class PasswordsController extends APIController
     public function validatePasswordReset(Request $request)
     {
 
-        $validator = Validator::make($request->all(), [
-            'new_password'     => 'confirmed|required|min:8',
-            'email'            => 'required|email',
-            'project_id'       => 'exists:dbp_users.projects,id',
-            'token_id'         => ['required',
-            Rule::exists('password_resets', 'token')->where(function ($query) use ($request) {
-                $query->where('email', $request->email);
-            })]
-        ]);
-
-        if ($validator->fails()) {
-            $token = $request->token_id;
-            $errors = $validator->errors();
-            return view('auth.passwords.reset', compact('token','errors'));
+        $password_reset = PasswordReset::where('email', $request->email)->where('token_id',$request->token_id)->first();
+        if(!$password_reset) {
+            return $this->setStatusCode(401)->replyWithError("No password reset has been created for this account");
         }
 
         $user = User::where('email', $request->email)->first();
