@@ -215,6 +215,16 @@ class Bible extends Model
      */
     public $incrementing = false;
 
+    public function scopeFilterByLanguage($query,$language_codes)
+    {
+        $query->when($language_codes, function ($q) use ($language_codes) {
+            $language_codes = explode(',',$language_codes);
+            $language = Language::whereIn('iso', $language_codes)->orWhereIn('id', $language_codes)->get();
+            $q->whereIn('bibles.language_id', $language->id);
+        });
+    }
+
+
     public function translations()
     {
         return $this->hasMany(BibleTranslation::class)->where('name', '!=', '');
