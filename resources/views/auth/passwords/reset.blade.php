@@ -6,7 +6,7 @@
         'title' => __('Reset Password')
     ])
 
-            <form id="password-reset" class="column is-half is-offset-one-quarter" method="POST" action="{{ route('v4_user.password_reset', ['token' => $reset_token]) }}">
+            <form id="password-reset" class="column is-half is-offset-one-quarter" method="POST" action="{{ route('v4_user.password_reset', ['token' => $reset_request->token]) }}">
                 @csrf
                 <div id="form-box" class="box">
 
