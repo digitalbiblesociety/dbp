@@ -19,15 +19,13 @@ use Carbon\Carbon;
 class PasswordsController extends APIController
 {
 
-    public function showResetForm(Request $request)
+    public function showResetForm(Request $request, $token = null)
     {
-        $reset_token = checkParam('token_id') ?? $request->reset_token;
-        $reset_request = PasswordReset::where('token', $reset_token)->first();
+        $reset_request = PasswordReset::where('token', $token)->first();
         if (!$reset_request) {
             return $this->replyWithError('No matching Token found');
         }
-
-        return view('auth.passwords.reset', compact('reset_token'));
+        return view('auth.passwords.reset', compact('reset_request'));
     }
 
     public function showRequestForm()
@@ -143,11 +141,27 @@ class PasswordsController extends APIController
      */
     public function validatePasswordReset(Request $request)
     {
-        $password_reset = PasswordReset::where('email', $request->email)->where('token',$request->reset_token)->first();
-        if(!$password_reset) {
-            return $this->setStatusCode(401)->replyWithError('No password reset has been created for this account');
+
+        $validator = Validator::make($request->all(), [
+            'new_password'     => 'confirmed|required|min:8',
+            'email'            => 'required|email',
+            'project_id'       => 'exists:dbp_users.projects,id',
+            'token_id'         => ['required',
+            Rule::exists('password_resets', 'token')->where(function ($query) use ($request) {
+                $query->where('email', $request->email);
+            })]
+        ]);
+
+        if ($validator->fails()) {
+            $token = $request->token_id;
+            $errors = $validator->errors();
+
+            if($this->api) {
+                return $this->setStatusCode(401)->replyWithError($errors);
+            }
+
+            return view('auth.passwords.reset', compact('token','errors'));
         }
-        $reset_path = $password_reset->reset_path;
 
         $user = User::where('email', $request->email)->first();
         if (!$user) {
@@ -157,15 +171,25 @@ class PasswordsController extends APIController
         $new_password = $request->new_password;
         $user->password = \Hash::needsRehash($new_password) ? \Hash::make($new_password) : $new_password;
         $user->save();
-        $password_reset->delete();
 
-        return view('auth.passwords.reset-successful', compact('reset_path'));
-    }
+        $reset = PasswordReset::where('email',$user->email)->where('token', $request->token_id)->first();
+        $reset_path = $reset->reset_path;
+        $reset->delete();
 
-    public function passwordAttempt()
-    {
-        $reset_path = checkParam('reset_path');
-        return view('auth.passwords.reset-successful', compact('reset_path'));
+        if($reset_path) {
+            return redirect($reset_path, 302, [
+                'Cache-Control' => 'no-cache, must-revalidate',
+                'Location'      => $reset_path
+            ], true);
+            header('Location: '.$reset_path);
+            exit();
+        }
+
+        if($this->api) {
+            return $this->setStatusCode(200)->reply($user);
+        }
+
+        return view('auth.passwords.reset-successful');
     }
 
 }
