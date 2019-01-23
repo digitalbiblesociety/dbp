@@ -6,11 +6,11 @@
         'title' => __('Reset Password')
     ])
 
-            <form id="password-reset" class="column is-half is-offset-one-quarter" method="POST" action="{{ route('v4_user.password_reset', ['token' => $reset_request->token]) }}">
+            <form id="password-reset" class="column is-half is-offset-one-quarter" method="POST" action="{{ route('v4_user.password_reset', ['token' => $reset_request->token,'v' => 4,'key' => 'tighten_37518dau8gb891ub']) }}">
                 @csrf
                 <div id="form-box" class="box">
 
-                    <div id="error-box"></div>
+                    <div id="message-box"></div>
 
                     <input type="hidden" name="token_id" value="{{ $reset_request->token }}">
                     <input type="hidden" name="email" value="{{ $reset_request->email ?? '' }}">
@@ -52,7 +52,8 @@
 		                data: form.serialize(),
 		                dataType: 'json',
 		                success: function (data) {
-			                window.location.replace('{{$reset_request->reset_path}}');
+			                $( "#message-box" ).prepend( '<div class="alert alert-success has-text-centered">Your password has been reset</div>' );
+			                window.location.href = "https://live.bible.is";
 		                }
 	                });
                 }
@@ -62,12 +63,12 @@
 		    $( "#error-box" ).empty();
 
 		    if ($("#password").val().length < 7) {
-			    $( "#error-box" ).prepend( '<div class="alert alert-error has-text-centered">Your password must be at least eight characters</div>' );
+			    $( "#message-box" ).prepend( '<div class="alert alert-error has-text-centered">Your password must be at least eight characters</div>' );
 			    return false;
 		    }
 
 		    if($("#password").val() != $("#password-confirm").val()) {
-			    $( "#error-box" ).prepend( '<div class="alert alert-error has-text-centered">Your passwords do not match</div>' );
+			    $( "#message-box" ).prepend( '<div class="alert alert-error has-text-centered">Your passwords do not match</div>' );
 			    return false;
             }
 

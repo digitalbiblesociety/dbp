@@ -173,23 +173,11 @@ class PasswordsController extends APIController
         $user->save();
 
         $reset = PasswordReset::where('email',$user->email)->where('token', $request->token_id)->first();
-        $reset_path = $reset->reset_path;
         $reset->delete();
-
-        if($reset_path) {
-            return redirect($reset_path, 302, [
-                'Cache-Control' => 'no-cache, must-revalidate',
-                'Location'      => $reset_path
-            ], true);
-            header('Location: '.$reset_path);
-            exit();
-        }
 
         if($this->api) {
             return $this->setStatusCode(200)->reply($user);
         }
-
-        return view('auth.passwords.reset-successful');
     }
 
 }
