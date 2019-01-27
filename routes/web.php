@@ -68,8 +68,6 @@ Localization::localizedRoutesGroup(function () {
     Route::name('api_key_email')->post('keys/email',                     'User\KeyController@sendKeyEmail');
     Route::name('api_key_generate')->get('keys/generate/{email_token}',  'User\KeyController@generateAPIKey');
 
-    Route::name('v4_api.gitVersion')->get('/api/status', 'ApiMetadataController@getStatus');
-
     Route::name('wiki_bibles.one')->get('/wiki/bibles/{id}', 'Bible\BiblesController@show');
     Route::name('wiki_bibles.all')->get('/wiki/bibles', 'Bible\BiblesController@index');
 
@@ -79,7 +77,6 @@ Localization::localizedRoutesGroup(function () {
 
         // Getting Started
         Route::name('apiDocs_bible_equivalents')->get('/api/bible/bible-equivalents', 'Bible\BibleEquivalentsController@index');
-
 
         // Docs Routes
         Route::name('docs')->get('docs', 'User\DocsController@index');
@@ -111,6 +108,22 @@ Localization::localizedRoutesGroup(function () {
         Route::name('social.redirect')->get('/login/redirect/{provider}', 'User\SocialController@redirect');
         Route::name('social.handle')->get('/login/{provider}/callback',   'User\SocialController@callback');
     });
+
+    Route::group(['middleware' => ['auth']],  function() {
+
+        Route::name('dashboard')->get('home',                 'User\Dashboard\DashboardController@home');
+
+        Route::name('dashboard.projects.index')->get('api/projects',         'User\Dashboard\ProjectsController@index');
+        Route::name('dashboard.projects.create')->get('api/projects/create', 'User\Dashboard\ProjectsController@create');
+        Route::name('dashboard.projects.edit')->get('api/projects/{project_id}/edit', 'User\Dashboard\ProjectsController@edit');
+        Route::name('dashboard.projects.update')->put('api/projects/{project_id}/', 'User\Dashboard\ProjectsController@edit');
+        Route::name('dashboard.projects.members')->get('api/projects/{project_id}/members', 'User\Dashboard\ProjectsController@members');
+
+        Route::name('profile')->get('profile',                'User\Dashboard\ProfileController@profile');
+        Route::name('profile.update')->post('profile',        'User\Dashboard\ProfileController@updateProfile');
+
+    });
+
 
 });
 
