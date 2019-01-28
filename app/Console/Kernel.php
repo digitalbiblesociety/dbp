@@ -34,7 +34,11 @@ class Kernel extends ConsoleKernel
         Commands\loaderPush::class,
         Commands\loaderGetResults::class,
 
-        Commands\syncV2::class,
+        Commands\syncV2Users::class,
+        Commands\syncV2Profiles::class,
+        Commands\syncV2Bookmarks::class,
+        Commands\syncV2Highlights::class,
+        Commands\syncV2Notes::class,
 
         Commands\S3LogBackup::class,
         Commands\SyncUsers::class,
