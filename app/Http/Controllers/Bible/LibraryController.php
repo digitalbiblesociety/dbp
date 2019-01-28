@@ -215,10 +215,10 @@ class LibraryController extends APIController
         $cache_string = strtolower('v2_library_history:'.$limit);
 
         $filesets = \Cache::remember($cache_string, now()->addDay(), function () use ($limit) {
-            return BibleFileset::with('bible.language')->has('bible.language')->take($limit)->get()
-                ->map(function ($fileset) {
-                    $v2_id = $fileset->bible->first()->language->iso . substr($fileset->bible->first()->id);
-                    $fileset->v2_id = strtoupper($v2_id, 3, 3);
+            $filesets = BibleFileset::with('bible.language')->has('bible.language')->take($limit)->get();
+            return $filesets->map(function ($fileset) {
+                $v2_id = $fileset->bible->first()->language->iso . substr($fileset->bible->first()->id, 3, 3);
+                $fileset->v2_id = strtoupper($v2_id);
                 return $fileset;
             });
         });
