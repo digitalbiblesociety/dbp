@@ -100,7 +100,7 @@ class TextController extends APIController
             return $this->setStatusCode(403)->replyWithError('Your API Key does not have access to this fileset');
         }
 
-        $cache_string = strtolower('bible_text'.$fileset_id.$book_id.$chapter.$verse_start.$verse_end.$asset_id);
+        $cache_string = strtolower('bible_text:'.$asset_id.':'.$fileset_id.':'.$book_id.':'.$chapter.':'.$verse_start.':'.$verse_end);
         $verses = \Cache::remember($cache_string, 2400, function() use ($fileset,$bible,$book,$chapter,$verse_start,$verse_end) {
            return BibleVerse::withVernacularMetaData($bible)
                 ->where('hash_id', $fileset->hash_id)
