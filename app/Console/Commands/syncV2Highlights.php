@@ -31,16 +31,6 @@ class syncV2Highlights extends Command
     protected $description = 'Sync the Highlights with the V2 Database';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed

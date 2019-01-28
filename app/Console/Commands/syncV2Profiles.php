@@ -28,16 +28,6 @@ class syncV2Profiles extends Command
     protected $description = 'Sync the Profiles with the V2 Database';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed

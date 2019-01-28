@@ -27,16 +27,6 @@ class syncV2Notes extends Command
     protected $description = 'Sync the Notes with the V2 Database';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed

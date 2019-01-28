@@ -28,16 +28,6 @@ class syncV2Bookmarks extends Command
     protected $description = 'Sync the Bookmarks with the V2 Database';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
@@ -93,13 +83,13 @@ class syncV2Bookmarks extends Command
                     }
 
                     $bookmark = Bookmark::firstOrNew([
-                        'user_id'    => $user_exists->id,
-                        'bible_id'   => $fileset->bible->first()->id,
-                        'book_id'    => $books[$bookmark->book_id],
-                        'chapter'    => $bookmark->chapter_id,
-                        'verse_start'=> $bookmark->verse_id,
-                        'created_at' => Carbon::createFromTimeString($bookmark->created)->toDateString(),
-                        'updated_at' => Carbon::createFromTimeString($bookmark->updated)->toDateString()
+                        'user_id'     => $user_exists->id,
+                        'bible_id'    => $fileset->bible->first()->id,
+                        'book_id'     => $books[$bookmark->book_id],
+                        'chapter'     => $bookmark->chapter_id,
+                        'verse_start' => $bookmark->verse_id,
+                        'created_at'  => Carbon::createFromTimeString($bookmark->created)->toDateString(),
+                        'updated_at'  => Carbon::createFromTimeString($bookmark->updated)->toDateString()
                     ]);
                     $bookmark->v2_id = $bookmark->id;
                     $bookmark->save();
