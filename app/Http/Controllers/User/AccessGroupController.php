@@ -42,7 +42,7 @@ class AccessGroupController extends APIController
     public function index()
     {
         $cache_string = 'access_groups';
-        $access_groups = \Cache::remember($cache_string, 1800, function () {
+        $access_groups = \Cache::remember($cache_string, now()->addDay(), function () {
             $access_groups = AccessGroup::select(['id','name'])->get();
             return $access_groups->pluck('name', 'id');
         });
@@ -143,7 +143,7 @@ class AccessGroupController extends APIController
     public function show($id)
     {
         $cache_string = 'access_group_'.strtolower($id);
-        $access_group = \Cache::remember($cache_string, 1800, function () use ($id) {
+        $access_group = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
 
             $access_group = AccessGroup::with('filesets', 'types', 'keys')->findByIdOrName($id)->first();
             if (!$access_group) {
@@ -199,7 +199,7 @@ class AccessGroupController extends APIController
     public function current()
     {
         $cache_string = 'access_current_'.$this->key;
-        $current_access = \Cache::remember($cache_string, 2400, function() {
+        $current_access = \Cache::remember($cache_string, now()->addDay(), function() {
             $current_access = $this->accessControl($this->key);
             $current_access->hash_count = \count($current_access->hashes);
             return $current_access;

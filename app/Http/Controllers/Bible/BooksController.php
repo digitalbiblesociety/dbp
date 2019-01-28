@@ -25,6 +25,7 @@ class BooksController extends APIController
      *
      * @OA\Get(
      *     path="/bibles/books/",
+     *
      *     tags={"Bibles"},
      *     summary="Returns the books of the Bible",
      *     description="Returns all of the books of the Bible both canonical and deuterocanonical",
@@ -47,7 +48,7 @@ class BooksController extends APIController
      */
     public function index()
     {
-        $books = \Cache::rememberForever('v4_books_index', function () {
+        $books = \Cache::rememberForever('v4_books:index', function () {
             $books = Book::orderBy('protestant_order')->get();
             return fractal($books, new BooksTransformer(), $this->serializer);
         });
@@ -109,8 +110,8 @@ class BooksController extends APIController
         $fileset_type = checkParam('fileset_type');
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        $cache_string = strtolower('bible_books_'.$id.$fileset_type.$asset_id);
-        $books = \Cache::remember($cache_string, 2400, function () use ($fileset_type, $asset_id, $id) {
+        $cache_string = strtolower('v4_books:'.$asset_id.':'.$id.'_'.$fileset_type);
+        $books = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset_type, $asset_id, $id) {
             $fileset = BibleFileset::where('id', $id)->where('asset_id', $asset_id)->where('set_type_code', $fileset_type)->first();
             if (!$fileset) {
                 return $this->replyWithError('Fileset Not Found');
