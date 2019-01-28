@@ -19,7 +19,7 @@ trait AccessControlAPI
      */
     public function accessControl($api_key)
     {
-        return \Cache::remember($api_key.'_access_control', 2400, function () use($api_key) {
+        return \Cache::remember('access_control:'.$api_key, 2400, function () use($api_key) {
             $user_location = geoip($this->getIpAddress());
             $country_code = (!isset($user_location->iso_code)) ? $user_location->iso_code : null;
             $continent = (!isset($user_location->continent)) ? $user_location->continent : null;
