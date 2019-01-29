@@ -141,10 +141,11 @@ class BooksController extends APIController
                     'books.id_osis',
                     'books.book_testament',
                     'books.testament_order',
-                    'books.protestant_order',
                     'books.book_group',
                     'bible_books.chapters',
-                    'bible_books.name'
+                    'bible_books.name',
+                    'books.protestant_order',
+                    $book_order_column.' as book_order_column'
                 ])->get();
 
             return fractal($books, new BooksTransformer(), $this->serializer);
