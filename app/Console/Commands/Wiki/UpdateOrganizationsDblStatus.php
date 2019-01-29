@@ -26,16 +26,6 @@ class UpdateOrganizationsDblStatus extends Command
     protected $description = 'Fetch and update the organization DBL status';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
@@ -72,12 +62,10 @@ class UpdateOrganizationsDblStatus extends Command
         $dbl_id = Organization::where('slug', 'digital-bible-library')->first()->id;
         $missing = [];
         $pre_matched = [
-            //'Bible Society of Congo (Republic)' => "135",
-            //'Example Library Card Holder' => "",
-            'Bible Society of El Salvador'     => '535',
+            'Bible Society of El Salvador' => '535',
             'Voice of Christ Media Ministries' => '514',
-            'Swedish Bible Society'            => '129',
-            'Crossway / Good News Publishers'  => '5 ',
+            'Swedish Bible Society' => '129',
+            'Crossway / Good News Publishers' => '5 ',
             'Samaritan’s Purse' => '560',
             'iMatt Solutions Limited' => '570',
             '"Bible Society in Guatemala"' => '73',
@@ -98,7 +86,7 @@ class UpdateOrganizationsDblStatus extends Command
             'Galcom Int’l' => '585',
             'Dominican Republic Bible Society' => '136',
             'United Bible Societies in Venezuela' => '335',
-            'Power to Change  (formerly Campus Crusade for Christ Australia)  ' => '587',
+            'Power to Change  (formerly Campus Crusade for Christ Australia)' => '587',
             'Bible Society in Namibia' => '102',
             'Aramaic Bible Translation, Inc.' => '588',
             'Google, Inc.' => '589',
@@ -130,7 +118,7 @@ class UpdateOrganizationsDblStatus extends Command
             'Bible Society in Algeria' => '550',
             'OneSheep, a charity registered in England and Wales, number 1151906' => '617',
             'United Bible Societies in Ecuador' => '866',
-            'Gobaith i Gymru' => '1054',
+            //'Gobaith i Gymru' => '1054',
             'Alpha International' => '1055',
             'Bible Society of Congo (Republic)' => '135',
             'Bible Society in Guatemala' => '73',
@@ -140,12 +128,13 @@ class UpdateOrganizationsDblStatus extends Command
             'Mission Evangélique Réformée Néerlandaise' => '1058',
             'Bible Translation Institute at Zaoksky, Russia' => '1059',
             'United Bible Societies in Ecuador' => '866',
+            'Bible Society of Côte d\'Ivoire' => '62'
         ];
 
         foreach ($organizations->orgs as $dbl_organization) {
-            $translationMatchExists = OrganizationTranslation::where('name', $dbl_organization->full_name)->first();
+            $translationMatchExists    = OrganizationTranslation::where('name', $dbl_organization->full_name)->first();
             $relationshipAlreadyExists = OrganizationRelationship::where('organization_parent_id', $dbl_id)->where('relationship_id', $dbl_organization->id)->first();
-            if ($relationshipAlreadyExists or ($dbl_id == $dbl_organization->id)) {
+            if ($relationshipAlreadyExists || ($dbl_id === $dbl_organization->id)) {
                 continue;
             }
 
@@ -170,8 +159,12 @@ class UpdateOrganizationsDblStatus extends Command
                 ]);
             } else {
                 // Otherwise Fuzzy Search for Provider Name
-                $organizations = Searchy::driver('ufuzzy')->search('dbp.organization_translations')->fields('name')->query($dbl_organization->full_name)->getQuery()->limit(5)->get();
-                if ($organizations->count() == 0) {
+                $organizations = @Searchy::driver('ufuzzy')->search(config('database.connections.dbp.database').'.organization_translations')->fields('name')->query($dbl_organization->full_name)->getQuery()->limit(5)->get();
+                if(!isset($organizations)) {
+                    $missing[] = $dbl_organization->full_name;
+                    continue;
+                }
+                if ($organizations->count() === 0) {
                     $missing[] = $dbl_organization->full_name;
                     continue;
                 }
@@ -182,8 +175,8 @@ class UpdateOrganizationsDblStatus extends Command
 
                 // Get User Input
                 $confirmed       = false;
-                $organization_id = $this->ask('Please enter the number of the Closest Match, if none just hit enter');
-                if ($organization_id == 0) {
+                $organization_id = $this->ask('Please enter the number of the Closest Match, if none just hit 0');
+                if ((int) $organization_id === 0) {
                     $missing[$dbl_organization->id] = $dbl_organization->full_name;
                     continue;
                 }

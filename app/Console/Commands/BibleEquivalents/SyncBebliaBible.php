@@ -22,16 +22,6 @@ class SyncBebliaBible extends Command
     protected $description = 'Crawls and parses Bibles from Beblia.com into usfm';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed

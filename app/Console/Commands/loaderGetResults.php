@@ -28,8 +28,8 @@ class loaderGetResults extends Command
      */
     public function __construct()
     {
-        $this->loaderIoKey = config('services.loaderIo.key');
         parent::__construct();
+        $this->loaderIoKey = config('services.loaderIo.key');
     }
 
     /**
