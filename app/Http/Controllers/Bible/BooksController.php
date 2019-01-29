@@ -118,8 +118,9 @@ class BooksController extends APIController
             }
             $is_plain_text = BibleVerse::where('hash_id', $fileset->hash_id)->exists();
 
-            $book_order_column_exists = \Schema::connection('dbp')->hasColumn('books', optional($fileset->bible)->versification.'_order');
-            $book_order_column = $book_order_column_exists ? 'books.'.$fileset->bible->verseification.'_order' : 'books.protestant_order';
+            $versification = optional($fileset->bible->first())->versification;
+            $book_order_column_exists = \Schema::connection('dbp')->hasColumn('books', $versification.'_order');
+            $book_order_column = $book_order_column_exists ? 'books.'.$versification.'_order' : 'books.protestant_order';
 
             $dbp_database = config('database.connections.dbp.database');
             $books = \DB::connection('dbp')->table($dbp_database.'.bible_filesets as fileset')
