@@ -302,12 +302,20 @@ class Organization extends Model
      */
     protected $email;
 
+    public function scopeIncludeLogos($query, $language_id)
+    {
+        return $query->with(['logos' => function ($query) use ($language_id) {
+            $query->where('language_id', $language_id);
+        }]);
+    }
+
     public function scopeIncludeMemberResources($query, $membership)
     {
         return $query->when($membership, function ($q) use ($membership) {
+            $membership = Organization::where('slug', $membership)->first();
             $q->join('organization_relationships', function ($join) use ($membership) {
                 $join->on('organizations.id', '=', 'organization_relationships.organization_child_id')
-                     ->where('organization_relationships.organization_parent_id', $membership);
+                     ->where('organization_relationships.organization_parent_id', optional($membership)->id);
             });
         });
     }
