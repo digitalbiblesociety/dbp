@@ -112,11 +112,14 @@ class BooksController extends APIController
 
         $cache_string = strtolower('v4_books:'.$asset_id.':'.$id.'_'.$fileset_type);
         $books = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset_type, $asset_id, $id) {
-            $fileset = BibleFileset::where('id', $id)->where('asset_id', $asset_id)->where('set_type_code', $fileset_type)->first();
+            $fileset = BibleFileset::with('bible')->where('id', $id)->where('asset_id', $asset_id)->where('set_type_code', $fileset_type)->first();
             if (!$fileset) {
                 return $this->replyWithError('Fileset Not Found');
             }
             $is_plain_text = BibleVerse::where('hash_id', $fileset->hash_id)->exists();
+
+            $book_order_column_exists = \Schema::connection('dbp')->hasColumn('books', optional($fileset->bible)->versification.'_order');
+            $book_order_column = $book_order_column_exists ? 'books.'.$fileset->bible->verseification.'_order' : 'books.protestant_order';
 
             $dbp_database = config('database.connections.dbp.database');
             $books = \DB::connection('dbp')->table($dbp_database.'.bible_filesets as fileset')
@@ -131,7 +134,7 @@ class BooksController extends APIController
                 }, function ($query) use ($fileset) {
                     $this->compareFilesetToFileTableBooks($query, $fileset->hash_id);
                 })
-                ->orderBy('books.protestant_order')->select([
+                ->orderBy($book_order_column)->select([
                     'books.id',
                     'books.id_usfx',
                     'books.id_osis',
