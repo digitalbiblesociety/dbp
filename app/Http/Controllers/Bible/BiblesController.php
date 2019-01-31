@@ -78,6 +78,8 @@ class BiblesController extends APIController
         $asset_id           = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $media              = checkParam('media');
         $media_exclude      = checkParam('media_exclude');
+        $size               = checkParam('size');
+        $size_exclude       = checkParam('size_exclude');
 
         if($media) {
             $media_types = BibleFilesetType::select('set_type_code')->get();
@@ -88,9 +90,9 @@ class BiblesController extends APIController
         }
 
         $access_control = $this->accessControl($this->key);
-        $cache_string = strtolower('bibles:'.$language_code.$organization.$country.$asset_id.$access_control->string.$media);
-        $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude) {
-            $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $media, $media_exclude)
+        $cache_string = strtolower('bibles:'.$language_code.$organization.$country.$asset_id.$access_control->string.$media.$media_exclude.$size.$size_exclude);
+        $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude) {
+            $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $media, $media_exclude, $size, $size_exclude)
                 ->leftJoin('bible_translations as ver_title', function ($join) {
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
                 })
