@@ -51,6 +51,30 @@ class BiblesController extends APIController
      *          @OA\Schema(type="string"),
      *          description="The asset_id to filter results by. There are two buckets provided `dbp.test` & `dbs-web`"
      *     ),
+     *     @OA\Parameter(
+     *          name="media",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="Will filter bibles based upon the media type of their filesets"
+     *     ),
+     *     @OA\Parameter(
+     *          name="media_exclude",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="Will exclude bibles based upon the media type of their filesets"
+     *     ),
+     *     @OA\Parameter(
+     *          name="size",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="Will filter bibles based upon the size type of their filesets"
+     *     ),
+     *     @OA\Parameter(
+     *          name="size_exclude",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="Will exclude bibles based upon the size type of their filesets"
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
