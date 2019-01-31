@@ -77,6 +77,7 @@ class BiblesController extends APIController
         $country            = checkParam('country');
         $asset_id           = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $media              = checkParam('media');
+        $media_exclude      = checkParam('media_exclude');
 
         if($media) {
             $media_types = BibleFilesetType::select('set_type_code')->get();
@@ -89,7 +90,7 @@ class BiblesController extends APIController
         $access_control = $this->accessControl($this->key);
         $cache_string = strtolower('bibles:'.$language_code.$organization.$country.$asset_id.$access_control->string.$media);
         $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media) {
-            $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $media)
+            $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $media, $media_exclude)
                 ->leftJoin('bible_translations as ver_title', function ($join) {
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
                 })
@@ -259,7 +260,7 @@ class BiblesController extends APIController
     public function show($id)
     {
         $access_control = $this->accessControl($this->key);
-        $cache_string = strtolower('bible_show_response'.$id.$access_control->string);
+        $cache_string = strtolower('bible_show:'.$id.':'.$access_control->string);
         $bible = \Cache::remember($cache_string, now()->addDay(), function() use($access_control,$id) {
             return Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
                 'filesets' => function ($query) use ($access_control) {
