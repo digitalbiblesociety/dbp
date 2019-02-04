@@ -193,11 +193,12 @@ class ApiMetadataController extends APIController
         }
 
         $asset = Asset::where('id', $asset_id)->first();
+        $url = parse_url($asset->base_name ?? config('app.url'));
         $libraryAsset = [
             [
-                'server'    => $asset->base_name,
+                'server'    => $url['host'] ?? 'dbp4.org',
                 'root_path' => '/audio',
-                'protocol'  => $asset->protocol,
+                'protocol'  => $asset->protocol ?? 'https',
                 'CDN'       => $asset->cdn ?? '1',
                 'priority'  => $asset->priority ?? '1',
                 'volume_id' => $dam_id,
