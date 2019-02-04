@@ -59,7 +59,7 @@ class SyncAlphabets extends Command
                 continue;
             }
             if (!$alphabet) {
-                echo "missing:". $alphabetUrl;
+                echo "\nMissing: $alphabetUrl";
                 continue;
             }
             $dom->load($alphabet);

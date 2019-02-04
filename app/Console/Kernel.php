@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
         Commands\Wiki\GenerateWorldFactbook::class,
         Commands\Wiki\SyncAlphabets::class,
         Commands\Wiki\SyncLanguageDescriptions::class,
-        Commands\Wiki\UpdateOrganizationsDblStatus::class,
+        Commands\Wiki\OrgDigitalBibleLibraryCompare::class,
 
         Commands\loaderPush::class,
         Commands\loaderGetResults::class,
