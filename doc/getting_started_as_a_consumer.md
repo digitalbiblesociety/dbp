@@ -9,17 +9,19 @@
 curl -i -H "Authorization: Bearer YOURKEYHERE" -H "Accept: application/json" -H "Content-Type: application/json" -X GET https://api.dbp4.org/bibles/?v=4
 ```
 
-## Common workflow #1: An app that only displays text Bibles
+## Common workflow: An app that only displays text Bibles
 
-Let's imagine we're building an app that starts the end user off looking at a list of Bibles and lets them choose a Bible, then takes them to the first available chapter for that Bible (often, but not always, Genesis 1). Then it will display all of the available content (in this case, just text) for that Bible.
+Let's imagine we're building an app that starts the end user off looking at a list of Bibles and lets them choose a Bible, then lists the books and chapters and allows them to select a book or a chapter. Then it will display all of the available content (in this case, just text) for that Bible.
 
-> Note: All example URLs in these common workflows will assume you're passing an authorization header. As you can see in the `curl` example above, you'll pass a header with the name of `Authorization` and the value of `Bearer YOURKEYHERE`, where `YOURKEYHERE` is your API key.
+> NOTE: All example URLs in these common workflows will assume you're passing an authorization header. As you can see in the `curl` example above, you'll pass a header with the name of `Authorization` and the value of `Bearer YOURKEYHERE`, where `YOURKEYHERE` is your API key.
 
-### Step 1: List Bibles that have a text fileset
+### Step 1: List all Bibles that have a text fileset
 
 First, make a query to the "List all Bibles that have a text fileset" route:
 
 `/bibles?media=text_plain&v=4`
+
+> What is a Fileset? [Fileset definition](#markdown-definition--fileset)
 
 Here's what your response might look like:
 
@@ -65,7 +67,7 @@ Here's what your response might look like:
                 ]
             }
         },
-        /* Other Bibles here... */
+        'Other Bibles here...',
     ]
 }
 ```
@@ -73,8 +75,6 @@ Here's what your response might look like:
 You can now iterate over all of the Bibles present in the `data` array and present each to the user.
 
 > Note: What's `dbp-prod`? By default, every call you make will present the "filesets" that are provided by DBP, which will all come nested under the `dbp-prod` key. Later you'll learn about requesting content from custom asset providers, but for now, just assume you can always look for your filesets beneath the `dbp-prod` key.
-
-> What is a Fileset? [Fileset definition](#markdown-definition--fileset)
 
 Now, your frontend template code might look a bit like this:
 
@@ -142,7 +142,7 @@ Here's a truncated example of what you might be back:
             "book_group": "The Law",
             "chapters": [
                 1,
-                /* More chapters... */
+                'More chapters here...',
                 50
             ]
         },
@@ -157,11 +157,11 @@ Here's a truncated example of what you might be back:
             "book_group": "The Law",
             "chapters": [
                 1,
-                /* More chapters... */
+                'More chapters here...',
                 40
             ]
         },
-        /* More books... */
+        'More books here...',
     ]
 }
 ```
@@ -233,7 +233,7 @@ Here's what the response from that will look like:
             "verse_end_alt": "2",
             "verse_text": "The earth was without form and void, and darkness was over the face of the deep. And the Spirit of God was hovering over the face of the waters."
         },
-        /* More verses... */
+        'More verses here...',
     ]
 }
 ```
