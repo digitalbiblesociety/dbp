@@ -14,6 +14,7 @@ class UsersSeeder extends Seeder
         $countries = \DB::connection('dbp')->table('countries')->get();
         $projects  = Project::all();
         $role_id   = Role::where('slug', 'user')->first()->id;
+        $languages = \App\Models\Language\Language::limit(500)->select('id')->get();
 
         $user = User::create([
             'name' => 'FCBH Test Developer',
@@ -63,6 +64,7 @@ class UsersSeeder extends Seeder
             // 50 percent chance to have a profile
             if (random_int(0, 1)) {
                 $user->profile()->create([
+                    'language_id'   => $languages->random()->id,
                     'bio'           => implode(' ', $faker->paragraphs(3)),
                     'address_1'     => (string) $faker->streetAddress,
                     'address_2'     => (string) $faker->buildingNumber,
