@@ -94,6 +94,10 @@ class PasswordsController extends APIController
         $user->token = $generatedToken->token;
 
         \Mail::to($user)->send(new EmailPasswordReset($user, $connection->project));
+        if(!$this->api) {
+            return view('auth.passwords.email-sent');
+        }
+
         return $this->reply(trans('api.email_send_successful'));
     }
 

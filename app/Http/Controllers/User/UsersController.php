@@ -21,6 +21,8 @@ use Socialite;
 use Image;
 use Mail;
 use Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
@@ -60,8 +62,7 @@ class UsersController extends APIController
         $project_id = checkParam('project_id');
 
         $users = \DB::table('users')->join('project_members', function ($join) use ($project_id) {
-            $join->on('users.id', '=', 'project_members.user_id')
-                 ->where('project_members.project_id', '=', $project_id);
+            $join->on('users.id', 'project_members.user_id')->where('project_members.project_id', $project_id);
         })->select(['id','name','email'])->paginate($limit);
 
         $userCollection = $users->getCollection();
@@ -168,11 +169,10 @@ class UsersController extends APIController
      */
     public function login(Request $request)
     {
-        $project_id = checkParam('project_id');
-
         if (!$this->api && $request->method() !== 'POST') {
             return view('auth.login');
         }
+
         $user = User::with('accounts')->where('email', $request->email)->first();
         if (!$user) {
             return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email'));
@@ -183,8 +183,9 @@ class UsersController extends APIController
 
         if ($oldPassword || $newPassword) {
             // Associate user with Project
+            $project_id = checkParam('project_id');
             if ($project_id) {
-                $connection_exists = ProjectMember::where(['user_id' =>$user->id, 'project_id' =>$project_id])->exists();
+                $connection_exists = ProjectMember::where(['user_id' => $user->id, 'project_id' => $project_id])->exists();
                 if (!$connection_exists) {
                     $role = Role::where('slug', 'user')->first();
                     ProjectMember::create([
@@ -199,8 +200,8 @@ class UsersController extends APIController
                 return $user;
             }
 
-            \Auth::guard()->setUser($user);
-            return view('dashboard.home', compact('user'));
+            Auth::login($user, true);
+            return redirect()->to('dashboard');
         }
 
         return $this->setStatusCode(401)->replyWithError(trans('auth.failed'));
@@ -276,6 +277,12 @@ class UsersController extends APIController
                 'provider_user_id' => $request->social_provider_user_id,
             ]);
         }
+
+        if(!$this->api) {
+            Auth::login($user, true);
+            return redirect()->to('home');
+        }
+
         return $this->setStatusCode(200)->reply(fractal($user, new UserTransformer())->addMeta(['success' => 'User created']));
     }
 

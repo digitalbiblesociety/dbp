@@ -19,7 +19,7 @@
                 <ul class="menu-list">
                     <li><a href="{{ route('profile') }}">Profile</a></li>
                     <li><a href="{{ route('dashboard.projects.index') }}">Projects</a></li>
-                    <li><a href="#" class="disabled">Donate</a></li>
+                    <li><a href="{{ route('dashboard.keys.create') }}">API Keys</a></li>
                 </ul>
                 <p class="menu-label">Messages</p>
                 <ul class="menu-list">

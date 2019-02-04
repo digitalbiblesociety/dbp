@@ -31,7 +31,7 @@ class ProjectsController extends Controller
      */
     public function create()
     {
-        return view('dashboard.profiles.create');
+        return view('dashboard.projects.create');
     }
 
     /**
@@ -43,19 +43,7 @@ class ProjectsController extends Controller
     public function store(Request $request)
     {
         $project = Project::where('id',$request->id)->first();
-        return view('dashboard.projects.show', compact('project'));
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $project = Project::where('id',$id)->first();
-        return view('dashboard.projects.show', compact('project'));
+        return view('dashboard.projects.edit', compact('project'));
     }
 
     /**
@@ -93,7 +81,7 @@ class ProjectsController extends Controller
     public function update(Request $request, $id)
     {
         $project = Project::where('id',$id)->first();
-        return view('dashboard.projects.show', compact('project'));
+        return view('dashboard.projects.edit', compact('project'));
     }
 
     /**
@@ -105,6 +93,6 @@ class ProjectsController extends Controller
     public function destroy($id)
     {
         $project = Project::where('id',$id)->first();
-        return view('dashboard.projects.show', compact('project'));
+        return view('dashboard.projects.edit', compact('project'));
     }
 }

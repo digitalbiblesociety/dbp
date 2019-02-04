@@ -59,14 +59,15 @@ Localization::localizedRoutesGroup(function () {
     Route::name('logout')->post('logout', 'User\UsersController@logout');
     Route::name('register')->get('register', 'User\UsersController@create');
     Route::post('register', 'User\UsersController@store');
-    Route::name('password.request')->get('password/reset',             'User\PasswordsController@showRequestForm');
-    Route::name('password.reset')->get('password/reset/{reset_token}', 'User\PasswordsController@showResetForm');
-    Route::name('password.email')->post('password/email',               'User\PasswordsController@triggerPasswordResetEmail');
-    Route::name('password.attempt')->post('password/reset/attempt',       'User\PasswordsController@validatePasswordReset');
-    Route::name('password.attemptPage')->get('password/reset/attempt',        'User\PasswordsController@passwordAttempt');
 
-    Route::name('api_key_email')->post('keys/email',                     'User\KeyController@sendKeyEmail');
-    Route::name('api_key_generate')->get('keys/generate/{email_token}',  'User\KeyController@generateAPIKey');
+    Route::name('password.request')->get('password/reset',               'User\PasswordsController@showRequestForm');
+    Route::name('password.reset')->get('password/reset/{reset_token}',   'User\PasswordsController@showResetForm');
+    Route::name('password.email')->post('password/email',                'User\PasswordsController@triggerPasswordResetEmail');
+    Route::name('password.attempt')->post('password/reset/attempt',      'User\PasswordsController@validatePasswordReset');
+    Route::name('password.attemptPage')->get('password/reset/attempt',   'User\PasswordsController@passwordAttempt');
+
+    Route::name('api_key_email')->post('keys/email',                     'User\Dashboard\KeysController@sendKeyEmail');
+    Route::name('api_key_generate')->get('keys/generate/{email_token}',  'User\Dashboard\KeysController@generateAPIKey');
 
     Route::name('wiki_bibles.one')->get('/wiki/bibles/{id}', 'Bible\BiblesController@show');
     Route::name('wiki_bibles.all')->get('/wiki/bibles', 'Bible\BiblesController@index');
@@ -111,16 +112,28 @@ Localization::localizedRoutesGroup(function () {
 
     Route::group(['middleware' => ['auth']],  function() {
 
-        Route::name('dashboard')->get('home',                 'User\Dashboard\DashboardController@home');
 
-        Route::name('dashboard.projects.index')->get('api/projects',         'User\Dashboard\ProjectsController@index');
-        Route::name('dashboard.projects.create')->get('api/projects/create', 'User\Dashboard\ProjectsController@create');
-        Route::name('dashboard.projects.edit')->get('api/projects/{project_id}/edit', 'User\Dashboard\ProjectsController@edit');
-        Route::name('dashboard.projects.update')->put('api/projects/{project_id}/', 'User\Dashboard\ProjectsController@edit');
+        Route::name('dashboard')->get('home',                                               'User\Dashboard\DashboardController@home');
+        Route::name('dashboard_alt')->get('dashboard',                                      'User\Dashboard\DashboardController@home');
+        Route::name('dashboard.projects.index')->get('api/projects',                        'User\Dashboard\ProjectsController@index');
+        Route::name('dashboard.projects.create')->get('api/projects/create',                'User\Dashboard\ProjectsController@create');
+        Route::name('dashboard.projects.store')->post('api/projects',                       'User\Dashboard\ProjectsController@store');
         Route::name('dashboard.projects.members')->get('api/projects/{project_id}/members', 'User\Dashboard\ProjectsController@members');
+        Route::name('dashboard.projects.edit')->get('api/projects/{project_id}/edit',       'User\Dashboard\ProjectsController@edit');
+        Route::name('dashboard.projects.update')->put('api/projects/{project_id}/',         'User\Dashboard\ProjectsController@update');
 
-        Route::name('profile')->get('profile',                'User\Dashboard\ProfileController@profile');
-        Route::name('profile.update')->post('profile',        'User\Dashboard\ProfileController@updateProfile');
+        // Keys
+        Route::name('dashboard.keys.create')->get('api/keys/create',            'User\Dashboard\KeysController@create');
+        Route::name('dashboard.keys.store')->post('api/keys',                   'User\Dashboard\KeysController@store');
+        Route::name('dashboard.keys.clone')->post('api/keys/{id}/clone',        'User\Dashboard\KeysController@clone');
+        Route::name('dashboard.keys.edit')->get('api/keys/{id}/edit',           'User\Dashboard\KeysController@edit');
+        Route::name('dashboard.keys.update')->put('api/keys/{id}',              'User\Dashboard\KeysController@update');
+        Route::name('dashboard.keys.access')->put('api/keys/{id}/access',       'User\Dashboard\KeysController@access');
+        Route::name('dashboard.keys.delete')->put('api/keys/{id}/delete',       'User\Dashboard\KeysController@delete');
+
+        // Profiles
+        Route::name('profile')->get('profile',                                              'User\Dashboard\ProfileController@profile');
+        Route::name('profile.update')->put('profile/{user_id}',                             'User\Dashboard\ProfileController@updateProfile');
 
     });
 
