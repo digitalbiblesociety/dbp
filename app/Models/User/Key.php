@@ -33,7 +33,6 @@ class Key extends Model
 {
     protected $connection = 'dbp_users';
     protected $table = 'user_keys';
-
     protected $fillable = ['key','name','description','user_id'];
 
     /**
@@ -105,6 +104,6 @@ class Key extends Model
 
     public function access()
     {
-        return $this->belongsToMany(AccessGroup::class, config('database.connections.dbp_users.database').'.access_group_keys','key_id');
+        return $this->belongsToMany(AccessGroup::class, config('database.connections.dbp_users.database').'.access_group_keys');
     }
 }
