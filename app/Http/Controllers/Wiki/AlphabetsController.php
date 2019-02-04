@@ -117,7 +117,7 @@ class AlphabetsController extends APIController
      */
     public function show($id)
     {
-        $cache_string = 'alphabet_' . strtolower($id);
+        $cache_string = 'alphabet:' . strtolower($id);
         $alphabet = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
             $alphabet = Alphabet::with('fonts', 'languages', 'bibles.currentTranslation')->find($id);
             return fractal($alphabet, AlphabetTransformer::class, $this->serializer);

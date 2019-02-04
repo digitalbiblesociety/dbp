@@ -173,7 +173,7 @@ class LanguagesController extends APIController
      */
     public function show($id)
     {
-        $cache_string = 'single_language_'. strtolower($id);
+        $cache_string = 'language:'. strtolower($id);
         $language = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
             $language = Language::where('id', $id)->orWhere('iso', $id)->first();
             if (!$language) {
@@ -199,7 +199,7 @@ class LanguagesController extends APIController
 
     public function valid($id)
     {
-        $cache_string = 'single_language_valid_'. strtolower($id);
+        $cache_string = 'language_single_valid:'. strtolower($id);
         $language = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
             return Language::where('iso', $id)->exists();
         });
