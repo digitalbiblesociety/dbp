@@ -36,6 +36,7 @@ class Kernel extends HttpKernel
         ValidatePostSize::class,
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
+        Cors::class
     ];
 
     /**
@@ -55,8 +56,7 @@ class Kernel extends HttpKernel
         ],
         'api' => [
             'throttle:500,1',
-            'bindings',
-            Cors::class
+            'bindings'
         ],
         //'activated' => [CheckIsUserActivated::class,],
     ];
