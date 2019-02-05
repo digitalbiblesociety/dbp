@@ -78,7 +78,7 @@ class Handler extends ExceptionHandler
             'errors'      => array_wrap($message),
             'status_code' => $exception->getStatusCode(),
             'host_name'   => gethostname()
-        ], http_response_code());
+        ], $exception->getStatusCode());
     }
 
     /**
