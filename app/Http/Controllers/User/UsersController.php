@@ -410,50 +410,6 @@ class UsersController extends APIController
         return $this->reply('User Project connection successfully removed');
     }
 
-
-    /**
-     *
-     * @OA\Get(
-     *     path="/users/geolocate",
-     *     tags={"Users"},
-     *     summary="Geolocate a user by their Ip address",
-     *     description="",
-     *     operationId="v4_user.geolocate",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="object")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(type="object")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(type="object"))
-     *     )
-     * )
-     *
-     * @return mixed
-     */
-    public function geoLocate()
-    {
-        $ip_address  = checkParam('ip_address') ?? request()->getClientIp();
-
-        $geolocation = geoip($ip_address);
-        return $this->reply([
-            'ip'          => $geolocation->getAttribute('ip'),
-            'iso_code'    => $geolocation->getAttribute('iso_code'),
-            'country'     => $geolocation->getAttribute('country'),
-            'city'        => $geolocation->getAttribute('city'),
-            'state'       => $geolocation->getAttribute('state'),
-            'state_name'  => $geolocation->getAttribute('state_name'),
-            'postal_code' => $geolocation->getAttribute('postal_code'),
-            'lat'         => $geolocation->getAttribute('lat'),
-            'lon'         => $geolocation->getAttribute('lon'),
-            'timezone'    => $geolocation->getAttribute('timezone'),
-            'continent'   => $geolocation->getAttribute('continent'),
-        ]);
-    }
-
     public function verify($token)
     {
         $user = User::where('email_token', $token)->first();

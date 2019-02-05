@@ -153,23 +153,6 @@ class UserRoutesTest extends ApiV4Test
 
     /**
      * @category V4_API
-     * @category Route Name: v4_user.geolocate
-     * @category Route Path: https://api.dbp.test/users/geolocate?v=4&key={key}
-     * @see      \App\Http\Controllers\User\UsersController::geoLocate
-     * @group    V4
-     * @group    travis
-     * @test
-     */
-    public function userGeolocate()
-    {
-        $path = route('v4_user.geolocate', $this->params);
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->get($path);
-        $response->assertSuccessful();
-    }
-
-    /**
-     * @category V4_API
      * @category Route Name: v4_user.oAuth
      * @category Route Path: https://api.dbp.test/users/login/{driver}?v=4&key={key}
      * @see      \App\Http\Controllers\User\SocialController::getSocialRedirect

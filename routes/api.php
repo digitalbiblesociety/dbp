@@ -82,7 +82,7 @@ Route::name('v4_bible.books')->get('bibles/{bible_id}/book/{book?}',            
 Route::name('v4_bible_equivalents.all')->get('bible/equivalents',                  'Bible\BibleEquivalentsController@index');
 Route::name('v4_bible.archival')->get('bibles/archival',                           'Bible\BiblesController@archival');
 Route::name('v4_bible.links')->get('bibles/links',                                 'Bible\BibleLinksController@index');
-Route::name('v4_bible_books_all')->get('bibles/books/',                                  'Bible\BooksController@index');
+Route::name('v4_bible_books_all')->get('bibles/books/',                            'Bible\BooksController@index');
 Route::name('v4_bible.one')->get('bibles/{bible_id}',                              'Bible\BiblesController@show');
 Route::name('v4_bible.all')->get('bibles',                                         'Bible\BiblesController@index');
 
@@ -126,7 +126,6 @@ Route::name('v4_user.store')->post('users',                                     
 Route::name('v4_user.show')->get('users/{user_id}',                                'User\UsersController@show');
 Route::name('v4_user.update')->put('users/{user_id}',                              'User\UsersController@update');
 Route::name('v4_user.destroy')->delete('users/{user_id}',                          'User\UsersController@destroy');
-Route::name('v4_user.geolocate')->get('users/geolocate',                           'User\UsersController@geoLocate');
 Route::name('v4_user.login')->post('/login',                                       'User\UsersController@login');
 Route::name('v4_user.oAuth')->get('/login/{driver}',                               'User\SocialController@redirect');
 Route::name('v4_user.oAuthCallback')->get('/login/{driver}/callback',              'User\SocialController@callback');
