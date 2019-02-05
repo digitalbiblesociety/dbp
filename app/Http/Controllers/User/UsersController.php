@@ -98,14 +98,12 @@ class UsersController extends APIController
      */
     public function show($id)
     {
-        $project_limited = $this->projectLimited();
         $available_projects = $this->availableProjects();
 
-        $user = User::with('accounts', 'organizations', 'profile')->when($project_limited, function ($q) use ($available_projects) {
-            $q->whereHas('projectMembers', function ($query) use ($available_projects) {
-                $query->whereIn('project_id', $available_projects);
-            });
-        })->where('id', $id)->first();
+        $user = User::with('accounts', 'organizations', 'profile')
+            ->whereHas('projectMembers', function ($query) use ($available_projects) {
+                    $query->whereIn('project_id', $available_projects);
+            })->where('id', $id)->first();
         if (!$user) {
             return $this->replyWithError(trans('api.users_errors_404', ['param' => $id]));
         }
@@ -350,9 +348,9 @@ class UsersController extends APIController
         }
 
         // If the request does not originate from an admin
-        if ($this->projectLimited()) {
             $user_projects = $user->projects->pluck('id');
-            $developer_projects = $this->user->developer->pluck('id');
+            $developer_projects = $this->user->projectMembers->whereIn('role_id', [2,3,4])->pluck('project_id');
+
             if (!$developer_projects->contains(request()->project_id)) {
                 return $this->setStatusCode(401)->replyWithError(trans('api.projects_developer_not_a_member', [], $GLOBALS['i18n_iso']));
             }
@@ -372,26 +370,11 @@ class UsersController extends APIController
 
                 Mail::to($user->email)->send(new ProjectVerificationEmail($connection, $project));
                 return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_needs_to_connect', [], $GLOBALS['i18n_iso']));
-            }
         }
 
         // Fetch Data
-        $input = $request->all();
+        $user->fill($request->except(['v','key','pretty','project_id']))->save();
 
-        // Process Avatar
-        if ($request->hasFile('avatar')) {
-            //$input['avatar'] = $id.".".$request->file('avatar')->extension();
-            //dd($request->file('avatar'));
-            $image = Image::make($request->file('avatar'));
-            if (isset($request->avatar_crop_width, $request->avatar_crop_height)) {
-                $image->crop($request->avatar_crop_width, $request->avatar_crop_height, $request->avatar_crop_inital_x_coordinate, $request->avatar_crop_inital_y_coordinate);
-            }
-            $image->resize(300, 300);
-            \Storage::disk('public')->put($id.'.'.$request->avatar->extension(), $image->save());
-            $input['avatar'] = \URL::to('/storage/'.$id.'.'.$request->avatar->extension());
-        }
-
-        $user->fill($input)->save();
         if ($this->api) {
             return $this->reply(['success' => 'User updated', 'user' => $user]);
         }
@@ -436,15 +419,6 @@ class UsersController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.auth_user_validation_failed'));
         }
         return false;
-    }
-
-    private function projectLimited()
-    {
-        $this->user = isset($_GET['key']) ? Key::where('key', $_GET['key'])->first()->user : \Auth::user();
-        if ($this->user !== null) {
-            return !($this->user->admin or $this->user->archivist);
-        }
-        return true;
     }
 
 
