@@ -76,7 +76,7 @@ class Handler extends ExceptionHandler
         }
         return response()->json([
             'errors'      => array_wrap($message),
-            'status_code' => response()->getStatusCode(),
+            'status_code' => $exception->getStatusCode(),
             'host_name'   => gethostname()
         ], http_response_code());
     }
