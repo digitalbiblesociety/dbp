@@ -87,15 +87,6 @@ class UsersSeeder extends Seeder
                 ]);
             }
 
-            // 1 percent chance for user to be a developer
-            if (random_int(1, 100) === 100) {
-                $user->keys()->create([
-                    'key'  => unique_random('user_keys', 'key'),
-                    'name' => $faker->colorName . ' ' . $faker->company
-                ]);
-                $role_id = Role::where('slug', 'developer')->first()->id;
-            }
-
             \DB::connection('dbp_users')->table('project_members')->insert([
                 'user_id'    => $user->id,
                 'project_id' => $projects->random()->id,
