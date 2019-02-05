@@ -55,7 +55,7 @@ class Kernel extends HttpKernel
             LocalizationHandler::class,
         ],
         'api' => [
-            'throttle:500,1',
+            'throttle:2000,1',
             'bindings'
         ],
         //'activated' => [CheckIsUserActivated::class,],
