@@ -442,7 +442,7 @@ class BibleFileSetsController extends APIController
 
     /**
      *
-     * @OA\PUT(
+     * @OA\Put(
      *     path="/bibles/filesets/{fileset_id}",
      *     tags={"Bibles"},
      *     summary="Available fileset",
