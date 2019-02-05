@@ -71,7 +71,7 @@ class User extends Authenticatable
      *
      * @method static User whereId($value)
      */
-    public $id;
+    private $id;
 
     /**
      *
