@@ -13,7 +13,7 @@
             </ul>
         </div>
         <form method="POST" action="{{ route('login') }}">
-            <input name="_token" value="{{ csrf_token() }}" type="hidden" />
+            @csrf
             <div class="field">
                 <label class="label" for="email">{{ __('E-Mail Address') }}</label>
                 <div class="control"><input class="input" id="email" type="text" autocomplete="email" name="email" value="{{ old('email') }}" required autofocus placeholder="Email"></div>

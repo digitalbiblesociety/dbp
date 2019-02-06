@@ -10,7 +10,7 @@
         @if (session('status'))<div class="alert alert-success">{{ session('status') }}</div> @endif
 
         <div class="columns">
-            <form class="column is-half is-offset-one-quarter" method="POST" action="{{ route('password.email') }}">
+            <form class="column is-half is-offset-one-quarter" method="POST" action="{{ route('v4_user.password_email') }}">
                 {{ csrf_field() }}
                 <div class="box">
                     <input class="input" type="hidden" name="project_id" value="{{ $project->id ?? null }}" required>

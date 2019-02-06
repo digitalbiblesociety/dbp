@@ -26,6 +26,16 @@ class SyncFcbhApk extends Command
     protected $description = 'Fetches the APKs from the table on apk.fcbh.org and imports them into the database.';
 
     /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
      * Execute the console command.
      *
      * @return mixed

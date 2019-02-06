@@ -21,6 +21,16 @@ class SyncGlobalRecordingsNetwork extends Command
     protected $description = 'Syncs the Listed Resources from the GRN Partner Organization';
 
     /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
      * Execute the console command.
      *
      * @return mixed

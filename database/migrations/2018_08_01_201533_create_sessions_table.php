@@ -19,7 +19,6 @@ class CreateSessionsTable extends Migration
             Schema::connection('dbp_users')->create('sessions', function (Blueprint $table) {
                 $table->string('id')->unique();
                 $table->unsignedInteger('user_id')->nullable();
-                $table->foreign('user_id', 'FK_users_sessions')->references('id')->on(config('database.connections.dbp_users.database').'.users')->onDelete('cascade')->onUpdate('cascade');
                 $table->string('ip_address', 45)->nullable();
                 $table->text('user_agent')->nullable();
                 $table->text('payload');

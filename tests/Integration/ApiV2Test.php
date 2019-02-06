@@ -146,7 +146,6 @@ class ApiV2Test extends TestCase
      */
     public function libraryBookOrder()
     {
-        $this->markTestIncomplete('Inconsistent success, seeds need review');
         $hash_id = BibleVerse::where('id', random_int(1, BibleVerse::count()))->select('hash_id')->first()->hash_id;
         $bible_fileset = BibleFileset::where('hash_id',$hash_id)->first();
 
