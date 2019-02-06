@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\User\UserSetting
  *
- * @mixin \Eloquent
- *
  * @protected $theme
  * @protected $font_type
  * @protected $font_size
@@ -18,11 +16,11 @@ use Illuminate\Database\Eloquent\Model;
  * @protected $readers_mode
  * @protected $justified_text
  * @protected $cross_references
- * @protected $one_verse_per_line
+ * @protected $unformatted
  *
  * @OA\Schema (
  *     type="object",
- *     description="",
+ *     description="Stores user preferences for a specific project",
  *     title="UserSetting",
  *     @OA\Xml(name="UserSetting")
  * )
@@ -30,6 +28,32 @@ use Illuminate\Database\Eloquent\Model;
  */
 class UserSetting extends Model
 {
+    protected $connection = 'dbp_users';
+    protected $hidden = ['project_id'];
+
+    protected $fillable = [
+        'user_id',
+        'project_id',
+        'bible_id',
+        'book_id',
+        'chapter',
+        'theme',
+        'preferred_font',
+        'font_size',
+        'readers_mode',
+        'justified_text',
+        'cross_references',
+        'unformatted'
+    ];
+
+    protected $casts = [
+        'user_id'          => 'integer',
+        'langauge_id'      => 'integer',
+        'readers_mode'     => 'boolean',
+        'justified_text'   => 'boolean',
+        'cross_references' => 'boolean',
+        'unformatted'      => 'boolean',
+    ];
 
     /**
      *
@@ -131,7 +155,7 @@ class UserSetting extends Model
      * @OA\Property(
      *   title="cross_references",
      *   type="boolean",
-     *   description="Show cross_references & Footnotes"
+     *   description="Show cross_references & footnotes"
      * )
      *
      * @method static UserSetting whereCrossReferences($value)

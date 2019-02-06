@@ -3,66 +3,67 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
+use App\Models\Language\Language;
 use App\Models\User\UserSetting;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Validator;
 
 class UserSettingsController extends APIController
 {
 
     /**
-     * Display the specified resource.
+     * Display the specified Settings
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function show($id)
     {
-        return UserSetting::find($id);
+        $project_id = checkParam('project_id', true);
+        return UserSetting::where('user_id',$id)->where('project_id',$project_id)->first();
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store or update newly created Settings
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store($id)
     {
-        return UserSetting::create($request->all());
+        $request = request()->except(['v','key']);
+        $request['user_id'] = $id;
+        $request['language_id'] = Language::where('id',request()->language_id)->select('id')->first()->id;
+
+        $invalid_settings = $this->invalidSettings($request);
+        if ($invalid_settings) {
+            return $invalid_settings;
+        }
+
+        return UserSetting::updateOrCreate(['user_id' => $id],$request);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    private function invalidSettings($request)
     {
-        return UserSetting::where('user_id',$id)->update($request->all());
-    }
-
-    private function validateSettings()
-    {
-        $validator = Validator::make(request()->all(), [
+        $validator = Validator::make($request, [
             'user_id'           => 'required|exists:dbp_users.users,id',
-            'bible_id'          => 'exists:dbp.bibles,id',
-            'book_id'           => 'exists:dbp.books,id',
-            'chapter'           => 'max:150|min:1|integer',
-            'font_size'         => 'integer',
-            'justified_text'    => 'boolean',
-            'theme'             => 'string|nullable',
-            'preferred_font'    => 'string|nullable',
-            'readers_mode'      => 'boolean',
-            'justified_text'    => 'boolean',
-            'cross_references'  => 'boolean',
-            'unformatted'       => 'boolean',
+            'project_id'        => 'required|exists:dbp_users.projects,id',
+            'language_id'       => 'nullable|exists:dbp.languages,id',
+            'bible_id'          => 'nullable|exists:dbp.bibles,id',
+            'book_id'           => 'nullable|exists:dbp.books,id',
+            'chapter'           => 'nullable|max:150|min:1|integer',
+            'theme'             => 'nullable|string',
+            'preferred_font'    => 'nullable|string',
+            'font_size'         => 'nullable|integer',
+            'readers_mode'      => 'nullable|boolean',
+            'justified_text'    => 'nullable|boolean',
+            'cross_references'  => 'nullable|boolean',
+            'unformatted'       => 'nullable|boolean',
         ]);
         if ($validator->fails()) {
             return ['errors' => $validator->errors()];
         }
-        return true;
+        return false;
     }
 
 }
