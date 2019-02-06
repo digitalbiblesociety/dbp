@@ -35,8 +35,7 @@ class Kernel extends HttpKernel
         CheckForMaintenanceMode::class,
         ValidatePostSize::class,
         TrimStrings::class,
-        ConvertEmptyStringsToNull::class,
-        Cors::class
+        ConvertEmptyStringsToNull::class
     ];
 
     /**
@@ -52,13 +51,11 @@ class Kernel extends HttpKernel
             ShareErrorsFromSession::class,
             SubstituteBindings::class,
             VerifyCsrfToken::class,
-            LocalizationHandler::class,
-            Cors::class
+            LocalizationHandler::class
         ],
         'api' => [
             'throttle:2000,1',
-            'bindings',
-            Cors::class
+            'bindings'
         ],
         //'activated' => [CheckIsUserActivated::class,],
     ];
