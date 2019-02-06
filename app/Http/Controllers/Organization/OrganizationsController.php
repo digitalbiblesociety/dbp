@@ -69,29 +69,62 @@ class OrganizationsController extends APIController
      */
     public function index()
     {
+        if (!$this->api) {
+            // If User is authorized pass them on to the Dashboard
+            $user = \Auth::user();
+
+            return view('dashboard.organizations.index', compact('user'));
+        }
+
+        $i10n        = checkParam('iso') ?? 'eng';
+        $i10n_language     = Language::where('iso', $i10n)->first();
+        if (!$i10n_language) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.i10n_errors_404', ['id' => $i10n]));
+        }
         $membership  = checkParam('membership');
         $content     = checkParam('has_content');
         $bibles      = checkParam('bibles');
         $resources   = checkParam('resources');
-        $language_id = $GLOBALS['i18n_id'];
 
-        $cache_string = strtolower($this->v . '_organizations:' . $language_id . $membership . $content . $bibles . $resources);
-        $organizations = \Cache::remember($cache_string, now()->addDay(), function () use ($language_id, $membership, $content, $bibles, $resources) {
+        $cache_string = strtolower($this->v . 'organizations' . $i10n . $membership . $content . $bibles .$resources);
 
-            $organizations = Organization::with('translations')
-                ->includeMemberResources($membership)
-                ->includeLogos($language_id)
-                ->has('translations')
-                ->withCount('bibles')
-                ->when($bibles, function ($q) {
-                    $q->has('bibles')->orHas('links');
-                })->when($resources, function ($q) {
-                    $q->has('resources');
-                })->when($content, function ($q) {
-                    $q->has('resources');
-                })->get();
+        $organizations = \Cache::remember($cache_string, 2400, function () use ($i10n_language, $membership, $content, $bibles, $resources) {
+                if ($membership) {
+                    $membership = Organization::where('slug', $membership)->first();
+                    if (!$membership) {
+                        return $this->setStatusCode(404)->replyWithError(trans('api.organizations_relationship_members_404'));
+                    }
+                    $membership = $membership->id;
+                }
 
-            return fractal($organizations, new OrganizationTransformer(), $this->serializer);
+                // Otherwise Fetch API route
+                $organizations = Organization::with(['translations',
+                    'logos' => function ($query) use ($i10n_language) {
+                        $query->where('language_id', $i10n_language->id);
+                    }])
+                    ->when(
+                        $membership,
+                        function ($q) use ($membership) {
+                            $q->join(
+                                'organization_relationships',
+                                function ($join) use ($membership) {
+                                    $join->on('organizations.id', '=', 'organization_relationships.organization_child_id')
+                                     ->where('organization_relationships.organization_parent_id', $membership);
+                                }
+                            );
+                        }
+                    )->when($bibles, function ($q) {
+                        $q->has('bibles')->orHas('links');
+                    })->when($resources, function ($q) {
+                        $q->has('resources');
+                    })->when($content, function ($q) {
+                        $q->has('bibles')->orHas('links')->orHas('resources');
+                    })->has('translations')->get();
+                if (isset($_GET['count']) || (\Route::currentRouteName() === 'v2_volume_organization_list')) {
+                    $organizations->load('bibles');
+                }
+
+                return fractal($organizations, new OrganizationTransformer(), $this->serializer);
             }
         );
 

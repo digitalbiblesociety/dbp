@@ -53,7 +53,7 @@ class OrganizationTransformer extends BaseTransformer
                 return [
                     'organization_id'   => (string) $organization->id,
                     'organization_name' => (string) $organization->name,
-                    'number_volumes'    => (string) $organization->bibles_count,
+                    'number_volumes'    => (string) $organization->bibles->count(),
                 ];
                 break;
 
@@ -140,7 +140,6 @@ class OrganizationTransformer extends BaseTransformer
                     'email'             => $organization->email,
                     'latitude'          => $organization->latitude,
                     'longitude'         => $organization->longitude,
-                    'bible_count'       => $organization->bibles_count,
                     'colors'            => [
                         'primary'   => $organization->primaryColor,
                         'secondary' => $organization->secondaryColor,

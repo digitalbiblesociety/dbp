@@ -18,31 +18,6 @@ return [
 
 	'languages_create_title'    => 'Create a New Language Entry',
 
-    'home' => [
-        'title' => 'Home'
-    ],
-
-    'form' => [
-        'choose_file' => 'Choose File...',
-        'description' => 'Description'
-    ],
-
-    'projects' => [
-        'index' => [
-            'title' => 'Projects'
-        ],
-        'create' => [
-            'title' => 'Create Project'
-        ],
-        'form' => [
-            'url_site'              => 'Website Url',
-            'name'                  => 'Name',
-            'icon'                  => 'Icon',
-            'logo'                  => 'Logo',
-            'sensitive_description' => 'This project is sensitive and should be hidden by default',
-        ]
-    ],
-
 /*
 |--------------------------------------------------------------------------
 | Laravel Logger Language Lines - Global

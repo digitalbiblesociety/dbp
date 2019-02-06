@@ -14,7 +14,7 @@ class UpdateBibleLinkOrganizations extends Command
      *
      * @var string
      */
-    protected $signature = 'update:bible_links';
+    protected $signature = 'update:bible_links {focus}';
 
     /**
      * The console command description.
@@ -24,11 +24,27 @@ class UpdateBibleLinkOrganizations extends Command
     protected $description = 'Preform Operations on the Bible Links Table';
 
     /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
      * Execute the console command.
      *
      * @return mixed
      */
     public function handle()
+    {
+        //$focus = $this->arguments('focus');
+        $this->organizationFocus();
+    }
+
+    public function organizationFocus()
     {
         $update_count = 0;
         $bible_links = BibleLink::where('organization_id', null)->get();
@@ -67,15 +83,17 @@ class UpdateBibleLinkOrganizations extends Command
             // Get User Input
             $confirmed = false;
             $organization_id = $this->ask('Please enter the number of the Closest Match, if none just hit enter');
-            if ($organization_id === 0) {
+            if ($organization_id == 0) {
                 $skippedProviders[] = $bible_link->provider;
                 continue;
             }
 
-            while ($confirmed === false) {
+            while ($confirmed == false) {
                 // Validate Input
-                if (!\in_array($organization_id, $organizations->pluck('organization_id')->toArray())) {
-                    $confirmed = true;
+                if (!in_array($organization_id, $organizations->pluck('organization_id')->toArray())) {
+                    if ($this->confirm("Your selection $organization_id is not in the recommendations, is that your intention? [yes|no]")) {
+                        $confirmed = true;
+                    }
                 }
 
                 // Save organization_id

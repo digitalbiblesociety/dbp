@@ -371,42 +371,19 @@ class Bible extends Model
         return $this->hasMany(Video::class)->orderBy('order', 'asc');
     }
 
-    public function scopeWithRequiredFilesets($query, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude)
+    public function scopeWithRequiredFilesets($query, $asset_id, $access_control, $media)
     {
-        return $query->whereHas('filesets', function ($q) use ($asset_id,$access_control,$media, $media_exclude, $size, $size_exclude) {
-
-            $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
+        return $query->whereHas('filesets', function ($q) use ($asset_id,$access_control, $media) {
             if ($asset_id) {
                 $q->where('asset_id', $asset_id);
             }
+                $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
             if($media) {
                 $q->where('bible_filesets.set_type_code',$media);
             }
-            if($media_exclude) {
-                $q->where('bible_filesets.set_type_code', '!=', $media_exclude);
-            }
-            if($size) {
-                $q->where('bible_filesets.set_size_code', '=', $size);
-            }
-            if($size_exclude) {
-                $q->where('bible_filesets.set_size_code', '!=', $size_exclude);
-            }
-
-        })->with(['filesets' => function ($q) use ($asset_id, $access_control, $media, $media_exclude, $size, $size_exclude) {
+        })->with(['filesets' => function ($q) use ($asset_id, $access_control) {
             if ($asset_id) {
                 $q->where('asset_id', $asset_id);
-            }
-            if($media) {
-                $q->where('bible_filesets.set_type_code',$media);
-            }
-            if($media_exclude) {
-                $q->where('bible_filesets.set_type_code', '!=', $media_exclude);
-            }
-            if($size) {
-                $q->where('bible_filesets.set_size_code', '=', $size);
-            }
-            if($size_exclude) {
-                $q->where('bible_filesets.set_size_code', '!=', $size_exclude);
             }
             $q->whereIn('bible_filesets.hash_id', $access_control->hashes)
               ->select(['id','set_type_code','set_size_code','asset_id']);

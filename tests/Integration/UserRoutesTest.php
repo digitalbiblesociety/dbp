@@ -115,7 +115,7 @@ class UserRoutesTest extends ApiV4Test
 
         $path = route('v4_user.update', array_merge(['user_id' => $new_created_user->id,'project_id' => $project_id], $this->params));
         echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->put($path, ['notes' => 'A user updated by Feature tests', 'email' => 'new_email@gmail.com']);
+        $response = $this->withHeaders($this->params)->put($path, ['notes' => 'A user updated by Feature tests']);
         $response->assertSuccessful();
 
         $path = route('v4_user.show', array_merge(['user_id' => $new_created_user->id,'project_id' => $project_id], $this->params));
@@ -149,6 +149,23 @@ class UserRoutesTest extends ApiV4Test
         $response = $this->withHeaders($this->params)->post($path, $login);
         $response->assertSuccessful();
         $user->delete();
+    }
+
+    /**
+     * @category V4_API
+     * @category Route Name: v4_user.geolocate
+     * @category Route Path: https://api.dbp.test/users/geolocate?v=4&key={key}
+     * @see      \App\Http\Controllers\User\UsersController::geoLocate
+     * @group    V4
+     * @group    travis
+     * @test
+     */
+    public function userGeolocate()
+    {
+        $path = route('v4_user.geolocate', $this->params);
+        echo "\nTesting: $path";
+        $response = $this->withHeaders($this->params)->get($path);
+        $response->assertSuccessful();
     }
 
     /**

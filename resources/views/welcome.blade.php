@@ -6,14 +6,10 @@
         'title'     => trans('app.site_name'),
         'subtitle'  => trans('app.site_description'),
         'size'      => 'medium',
-        'image'     => '/images/dbp_icon.svg',
-        'actions'   => [
-            route('docs.getting_started') => 'Get Started'
-        ]
+        'image'     => '/images/dbp_icon.svg'
     ])
 
 <section class="container">
-
     <div class="columns features level">
 
         <div class="column is-4 level-item">

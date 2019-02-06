@@ -25,7 +25,6 @@ class BooksController extends APIController
      *
      * @OA\Get(
      *     path="/bibles/books/",
-     *
      *     tags={"Bibles"},
      *     summary="Returns the books of the Bible",
      *     description="Returns all of the books of the Bible both canonical and deuterocanonical",
@@ -48,7 +47,7 @@ class BooksController extends APIController
      */
     public function index()
     {
-        $books = \Cache::rememberForever('v4_books:index', function () {
+        $books = \Cache::rememberForever('v4_books_index', function () {
             $books = Book::orderBy('protestant_order')->get();
             return fractal($books, new BooksTransformer(), $this->serializer);
         });
@@ -107,20 +106,16 @@ class BooksController extends APIController
      */
     public function show($id)
     {
-        $fileset_type = checkParam('fileset_type', true);
+        $fileset_type = checkParam('fileset_type');
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        $cache_string = strtolower('v4_books:'.$asset_id.':'.$id.'_'.$fileset_type);
-        $books = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset_type, $asset_id, $id) {
-            $fileset = BibleFileset::with('bible')->where('id', $id)->where('asset_id', $asset_id)->where('set_type_code', $fileset_type)->first();
+        $cache_string = strtolower('bible_books_'.$id.$fileset_type.$asset_id);
+        $books = \Cache::remember($cache_string, 2400, function () use ($fileset_type, $asset_id, $id) {
+            $fileset = BibleFileset::where('id', $id)->where('asset_id', $asset_id)->where('set_type_code', $fileset_type)->first();
             if (!$fileset) {
                 return $this->replyWithError('Fileset Not Found');
             }
             $is_plain_text = BibleVerse::where('hash_id', $fileset->hash_id)->exists();
-
-            $versification = optional($fileset->bible->first())->versification;
-            $book_order_column_exists = \Schema::connection('dbp')->hasColumn('books', $versification.'_order');
-            $book_order_column = $book_order_column_exists ? 'books.'.$versification.'_order' : 'books.protestant_order';
 
             $dbp_database = config('database.connections.dbp.database');
             $books = \DB::connection('dbp')->table($dbp_database.'.bible_filesets as fileset')
@@ -135,17 +130,16 @@ class BooksController extends APIController
                 }, function ($query) use ($fileset) {
                     $this->compareFilesetToFileTableBooks($query, $fileset->hash_id);
                 })
-                ->orderBy($book_order_column)->select([
+                ->orderBy('books.protestant_order')->select([
                     'books.id',
                     'books.id_usfx',
                     'books.id_osis',
                     'books.book_testament',
                     'books.testament_order',
+                    'books.protestant_order',
                     'books.book_group',
                     'bible_books.chapters',
-                    'bible_books.name',
-                    'books.protestant_order',
-                    $book_order_column.' as book_order_column'
+                    'bible_books.name'
                 ])->get();
 
             return fractal($books, new BooksTransformer(), $this->serializer);
