@@ -68,6 +68,7 @@ class CreateOrganizationsTable extends Migration
                 $table->foreign('organization_parent_id', 'FK_organizations_relationships_parent_id')->references('id')->on(config('database.connections.dbp.database').'.organizations');
                 $table->integer('organization_child_id')->unsigned();
                 $table->foreign('organization_child_id', 'FK_organizations_relationships_child_id')->references('id')->on(config('database.connections.dbp.database').'.organizations');
+                $table->string('relationship_id');
                 $table->string('type');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));

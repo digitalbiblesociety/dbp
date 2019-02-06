@@ -21,9 +21,7 @@ class DashboardController extends APIController
     public function home()
     {
         $user = Auth::user() ?? $this->user;
-        if ($user->isAdmin()) {
-            return view('dashboard.admin', compact('user'));
-        }
         return view('dashboard.home', compact('user'));
     }
+
 }

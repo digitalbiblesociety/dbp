@@ -22,16 +22,6 @@ class GenerateWorldFactbook extends Command
     protected $description = 'Create JSON files of the world factbook information';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed

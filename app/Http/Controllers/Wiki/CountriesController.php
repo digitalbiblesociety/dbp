@@ -79,9 +79,9 @@ class CountriesController extends APIController
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $languages = checkParam('include_languages');
 
-        $cache_string = strtolower('countries' . $GLOBALS['i18n_iso'] . $filesets . $asset_id . $languages);
+        $cache_string = strtolower('countries_' . $GLOBALS['i18n_iso'] . $filesets . $asset_id . $languages);
 
-        $countries = \Cache::remember($cache_string, 1600, function () use ($filesets, $asset_id, $languages) {
+        $countries = \Cache::remember($cache_string, now()->addDay(), function () use ($filesets, $asset_id, $languages) {
             $countries = Country::with('currentTranslation')->when($filesets, function ($query) use ($asset_id) {
                 $query->whereHas('languages.bibles.filesets', function ($query) use ($asset_id) {
                     if ($asset_id) {
@@ -119,8 +119,8 @@ class CountriesController extends APIController
      */
     public function joshuaProjectIndex()
     {
-        $cache_string = 'countries_jp_' . strtolower($GLOBALS['i18n_iso']);
-        $joshua_project_countries = \Cache::remember($cache_string, 1600, function () {
+        $cache_string = 'countries_jp:' . strtolower($GLOBALS['i18n_iso']);
+        $joshua_project_countries = \Cache::remember($cache_string, now()->addDay(), function () {
             $countries = JoshuaProject::with(['country',
                 'translations' => function ($query) {
                     $query->where('language_id', $GLOBALS['i18n_id']);
@@ -185,8 +185,8 @@ class CountriesController extends APIController
      */
     public function show($id)
     {
-        $cache_string = strtolower('countries_'. $id . $GLOBALS['i18n_iso']);
-        $country = \Cache::remember($cache_string, 1600, function () use ($id) {
+        $cache_string = strtolower('countries:'. $id .'_'. $GLOBALS['i18n_iso']);
+        $country = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
             $country = Country::with('languagesFiltered.bibles.translations')->find($id);
             if (!$country) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['id' => $id]));

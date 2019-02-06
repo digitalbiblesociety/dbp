@@ -7,6 +7,7 @@ use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
 use App\Models\Organization\Asset;
 use App\Traits\CallsBucketsTrait;
+use Illuminate\Support\Facades\Cache;
 
 class ApiMetadataController extends APIController
 {
@@ -192,11 +193,12 @@ class ApiMetadataController extends APIController
         }
 
         $asset = Asset::where('id', $asset_id)->first();
+        $url = parse_url($asset->base_name ?? config('app.url'));
         $libraryAsset = [
             [
-                'server'    => $asset->base_name,
+                'server'    => $url['host'] ?? 'dbp4.org',
                 'root_path' => '/audio',
-                'protocol'  => $asset->protocol,
+                'protocol'  => $asset->protocol ?? 'https',
                 'CDN'       => $asset->cdn ?? '1',
                 'priority'  => $asset->priority ?? '1',
                 'volume_id' => $dam_id,
@@ -296,4 +298,14 @@ class ApiMetadataController extends APIController
 
         return $this->reply($versionReplies[$this->v]);
     }
+
+    public function refreshDevCache()
+    {
+        if(config('app.server_name') != 'APP_DEV') {
+            return $this->setStatusCode(422)->replyWithError('This is not the dev server');
+        }
+        Cache::flush();
+        return $this->reply('Cache Flushed successfully');
+    }
+
 }

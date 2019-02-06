@@ -73,8 +73,8 @@ class BooksControllerV2 extends APIController
                 break;
         }
 
-        $cache_string = strtolower('v2_library_book_' . $id . $asset_id . $fileset . $testament);
-        $libraryBook = \Cache::remember($cache_string, 1600,
+        $cache_string = strtolower('v2_library_book:' . $asset_id .':'. $id .':' . $fileset . '_' . $testament);
+        $libraryBook = \Cache::remember($cache_string, now()->addDay(),
             function () use ($id, $fileset, $testament) {
 
                 if ($fileset->set_type_code === 'text_plain') {
@@ -132,7 +132,7 @@ class BooksControllerV2 extends APIController
                 $testament = 'NT';
         }
         $cache_string = strtolower('v2_library_bookOrder_' . $id . $asset_id . $fileset . $testament);
-        $libraryBook = \Cache::remember($cache_string, 1600,
+        $libraryBook = \Cache::remember($cache_string, now()->addDay(),
             function () use ($id, $fileset, $testament) {
                 $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select('book_id', 'chapter')->distinct()->get();
                 $books = Book::whereIn('id', $booksChapters->pluck('book_id')->unique()->toArray())
@@ -201,7 +201,7 @@ class BooksControllerV2 extends APIController
         }
 
         $cache_string = 'v2_library_bookName_' . strtolower($iso);
-        $libraryBookName = \Cache::remember($cache_string, 1600, function () use ($language) {
+        $libraryBookName = \Cache::remember($cache_string, now()->addDay(), function () use ($language) {
             $bookTranslations = BookTranslation::where('language_id', $language->id)->with('book')->select(['name', 'book_id'])->get()->pluck('name', 'book.id_osis');
             $bookTranslations['AL'] = 'Alternative';
             $bookTranslations['ON'] = 'Old and New Testament';
@@ -266,8 +266,8 @@ class BooksControllerV2 extends APIController
         $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $book_id   = checkParam('book_id');
 
-        $cache_string = strtolower('v2_library_chapter_' . $id . $asset_id . $book_id);
-        $chapters = \Cache::remember($cache_string, 1600, function () use ($id, $asset_id, $book_id) {
+        $cache_string = strtolower('v2_library_chapter:' . $asset_id . ':' . $id . '_' . $book_id);
+        $chapters = \Cache::remember($cache_string, now()->addDay(), function () use ($id, $asset_id, $book_id) {
             $fileset = BibleFileset::where(function ($query) use($id) {
                 $query->where('id', $id)->orWhere('id', substr($id, 0, -4));
             })->where('set_type_code', 'text_plain')->where('asset_id', $asset_id)->first();

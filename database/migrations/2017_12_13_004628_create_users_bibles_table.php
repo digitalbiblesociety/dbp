@@ -202,8 +202,8 @@ class CreateUsersBiblesTable extends Migration
             Schema::connection('dbp_users')->create('access_group_keys', function (Blueprint $table) {
                 $table->integer('access_group_id')->unsigned();
                 $table->foreign('access_group_id', 'FK_access_groups_access_group_keys')->references('id')->on(config('database.connections.dbp.database').'.access_groups')->onUpdate('cascade')->onDelete('cascade');
-                $table->string('key_id', 64);
-                $table->foreign('key_id', 'FK_user_keys_access_group_keys')->references('key')->on(config('database.connections.dbp_users.database').'.user_keys')->onUpdate('cascade')->onDelete('cascade');
+                $table->integer('key_id')->unsigned();
+                $table->foreign('key_id', 'FK_user_keys_access_group_keys')->references('id')->on(config('database.connections.dbp_users.database').'.user_keys')->onUpdate('cascade')->onDelete('cascade');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });

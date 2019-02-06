@@ -42,7 +42,7 @@
         "tom-lingham/searchy": "2.*",
         "torann/geoip": "^1.0",
         "yosymfony/toml": "^1.0",
-        "zircote/swagger-php": "^3.0@dev"
+        "zircote/swagger-php": "^3.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",
