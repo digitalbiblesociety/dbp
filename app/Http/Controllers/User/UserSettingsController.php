@@ -33,7 +33,7 @@ class UserSettingsController extends APIController
     {
         $request = request()->except(['v','key']);
         $request['user_id'] = $id;
-        $request['language_id'] = Language::where('id',request()->language_id)->select('id')->first()->id;
+        $request['language_id'] = optional(Language::where('id',request()->language_id)->select('id')->first())->id;
 
         $invalid_settings = $this->invalidSettings($request);
         if ($invalid_settings) {

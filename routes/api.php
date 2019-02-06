@@ -147,6 +147,10 @@ Route::name('v4_highlights.store')->post('users/{user_id}/highlights',          
 Route::name('v4_highlights.update')->put('users/{user_id}/highlights/{id}',        'User\HighlightsController@update');
 Route::name('v4_highlights.destroy')->delete('users/{user_id}/highlights/{id}',    'User\HighlightsController@destroy');
 
+// VERSION 4 | User Settings
+Route::name('v4_UserSettings.show')->get('users/{user_id}/settings',               'User\UserSettingsController@show');
+Route::name('v4_UserSettings.store')->post('users/{user_id}/settings',             'User\UserSettingsController@store');
+
 // VERSION 4 | Community
 Route::name('v4_articles.index')->get('articles',                                  'User\ArticlesController@index');
 Route::name('v4_articles.show')->get('articles/{id}',                              'User\ArticlesController@show');
