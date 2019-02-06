@@ -51,6 +51,30 @@ class BiblesController extends APIController
      *          @OA\Schema(type="string"),
      *          description="The asset_id to filter results by. There are two buckets provided `dbp.test` & `dbs-web`"
      *     ),
+     *     @OA\Parameter(
+     *          name="media",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="Will filter bibles based upon the media type of their filesets"
+     *     ),
+     *     @OA\Parameter(
+     *          name="media_exclude",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="Will exclude bibles based upon the media type of their filesets"
+     *     ),
+     *     @OA\Parameter(
+     *          name="size",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="Will filter bibles based upon the size type of their filesets"
+     *     ),
+     *     @OA\Parameter(
+     *          name="size_exclude",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="Will exclude bibles based upon the size type of their filesets"
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -77,6 +101,9 @@ class BiblesController extends APIController
         $country            = checkParam('country');
         $asset_id           = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $media              = checkParam('media');
+        $media_exclude      = checkParam('media_exclude');
+        $size               = checkParam('size');
+        $size_exclude       = checkParam('size_exclude');
 
         if($media) {
             $media_types = BibleFilesetType::select('set_type_code')->get();
@@ -87,9 +114,9 @@ class BiblesController extends APIController
         }
 
         $access_control = $this->accessControl($this->key);
-        $cache_string = strtolower('bibles'.$language_code.$organization.$country.$asset_id.$access_control->string.$media);
-        $bibles = \Cache::remember($cache_string, 1600, function () use ($language_code, $organization, $country, $asset_id, $access_control, $media) {
-            $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $media)
+        $cache_string = strtolower('bibles:'.$language_code.$organization.$country.$asset_id.$access_control->string.$media.$media_exclude.$size.$size_exclude);
+        $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude) {
+            $bibles = Bible::withRequiredFilesets($asset_id, $access_control, $media, $media_exclude, $size, $size_exclude)
                 ->leftJoin('bible_translations as ver_title', function ($join) {
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
                 })
@@ -164,7 +191,7 @@ class BiblesController extends APIController
 
         $language = $iso ? Language::where('iso', $iso)->with('dialects')->first() : null;
         $cache_string = strtolower('bibles_archival'.$iso.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id);
-        $bibles = \Cache::remember($cache_string, 1600, function () use ($language, $organization_id, $country, $include_regionInfo, $dialects, $asset_id) {
+        $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language, $organization_id, $country, $include_regionInfo, $dialects, $asset_id) {
             $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {
@@ -259,8 +286,8 @@ class BiblesController extends APIController
     public function show($id)
     {
         $access_control = $this->accessControl($this->key);
-        $cache_string = strtolower('bible_show_response'.$id.$access_control->string);
-        $bible = \Cache::remember($cache_string, 2400, function() use($access_control,$id) {
+        $cache_string = strtolower('bible_show:'.$id.':'.$access_control->string);
+        $bible = \Cache::remember($cache_string, now()->addDay(), function() use($access_control,$id) {
             return Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
                 'filesets' => function ($query) use ($access_control) {
                     $query->whereIn('bible_filesets.hash_id', $access_control->hashes);

@@ -160,21 +160,27 @@
                     </div>
                 </div>
 
-                <form action="{{ route('api_key_email') }}" method="POST">
-                    {{ csrf_field() }}
-                    <div id="signup">
-                        <input id="request" placeholder="Request Api Access" spellcheck="false" type="email">
-                        <div class="email-send"></div>
-                    </div>
-                </form>
+                <div class="has-text-centered">
+                @if(\Auth::user())
+                    @if(\Auth::user()->keys()->count() === 0)
+                        <form action="{{ route('api_key_email') }}" method="POST">
+                            {{ csrf_field() }}
+                            <input type="text" name="email" value="{{ Auth::user()->email }}" />
+                            <input type="submit" />
+                        </form>
+                    @else
+                        <pre>{{ \Auth::user()->keys()->first() }}</pre>
+                    @endif
+                @else
+                    <h4>Please Log in to have access to the API key generation</h4>
+                @endif
+                </div>
 
                 <h4 class="title">The API Structure</h4>
                 <h2 class="subtitle">Bibles and Filesets</h2>
 
                 <div class="ribbon">If you want to jump right in to queries you can check out the <a href="{{ route('swagger_v4') }}">API reference documentation.</a></div>
-
                 <p>Your first call to the DBP will probably be to /bibles. All Biblical content whether it be Audio, Video, or text is nested within bible_id.</p>
-
                 <p>All calls within version 4 of the API are separated into three general categories: Bibles, Wiki, and Community.</p>
 
                 <h4>Bibles</h4>

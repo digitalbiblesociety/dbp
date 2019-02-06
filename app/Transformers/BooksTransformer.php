@@ -154,7 +154,7 @@ class BooksTransformer extends BaseTransformer
                     'name'            => $book->name,
                     'testament'       => $book->book_testament,
                     'testament_order' => $book->testament_order,
-                    'book_order'      => $book->protestant_order,
+                    'book_order'      => $book->book_order_column,
                     'book_group'      => $book->book_group,
                     'chapters'        => array_map('\intval', explode(',', $book->chapters)),
                 ];

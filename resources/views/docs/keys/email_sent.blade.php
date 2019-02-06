@@ -2,22 +2,20 @@
 
 @section('head')
     <style>
-
-        svg{
-            width:100%;
-            height:100%;
-            visibility:hidden;
-
-        }
-
-        .xx{
-            pointer-events:fill;
+        .email-success {
+            margin-top:75px;
         }
     </style>
 @endsection
 
 @section('content')
 
+    <div class="container">
+        <div class="box email-success">
+            <h1 class="has-text-centered is-size-4">Email sent succesfully</h1>
+            <p></p>
+        </div>
+    </div>
 
 @endsection
 

@@ -42,7 +42,6 @@ class OrganizationTranslation extends Model
     protected $primaryKey = 'organization_id';
     protected $fillable = ['iso', 'name','description'];
     protected $table = 'organization_translations';
-    //public $incrementing = "false";
     protected $hidden = ['created_at','updated_at','organization_id','description'];
 
     /**

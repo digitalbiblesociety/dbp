@@ -53,8 +53,8 @@ class LibraryController extends APIController
         $fileset_id = checkParam('dam_id');
         $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        $cache_string = 'v2_library_metadata' . strtolower($fileset_id);
-        $metadata = Cache::remember($cache_string, 1600, function () use ($fileset_id, $asset_id) {
+        $cache_string = 'v2_library_metadata:' . strtolower($fileset_id);
+        $metadata = Cache::remember($cache_string, now()->addDay(), function () use ($fileset_id, $asset_id) {
 
             $metadata = BibleFileset::where('asset_id', $asset_id)
                 ->when($fileset_id, function ($q) use ($fileset_id) {
@@ -144,8 +144,8 @@ class LibraryController extends APIController
         $name = checkParam('name');
         $sort = checkParam('sort_by');
 
-        $cache_string = strtolower('libraryVersion'.$code.$name.$sort);
-        $versions = \Cache::remember($cache_string, 2800, function () use ($code, $sort, $name) {
+        $cache_string = strtolower('v2_library_version:'.$code.'_'.$name.'_'.$sort);
+        $versions = \Cache::remember($cache_string, now()->addDay(), function () use ($code, $sort, $name) {
             $english_id = Language::where('iso', 'eng')->first()->id ?? '6414';
 
             $versions = BibleFileset::where('asset_id', config('filesystems.disks.s3_fcbh.bucket'))
@@ -211,18 +211,19 @@ class LibraryController extends APIController
      */
     public function history()
     {
-        if (!$this->api) {
-            return view('bibles.history');
-        }
-
         $limit  = checkParam('limit') ?? 500;
-        $filesets = BibleFileset::with('bible.language')->has('bible.language')->take($limit)->get();
-        $filesets->map(function ($fileset) {
-            $fileset->v2_id = strtoupper($fileset->bible->first()->language->iso.substr($fileset->bible->first()->id, 3, 3));
-            return $fileset;
+        $cache_string = strtolower('v2_library_history:'.$limit);
+
+        $filesets = \Cache::remember($cache_string, now()->addDay(), function () use ($limit) {
+            $filesets = BibleFileset::with('bible.language')->has('bible.language')->take($limit)->get();
+            return $filesets->map(function ($fileset) {
+                $v2_id = $fileset->bible->first()->language->iso . substr($fileset->bible->first()->id, 3, 3);
+                $fileset->v2_id = strtoupper($v2_id);
+                return $fileset;
+            });
         });
 
-        return $this->reply(fractal($filesets, new LibraryVolumeTransformer())->serializeWith($this->serializer));
+        return $this->reply(fractal($filesets, new LibraryVolumeTransformer(), $this->serializer));
     }
 
     /**

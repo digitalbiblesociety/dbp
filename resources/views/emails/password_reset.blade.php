@@ -23,6 +23,10 @@
 <body>
     <h2>{{ trans('auth.reset_email_heading', [], $project->iso) }}</h2>
     <p>{{ trans('auth.reset_email_body', ['project_name' => $project->name], $project->iso) }}</p>
-    <p><a class="button" href="{{ $project->url_reset ?? config('app.url').'/password/reset' }}/{{ $user->token}}">{{ trans('auth.reset_email_action', [], $project->iso) }}</a></p>
+    <p>
+        <a class="button" href="{{ $project->url_reset ?? config('app.url').'/password/reset' }}/{{ $user->token}}">
+            {{ trans('auth.reset_email_action', [], $project->iso) }}
+        </a>
+    </p>
 </body>
 </html>

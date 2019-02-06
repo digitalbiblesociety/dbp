@@ -7,7 +7,7 @@
 
 <h1>So you Requested An API key</h1>
 
-<a href="{{ route('api_key_generate', ['email_token' => $email_token]) }}">Click Me</a>
+<a href="{{ route('api_key_generate', ['email_token' => $token]) }}">Click Me</a>
 
 </body>
 </html>
