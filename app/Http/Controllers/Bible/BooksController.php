@@ -107,7 +107,7 @@ class BooksController extends APIController
      */
     public function show($id)
     {
-        $fileset_type = checkParam('fileset_type');
+        $fileset_type = checkParam('fileset_type', true);
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
         $cache_string = strtolower('v4_books:'.$asset_id.':'.$id.'_'.$fileset_type);
