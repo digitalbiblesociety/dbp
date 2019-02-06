@@ -55,7 +55,8 @@ class Kernel extends HttpKernel
         ],
         'api' => [
             'throttle:2000,1',
-            'bindings'
+            'bindings',
+            Cors::class
         ],
         //'activated' => [CheckIsUserActivated::class,],
     ];
