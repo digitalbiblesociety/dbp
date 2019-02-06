@@ -53,10 +53,12 @@ class Kernel extends HttpKernel
             SubstituteBindings::class,
             VerifyCsrfToken::class,
             LocalizationHandler::class,
+            Cors::class
         ],
         'api' => [
             'throttle:2000,1',
-            'bindings'
+            'bindings',
+            Cors::class
         ],
         //'activated' => [CheckIsUserActivated::class,],
     ];
