@@ -13,26 +13,30 @@
 To use the PHP SDK, you'll want to use Composer to require it:
 
 ```bash
-composer require digitalbiblesociety/@todo
+composer require digitakbiblesociety/@todo
 ```
 
 Now, you can make calls to the API using it. First, authenticate by passing the desired URL and your API key:
 
 ```php
-DbsSwagger\Configuration::$access_token = 'your API key here';
+$apiInstance = new DbpPhpSdk\Client\Api\APIApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client()
+);
+$v = 56; // int | The Version Number
+$key = "key_example"; // string | The Key granted to the api user upon sign up
+$pretty = true; // bool | Setting this param to true will add human readable whitespace to the return
+$format = "format_example"; // string | Setting this param to true will add format the return as a specific file type. The currently supported return types are `xml`, `csv`, `json`, and `yaml`
 
-// For Sandbox ? @todo
-$apiClient = new DbsSwagger\ApiClient("https://api-sandbox.dbp4.org/");
-
-// For production
-$apiClient = new DbsSwagger\ApiClient("https://api.dbp4.org");
+try {
+    $result = $apiInstance->v4ApiGitVersion($v, $key, $pretty, $format);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling APIApi->v4ApiGitVersion: ', $e->getMessage(), PHP_EOL;
+}
 ```
 
-Once you have a functioning API client, you can make calls using it:
-
-```php
-
-```
 
 See the @todo to find documentation of which calls are available to you.
 
@@ -56,7 +60,7 @@ For example, if you're pulling the client directly in via the browser (instead o
     <script src="https://unpkg.com/swagger-client@3.8.23/browser/index.js" type="text/javascript"></script>
     <script>
         SwaggerClient({
-            url: './dbp-swagger.json'
+            url: 'https://api.dbp4.org/swagger_docs.json'
         }).then((client) => {
             client
                 .apis
@@ -82,7 +86,7 @@ For example, if you're pulling the client directly in via the browser (instead o
 </html>
 ```
 
-@todo a list of the possible "tags" and "operations"
+For a list of possible tags and operations, visit the [Swagger documentation](https://api.dbp4.org/docs/swagger/v4). The initial entries you'll see on that page (Bibles, Users, etc.) will each represent a "tag", and the entries underneath each tag (e.g. `get /timestamps`) will each, on their detail page, show the "route name" (the operation name, in our example above).
 
 
 ## Un-supported
