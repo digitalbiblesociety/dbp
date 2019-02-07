@@ -141,3 +141,5 @@ Localization::localizedRoutesGroup(function () {
 
 
 });
+
+Route::name('api_status')->get('/api/status', 'ApiMetadataController@getStatus');

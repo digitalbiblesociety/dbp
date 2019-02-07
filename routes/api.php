@@ -179,7 +179,6 @@ Route::name('v4_resources.store')->post('resources',                            
 Route::name('v4_resources.destroy')->delete('resources/{resource_id}',             'Organization\ResourcesController@destroy');
 
 // VERSION 4 | API METADATA
-Route::name('v4_api.gitVersion')->get('/api/status',                               'ApiMetadataController@getStatus');
 Route::name('v4_api.versions')->get('/api/versions',                               'HomeController@versions');
 Route::name('v4_api.buckets')->get('/api/buckets',                                 'HomeController@buckets');
 Route::name('v4_api.stats')->get('/stats',                                         'HomeController@stats');
