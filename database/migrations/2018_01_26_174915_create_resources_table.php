@@ -60,43 +60,6 @@ class CreateResourcesTable extends Migration
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
-
-        if (!Schema::connection('dbp')->hasTable('connections')) {
-            Schema::connection('dbp')->create('connections', function (Blueprint $table) {
-                $table->increments('id');
-                $table->integer('organization_id')->unsigned();
-                $table->foreign('organization_id', 'FK_organizations_connections')->references('id')->on(config('database.connections.dbp.database').'.organizations')->onUpdate('cascade')->onDelete('cascade');
-                $table->string('site_url');
-                $table->string('title');
-                $table->string('cover_thumbnail')->nullable();
-                $table->string('date')->nullable();
-                $table->string('type');
-                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            });
-        }
-
-        if (!Schema::connection('dbp')->hasTable('connection_translations')) {
-            Schema::connection('dbp')->create('connection_translations', function (Blueprint $table) {
-                $table->integer('language_id')->unsigned();
-                $table->foreign('language_id', 'FK_languages_connection_translations')->references('id')->on(config('database.connections.dbp.database').'.languages')->onDelete('cascade')->onUpdate('cascade');
-                $table->integer('resource_id')->unsigned();
-                $table->foreign('resource_id', 'FK_resources_connection_translations')->references('id')->on(config('database.connections.dbp.database').'.resources')->onUpdate('cascade')->onDelete('cascade');
-                $table->boolean('vernacular');
-                $table->boolean('tag');
-                $table->string('title');
-                $table->text('description')->nullable();
-                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            });
-        }
-
-        if (!Schema::connection('dbp')->hasTable('resource_connections')) {
-            Schema::connection('dbp')->create('resource_connections', function (Blueprint $table) {
-                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            });
-        }
     }
 
     /**
