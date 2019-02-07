@@ -4,6 +4,8 @@ namespace App\Http\Controllers\User\Dashboard;
 
 use App\Http\Controllers\APIController;
 use App\Mail\EmailVerification;
+use App\Models\User\AccessGroupFileset;
+use App\Models\User\AccessGroupKey;
 use App\Models\User\Key;
 use App\Models\User\User;
 use Illuminate\Http\Request;
@@ -16,65 +18,51 @@ class KeysController extends APIController
     {
         $user = Auth::user();
         $key = Key::with('access')->where('id',$request->id)->where('user_id',$user->id)->first();
+
         $new_key = $key->replicate(['id']);
+        $new_key->key = unique_random('user_keys', 'key', 24);
+        $new_key->save();
 
-        return view('dashboard.keys.create');
-    }
-
-    public function edit()
-    {
-        return view('dashboard.keys.edit');
-    }
-
-    public function update()
-    {
-        return view('dashboard.keys.create');
-    }
-
-    public function access()
-    {
-        return view('dashboard.keys.access');
-    }
-
-    public function delete()
-    {
         return view('dashboard.keys.create');
     }
 
     public function create()
     {
-        $user = Auth::user();
-        $keys = Key::with('access')->where('user_id',$user->id)->get();
-        return view('dashboard.keys.create', compact('keys'));
+        return view('dashboard.keys.create');
+    }
+
+    public function delete($id)
+    {
+        $key = Key::where('id',$id)->first();
+        return view('dashboard.keys.delete', compact('key'));
+    }
+
+    public function destroy($id)
+    {
+        $key = Key::where('id',$id)->where('user_id',Auth::user()->id)->first();
+        $key->delete();
+
+        return view('dashboard.keys.create');
     }
 
     public function store(Request $request)
     {
-        $user = Auth::user();
-        $key = unique_random('user_keys', 'key', 24);
-        $user->keys()->create([
-            'key'         => $key,
+        Auth::user()->keys()->create([
+            'key'         => unique_random('user_keys', 'key', 24),
             'name'        => $request->name,
             'description' => $request->description,
         ]);
-        $user->save();
-
-        return view('dashboard.keys.create', compact('key'));
+        return view('dashboard.keys.create');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function sendKeyEmail()
+    public function accessGroups($id)
     {
-        $user = User::firstOrNew(['email' => request()->email]);
-        $user->token = unique_random('users', 'token');
-        $user->save();
+        $key = Key::where('id',$id)->where('user_id',Auth::user()->id)->first();
+        return view('dashboard.keys.access', compact('key'));
+    }
 
-        \Mail::to($user)->send(new EmailVerification($user, true));
-        return view('dashboard.keys.email_sent');
+    public function accessGroup($id, $access_group_id) {
+
     }
 
 }

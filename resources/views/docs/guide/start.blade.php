@@ -154,20 +154,10 @@
 
                 <h4 class="title">Generating and Confirming your API Key</h4>
 
-                <div class="columns">
-                    <div class="is-6-desktop">
-                        <p>We'll send you an email with a confirmation email that'll provide a link to your API key and you'll be up in running in less than a minute.</p>
-                    </div>
-                </div>
-
                 <div class="has-text-centered">
                 @if(\Auth::user())
                     @if(\Auth::user()->keys()->count() === 0)
-                        <form action="{{ route('api_key_email') }}" method="POST">
-                            {{ csrf_field() }}
-                            <input type="text" name="email" value="{{ Auth::user()->email }}" />
-                            <input type="submit" />
-                        </form>
+                        <a class="button is-primary" href="{{ route('dashboard.keys.create') }}"> Create a Key</a>
                     @else
                         <pre>{{ \Auth::user()->keys()->first() }}</pre>
                     @endif

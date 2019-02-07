@@ -60,6 +60,12 @@ class AccessGroupKey extends Model
 
     public function user()
     {
-        return $this->BelongsTo(Key::class);
+        return $this->belongsTo(Key::class);
     }
+
+    public function filesets()
+    {
+        return $this->hasMany(AccessGroupFileset::class,'access_group_id','access_group_id')->unique();
+    }
+
 }

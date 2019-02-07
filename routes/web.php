@@ -123,13 +123,15 @@ Localization::localizedRoutesGroup(function () {
         Route::name('dashboard.projects.update')->put('api/projects/{project_id}/',         'User\Dashboard\ProjectsController@update');
 
         // Keys
+        Route::resource('api/keys', 'User\Dashboard\KeysController');
         Route::name('dashboard.keys.create')->get('api/keys/create',            'User\Dashboard\KeysController@create');
         Route::name('dashboard.keys.store')->post('api/keys',                   'User\Dashboard\KeysController@store');
         Route::name('dashboard.keys.clone')->post('api/keys/{id}/clone',        'User\Dashboard\KeysController@clone');
         Route::name('dashboard.keys.edit')->get('api/keys/{id}/edit',           'User\Dashboard\KeysController@edit');
         Route::name('dashboard.keys.update')->put('api/keys/{id}',              'User\Dashboard\KeysController@update');
-        Route::name('dashboard.keys.access')->put('api/keys/{id}/access',       'User\Dashboard\KeysController@access');
-        Route::name('dashboard.keys.delete')->put('api/keys/{id}/delete',       'User\Dashboard\KeysController@delete');
+        Route::name('dashboard.keys.access')->get('api/keys/{id}/accessGroups', 'User\Dashboard\KeysController@accessGroups');
+        Route::name('dashboard.keys.delete')->get('api/keys/{id}/delete',       'User\Dashboard\KeysController@delete');
+        Route::name('dashboard.keys.destroy')->post('api/keys/{id}/delete',      'User\Dashboard\KeysController@destroy');
 
         // Profiles
         Route::name('profile')->get('profile',                                              'User\Dashboard\ProfileController@profile');

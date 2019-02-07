@@ -14,6 +14,38 @@
             font-size: 10.2px;
             text-align: justify;
         }
+
+        .card-footer-item {
+            text-align: center;
+            box-sizing: border-box;
+            font-size:medium;
+        }
+
+        .card-footer-item form {
+            width:100%;
+            height:100%;
+            display: block;
+        }
+
+        .card-footer-item button {
+            padding: 0;
+            border: none;
+            background: none;
+            font-weight: inherit;
+            font-size: inherit;
+            color: #643c64;
+            cursor: pointer;
+            width:100%;
+            height:100%;
+            display: block;
+        }
+
+        .card-footer-item button:hover,
+        .card-footer-item:hover {
+            background-image: linear-gradient(141deg, #ad2462 0%, #c83c64 71%, #d34a5b 100%);
+            color:#FFF!important;
+        }
+
     </style>
 @endsection
 
@@ -35,30 +67,32 @@
                 <input class="button is-primary" type="submit" value="{{ trans('fields.submit_key') }}" />
             </form>
             <div class="column is-6">
-                    @foreach($keys as $key)
-                        <div class="card">
-                            <header class="card-header">
-                                <p class="card-header-title">{{ $key->name }}</p>
-                                <a href="#" class="card-header-icon">
-                                    <time class="has-text-grey has-text-right" datetime="{{ $key->created_at }}">{{ $key->created_at->diffForHumans() }}</time>
-                                </a>
-                            </header>
-                            <div class="card-content">
-                                <div class="content"><pre>{{ $key->key }}</pre>{{ $key->description }}</div>
-                            </div>
-                            <footer class="card-footer">
+                @foreach(Auth::user()->keys as $key)
+                    <div class="card">
+                        <header class="card-header">
+                            <p class="card-header-title">{{ $key->name }}</p>
+                            @if(isset($key->created_at))
+                               <time class="card-header-icon has-text-grey has-text-right" datetime="{{ $key->created_at }}">
+                                   {{ $key->created_at->diffForHumans() }}
+                               </time>
+                            @endif
+                        </header>
+                        <div class="card-content">
+                            <div class="content"><pre>{{ $key->key }}</pre>{{ $key->description }}</div>
+                        </div>
+                        <footer class="card-footer">
+                            <div class="card-footer-item">
                                 <form action="{{ route('dashboard.keys.clone', ['id' => $key->id]) }}" method="Post">
                                     {{ csrf_field() }}
                                     <input type="hidden" name="key">
-                                    <input type="submit" href="{{ route('dashboard.keys.clone', ['id' => $key->id]) }}" class="card-footer-item">Clone</input>
+                                    <button type="submit" href="{{ route('dashboard.keys.clone', ['id' => $key->id]) }}">Regenerate</button>
                                 </form>
-                                <a href="{{ route('dashboard.keys.edit', ['id' => $key->id]) }}" class="card-footer-item">Edit</a>
-                                <a href="{{ route('dashboard.keys.access', ['id' => $key->id]) }}" class="card-footer-item">Access Controls</a>
-                                <a href="{{ route('dashboard.keys.delete', ['id' => $key->id]) }}" class="card-footer-item">Delete</a>
-                            </footer>
-                        </div>
-                    @endforeach
-
+                            </div>
+                            <a href="{{ route('dashboard.keys.access', ['id' => $key->id]) }}" class="card-footer-item">Access Controls</a>
+                            <a href="{{ route('dashboard.keys.delete', ['id' => $key->id]) }}" class="card-footer-item">Delete</a>
+                        </footer>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>
