@@ -141,6 +141,3 @@ Localization::localizedRoutesGroup(function () {
 
 
 });
-
-// VERSION 4 | DEPLOYMENT
-Route::name('deployments.github')->post('/deploy/github', 'Connections\GitDeployController@deploy');

@@ -111,11 +111,6 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
-    'deploy' => [
-        'secret' => env('APP_DEPLOY_SECRET'),
-        'path'   => env('APP_DEPLOY_SCRIPT_PATH')
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
