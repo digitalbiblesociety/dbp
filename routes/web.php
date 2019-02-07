@@ -74,7 +74,6 @@ Localization::localizedRoutesGroup(function () {
 
     // Public Routes
     Route::group(['middleware' => ['web']], function () {
-        Route::name('notes')->get('notes', 'User\UserNotesController@index');
 
         // Getting Started
         Route::name('apiDocs_bible_equivalents')->get('/api/bible/bible-equivalents', 'Bible\BibleEquivalentsController@index');
