@@ -32,7 +32,6 @@ class Kernel extends ConsoleKernel
         Commands\Wiki\OrgDigitalBibleLibraryCompare::class,
 
         Commands\loaderPush::class,
-        Commands\loaderGetResults::class,
 
         Commands\syncV2Users::class,
         Commands\syncV2Profiles::class,
