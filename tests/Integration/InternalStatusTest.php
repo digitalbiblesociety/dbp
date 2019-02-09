@@ -7,9 +7,7 @@ use Tests\TestCase;
 class InternalStatusTest extends TestCase
 {
     /**
-     * A basic test example.
-     *
-     * @return void
+     * @test
      */
     public function ensureStatusChecksAreSuccessful()
     {
