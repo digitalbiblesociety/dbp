@@ -336,11 +336,6 @@ class Bible extends Model
         return $this->belongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type']);
     }
 
-    public function publisher()
-    {
-        return $this->belongsToMany(Organization::class, 'bible_organizations')->withPivot(['relationship_type'])->wherePivot('relationship_type', 'publisher');
-    }
-
     public function links()
     {
         return $this->hasMany(BibleLink::class)->where('visible', true);
@@ -371,44 +366,43 @@ class Bible extends Model
         return $this->hasMany(Video::class)->orderBy('order', 'asc');
     }
 
-    public function scopeWithRequiredFilesets($query, $asset_id, $access_control, $type_filters)
+    public function scopeWithRequiredFilesets($query, $type_filters)
     {
-        return $query->whereHas('filesets', function ($q) use ($asset_id, $access_control, $media, $media_exclude, $size, $size_exclude) {
-
-            $q->whereIn('bible_filesets.hash_id', $access_control->hashes);
-            if ($asset_id) {
-                $q->where('asset_id', $asset_id);
+        return $query->whereHas('filesets', function ($q) use ($type_filters) {
+            $q->whereIn('bible_filesets.hash_id', $type_filters['access_control']->hashes);
+            if ($type_filters['asset_id']) {
+                $q->where('asset_id', $type_filters['asset_id']);
             }
-            if($media) {
-                $q->where('bible_filesets.set_type_code',$media);
+            if($type_filters['media']) {
+                $q->where('bible_filesets.set_type_code',$type_filters['media']);
             }
-            if($media_exclude) {
-                $q->where('bible_filesets.set_type_code', '!=', $media_exclude);
+            if($type_filters['media_exclude']) {
+                $q->where('bible_filesets.set_type_code', '!=', $type_filters['media_exclude']);
             }
-            if($size) {
-                $q->where('bible_filesets.set_size_code', '=', $size);
+            if($type_filters['size']) {
+                $q->where('bible_filesets.set_size_code', '=', $type_filters['size']);
             }
-            if($size_exclude) {
-                $q->where('bible_filesets.set_size_code', '!=', $size_exclude);
+            if($type_filters['size_exclude']) {
+                $q->where('bible_filesets.set_size_code', '!=', $type_filters['size_exclude']);
             }
-        })->with(['filesets' => function ($q) use ($asset_id, $access_control, $media, $media_exclude, $size, $size_exclude) {
-            if ($asset_id) {
-                $q->where('asset_id', $asset_id);
-            }
-            if($media) {
-                $q->where('bible_filesets.set_type_code',$media);
-            }
-            if($media_exclude) {
-                $q->where('bible_filesets.set_type_code', '!=', $media_exclude);
-            }
-            if($size) {
-                $q->where('bible_filesets.set_size_code', '=', $size);
-            }
-            if($size_exclude) {
-                $q->where('bible_filesets.set_size_code', '!=', $size_exclude);
-            }
-            $q->whereIn('bible_filesets.hash_id', $access_control->hashes)
+        })->with(['filesets' => function ($q) use ($type_filters) {
+            $q->whereIn('bible_filesets.hash_id', $type_filters['access_control']->hashes)
               ->select(['id','set_type_code','set_size_code','asset_id']);
+            if ($type_filters['asset_id']) {
+                $q->where('asset_id', $type_filters['asset_id']);
+            }
+            if($type_filters['media']) {
+                $q->where('bible_filesets.set_type_code',$type_filters['media']);
+            }
+            if($type_filters['media_exclude']) {
+                $q->where('bible_filesets.set_type_code', '!=', $type_filters['media_exclude']);
+            }
+            if($type_filters['size']) {
+                $q->where('bible_filesets.set_size_code', '=', $type_filters['size']);
+            }
+            if($type_filters['size_exclude']) {
+                $q->where('bible_filesets.set_size_code', '!=', $type_filters['size_exclude']);
+            }
         }]);
     }
 
