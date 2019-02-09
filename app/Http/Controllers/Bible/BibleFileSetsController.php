@@ -176,10 +176,10 @@ class BibleFileSetsController extends APIController
      *     @OA\Parameter(name="fileset_id", in="path", required=true, description="The fileset ID",
      *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
      *     ),
-     *     @OA\Parameter(name="asset_id", in="path", required=true, description="The fileset ID",
+     *     @OA\Parameter(name="asset_id", in="query", required=true, description="The fileset ID",
      *          @OA\Schema(ref="#/components/schemas/Asset/properties/id")
      *     ),
-     *     @OA\Parameter(name="book_ids", in="path", required=true,
+     *     @OA\Parameter(name="book_ids", in="query", required=true,
      *          description="The list of book ids to download content for seperated by commas",
      *          example="GEN,EXO,MAT,REV",
      *          @OA\Schema(ref="#/components/schemas/Book/properties/id")

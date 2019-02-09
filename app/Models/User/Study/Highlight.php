@@ -69,13 +69,12 @@ class Highlight extends Model
       *
       */
     protected $user_id;
-     /**
-      *
-      * @OA\Property(ref="#/components/schemas/Bible/properties/id")
-      */
+
+    /**
+     * @OA\Property(ref="#/components/schemas/Bible/properties/id")
+     */
     protected $bible_id;
      /**
-      *
       * @OA\Property(ref="#/components/schemas/Book/properties/id")
       */
     protected $book_id;

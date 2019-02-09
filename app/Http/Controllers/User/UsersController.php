@@ -289,9 +289,9 @@ class UsersController extends APIController
      * @OA\Put(
      *     path="/users/{id}",
      *     tags={"Users"},
-     *     summary="Create a new user",
+     *     summary="Update an existing user",
      *     description="",
-     *     operationId="v4_user.store",
+     *     operationId="v4_user.update",
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),

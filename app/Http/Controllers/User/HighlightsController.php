@@ -58,13 +58,13 @@ class HighlightsController extends APIController
      *     @OA\Parameter(
      *          name="limit",
      *          in="query",
-     *          @OA\Schema(type="integer",example=15,default=15),
+     *          @OA\Schema(type="integer",default=15),
      *          description="The number of highlights to include in each return"
      *     ),
      *     @OA\Parameter(
      *          name="prefer_color",
      *          in="query",
-     *          @OA\Schema(type="string",example="hex",default="hex",enum={"hex","rgba","rgb","full"}),
+     *          @OA\Schema(type="string",default="hex",enum={"hex","rgba","rgb","full"}),
      *          description="Choose the format that highlighted colors will be returned in. If no color
      *          is not specified than the default is a six letter hexadecimal color."
      *     ),
@@ -107,7 +107,7 @@ class HighlightsController extends APIController
 
         $highlights = Highlight::with('color')->with('tags')->where('user_id', $user_id)
             ->join($dbp_database.'.bibles as bibles', 'bibles.id', '=', $dbp_users_database.'.user_highlights.bible_id')
-            ->leftjoin($dbp_database.'.bible_books as book', function ($join) {
+            ->leftJoin($dbp_database . '.bible_books as book', function ($join) {
                 $join->on('bibles.id', '=', 'book.bible_id')
                      ->on('book.book_id', '=', 'user_highlights.book_id');
             })
@@ -145,11 +145,11 @@ class HighlightsController extends APIController
      *     summary="Create a user highlight",
      *     description="",
      *     operationId="v4_highlights.store",
-     *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
+     *     @OA\Parameter(name="user_id",  in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(name="bible_id", in="query", @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
-     *     @OA\Parameter(name="book_id", in="query", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
-     *     @OA\Parameter(name="chapter", in="query", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
-     *     @OA\Parameter(name="paginate", in="query", @OA\Schema(type="integer",example=15,default=15)),
+     *     @OA\Parameter(name="book_id",  in="query", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OA\Parameter(name="chapter",  in="query", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+     *     @OA\Parameter(name="paginate", in="query", @OA\Schema(type="integer",default=15)),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),

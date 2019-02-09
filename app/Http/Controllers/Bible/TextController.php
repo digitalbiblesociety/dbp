@@ -129,7 +129,7 @@ class TextController extends APIController
                 ])->get();
         });
 
-        return $this->reply(fractal()->collection($verses)->transformWith(new TextTransformer())->serializeWith($this->serializer)->toArray());
+        return $this->reply(fractal($verses, new TextTransformer(), $this->serializer));
     }
 
     /**
@@ -199,7 +199,7 @@ class TextController extends APIController
      *     @OA\Parameter(name="fileset_id", in="query", description="The Bible fileset ID", required=true,
      *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
      *     @OA\Parameter(name="limit",  in="query", description="The number of search results to return",
-     *          @OA\Schema(type="integer",example=15,default=15)),
+     *          @OA\Schema(type="integer",default=15)),
      *     @OA\Parameter(name="books",  in="query", description="The Books to search through",
      *          @OA\Schema(type="string",example="GEN,EXO,MAT")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),

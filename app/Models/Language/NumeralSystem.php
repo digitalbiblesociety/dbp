@@ -34,7 +34,7 @@ class NumeralSystem extends Model
      * )
      *
      */
-    protected $numeral_system_id;
+    protected $id;
 
     /**
      * @property string numeral

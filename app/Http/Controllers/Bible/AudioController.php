@@ -146,11 +146,26 @@ class AudioController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/hash_id")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/BibleFileset/properties/hash_id")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/BibleFileset/properties/hash_id"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible_timestamps")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible_timestamps")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible_timestamps"))
      *     )
      * )
+     *
+     *
+     * @OA\Schema (
+     *   type="object",
+     *   schema="v4_bible_timestamps",
+     *   description="The bibles hash returned for timestamps",
+     *   title="Bible Timestamps",
+     *   @OA\Xml(name="v4_bible.timestamps"),
+     *   @OA\Items(
+     *       @OA\Property(property="hash_id", ref="#/components/schemas/BibleFileset/properties/hash_id"),
+     *     )
+     *   )
+     * )
+     *
+     *
      *
      * @return mixed
      */
@@ -234,7 +249,7 @@ class AudioController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="id", in="path", required=true, description="The specific fileset to return references for", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+     *     @OA\Parameter(name="id", in="query", required=true, description="The specific fileset to return references for", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
      *     @OA\Parameter(name="query", in="query", required=true, description="The tag for which to return timestamps", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
      *     @OA\Response(
      *         response=200,

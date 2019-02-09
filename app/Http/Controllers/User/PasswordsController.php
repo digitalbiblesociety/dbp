@@ -111,7 +111,7 @@ class PasswordsController extends APIController
      *          If the password is known to the your users you can reset their passwords without the requirement to send
      *          them a verification email by setting the optional fields `password` and `new_password` fields within the
      *          request.",
-     *     operationId="v4_user.reset",
+     *     operationId="v4_user.resetPassword",
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),

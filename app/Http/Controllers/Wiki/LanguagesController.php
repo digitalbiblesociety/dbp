@@ -107,18 +107,12 @@ class LanguagesController extends APIController
         $cache_string = 'v'.$this->v.'_l_'.$country.$code.$GLOBALS['i18n_id'].$sort_by.$name.
                         $show_restricted.$include_alt_names.$asset_id.$access_control->string;
 
-        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $sort_by, $show_restricted, $access_control) {
-            $languages = Language::select([
-                    'languages.id',
-                    'languages.glotto_id',
-                    'languages.iso',
-                    'languages.name as backup_name',
-                    'current_translation.name as name',
-                    'autonym.name as autonym'
-                ])
-                ->leftJoin('language_translations as autonym', function ($join) {
+        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control) {
+            $languages = Language::
+                leftJoin('language_translations as autonym', function ($join) {
                     $priority_q = \DB::raw('(select max(`priority`) FROM language_translations
                         WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
+
                     $join->on('autonym.language_source_id', '=', 'languages.id')
                              ->on('autonym.language_translation_id', '=', 'languages.id')
                              ->orderBy('autonym.priority', '=', $priority_q)->limit(1);
@@ -126,16 +120,26 @@ class LanguagesController extends APIController
                 ->leftJoin('language_translations as current_translation', function ($join) {
                     $priority_q = \DB::raw('(select max(`priority`) from language_translations
                         WHERE language_source_id = languages.id LIMIT 1)');
+
                     $join->on('current_translation.language_source_id', 'languages.id')
                         ->where('current_translation.language_translation_id', '=', $GLOBALS['i18n_id'])
-                        ->where('current_translation.priority', '=', $priority_q)->limit(1);
+                        ->where('current_translation.priority', '=', $priority_q)
+                        ->orderBy('current_translation.priority', $priority_q)->limit(1);
                 })
                 ->includeExtraLanguages($show_restricted, $access_control, $asset_id)
                 ->includeExtraLanguageTranslations($include_alt_names)
                 ->filterableByCountry($country)
                 ->filterableByIsoCode($code)
                 ->filterableByName($name)
-                ->orderBy($sort_by)->withCount('bibles')->withCount('filesets')->get();
+                ->orderBy('languages.id')->withCount('bibles')->withCount('filesets')
+                ->select([
+                    'languages.id',
+                    'languages.glotto_id',
+                    'languages.iso',
+                    'languages.name as backup_name',
+                    'current_translation.name as name',
+                    'autonym.name as autonym'
+                ])->get();
 
             return fractal($languages, new LanguageTransformer(), $this->serializer);
         });

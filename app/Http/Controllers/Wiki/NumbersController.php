@@ -13,7 +13,6 @@ class NumbersController extends APIController
 
     /**
      *
-     *
      * @OA\Get(
      *     path="/numbers/range",
      *     tags={"Languages"},
@@ -24,12 +23,27 @@ class NumbersController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="iso", in="query", required=true,
-     *          @OA\Schema(ref="#/components/schemas/Language/properties/iso")),
-     *     @OA\Parameter(name="start", in="query", required=true,
-     *          @OA\Schema(type="object")),
-     *     @OA\Parameter(name="end", in="query", required=true,
-     *          @OA\Schema(type="object")),
+     *     @OA\Parameter(
+     *          name="script_id",
+     *          in="query",
+     *          required=true,
+     *          description="The script_id to return numbers for",
+     *          @OA\Schema(ref="#/components/schemas/NumeralSystem/properties/id")
+     *     ),
+     *     @OA\Parameter(
+     *          name="start",
+     *          in="query",
+     *          required=true,
+     *          description="The start of the range to select for",
+     *          @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *          name="end",
+     *          in="query",
+     *          required=true,
+     *          description="The end of the range to select for",
+     *          @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",

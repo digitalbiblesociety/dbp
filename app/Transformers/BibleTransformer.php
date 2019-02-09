@@ -98,7 +98,7 @@ class BibleTransformer extends BaseTransformer
 
             /**
              * @OA\Schema (
-            *   type="array",
+            *   type="object",
             *   schema="v4_bible.all",
             *   description="The bibles being returned",
             *   title="v4_bible.all",

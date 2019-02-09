@@ -259,7 +259,7 @@ class ProjectsController extends APIController
      *     tags={"Users"},
      *     summary="Remove a project",
      *     description="",
-     *     operationId="v4_projects.update",
+     *     operationId="v4_projects.destroy",
      *     @OA\Parameter(name="project_id", in="path", required=true, description="The project id", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),

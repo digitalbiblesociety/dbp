@@ -20,8 +20,18 @@ class BibleEquivalentsController extends APIController
                This route will allow your apps to connect to other Bible APIs and services without
                introducing duplicate Bible content into your apps and ease migration between APIs.",
      *     operationId="v4_bible.equivalents",
-     *     @OA\Parameter(name="organization_id",in="query",@OA\Schema(ref="#/components/schemas/Organization/properties/id")),
-     *     @OA\Parameter(name="bible_id",in="query",@OA\Schema(ref="#/components/schemas/Bible/properties/id")),
+     *     @OA\Parameter(
+     *       name="organization_id",
+     *       in="query",
+     *       description="The organization id to filter equivalents by",
+     *       @OA\Schema(ref="#/components/schemas/Organization/properties/id")
+     *     ),
+     *     @OA\Parameter(
+     *        name="bible_id",
+     *        in="query",
+     *        description="The Bible id to return equivalents for",
+     *        @OA\Schema(ref="#/components/schemas/Bible/properties/id")
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
