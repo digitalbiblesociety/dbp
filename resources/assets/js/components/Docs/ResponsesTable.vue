@@ -15,9 +15,11 @@
         <td v-html="marked(response.description)"></td>
         <td v-if="!response.content"></td>
         <td v-if="response.content">
-          <select class="select" v-model="response.selectedType">
-            <option v-for="(value, content) in response.content" :key="content" :value="content">{{content}}</option>
-          </select>
+			<div class="select">
+          		<select v-model="response.selectedType">
+          		  <option v-for="(value, content) in response.content" :key="content" :value="content">{{content}}</option>
+          		</select>
+			</div>
         </td>
         <td v-if="!response.content || !response.content[response.selectedType].schema"></td>
         <td v-if="response.content && response.content[response.selectedType].schema">

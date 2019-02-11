@@ -1,38 +1,17 @@
 @extends('layouts.app')
 
 @section('head')
-    <title>Swagger v4 API</title>
-@endsection
+    <style>html, body {height: 100%}
 
-@section('content')
+    .menu-list a {
+        display: block;
+        text-align: center;
+        font-size: smaller;
+    }
 
-    <div id="swagger-ui"></div>
-
+    </style>
 @endsection
 
 @section('footer')
-    <script src="/js/swagger-ui-bundle.js"> </script>
-    <script src="/js/swagger-ui-standalone-preset.js"> </script>
-    <script>
-        window.onload = function() {
-
-            // Build a system
-            const ui = SwaggerUIBundle({
-                url: "/eng/swagger_docs",
-                dom_id: '#swagger-ui',
-                deepLinking: true,
-                docExpansion: 'none',
-                presets: [
-                    SwaggerUIBundle.presets.apis,
-                    SwaggerUIStandalonePreset
-                ],
-                plugins: [
-                    SwaggerUIBundle.plugins.DownloadUrl
-                ],
-                layout: "StandaloneLayout"
-            })
-
-            window.ui = ui
-        }
-    </script>
+    <script src="{{ mix('/js/docs.js') }}"></script>
 @endsection

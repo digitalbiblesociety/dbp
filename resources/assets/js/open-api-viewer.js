@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import OpenApi from './components/Docs/OpenApi.vue'
 import VueResource from 'vue-resource'
-import jsonApi from './swagger_v2.json'
 
 Vue.use(VueResource)
 Vue.component('bulma-accordion', require('./components/bulma/Accordion.vue'))
@@ -11,9 +10,18 @@ Vue.component('bulma-accordion-item', require('./components/bulma/AccordionItem.
 new Vue({
 	el: '#app',
 	template: '<open-api v-if="jsonApi" :api="jsonApi" :query-params="queryParams" :headers="headers"></open-api>',
-	data: () => ({
-		jsonApi: jsonApi
-	}),
+	mounted () {
+		axios
+			.get('/open-api-'+ window.location.pathname.split("/").pop() +'.json')
+			.then(response => (this.jsonApi = response.data))
+	},
+	data() {
+		return {
+			queryParams: [],
+			headers: [],
+			jsonApi: []
+		}
+	},
 	components: {
 		OpenApi
 	}

@@ -1,6 +1,5 @@
 <template>
 	<div class="openapi">
-
 		<section class="hero is-primary">
 			<div class="hero-body">
 				<div class="container">
@@ -20,8 +19,9 @@
 											<div slot="content">
 												<ul class="menu-list">
 													<li><a v-for="(entry, i) in entries" :key="i" v-on:click="select(entry)" style="display: block">
-														<b :class="{'has-text-primary':selectedEntry === entry}" v-html="entry.path.replace(/\//g,'<b>/</b>')"></b>
-														<div v-bind:class="{entry: entry.method}">{{ entry.method }}</div>
+														<small :class="{'has-text-primary':selectedEntry === entry}" v-html="entry.path.replace(/\//g,'<b>/</b>')"></small>
+														<i v-bind:class="{entry: entry.method}">{{ entry.method }}</i>
+														<b>{{ entry.summary }}</b>
 													</a></li>
 												</ul>
 											</div>

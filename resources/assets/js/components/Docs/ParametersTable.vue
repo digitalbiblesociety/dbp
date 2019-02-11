@@ -17,9 +17,11 @@
         <td>Request body</td>
         <td v-if="!selectedEntry.requestBody.content"></td>
         <td v-if="selectedEntry.requestBody.content">
-          <select v-model="selectedEntry.requestBody.selectedType">
-            <option v-for="contentType in Object.keys(selectedEntry.requestBody.content)" :key="contentType" :value="contentType">{{contentType}}</option>
-          </select>
+			<div class="select">
+          		<select v-model="selectedEntry.requestBody.selectedType">
+          		  <option v-for="contentType in Object.keys(selectedEntry.requestBody.content)" :key="contentType" :value="contentType">{{contentType}}</option>
+          		</select>
+			</div>
         </td>
         <td v-if="!selectedEntry.requestBody.content || !selectedEntry.requestBody.content[selectedEntry.requestBody.selectedType].schema"></td>
         <td v-if="selectedEntry.requestBody.content && selectedEntry.requestBody.content[selectedEntry.requestBody.selectedType].schema" style="align-items: left;">

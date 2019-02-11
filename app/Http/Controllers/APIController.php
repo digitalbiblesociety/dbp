@@ -32,6 +32,17 @@ class APIController extends Controller
      *     @OA\License(name="Apache 2.0",url="http://www.apache.org/licenses/LICENSE-2.0.html")
      * )
      *
+     * @OA\Server(
+     *     url="https://api.dbp4.org",
+     *     description="Live Server",
+     *     @OA\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
+     * )
+     *
+     * @OA\Server(
+     *     url="https://api.dbp.test",
+     *     description="Development server",
+     *     @OA\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
+     * )
      *
      * @OA\Parameter(parameter="version_number",name="v",in="query",description="The Version Number",required=true,@OA\Schema(type="integer",enum={2,4},example=4))
      * @OA\Parameter(parameter="key",name="key",in="query",description="The Key granted to the api user upon sign up",required=true,@OA\Schema(type="string",example="ar45g3h4ae644"))

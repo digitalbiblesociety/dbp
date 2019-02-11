@@ -24,12 +24,12 @@ class DocsController extends APIController
 
     public function swaggerV2()
     {
-        return view('docs.swagger_v2');
+        return view('docs.swagger_docs');
     }
 
     public function swaggerV4()
     {
-        return view('docs.swagger_v4');
+        return view('docs.swagger_docs');
     }
 
     public function codeAnalysis()

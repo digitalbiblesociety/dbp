@@ -24,23 +24,21 @@ class SwaggerDocsController extends APIController
         return view('docs.swagger_database', compact('docs', 'id'));
     }
 
-    public function swaggerDocsGen()
+    public function swaggerDocsGen($version)
     {
-        $version      = checkParam('v') ?? 'v4';
         $otherVersion = ($version === 'v4') ? 'v2' : 'v4';
-        $swagger      = \OpenApi\scan(app_path());
 
-        foreach ($swagger->components->schemas as $key => $component) {
-            if (strpos($swagger->components->schemas[$key]->title, $otherVersion) === 0) {
-                unset($swagger->components->schemas[$key]);
+        $swagger = \Cache::remember('OAS_'.$version, now()->addDay(), function () use ($version, $otherVersion) {
+            $swagger = \OpenApi\scan(app_path());
+            foreach ($swagger->components->schemas as $key => $component) {
+                if (str_contains($swagger->components->schemas[$key]->title, $otherVersion)) {
+                    unset($swagger->components->schemas[$key]);
+                }
             }
-        }
-        foreach ($swagger->components->responses as $key => $response) {
-            unset($swagger->components->responses[$key]);
-        }
-
-        $swagger->tags = $this->swaggerVersionTags($swagger->tags, $version);
-        $swagger->paths = $this->swaggerVersionPaths($swagger->paths, $version);
+            $swagger->tags  = $this->swaggerVersionTags($swagger->tags, $version);
+            $swagger->paths = $this->swaggerVersionPaths($swagger->paths, $version);
+            return $swagger;
+        });
 
         return response()->json($swagger, $this->getStatusCode(), [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
                          ->header('Content-Type', 'application/json');
@@ -49,7 +47,7 @@ class SwaggerDocsController extends APIController
     private function swaggerVersionTags($tags, $version)
     {
         foreach ($tags as $key => $tag) {
-            if (strpos($tags[$key]->description, $version) !== 0) {
+            if (str_contains($tags[$key]->description, $version)) {
                 unset($tags[$key]);
             } else {
                 $tags[$key]->description = substr($tags[$key]->description, 2);
@@ -61,19 +59,20 @@ class SwaggerDocsController extends APIController
     private function swaggerVersionPaths($paths, $version)
     {
         foreach ($paths as $key => $path) {
-            if (isset($path->get->operationId) && (strpos($path->get->operationId, $version) !== 0)) {
+            if (isset($path->get->operationId) && str_contains($path->get->operationId, $version)) {
                 unset($paths[$key]);
             }
-            if (isset($path->put->operationId) && (strpos($path->put->operationId, $version) !== 0)) {
+            if (isset($path->put->operationId) && str_contains($path->put->operationId, $version)) {
                 unset($paths[$key]);
             }
-            if (isset($path->post->operationId) && (strpos($path->post->operationId, $version) !== 0)) {
+            if (isset($path->post->operationId) && str_contains($path->post->operationId, $version)) {
                 unset($paths[$key]);
             }
-            if (isset($path->delete->operationId) && (strpos($path->delete->operationId, $version) !== 0)) {
+            if (isset($path->delete->operationId) && str_contains($path->delete->operationId, $version)) {
                 unset($paths[$key]);
             }
         }
+
         return $paths;
     }
 

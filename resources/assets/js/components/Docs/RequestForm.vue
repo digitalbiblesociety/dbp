@@ -15,9 +15,11 @@
 
       <div v-if="parameter.schema.enum">
         <label class="label">{{parameter.name}}</label>
-        <select class="select" v-model="currentRequest.params[parameter.name]">
-          <option v-for="val in parameter.schema.enum" :key="val" :value="val">{{val}}</option>
-        </select>
+		  <div class="select">
+			<select v-model="currentRequest.params[parameter.name]">
+			  <option v-for="val in parameter.schema.enum" :key="val" :value="val">{{val}}</option>
+			</select>
+		  </div>
       </div>
 
       <div v-if="parameter.schema.type === 'array' && parameter.schema.items.enum">
@@ -30,7 +32,8 @@
       </div>
 
 	<label v-if="parameter.schema.type === 'boolean'">
-		<input type="checkbox" v-model="currentRequest.params[parameter.name]">{{parameter.name}}
+		<label class="label">{{parameter.name}}
+		<input type="checkbox" v-model="currentRequest.params[parameter.name]"></label>
 	</label>
 
     </div>

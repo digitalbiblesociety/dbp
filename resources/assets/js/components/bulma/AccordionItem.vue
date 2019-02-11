@@ -5,10 +5,7 @@
 				<slot name="title"></slot>
 			</p>
 			<p class="card-header-icon">
-                <span v-if="!usingCustomIcon" class="icon">
-                    <Caret v-if="showCaret" :class="dropdownIconClasses" :style="iconStyle"/>
-                    <PlusMinus v-if="showPlus || showMinus" :minus="showMinus"/>
-                </span>
+				<PlusMinus v-if="showPlus || showMinus" :minus="showMinus"/>
 				<span v-else class="icon">
                     <slot name="icon"></slot>
                     <slot v-if="isOpen" name="icon-open"></slot>

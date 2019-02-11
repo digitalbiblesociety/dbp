@@ -97,7 +97,7 @@ Localization::localizedRoutesGroup(function () {
         Route::name('docs_analysis')->get('docs/code-analysis', 'User\DocsController@codeAnalysis');
 
         // Docs Generator Routes
-        Route::name('swagger_docs_gen')->get('swagger_docs',                     'User\SwaggerDocsController@swaggerDocsGen');
+        Route::name('swagger_docs_gen')->get('open-api-{version}.json',          'User\SwaggerDocsController@swaggerDocsGen');
         Route::name('swagger_database')->get('docs/swagger/database',            'User\SwaggerDocsController@swaggerDatabase');
         Route::name('swagger_database_model')->get('docs/swagger/database/{id}', 'User\SwaggerDocsController@swaggerDatabase_model');
 
