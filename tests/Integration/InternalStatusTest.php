@@ -2,11 +2,11 @@
 
 namespace Tests\Integration;
 
-use Tests\TestCase;
-
-class InternalStatusTest extends TestCase
+class InternalStatusTest extends ApiV4Test
 {
     /**
+     *
+     * @group    travis
      * @test
      */
     public function ensureStatusChecksAreSuccessful()
