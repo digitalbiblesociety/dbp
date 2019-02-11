@@ -318,6 +318,28 @@ class Language extends Model
      */
     protected $country_id;
 
+    public function scopeIncludeAutonymTranslation($query)
+    {
+        $query->leftJoin('language_translations as autonym', function ($join) {
+            $priority_q = \DB::raw('(select max(`priority`) FROM language_translations WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
+            $join->on('autonym.language_source_id', '=', 'languages.id')
+               ->on('autonym.language_translation_id', '=', 'languages.id')
+               ->where('autonym.priority', '=', $priority_q)
+               ->orderBy('autonym.priority', 'desc')->limit(1);
+        });
+    }
+
+    public function scopeIncludeCurrentTranslation($query)
+    {
+        $query->leftJoin('language_translations as current_translation', function ($join) {
+        $priority_q = \DB::raw('(select max(`priority`) from language_translations WHERE language_source_id = languages.id LIMIT 1)');
+        $join->on('current_translation.language_source_id', 'languages.id')
+             ->where('current_translation.language_translation_id', '=', $GLOBALS['i18n_id'])
+             ->where('current_translation.priority', '=', $priority_q)
+             ->orderBy('current_translation.priority', 'desc')->limit(1);
+        });
+    }
+
     public function scopeIncludeExtraLanguageTranslations($query, $include_alt_names)
     {
         return $query->when($include_alt_names, function ($query) {

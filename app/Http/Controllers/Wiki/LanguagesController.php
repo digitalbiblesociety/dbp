@@ -108,28 +108,8 @@ class LanguagesController extends APIController
                         $show_restricted.$include_alt_names.$asset_id.$access_control->string;
 
         $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control) {
-            $languages = Language::
-                leftJoin('language_translations as autonym', function ($join) {
-
-                    $priority_q = \DB::raw('(select max(`priority`) FROM language_translations
-                        WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
-
-                    $join->on('autonym.language_source_id', '=', 'languages.id')
-                             ->on('autonym.language_translation_id', '=', 'languages.id')
-                             ->where('autonym.priority', '=', $priority_q)
-                             ->orderBy('autonym.priority', 'desc')->limit(1);
-
-                })
-                ->leftJoin('language_translations as current_translation', function ($join) {
-
-                    $priority_q = \DB::raw('(select max(`priority`) from language_translations
-                        WHERE language_source_id = languages.id LIMIT 1)');
-
-                    $join->on('current_translation.language_source_id', 'languages.id')
-                        ->where('current_translation.language_translation_id', '=', $GLOBALS['i18n_id'])
-                        ->where('current_translation.priority', '=', $priority_q)
-                        ->orderBy('current_translation.priority', 'desc')->limit(1);
-                })
+            $languages = Language::includeCurrentTranslation()
+                ->includeAutonymTranslation()
                 ->includeExtraLanguages($show_restricted, $access_control, $asset_id)
                 ->includeExtraLanguageTranslations($include_alt_names)
                 ->filterableByCountry($country)
