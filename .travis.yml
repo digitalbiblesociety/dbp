@@ -24,8 +24,17 @@ before_script:
   - npm install
   - php artisan key:generate
   - php artisan migrate --seed
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 
-script: phpunit --group=travis
+script:
+  - vendor/bin/codecept run unit --coverage --coverage-xml
+  - phpunit --group=travis
+
+after:
+  - mv tests/_output/coverage.xml clover.xml
+  - ./cc-test-reporter after-build --coverage-input-type clover --id 2b8f80c7fa55faaece242de3b0f33851b85a3f6b03e9d1cd0777b612a8b20f08 --exit-code $TRAVIS_TEST_RESULT
 
 services:
   - mysql
