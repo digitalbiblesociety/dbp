@@ -111,6 +111,7 @@ Localization::localizedRoutesGroup(function () {
 
     Route::group(['middleware' => ['auth']],  function() {
 
+        Route::name('dashboard.bibles')->get('dashboard/bibles',                            'User\Dashboard\BibleManagementController@index');
 
         Route::name('dashboard')->get('home',                                               'User\Dashboard\DashboardController@home');
         Route::name('dashboard_alt')->get('dashboard',                                      'User\Dashboard\DashboardController@home');

@@ -29,7 +29,7 @@ class ApiV2Test extends TestCase
 
         // Fetch the Swagger Docs for Structure Validation
         $arrContextOptions = ['ssl' => ['verify_peer' =>false, 'verify_peer_name' =>false]];
-        $swagger_url       = base_path('resources/assets/js/swagger_v2.json');
+        $swagger_url       = str_replace('api.','',route('swagger_docs_gen', ['version' => 'v2']));
         $this->swagger = json_decode(file_get_contents($swagger_url, false, stream_context_create($arrContextOptions)), true);
         $this->schemas = $this->swagger['components']['schemas'];
         ini_set('memory_limit', '1264M');

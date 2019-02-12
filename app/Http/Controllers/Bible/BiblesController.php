@@ -162,7 +162,7 @@ class BiblesController extends APIController
                 })
                 ->select(
                     \DB::raw(
-                        'MIN(current_title.name) as ctitle,
+                       'MIN(current_title.name) as ctitle,
                         MIN(ver_title.name) as vtitle,
                         MIN(bibles.language_id) as language_id,
                         MIN(languages.iso) as iso,
@@ -238,34 +238,6 @@ class BiblesController extends APIController
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function store()
-    {
-        request()->validate([
-            'id'                  => 'required|unique:dbp.bibles,id|max:24',
-            'iso'                 => 'required|exists:dbp.languages,iso',
-            'translations.*.name' => 'required',
-            'translations.*.iso'  => 'required|exists:dbp.languages,iso',
-            'date'                => 'integer',
-        ]);
-
-        $bible = \DB::transaction(function () {
-            $bible = new Bible();
-            $bible = $bible->create(request()->only(['id', 'date', 'script', 'portions', 'copyright', 'derived', 'in_progress', 'notes', 'iso']));
-            $bible->translations()->createMany(request()->translations);
-            $bible->organizations()->attach(request()->organizations);
-            $bible->equivalents()->createMany(request()->equivalents);
-            $bible->links()->createMany(request()->links);
-            return $bible;
-        });
-
-        return redirect()->route('view_bibles.show', ['id' => $bible->id]);
-    }
-
-    /**
      * Description:
      * Display the bible meta data for the specified ID.
      *
@@ -309,16 +281,6 @@ class BiblesController extends APIController
         }
 
         return $this->reply(fractal($bible, new BibleTransformer(), $this->serializer));
-    }
-
-    public function manage($id)
-    {
-        $bible = Bible::with('filesets')->find($id);
-        if (!$bible) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id]));
-        }
-
-        return view('bibles.manage', compact('bible'));
     }
 
     /**
@@ -375,100 +337,4 @@ class BiblesController extends APIController
         return $this->reply(fractal($books, new BooksTransformer));
     }
 
-    public function edit($id)
-    {
-        $bible = Bible::with('translations.language')->find($id);
-        if (!$this->api) {
-            $languages     = Language::select(['iso', 'name'])->orderBy('iso')->get();
-            $organizations = OrganizationTranslation::select(['name', 'organization_id'])->where(
-                'language_iso',
-                'eng'
-            )->get();
-            $alphabets     = Alphabet::select('script')->get();
-            return view('bibles.edit', compact('languages', 'organizations', 'alphabets', 'bible'));
-        }
-
-        return $this->reply(fractal()->collection($bible)->transformWith(new BibleTransformer())->toArray());
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $languages     = Language::select(['iso', 'name'])->get();
-        $organizations = OrganizationTranslation::select(['name', 'organization_id'])->where(
-            'language_iso',
-            'eng'
-        )->get();
-        $alphabets     = Alphabet::select('script')->get();
-        return view('bibles.create', compact('languages', 'organizations', 'alphabets'));
-    }
-
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function update($id)
-    {
-        request()->validate([
-            'id'                  => 'required|max:24',
-            'iso'                 => 'required|exists:dbp.languages,iso',
-            'translations.*.name' => 'required',
-            'translations.*.iso'  => 'required|exists:dbp.languages,iso',
-            'date'                => 'integer',
-        ]);
-
-        $bible = \DB::transaction(function () use ($id) {
-            $bible = Bible::with('translations', 'organizations', 'equivalents', 'links')->find($id);
-            $bible->update(request()->only(['id', 'date', 'script', 'portions', 'copyright', 'derived', 'in_progress', 'notes', 'iso']));
-
-            if (request()->translations) {
-                foreach ($bible->translations as $translation) {
-                    $translation->delete();
-                }
-                foreach (request()->translations as $translation) {
-                    if ($translation['name']) {
-                        $bible->translations()->create($translation);
-                    }
-                }
-            }
-
-            if (request()->organizations) {
-                $bible->organizations()->sync(request()->organizations);
-            }
-
-            if (request()->equivalents) {
-                foreach ($bible->equivalents as $equivalent) {
-                    $equivalent->delete();
-                }
-                foreach (request()->equivalents as $equivalent) {
-                    if ($equivalent['equivalent_id']) {
-                        $bible->equivalents()->create($equivalent);
-                    }
-                }
-            }
-
-            if (request()->links) {
-                foreach ($bible->links as $link) {
-                    $link->delete();
-                }
-                foreach (request()->links as $link) {
-                    if ($link['url']) {
-                        $bible->links()->create($link);
-                    }
-                }
-            }
-
-            return $bible;
-        });
-
-        return redirect()->route('view_bibles.show', ['id' => $bible->id]);
-    }
 }
