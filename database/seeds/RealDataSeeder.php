@@ -98,9 +98,12 @@ class RealDataSeeder extends Seeder
 
     public function seedData($path, $object)
     {
+
+        $subpath = (config('app.server_name') === 'Travis') ? 'https://raw.githubusercontent.com/digitalbiblesociety/dbp-seeds/master/' : '/Sites/dbp-seeds/';
+
         $parser = new Yaml();
         $current_object = new $object;
-        $entries = $parser->parse(file_get_contents("https://raw.githubusercontent.com/digitalbiblesociety/dbp-seeds/master/$path.yaml"));
+        $entries = $parser->parse(file_get_contents($subpath.$path.'.yaml'));
         $entries_count = count($entries);
         $current_count = 0;
         foreach ($entries as $entry) {
