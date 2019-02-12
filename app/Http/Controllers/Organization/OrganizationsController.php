@@ -91,7 +91,7 @@ class OrganizationsController extends APIController
                     $q->has('resources');
                 })->get();
 
-            return fractal($organizations, new OrganizationTransformer(), $this->serializer);
+                return fractal($organizations, new OrganizationTransformer(), $this->serializer);
             }
         );
 
@@ -105,38 +105,31 @@ class OrganizationsController extends APIController
      *
      * @return mixed
      */
-    public function show($slug)
+    public function show($id)
     {
-        $i10n           = checkParam('iso') ?? 'eng';
-        $i10n_language  = Language::where('iso', $i10n)->first();
-        if (!$i10n_language) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.i10n_errors_404', ['id' => $i10n]));
-        }
-        $searchedColumn = is_numeric($slug) ? 'id' : 'slug';
+        $organization = \Cache::remember($this->v . '_organizations:'.$id, now()->addDay(), function () use ($id) {
+            $organization = Organization::where('id', $id)->orWhere('slug', $id)->with([
+                'bibles.translations',
+                'bibles.language',
+                'memberships.childOrganization.bibles.translations',
+                'memberships.childOrganization.bibles.links',
+                'links',
+                'translations',
+                'currentTranslation',
+                'resources',
+                'logos' => function ($query) {
+                    $query->where('language_id', $GLOBALS['i18n_id']);
+                }
+            ])->first();
 
-        $organization = Organization::with(['bibles.translations','bibles.language','memberships.childOrganization.bibles.translations','memberships.childOrganization.bibles.links','links','translations','currentTranslation','resources',
-        'logos' => function ($query) use ($i10n_language) {
-            $query->where('language_id', $i10n_language->id);
-        }])->where($searchedColumn, $slug)->first();
+            if (!$organization) {
+                return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id' => $id]));
+            }
 
-        if (!$organization) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id' => $slug]));
-        }
+            return fractal($organization, new OrganizationTransformer(), $this->serializer);
+        });
 
-        // Handle API First
-        if ($this->api) {
-            return $this->reply(fractal()->item($organization)->serializeWith($this->serializer)->transformWith(new OrganizationTransformer()));
-        }
-
-        // Than Try Admin
-        $user = \Auth::user();
-        if ($user) {
-            $organization->load('filesets.bible.currentTranslation');
-            return view('dashboard.organizations.show', compact('user', 'organization'));
-        }
-
-        // Finally send them to the public view
-        return view('community.organizations.show', compact('organization'));
+        return $this->reply($organization);
     }
 
     /**
@@ -147,7 +140,7 @@ class OrganizationsController extends APIController
     {
         $organization = Organization::with('bibles')->where('slug', $slug)->first();
 
-        return $this->reply(fractal()->collection($organization->bibles)->transformWith(new BibleTransformer())->toArray());
+        return $this->reply(fractal($organization->bibles,new BibleTransformer()));
     }
 
     public function compare()
