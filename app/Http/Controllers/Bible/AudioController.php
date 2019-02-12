@@ -114,10 +114,6 @@ class AudioController extends APIController
                 })->orderBy('file_name')->get();
         });
 
-        if (is_a($audioChapters, JsonResponse::class)) {
-            return $audioChapters;
-        }
-
         // Transaction id to be passed to signedUrl
         $transaction_id = random_int(0, 10000000);
         foreach ($audioChapters as $key => $audio_chapter) {

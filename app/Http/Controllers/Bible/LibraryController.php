@@ -68,10 +68,6 @@ class LibraryController extends APIController
             return [fractal($metadata, new LibraryMetadataTransformer())->serializeWith($this->serializer)];
         });
 
-        if(is_a($metadata, JsonResponse::class)) {
-            return $metadata;
-        }
-
         return $this->reply($metadata);
     }
 

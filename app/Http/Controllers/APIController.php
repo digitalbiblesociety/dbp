@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Language\Language;
 use App\Models\User\Key;
 
+use Illuminate\Http\JsonResponse;
 use SoapBox\Formatter\Formatter;
 use League\Fractal\Serializer\DataArraySerializer;
 
@@ -178,6 +179,10 @@ class APIController extends Controller
         }
         $input  = checkParam('callback|jsonp');
         $format = checkParam('reply|format');
+
+        if(is_a($object, JsonResponse::class)) {
+            return $object;
+        }
         
         // Status Code, Headers, Params, Body, Time
         try {

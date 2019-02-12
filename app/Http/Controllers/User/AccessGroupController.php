@@ -153,11 +153,6 @@ class AccessGroupController extends APIController
             return fractal($access_group, new AccessGroupTransformer());
         });
 
-        // If The access group is an error message don't pass it through to reply()
-        if (is_a($access_group, JsonResponse::class)) {
-            return $access_group;
-        }
-
         return $this->reply($access_group);
     }
 

@@ -48,10 +48,6 @@ class BibleLinksController extends APIController
             return fractal($bibleLinks, new BibleLinksTransformer());
         });
 
-        if (is_a($bibleLinks, JsonResponse::class)) {
-            return $bibleLinks;
-        }
-
         return $this->reply($bibleLinks);
     }
 }

@@ -151,10 +151,6 @@ class BooksController extends APIController
             return fractal($books, new BooksTransformer(), $this->serializer);
         });
 
-        if (is_a($books, JsonResponse::class)) {
-            return $books;
-        }
-
         return $this->reply($books);
     }
 
