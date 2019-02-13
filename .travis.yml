@@ -20,7 +20,7 @@ before_script:
   - phpenv config-add travis.php.ini
   - cp .env.travis .env
   - composer self-update
-  - composer install --no-interaction --prefer-dist --no-suggest
+  - composer install
   - npm install
   - php artisan key:generate
   - php artisan migrate --seed
