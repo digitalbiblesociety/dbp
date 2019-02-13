@@ -118,8 +118,8 @@ class BibleTransformer extends BaseTransformer
              * )
              */
             case 'v4_bible.archival':
-                $name = $bible->translatedTitles->where('language_id', $bible->english_language_id)->first();
-                $vName = ($bible->iso != 'eng') ? $bible->translatedTitles->where('language_id', $bible->language_id)->first() : false;
+                $name = $bible->translations->where('language_id', $bible->english_language_id)->first();
+                $vName = ($bible->iso != 'eng') ? $bible->translations->where('language_id', $bible->language_id)->first() : false;
                 $output = [
                     'abbr'              => $bible->id,
                     'script'            => $bible->script,
@@ -206,12 +206,13 @@ class BibleTransformer extends BaseTransformer
              * )
              */
             case 'v4_bible.one':
+                $currentTranslation = optional($bible->translations->where('language_id', $GLOBALS['i18n_id']));
                 return [
                     'abbr'          => $bible->id,
                     'alphabet'      => $bible->alphabet,
                     'mark'          => $bible->copyright,
-                    'name'          => optional($bible->currentTranslation)->name,
-                    'description'   => optional($bible->currentTranslation)->description,
+                    'name'          => optional($bible->translations->where('language_id', $GLOBALS['i18n_id']))->name,
+                    'description'   => optional($bible->translations->where('language_id', $GLOBALS['i18n_id']))->description,
                     'vname'         => optional($bible->vernacularTranslation)->name,
                     'vdescription'  => optional($bible->vernacularTranslation)->description,
                     'publishers'    => optional($bible->organizations)->where('pivot.relationship_type', 'publisher')->all(),

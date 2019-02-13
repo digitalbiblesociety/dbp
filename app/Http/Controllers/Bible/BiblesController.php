@@ -200,7 +200,7 @@ class BiblesController extends APIController
         $language = $iso ? Language::where('iso', $iso)->with('dialects')->first() : null;
         $cache_string = strtolower('bibles_archival'.$iso.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id);
         $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language, $organization_id, $country, $include_regionInfo, $dialects, $asset_id) {
-            $bibles = Bible::with(['translatedTitles', 'language','country','filesets.copyrightOrganization'])->withCount('links')
+            $bibles = Bible::with(['translations', 'language','country','filesets.copyrightOrganization'])->withCount('links')
                 ->has('translations')->has('language')
                 ->when($country, function ($q) use ($country) {
                     $q->whereHas('language.countries', function ($query) use ($country) {

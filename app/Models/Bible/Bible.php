@@ -15,12 +15,6 @@ use App\Models\Language\Language;
  *
  * @property-read \App\Models\Language\Alphabet $alphabet
  * @property-read \App\Models\Bible\BibleBook[] $books
- * @property-read BibleEquivalent[] $dbl
- * @property-read BibleEquivalent[] $dbp
- * @property-read BibleEquivalent[] $eBible
- * @property-read BibleEquivalent[] $eSword
- * @property-read BibleEquivalent[] $equivalents
- * @property-read \App\Models\Bible\BibleEquivalent $fcbh
  * @property-read BibleFile[] $files
  * @property-read BibleFileset[] $filesets
  * @property-read BibleEquivalent[] $hasType
@@ -30,9 +24,6 @@ use App\Models\Language\Language;
  * @property-read BibleTranslation[] $translations
  * @property-read Translator[] $translators
  * @property-read Video[] $videos
- * @property-read BibleFileset[] $filesetAudio
- * @property-read BibleFileset[] $filesetFilm
- * @property-read BibleFileset[] $filesetText
  *
  * @property int $priority
  * @property int $open_access
@@ -215,22 +206,7 @@ class Bible extends Model
      */
     public $incrementing = false;
 
-    public function scopeFilterByLanguage($query,$language_codes)
-    {
-        $query->when($language_codes, function ($q) use ($language_codes) {
-            $language_codes = explode(',',$language_codes);
-            $languages = Language::whereIn('iso', $language_codes)->orWhereIn('id', $language_codes)->get();
-            $q->whereIn('bibles.language_id', $languages->pluck('id'));
-        });
-    }
-
-
     public function translations()
-    {
-        return $this->hasMany(BibleTranslation::class)->where('name', '!=', '');
-    }
-
-    public function translatedTitles()
     {
         return $this->hasMany(BibleTranslation::class)->where('name', '!=', '');
     }
@@ -249,11 +225,6 @@ class Bible extends Model
     public function books()
     {
         return $this->hasMany(BibleBook::class);
-    }
-
-    public function translators()
-    {
-        return $this->belongsToMany(Translator::class);
     }
 
     /*
@@ -281,54 +252,9 @@ class Bible extends Model
         return $this->hasManyThrough(BibleFileset::class, BibleFilesetConnection::class, 'bible_id', 'hash_id', 'id', 'hash_id');
     }
 
-    public function filesetAudio()
-    {
-        return $this->hasMany(BibleFileset::class)->where('set_type', 'Audio');
-    }
-
-    public function filesetFilm()
-    {
-        return $this->hasMany(BibleFileset::class)->where('set_type', 'Film');
-    }
-
-    public function filesetText()
-    {
-        return $this->hasMany(BibleFileset::class)->where('set_type', 'Text');
-    }
-
     public function files()
     {
         return $this->hasMany(BibleFile::class);
-    }
-
-    public function hasType($type = null)
-    {
-        return $this->hasMany(BibleEquivalent::class)->where('type', $type);
-    }
-
-    public function dbp()
-    {
-        return $this->hasMany(BibleEquivalent::class)->where('site', 'bible.is');
-    }
-
-    public function fcbh()
-    {
-        return $this->hasOne(BibleEquivalent::class)->where('site', 'bible.is');
-    }
-
-    public function dbl()
-    {
-        return $this->hasMany(BibleEquivalent::class)->where('site', 'Digital Bible Library');
-    }
-
-    public function eSword()
-    {
-        return $this->hasMany(BibleEquivalent::class)->where('type', 'eSword');
-    }
-
-    public function eBible()
-    {
-        return $this->hasMany(BibleEquivalent::class)->where('type', 'eBible');
     }
 
     public function organizations()
@@ -406,7 +332,13 @@ class Bible extends Model
         }]);
     }
 
-
-
+    public function scopeFilterByLanguage($query,$language_codes)
+    {
+        $query->when($language_codes, function ($q) use ($language_codes) {
+            $language_codes = explode(',',$language_codes);
+            $languages = Language::whereIn('iso', $language_codes)->orWhereIn('id', $language_codes)->get();
+            $q->whereIn('bibles.language_id', $languages->pluck('id'));
+        });
+    }
 
 }
