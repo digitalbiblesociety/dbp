@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "68aded6a4fb6a3f39d9338534ebefac8",
+    "content-hash": "3d439b79ed32e2d4691ca6dae0fbfd0c",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -8140,16 +8140,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.3",
+            "version": "7.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2cb759721e53bc05f56487f628c6b9fbb6c18746"
+                "reference": "61d34e8dd6eb3555900f0f2a2fa9e7e570730102"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2cb759721e53bc05f56487f628c6b9fbb6c18746",
-                "reference": "2cb759721e53bc05f56487f628c6b9fbb6c18746",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/61d34e8dd6eb3555900f0f2a2fa9e7e570730102",
+                "reference": "61d34e8dd6eb3555900f0f2a2fa9e7e570730102",
                 "shasum": ""
             },
             "require": {
@@ -8194,7 +8194,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "7.5-dev"
+                    "dev-master": "7.4-dev"
                 }
             },
             "autoload": {
@@ -8220,7 +8220,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-02-01T05:24:07+00:00"
+            "time": "2018-12-03T05:01:24+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
