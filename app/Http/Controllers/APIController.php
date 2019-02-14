@@ -16,12 +16,9 @@ use Log;
 use Symfony\Component\Yaml\Yaml;
 use Yosymfony\Toml\TomlBuilder;
 
-use App\Traits\CaptureIpTrait;
-
 class APIController extends Controller
 {
     // Top Level Swagger Docs
-    use CaptureIpTrait;
 
     /**
      * @OA\Info(
@@ -187,7 +184,7 @@ class APIController extends Controller
         // Status Code, Headers, Params, Body, Time
         try {
             if (config('app.env') != 'local') {
-                apiLogs(request(), $this->getStatusCode(), $s3_transaction_id, $this->getIpAddress());
+                apiLogs(request(), $this->getStatusCode(), $s3_transaction_id, request()->ip());
             }
         } catch (\Exception $e) {
             Log::error($e->getMessage());
