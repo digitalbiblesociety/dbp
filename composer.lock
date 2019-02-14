@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9e61870ff4d43c23c93f6e9ac775d6aa",
+    "content-hash": "68aded6a4fb6a3f39d9338534ebefac8",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -184,16 +184,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.87.9",
+            "version": "3.87.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "3508f119723b7ee69929c102e350ea26f3c5ff2d"
+                "reference": "fcf0fc6992e2926327e8ccd553cbb7a594acc1db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3508f119723b7ee69929c102e350ea26f3c5ff2d",
-                "reference": "3508f119723b7ee69929c102e350ea26f3c5ff2d",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/fcf0fc6992e2926327e8ccd553cbb7a594acc1db",
+                "reference": "fcf0fc6992e2926327e8ccd553cbb7a594acc1db",
                 "shasum": ""
             },
             "require": {
@@ -262,7 +262,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-02-12T23:15:22+00:00"
+            "time": "2019-02-13T23:07:20+00:00"
         },
         {
             "name": "aws/aws-sdk-php-laravel",
@@ -8140,16 +8140,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.4",
+            "version": "7.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2896657da5fb237bc316bdfc18c2650efeee0dc0"
+                "reference": "2cb759721e53bc05f56487f628c6b9fbb6c18746"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2896657da5fb237bc316bdfc18c2650efeee0dc0",
-                "reference": "2896657da5fb237bc316bdfc18c2650efeee0dc0",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2cb759721e53bc05f56487f628c6b9fbb6c18746",
+                "reference": "2cb759721e53bc05f56487f628c6b9fbb6c18746",
                 "shasum": ""
             },
             "require": {
@@ -8220,7 +8220,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-02-07T14:15:04+00:00"
+            "time": "2019-02-01T05:24:07+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
