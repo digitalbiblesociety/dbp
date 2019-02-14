@@ -22,7 +22,6 @@ before_script:
   - composer self-update
   - rm -rf vendor
   - composer install
-  - npm install
   - php artisan key:generate
   - php artisan migrate --seed
 
@@ -31,11 +30,6 @@ script:
 
 services:
   - mysql
-
-cache:
-  directories:
-    - node_modules
-    - vendor
 
 env:
   - TRAVIS_NODE_VERSION="4"
