@@ -226,7 +226,7 @@ class CreateUsersBiblesTable extends Migration
         Schema::connection('dbp_users')->dropIfExists('projects');
         Schema::connection('dbp')->dropIfExists('access_group_types');
         Schema::connection('dbp')->dropIfExists('access_group_filesets');
-        Schema::connection('dbp_users')->dropIfExists('access_group_keys');
+        Schema::connection('dbp_users')->dropIfExists('access_group_api_keys');
         Schema::connection('dbp')->dropIfExists('access_type_translations');
         Schema::connection('dbp')->dropIfExists('access_types');
         Schema::connection('dbp')->dropIfExists('access_groups');

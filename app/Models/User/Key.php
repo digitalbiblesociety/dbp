@@ -104,6 +104,6 @@ class Key extends Model
 
     public function access()
     {
-        return $this->belongsToMany(AccessGroup::class, config('database.connections.dbp_users.database').'.access_group_keys');
+        return $this->belongsToMany(AccessGroup::class, config('database.connections.dbp_users.database').'.access_group_api_keys');
     }
 }
