@@ -198,12 +198,12 @@ class CreateUsersBiblesTable extends Migration
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
         }
-        if (!Schema::connection('dbp_users')->hasTable('access_group_keys')) {
-            Schema::connection('dbp_users')->create('access_group_keys', function (Blueprint $table) {
+        if (!Schema::connection('dbp_users')->hasTable('access_group_api_keys')) {
+            Schema::connection('dbp_users')->create('access_group_api_keys', function (Blueprint $table) {
                 $table->integer('access_group_id')->unsigned();
-                $table->foreign('access_group_id', 'FK_access_groups_access_group_keys')->references('id')->on(config('database.connections.dbp.database').'.access_groups')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('access_group_id', 'FK_access_groups_access_group_api_keys')->references('id')->on(config('database.connections.dbp.database').'.access_groups')->onUpdate('cascade')->onDelete('cascade');
                 $table->integer('key_id')->unsigned();
-                $table->foreign('key_id', 'FK_user_keys_access_group_keys')->references('id')->on(config('database.connections.dbp_users.database').'.user_keys')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign('key_id', 'FK_user_keys_access_group_api_keys')->references('id')->on(config('database.connections.dbp_users.database').'.user_keys')->onUpdate('cascade')->onDelete('cascade');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             });
