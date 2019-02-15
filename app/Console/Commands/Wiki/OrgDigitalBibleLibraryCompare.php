@@ -53,25 +53,32 @@ class OrgDigitalBibleLibraryCompare extends Command
         $this->handlePreMatchedOrgs();
 
         foreach ($this->organizations as $dbl_org) {
-            $translationMatchExists    = OrganizationTranslation::where('name', $dbl_org->full_name)->first();
-            $relationshipAlreadyExists = OrganizationRelationship::where('organization_parent_id', $this->dbl_id)
-                                                                 ->where('relationship_id', $dbl_org->id)->first();
-            if ($relationshipAlreadyExists || ($this->dbl_id === $dbl_org->id)) {
-                continue;
+            if (!$this->organizationExists($dbl_org)) {
+                $this->fuzzySearchOrgs($dbl_org);
             }
-
-            if ($translationMatchExists) {
-                OrganizationRelationship::firstOrCreate([
-                    'type'                   => 'Member',
-                    'organization_child_id'  => $translationMatchExists->organization->id,
-                    'organization_parent_id' => $this->dbl_id,
-                    'relationship_id'        => $dbl_org->id
-                ]);
-                continue;
-            }
-
-            $this->fuzzySearchOrgs($dbl_org);
         }
+    }
+
+    private function organizationExists($dbl_org)
+    {
+        $translationMatchExists    = OrganizationTranslation::where('name', $dbl_org->full_name)->first();
+        $relationshipAlreadyExists = OrganizationRelationship::where('organization_parent_id', $this->dbl_id)
+                                                             ->where('relationship_id', $dbl_org->id)->first();
+        if ($relationshipAlreadyExists || $this->dbl_id === $dbl_org->id) {
+            return true;
+        }
+
+        if ($translationMatchExists) {
+            OrganizationRelationship::firstOrCreate([
+                'type'                   => 'Member',
+                'organization_child_id'  => $translationMatchExists->organization->id,
+                'organization_parent_id' => $this->dbl_id,
+                'relationship_id'        => $dbl_org->id
+            ]);
+            return true;
+        }
+
+        return false;
     }
 
     private function fuzzySearchOrgs($dbl_org)
