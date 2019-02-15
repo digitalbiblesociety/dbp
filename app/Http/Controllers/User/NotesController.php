@@ -57,13 +57,6 @@ class NotesController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        if (!$this->api) {
-            if (!Auth::user()) {
-                return $this->setStatusCode(401)->replyWithError(trans('api.auth_permission_denied'));
-            }
-            return view('dashboard.notes.index');
-        }
-
         $bible_id   = checkParam('bible_id');
         $book_id    = checkParam('book_id');
         $chapter_id = checkParam('chapter_id');
@@ -124,19 +117,11 @@ class NotesController extends APIController
      */
     public function show($user_id, $note_id)
     {
-        if (!$this->api) {
-            if (!$this->user->hasRole('admin')) {
-                return $this->setStatusCode(401)->replyWithError(trans('api.errors_401'));
-            }
-            return view('dashboard.notes.index');
-        }
-
-        $user_is_member = $this->compareProjects($user_id, $this->key);
-        if (!$user_is_member) {
+        if (!$this->compareProjects($user_id, $this->key)) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $note        = Note::where('user_id', $user_id)->where('id', $note_id)->first();
+        $note = Note::where('user_id', $user_id)->where('id', $note_id)->first();
         if (!$note) {
             return $this->setStatusCode(404)->replyWithError(trans('api.errors_404'));
         }
