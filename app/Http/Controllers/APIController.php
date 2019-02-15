@@ -137,14 +137,6 @@ class APIController extends Controller
     }
 
     /**
-     * @return mixed
-     */
-    public function getStatusCode()
-    {
-        return $this->statusCode;
-    }
-
-    /**
      * Set Status Code
      *
      * @param mixed $statusCode
@@ -177,50 +169,18 @@ class APIController extends Controller
         $input  = checkParam('callback|jsonp');
         $format = checkParam('reply|format');
 
-        if(is_a($object, JsonResponse::class)) {
+        if (is_a($object, JsonResponse::class)) {
             return $object;
         }
         
         // Status Code, Headers, Params, Body, Time
         try {
-            if (config('app.env') != 'local') {
-                apiLogs(request(), $this->getStatusCode(), $s3_transaction_id, request()->ip());
-            }
+            apiLogs(request(), $this->statusCode, $s3_transaction_id, request()->ip());
         } catch (\Exception $e) {
             Log::error($e->getMessage());
         }
 
-        switch ($format) {
-            case 'jsonp':
-                return response()->json($object, $this->getStatusCode())
-                    ->header('Content-Type', 'application/javascript; charset=utf-8')
-                    ->setCallback(request()->input('callback'));
-            case 'xml':
-                $formatter = ArrayToXml::convert($object->toArray(), [
-                    'rootElementName' => $meta['rootElementName'] ?? 'root',
-                    '_attributes'     => $meta['rootAttributes'] ?? []
-                ], true, 'utf-8');
-                return response()->make($formatter, $this->getStatusCode())
-                                 ->header('Content-Type', 'application/xml; charset=utf-8');
-            case 'yaml':
-                $formatter = Yaml::dump($object->toArray());
-                return response()->make($formatter, $this->getStatusCode())
-                                 ->header('Content-Type', 'text/yaml; charset=utf-8');
-            case 'toml':
-                $tomlBuilder = new TomlBuilder();
-                $formatter = $tomlBuilder->addValue('multiple', $object->toArray())->getTomlString();
-                return response()->make($formatter, $this->getStatusCode())
-                                 ->header('Content-Type', 'text/yaml; charset=utf-8');
-            case 'csv':
-                $formatter = Formatter::make($object->toArray(), Formatter::ARR);
-                return response()->make($formatter->toCsv(), $this->getStatusCode())
-                                 ->header('Content-Type', 'text/csv; charset=utf-8');
-            default:
-                if (isset($_GET['pretty'])) {
-                    return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
-                }
-                return response()->json($object, $this->getStatusCode(), [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
-        }
+        return $this->replyFormatter($object, $meta, $format, $input);
     }
 
     /**
@@ -231,44 +191,69 @@ class APIController extends Controller
      */
     public function replyWithError($message, $action = null)
     {
-        $status = $this->getStatusCode();
+        if (!$this->api) {
+            return view('layouts.errors.broken')->with(['message' => $message]);
+        }
 
         try {
-            if (config('app.env') != 'local') {
-                apiLogs(request(), $status);
-            }
+            apiLogs(request(), $this->statusCode);
         } catch (\Exception $e) {
             Log::error($e);
         }
 
-        if ((!$this->api && $status === null) || isset($_GET['local'])) {
-            redirect()->route('error')->with(['message' => $message, 'status' => $status]);
-        }
-        if (!$this->api || isset($_GET['local'])) {
-            return view('layouts.errors.broken')->with(['message' => $message]);
-        }
-        $faces = ['⤜(ʘ_ʘ)⤏', '¯\_ツ_/¯', 'ᗒ ͟ʖᗕ', 'ᖗ´• ꔢ •`ᖘ', '|▰╭╮▰|'];
-
-
-        if ((int) $this->v === 2 && (config('app.env') !== 'local')) {
+        if ((int) $this->v === 2) {
             return [];
         }
 
-        $error = [
-                'message'     => $message,
-                'status code' => $status,
-                'status'      => 'Fail',
-                'face'        => array_random($faces)
-        ];
-        if ($action) {
-            $error['action'] = $action;
-        }
-
-        return response()->json(['error' => $error], $this->getStatusCode(), [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        return response()->json(['error' => [
+            'message'     => $message,
+            'status code' => $this->statusCode,
+            'action'      => $action ?? ''
+        ]], $this->statusCode);
     }
 
-    public function utf8ForXml($string)
+    /**
+     * @param       $object
+     * @param array $meta
+     * @param       $format
+     * @param       $input
+     *
+     * @return JsonResponse|\Illuminate\Http\Response
+     */
+    private function replyFormatter($object, array $meta, $format, $input)
     {
-        return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $string);
+        switch ($format) {
+            case 'jsonp':
+                return response()->json($object, $this->statusCode)
+                                 ->header('Content-Type', 'application/javascript; charset=utf-8')
+                                 ->setCallback(request()->input('callback'));
+            case 'xml':
+                $formatter = ArrayToXml::convert($object->toArray(), [
+                    'rootElementName' => $meta['rootElementName'] ?? 'root',
+                    '_attributes'     => $meta['rootAttributes'] ?? []
+                ], true, 'utf-8');
+                return response()->make($formatter, $this->statusCode)
+                                 ->header('Content-Type', 'application/xml; charset=utf-8');
+            case 'yaml':
+                $formatter = Yaml::dump($object->toArray());
+                return response()->make($formatter, $this->statusCode)
+                                 ->header('Content-Type', 'text/yaml; charset=utf-8');
+            case 'toml':
+                $tomlBuilder = new TomlBuilder();
+                $formatter   = $tomlBuilder->addValue('multiple', $object->toArray())->getTomlString();
+                return response()->make($formatter, $this->statusCode)
+                                 ->header('Content-Type', 'text/yaml; charset=utf-8');
+            case 'csv':
+                $formatter = Formatter::make($object->toArray(), Formatter::ARR);
+                return response()->make($formatter->toCsv(), $this->statusCode)
+                                 ->header('Content-Type', 'text/csv; charset=utf-8');
+            default:
+                if (isset($_GET['pretty'])) {
+                    return response()->json($object, $this->statusCode, [], JSON_UNESCAPED_UNICODE)
+                        ->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
+                }
+                return response()->json($object, $this->statusCode, [], JSON_UNESCAPED_UNICODE)
+                        ->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
+        }
     }
 }
