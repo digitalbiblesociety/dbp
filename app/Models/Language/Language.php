@@ -378,10 +378,11 @@ class Language extends Model
         });
     }
 
-    public function scopeFilterableByName($query, $name)
+    public function scopeFilterableByName($query, $name, $full_word = false)
     {
-        return $query->when($name, function ($query) use ($name) {
-            $query->where('name', 'like', $name.'%');
+        $name_expression = $full_word ? $name : '%'.$name.'%';
+        return $query->when($name, function ($query) use ($name, $name_expression) {
+            $query->where('languages.name', 'like', $name_expression);
         });
     }
 

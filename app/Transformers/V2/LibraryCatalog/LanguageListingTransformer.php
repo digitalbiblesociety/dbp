@@ -37,7 +37,7 @@ class LanguageListingTransformer extends BaseTransformer
         switch ($this->route) {
             case 'v2_library_volumeLanguage':
                 return [
-                    'language_name'             => $language->autonym->name ?? '',
+                    'language_name'             => $language->autonym ?? '',
                     'english_name'              => (string) $language->name,
                     'language_code'             => strtoupper($language->iso),
                     'language_iso'              => (string) $language->iso,
@@ -45,13 +45,13 @@ class LanguageListingTransformer extends BaseTransformer
                     'language_iso_2T'           => (string) $language->iso2T,
                     'language_iso_1'            => (string) $language->iso1,
                     'language_iso_name'         => (string) $language->name,
-                    'language_family_code'      => $language->parent ? $language->parent->autonym : strtoupper($language->iso),
-                    'language_family_name'      => ($language->parent ? $language->parent->autonym : $language->autonym) ?? '',
-                    'language_family_english'   => ($language->parent ? $language->parent->name : $language->name) ?? '',
-                    'language_family_iso'       => $language->iso ?? '',
-                    'language_family_iso_2B'    => ($language->parent ? $language->parent->iso2B : $language->iso2B) ?? '',
-                    'language_family_iso_2T'    => ($language->parent ? $language->parent->iso2T : $language->iso2T) ?? '',
-                    'language_family_iso_1'     => ($language->parent ? $language->parent->iso1 : $language->iso1) ?? '',
+                    'language_family_code'      => strtoupper(optional($language->parent)->iso) ?? '',
+                    'language_family_name'      => optional($language->parent)->autonym ?? '',
+                    'language_family_english'   => optional($language->parent)->name ?? '',
+                    'language_family_iso'       => optional($language->parent)->iso ?? '',
+                    'language_family_iso_2B'    => optional($language->parent)->iso2B ?? '',
+                    'language_family_iso_2T'    => optional($language->parent)->iso2T ?? '',
+                    'language_family_iso_1'     => optional($language->parent)->iso1 ?? '',
                     'media'                     => ['text'],
                     'delivery'                  => ['mobile', 'web', 'subsplash'],
                     'resolution'                => []

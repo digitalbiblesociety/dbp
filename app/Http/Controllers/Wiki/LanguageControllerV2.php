@@ -60,7 +60,7 @@ class LanguageControllerV2 extends APIController
                         $query->where('name', 'like', '%' . $name . $added_space . '%')->orWhere('name', $name);
                     });
                 })->get();
-            return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer);
+            return fractal($languages, new LanguageListingTransformer(), $this->serializer);
         });
 
         return $this->reply($cached_languages);
@@ -142,7 +142,10 @@ class LanguageControllerV2 extends APIController
         $cache_string   = 'v2_country_lang_' . $sort_by . $lang_code . $country_code . $img_size . $img_type .
                           $additional . $access_control->string;
 
-        $countryLang = \Cache::remember($cache_string, now()->addDay(), function () use ($sort_by, $lang_code, $country_code, $additional, $img_size, $img_type, $access_control) {
+        $countryLang = \Cache::remember(
+            $cache_string,
+            now()->addDay(),
+            function () use ($sort_by, $lang_code, $country_code, $additional, $img_size, $img_type, $access_control) {
 
                 // Fetch Languages and add conditional sorting
                 $languages = Language::select([
@@ -278,42 +281,30 @@ class LanguageControllerV2 extends APIController
         $media           = checkParam('media');
         $full_word       = (boolean) checkParam('full_word');
         $organization_id = checkParam('organization_id');
-
+        
         $cache_string = strtolower('volumeLanguage' . $root . $iso . $media . $organization_id);
         $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($root, $iso, $media, $full_word, $organization_id) {
-                $languages = Language::with(['parent','translations'])
-                    ->has('filesets')
-                    ->leftJoin('language_translations as autonym', function ($join) {
-                        $priority_q = \DB::raw('(select max(`priority`) FROM language_translations
-                          WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
-                        $join->on('autonym.language_source_id', '=', 'languages.id')
-                             ->on('autonym.language_translation_id', '=', 'languages.id')
-                             ->where('autonym.priority', '=', $priority_q)->limit(1);
-                    })
-                    ->when($full_word, function ($query) use ($full_word) {
-                        $query->where('name', 'LIKE', '%'.$full_word.'%');
-                    })
-                    ->when($iso, function ($query) use ($iso) {
-                        return $query->where('iso', $iso);
-                    })->when($root, function ($query) use ($root) {
-                        return $query->where('name', '%' . $root . '%');
-                    })->when($organization_id, function ($query) use ($organization_id) {
+                $languages = Language::has('filesets')
+                    ->includeCurrentTranslation()
+                    ->includeAutonymTranslation()
+                    ->filterableByIsoCode($iso)
+                    ->filterableByName($root, $full_word)
+                    ->when($organization_id, function ($query) use ($organization_id) {
                         return $query->whereHas('filesets', function ($q) use ($organization_id) {
                             $q->where('organization_id', $organization_id);
                         });
                     })->when($media, function ($query) use ($media) {
-                        switch ($media) {
-                            case 'audio':
-                                return $query->has('bibles.filesetAudio');
-                                break;
-                            case 'video':
-                                return $query->has('bibles.filesetFilm');
-                                break;
-                            case 'text':
-                                return $query->has('bibles.filesets');
-                                break;
-                        }
-                    })->get();
+                        return $query->whereHas(['bibles.filesets' => function ($query) use ($media) {
+                            return $query->where('set_type_code', 'LIKE', $media.'%');
+                        }]);
+                    })->select([
+                        'languages.id',
+                        'languages.glotto_id',
+                        'languages.iso',
+                        'languages.name as backup_name',
+                        'current_translation.name as name',
+                        'autonym.name as autonym'
+                    ])->with('parent')->get();
 
                 return fractal($languages, new LanguageListingTransformer(), $this->serializer);
             }
