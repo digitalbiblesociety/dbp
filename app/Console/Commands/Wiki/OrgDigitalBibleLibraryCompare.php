@@ -25,21 +25,11 @@ class OrgDigitalBibleLibraryCompare extends Command
      */
     protected $description = 'Command description';
 
-    protected $organizations;
-
     protected $dbl_id;
 
     public function __construct()
     {
-        $organizations = json_decode(file_get_contents(storage_path('data/organizations/organizations_dbl.json')));
-        $duplicates = ['55dfef9e5117ad36e0f362c9'];
-
-        foreach ($organizations->orgs as $org) {
-            if (!in_array($org->id, $duplicates)) {
-                $this->organizations[] = $org;
-            }
-        }
-
+        parent::__construct();
         $this->dbl_id = Organization::where('slug', 'digital-bible-library')->first()->id;
     }
 
@@ -51,12 +41,24 @@ class OrgDigitalBibleLibraryCompare extends Command
     public function handle()
     {
         $this->handlePreMatchedOrgs();
-
-        foreach ($this->organizations as $dbl_org) {
+        foreach ($this->organizationsFiltered() as $dbl_org) {
             if (!$this->organizationExists($dbl_org)) {
                 $this->fuzzySearchOrgs($dbl_org);
             }
         }
+    }
+
+    private function organizationsFiltered()
+    {
+        $organizations = json_decode(file_get_contents(storage_path('data/organizations/organizations_dbl.json')));
+        $duplicates = ['55dfef9e5117ad36e0f362c9'];
+
+        foreach ($organizations->orgs as $org) {
+            if (!in_array($org->id, $duplicates)) {
+                $organizations_filtered[] = $org;
+            }
+        }
+        return $organizations_filtered;
     }
 
     private function organizationExists($dbl_org)
