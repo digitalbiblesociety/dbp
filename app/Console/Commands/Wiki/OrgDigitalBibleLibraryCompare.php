@@ -50,6 +50,7 @@ class OrgDigitalBibleLibraryCompare extends Command
 
     private function organizationsFiltered()
     {
+        $organizations_filtered = [];
         $organizations = json_decode(file_get_contents(storage_path('data/organizations/organizations_dbl.json')));
         $duplicates = ['55dfef9e5117ad36e0f362c9'];
 
