@@ -196,7 +196,7 @@ class ApiMetadataController extends APIController
         $url = parse_url($asset->base_name ?? config('app.url'));
         $libraryAsset = [
             [
-                'server'    => $url['host'] ?? 'dbp4.org',
+                'server'    => 'https://content.cdn.dbp-prod.dbp4.org',
                 'root_path' => '/audio',
                 'protocol'  => $asset->protocol ?? 'https',
                 'CDN'       => $asset->cdn ?? '1',
