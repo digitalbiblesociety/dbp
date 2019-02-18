@@ -192,20 +192,16 @@ class ApiMetadataController extends APIController
             }
         }
 
-        $asset = Asset::where('id', $asset_id)->first();
-        $url = parse_url($asset->base_name ?? config('app.url'));
-        $libraryAsset = [
+        return $this->reply([
             [
                 'server'    => 'content.cdn.dbp-prod.dbp4.org',
                 'root_path' => '/audio',
-                'protocol'  => $asset->protocol ?? 'https',
-                'CDN'       => $asset->cdn ?? '1',
-                'priority'  => $asset->priority ?? '1',
+                'protocol'  => 'https',
+                'CDN'       => '1',
+                'priority'  => '1',
                 'volume_id' => $dam_id,
             ]
-        ];
-
-        return $this->reply($libraryAsset);
+        ]);
     }
 
     /**
