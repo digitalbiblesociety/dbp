@@ -6,6 +6,7 @@ php:
 branches:
   only:
     - master
+    - dev
 
 addons:
   hosts:
@@ -21,12 +22,21 @@ before_script:
   - composer install
   - php artisan key:generate
   - php artisan migrate --seed
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 
 script:
   - phpunit --group=travis
+  - bundle exec rspec
+
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
 services:
   - mysql
 
 env:
   - TRAVIS_NODE_VERSION="4"
+  global:
+    - CC_TEST_REPORTER_ID=2b8f80c7fa55faaece242de3b0f33851b85a3f6b03e9d1cd0777b612a8b20f08
