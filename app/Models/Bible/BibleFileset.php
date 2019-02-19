@@ -172,10 +172,52 @@ class BibleFileset extends Model
         return $this->hasMany(BibleFilesetTag::class, 'hash_id', 'hash_id');
     }
 
-    public function scopeUniqueFileset($query, $id, $asset_id, $fileset_type)
+    public function scopeWithBible($query, $bible_name, $language_id, $organization)
     {
-        return $query->where(function($query) use ($id) {
-            $query->where('id', $id)->orWhere('id', substr($id, 0, -4))->orWhere('id', substr($id, 0, -2));
-        })->where('asset_id', $asset_id)->where('set_type_code',$fileset_type);
+        return $query
+            ->join('bible_fileset_connections as connection', 'connection.hash_id', 'bible_filesets.hash_id')
+            ->join('bibles', 'connection.bible_id', 'bibles.id', function ($q) use ($language_id) {
+                $q->where('bibles.language_id', $language_id);
+            })
+            ->leftJoin('languages', 'bibles.language_id', 'languages.id')
+            ->join('language_translations', function ($q) {
+                $q->on('languages.id', 'language_translations.language_source_id')
+                  ->on('languages.id', 'language_translations.language_translation_id');
+            })
+            ->leftJoin('alphabets', 'bibles.script', 'alphabets.script')
+            ->leftJoin('bible_translations', function ($q) use ($bible_name) {
+                $q->on('bible_translations.bible_id', 'bibles.id')
+                  ->where('bible_translations.name', 'LIKE', '%'.$bible_name.'%');
+            })
+            ->leftJoin('bible_organizations', function ($q) use ($organization) {
+                $q->on('bibles.id', 'bible_organizations.bible_id')->where('relationship_type', 'publisher');
+                if ($organization) {
+                    $q->where('bible_organizations.organization_id', $organization);
+                }
+            });
+    }
+
+    public function scopeUniqueFileset($query, $id = null, $asset_id = null, $fileset_type = null, $ambigious_fileset_type = false)
+    {
+        return $query->when($id, function ($query) use ($id) {
+            $query->where(function ($query) use ($id) {
+                $query->where('id', $id)->orWhere('id', substr($id, 0, -4))->orWhere('id', substr($id, 0, -2));
+            });
+        })
+        ->when($asset_id, function ($query) use ($asset_id) {
+            $query->where('asset_id', $asset_id);
+        })
+        ->when($fileset_type, function ($query) use ($fileset_type, $ambigious_fileset_type) {
+            if ($ambigious_fileset_type) {
+                $query->where('set_type_code', 'LIKE', $fileset_type.'%');
+            } else {
+                $query->where('set_type_code', $fileset_type);
+            }
+        });
+    }
+
+    public function scopeLanguage()
+    {
+        // return
     }
 }
