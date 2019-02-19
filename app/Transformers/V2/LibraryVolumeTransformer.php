@@ -142,7 +142,7 @@ class LibraryVolumeTransformer extends BaseTransformer
                     'sku'                       => $fileset->volume_sku,
                     'audio_zip_path'            => $fileset->generated_id.'/'.$fileset->generated_id.'.zip',
                     'font'                      => null,
-                    'arclight_language_id'      => '',
+                    'arclight_language_id'      => $fileset->arclight_code,
                     'media'                     => str_contains($fileset->set_type_code, 'audio') ? 'audio' : 'text',
                     'media_type'                => $fileset->set_type_code === 'audio_drama' ? 'Drama' : 'Non-Drama',
                     'delivery'                  => [

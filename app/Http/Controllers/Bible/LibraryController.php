@@ -332,11 +332,6 @@ class LibraryController extends APIController
      */
     public function volume()
     {
-        // Return the documentation if it's not an API request
-        if (!$this->api) {
-            return view('bibles.index');
-        }
-
         $dam_id             = checkParam('dam_id|fcbh_id');
         $media              = checkParam('media');
         $language_name      = checkParam('language');
@@ -344,48 +339,55 @@ class LibraryController extends APIController
         $updated            = checkParam('updated');
         $organization       = checkParam('organization_id');
 
-        $access_control = $this->accessControl($this->key);
+        $cache_string = 'v2_library_volume:'.$dam_id.$media.$language_name.$iso.$updated.$organization;
+        $filesets = Cache::remember($cache_string, now()->addDay(), function () use ($dam_id, $media, $language_name, $iso, $updated,$organization) {
+            $access_control = $this->accessControl($this->key);
+            $language_id = $iso ? Language::where('iso', $iso)->first()->id : null;
+            $filesets = BibleFileset::where('set_type_code', '!=', 'text_format')
+                ->whereIn('bible_filesets.hash_id', $access_control->hashes)
+                ->uniqueFileset($dam_id, 'dbp-prod', $media, true)
+                ->withBible($language_name, $language_id, $organization)
+                ->when($language_id, function ($query) use ($language_id) {
+                    $query->whereHas('bible', function ($subquery) use ($language_id) {
+                        $subquery->where('language_id', $language_id);
+                    });
+                })
+                ->leftJoin('bible_fileset_tags as volume', function ($q) {
+                    $q->on('volume.hash_id', 'bible_filesets.hash_id')->where('volume.name', 'volume');
+                })
+                ->leftJoin('bible_fileset_tags as sku', function ($q) {
+                    $q->on('sku.hash_id', 'bible_filesets.hash_id')->where('sku.name', 'sku');
+                })
+                ->leftJoin('language_codes as arclight', function ($q) {
+                    $q->on('arclight.language_id', 'languages.id')->where('source', 'arclight');
+                })
+                ->select([
+                    'bible_translations.name as version_name',
+                    'bibles.id as bible_id',
+                    'bible_filesets.id',
+                    'volume.description as volume_name',
+                    'sku.description as volume_sku',
+                    'bible_filesets.created_at',
+                    'bible_filesets.updated_at',
+                    'bible_filesets.set_type_code',
+                    'bible_filesets.set_size_code',
+                    'alphabets.direction',
+                    'languages.iso',
+                    'languages.iso2B',
+                    'languages.iso2T',
+                    'languages.iso1',
+                    'arclight.code as arclight_code',
+                    'languages.name as language_name',
+                    'language_translations.name as autonym'
+                ])
+                ->when($updated, function ($q) use ($updated) {
+                    $q->where('updated_at', '>', $updated);
+                })->get();
 
-        $language_id = $iso ? Language::where('iso', $iso)->first()->id : null;
+            return $this->generateV2StyleId($filesets);
+        });
 
-        $filesets = BibleFileset::where('set_type_code', '!=', 'text_format')
-            ->whereIn('bible_filesets.hash_id', $access_control->hashes)
-            ->uniqueFileset($dam_id, 'dbp-prod', $media, true)
-            ->withBible($language_name, $language_id, $organization)
-            ->when($language_id, function ($query) use ($language_id) {
-                $query->whereHas('bible', function ($subquery) use ($language_id) {
-                    $subquery->where('language_id', $language_id);
-                });
-            })
-            ->leftJoin('bible_fileset_tags as volume', function ($q) {
-                $q->on('volume.hash_id', 'bible_filesets.hash_id')->where('volume.name', 'volume');
-            })
-            ->leftJoin('bible_fileset_tags as sku', function ($q) {
-                $q->on('sku.hash_id', 'bible_filesets.hash_id')->where('sku.name', 'sku');
-            })
-            ->select([
-                'bible_translations.name as version_name',
-                'bibles.id as bible_id',
-                'bible_filesets.id',
-                'volume.description as volume_name',
-                'sku.description as volume_sku',
-                'bible_filesets.created_at',
-                'bible_filesets.updated_at',
-                'bible_filesets.set_type_code',
-                'bible_filesets.set_size_code',
-                'alphabets.direction',
-                'languages.iso',
-                'languages.iso2B',
-                'languages.iso2T',
-                'languages.iso1',
-                'languages.name as language_name',
-                'language_translations.name as autonym'
-            ])
-            ->when($updated, function ($q) use ($updated) {
-                $q->where('updated_at', '>', $updated);
-            })->get();
 
-        $filesets = $this->generateV2StyleId($filesets);
         return $this->reply(fractal($filesets, new LibraryVolumeTransformer(), $this->serializer));
     }
 
