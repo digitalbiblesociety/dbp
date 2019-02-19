@@ -98,6 +98,11 @@ Route::name('v4_filesets.books')->get('bibles/filesets/{fileset_id}/books',     
 Route::name('v4_filesets.chapter')->get('bibles/filesets/{fileset_id}/{book}/{chapter}', 'Bible\TextController@index');
 Route::name('v4_text_search')->get('search',                                             'Bible\TextController@search');
 
+// VERSION 4 | Commentaries
+
+Route::name('v4_commentary_index')->get('commentaries/',                           'Bible\Study\CommentaryController@index');
+Route::name('v4_commentary_index')->get('commentaries/{commentary_id}',            'Bible\Study\CommentaryController@show');
+
 // VERSION 4 | Timestamps
 Route::name('v4_timestamps')->get('timestamps',                                    'Bible\AudioController@availableTimestamps');
 Route::name('v4_timestamps.tag')->get('/timestamps/search',                        'Bible\AudioController@timestampsByTag');
