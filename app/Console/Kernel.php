@@ -31,6 +31,8 @@ class Kernel extends ConsoleKernel
         Commands\Wiki\SyncLanguageDescriptions::class,
         Commands\Wiki\OrgDigitalBibleLibraryCompare::class,
 
+        Commands\StudyFormats\fetchTyndalePeople::class,
+
         Commands\loaderPush::class,
 
         Commands\syncV2Users::class,
