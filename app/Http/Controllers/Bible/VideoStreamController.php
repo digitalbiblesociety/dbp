@@ -6,6 +6,8 @@ use App\Http\Controllers\APIController;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
 use App\Traits\CallsBucketsTrait;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 
 class VideoStreamController extends APIController
 {
@@ -49,7 +51,7 @@ class VideoStreamController extends APIController
      *
      * @return $this
      */
-    public function transportStream($fileset_id = null, $file_id = null, $file_name = null)
+    public function transportStream(Response $response, $fileset_id = null, $file_id = null, $file_name = null)
     {
         $fileset = BibleFileset::with('bible')->where('id', $fileset_id)->select(['id','hash_id','asset_id'])->first();
         if (!$fileset) {
@@ -70,7 +72,7 @@ class VideoStreamController extends APIController
         }
         $transaction_id = random_int(0, 10000000);
         try {
-            apiLogs(request(), $this->getStatusCode(), $transaction_id);
+            apiLogs(request(), $response->getStatusCode(), $transaction_id);
         } catch (\Exception $e) {
             Log::error($e);
         }
