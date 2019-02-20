@@ -17,6 +17,16 @@ class ProjectsSeeder extends Seeder
      */
     public function run(Faker $faker)
     {
+        Project::create([
+            'id'              => unique_random('projects', 'id', 4),
+            'name'            => 'Digital Bible Platform',
+            'url_avatar'      => $faker->url,
+            'url_avatar_icon' => $faker->url,
+            'url_site'        => $faker->url,
+            'description'     => $faker->paragraph(3, true),
+            'sensitive'       => false
+        ]);
+
         $project_count = random_int(10, 50);
         while ($project_count > 0) {
             $i = 1;
@@ -33,8 +43,8 @@ class ProjectsSeeder extends Seeder
             ProjectOauthProvider::create([
                 'name'          => 'facebook',
                 'project_id'    => $project_count,
-                'client_id'     => unique_random('project_oauth_providers','client_id'),
-                'client_secret' => unique_random('project_oauth_providers','client_secret'),
+                'client_id'     => unique_random('project_oauth_providers', 'client_id'),
+                'client_secret' => unique_random('project_oauth_providers', 'client_secret'),
                 'callback_url'  => 'https://dbp4.org/login/callback/facebook',
                 'description'   => (string) $faker->paragraph(),
             ]);
@@ -42,8 +52,8 @@ class ProjectsSeeder extends Seeder
             ProjectOauthProvider::create([
                 'name'          => 'google',
                 'project_id'    => $project_count,
-                'client_id'     => unique_random('project_oauth_providers','client_id'),
-                'client_secret' => unique_random('project_oauth_providers','client_secret'),
+                'client_id'     => unique_random('project_oauth_providers', 'client_id'),
+                'client_secret' => unique_random('project_oauth_providers', 'client_secret'),
                 'callback_url'  => 'https://dbp4.org/login/callback/google',
                 'description'   => (string) $faker->paragraph(),
             ]);
