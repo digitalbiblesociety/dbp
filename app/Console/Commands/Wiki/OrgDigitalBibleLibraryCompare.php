@@ -27,12 +27,6 @@ class OrgDigitalBibleLibraryCompare extends Command
 
     protected $dbl_id;
 
-    public function __construct()
-    {
-        parent::__construct();
-        $this->dbl_id = Organization::where('slug', 'digital-bible-library')->first()->id;
-    }
-
     /**
      * Execute the console command.
      *
@@ -40,6 +34,8 @@ class OrgDigitalBibleLibraryCompare extends Command
      */
     public function handle()
     {
+        $this->dbl_id = Organization::where('slug', 'digital-bible-library')->first()->id;
+
         $this->handlePreMatchedOrgs();
         foreach ($this->organizationsFiltered() as $dbl_org) {
             if (!$this->organizationExists($dbl_org)) {
