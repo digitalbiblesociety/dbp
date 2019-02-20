@@ -2,6 +2,7 @@
 
 namespace App\Models\Bible\Study;
 
+use App\Models\Bible\Book;
 use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Bible\Study\CommentarySection
@@ -38,6 +39,16 @@ class CommentarySection extends Model
     public function commentary()
     {
         return $this->belongsTo(Commentary::class);
+    }
+
+    public function scopeOrderByBook()
+    {
+        //return $this->
+    }
+
+    public function book()
+    {
+        return $this->belongsTo(Book::class);
     }
 
 }
