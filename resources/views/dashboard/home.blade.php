@@ -21,10 +21,12 @@
                     <li><a href="{{ route('dashboard.projects.index') }}">Projects</a></li>
                     <li><a href="{{ route('dashboard.keys.create') }}">API Keys</a></li>
                 </ul>
-                <p class="menu-label">Messages</p>
+                @if($user->projectMembers->where('role_id',2)->first())
+                <p class="menu-label">Archivist</p>
                 <ul class="menu-list">
-                    <li><a href="#" class="disabled">Messages</a></li>
+                    <li><a href="{{ route('dashboard.bibles') }}">Bibles</a></li>
                 </ul>
+                @endif
                 <p class="menu-label">Notes</p>
                 <ul class="menu-list">
                     <li><a href="#" class="disabled">Create New Note</a></li>

@@ -72,34 +72,63 @@ class BibleFileSetsController extends APIController
      */
     public function show($id = null)
     {
-        //if (!$this->api) return view('bibles.filesets.index');
         $fileset_id    = checkParam('dam_id|fileset_id', true, $id);
         $book_id       = checkParam('book_id');
         $chapter_id    = checkParam('chapter_id');
         $asset_id      = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
-        $versification = checkParam('versification');
         $type          = checkParam('type', true);
 
-        $book = $book_id ? Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first() : null;
-        if ($book !== null) {
-            $book_id = $book->id;
-        }
-        $fileset = BibleFileset::with('bible')->where('id', $fileset_id)->when($asset_id, function ($query) use ($asset_id) {
-                return $query->where('asset_id', $asset_id);
-            })->where('set_type_code', $type)->first();
-        if (!$fileset) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404_asset', ['asset_id' => $asset_id]));
-        }
+        $cache_string = '';
+        $fileset_chapters = \Cache::remember($cache_string, now()->addMinutes(20), function () use ($fileset_id, $book_id, $type, $chapter_id, $asset_id) {
+            $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
+            $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, $type)->first();
+            if (!$fileset) {
+                return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404'));
+            }
 
-        $access_control = $this->accessControl($this->key);
-        if (!\in_array($fileset->hash_id, $access_control->hashes, true)) {
-            return $this->setStatusCode(403)->replyWithError(trans('api.bible_fileset_errors_401'));
-        }
+            $access_blocked = $this->blockedByAccessControl($fileset);
+            if($access_blocked) {
+                return $access_blocked;
+            }
 
-        $bible         = $fileset->bible->first() ?: false;
-        $bible_path    = $bible ? $bible->id . '/' : '';
-        $versification = (!$versification) ? $bible->versification : 'protestant';
+            $bible = optional($fileset->bible)->first();
+            $fileset_chapters = BibleFile::where('hash_id', $fileset->hash_id)
+                ->leftJoin(config('database.connections.dbp.database').'.bible_books', function ($q) use ($bible) {
+                    $q->on('bible_books.book_id', 'bible_files.book_id')->where('bible_books.bible_id', $bible->id);
+                })
+                ->leftJoin(config('database.connections.dbp.database').'.books', 'books.id', 'bible_files.book_id')
+                ->when($chapter_id, function ($query) use ($chapter_id) {
+                    return $query->where('bible_files.chapter_start', $chapter_id);
+                })->when($book, function ($query) use ($book) {
+                    return $query->where('bible_files.book_id', $book->id);
+                })
+                  ->select([
+                    'bible_files.duration',
+                    'bible_files.hash_id',
+                    'bible_files.id',
+                    'bible_files.book_id',
+                    'bible_files.chapter_start',
+                    'bible_files.chapter_end',
+                    'bible_files.verse_start',
+                    'bible_files.verse_end',
+                    'bible_files.file_name',
+                    'bible_books.name as book_name',
+                    'books.protestant_order as book_order'
+                ])->get();
 
+            if ($fileset_chapters->count() === 0) {
+                return $this->setStatusCode(404)->replyWithError('No Fileset Chapters Found for the provided params');
+            }
+
+            return fractal($this->generateFilesetChapters($fileset, $fileset_chapters, $bible, $asset_id), new FileSetTransformer(), $this->serializer);
+        });
+
+
+        return $this->reply($fileset_chapters, [], $transaction_id ?? '');
+    }
+
+    private function signedPath($bible, $fileset, $fileset_chapter)
+    {
         switch ($fileset->set_type_code) {
             case 'audio_drama':
             case 'audio':
@@ -120,45 +149,7 @@ class BibleFileSetsController extends APIController
                 $fileset_type = 'text';
                 break;
         }
-
-        $fileSetChapters = BibleFile::where('hash_id', $fileset->hash_id)
-            ->join(config('database.connections.dbp.database').'.bible_books', function ($q) use ($bible) {
-                $q->on('bible_books.book_id', 'bible_files.book_id')->where('bible_id', $bible->id);
-            })
-            ->join(config('database.connections.dbp.database').'.books', 'books.id', 'bible_files.book_id')
-            ->when($chapter_id, function ($query) use ($chapter_id) {
-                return $query->where('bible_files.chapter_start', $chapter_id);
-            })->when($book_id, function ($query) use ($book_id) {
-                return $query->where('bible_files.book_id', $book_id);
-            })->select([
-                'bible_files.duration',
-                'bible_files.hash_id',
-                'bible_files.id',
-                'bible_files.book_id',
-                'bible_files.chapter_start',
-                'bible_files.chapter_end',
-                'bible_files.verse_start',
-                'bible_files.verse_end',
-                'bible_files.file_name',
-                'bible_books.name as book_name',
-                'books.' . $versification . '_order as book_order'
-            ])->get();
-        if ($fileSetChapters->count() === 0) {
-            return $this->setStatusCode(404)->replyWithError('No Fileset Chapters Found for the provided params');
-        }
-
-        if ($fileset->set_type_code !== 'video_stream') {
-            $transaction_id = random_int(0, 10000000);
-            foreach ($fileSetChapters as $key => $fileSet_chapter) {
-                $fileSetChapters[$key]->file_name = $this->signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $fileSet_chapter->file_name, $asset_id, $transaction_id);
-            }
-        } else {
-            foreach ($fileSetChapters as $key => $fileSet_chapter) {
-                $fileSetChapters[$key]->file_name = route('v4_video_stream', ['fileset_id' => $fileset->id,'file_id' => $fileSet_chapter->id]);
-            }
-        }
-
-        return $this->reply(fractal($fileSetChapters, new FileSetTransformer(), $this->serializer), [], $transaction_id ?? '');
+        return $fileset_type . '/' . ($bible ? $bible->id . '/' : '') . $fileset->id . '/' . $fileset_chapter->file_name;
     }
 
     /**
@@ -221,49 +212,6 @@ class BibleFileSetsController extends APIController
 
         Asset::download($files, 's3_fcbh', 'dbp.test', 5, $books);
         return $this->reply('download successful');
-    }
-
-    /**
-     *
-     * @OA\Get(
-     *     path="/bibles/filesets/{fileset_id}/podcast",
-     *     tags={"Bibles"},
-     *     summary="Audio Filesets as Podcasts",
-     *     description="An audio Fileset in an RSS format suitable for consumption by iTunes",
-     *     operationId="v4_bible_filesets.podcast",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="fileset_id", in="path", required=true, description="The fileset ID", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Response(
-     *         response=200,
-     *         description="The requested fileset as a rss compatible xml podcast",
-     *         @OA\MediaType(mediaType="application/xml")
-     *     )
-     * )
-     *
-     * @param $id
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
-     */
-    public function podcast($id)
-    {
-        $asset_id = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
-        $fileset   = BibleFileset::with('translations', 'files.currentTitle', 'bible.books')->where('id', $id)->where('asset_id', $asset_id)->first();
-        if (!$fileset) {
-            return $this->replyWithError(trans('api.bible_fileset_errors_404'));
-        }
-
-        $rootElementName = 'rss';
-        $rootAttributes  = [
-            'xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd',
-            'xmlns:atom' => 'http://www.w3.org/2005/Atom',
-            'xmlns:media' => 'http://search.yahoo.com/mrss/',
-            'version' => '2.0'
-        ];
-        $podcast         = fractal($fileset, new FileSetTransformer(), $this->serializer);
-        return $this->reply($podcast, ['rootElementName' => $rootElementName, 'rootAttributes' => $rootAttributes]);
     }
 
     /**
@@ -344,55 +292,7 @@ class BibleFileSetsController extends APIController
         return $this->reply($fileset);
     }
 
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function create()
-    {
-        $bibles = Bible::with('currentTranslation')->select('id')->get()->pluck('currentTranslation.name', 'id');
-        return view('bibles.filesets.create', compact('bibles'));
-    }
 
-    /**
-     *
-     * @OA\Post(
-     *     path="/bibles/filesets/",
-     *     tags={"Bibles"},
-     *     summary="Create a brand new Fileset",
-     *     description="Create a new Bible Fileset",
-     *     operationId="v4_bible_filesets.store",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\RequestBody(required=true, description="Fields for Bible Fileset Creation",
-     *          @OA\MediaType(mediaType="application/json",                  @OA\Schema(ref="#/components/schemas/BibleFileset")),
-     *          @OA\MediaType(mediaType="application/x-www-form-urlencoded", @OA\Schema(ref="#/components/schemas/BibleFileset"))
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="The completed fileset",
-     *         @OA\MediaType(
-     *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/BibleFileset")
-     *         )
-     *     )
-     * )
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
-     */
-    public function store()
-    {
-        $this->validateUser(Auth::user());
-        $this->validateBibleFileset();
-
-        $fileset = BibleFileset::create(request()->all());
-
-        // $bible = request()->file('file');
-
-        // ProcessBible::dispatch($request->file('zip'), $fileset->id);
-        return view('bibles.filesets.thanks', compact('fileset'));
-    }
 
     /**
      * Returns the Available Media Types for Filesets within the API.
@@ -430,109 +330,30 @@ class BibleFileSetsController extends APIController
     }
 
     /**
-     * @param $id
+     * @param      $fileset
+     * @param      $fileset_chapters
+     * @param      $bible
+     * @param      $asset_id
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Exception
+     * @return array
      */
-    public function edit($id)
+    private function generateFilesetChapters($fileset, $fileset_chapters, $bible, $asset_id)
     {
-        $fileset = BibleFileset::find($id);
-        return view('bibles.filesets.edit', compact('fileset'));
-    }
-
-    /**
-     *
-     * @OA\Put(
-     *     path="/bibles/filesets/{fileset_id}",
-     *     tags={"Bibles"},
-     *     summary="Available fileset",
-     *     description="A list of all the file types that exist within the filesets",
-     *     operationId="v4_bible_filesets.update",
-     *     @OA\Parameter(name="fileset_id", in="path", required=true, description="The fileset ID", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="The fileset just edited",
-     *         @OA\MediaType(
-     *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/BibleFileset")
-     *         )
-     *     )
-     * )
-     *
-     * @param $id
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function update($id)
-    {
-        $this->validateUser(Auth::user());
-        $this->validateBibleFileset(request());
-
-        $fileset = BibleFileset::find($id);
-        $fileset->fill(request()->all())->save();
-
-        if ($this->api) {
-            return $this->setStatusCode(201)->reply($fileset);
-        }
-        return view('bibles.filesets.thanks', compact('fileset'));
-    }
-
-    /**
-     * Ensure the current User has permissions to alter the alphabets
-     *
-     * @param null $fileset
-     *
-     * @return \App\Models\User\User|mixed|null
-     */
-    private function validateUser($fileset = null)
-    {
-        $user = Auth::user();
-        if (!$user) {
-            $key = Key::where('key', $this->key)->first();
-            if (!isset($key)) {
-                return $this->setStatusCode(403)->replyWithError('No Authentication Provided or invalid Key');
-            }
-            $user = $key->user;
-        }
-        if (!$user->archivist && !$user->admin) {
-            if ($fileset) {
-                $userIsAMember = $user->organizations->where('organization_id', $fileset->organization->id)->first();
-                if ($userIsAMember) {
-                    return $user;
-                }
-            }
-            return $this->setStatusCode(401)->replyWithError("You don't have permission to edit this filesets");
-        }
-        return $user;
-    }
-
-    /**
-     * Ensure the current fileset change is valid
-     *
-     * @return mixed
-     */
-    private function validateBibleFileset()
-    {
-        $validator = Validator::make(request()->all(), [
-            'id'            => (request()->method() === 'POST') ? 'required|unique:bible_filesets,id|max:16|min:6' : 'required|exists:bible_filesets,id|max:16|min:6',
-            'asset_id'     => 'string|maxLength:64',
-            'set_type_code' => 'string|maxLength:16',
-            'set_size_code' => 'string|maxLength:9',
-            'hidden'        => 'boolean',
-        ]);
-
-        if ($validator->fails()) {
-            if ($this->api) {
-                return $this->setStatusCode(422)->replyWithError($validator->errors());
-            }
-            if (!$this->api) {
-                return redirect('dashboard/bible-filesets/create')->withErrors($validator)->withInput();
+        if ($fileset->set_type_code === 'video_stream') {
+            foreach ($fileset_chapters as $key => $fileSet_chapter) {
+                $fileset_chapters[$key]->file_name = route('v4_video_stream', ['fileset_id' => $fileset->id, 'file_id' => $fileSet_chapter->id]);
             }
         }
-        return null;
+
+        if ($fileset->set_type_code !== 'video_stream') {
+            foreach ($fileset_chapters as $key => $fileset_chapter) {
+                $fileset_chapters[$key]->file_name = $this->signedUrl($this->signedPath($bible, $fileset, $fileset_chapter), $asset_id, random_int(0, 10000000));
+            }
+        }
+
+        return $fileset_chapters;
     }
+
+
 }

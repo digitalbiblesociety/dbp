@@ -84,8 +84,8 @@ class TextController extends APIController
         $verse_end   = checkParam('verse_end');
         $asset_id    = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3.bucket');
 
-        $book = Book::where('id',$book_id)->orWhere('id_osis',$book_id)->first();
-        if(!$book) {
+        $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->first();
+        if (!$book) {
             return $this->setStatusCode(404)->replyWithError('No book could be found for the given ID');
         }
 
@@ -95,14 +95,14 @@ class TextController extends APIController
         }
         $bible = optional($fileset->bible)->first();
 
-        $access_control = $this->accessControl($this->key);
-        if (!\in_array($fileset->hash_id, $access_control->hashes)) {
-            return $this->setStatusCode(403)->replyWithError('Your API Key does not have access to this fileset');
+        $access_blocked = $this->blockedByAccessControl($fileset);
+        if($access_blocked) {
+            return $access_blocked;
         }
 
         $cache_string = strtolower('bible_text:'.$asset_id.':'.$fileset_id.':'.$book_id.':'.$chapter.':'.$verse_start.'_'.$verse_end);
-        $verses = \Cache::remember($cache_string, now()->addDay(), function() use ($fileset,$bible,$book,$chapter,$verse_start,$verse_end) {
-           return BibleVerse::withVernacularMetaData($bible)
+        $verses = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset,$bible,$book,$chapter,$verse_start,$verse_end) {
+            return BibleVerse::withVernacularMetaData($bible)
                 ->where('hash_id', $fileset->hash_id)
                 ->where('bible_verses.book_id', $book->id)
                 ->when($verse_start, function ($query) use ($verse_start) {
@@ -315,7 +315,7 @@ class TextController extends APIController
             ->join('books', 'bible_verses.book_id', 'books.id')
             ->select(
                 DB::raw(
-                   'MIN(verse_text) as verse_text,
+                    'MIN(verse_text) as verse_text,
                     MIN(verse_start) as verse_start,
                     COUNT(verse_text) as resultsCount,
                     MIN(verse_start),
@@ -451,5 +451,4 @@ class TextController extends APIController
          */
         return $this->reply($verse_info);
     }
-
 }

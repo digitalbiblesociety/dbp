@@ -60,4 +60,14 @@ trait AccessControlAPI
             ];
         });
     }
+
+    public function blockedByAccessControl($fileset)
+    {
+        $access_control = $this->accessControl($this->key);
+        if (!\in_array($fileset->hash_id, $access_control->hashes, true)) {
+            return $this->setStatusCode(403)->replyWithError(trans('api.bible_fileset_errors_401'));
+        }
+
+        return false;
+    }
 }

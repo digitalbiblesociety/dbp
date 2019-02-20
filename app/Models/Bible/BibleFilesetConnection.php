@@ -66,7 +66,7 @@ class BibleFilesetConnection extends Model
 
     public function bible()
     {
-        return $this->belongsTo(Bible::class);
+        return $this->belongsTo(Bible::class, 'id', 'bible_id');
     }
 
     public function size()

@@ -40,8 +40,7 @@ class SwaggerDocsController extends APIController
             return $swagger;
         });
 
-        return response()->json($swagger, $this->getStatusCode(), [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-                         ->header('Content-Type', 'application/json');
+        return response()->json($swagger)->header('Content-Type', 'application/json');
     }
 
     private function swaggerVersionTags($tags, $version)

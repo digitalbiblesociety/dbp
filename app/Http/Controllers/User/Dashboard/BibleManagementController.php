@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 
 class BibleManagementController extends Controller
 {
-
     public function index()
     {
         return view('dashboard.bibles.home');
@@ -21,7 +20,6 @@ class BibleManagementController extends Controller
 
     public function create()
     {
-
         $languages     = Language::select(['iso', 'name'])->get();
         $organizations = OrganizationTranslation::select(['name', 'organization_id'])->where('language_id', 'eng')->get();
         $alphabets     = Alphabet::select('script')->get();
@@ -101,7 +99,7 @@ class BibleManagementController extends Controller
             return view('bibles.edit', compact('languages', 'organizations', 'alphabets', 'bible'));
         }
 
-        return $this->reply(fractal($bible,new BibleTransformer())->toArray());
+        return $this->reply(fractal($bible, new BibleTransformer())->toArray());
     }
 
 
@@ -132,5 +130,4 @@ class BibleManagementController extends Controller
 
         return redirect()->route('dashboard.bibles.show', ['id' => $bible->id]);
     }
-
 }

@@ -88,7 +88,7 @@ Route::name('v4_bible.all')->get('bibles',                                      
 
 // VERSION 4 | Filesets
 Route::name('v4_filesets.types')->get('bibles/filesets/media/types',               'Bible\BibleFileSetsController@mediaTypes');
-Route::name('v4_filesets.podcast')->get('bibles/filesets/{fileset_id}/podcast',    'Bible\BibleFileSetsController@podcast');
+Route::name('v4_filesets.podcast')->get('bibles/filesets/{fileset_id}/podcast',    'Bible\BibleFilesetsPodcastController@index');
 Route::name('v4_filesets.download')->get('bibles/filesets/{fileset_id}/download',  'Bible\BibleFileSetsController@download');
 Route::name('v4_filesets.copyright')->get('bibles/filesets/{fileset_id}/copyright','Bible\BibleFileSetsController@copyright');
 Route::name('v4_filesets.show')->get('bibles/filesets/{fileset_id?}',              'Bible\BibleFileSetsController@show');
