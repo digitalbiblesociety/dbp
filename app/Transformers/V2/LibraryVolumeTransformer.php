@@ -144,7 +144,7 @@ class LibraryVolumeTransformer extends BaseTransformer
                     'font'                      => null,
                     'arclight_language_id'      => $fileset->arclight_code,
                     'media'                     => str_contains($fileset->set_type_code, 'audio') ? 'audio' : 'text',
-                    'media_type'                => $fileset->set_type_code === 'audio_drama' ? 'Drama' : 'Non-Drama',
+                    'media_type'                => ((int) substr($fileset->generated_id, -3, 1) === 2) ? 'Drama' : 'Non-Drama',
                     'delivery'                  => [
                         'mobile',
                         'web',

@@ -394,44 +394,43 @@ class LibraryController extends APIController
     private function generateV2StyleId($filesets)
     {
         $output = [];
-        foreach ($filesets as $fileset) {
-            $output = array_merge($output, $this->getV2Output($fileset));
+        foreach ($filesets->groupBy('bible_id')->sortBy('set_type_code') as $bible => $fileset) {
+            $output = array_merge($output, $this->getV2Output($bible, $fileset));
         }
         return $output;
     }
 
-    private function getV2Output($fileset)
+    private function getV2Output($bible, $filesets)
     {
-        $fileset_id = substr($fileset->id, 0, 6);
-        $type_code  = $this->getV2TypeCode($fileset);
-        $output = [];
+        foreach ($filesets as $fileset) {
+            foreach ($this->getV2TypeCode($fileset, false) as $type_code) {
+                $ot_fileset_id = $bible.'O'.$type_code;
+                $nt_fileset_id = $bible.'N'.$type_code;
+                switch ($fileset->set_size_code) {
+                    case 'C':
+                    case 'NTOTP':
+                    case 'OTNTP':
+                    case 'NTPOTP':
+                        $output[$ot_fileset_id] = clone $fileset;
+                        $output[$ot_fileset_id]->generated_id = $ot_fileset_id;
 
-        $ot_fileset_id = $fileset_id.'O'.$type_code;
-        $nt_fileset_id = $fileset_id.'N'.$type_code;
+                        $output[$nt_fileset_id] = clone $fileset;
+                        $output[$nt_fileset_id]->generated_id = $nt_fileset_id;
+                        break;
 
-        switch ($fileset->set_size_code) {
-            case 'C':
-            case 'NTOTP':
-            case 'OTNTP':
-            case 'NTPOTP':
-                $output[$ot_fileset_id] = clone $fileset;
-                $output[$ot_fileset_id]->generated_id = $ot_fileset_id;
+                    case 'NT':
+                    case 'NTP':
+                        $output[$nt_fileset_id] = clone $fileset;
+                        $output[$nt_fileset_id]->generated_id = $nt_fileset_id;
+                        break;
 
-                $output[$fileset_id.'N'.$type_code] = clone $fileset;
-                $output[$nt_fileset_id]->generated_id = $nt_fileset_id;
-                break;
-
-            case 'NT':
-            case 'NTP':
-                $output[$fileset_id.'N'.$type_code] = clone $fileset;
-                $output[$nt_fileset_id]->generated_id = $nt_fileset_id;
-                break;
-
-            case 'OT':
-            case 'OTP':
-                $output[$fileset_id.'O'.$type_code] = clone $fileset;
-                $output[$ot_fileset_id]->generated_id = $ot_fileset_id;
-                break;
+                    case 'OT':
+                    case 'OTP':
+                        $output[$ot_fileset_id] = clone $fileset;
+                        $output[$ot_fileset_id]->generated_id = $ot_fileset_id;
+                        break;
+                }
+            }
         }
 
         return $output;
@@ -442,15 +441,19 @@ class LibraryController extends APIController
      *
      * @return string
      */
-    private function getV2TypeCode($fileset)
+    private function getV2TypeCode($fileset, $non_drama_exists)
     {
         switch ($fileset->set_type_code) {
             case 'audio_drama':
-                return '2DA';
+                return ['2DA'];
             case 'audio':
-                return '1DA';
+                $non_drama_exists = true;
+                return ['1DA'];
             case 'text_plain':
-                return '2ET';
+                if ($non_drama_exists) {
+                    return ['2ET', '1ET'];
+                }
+                return ['2ET'];
         }
     }
 }
