@@ -402,6 +402,7 @@ class LibraryController extends APIController
 
     private function getV2Output($bible, $filesets)
     {
+        $output = [];
         foreach ($filesets as $fileset) {
             $type_codes = $this->getV2TypeCode($fileset, false);
             foreach ($type_codes as $type_code) {
