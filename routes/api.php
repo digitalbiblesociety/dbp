@@ -100,8 +100,9 @@ Route::name('v4_text_search')->get('search',                                    
 
 // VERSION 4 | Commentaries
 
-Route::name('v4_commentary_index')->get('commentaries/',                           'Bible\Study\CommentaryController@index');
-Route::name('v4_commentary_index')->get('commentaries/{commentary_id}',            'Bible\Study\CommentaryController@show');
+Route::name('v4_commentary_index')->get('commentaries/',                                       'Bible\Study\CommentaryController@index');
+Route::name('v4_commentary_chapters')->get('commentaries/{commentary_id}/chapters',            'Bible\Study\CommentaryController@chapters');
+Route::name('v4_commentary_chapters')->get('commentaries/{commentary_id}/{book_id}/{chapter}', 'Bible\Study\CommentaryController@sections');
 
 // VERSION 4 | Timestamps
 Route::name('v4_timestamps')->get('timestamps',                                    'Bible\AudioController@availableTimestamps');
@@ -189,3 +190,6 @@ Route::name('v4_api.buckets')->get('/api/buckets',                              
 Route::name('v4_api.stats')->get('/stats',                                         'HomeController@stats');
 Route::name('v4_api.gitVersion')->get('/api/git/version',                          'ApiMetadataController@gitVersion');
 Route::name('v4_api.refreshDevCache')->get('/api/refresh-dev-cache',               'ApiMetadataController@refreshDevCache');
+
+// VERSION 4 | GENERATOR
+Route::name('v4_api.generator')->get('/api/gen/bibles',                            'Connections\GeneratorController@bibles');
