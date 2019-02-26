@@ -96,6 +96,18 @@ class CreateCommentaryTables extends Migration
             });
         }
 
+        if (!\Schema::connection('dbp')->hasTable('glossary_person_name_references')) {
+            Schema::connection('dbp')->create('glossary_person_name_references', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('person_name_id')->unsigned();
+                $table->foreign('person_name_id', 'FK_glossary_person_glossary_person_names')->references('id')->on(config('database.connections.dbp.database') . '.glossary_person_name_references')->onUpdate('cascade')->onDelete('cascade');
+                $table->integer('verse_reference_id')->unsigned();
+                $table->foreign('verse_reference_id', 'FK_verse_references_glossary_reference')->references('id')->on(config('database.connections.dbp.database') . '.verse_references')->onUpdate('cascade')->onDelete('cascade');
+                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            });
+        }
+
         if (!\Schema::connection('dbp')->hasTable('glossary_person_translation')) {
             Schema::connection('dbp')->create('glossary_person_translation', function (Blueprint $table) {
                 $table->increments('id');
