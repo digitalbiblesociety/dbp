@@ -403,7 +403,9 @@ class LibraryController extends APIController
     private function getV2Output($bible, $filesets)
     {
         foreach ($filesets as $fileset) {
-            foreach ($this->getV2TypeCode($fileset, false) as $type_code) {
+            $type_codes = $this->getV2TypeCode($fileset, false);
+            foreach ($type_codes as $type_code) {
+
                 $ot_fileset_id = $bible.'O'.$type_code;
                 $nt_fileset_id = $bible.'N'.$type_code;
                 switch ($fileset->set_size_code) {
@@ -454,6 +456,8 @@ class LibraryController extends APIController
                     return ['2ET', '1ET'];
                 }
                 return ['2ET'];
+            default:
+                return [];
         }
     }
 }
