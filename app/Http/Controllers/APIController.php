@@ -107,7 +107,7 @@ class APIController extends Controller
         if (str_contains($subdomain, 'api')) {
             $this->api = true;
             $this->v   = (int) checkParam('v', true, $this->preset_v);
-            $this->key = checkParam('key');
+            $this->key = checkParam('key', true);
 
             $cache_string = 'keys:'.$this->key;
             $keyExists = \Cache::remember($cache_string, now()->addDay(), function () {
