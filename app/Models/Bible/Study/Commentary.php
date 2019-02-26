@@ -25,7 +25,6 @@ class Commentary extends Model
     protected $hidden = ['created_at','updated_at'];
 
     /**
-     *
      * @OA\Property(
      *   title="id",
      *   type="string",
@@ -38,7 +37,6 @@ class Commentary extends Model
     protected $id;
 
     /**
-     *
      * @OA\Property(
      *   title="type",
      *   type="string",
@@ -51,7 +49,6 @@ class Commentary extends Model
     protected $type;
 
     /**
-     *
      * @OA\Property(
      *   title="type",
      *   type="string",
@@ -62,7 +59,6 @@ class Commentary extends Model
     protected $author;
 
     /**
-     *
      * @OA\Property(
      *   title="date",
      *   type="integer",
@@ -73,7 +69,6 @@ class Commentary extends Model
     protected $date;
 
     /**
-     *
      * @OA\Property(
      *   title="date",
      *   type="integer",
@@ -84,7 +79,6 @@ class Commentary extends Model
     protected $features;
 
     /**
-     *
      * @OA\Property(
      *   title="publisher",
      *   type="string",

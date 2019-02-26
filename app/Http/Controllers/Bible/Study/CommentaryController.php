@@ -10,7 +10,24 @@ class CommentaryController extends APIController
 {
 
     /**
-     * @return mixed
+     *
+     * @OA\GET(
+     *     path="/commentaries",
+     *     tags={"StudyBible"},
+     *     summary="Commentaries",
+     *     description="A list of all the commentaries that can be retrieved",
+     *     operationId="v4_commentary_index",
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="The fileset types",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Commentary")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/Commentary"))
+     *     )
+     * )
+     *
      */
     public function index()
     {
@@ -19,11 +36,50 @@ class CommentaryController extends APIController
     }
 
     /**
-     * @param $commentary_id
      *
+     * @OA\GET(
+     *     path="/commentaries/{commentary_id}/chapters",
+     *     tags={"StudyBible"},
+     *     summary="Commentary Chapters",
+     *     description="A list of all the chapter navigation for a specific commentary",
+     *     operationId="v4_commentary_chapter",
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(
+     *          name="commentary_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Commentary/properties/id"),
+     *          description="The commentary id of the commentary"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="The fileset types",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_commentaries_chapter_response")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v4_commentaries_chapter_response"))
+     *     )
+     * )
+     *
+     * @OA\Schema(
+     *     type="object",
+     *     title="The all alphabets response",
+     *     description="",
+     *     schema="v4_commentaries_chapter_response",
+     *     @OA\Xml(name="v4_commentaries_chapter_response"),
+     *     example={
+     *       "MAT": {1,2,3,4,5},
+     *       "MRK": {1,2,3},
+     *       "LUK": {1,2,3,4,5,6,7,8,9},
+     *       "JHN": {1,2,3,4,10}
+     *     }
+     * )
+     *
+     * @param $commentary_id
      * @return mixed
+     *
      */
-    public function show($commentary_id)
+    public function chapters($commentary_id)
     {
         $book_id = checkParam('book_id');
         $chapter = checkParam('chapter');
@@ -42,10 +98,56 @@ class CommentaryController extends APIController
               ->orderBy('books.protestant_order')
               ->orderBy('commentary_sections.chapter_start')->get();
 
-        return $this->reply(['data' => $commentary_sections, 'meta' => $commentary->toArray()]);
+        foreach ($commentary_sections as $section) {
+            $books[$section->book_id][] = $section->chapter_start;
+        }
+
+        return $this->reply(['data' => $books, 'meta' => $commentary->toArray()]);
     }
 
     /**
+     *
+     * @OA\GET(
+     *     path="/commentaries/{commentary_id}/sections",
+     *     tags={"StudyBible"},
+     *     summary="Commentary Sections",
+     *     description="A list of all the chapter navigation for a specific commentary",
+     *     operationId="v4_commentary_chapter",
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(
+     *          name="commentary_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Commentary/properties/id"),
+     *          description="The commentary id of the commentary"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="The fileset types",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_commentaries_section_response")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_commentaries_section_response"))
+     *     )
+     * )
+     *
+     * @OA\Schema(
+     *     type="object",
+     *     title="The commentary section response",
+     *     description="",
+     *     schema="v4_commentaries_section_response",
+     *     @OA\Xml(name="v4_commentaries_section_response"),
+     *     @OA\Items(
+     *          @OA\Property(property="title",         ref="#/components/schemas/CommentarySection/properties/title"),
+     *          @OA\Property(property="content",       ref="#/components/schemas/CommentarySection/properties/content"),
+     *          @OA\Property(property="book_id",       ref="#/components/schemas/CommentarySection/properties/book_id"),
+     *          @OA\Property(property="chapter_start", ref="#/components/schemas/CommentarySection/properties/chapter_start"),
+     *          @OA\Property(property="chapter_end",   ref="#/components/schemas/CommentarySection/properties/chapter_end"),
+     *          @OA\Property(property="verse_start",   ref="#/components/schemas/CommentarySection/properties/verse_start"),
+     *          @OA\Property(property="verse_end",     ref="#/components/schemas/CommentarySection/properties/verse_end"),
+     *     )
+     * )
+     *
      * @param $commentary_id
      * @param $book_id
      * @param $chapter
