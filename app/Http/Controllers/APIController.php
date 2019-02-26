@@ -95,6 +95,7 @@ class APIController extends Controller
     protected $statusCode = 200;
     protected $api;
     protected $serializer;
+    protected $preset_v;
     protected $v;
     protected $key;
     protected $user;
@@ -105,7 +106,7 @@ class APIController extends Controller
         $subdomain     = array_shift($url);
         if (str_contains($subdomain, 'api')) {
             $this->api = true;
-            $this->v   = (int) checkParam('v', true);
+            $this->v   = (int) checkParam('v', true, $this->preset_v);
             $this->key = checkParam('key');
 
             $cache_string = 'keys:'.$this->key;

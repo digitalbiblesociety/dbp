@@ -26,6 +26,7 @@ class UsersControllerV2 extends APIController
 
     public function __construct()
     {
+        $this->preset_v = 2;
         parent::__construct();
         $this->hash = md5(date('m/d/Y').config('services.bibleIs.key').config('services.bibleIs.secret'));
     }
@@ -79,27 +80,28 @@ class UsersControllerV2 extends APIController
      */
     public function login()
     {
+        $email    = request()->email ?? request()->login;
+        $provider = request()->remote_type;
+        $password = request()->password;
+
         if ($this->hash === request()->hash) {
             $alt_url = checkParam('alt_url');
-            $provider = request()->remote_type;
             if ($provider == 'twitter') {
                 return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
             }
 
             $user = User::whereHas('accounts', function ($query) {
                 $query->where('provider_user_id', request()->remote_id)->where('provider_id', request()->remote_type);
-            })->where('email', request()->email)->first();
+            })->where('email', $email)->first();
 
             if (!$user) {
-                // Check if user already exists but just hasnt signed up with that account
-                $user    = User::where('email', request()->email)->first();
-                if (!$user) {
-                    $user = User::create(['email' => request()->email()]);
-                    $account = new Account(['provider_user_id' => request()->remote_id, 'provider_id' => request()->remote_type]);
+                // Check if user already exists but just hasn't signed up with that account
+                $user    = User::firstOrCreate(['email' => $email]);
+                if(!isset($password)) {
+                    $account = Account::firstOrCreate(['provider_user_id' => request()->remote_id, 'provider_id' => request()->remote_type]);
+                    $account->user()->associate($user);
+                    $account->save();
                 }
-
-                $account->user()->associate($user);
-                $account->save();
             }
 
             return $this->reply([
@@ -125,8 +127,6 @@ class UsersControllerV2 extends APIController
 
     public function profile()
     {
-
-
         return [
             ['Title' => 'Resource Invalid (improperly formatted request)'],
             ['Error' => ['You must enter a field name']]
@@ -163,30 +163,14 @@ class UsersControllerV2 extends APIController
     public function bookmark()
     {
         $limit   = checkParam('limit') ?? 1000;
-        $offset  = checkParam('offset') ?? 0;
+        $offset  = checkParam('offset') ?? 1;
         $user_id = checkParam('user_id');
 
-        $bookmarks = \DB::table('user_bookmarks')
-            ->where('user_id', $user_id)
-            ->join('dbp.bibles', 'bibles.id', 'user_bookmarks.bible_id')
-            ->join('dbp.bible_books', function ($join) {
-                $join->on('bibles.id', 'bible_books.bible_id')
-                     ->on('user_bookmarks.book_id', 'bible_books.book_id');
-            })
-            ->join('dbp.books', 'user_bookmarks.book_id', 'books.id')
-            ->select([
-                'books.protestant_order as protestant_order',
-                'books.id_osis as book_id',
-                'books.book_testament',
-                'user_id',
-                'chapter',
-                'verse_start',
-                'user_bookmarks.id as id',
-                'bibles.id as bible_id',
-                'bible_books.name as book_name',
-                'user_bookmarks.created_at',
-                'user_bookmarks.updated_at'
-            ])
+        $bookmarks = Bookmark::where('user_id', $user_id)
+            ->with(['book','bible.filesets' => function($query) {
+                $query->where('asset_id', 'dbp-prod')->where('set_type_code', 'text_plain');
+            }])
+            ->skip($offset)
             ->paginate($limit);
 
         $queryParams = array_diff_key($_GET, array_flip(['page']));
