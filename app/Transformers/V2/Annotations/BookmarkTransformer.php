@@ -31,13 +31,13 @@ class BookmarkTransformer extends TransformerAbstract
             'created'              => (string) $bookmark->created_at,
             'updated'              => (string) $bookmark->updated_at,
             'dbt_data'             => [[
-                'book_name'        => (string) $bookmark->book_name,
+                'book_name'        => (string) $bookmark->book->name,
                 'book_id'          => (string) $bookmark->book_id,
-                'book_order'       => (string) $bookmark->protestant_order,
+                'book_order'       => (string) $bookmark->book->protestant_order,
                 'chapter_id'       => (string) $bookmark->chapter,
                 'chapter_title'    => trans('api.chapter_title_prefix').' '.$bookmark->chapter,
                 'verse_id'         => (string) $bookmark->verse_start,
-                'verse_text'       => $bookmark->verse_text ?? '',
+                'verse_text'       => $bookmark->verse->verse_text ?? '',
                 'paragraph_number' => '1'
             ]]
         ];
