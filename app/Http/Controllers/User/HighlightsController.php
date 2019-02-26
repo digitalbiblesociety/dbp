@@ -259,7 +259,7 @@ class HighlightsController extends APIController
 
         if ($request->highlighted_color) {
             $color = $this->selectColor($request->highlighted_color);
-            $highlight->fill(array_add($request->except('highlighted_color'), 'highlighted_color', $color))->save();
+            $highlight->fill(array_add($request->except('highlighted_color','project_id'), 'highlighted_color', $color))->save();
         } else {
             $highlight->fill($request->except(['project_id']))->save();
         }
