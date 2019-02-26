@@ -13,7 +13,7 @@
 
     <tabs animation="slide" :only-fade="false">
         <tab-pane label="{{ trans('dashboard.metadata') }}" data-shortcut="m">
-            @include('bibles.management.form_tabs_metadata')
+            @include('dashboard.bibles.form_tabs_metadata')
         </tab-pane>
         <tab-pane label="{{ trans('dashboard.links') }}" data-shortcut="l">
             <form-bible-links data-links='{!! str_replace("'","", $bible->links) !!}'></form-bible-links>

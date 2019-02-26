@@ -3,14 +3,23 @@
 namespace App\Http\Controllers\User\Dashboard;
 
 use App\Models\Bible\Bible;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+
+
+use App\Models\Language\Language;
+use App\Models\Bible\BibleTranslation;
+use App\Models\Organization\OrganizationTranslation;
+use App\Models\Language\Alphabet;
+use App\Models\Bible\Book;
 
 class BibleManagementController extends Controller
 {
     public function index()
     {
-        return view('dashboard.bibles.home');
+        $bibles = BibleTranslation::select('bible_id','name')->where('language_id', '6414')->distinct()->get();
+        return view('dashboard.bibles.home', compact('bibles'));
     }
 
     public function show()
@@ -20,11 +29,14 @@ class BibleManagementController extends Controller
 
     public function create()
     {
-        $languages     = Language::select(['iso', 'name'])->get();
-        $organizations = OrganizationTranslation::select(['name', 'organization_id'])->where('language_id', 'eng')->get();
         $alphabets     = Alphabet::select('script')->get();
+        $languages     = Language::select(['iso', 'name'])->get();
+        $bibles        = Bible::with('currentTranslation')->get();
+        $organizations = OrganizationTranslation::select(['name', 'organization_id'])->where('language_id', 'eng')->get();
+        $books         = Book::all();
+        $bible         = new Bible();
 
-        return view('dashboard.bibles.create', compact('languages', 'organizations', 'alphabets'));
+        return view('dashboard.bibles.create', compact('languages', 'organizations', 'alphabets', 'bibles', 'bible', 'books'));
     }
 
     public function update($id)
@@ -88,18 +100,15 @@ class BibleManagementController extends Controller
 
     public function edit($id)
     {
-        $bible = Bible::with('translations.language')->find($id);
-        if (!$this->api) {
-            $languages     = Language::select(['iso', 'name'])->orderBy('iso')->get();
-            $organizations = OrganizationTranslation::select(['name', 'organization_id'])->where(
-                'language_iso',
-                'eng'
-            )->get();
-            $alphabets     = Alphabet::select('script')->get();
-            return view('bibles.edit', compact('languages', 'organizations', 'alphabets', 'bible'));
-        }
+        $bibles        = Bible::with('translations')->get();
+        $bible         = Bible::with('translations.language')->find($id);
+        $books         = Book::all();
+        $organizations = OrganizationTranslation::select(['name', 'organization_id'])->where('language_id', '6466')->get();
+        $alphabets     = Alphabet::select('script')->get();
+        $languages     = Language::select(['iso', 'name'])->orderBy('iso')->get();
+        $language_current = Language::select(['iso', 'name'])->where('id',$bible->language_id)->first();
 
-        return $this->reply(fractal($bible, new BibleTransformer())->toArray());
+        return view('dashboard.bibles.edit', compact('languages', 'organizations', 'alphabets', 'bible','bibles','books', 'language_current'));
     }
 
 

@@ -11,7 +11,7 @@
     ])
 
     <div class="container">
-        @include('bibles.management.form', ['type' => 'PUT','bible' => $bible])
+        @include('dashboard.bibles.form', ['type' => 'PUT', 'bible' => $bible])
     </div>
 
 @endsection

@@ -112,6 +112,10 @@ Localization::localizedRoutesGroup(function () {
     Route::group(['middleware' => ['auth']],  function() {
 
         Route::name('dashboard.bibles')->get('dashboard/bibles',                            'User\Dashboard\BibleManagementController@index');
+        Route::name('dashboard.bibles.create')->get('dashboard/bibles/create',              'User\Dashboard\BibleManagementController@create');
+        Route::name('dashboard.bibles.store')->post('dashboard/bibles',                     'User\Dashboard\BibleManagementController@store');
+        Route::name('dashboard.bibles.edit')->get('dashboard/bibles/{bible_id}',            'User\Dashboard\BibleManagementController@edit');
+        Route::name('dashboard.bibles.update')->put('dashboard/bibles/{bible_id}',          'User\Dashboard\BibleManagementController@update');
 
         Route::name('dashboard')->get('home',                                               'User\Dashboard\DashboardController@home');
         Route::name('dashboard_alt')->get('dashboard',                                      'User\Dashboard\DashboardController@home');

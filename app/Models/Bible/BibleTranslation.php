@@ -49,7 +49,7 @@ use Illuminate\Database\Eloquent\Model;
 class BibleTranslation extends Model
 {
     protected $connection = 'dbp';
-    protected $hidden = ['created_at','updated_at','bible_id','id','notes','pivot','language'];
+    protected $hidden = ['created_at','updated_at','id','notes','pivot','language'];
     protected $fillable = ['name','description','bible_id','iso'];
 
     /**

@@ -8,7 +8,7 @@
     ])
 
     <div class="container">
-        @include('bibles.management.form', ['type' => 'POST'])
+        @include('dashboard.bibles.form', ['type' => 'POST'])
     </div>
 
 

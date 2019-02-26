@@ -31,6 +31,8 @@ if (token) {
 	console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
 
+
+
 // Site
 import VueHotkey from 'v-hotkey'
 import vSelect from 'vue-select'
@@ -49,23 +51,12 @@ Vue.component('form-bible-equivalents', require('./components/FormBibleEquivalen
 Vue.component('form-bible-books',require('./components/FormBibleBooks.vue'))
 Vue.component('task-bible-equivalents', require('./components/Tasks/TaskBibleEquivalents.vue'))
 
-// Docs
-/*
-import VueResource from 'vue-resource'
-Vue.use(VueResource)
-
-Vue.component('open-api', require('./components/Docs/OpenApi.vue'))
-Vue.component('docs-v2',  require('./components/Docs/Docs2.vue'))
-Vue.component('docs-v4',  require('./components/Docs/Docs4.vue'))
-*/
-
 import InstantSearch from 'vue-instantsearch';
 Vue.use(InstantSearch);
 Vue.component('algolia-bible-search', require('./components/Search/AlgoliaBibleSearch.vue'))
 //Vue.component('messages', require('./components/Messages.vue'));
 //Vue.component('open-api', require('./components/OpenApi.vue'));
-
-const app = new Vue({
+var app = new Vue({
     el: '#app'
 });
 
@@ -75,3 +66,7 @@ const app = new Vue({
  * allows your team to easily build robust real-time web applications.
  */
 //import Echo from 'laravel-echo'
+
+import {DataTable} from "simple-datatables"
+const myTable = document.querySelector("#myTable");
+const dataTable = new DataTable(myTable);

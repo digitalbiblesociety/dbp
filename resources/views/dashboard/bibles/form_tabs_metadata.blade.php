@@ -8,8 +8,8 @@
     </div>
 
     <div class="column is-4-desktop">
-        <label class="label" for="iso">{{ trans('dashboard.bibles_language') }}</label>
-        <v-select name="iso" label="name" :options='{!! str_replace("'","", $languages->toJson()) !!}'></v-select>
+        <label class="label" for="iso">Languages</label>
+        <v-select name="iso" label="name" :selected='{!! str_replace("'","", $language_current->toJson()) !!}' :options='{!! str_replace("'","", $languages->toJson()) !!}'></v-select>
         @if($errors->has('iso')) <span class="help-block"><strong>{{ $errors->first('iso') }}</strong></span> @endif
     </div>
 
@@ -26,14 +26,8 @@
     </div>
 
     <div class="column is-4-desktop">
-        <label class="label" for="derived">{{ trans('dashboard.bibles_derived') }}</label>
-        <v-select name="derived" :options='{!! str_replace("'","", $bibles->pluck('id')->toJson()) !!}'></v-select>
-        @if($errors->has('derived')) <span class="help-block"><strong>{{ $errors->first('derived') }}</strong></span> @endif
-    </div>
-
-    <div class="column is-4-desktop">
         <label class="label" for="numeral_system_id">{{ trans('dashboard.bibles_numeral_system_id') }}</label>
-        <v-select name="numeral_system_id" :options='{!! str_replace("'","", $bibles->pluck('numeral_system_id')->unique()->toJson()) !!}'></v-select>
+        <v-select name="numeral_system_id" :selected='{!! str_replace("'","", $bible->numeral_system_id) !!}' :options='{!! str_replace("'","", $bibles->pluck('numeral_system_id')->unique()->toJson()) !!}'></v-select>
         @if($errors->has('numeral_system_id')) <span class="help-block"><strong>{{ $errors->first('numeral_system_id') }}</strong></span> @endif
     </div>
 
@@ -41,16 +35,16 @@
         <label class="label" for="scope">{{ trans('dashboard.bibles_scope') }}</label>
         <div class="select">
         <select name="scope">
-            <option value="C">Complete</option>
-            <option value="NT">New Testament</option>
-            <option value="NTOTP">New Testament, Old Testament Portion</option>
-            <option value="NTP">New Testament Portion</option>
-            <option value="NTPOTP">new Testament Portion, Old Testament Portion</option>
-            <option value="OT">Old Testament</option>
-            <option value="OTNTP">Old Testament, New Testament Portion</option>
-            <option value="OTP">Old Testament Portion</option>
-            <option value="P">Portion</option>
-            <option value="S">Stories</option>
+            <option @if($bible->scope === "NT" ) selected @endif value="NT">New Testament</option>
+            <option @if($bible->scope === "FBA" ) selected @endif value="C">Full Bible with Apocrypha</option>
+            <option @if($bible->scope === "NTOTP" ) selected @endif value="NTOTP">New Testament, Old Testament Portion</option>
+            <option @if($bible->scope === "NTP" ) selected @endif value="NTP">New Testament Portion</option>
+            <option @if($bible->scope === "NTPOTP" ) selected @endif value="NTPOTP">new Testament Portion, Old Testament Portion</option>
+            <option @if($bible->scope === "OT" ) selected @endif value="OT">Old Testament</option>
+            <option @if($bible->scope === "OTNTP" ) selected @endif value="OTNTP">Old Testament, New Testament Portion</option>
+            <option @if($bible->scope === "OTP" ) selected @endif value="OTP">Old Testament Portion</option>
+            <option @if($bible->scope === "P" ) selected @endif value="P">Portion</option>
+            <option @if($bible->scope === "S" ) selected @endif value="S">Stories</option>
         </select>
         </div>
     </div>
@@ -61,7 +55,7 @@
             <select name="versification">
                 @foreach($bibles->pluck('versification')->unique() as $versification)
                     @if($versification != '')
-                    <option @if(($bible->$versification == $versification) ?? (old('versification') == $versification)) selected @endif value="{{ $versification }}">{{ $versification }}</option>
+                        <option @if((optional($bible)->$versification == $versification) ?? (old('versification') == $versification)) selected @endif value="{{ $versification }}">{{ $versification }}</option>
                     @endif
                 @endforeach
             </select>
