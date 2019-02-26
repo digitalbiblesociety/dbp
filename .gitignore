@@ -13,6 +13,7 @@
 /public/scriptures
 /public/uploads
 /public/swagger-editor
+/tests/test-reporter*
 /storage/
 /storage/app/geoip.mmdb
 /storage/framework/
