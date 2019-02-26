@@ -18,11 +18,13 @@
 											<h4 slot="title">{{ tag }}</h4>
 											<div slot="content">
 												<ul class="menu-list">
-													<li><a v-for="(entry, i) in entries" :key="i" v-on:click="select(entry)" style="display: block">
-														<small :class="{'has-text-primary':selectedEntry === entry}" v-html="entry.path.replace(/\//g,'<b>/</b>')"></small>
-														<i v-bind:class="{entry: entry.method}">{{ entry.method }}</i>
-														<b>{{ entry.summary }}</b>
-													</a></li>
+													<li>
+														<a :class="{'has-text-primary':selectedEntry === entry}" v-for="(entry, i) in entries" :key="i" v-on:click="select(entry)" style="display: block">
+															<span v-bind:class="{entry: entry.method}">{{ entry.method }}</span>
+															<b>{{ entry.summary }}</b>
+															<small v-html="entry.path.replace(/\//g,'<b>/</b>')"></small>
+														</a>
+													</li>
 												</ul>
 											</div>
 										</bulma-accordion-item>

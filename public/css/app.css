@@ -11518,9 +11518,6 @@ label.panel-block:hover {
 }
 
 #docs-nav .menu-list a .entry {
-  position: absolute;
-  left: -18px;
-  top: 8px;
   display: inline-block;
 }
 

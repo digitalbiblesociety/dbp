@@ -9,7 +9,7 @@
     <div class="column is-6-desktop" v-for="(parameter, i) in selectedEntry.parameters" :key="i">
 
       <div v-if="(parameter.schema.type === 'string' || parameter.schema.type === 'integer' || parameter.schema.type === 'number') && !parameter.schema.enum">
-        <label class="label">{{parameter.name}} <small class="is-4 has-text-primary has-text-right">{{parameter.schema.type}}</small></label>
+        <label class="label">{{parameter.name}} <small class="is-4 has-text-primary is-pulled-right">{{parameter.schema.type}}</small></label>
         <input class="input" v-model="currentRequest.params[parameter.name]" :type="parameter.schema.type === 'string' ? 'text' : 'number'">
       </div>
 
