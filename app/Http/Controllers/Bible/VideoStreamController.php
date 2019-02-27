@@ -25,10 +25,13 @@ class VideoStreamController extends APIController
      */
     public function index($fileset_id = null, $file_id = null)
     {
-        $fileset = BibleFileset::where('id', $fileset_id)->select(['id','hash_id'])->first();
+        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
+
+        $fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'video_stream')->select('hash_id','id')->first();
         if (!$fileset) {
-            return $this->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $fileset_id]));
+            return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
+
         $file = BibleFile::with('videoResolution')->where('hash_id', $fileset->hash_id)->where('id', $file_id)->first();
         if (!$file) {
             return $this->replyWithError(trans('api.bible_file_errors_404', ['id'=> $file_id]));
@@ -50,12 +53,15 @@ class VideoStreamController extends APIController
      * @param null $file_name
      *
      * @return $this
+     * @throws \Exception
      */
     public function transportStream(Response $response, $fileset_id = null, $file_id = null, $file_name = null)
     {
-        $fileset = BibleFileset::with('bible')->where('id', $fileset_id)->select(['id','hash_id','asset_id'])->first();
+        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
+
+        $fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'video_stream')->select('hash_id','id','asset_id')->first();
         if (!$fileset) {
-            return $this->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $fileset_id]));
+            return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
 
         $file = BibleFile::with('videoResolution.transportStream')->whereId($file_id)->first();

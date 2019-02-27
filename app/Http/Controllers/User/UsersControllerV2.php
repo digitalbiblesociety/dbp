@@ -181,16 +181,19 @@ class UsersControllerV2 extends APIController
     /**
      * @return mixed
      */
-    public function bookmarkStore()
+    public function bookmarkAlter()
     {
         if (request()->hash === $this->hash) {
+
+            if(request()->_method === 'delete') {
+                Bookmark::where('id', request()->id)->delete();
+                return ['Status' => 'Done'];
+            }
+
             $book = Book::where('id_osis', request()->book_id)->first();
-            $bibleFileset = BibleFileset::with('bible')
-                ->where('bible_filesets.id', request()->dam_id)
-                ->orWhere('bible_filesets.id', substr(request()->dam_id, 0, -4))
-                ->orWhere('bible_filesets.id', substr(request()->dam_id, 0, -2))->first();
+            $bibleFileset = BibleFileset::with('bible')->uniqueFileset(request()->dam_id, 'dbp-prod', 'text_plain')->first();
             $bookmark = Bookmark::create([
-                'bible_id'    => $bibleFileset->id,
+                'bible_id'    => $bibleFileset->bible->id,
                 'book_id'     => $book->id,
                 'chapter'     => request()->chapter_id,
                 'verse_start' => request()->verse_id,
@@ -266,23 +269,35 @@ class UsersControllerV2 extends APIController
             }
 
             $book = Book::where('id_osis', request()->book_id)->first();
-            $fileset = BibleFileset::where('id', request()->dam_id)->first();
+            $fileset = BibleFileset::uniqueFileset(request()->dam_id, 'dbp-prod', 'text_plain')->first();
             $chapter = BibleVerse::where('hash_id', $fileset->hash_id)->where('chapter', request()->chapter_id)
-                        ->where('book_id', $book->id_usfx)->where('verse_start', request()->verse_id)->first();
+                        ->where('book_id', $book->id)->where('verse_start', request()->verse_id)->first();
             if (!$chapter) {
                 return $this->setStatusCode(404)->replyWithError('No bible_fileset found');
             }
             $highlightColor = HighlightColor::where('color', request()->color)->first();
-            $highlight = Highlight::create([
+            $highlight_content = [
                 'user_id'           => request()->user_id,
                 'book_id'           => $book->id,
                 'bible_id'          => $fileset->id,
                 'chapter'           => request()->chapter_id,
                 'verse_start'       => request()->verse_id,
-                'highlight_start'   => 1,
-                'highlighted_words' => substr_count($chapter->verse_text, ' ') + 1,
-                'highlighted_color' => $highlightColor->id
-            ]);
+                'highlight_start'   => 1
+            ];
+            $highlight = Highlight::where($highlight_content)->first();
+
+            if($highlight) {
+                $highlight->highlighted_color = $highlightColor->id;
+                $highlight->save();
+            } else {
+                $highlight = Highlight::create(
+                    array_merge($highlight_content, [
+                        'highlighted_words' => substr_count($chapter->verse_text, ' ') + 1,
+                        'highlighted_color' => $highlightColor->id
+                    ])
+                );
+            }
+
             return $this->reply([
                 'user_id'       => (string) $highlight->user_id,
                 'dam_id'        => request()->dam_id,
@@ -304,9 +319,9 @@ class UsersControllerV2 extends APIController
     {
         if ($this->hash === checkParam('hash', true)) {
             $user_id = checkParam('user_id');
-            $updated = checkParam('updated') ?? Carbon::createFromDate(1969);
-            $notes = Note::with('book:id,id_osis,book_testament')->where('user_id', $user_id)->where('updated_at', '>', $updated)->get();
+            $updated = Carbon::createFromDate(2000, 01, 01);
 
+            $notes = Note::with('book')->where('user_id', $user_id)->where('updated_at', '>', $updated)->get();
             return $this->reply(fractal($notes, NoteTransformer::class, NoteArraySerializer::class));
         }
         return $this->setStatusCode(401)->replyWithError('hash does not match');
@@ -316,9 +331,15 @@ class UsersControllerV2 extends APIController
      *
      * @return $this|\Illuminate\Database\Eloquent\Model
      */
-    public function noteStore()
+    public function noteAlter()
     {
         if ($this->hash === request()->hash) {
+
+            if(request()->_method === 'delete') {
+                Note::where('id', request()->id)->delete();
+                return ['Status' => 'Done'];
+            }
+
             $book = Book::where('id_osis', request()->book_id)->first();
             $fileset = BibleFileset::where('id', substr(request()->dam_id, 0, 6))->first();
             if (!$fileset) {

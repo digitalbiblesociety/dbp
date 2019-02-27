@@ -79,7 +79,7 @@ class TextController extends APIController
         // Fetch and Assign $_GET params
         $fileset_id  = checkParam('dam_id|fileset_id', true, $bible_url_param);
         $book_id     = checkParam('book_id', true, $book_url_param);
-        $chapter     = checkParam('chapter_id', true, $chapter_url_param);
+        $chapter     = checkParam('chapter_id', false, $chapter_url_param);
         $verse_start = checkParam('verse_start') ?? 1;
         $verse_end   = checkParam('verse_end');
         $asset_id    = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3.bucket');
@@ -185,7 +185,7 @@ class TextController extends APIController
             $q->where('id', $id);
         })->get();
 
-        return $this->reply(fractal()->collection($fonts)->transformWith(new FontsTransformer())->serializeWith($this->serializer)->toArray());
+        return $this->reply(fractal($fonts, new FontsTransformer(), $this->serializer));
     }
 
     /**
@@ -230,8 +230,7 @@ class TextController extends APIController
         $book_id  = checkParam('book|book_id');
         $asset_id = checkParam('asset_id') ?? 'dbp-prod';
 
-        $fileset = BibleFileset::with('bible')->where('id', $fileset_id)->where('set_type_code', 'text_plain')
-                                                                        ->where('asset_id', $asset_id)->first();
+        $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, 'text_plain')->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
@@ -302,15 +301,13 @@ class TextController extends APIController
         $fileset_id = checkParam('dam_id');
         $asset_id   = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
 
-        $hash_id = optional(BibleFileset::with('bible')->where('id', $fileset_id)
-            ->where('set_type_code', 'text_plain')->where('asset_id', $asset_id)
-            ->select('hash_id')->first())->hash_id;
-        if (!$hash_id) {
+        $fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'text_plain')->select('hash_id')->first();
+        if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
 
         $verses = \DB::connection('dbp')->table('bible_verses')
-            ->where('bible_verses.hash_id', $hash_id)
+            ->where('bible_verses.hash_id', $fileset->hash_id)
             ->join('bible_filesets', 'bible_filesets.hash_id', 'bible_verses.hash_id')
             ->join('books', 'bible_verses.book_id', 'books.id')
             ->select(
@@ -407,16 +404,16 @@ class TextController extends APIController
      */
     public function info()
     {
-        $bible_id    = checkParam('dam_id|bible_id', true);
+        $fileset_id  = checkParam('dam_id|bible_id', true);
         $book_id     = checkParam('book_id');
         $chapter_id  = checkParam('chapter|chapter_id');
         $verse_start = checkParam('verse_start') ?? 1;
         $verse_end   = checkParam('verse_end');
         $asset_id    = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
 
-        $fileset = BibleFileset::where([['id', $bible_id], ['asset_id', $asset_id], ['set_type_code', 'text_plain']])->first();
+        $fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'text_plain')->select('hash_id','id')->first();
         if (!$fileset) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.fileset_errors_404'));
+            return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
 
         $verse_info = BibleVerse::where('hash_id', $fileset->hash_id)->where([

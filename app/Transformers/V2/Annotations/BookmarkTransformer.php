@@ -20,24 +20,23 @@ class BookmarkTransformer extends TransformerAbstract
      */
     public function transform($bookmark)
     {
-        $dam_id = $bookmark->bible_id.substr($bookmark->book_testament, 0, 1).'2ET';
         return [
             'id'                   => (string) $bookmark->id,
             'user_id'              => (string) $bookmark->user_id,
-            'dam_id'               => $dam_id,
-            'book_id'              => (string) $bookmark->book_id,
+            'dam_id'               => $bookmark->bible_id.substr($bookmark->book->book_testament, 0, 1).'2ET',
+            'book_id'              => (string) $bookmark->book->id_osis,
             'chapter_id'           => (string) $bookmark->chapter,
             'verse_id'             => (string) $bookmark->verse_start,
             'created'              => (string) $bookmark->created_at,
             'updated'              => (string) $bookmark->updated_at,
             'dbt_data'             => [[
                 'book_name'        => (string) $bookmark->book->name,
-                'book_id'          => (string) $bookmark->book_id,
+                'book_id'          => (string) $bookmark->book->id_osis,
                 'book_order'       => (string) $bookmark->book->protestant_order,
                 'chapter_id'       => (string) $bookmark->chapter,
                 'chapter_title'    => trans('api.chapter_title_prefix').' '.$bookmark->chapter,
                 'verse_id'         => (string) $bookmark->verse_start,
-                'verse_text'       => $bookmark->verse->verse_text ?? '',
+                'verse_text'       => 'ipsum lorem',
                 'paragraph_number' => '1'
             ]]
         ];

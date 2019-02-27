@@ -391,6 +391,17 @@ class Book extends Model
      */
     protected $updated_at;
 
+    public function scopeSelectByID($query, $id) {
+        $query->where('id', $id)->orWhere('id_osis', $id)->orWhere('id_usfx', $id);
+    }
+
+    public function scopeFilterByTestament($query, $testament)
+    {
+        $query->when($testament, function ($q) use ($testament) {
+            $q->where('book_testament', $testament);
+        });
+    }
+
     public function translations()
     {
         return $this->hasMany(BookTranslation::class, 'book_id');

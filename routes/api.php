@@ -53,12 +53,14 @@ Route::name('v2_users_profile')->post('/users/profile',                         
 Route::name('v2_user_login')->match(['put','post','options'], '/users/login',      'User\UsersControllerV2@login');
 Route::name('v2_annotations')->get('/annotations/list',                            'User\UsersControllerV2@annotationList');
 Route::name('v2_bookmarks')->get('/annotations/bookmark',                          'User\UsersControllerV2@bookmark');
-Route::name('v2_bookmarks_store')->post('/annotations/bookmark',                   'User\UsersControllerV2@bookmarkStore');
+Route::name('v2_bookmarks_alter')->post('/annotations/bookmark',                   'User\UsersControllerV2@bookmarkAlter');
+Route::name('v2_bookmarks_delete')->delete('/annotations/bookmark',                'User\UsersControllerV2@bookmarkAlter');
 Route::name('v2_notes')->get('/annotations/note',                                  'User\UsersControllerV2@note');
-Route::name('v2_notes_store')->post('/annotations/note',                           'User\UsersControllerV2@noteStore');
+Route::name('v2_notes_store')->post('/annotations/note',                           'User\UsersControllerV2@noteAlter');
+Route::name('v2_notes_delete')->delete('/annotations/note',                        'User\UsersControllerV2@noteAlter');
 Route::name('v2_highlights')->get('/annotations/highlight',                        'User\UsersControllerV2@highlight');
 Route::name('v2_highlights_store')->post('/annotations/highlight',                 'User\UsersControllerV2@highlightAlter');
-Route::name('v2_highlights_destroy')->delete('/annotations/highlight',             'User\UsersControllerV2@highlightAlter');
+Route::name('v2_highlights_delete')->delete('/annotations/highlight',              'User\UsersControllerV2@highlightAlter');
 
 Route::prefix('v3')->group(function () {
     Route::name('v3_query')->get('search',                                         'Connections\V3Controller@search');

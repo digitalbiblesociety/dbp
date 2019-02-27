@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Connections;
 
 use App\Http\Controllers\APIController;
 use App\Transformers\ArclightTransformer;
+use Spatie\Fractalistic\ArraySerializer;
 
 class ArclightController extends APIController
 {
@@ -54,7 +55,7 @@ class ArclightController extends APIController
             return $components;
         });
 
-        return $this->reply(fractal($chapters, new ArclightTransformer()));
+        return $this->reply(fractal($chapters, new ArclightTransformer(), new ArraySerializer()));
     }
 
     public function chapter($chapter_id)

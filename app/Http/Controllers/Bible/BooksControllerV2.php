@@ -51,45 +51,31 @@ class BooksControllerV2 extends APIController
     {
         $id        = checkParam('dam_id');
         $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $fileset_type = checkParam('fileset_type') ?? 'text_plain';
 
-        $fileset   = BibleFileset::with('bible')->where('asset_id', $asset_id)
-            ->where('id', $id)
-            ->orWhere('id', substr($id, 0, -4))
-            ->orWhere('id', substr($id, 0, -2))
-            ->orWhere('id', 'LIKE', $id.'%')
-            ->first();
+        $fileset   = BibleFileset::with('bible')->uniqueFileset($id, $asset_id, $fileset_type)->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
-        $testament = false;
 
-        switch ($id[\strlen($id) - 2]) {
-            case 'O':
-                $testament = 'OT';
-                break;
-
-            case 'N':
-                $testament = 'NT';
-                break;
-        }
-
+        $testament = $this->getTestamentString($id);
         $cache_string = strtolower('v2_library_book:' . $asset_id .':'. $id .':' . $fileset . '_' . $testament);
-        $libraryBook = \Cache::remember($cache_string, now()->addDay(),
-            function () use ($id, $fileset, $testament) {
+        $libraryBook = \Cache::remember($cache_string, now()->addDay(), function () use ($id, $fileset, $testament) {
 
-                if ($fileset->set_type_code === 'text_plain') {
-                    // If plain text check BibleVerse
-                    $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select('book_id', 'chapter')->distinct()->get();
-                    $chapter_field = 'chapter';
-                } else {
-                    // Otherwise refer to Bible Files
-                    $booksChapters = BibleFile::where('hash_id', $fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
-                    $chapter_field = 'chapter_start';
-                }
+            if ($fileset->set_type_code === 'text_plain') {
+                // If plain text check BibleVerse
+                $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select(['book_id', 'chapter'])->distinct()->get();
+                $chapter_field = 'chapter';
+            } else {
+                // Otherwise refer to Bible Files
+                $booksChapters = BibleFile::where('hash_id', $fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
+                $chapter_field = 'chapter_start';
+            }
 
-                $books = Book::whereIn('id', $booksChapters->pluck('book_id'))->when($testament, function ($q) use ($testament) {
-                    $q->where('book_testament', $testament);
-                })->orderBy('protestant_order')->get();
+               $books = Book::whereIn('id', $booksChapters->pluck('book_id')->unique())
+                            ->filterByTestament($testament)
+                            ->orderBy('protestant_order')->get();
+
                 foreach ($books as $key => $book) {
                     $current_chapters[$key] = $booksChapters->where('book_id', $book->id)->pluck($chapter_field);
                 }
@@ -114,23 +100,12 @@ class BooksControllerV2 extends APIController
         $id        = checkParam('dam_id', true);
         $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? 'dbp-prod';
 
-        $fileset   = BibleFileset::with('bible')
-            ->where(function($query) use ($id) {
-                $query->where('id', $id)->orWhere('id', substr($id, 0, -4))->orWhere('id', substr($id, 0, -2));
-            })->where('asset_id', $asset_id)->where('set_type_code', 'text_plain')->first();
+        $fileset   = BibleFileset::with('bible')->uniqueFileset($id, $asset_id, 'text_plain')->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
-        $testament = false;
 
-        switch ($id[\strlen($id) - 2]) {
-            case 'O':
-                $testament = 'OT';
-                break;
-
-            case 'N':
-                $testament = 'NT';
-        }
+        $testament = $this->getTestamentString($id);
         $cache_string = strtolower('v2_library_bookOrder_' . $id . $asset_id . $fileset . $testament);
         $libraryBook = \Cache::remember($cache_string, now()->addDay(),
             function () use ($id, $fileset, $testament) {
@@ -268,9 +243,8 @@ class BooksControllerV2 extends APIController
 
         $cache_string = strtolower('v2_library_chapter:' . $asset_id . ':' . $id . '_' . $book_id);
         $chapters = \Cache::remember($cache_string, now()->addDay(), function () use ($id, $asset_id, $book_id) {
-            $fileset = BibleFileset::where(function ($query) use($id) {
-                $query->where('id', $id)->orWhere('id', substr($id, 0, -4));
-            })->where('set_type_code', 'text_plain')->where('asset_id', $asset_id)->first();
+
+            $fileset = BibleFileset::with('bible')->uniqueFileset($id, $asset_id, 'text_plain')->first();
             if (!$fileset) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
             }
@@ -295,5 +269,25 @@ class BooksControllerV2 extends APIController
         });
 
         return $this->reply($chapters);
+    }
+
+    /**
+     * @param $id
+     *
+     * @return bool|string
+     */
+    private function getTestamentString($id)
+    {
+        $testament = false;
+        switch ($id[\strlen($id) - 2]) {
+            case 'O':
+                $testament = 'OT';
+                break;
+
+            case 'N':
+                $testament = 'NT';
+                break;
+        }
+        return $testament;
     }
 }

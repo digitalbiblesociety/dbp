@@ -28,7 +28,7 @@ class HighlightTransformer extends TransformerAbstract
             'book_id'              => (string) $highlight->book_id,
             'chapter_id'           => (string) $highlight->chapter,
             'verse_id'             => (string) $highlight->verse_start,
-            'color'                => $highlight->color->name ?? 'green',
+            'color'                => $highlight->color->color ?? 'green',
             'created'              => (string) $highlight->created_at,
             'updated'              => (string) $highlight->updated_at,
             'dbt_data'             => [[
