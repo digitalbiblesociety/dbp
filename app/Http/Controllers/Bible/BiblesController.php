@@ -107,7 +107,7 @@ class BiblesController extends APIController
 
         if($media) {
             $media_types = BibleFilesetType::select('set_type_code')->get();
-            $media_type_exists = $media_types->where('name',$media);
+            $media_type_exists = $media_types->where('set_type_code', $media);
             if($media_type_exists->isEmpty()) {
                 return $this->setStatusCode(404)->replyWithError('media type not found. must be one of ' . $media_types->pluck('set_type_code')->implode(','));
             }
