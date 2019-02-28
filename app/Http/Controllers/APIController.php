@@ -15,6 +15,7 @@ use Spatie\ArrayToXml\ArrayToXml;
 use Log;
 use Symfony\Component\Yaml\Yaml;
 use Yosymfony\Toml\TomlBuilder;
+use Illuminate\Support\Str;
 
 class APIController extends Controller
 {
@@ -104,7 +105,7 @@ class APIController extends Controller
     {
         $url           = explode('.', url()->current());
         $subdomain     = array_shift($url);
-        if (str_contains($subdomain, 'api')) {
+        if (Str::contains($subdomain, 'api')) {
             $this->api = true;
             $this->v   = (int) checkParam('v', true, $this->preset_v);
             $this->key = checkParam('key', true);

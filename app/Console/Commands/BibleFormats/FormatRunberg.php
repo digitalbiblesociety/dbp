@@ -4,7 +4,7 @@ namespace App\Console\Commands\BibleFormats;
 
 use App\Models\Bible\Book;
 use Illuminate\Console\Command;
-
+use Illuminate\Support\Arr;
 class FormatRunberg extends Command
 {
     /**
@@ -35,7 +35,7 @@ class FormatRunberg extends Command
         }
 
         foreach ($chaptersByBook as $book_number => $chapters) {
-            $chapters_in_order = array_sort($chapters);
+            $chapters_in_order = Arr::sort($chapters);
             $book =  Book::where('protestant_order', (int) $book_number)->first();
             if(!$book) {
                 echo "skipping: $book_number";

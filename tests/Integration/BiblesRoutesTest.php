@@ -7,6 +7,8 @@ use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
 use App\Traits\AccessControlAPI;
 
+use Illuminate\Support\Arr;
+
 class BiblesRoutesTest extends ApiV4Test
 {
 
@@ -151,7 +153,7 @@ class BiblesRoutesTest extends ApiV4Test
      */
     public function bibleLinks()
     {
-        $path = route('v4_bible.links', array_add($this->params, 'iso', 'eng'));
+        $path = route('v4_bible.links', Arr::add($this->params, 'iso', 'eng'));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
@@ -265,7 +267,7 @@ class BiblesRoutesTest extends ApiV4Test
      */
     public function bibleOne()
     {
-        $path = route('v4_bible.one', array_add($this->params, 'bible_id', 'ENGESV'));
+        $path = route('v4_bible.one', Arr::add($this->params, 'bible_id', 'ENGESV'));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();

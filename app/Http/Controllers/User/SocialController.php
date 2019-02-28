@@ -18,6 +18,7 @@ use Laravel\Socialite\Two\GithubProvider;
 use Laravel\Socialite\Two\GoogleProvider;
 
 use Socialite;
+use Illuminate\Support\Str;
 
 class SocialController extends APIController
 {
@@ -136,11 +137,11 @@ class SocialController extends APIController
             $user = User::where('email', $providerUser->getEmail())->first();
             if (!$user) {
                 $user = User::create([
-                    'id'        => str_random(24),
+                    'id'        => Str::random(24),
                     'email'     => $providerUser->getEmail(),
                     'name'      => $providerUser->getName(),
-                    'password'  => bcrypt(str_random(16)),
-                    'token'     => str_random(10),
+                    'password'  => bcrypt(Str::random(16)),
+                    'token'     => Str::random(10),
                     'activated' => 1,
                 ]);
             }

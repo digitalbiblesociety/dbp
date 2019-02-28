@@ -6,6 +6,7 @@ use App\Models\User\Study\Highlight;
 use App\Models\User\User;
 use App\Models\User\Key;
 
+use Illuminate\Support\Arr;
 class UserHighlightTest extends ApiV4Test
 {
 
@@ -21,7 +22,7 @@ class UserHighlightTest extends ApiV4Test
     public function highlightIndexErrors()
     {
         // User 404
-        $path = route('v4_highlights.index', array_add($this->params, 'user_id', 'not-a-real-user'));
+        $path = route('v4_highlights.index', Arr::add($this->params, 'user_id', 'not-a-real-user'));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertStatus(404);
@@ -39,7 +40,7 @@ class UserHighlightTest extends ApiV4Test
     public function highlights()
     {
         $key = Key::where('key',$this->key)->first();
-        $path = route('v4_highlights.index', array_add($this->params, 'user_id', $key->user_id));
+        $path = route('v4_highlights.index', Arr::add($this->params, 'user_id', $key->user_id));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
@@ -56,7 +57,7 @@ class UserHighlightTest extends ApiV4Test
             'highlighted_color' => '#fff000',
         ];
 
-        $path = route('v4_highlights.store', array_add($this->params, 'user_id', $key->user_id));
+        $path = route('v4_highlights.store', Arr::add($this->params, 'user_id', $key->user_id));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->post($path, $test_highlight_post);
         $response->assertSuccessful();

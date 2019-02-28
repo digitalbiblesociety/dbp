@@ -6,7 +6,7 @@ use App\Models\Country\Country;
 use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 use App\Models\Language\NumeralSystem;
-
+use Illuminate\Support\Arr;
 class WikiRoutesTest extends ApiV4Test
 {
 
@@ -33,7 +33,7 @@ class WikiRoutesTest extends ApiV4Test
         $response->assertSuccessful();
 
         $current_country = Country::inRandomOrder()->first();
-        $path = route('v4_countries.one', array_add($this->params, 'country_id', $current_country->id));
+        $path = route('v4_countries.one', Arr::add($this->params, 'country_id', $current_country->id));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
@@ -58,7 +58,7 @@ class WikiRoutesTest extends ApiV4Test
         $response->assertSuccessful();
 
         $current_language = Language::inRandomOrder()->first();
-        $path = route('v4_languages.one', array_add($this->params, 'language_id', $current_language->id));
+        $path = route('v4_languages.one', Arr::add($this->params, 'language_id', $current_language->id));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
@@ -82,7 +82,7 @@ class WikiRoutesTest extends ApiV4Test
         $response->assertSuccessful();
 
         $current_alphabet = Alphabet::inRandomOrder()->first();
-        $path = route('v4_alphabets.one', array_add($this->params, 'alphabet_id', $current_alphabet->script));
+        $path = route('v4_alphabets.one', Arr::add($this->params, 'alphabet_id', $current_alphabet->script));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();

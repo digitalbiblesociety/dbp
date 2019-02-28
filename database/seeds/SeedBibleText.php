@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Bible\Book;
 use App\Models\Bible\BibleVerse;
 use App\Models\Bible\BibleFileset;
-
+use Illuminate\Support\Str;
 class SeedBibleText extends Seeder
 {
     /**
@@ -48,13 +48,13 @@ class SeedBibleText extends Seeder
                             continue;
                         }
 
-                        $verseIsSplit = str_contains($verse->canon_order, ['a','b','c','d','e']);
+                        $verseIsSplit = Str::contains($verse->canon_order, ['a','b','c','d','e']);
 
                         if (!$verseIsSplit) {
                             $verse_text_combined = '';
                         }
 
-                        if (str_contains($verse->canon_order, ['a'])) {
+                        if (Str::contains($verse->canon_order, ['a'])) {
                             $verse_text_combined = $verse->verse_text;
                             $verse_number_combined = $verse->verse_start;
                             continue;

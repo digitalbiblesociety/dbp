@@ -10,7 +10,9 @@ use App\Models\User\Project;
 use App\Models\User\ProjectMember;
 use App\Models\User\ProjectOauthProvider;
 use App\Models\User\User;
+
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Arr;
 
 class UserRoutesTest extends ApiV4Test
 {
@@ -33,7 +35,7 @@ class UserRoutesTest extends ApiV4Test
         $response->assertSuccessful();
 
         $group = AccessGroup::inRandomOrder()->first();
-        $path              = route('v4_access_groups.show', array_add($this->params, 'id', $group->name));
+        $path              = route('v4_access_groups.show', Arr::add($this->params, 'id', $group->name));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
@@ -90,7 +92,7 @@ class UserRoutesTest extends ApiV4Test
         $key = Key::with('user.projectMembers')->where('key',$this->key)->first();
         $project_id = $key->user->projectMembers->whereIn('role_id',[2,4])->first()->project_id;
 
-        $path = route('v4_user.index', array_add($this->params, 'project_id', $project_id));
+        $path = route('v4_user.index', Arr::add($this->params, 'project_id', $project_id));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
@@ -235,7 +237,7 @@ class UserRoutesTest extends ApiV4Test
     public function notes()
     {
         $key = Key::where('key',$this->key)->first();
-        $path = route('v4_notes.index', array_add($this->params, 'user_id', $key->user_id));
+        $path = route('v4_notes.index', Arr::add($this->params, 'user_id', $key->user_id));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
@@ -286,7 +288,7 @@ class UserRoutesTest extends ApiV4Test
     {
         $key = Key::where('key', $this->key)->first();
 
-        $path = route('v4_bookmarks.index', array_add($this->params, 'user_id', $key->user_id));
+        $path = route('v4_bookmarks.index', Arr::add($this->params, 'user_id', $key->user_id));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
@@ -298,7 +300,7 @@ class UserRoutesTest extends ApiV4Test
             'chapter'       => 1,
             'verse_start'   => 10,
         ];
-        $path = route('v4_bookmarks.store', array_add($this->params, 'user_id', $key->user_id));
+        $path = route('v4_bookmarks.store', Arr::add($this->params, 'user_id', $key->user_id));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->post($path, $test_bookmark);
         $response->assertSuccessful();

@@ -6,6 +6,7 @@ use App\Models\User\Project;
 use App\Models\User\Role;
 use App\Models\User\User;
 use Faker\Generator as Faker;
+use Illuminate\Support\Str;
 
 class UsersSeeder extends Seeder
 {
@@ -22,7 +23,7 @@ class UsersSeeder extends Seeder
             'last_name'                      => $faker->lastName,
             'email'                          => $faker->unique()->safeEmail,
             'password'                       => bcrypt('password'),
-            'token'                          => str_random(64),
+            'token'                          => Str::random(64),
             'activated'                      => true,
             'signup_ip_address'              => $faker->ipv4,
             'signup_confirmation_ip_address' => $faker->ipv4,
@@ -55,7 +56,7 @@ class UsersSeeder extends Seeder
                 'last_name'                      => $faker->lastName,
                 'email'                          => $faker->unique()->safeEmail,
                 'password'                       => bcrypt('password'),
-                'token'                          => str_random(64),
+                'token'                          => Str::random(64),
                 'activated'                      => true,
                 'signup_ip_address'              => $faker->ipv4,
                 'signup_confirmation_ip_address' => $faker->ipv4,
@@ -91,7 +92,7 @@ class UsersSeeder extends Seeder
                 'user_id'    => $user->id,
                 'project_id' => $projects->random()->id,
                 'role_id'    => $role_id,
-                'token'      => str_random(12)
+                'token'      => Str::random(12)
             ]);
         }
     }

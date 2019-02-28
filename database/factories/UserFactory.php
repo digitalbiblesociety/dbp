@@ -5,8 +5,8 @@ use App\Models\User\User;
 use App\Models\User\Profile;
 use App\Models\User\Key;
 use App\Models\User\AccessGroupKey;
-
 use App\Models\Organization\Organization;
+use Illuminate\Support\Str;
 
 $factory->define(Key::class, function (Faker $faker) {
     return [
@@ -28,9 +28,9 @@ $factory->define(User::class, function (Faker $faker) {
         'last_name'                      => $faker->lastName,
         'email'                          => $faker->unique()->safeEmail,
         'password'                       => $password ?: $password = bcrypt('secret'),
-        'token'                          => str_random(64),
+        'token'                          => Str::random(64),
         'activated'                      => true,
-        'remember_token'                 => str_random(10),
+        'remember_token'                 => Str::random(10),
         'signup_ip_address'              => $faker->ipv4,
         'signup_confirmation_ip_address' => $faker->ipv4,
     ];
@@ -83,7 +83,7 @@ $factory->define(Organization::class, function ($faker) {
 $factory->define(\App\Models\User\Role::class, function ($faker) {
     return [
         'name'        => $faker->name,
-        'slug'        => str_slug($faker->name),
+        'slug'        => Str::slug($faker->name),
         'description' => $faker->name
     ];
 });

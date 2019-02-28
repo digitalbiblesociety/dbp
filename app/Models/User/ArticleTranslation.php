@@ -4,6 +4,7 @@ namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * App\Models\User\ArticleTranslation
@@ -33,7 +34,7 @@ class ArticleTranslation extends Model
 
     public function getSlugAttribute()
     {
-        return str_slug($this->name);
+        return Str::slug($this->name);
     }
 
     public function article()

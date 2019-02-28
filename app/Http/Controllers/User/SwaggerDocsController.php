@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
-use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class SwaggerDocsController extends APIController
 {
@@ -31,7 +32,7 @@ class SwaggerDocsController extends APIController
         $swagger = \Cache::remember('OAS_'.$version, now()->addDay(), function () use ($version, $otherVersion) {
             $swagger = \OpenApi\scan(app_path());
             foreach ($swagger->components->schemas as $key => $component) {
-                if (str_contains($swagger->components->schemas[$key]->title, $otherVersion)) {
+                if (Str::contains($swagger->components->schemas[$key]->title, $otherVersion)) {
                     unset($swagger->components->schemas[$key]);
                 }
             }
@@ -46,28 +47,28 @@ class SwaggerDocsController extends APIController
     private function swaggerVersionTags($tags, $version)
     {
         foreach ($tags as $key => $tag) {
-            if (str_contains($tags[$key]->description, $version)) {
+            if (Str::contains($tags[$key]->description, $version)) {
                 unset($tags[$key]);
             } else {
                 $tags[$key]->description = substr($tags[$key]->description, 2);
             }
         }
-        return array_flatten($tags);
+        return Arr::flatten($tags);
     }
 
     private function swaggerVersionPaths($paths, $version)
     {
         foreach ($paths as $key => $path) {
-            if (isset($path->get->operationId) && str_contains($path->get->operationId, $version)) {
+            if (isset($path->get->operationId) && Str::contains($path->get->operationId, $version)) {
                 unset($paths[$key]);
             }
-            if (isset($path->put->operationId) && str_contains($path->put->operationId, $version)) {
+            if (isset($path->put->operationId) && Str::contains($path->put->operationId, $version)) {
                 unset($paths[$key]);
             }
-            if (isset($path->post->operationId) && str_contains($path->post->operationId, $version)) {
+            if (isset($path->post->operationId) && Str::contains($path->post->operationId, $version)) {
                 unset($paths[$key]);
             }
-            if (isset($path->delete->operationId) && str_contains($path->delete->operationId, $version)) {
+            if (isset($path->delete->operationId) && Str::contains($path->delete->operationId, $version)) {
                 unset($paths[$key]);
             }
         }

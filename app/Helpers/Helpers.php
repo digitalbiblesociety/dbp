@@ -101,7 +101,6 @@ if (! function_exists('unique_random')) {
     /**
      *
      * Generate a unique random string of characters
-     * uses str_random() helper for generating the random string
      *
      * @param      $table - name of the table
      * @param      $col   - name of the column that needs to be tested
@@ -119,7 +118,7 @@ if (! function_exists('unique_random')) {
 
         do {
             // Generate random string of characters
-            $random = str_random($chars);
+            $random = Illuminate\Support\Str::random($chars);
 
             // Check if it's already testing
             // If so, don't query the database again

@@ -8,6 +8,8 @@ use App\Models\User\ProjectMember;
 use App\Models\User\Role;
 use App\Models\User\User;
 
+use Illuminate\Support\Arr;
+
 class ProjectRoutesTest extends ApiV4Test
 {
 
@@ -79,7 +81,7 @@ class ProjectRoutesTest extends ApiV4Test
            'role_id' => $admin_role->id,
         ]);
 
-        $path = route('v4_oAuth.index', array_add($this->params, 'project_id', $project->id));
+        $path = route('v4_oAuth.index', Arr::add($this->params, 'project_id', $project->id));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();

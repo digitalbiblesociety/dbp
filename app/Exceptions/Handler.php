@@ -11,7 +11,7 @@ use Mail;
 use Response;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
-
+use Illuminate\Support\Arr;
 class Handler extends ExceptionHandler
 {
     /**
@@ -75,7 +75,7 @@ class Handler extends ExceptionHandler
             $message = $message->toArray();
         }
         return response()->json([
-            'errors'      => array_wrap($message),
+            'errors'      => Arr::wrap($message),
             'status_code' => $exception->getStatusCode(),
             'host_name'   => gethostname()
         ], $exception->getStatusCode());

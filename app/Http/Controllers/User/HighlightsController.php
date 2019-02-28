@@ -14,6 +14,7 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Validator;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class HighlightsController extends APIController
 {
@@ -259,7 +260,7 @@ class HighlightsController extends APIController
 
         if ($request->highlighted_color) {
             $color = $this->selectColor($request->highlighted_color);
-            $highlight->fill(array_add($request->except('highlighted_color','project_id'), 'highlighted_color', $color))->save();
+            $highlight->fill(Arr::add($request->except('highlighted_color','project_id'), 'highlighted_color', $color))->save();
         } else {
             $highlight->fill($request->except(['project_id']))->save();
         }

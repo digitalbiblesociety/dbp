@@ -10,6 +10,8 @@ use App\Models\User\Role;
 use Illuminate\Http\Request;
 use Validator;
 
+use Illuminate\Support\Arr;
+
 class OAuthProvidersController extends APIController
 {
     /**
@@ -97,7 +99,7 @@ class OAuthProvidersController extends APIController
             return $invalidRequest;
         }
 
-        $provider = ProjectOauthProvider::create(array_add($request->all(), 'id', 'generated'));
+        $provider = ProjectOauthProvider::create(Arr::add($request->all(), 'id', 'generated'));
         return $this->setStatusCode(200)->reply($provider);
     }
 

@@ -4,7 +4,7 @@ namespace App\Transformers\V2;
 
 use App\Models\Bible\BibleFileset;
 use App\Transformers\BaseTransformer;
-
+use Illuminate\Support\Str;
 /**
  * Class LibraryVolumeTransformer
  *
@@ -143,7 +143,7 @@ class LibraryVolumeTransformer extends BaseTransformer
                     'audio_zip_path'            => $fileset->generated_id.'/'.$fileset->generated_id.'.zip',
                     'font'                      => null,
                     'arclight_language_id'      => $fileset->arclight_code,
-                    'media'                     => str_contains($fileset->set_type_code, 'audio') ? 'audio' : 'text',
+                    'media'                     => Str::contains($fileset->set_type_code, 'audio') ? 'audio' : 'text',
                     'media_type'                => ((int) substr($fileset->generated_id, -3, 1) === 2) ? 'Drama' : 'Non-Drama',
                     'delivery'                  => [
                         'mobile',

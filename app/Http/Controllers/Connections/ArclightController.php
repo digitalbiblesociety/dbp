@@ -123,6 +123,17 @@ class ArclightController extends APIController
         $language_id = checkParam('language_id');
         $media_components = $this->fetch('media-components/'.$chapter_id.'/languages/'.$language_id, ['platform' => 'web']);
 
+        $current_file = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=320000\n";
+        $current_file .= $media_components->downloadUrls->low->url;
+//med.m3u8
+//#EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=564000
+//high.m3u8
+//#EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=136000
+//low.m3u8
+//#EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=64000
+//audio.m3u8
+//
+
         $current_file = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-ALLOW-CACHE:YES\n#EXT-X-TARGETDURATION:4";
 //      $current_file .= "\n#EXTINF:\n".$media_components->downloadUrls->low->url;
         $current_file .= "\n#EXTINF:".($media_components->lengthInMilliseconds / 1000)."\n".$media_components->downloadUrls->high->url;

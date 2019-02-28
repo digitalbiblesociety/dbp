@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\User\User;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class syncV2Users extends Command
 {
@@ -41,7 +42,7 @@ class syncV2Users extends Command
                        'password'         => bcrypt($user->password),
                        'first_name'       => $user->first_name,
                        'last_name'        => $user->last_name,
-                       'token'            => str_random(24),
+                       'token'            => Str::random(24),
                        'email'            => $user->email,
                        'activated'        => (int) $user->confirmed,
                        'created_at'       => Carbon::createFromTimeString($user->created),

@@ -15,6 +15,7 @@ use Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class PasswordsController extends APIController
 {
@@ -87,7 +88,7 @@ class PasswordsController extends APIController
 
         $generatedToken = PasswordReset::create([
             'email' => $request->email,
-            'token' => str_random(64),
+            'token' => Str::random(64),
             'reset_path' => $request->reset_path,
             'created_at' => Carbon::now()
         ]);

@@ -11,6 +11,7 @@ use Mockery as m;
 use Torann\GeoIP\GeoIP;
 
 use Tests\Integration\ApiV4Test;
+use Illuminate\Support\Str;
 
 class AccessControlTest extends ApiV4Test
 {
@@ -27,8 +28,8 @@ class AccessControlTest extends ApiV4Test
         $access_controls = $this->accessControl($user->keys->first());
 
         $this->assertTrue(count($access_controls->hashes) > 0);
-        $this->assertFalse(str_contains($access_controls->string, 'RESTRICTED'));
-        $this->assertTrue(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
+        $this->assertFalse(Str::contains($access_controls->string, 'RESTRICTED'));
+        $this->assertTrue(Str::contains($access_controls->string, 'PUBLIC_DOMAIN'));
     }
 
     /**
@@ -41,8 +42,8 @@ class AccessControlTest extends ApiV4Test
         $access_controls = $this->accessControl('this-is-not-a-real-api-key');
 
         $this->assertFalse(count($access_controls->hashes) > 0);
-        $this->assertFalse(str_contains($access_controls->string, 'RESTRICTED'));
-        $this->assertFalse(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
+        $this->assertFalse(Str::contains($access_controls->string, 'RESTRICTED'));
+        $this->assertFalse(Str::contains($access_controls->string, 'PUBLIC_DOMAIN'));
     }
 
     /**
@@ -60,8 +61,8 @@ class AccessControlTest extends ApiV4Test
 
         // Assert hashes attached to the group are returned
         $this->assertTrue(count($access_controls->hashes) > 0);
-        $this->assertFalse(str_contains($access_controls->string, 'RESTRICTED'));
-        $this->assertTrue(str_contains($access_controls->string, 'PUBLIC_DOMAIN'));
+        $this->assertFalse(Str::contains($access_controls->string, 'RESTRICTED'));
+        $this->assertTrue(Str::contains($access_controls->string, 'PUBLIC_DOMAIN'));
     }
 
 
@@ -77,7 +78,7 @@ class AccessControlTest extends ApiV4Test
         $user = $this->createUserAndAccessGroup(factory(AccessType::class)->make(['country_id' => 'IN']));
         $access_controls = $this->accessControl($user->keys->first());
 
-        $this->assertFalse(str_contains($access_controls->string, 'RESTRICTED'));
+        $this->assertFalse(Str::contains($access_controls->string, 'RESTRICTED'));
         $this->assertEquals($access_controls->string, 'PUBLIC_DOMAIN'); // Only public domain group for limited access
     }
 

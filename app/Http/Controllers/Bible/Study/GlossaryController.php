@@ -11,8 +11,7 @@ class GlossaryController extends APIController
     public function people()
     {
         $glossary_person = checkParam('glossary_person');
-
-        $person = GlossaryPerson::with('names', 'relationships', 'translation')->where('id',$glossary_person)->first();
+        $person = GlossaryPerson::with('names', 'relationships', 'translation')->where('id', $glossary_person)->first();
         return $person;
     }
 

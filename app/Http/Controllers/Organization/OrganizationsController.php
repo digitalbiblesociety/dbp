@@ -9,6 +9,7 @@ use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Transformers\OrganizationTransformer;
 use App\Transformers\BibleTransformer;
+use Illuminate\Support\Arr;
 
 class OrganizationsController extends APIController
 {
@@ -164,7 +165,7 @@ class OrganizationsController extends APIController
         $destination_links = BibleLink::where('organization_id', $destination_organization->id)->get()->pluck('bible_id');
         $destination = $destination_bibles->merge($destination_links);
 
-        $bible_array = array_flatten(array_sort($destination->diff($source)->unique()));
+        $bible_array = Arr::flatten(Arr::sort($destination->diff($source)->unique()));
         $bibles = Bible::with('translations')->whereIn('id',$bible_array)->get();
 
         return $this->reply($bibles);

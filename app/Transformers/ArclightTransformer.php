@@ -24,6 +24,7 @@ class ArclightTransformer extends BaseTransformer
     {
         $id = (int) substr($arclight->mediaComponentId, 6, 2);
         $computed_media = substr_replace($arclight->mediaComponentId, $arclight->language_id.'-', 2, 0);
+
         return [
             'id'                   => (string) $id,
             'name'                 => (string) $arclight->title,

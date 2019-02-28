@@ -4,6 +4,8 @@ namespace App\Transformers;
 
 use App\Models\Bible\Bible;
 
+use Illuminate\Support\Arr;
+
 class BibleTransformer extends BaseTransformer
 {
 
@@ -143,7 +145,7 @@ class BibleTransformer extends BaseTransformer
                             $output_organizations[] = $fileset->copyrightOrganization->pluck('organization_id')->implode(',');
                         }
                     }
-                    $output_organizations = array_flatten(array_unique($output_organizations));
+                    $output_organizations = Arr::flatten(array_unique($output_organizations));
                     $output['organizations'] = $output_organizations;
                 }
                 if ($bible->relationLoaded('country')) {
