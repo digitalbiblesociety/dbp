@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Connections;
 
 use App\Http\Controllers\APIController;
+use App\Models\Language\Language;
 use App\Transformers\ArclightTransformer;
 use Spatie\Fractalistic\ArraySerializer;
 
@@ -20,6 +21,64 @@ class ArclightController extends APIController
         parent::__construct();
         $this->api_key  = config('services.arclight.key');
         $this->base_url = 'https://api.arclight.org/v2/';
+    }
+
+    public function volumes()
+    {
+        return \Cache::remember('media-languages', now()->addWeek(), function () {
+            $current_time = now();
+            $languages = collect($this->fetch('media-languages')->mediaLanguages)->pluck('languageId', 'iso3');
+            $language_names = Language::whereIn('iso', array_keys($languages->toArray()))->get()->pluck('name','iso');
+
+            foreach ($languages as $iso => $arclight_language_id) {
+                $dam_id = strtoupper($iso).'JFVS2DV';
+                if(!isset($language_names[$iso])) {
+                    continue;
+                }
+                $jesusFilms[] = [
+                    'dam_id'                  => $dam_id,
+                    'fcbh_id'                 => $dam_id,
+                    'volume_name'             => '',
+                    'status'                  => 'live',
+                    'dbp_agreement'           => 'true',
+                    'expiration'              => '0000-00-00',
+                    'language_code'           => strtoupper($iso),
+                    'language_name'           => $language_names[$iso],
+                    'language_english'        => $language_names[$iso],
+                    'language_iso'            => $iso,
+                    'language_iso_2B'         => '',
+                    'language_iso_2T'         => '',
+                    'language_iso_1'          => '',
+                    'language_iso_name'       => $language_names[$iso],
+                    'language_family_code'    => strtoupper($iso),
+                    'language_family_name'    => $language_names[$iso],
+                    'language_family_english' => $language_names[$iso],
+                    'language_family_iso'     => $iso,
+                    'language_family_iso_2B'  => '',
+                    'language_family_iso_2T'  => '',
+                    'language_family_iso_1'   => '',
+                    'version_code'            => 'JFV',
+                    'version_name'            => 'Jesus Film Video',
+                    'version_english'         => 'Jesus Film Video',
+                    'collection_code'         => 'AL',
+                    'rich'                    => '0',
+                    'collection_name'         => '',
+                    'updated_on'              => $current_time,
+                    'created_on'              => '2010-01-01 01:01:01',
+                    'right_to_left'           => 'false',
+                    'num_art'                 => '0',
+                    'num_sample_audio'        => '0',
+                    'sku'                     => '',
+                    'audio_zip_path'          => $dam_id.'/'.$dam_id.'.zip',
+                    'font'                    => null,
+                    'arclight_language_id'    => $arclight_language_id,
+                    'media'                   => 'video',
+                    'media_type'              => 'Drama',
+                ];
+            }
+            return $jesusFilms;
+        });
+
     }
 
     /**

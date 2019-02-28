@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Bible;
 
+use App\Http\Controllers\Connections\ArclightController;
 use Illuminate\Http\Request;
 use App\Traits\AccessControlAPI;
 use Illuminate\Http\JsonResponse;
@@ -338,11 +339,18 @@ class LibraryController extends APIController
         $iso                = checkParam('language_code|language_family_code');
         $updated            = checkParam('updated');
         $organization       = checkParam('organization_id');
+        $version_code       = checkParam('version_code');
 
-        $cache_string = 'v2_library_volume:'.$dam_id.$media.$language_name.$iso.$updated.$organization;
-        $filesets = Cache::remember($cache_string, now()->addDay(), function () use ($dam_id, $media, $language_name, $iso, $updated,$organization) {
+        if($version_code === 'JFV') {
+            $arclight = new ArclightController();
+            return $arclight->volumes();
+        }
+
+        $cache_string = 'v2_library_volume:'.$dam_id.$media.$language_name.$iso.$updated.$organization.$version_code;
+        $filesets = Cache::remember($cache_string, now()->addDay(), function () use ($dam_id, $media, $language_name, $iso, $updated,$organization, $version_code) {
             $access_control = $this->accessControl($this->key);
             $language_id = $iso ? Language::where('iso', $iso)->first()->id : null;
+
             $filesets = BibleFileset::where('set_type_code', '!=', 'text_format')
                 ->whereIn('bible_filesets.hash_id', $access_control->hashes)
                 ->uniqueFileset($dam_id, 'dbp-prod', $media, true)
