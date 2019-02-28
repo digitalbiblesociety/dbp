@@ -63,7 +63,7 @@ class ArclightController extends APIController
                     'collection_code'         => 'AL',
                     'rich'                    => '0',
                     'collection_name'         => '',
-                    'updated_on'              => $current_time,
+                    'updated_on'              => $current_time->toDateTimeString(),
                     'created_on'              => '2010-01-01 01:01:01',
                     'right_to_left'           => 'false',
                     'num_art'                 => '0',
@@ -92,18 +92,19 @@ class ArclightController extends APIController
         $dam_id = checkParam('dam_id');
         $iso    = substr($dam_id, 0, 3);
 
-        $cache_string = 'arclight_'. strtolower($iso);
-        $chapters = \Cache::remember($cache_string, now()->addDay(), function () use ($iso) {
+        $chapters = \Cache::remember('arclight_'. strtolower($iso), now()->addDay(), function () use ($iso) {
             $languages = collect($this->fetch('media-languages')->mediaLanguages)->pluck('languageId', 'iso3');
             $language_id = $languages[strtolower($iso)];
             if (!$language_id) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
             }
 
-            $ids = ['1_jf6102-0-0','1_jf6103-0-0','1_jf6104-0-0','1_jf6105-0-0','1_jf6106-0-0','1_jf6107-0-0','1_jf6108-0-0','1_jf6109-0-0','1_jf6110-0-0','1_jf6111-0-0','1_jf6112-0-0','1_jf6113-0-0','1_jf6114-0-0','1_jf6115-0-0','1_jf6116-0-0','1_jf6117-0-0','1_jf6118-0-0','1_jf6119-0-0','1_jf6120-0-0','1_jf6121-0-0','1_jf6122-0-0','1_jf6123-0-0','1_jf6124-0-0','1_jf6125-0-0','1_jf6126-0-0','1_jf6127-0-0','1_jf6128-0-0','1_jf6129-0-0','1_jf6130-0-0','1_jf6131-0-0','1_jf6132-0-0','1_jf6133-0-0','1_jf6134-0-0','1_jf6135-0-0','1_jf6136-0-0','1_jf6137-0-0','1_jf6138-0-0','1_jf6139-0-0','1_jf6140-0-0','1_jf6141-0-0','1_jf6142-0-0','1_jf6143-0-0','1_jf6144-0-0','1_jf6145-0-0','1_jf6146-0-0','1_jf6147-0-0','1_jf6148-0-0','1_jf6149-0-0','1_jf6150-0-0','1_jf6151-0-0','1_jf6152-0-0','1_jf6153-0-0','1_jf6154-0-0','1_jf6155-0-0','1_jf6156-0-0','1_jf6157-0-0','1_jf6158-0-0','1_jf6159-0-0','1_jf6160-0-0','1_jf6161-0-0'];
+            $ids = ['1_jf6101-0-0','1_jf6102-0-0','1_jf6103-0-0','1_jf6104-0-0','1_jf6105-0-0','1_jf6106-0-0','1_jf6107-0-0','1_jf6108-0-0','1_jf6109-0-0','1_jf6110-0-0','1_jf6111-0-0','1_jf6112-0-0','1_jf6113-0-0','1_jf6114-0-0','1_jf6115-0-0','1_jf6116-0-0','1_jf6117-0-0','1_jf6118-0-0','1_jf6119-0-0','1_jf6120-0-0','1_jf6121-0-0','1_jf6122-0-0','1_jf6123-0-0','1_jf6124-0-0','1_jf6125-0-0','1_jf6126-0-0','1_jf6127-0-0','1_jf6128-0-0','1_jf6129-0-0','1_jf6130-0-0','1_jf6131-0-0','1_jf6132-0-0','1_jf6133-0-0','1_jf6134-0-0','1_jf6135-0-0','1_jf6136-0-0','1_jf6137-0-0','1_jf6138-0-0','1_jf6139-0-0','1_jf6140-0-0','1_jf6141-0-0','1_jf6142-0-0','1_jf6143-0-0','1_jf6144-0-0','1_jf6145-0-0','1_jf6146-0-0','1_jf6147-0-0','1_jf6148-0-0','1_jf6149-0-0','1_jf6150-0-0','1_jf6151-0-0','1_jf6152-0-0','1_jf6153-0-0','1_jf6154-0-0','1_jf6155-0-0','1_jf6156-0-0','1_jf6157-0-0','1_jf6158-0-0','1_jf6159-0-0','1_jf6160-0-0','1_jf6161-0-0'];
             $components = $this->fetch('media-components/', ['platform' => 'web','ids' => implode(',', $ids),'languageIds' => $language_id]);
             $components = $components->mediaComponents;
+
             foreach ($components as $key => $component) {
+                $component->language_id = $language_id;
                 $component->file_name = route('v2_api_jesusFilm_stream', [
                     'id'          => $component->mediaComponentId,
                     'language_id' => $language_id,

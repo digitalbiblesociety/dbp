@@ -23,12 +23,13 @@ class ArclightTransformer extends BaseTransformer
     public function transformForV2($arclight)
     {
         $id = (int) substr($arclight->mediaComponentId, 6, 2);
+        $computed_media = substr_replace($arclight->mediaComponentId, $arclight->language_id.'-', 2, 0);
         return [
             'id'                   => (string) $id,
             'name'                 => (string) $arclight->title,
-            'filename'             => '', // $arclight->file_name,
-            'arclight_ref_id'      => (string) $arclight->mediaComponentId,
-            'arclight_language_id' => (string) $arclight->lengthInMilliseconds,
+            'filename'             => $arclight->file_name,
+            'arclight_ref_id'      => (string) $computed_media,
+            'arclight_language_id' => (string) $arclight->language_id,
             'arclight_boxart_urls' => [
                 [ 'url' => [ 'type' => 'Mobile Cinematic Low', 'uri' => $arclight->imageUrls->mobileCinematicLow ] ],
                 [ 'url' => [ 'type' => 'Mobile Cinematic High', 'uri' => $arclight->imageUrls->mobileCinematicHigh ] ]

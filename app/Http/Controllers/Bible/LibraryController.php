@@ -341,8 +341,8 @@ class LibraryController extends APIController
         $organization       = checkParam('organization_id');
         $version_code       = checkParam('version_code');
 
+        $arclight = new ArclightController();
         if($version_code === 'JFV') {
-            $arclight = new ArclightController();
             return $arclight->volumes();
         }
 
@@ -394,6 +394,8 @@ class LibraryController extends APIController
 
             return $this->generateV2StyleId($filesets);
         });
+
+        $filesets = array_merge($arclight->volumes(),$filesets);
 
 
         return $this->reply(fractal($filesets, new LibraryVolumeTransformer(), $this->serializer));
