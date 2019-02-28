@@ -26,7 +26,7 @@ class ArclightTransformer extends BaseTransformer
         return [
             'id'                   => (string) $id,
             'name'                 => (string) $arclight->title,
-            'filename'             => $arclight->file_name,
+            'filename'             => '', // $arclight->file_name,
             'arclight_ref_id'      => (string) $arclight->mediaComponentId,
             'arclight_language_id' => (string) $arclight->lengthInMilliseconds,
             'arclight_boxart_urls' => [
