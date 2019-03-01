@@ -395,9 +395,6 @@ class LibraryController extends APIController
             return $this->generateV2StyleId($filesets);
         });
 
-        $filesets = array_merge($arclight->volumes(),$filesets);
-
-
         return $this->reply(fractal($filesets, new LibraryVolumeTransformer(), $this->serializer));
     }
 
