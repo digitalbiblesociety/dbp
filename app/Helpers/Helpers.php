@@ -21,7 +21,7 @@ function checkParam(string $paramName, $required = false, $inPathValue = null)
 
     // Authorization params (with key => Authorization translation)
     if ($paramName === 'key' && request()->header('Authorization')) {
-        return request()->header('Authorization');
+        return str_replace('Bearer ','', request()->header('Authorization'));;
     }
 
     foreach (explode('|', $paramName) as $current_param) {
