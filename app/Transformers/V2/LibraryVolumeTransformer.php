@@ -109,7 +109,7 @@ class LibraryVolumeTransformer extends BaseTransformer
                 return [
                     'dam_id'                    => $fileset->generated_id,
                     'fcbh_id'                   => $fileset->generated_id,
-                    'volume_name'               => $fileset->meta->where('name','volume')->first()->description ?? '',
+                    'volume_name'               => $fileset->meta->where('name','volume')->first()->description ?? $fileset->version_name,
                     'status'                    => 'live',// for the moment these default to Live
                     'dbp_agreement'             => 'true',// for the moment these default to True
                     'expiration'                => '0000-00-00',
