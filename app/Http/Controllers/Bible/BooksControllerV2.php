@@ -57,7 +57,8 @@ class BooksControllerV2 extends APIController
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
 
-        $testament = $this->getTestamentString($id);
+        $testament = $fileset->set_size_code;
+
         $cache_string = strtolower('v2_library_book:' . $asset_id .':'. $id .':' . $fileset . '_' . $testament);
         $libraryBook = \Cache::remember($cache_string, now()->addDay(), function () use ($id, $fileset, $testament) {
 
@@ -270,23 +271,4 @@ class BooksControllerV2 extends APIController
         return $this->reply($chapters);
     }
 
-    /**
-     * @param $id
-     *
-     * @return bool|string
-     */
-    private function getTestamentString($id)
-    {
-        $testament = false;
-        switch ($id[\strlen($id) - 2]) {
-            case 'O':
-                $testament = 'OT';
-                break;
-
-            case 'N':
-                $testament = 'NT';
-                break;
-        }
-        return $testament;
-    }
 }

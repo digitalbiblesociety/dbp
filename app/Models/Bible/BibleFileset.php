@@ -203,6 +203,7 @@ class BibleFileset extends Model
             $query->where(function ($query) use ($id) {
                 $query->where('bible_filesets.id', $id)
                       ->orWhere('bible_filesets.id', substr($id, 0, -4))
+                      ->orWhere('bible_filesets.id', 'like',  substr($id, 0, 6))
                       ->orWhere('bible_filesets.id', 'like', substr($id, 0, -2).'%');
             });
         })
