@@ -52,6 +52,19 @@ class Asset extends Model
      */
     protected $organization_id;
 
+    /**
+     *
+     * @OA\Property(
+     *   title="asset_type",
+     *   type="string",
+     *   description="The type of asset being provided",
+     *   maxLength=24
+     * )
+     *
+     * @method static Asset whereAssetType($value)
+     * @property string $asset_type
+     *
+     */
     protected $asset_type;
 
     /**
