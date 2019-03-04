@@ -106,6 +106,12 @@ class LibraryVolumeTransformer extends BaseTransformer
              * )
              */
             case 'v2_library_volume':
+
+                $delivery_types = $fileset->meta->where('name', 'LIKE','v2_access_%')->pluck('description');
+                if(count($delivery_types) === 0) {
+                    $delivery_types = ['mobile', 'web', 'local_bundled', 'subsplash'];
+                }
+
                 return [
                     'dam_id'                    => $fileset->generated_id,
                     'fcbh_id'                   => $fileset->generated_id,
@@ -145,7 +151,7 @@ class LibraryVolumeTransformer extends BaseTransformer
                     'arclight_language_id'      => '', // (int) $fileset->arclight_code,
                     'media'                     => Str::contains($fileset->set_type_code, 'audio') ? 'audio' : 'text',
                     'media_type'                => ((int) substr($fileset->generated_id, -3, 1) === 2) ? 'Drama' : 'Non-Drama',
-                    'delivery'                  => $fileset->meta->where('name', 'LIKE','v2_access_%')->pluck('description') ?? ['mobile', 'web', 'local_bundled', 'subsplash'],
+                    'delivery'                  => $delivery_types,
                     'resolution'                => []
                 ];
                 break;
