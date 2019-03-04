@@ -142,7 +142,7 @@ class LibraryVolumeTransformer extends BaseTransformer
                     'sku'                       => $fileset->meta->where('name','sku')->first()->description ?? '',
                     'audio_zip_path'            => $fileset->generated_id.'/'.$fileset->generated_id.'.zip',
                     'font'                      => null,
-                    'arclight_language_id'      => (int) $fileset->arclight_code,
+                    'arclight_language_id'      => '', // (int) $fileset->arclight_code,
                     'media'                     => Str::contains($fileset->set_type_code, 'audio') ? 'audio' : 'text',
                     'media_type'                => ((int) substr($fileset->generated_id, -3, 1) === 2) ? 'Drama' : 'Non-Drama',
                     'delivery'                  => $fileset->meta->where('name', 'LIKE','v2_access_%')->pluck('description') ?? ['mobile', 'web', 'local_bundled', 'subsplash'],
