@@ -197,7 +197,7 @@ class BibleFileset extends Model
             });
     }
 
-    public function scopeUniqueFileset($query, $id = null, $asset_id = null, $fileset_type = null, $ambigious_fileset_type = false)
+    public function scopeUniqueFileset($query, $id = null, $asset_id = null, $fileset_type = null, $ambigious_fileset_type = false, $testament_filter = null)
     {
         return $query->when($id, function ($query) use ($id) {
             $query->where(function ($query) use ($id) {
@@ -209,6 +209,9 @@ class BibleFileset extends Model
         })
         ->when($asset_id, function ($query) use ($asset_id) {
             $query->where('bible_filesets.asset_id', $asset_id);
+        })
+        ->when($testament_filter, function ($query) use ($testament_filter) {
+            $query->where('bible_filesets.set_size_code', $testament_filter);
         })
         ->when($fileset_type, function ($query) use ($fileset_type, $ambigious_fileset_type) {
             if ($ambigious_fileset_type) {

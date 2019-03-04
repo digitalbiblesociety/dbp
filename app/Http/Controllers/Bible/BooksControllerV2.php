@@ -52,13 +52,13 @@ class BooksControllerV2 extends APIController
         $id        = checkParam('dam_id');
         $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        $fileset   = BibleFileset::with('bible')->uniqueFileset($id, $asset_id)->first();
+        $testament = $this->getTestamentString($id);
+
+        $fileset   = BibleFileset::with('bible')->uniqueFileset($id, $asset_id, null, null, $testament)->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
-
-        $testament = $fileset->set_size_code;
-
+        
         $cache_string = strtolower('v2_library_book:' . $asset_id .':'. $id .':' . $fileset . '_' . $testament);
         $libraryBook = \Cache::remember($cache_string, now()->addDay(), function () use ($id, $fileset, $testament) {
 
@@ -74,7 +74,8 @@ class BooksControllerV2 extends APIController
 
                $books = Book::whereIn('id', $booksChapters->pluck('book_id')->unique())
                             ->filterByTestament($testament)
-                            ->orderBy('protestant_order')->get();
+                            ->orderBy('protestant_order')
+                            ->get();
 
                 foreach ($books as $key => $book) {
                     $current_chapters[$key] = $booksChapters->where('book_id', $book->id)->pluck($chapter_field);
@@ -253,6 +254,7 @@ class BooksControllerV2 extends APIController
             if (!$book) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.bible_books_errors_404', ['id' => $id]));
             }
+
             $chapters = BibleVerse::where('hash_id', $fileset->hash_id)
                 ->when($book, function ($q) use ($book) {
                     $q->where('book_id', $book->id);
@@ -265,10 +267,25 @@ class BooksControllerV2 extends APIController
                     return $chapter;
                 });
 
-            return fractal($chapters, new BookTransformer())->serializeWith($this->serializer);
+            return fractal($chapters, new BookTransformer(), $this->serializer);
         });
 
         return $this->reply($chapters);
+    }
+
+    private function getTestamentString($id)
+    {
+        $testament = false;
+        switch ($id[\strlen($id) - 2]) {
+            case 'O':
+                $testament = 'OT';
+                break;
+
+            case 'N':
+                $testament = 'NT';
+                break;
+        }
+        return $testament;
     }
 
 }

@@ -399,7 +399,7 @@ class Book extends Model
     {
         $query->when($testament, function ($q) use ($testament) {
             if($testament == 'NT' || $testament == 'OT') {
-                $q->where('book_testament', $testament);
+                $q->where('books.book_testament', $testament);
             }
         });
     }
