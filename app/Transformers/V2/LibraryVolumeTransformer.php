@@ -110,8 +110,8 @@ class LibraryVolumeTransformer extends BaseTransformer
                     'dam_id'                    => $fileset->generated_id,
                     'fcbh_id'                   => $fileset->generated_id,
                     'volume_name'               => $fileset->meta->where('name','volume')->first()->description ?? '',
-                    'status'                    => 'live', // for the moment these default to Live
-                    'dbp_agreement'             => 'true', // for the moment these default to True
+                    'status'                    => 'live',// for the moment these default to Live
+                    'dbp_agreement'             => 'true',// for the moment these default to True
                     'expiration'                => '0000-00-00',
                     'language_code'             => strtoupper($fileset->iso),
                     'language_name'             => $fileset->autonym ?? $fileset->language_name,
@@ -145,7 +145,7 @@ class LibraryVolumeTransformer extends BaseTransformer
                     'arclight_language_id'      => (int) $fileset->arclight_code,
                     'media'                     => Str::contains($fileset->set_type_code, 'audio') ? 'audio' : 'text',
                     'media_type'                => ((int) substr($fileset->generated_id, -3, 1) === 2) ? 'Drama' : 'Non-Drama',
-                    'delivery'                  => $fileset->meta->where('name', 'LIKE','v2_access_%')->pluck('description'),
+                    'delivery'                  => $fileset->meta->where('name', 'LIKE','v2_access_%')->pluck('description') ?? ['mobile', 'web', 'local_bundled', 'subsplash'],
                     'resolution'                => []
                 ];
                 break;
