@@ -51,9 +51,8 @@ class BooksControllerV2 extends APIController
     {
         $id        = checkParam('dam_id');
         $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
-        $fileset_type = checkParam('fileset_type') ?? 'text_plain';
 
-        $fileset   = BibleFileset::with('bible')->uniqueFileset($id, $asset_id, $fileset_type)->first();
+        $fileset   = BibleFileset::with('bible')->uniqueFileset($id, $asset_id)->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
