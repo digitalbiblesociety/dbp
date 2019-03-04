@@ -92,6 +92,7 @@ class CountriesController extends APIController
             if ($languages !== null) {
                 $countries->load([
                     'languagesFiltered' => function ($query) use ($languages) {
+                        $query->orderBy('country_language.population', 'desc');
                         if ($languages === 'with_names') {
                             $query->with(['translation' => function ($query) {
                                 $query->where('language_translation_id', $GLOBALS['i18n_id']);
