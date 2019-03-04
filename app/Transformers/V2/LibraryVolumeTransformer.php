@@ -108,20 +108,20 @@ class LibraryVolumeTransformer extends BaseTransformer
             case 'v2_library_volume':
                 return [
                     'dam_id'                    => $fileset->generated_id,
-                    'fcbh_id'                   => $fileset->id,
-                    'volume_name'               => (string) $fileset->volume_name,
+                    'fcbh_id'                   => $fileset->generated_id,
+                    'volume_name'               => $fileset->meta->where('name','volume')->first()->description ?? '',
                     'status'                    => 'live', // for the moment these default to Live
                     'dbp_agreement'             => 'true', // for the moment these default to True
                     'expiration'                => '0000-00-00',
                     'language_code'             => strtoupper($fileset->iso),
-                    'language_name'             => (string) $fileset->autonym,
-                    'language_english'          => (string) $fileset->name,
+                    'language_name'             => $fileset->autonym ?? $fileset->language_name,
+                    'language_english'          => (string) $fileset->language_name,
                     'language_iso'              => (string) $fileset->iso,
                     'language_iso_2B'           => (string) $fileset->iso2B,
                     'language_iso_2T'           => (string) $fileset->iso2T,
                     'language_iso_1'            => (string) $fileset->iso1,
                     'language_iso_name'         => (string) $fileset->language_name,
-                    'language_family_code'      => (string) $fileset->iso,
+                    'language_family_code'      => strtoupper($fileset->iso),
                     'language_family_name'      => (string) $fileset->autonym,
                     'language_family_english'   => (string) $fileset->language_name,
                     'language_family_iso'       => (string) $fileset->iso,
@@ -139,18 +139,13 @@ class LibraryVolumeTransformer extends BaseTransformer
                     'right_to_left'             => $fileset->direction === 'rtl' ? 'true' : 'false',
                     'num_art'                   => '0',
                     'num_sample_audio'          => '0',
-                    'sku'                       => $fileset->volume_sku,
+                    'sku'                       => $fileset->meta->where('name','sku')->first()->description ?? '',
                     'audio_zip_path'            => $fileset->generated_id.'/'.$fileset->generated_id.'.zip',
                     'font'                      => null,
-                    'arclight_language_id'      => $fileset->arclight_code,
+                    'arclight_language_id'      => (int) $fileset->arclight_code,
                     'media'                     => Str::contains($fileset->set_type_code, 'audio') ? 'audio' : 'text',
                     'media_type'                => ((int) substr($fileset->generated_id, -3, 1) === 2) ? 'Drama' : 'Non-Drama',
-                    'delivery'                  => [
-                        'mobile',
-                        'web',
-                        'local_bundled',
-                        'subsplash'
-                    ],
+                    'delivery'                  => $fileset->meta->where('name', 'LIKE','v2_access_%')->pluck('description'),
                     'resolution'                => []
                 ];
                 break;

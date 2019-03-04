@@ -90,6 +90,20 @@ return [
             'engine'    => null,
         ],
 
+        'dbp_v2' => [
+            'driver'    => 'mysql',
+            'host'      => env('DBP_USERS_V2_HOST', '127.0.0.1'),
+            'port'      => env('DBP_USERS_V2_PORT', '3306'),
+            'database'  => env('DBP_USERS_V2_DATABASE', 'dbpv2'),
+            'username'  => env('DBP_USERS_V2_USERNAME', 'root'),
+            'password'  => env('DBP_USERS_V2_PASSWORD', ''),
+            'charset'   => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix'    => '',
+            'strict'    => false,
+            'engine'    => null,
+        ],
+
     ],
 
     /*

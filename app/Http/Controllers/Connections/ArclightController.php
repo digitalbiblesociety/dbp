@@ -23,12 +23,18 @@ class ArclightController extends APIController
         $this->base_url = 'https://api.arclight.org/v2/';
     }
 
-    public function volumes()
+    public function volumes($language = null)
     {
-        return \Cache::remember('media-languages', now()->addWeek(), function () {
+        $language = Language::where('iso',$language)->first();
+        return \Cache::remember('media-languages', now()->addWeek(), function () use ($language) {
             $current_time = now();
-            $languages = collect($this->fetch('media-languages')->mediaLanguages)->pluck('languageId', 'iso3');
-            $language_names = Language::whereIn('iso', array_keys($languages->toArray()))->get()->pluck('name','iso');
+            $languages = collect($this->fetch('media-languages')->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
+
+            if($language) {
+                $languages = [$language->iso => $languages[$language->iso]];
+            }
+
+            $language_names = Language::whereIn('iso', array_keys($languages))->get()->pluck('name','iso');
 
             foreach ($languages as $iso => $arclight_language_id) {
                 $dam_id = strtoupper($iso).'JFVS2DV';
