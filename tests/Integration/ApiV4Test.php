@@ -16,7 +16,7 @@ class ApiV4Test extends TestCase
     /**Api_V2_Test constructor
      *
      */
-    public function setUp()
+    protected function setUp():void
     {
         parent::setUp();
         $this->key    = Key::where('name', 'test-key')->first()->key;
@@ -46,6 +46,11 @@ class ApiV4Test extends TestCase
      * @group    V4
      * @group    travis
      * @test
+     *
+     *      This must ensure
+     *      versions return evermore
+     *      only two and four
+     *
      */
     public function versionsReturnSuccessful()
     {
@@ -53,6 +58,8 @@ class ApiV4Test extends TestCase
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
+        $response->assertJson(['versions' => [2,4]]);
+
     }
 
     /**
