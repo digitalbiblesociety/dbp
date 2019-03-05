@@ -43,8 +43,9 @@ Route::name('v2_audio_timestamps')->get('audio/versestart',                     
 Route::name('v2_video_location')->get('video/location',                            'Organization\FilmsController@location');
 Route::name('v2_video_path')->get('video/videopath',                               'Organization\FilmsController@videoPath');
 Route::name('v2_api_jesusFilms')->get('library/jesusfilm',                         'Organization\ResourcesController@jesusFilmListing');
-Route::name('v2_api_jesusFilm_index')->get('video/jesusfilm',                      'Connections\ArclightController@index');
-Route::name('v2_api_jesusFilm_stream')->get('arclight/chapter/{id}.m3u8',          'Connections\ArclightController@chapter');
+
+Route::name('v2_api_jesusFilm_index')->get('video/jesusfilm',                     'Connections\ArclightController@index');
+Route::name('v2_api_jesusFilm_stream')->get('video/jesusfilm/{id}.m3u8',          'Connections\ArclightController@chapter');
 
 // VERSION 2 | Users
 Route::name('v2_users_banners_banner')->get('/banners/banner',                     'User\UsersControllerV2@banner');

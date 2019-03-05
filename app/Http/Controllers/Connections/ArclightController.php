@@ -30,7 +30,7 @@ class ArclightController extends APIController
             $current_time = now();
             $languages = collect($this->fetch('media-languages')->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
 
-            if($language) {
+            if($language && isset($languages[$language->iso])) {
                 $languages = [$language->iso => $languages[$language->iso]];
             }
 
@@ -97,8 +97,9 @@ class ArclightController extends APIController
     {
         $dam_id = checkParam('dam_id');
         $iso    = substr($dam_id, 0, 3);
+        $platform = checkParam('platform') ?? 'ios';
 
-        $chapters = \Cache::remember('arclight_'. strtolower($iso), now()->addDay(), function () use ($iso) {
+        $chapters = \Cache::remember('arclight_'. strtolower($iso), now()->addDay(), function () use ($iso, $platform) {
             $languages = collect($this->fetch('media-languages')->mediaLanguages)->pluck('languageId', 'iso3');
             $language_id = $languages[strtolower($iso)];
             if (!$language_id) {
@@ -106,7 +107,7 @@ class ArclightController extends APIController
             }
 
             $ids = ['1_jf6101-0-0','1_jf6102-0-0','1_jf6103-0-0','1_jf6104-0-0','1_jf6105-0-0','1_jf6106-0-0','1_jf6107-0-0','1_jf6108-0-0','1_jf6109-0-0','1_jf6110-0-0','1_jf6111-0-0','1_jf6112-0-0','1_jf6113-0-0','1_jf6114-0-0','1_jf6115-0-0','1_jf6116-0-0','1_jf6117-0-0','1_jf6118-0-0','1_jf6119-0-0','1_jf6120-0-0','1_jf6121-0-0','1_jf6122-0-0','1_jf6123-0-0','1_jf6124-0-0','1_jf6125-0-0','1_jf6126-0-0','1_jf6127-0-0','1_jf6128-0-0','1_jf6129-0-0','1_jf6130-0-0','1_jf6131-0-0','1_jf6132-0-0','1_jf6133-0-0','1_jf6134-0-0','1_jf6135-0-0','1_jf6136-0-0','1_jf6137-0-0','1_jf6138-0-0','1_jf6139-0-0','1_jf6140-0-0','1_jf6141-0-0','1_jf6142-0-0','1_jf6143-0-0','1_jf6144-0-0','1_jf6145-0-0','1_jf6146-0-0','1_jf6147-0-0','1_jf6148-0-0','1_jf6149-0-0','1_jf6150-0-0','1_jf6151-0-0','1_jf6152-0-0','1_jf6153-0-0','1_jf6154-0-0','1_jf6155-0-0','1_jf6156-0-0','1_jf6157-0-0','1_jf6158-0-0','1_jf6159-0-0','1_jf6160-0-0','1_jf6161-0-0'];
-            $components = $this->fetch('media-components/', ['platform' => 'web','ids' => implode(',', $ids),'languageIds' => $language_id]);
+            $components = $this->fetch('media-components/', ['platform' => $platform,'ids' => implode(',', $ids),'languageIds' => $language_id]);
             $components = $components->mediaComponents;
 
             foreach ($components as $key => $component) {
@@ -127,24 +128,12 @@ class ArclightController extends APIController
     public function chapter($chapter_id)
     {
         $language_id = checkParam('language_id');
-        $media_components = $this->fetch('media-components/'.$chapter_id.'/languages/'.$language_id, ['platform' => 'web']);
+        $platform = checkParam('platform') ?? 'ios';
 
-        $current_file = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=320000\n";
-        $current_file .= $media_components->downloadUrls->low->url;
-//med.m3u8
-//#EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=564000
-//high.m3u8
-//#EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=136000
-//low.m3u8
-//#EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=64000
-//audio.m3u8
-//
+        $media_components = $this->fetch('media-components/'.$chapter_id.'/languages/'.$language_id, ['platform' => $platform]);
 
-        $current_file = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-ALLOW-CACHE:YES\n#EXT-X-TARGETDURATION:4";
-//      $current_file .= "\n#EXTINF:\n".$media_components->downloadUrls->low->url;
-        $current_file .= "\n#EXTINF:".($media_components->lengthInMilliseconds / 1000)."\n".$media_components->downloadUrls->high->url;
-
-        $current_file .= "\n#EXT-X-ENDLIST";
+        $current_file = "#EXTM3U\n";
+        $current_file .= "#EXTINF:\n".$media_components->streamingUrls->m3u8[0]->url;
 
         return response($current_file, 200)->header('Content-Disposition', 'attachment; filename="'.'"')->header('Content-Type', 'application/x-mpegURL');
     }
