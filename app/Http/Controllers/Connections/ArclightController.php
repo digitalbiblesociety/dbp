@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Connections;
 
 use App\Http\Controllers\APIController;
 use App\Models\Language\Language;
+use App\Models\Language\LanguageCode;
 use App\Transformers\ArclightTransformer;
 use Spatie\Fractalistic\ArraySerializer;
 
@@ -104,8 +105,9 @@ class ArclightController extends APIController
         $platform = checkParam('platform') ?? 'ios';
 
         $chapters = \Cache::remember('arclight_'. strtolower($iso), now()->addDay(), function () use ($iso, $platform) {
-            $languages = collect($this->fetch('media-languages')->mediaLanguages)->pluck('languageId', 'iso3');
-            $language_id = $languages[strtolower($iso)];
+            $language_id = LanguageCode::whereHas('language', function($query) use($iso) {
+                $query->where('iso', $iso);
+            })->where('source','arclight')->select('code')->first()->code;
             if (!$language_id) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
             }
