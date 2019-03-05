@@ -175,7 +175,7 @@ class LanguageControllerV2 extends APIController
                     WHERE language_translation_id = languages.id AND language_source_id = languages.id LIMIT 1)');
                     $join->on('autonym.language_source_id', '=', 'languages.id')
                                       ->on('autonym.language_translation_id', '=', 'languages.id')
-                                      ->orderBy('autonym.priority', '=', $priority_q)->limit(1);
+                                      ->where('autonym.priority', '=', $priority_q)->limit(1);
                 })
                 ->leftJoin('language_translations as current_translation', function ($join) {
                     $priority_q = \DB::raw('(select max(`priority`) from language_translations 
