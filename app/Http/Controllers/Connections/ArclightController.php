@@ -30,7 +30,11 @@ class ArclightController extends APIController
             $current_time = now();
             $languages = collect($this->fetch('media-languages')->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
 
-            if($language && isset($languages[$language->iso])) {
+            if($language) {
+                if(!isset($languages[$language->iso])) {
+                    return [];
+                }
+
                 $languages = [$language->iso => $languages[$language->iso]];
             }
 
