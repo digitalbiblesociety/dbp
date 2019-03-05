@@ -24,6 +24,10 @@ class ArclightTransformer extends BaseTransformer
     {
         $id = (int) substr($arclight->mediaComponentId, 6, 2);
         $computed_media = substr_replace($arclight->mediaComponentId, $arclight->language_id.'-', 2, 0);
+        $citations = [];
+        foreach ($arclight->bibleCitations as $citation) {
+            $citations[$citation->osisBibleBook][$citation->chapterStart][] = (string) $citation->verseStart;
+        }
 
         return [
             'id'                   => (string) $id,
@@ -32,12 +36,10 @@ class ArclightTransformer extends BaseTransformer
             'arclight_ref_id'      => (string) $computed_media,
             'arclight_language_id' => (string) $arclight->language_id,
             'arclight_boxart_urls' => [
-                [ 'url' => [ 'type' => 'Mobile Cinematic Low', 'uri' => $arclight->imageUrls->mobileCinematicLow ] ],
-                [ 'url' => [ 'type' => 'Mobile Cinematic High', 'uri' => $arclight->imageUrls->mobileCinematicHigh ] ]
+                [ 'url' => [ 'type' => 'Mobile cinematic low', 'uri' => $arclight->imageUrls->mobileCinematicLow ] ],
+                [ 'url' => [ 'type' => 'Mobile cinematic high', 'uri' => $arclight->imageUrls->mobileCinematicHigh ] ]
             ],
-            'verses' => collect($arclight->bibleCitations)->mapWithKeys(function ($item) {
-                return [$item->osisBibleBook => [ $item->chapterStart => [ (string) $item->verseStart ]]];
-            })
+            'verses' => $citations
         ];
     }
 }
