@@ -184,9 +184,10 @@ class ApiMetadataController extends APIController
     {
         $dam_id   = checkParam('dam_id|fileset_id');
         $asset_id = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $asset_type = checkParam('asset_type');
 
         if ($dam_id) {
-            $fileset = BibleFileset::where('id', $dam_id)->orWhere('id', substr($dam_id, 0, -4))->orWhere('id', substr($dam_id, 0, -2))->where('asset_id', $asset_id)->first();
+            $fileset = BibleFileset::uniqueFileset($dam_id, $asset_id, $asset_type)->first();
             if (!$fileset) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404'));
             }
