@@ -24,7 +24,7 @@ before_script:
   - php artisan migrate --seed
 
 script:
-  - phpunit --group=travis
+  - vendor/bin/phpunit --group=travis
 
 services:
   - mysql
