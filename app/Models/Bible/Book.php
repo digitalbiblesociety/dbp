@@ -398,8 +398,11 @@ class Book extends Model
     public function scopeFilterByTestament($query, $testament)
     {
         $query->when($testament, function ($q) use ($testament) {
-            if($testament == 'NT' || $testament == 'OT') {
-                $q->where('books.book_testament', $testament);
+            if(\in_array('NT', $testament)) {
+                $q->where('books.book_testament', 'NT');
+            }
+            if(\in_array('OT', $testament)) {
+                $q->where('books.book_testament', 'OT');
             }
         });
     }

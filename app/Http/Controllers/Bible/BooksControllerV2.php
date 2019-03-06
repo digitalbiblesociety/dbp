@@ -278,11 +278,11 @@ class BooksControllerV2 extends APIController
         $testament = false;
         switch ($id[\strlen($id) - 2]) {
             case 'O':
-                $testament = ['OT'];
+                $testament = ['OT','C'];
                 break;
 
             case 'N':
-                $testament = ['NT'];
+                $testament = ['NT','C'];
                 break;
 
             case 'P':
