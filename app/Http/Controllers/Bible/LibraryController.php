@@ -398,20 +398,20 @@ class LibraryController extends APIController
     {
         $output = [];
         foreach ($filesets->groupBy('bible_id')->sortBy('set_type_code') as $bible => $fileset) {
-            $output = array_merge($output, $this->getV2Output($bible, $fileset));
+            $output = array_merge($output, $this->getV2Output($fileset));
         }
         return $output;
     }
 
-    private function getV2Output($bible, $filesets)
+    private function getV2Output($filesets)
     {
         $output = [];
         foreach ($filesets as $fileset) {
             $type_codes = $this->getV2TypeCode($fileset, false);
             foreach ($type_codes as $type_code) {
 
-                $ot_fileset_id = $bible.'O'.$type_code;
-                $nt_fileset_id = $bible.'N'.$type_code;
+                $ot_fileset_id = substr($fileset->id, 0, 6).'O'.$type_code;
+                $nt_fileset_id = substr($fileset->id, 0, 6).'N'.$type_code;
                 switch ($fileset->set_size_code) {
                     case 'C':
                     case 'NTOTP':
