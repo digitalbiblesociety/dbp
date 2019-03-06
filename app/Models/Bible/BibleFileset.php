@@ -211,7 +211,7 @@ class BibleFileset extends Model
             $query->where('bible_filesets.asset_id', $asset_id);
         })
         ->when($testament_filter, function ($query) use ($testament_filter) {
-            $query->where('bible_filesets.set_size_code', $testament_filter);
+            $query->whereIn('bible_filesets.set_size_code', $testament_filter);
         })
         ->when($fileset_type, function ($query) use ($fileset_type, $ambigious_fileset_type) {
             if ($ambigious_fileset_type) {

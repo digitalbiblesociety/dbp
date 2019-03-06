@@ -59,7 +59,7 @@ class BooksControllerV2 extends APIController
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
         
-        $cache_string = strtolower('v2_library_book:' . $asset_id .':'. $id .':' . $fileset . '_' . $testament);
+        $cache_string = strtolower('v2_library_book:' . $asset_id .':'. $id .':' . $fileset . '_' . implode('-',$testament));
         $libraryBook = \Cache::remember($cache_string, now()->addDay(), function () use ($id, $fileset, $testament) {
 
             if ($fileset->set_type_code === 'text_plain') {
@@ -278,11 +278,15 @@ class BooksControllerV2 extends APIController
         $testament = false;
         switch ($id[\strlen($id) - 2]) {
             case 'O':
-                $testament = 'OT';
+                $testament = ['OT'];
                 break;
 
             case 'N':
-                $testament = 'NT';
+                $testament = ['NT'];
+                break;
+
+            case 'P':
+                $testament = ['NTOTP', 'NTP', 'NTPOTP', 'OTNTP', 'OTP', 'P'];
                 break;
         }
         return $testament;

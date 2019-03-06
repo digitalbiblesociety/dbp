@@ -412,11 +412,9 @@ class LibraryController extends APIController
 
                 $ot_fileset_id = substr($fileset->id, 0, 6).'O'.$type_code;
                 $nt_fileset_id = substr($fileset->id, 0, 6).'N'.$type_code;
+                $pt_fileset_id = substr($fileset->id, 0, 6).'P'.$type_code;
                 switch ($fileset->set_size_code) {
                     case 'C':
-                    case 'NTOTP':
-                    case 'OTNTP':
-                    case 'NTPOTP':
                         $output[$ot_fileset_id] = clone $fileset;
                         $output[$ot_fileset_id]->generated_id = $ot_fileset_id;
 
@@ -425,15 +423,22 @@ class LibraryController extends APIController
                         break;
 
                     case 'NT':
-                    case 'NTP':
                         $output[$nt_fileset_id] = clone $fileset;
                         $output[$nt_fileset_id]->generated_id = $nt_fileset_id;
                         break;
 
                     case 'OT':
-                    case 'OTP':
                         $output[$ot_fileset_id] = clone $fileset;
                         $output[$ot_fileset_id]->generated_id = $ot_fileset_id;
+                        break;
+
+                    case 'NTOTP':
+                    case 'OTNTP':
+                    case 'NTPOTP':
+                    case 'NTP':
+                    case 'OTP':
+                        $output[$ot_fileset_id] = clone $fileset;
+                        $output[$ot_fileset_id]->generated_id = $pt_fileset_id;
                         break;
                 }
             }
