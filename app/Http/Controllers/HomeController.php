@@ -11,6 +11,7 @@ use App\Models\Organization\Organization;
 use App\Models\Bible\Bible;
 use App\Models\Resource\Resource;
 use App\Traits\CallsBucketsTrait;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends APIController
 {
@@ -65,56 +66,44 @@ class HomeController extends APIController
      *     title="The assets response",
      *     required={"id","organization_id"},
      *     @OA\Xml(name="v4_api_assets"),
-     *     @OA\Property(property="id",              ref="#/components/schemas/Asset/properties/id"),
-     *     @OA\Property(property="organization_id", ref="#/components/schemas/Asset/properties/organization_id")
+     *     @OA\Property(property="id",               ref="#/components/schemas/Asset/properties/id"),
+     *     @OA\Property(property="asset_type",       ref="#/components/schemas/Asset/properties/asset_type"),
+     *     @OA\Property(property="organization_id",  ref="#/components/schemas/Asset/properties/organization_id")
      * )
      *
      * @return mixed
      */
     public function buckets()
     {
-        return $this->reply(Asset::with('organization')->get());
-    }
+        $assets = \Cache::remember('v4_api_assets', now()->addDay(), function () {
+            return Asset::select('id', 'asset_type', 'organization_id')->with([
+                'organization' => function ($query) {
+                    $query->select('slug', 'email', 'id');
+                }
+            ])->get();
+        });
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function welcome()
-    {
-        $count['languages']     = Language::count();
-        $count['countries']     = Country::count();
-        $count['alphabets']     = Alphabet::count();
-        $count['organizations'] = Organization::count();
-        $count['bibles']        = Bible::count();
-
-        return view('welcome', compact('count'));
+        return $this->reply($assets);
     }
 
     public function stats()
     {
-        $count['languages']      = Language::count();
-        $count['countries']      = Country::count();
-        $count['alphabets']      = Alphabet::count();
-        $count['organizations']  = Organization::count();
-        $count['bible_filesets'] = BibleFileset::count();
-        $count['bibles']         = Bible::count();
-        $count['resources']      = Resource::count();
+        $counts = \Cache::remember('v4_api_counts', now()->addDay(), function () {
+            $count['languages']      = Language::count();
+            $count['countries']      = Country::count();
+            $count['alphabets']      = Alphabet::count();
+            $count['organizations']  = Organization::count();
+            $count['bible_filesets'] = BibleFileset::count();
+            $count['bibles']         = Bible::count();
+            $count['resources']      = Resource::count();
+            return $count;
+        });
 
-        return $this->reply($count);
+        return $this->reply($counts);
     }
 
     public function versions()
     {
         return $this->reply(['versions' => [2, 4]]);
-    }
-
-    public function error($status = null, $message = '')
-    {
-        if ($status) {
-            return view('errors.'.$status, compact('message'));
-        }
-        return view('errors.broken', compact('message'));
     }
 }
