@@ -185,9 +185,17 @@ class BibleFileset extends Model
                   ->on('languages.id', 'language_translations.language_translation_id');
             })
             ->leftJoin('alphabets', 'bibles.script', 'alphabets.script')
-            ->leftJoin('bible_translations', function ($q) use ($bible_name) {
-                $q->on('bible_translations.bible_id', 'bibles.id')
-                  ->where('bible_translations.name', 'LIKE', '%'.$bible_name.'%');
+            ->leftJoin('bible_translations as english_name', function ($q) use ($bible_name) {
+                $q->on('english_name.bible_id', 'bibles.id')->where('english_name.language_id', 6414);
+                $q->when($bible_name, function ($subQuery) use($bible_name) {
+                    $subQuery->where('english_name.name', 'LIKE', '%'.$bible_name.'%');
+                });
+            })
+            ->leftJoin('bible_translations as autonym', function ($q) use ($bible_name) {
+                $q->on('autonym.bible_id', 'bibles.id')->where('autonym.vernacular', true);
+                $q->when($bible_name, function ($subQuery) use($bible_name) {
+                    $subQuery->where('autonym.name', 'LIKE', '%'.$bible_name.'%');
+                });
             })
             ->leftJoin('bible_organizations', function ($q) use ($organization) {
                 $q->on('bibles.id', 'bible_organizations.bible_id')->where('relationship_type', 'publisher');

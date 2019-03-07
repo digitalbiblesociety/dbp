@@ -364,7 +364,8 @@ class LibraryController extends APIController
                     $q->on('arclight.language_id', 'languages.id')->where('source', 'arclight');
                 })
                 ->select([
-                    'bible_translations.name as version_name',
+                    'english_name.name as english_name',
+                    'autonym.name as autonym_name',
                     'bibles.id as bible_id',
                     'bible_filesets.id',
                     'bible_filesets.created_at',
