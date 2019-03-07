@@ -22,11 +22,9 @@ class ApiV4Test extends TestCase
         $this->key    = Key::where('name', 'test-key')->first()->key;
         $this->params = ['v' => 4, 'key' => $this->key, 'pretty'];
 
-        // Fetch the Swagger Docs for Structure Validation
-        $arrContextOptions = ['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]];
-        $swagger_url       = str_replace('api.','',route('swagger_docs_gen', ['version' => 'v4']));
-        $this->swagger     = json_decode(file_get_contents($swagger_url, false, stream_context_create($arrContextOptions)), true);
-        ini_set('memory_limit', '1264M');
+        $swagger = new SwaggerDocsController();
+        $this->swagger = json_decode($swagger->swaggerDocsGen('v4')->content(), true);
+        $this->schemas = $this->swagger['components']['schemas'];
     }
 
     public function getSchemaKeys($schema)

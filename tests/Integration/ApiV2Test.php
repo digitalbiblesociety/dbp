@@ -8,6 +8,7 @@ use App\Models\Bible\Book;
 use App\Models\Language\NumeralSystem;
 use App\Models\User\Key;
 use Tests\TestCase;
+use App\Http\Controllers\User\SwaggerDocsController;
 
 class ApiV2Test extends TestCase
 {
@@ -25,12 +26,9 @@ class ApiV2Test extends TestCase
         $this->key = Key::where('name', 'test-key')->first()->key;
         $this->params = ['v' => 2,'key' => $this->key,'pretty'];
 
-        // Fetch the Swagger Docs for Structure Validation
-        $arrContextOptions = ['ssl' => ['verify_peer' =>false, 'verify_peer_name' =>false]];
-        $swagger_url       = str_replace('api.','',route('swagger_docs_gen', ['version' => 'v2']));
-        $this->swagger = json_decode(file_get_contents($swagger_url, false, stream_context_create($arrContextOptions)), true);
+        $swagger = new SwaggerDocsController();
+        $this->swagger = json_decode($swagger->swaggerDocsGen('v2')->content(), true);
         $this->schemas = $this->swagger['components']['schemas'];
-        ini_set('memory_limit', '1264M');
     }
 
     public function getSchemaKeys($schema)
