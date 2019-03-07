@@ -1,3 +1,4 @@
+dist: trusty
 language: php
 
 php:
@@ -19,7 +20,9 @@ before_install:
 before_script:
   - phpenv config-add travis.php.ini
   - cp .env.travis .env
-  - composer install
+  - composer self-update
+  - composer install --no-interaction --prefer-dist --no-suggest
+  - npm install
   - php artisan key:generate
   - php artisan migrate --seed
 
@@ -28,6 +31,11 @@ script:
 
 services:
   - mysql
+
+cache:
+  directories:
+    - node_modules
+    - vendor
 
 env:
   - TRAVIS_NODE_VERSION="4"
