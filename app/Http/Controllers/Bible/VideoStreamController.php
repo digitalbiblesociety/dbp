@@ -39,7 +39,7 @@ class VideoStreamController extends APIController
 
         $current_file = '#EXTM3U';
         foreach ($file->videoResolution as $resolution) {
-            $current_file .= "\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=$resolution->bandwidth,RESOLUTION=".$resolution->resolution_width."x$resolution->resolution_height,CODECS=\"$resolution->codec\"\n$resolution->file_name" . '?key=' . $this->key . '&v=4';
+            $current_file .= "\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=$resolution->bandwidth,RESOLUTION=".$resolution->resolution_width."x$resolution->resolution_height,CODECS=\"$resolution->codec\"\n$resolution->file_name" . '?key=' . $this->key . '&v=4&asset_id='.$asset_id;
         }
         return response($current_file, 200)->header('Content-Disposition', 'attachment; filename="'.$file->file_name.'"')->header('Content-Type', 'application/x-mpegURL');
     }
