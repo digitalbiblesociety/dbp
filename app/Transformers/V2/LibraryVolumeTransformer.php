@@ -112,6 +112,10 @@ class LibraryVolumeTransformer extends BaseTransformer
                     $delivery_types = ['mobile', 'web', 'local_bundled', 'subsplash'];
                 }
 
+                if($fileset->autonym && $fileset->language_name) {
+                    $fileset->languageCombinedName = $fileset->autonym . ' ('. $fileset->language_name . ')';
+                }
+
                 return [
                     'dam_id'                    => $fileset->generated_id,
                     'fcbh_id'                   => $fileset->generated_id,
@@ -120,7 +124,7 @@ class LibraryVolumeTransformer extends BaseTransformer
                     'dbp_agreement'             => 'true',// for the moment these default to True
                     'expiration'                => '0000-00-00',
                     'language_code'             => strtoupper($fileset->iso),
-                    'language_name'             => $fileset->autonym ?? $fileset->language_name,
+                    'language_name'             => $fileset->languageCombinedName ?? $fileset->language_name,
                     'language_english'          => (string) $fileset->language_name,
                     'language_iso'              => (string) $fileset->iso,
                     'language_iso_2B'           => (string) $fileset->iso2B,
