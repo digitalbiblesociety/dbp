@@ -90,17 +90,10 @@ class AudioController extends APIController
         $cache_string = strtolower('audio_index:'.$asset_id.':'.$fileset_id.':'.$book_id.':'.$chapter_id);
         $audioChapters = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset_id, $book_id, $chapter_id, $asset_id) {
             // Account for various book ids
-            $book_id = optional(Book::where('id', $book_id)
-                ->orWhere('id_osis', $book_id)
-                ->orWhere('id_usfx', $book_id)
-                ->select('id')->first())->id;
+            $book_id = optional(Book::selectByID('id', $book_id)->select('id')->first())->id;
 
             // Fetch the Fileset
-            $hash_id = optional(BibleFileset::where('id', $fileset_id)
-                ->where('asset_id', $asset_id)
-                ->where('set_type_code', 'like', '%audio%')
-                ->select('hash_id')->first())->hash_id;
-
+            $hash_id = optional(BibleFileset::uniqueFileset($fileset_id, $asset_id, 'audio', true)->select('hash_id')->first())->hash_id;
             if (!$hash_id) {
                 return $this->setStatusCode(404)->replyWithError('No Audio Fileset could be found for: ' . $hash_id);
             }
@@ -210,17 +203,19 @@ class AudioController extends APIController
     public function timestampsByReference()
     {
         // Check Params
-        $id      = checkParam('fileset_id|dam_id');
-        $book    = checkParam('book|osis_code');
-        $chapter = checkParam('chapter_id|chapter_number');
+        $id       = checkParam('fileset_id|dam_id');
+        $asset_id = checkParam('asset_id');
+        $book     = checkParam('book|osis_code');
+        $chapter  = checkParam('chapter_id|chapter_number');
 
-        $book = Book::where('id', $book)->orWhere('id_osis', $book)->first();
+        $book = Book::selectByID($book)->first();
 
         // Fetch Fileset & Files
-        $fileset = BibleFileset::where('id', $id)->first();
+        $fileset = BibleFileset::uniqueFileset($id, $asset_id, 'audio', true)->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
+
         $bible_files = BibleFile::where('hash_id', $fileset->hash_id)->where('book_id', $book->id)->where('chapter_start', $chapter)->get();
 
         // Fetch Timestamps
@@ -263,16 +258,18 @@ class AudioController extends APIController
     {
         // Check Params
         $audio_fileset_id = checkParam('audio_fileset_id');
+        $audio_asset_id   = checkParam('audio_asset_id');
         $text_fileset_id  = checkParam('text_fileset_id');
+        $text_asset_id   = checkParam('text_asset_id');
         $book_id          = checkParam('book_id');
         $query            = checkParam('query', true);
 
         // Fetch Fileset & Books
-        $audio_fileset = BibleFileset::where('set_type_code', 'LIKE', 'audio%')->where('id', $audio_fileset_id)->first();
+        $audio_fileset = BibleFileset::uniqueFileset($audio_fileset_id, $audio_asset_id, 'audio', true)->first();
         if (!$audio_fileset) {
             return $this->setStatusCode(404)->replyWithError('Audio Fileset not found');
         }
-        $text_fileset  = BibleFileset::where('set_type_code', 'text_plain')->where('id', $text_fileset_id)->first();
+        $text_fileset  = BibleFileset::uniqueFileset($text_fileset_id, $text_asset_id, 'text', true)->first();
         if (!$text_fileset) {
             return $this->setStatusCode(404)->replyWithError('Text Comparison Fileset not found');
         }
