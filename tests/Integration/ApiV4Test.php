@@ -4,6 +4,7 @@ namespace Tests\Integration;
 
 use Tests\TestCase;
 use App\Models\User\Key;
+use App\Http\Controllers\User\SwaggerDocsController;
 
 class ApiV4Test extends TestCase
 {
