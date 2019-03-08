@@ -2,6 +2,9 @@
 
 namespace Tests\Integration;
 
+use App\Http\Controllers\ApiMetadataController;
+use Illuminate\Support\Facades\Input;
+
 class InternalStatusTest extends ApiV4Test
 {
     /**
@@ -11,9 +14,11 @@ class InternalStatusTest extends ApiV4Test
      */
     public function ensureStatusChecksAreSuccessful()
     {
-        $arrContextOptions = ['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]];
-        $route = str_replace('api.','',route('api_status'));
-        $response = json_decode(file_get_contents($route, false, stream_context_create($arrContextOptions)));
+        Input::replace($this->params);
+
+        $metaController = new ApiMetadataController();
+        $response = $metaController->getStatus();
+        $response = json_decode($response->content());
 
         $this->assertTrue($response->bibles_count > 0);
         $this->assertSame(200, $response->systems->status_code);
