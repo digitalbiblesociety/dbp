@@ -187,12 +187,13 @@ class BibleFileSetsController extends APIController
      */
     public function download($id)
     {
-        $set_id    = checkParam('fileset_id', true, $id);
+        $id        = checkParam('fileset_id', true, $id);
         $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $type      = checkParam('fileset_type');
         $books     = checkParam('book_ids');
         $files     = null;
 
-        $fileset = BibleFileset::where('id', $set_id)->where('asset_id', $asset_id)->first();
+        $fileset = BibleFileset::uniqueFileset($id, $asset_id, $type)->first();
         if (!$fileset) {
             return $this->replyWithError('Fileset ID not found');
         }
