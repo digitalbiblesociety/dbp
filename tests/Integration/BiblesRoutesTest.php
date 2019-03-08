@@ -38,7 +38,7 @@ class BiblesRoutesTest extends ApiV4Test
      * @category V4_API
      * @category Route Name: v4_filesets.podcast
      * @category Route Path: https://api.dbp.test/bibles/filesets/{fileset_id}/podcast?v=4&key={key}
-     * @see      \App\Http\Controllers\Bible\BibleFileSetsController::podcast
+     * @see      \App\Http\Controllers\Bible\BibleFilesetsPodcastController::index
      * @group    BibleRoutes
      * @group    V4
      * @group    travis
@@ -46,6 +46,8 @@ class BiblesRoutesTest extends ApiV4Test
      */
     public function bibleFilesetsPodcast()
     {
+        $fileset = BibleFileset::uniqueFileset(null, 'dbp-prod', 'audio')->inRandomOrder()->first();
+        $this->params['id'] = $fileset->id;
         $path = route('v4_filesets.podcast', $this->params);
         echo "\nTesting: $path";
 
