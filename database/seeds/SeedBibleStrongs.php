@@ -11,19 +11,55 @@ class SeedBibleStrongs extends Seeder
      */
     public function run()
     {
-        $strong_paths = glob(storage_path('data/bibles/lexicons/strongs/entries/*.json'));
+        \DB::connection('dbp')->table('lexicons')->delete();
+        $hebrew_lex = \DB::connection('dbp')->table('lexicon_hebrew')->get();
+        $greek_lex = \DB::connection('dbp')->table('lexicon_greek')->get();
 
-        foreach ($strong_paths as $strong_path) {
 
-            $strong_reference = json_decode(file_get_contents($strong_path));
+        foreach ($hebrew_lex as $lex) {
+            if(\DB::connection('dbp')->table('lexicons')->where('id','H'.$lex->strongs)->exists()) {
+                continue;
+            }
 
-            $strong = [
-                'strong_number'     => basename($strong_path, '.json'),
-                'root_word'         => $strong_reference->lemma,
-                'definition'        => $strong_reference->strongs_def,
-                'usage'             => $strong_reference->outline,
-            ];
+            $lex->data = json_decode($lex->data);
+            \DB::connection('dbp')->table('lexicons')->insert([
+                'id'             => 'H'.$lex->strongs,
+                'usage'          => $lex->usage,
+                'base_word'      => $lex->base_word,
+                'def_lit'        => $lex->data->def->lit ?? null,
+                'def_short'      => $lex->data->def->short,
+                'def_long'       => collect($lex->data->def->long)->flatten(),
+                'deriv'          => $lex->data->deriv ?? null,
+                'pronun_ipa'     => $lex->data->pronun->ipa,
+                'pronun_ipa_mod' => $lex->data->pronun->ipa_mod,
+                'pronun_sbl'     => $lex->data->pronun->sbl,
+                'pronun_dic'     => $lex->data->pronun->dic,
+                'pronun_dic_mod' => $lex->data->pronun->dic_mod,
+                'comment'        => $lex->data->comment ?? null
+            ]);
+        }
 
+        foreach ($greek_lex as $lex) {
+            if(\DB::connection('dbp')->table('lexicons')->where('id','G'.$lex->strongs)->exists()) {
+                continue;
+            }
+
+            $lex->data = json_decode($lex->data);
+            \DB::connection('dbp')->table('lexicons')->insert([
+                'id'             => 'G'.$lex->strongs,
+                'usage'          => $lex->usage,
+                'base_word'      => $lex->base_word,
+                'def_lit'        => $lex->data->def->lit ?? null,
+                'def_short'      => $lex->data->def->short,
+                'def_long'       => collect($lex->data->def->long)->flatten(),
+                'deriv'          => $lex->data->deriv ?? null,
+                'pronun_ipa'     => $lex->data->pronun->ipa,
+                'pronun_ipa_mod' => $lex->data->pronun->ipa_mod,
+                'pronun_sbl'     => $lex->data->pronun->sbl,
+                'pronun_dic'     => $lex->data->pronun->dic,
+                'pronun_dic_mod' => $lex->data->pronun->dic_mod,
+                'comment'        => $lex->data->comment ?? null
+            ]);
         }
 
     }
