@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\APIController;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
-class SwaggerDocsController extends APIController
+class SwaggerDocsController extends Controller
 {
 
     public function swaggerDatabase()
