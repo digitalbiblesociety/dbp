@@ -112,12 +112,12 @@ class FilmsController extends APIController
         }
 
         $bible_id      = checkParam('dam_id|fileset_id');
-        // $encoding      = checkParam('encoding');
-        // $resolution    = checkParam('resolution');
-        // $segment_order = checkParam('segment_order');
-        // $book_id       = checkParam('book_id');
-        // $chapter_id    = checkParam('chapter_id');
-        // $verse_id      = checkParam('verse_id');
+        $encoding      = checkParam('encoding');
+        $resolution    = checkParam('resolution');
+        $segment_order = checkParam('segment_order');
+        $book_id       = checkParam('book_id');
+        $chapter_id    = checkParam('chapter_id');
+        $verse_id      = checkParam('verse_id');
 
         $films = Video::with([
             'book',
@@ -128,6 +128,6 @@ class FilmsController extends APIController
             },
         ])->where('bible_id', $bible_id)->where('section', 'main')->get();
 
-        return $this->reply(fractal()->collection($films)->transformWith(new FilmTransformer())->serializeWith($this->serializer)->toArray());
+        return $this->reply(fractal($films, new FilmTransformer(), $this->serializer));
     }
 }
