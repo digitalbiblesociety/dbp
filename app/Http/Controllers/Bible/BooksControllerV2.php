@@ -58,8 +58,8 @@ class BooksControllerV2 extends APIController
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
-        
-        $cache_string = strtolower('v2_library_book:' . $asset_id .':'. $id .':' . $fileset . '_' . implode('-',$testament));
+
+        $cache_string = strtolower('v2_library_book:' . $asset_id .':'. $id .':' . $fileset . '_' . implode('-', $testament));
         $libraryBook = \Cache::remember($cache_string, now()->addDay(), function () use ($id, $fileset, $testament) {
 
             if ($fileset->set_type_code === 'text_plain') {
@@ -107,12 +107,13 @@ class BooksControllerV2 extends APIController
         }
 
         $testament = $this->getTestamentString($id);
+
         $cache_string = strtolower('v2_library_bookOrder_' . $id . $asset_id . $fileset . $testament);
         $libraryBook = \Cache::remember($cache_string, now()->addDay(),
             function () use ($id, $fileset, $testament) {
                 $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select('book_id', 'chapter')->distinct()->get();
                 $books = Book::whereIn('id', $booksChapters->pluck('book_id')->unique()->toArray())
-                             ->when($testament, function ($q) use ($testament) {
+                             ->when(!empty($testament), function ($q) use ($testament) {
                                  $q->where('book_testament', $testament);
                              })->orderBy('protestant_order')->get();
 
@@ -289,7 +290,7 @@ class BooksControllerV2 extends APIController
                 $testament = ['NTOTP', 'NTP', 'NTPOTP', 'OTNTP', 'OTP', 'P'];
                 break;
         }
-        return $testament;
+        return [];
     }
 
 }
