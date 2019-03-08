@@ -98,7 +98,7 @@ class LanguagesController extends APIController
         $code                  = checkParam('code|iso');
         $sort_by               = checkParam('sort_by') ?? 'name';
         $include_alt_names     = checkParam('include_alt_names');
-        $show_restricted       = checkParam('show_only_restricted');
+        $show_restricted       = checkParam('show_restricted');
         $asset_id              = checkParam('bucket_id|asset_id');
         $name                  = checkParam('name');
 
@@ -124,7 +124,6 @@ class LanguagesController extends APIController
                     'current_translation.name as name',
                     'autonym.name as autonym'
                 ])->withCount('bibles')->withCount('filesets')->get();
-
             return fractal($languages, new LanguageTransformer(), $this->serializer);
         });
 
