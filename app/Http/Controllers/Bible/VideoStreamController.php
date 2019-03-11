@@ -18,16 +18,16 @@ class VideoStreamController extends APIController
      *
      * Generate the parent m3u8 file which contains the various resolution m3u8 files
      *
-     * @param null $fileset_id
+     * @param null $id
      * @param null $file_id
      *
      * @return $this
      */
-    public function index($fileset_id = null, $file_id = null)
+    public function index($id = null, $file_id = null)
     {
-        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
+        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh_video.bucket');
 
-        $fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'video_stream')->select('hash_id','id')->first();
+        $fileset = BibleFileset::uniqueFileset($id, $asset_id)->select('hash_id','id')->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
@@ -57,7 +57,7 @@ class VideoStreamController extends APIController
      */
     public function transportStream(Response $response, $fileset_id = null, $file_id = null, $file_name = null)
     {
-        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
+        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh_video.bucket');
 
         $fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'video_stream')->select('hash_id','id','asset_id')->first();
         if (!$fileset) {

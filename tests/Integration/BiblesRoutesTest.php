@@ -67,6 +67,7 @@ class BiblesRoutesTest extends ApiV4Test
      */
     public function bibleFilesetsDownload()
     {
+        $this->markTestIncomplete('Awaiting Fileset download zips');
         $path = route('v4_filesets.download', $this->params);
         echo "\nTesting: $path";
 

@@ -162,7 +162,7 @@ class ApiV2Test extends TestCase
      * Test Library Book
      *
      * @category V2_Library
-     * @see \app\Http\Controllers\BooksControllerV2::book
+     * @see \app\Http\Controllers\Bible\BooksControllerV2::book
      * @category Swagger ID: v2_library_book
      * @category Route Name: v2_library_book
      * @link Test Route Path: https://api.dbp.test/library/book?v=2&dam_id=AAIWBTN2ET&key={key}&pretty
@@ -173,7 +173,7 @@ class ApiV2Test extends TestCase
      */
     public function libraryBook()
     {
-        $this->params['dam_id'] = 'ENGESV';
+        $this->params['dam_id'] = 'ENGKJV';
 
         echo "\nTesting: " . route('v2_library_book', $this->params);
         $response = $this->withHeaders($this->params)->get(route('v2_library_book'), $this->params);

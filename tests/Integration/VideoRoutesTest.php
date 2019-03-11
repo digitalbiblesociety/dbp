@@ -21,19 +21,18 @@ class VideoRoutesTest extends ApiV4Test
     public function videoStream()
     {
         $bible_file = BibleFile::with('fileset')->where('file_name', 'like', '%.m3u8')->inRandomOrder()->first();
-        $video_stream = [
+        $path = route('v4_video_stream', array_merge($this->params, [
             'file_id'    => $bible_file->id,
             'fileset_id' => $bible_file->fileset->id,
             'file_name'  => $bible_file->file_name
-        ];
-        $path = route('v4_video_stream', array_merge($this->params, $video_stream));
-        echo "\nTesting: $path";
+        ]));
+
         $response = $this->withHeaders($this->params)->get($path);
-        $this->assertEquals($response->getStatusCode(), 200);
+        $response->assertSuccessful();
 
         $disposition_header = $response->headers->get('content-disposition');
         $this->assertContains('attachment', $disposition_header);
-        $this->assertContains('filename="' . $video_stream['file_name'] . '"', $disposition_header);
+        $this->assertContains('filename="' . $bible_file->file_name . '"', $disposition_header);
     }
 
     /**
@@ -48,16 +47,14 @@ class VideoRoutesTest extends ApiV4Test
     public function videoStreamTs()
     {
         $resolution = VideoResolution::with('file.fileset')->inRandomOrder()->first();
-        $video_stream = [
+        $path = route('v4_video_stream_ts', array_merge([
             'file_id'    => $resolution->bible_file_id,
             'fileset_id' => $resolution->file->fileset->id,
             'file_name'  => $resolution->file_name
-        ];
-        $path = route('v4_video_stream_ts', array_merge($video_stream, $this->params));
-        echo "\nTesting: $path";
-        $response = $this->withHeaders($this->params)->get($path);
+        ], $this->params));
 
-        $this->assertEquals($response->getStatusCode(), 200);
+        $response = $this->withHeaders($this->params)->get($path);
+        $response->assertSuccessful();
         $this->assertContains('attachment', $response->headers->get('content-disposition'));
     }
 }

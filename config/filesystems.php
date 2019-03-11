@@ -147,6 +147,14 @@ return [
             'url'    => 'rtmp://stream.bible.build/cfx/st',
         ],
 
+        's3_fcbh_video' => [
+            'driver' => 's3',
+            'key'    => env('FCBH_AWS_VIDEO_KEY') ?? env('FCBH_AWS_KEY'),
+            'secret' => env('FCBH_AWS_VIDEO_SECRET') ?? env('FCBH_AWS_SECRET'),
+            'region' => env('FCBH_AWS_VIDEO_REGION') ?? env('FCBH_AWS_REGION'),
+            'bucket' => env('FCBH_AWS_VIDEO_BUCKET')
+        ]
+
     ],
 
 ];
