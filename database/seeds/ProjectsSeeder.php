@@ -31,7 +31,7 @@ class ProjectsSeeder extends Seeder
         while ($project_count > 0) {
             $i = 1;
             Project::create([
-                'id'              => $project_count,
+                'id'              => unique_random('projects', 'id'),
                 'name'            => $faker->company,
                 'url_avatar'      => $faker->url,
                 'url_avatar_icon' => $faker->url,
