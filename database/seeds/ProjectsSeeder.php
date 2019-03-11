@@ -18,7 +18,7 @@ class ProjectsSeeder extends Seeder
     public function run(Faker $faker)
     {
         Project::create([
-            'id'              => unique_random('projects', 'id', 4),
+            'id'              => unique_random('projects', 'id'),
             'name'            => 'Digital Bible Platform',
             'url_avatar'      => $faker->url,
             'url_avatar_icon' => $faker->url,
@@ -30,8 +30,9 @@ class ProjectsSeeder extends Seeder
         $project_count = random_int(10, 50);
         while ($project_count > 0) {
             $i = 1;
+            $project_id = unique_random('projects', 'id');
             Project::create([
-                'id'              => unique_random('projects', 'id'),
+                'id'              => $project_id,
                 'name'            => $faker->company,
                 'url_avatar'      => $faker->url,
                 'url_avatar_icon' => $faker->url,
@@ -42,7 +43,7 @@ class ProjectsSeeder extends Seeder
 
             ProjectOauthProvider::create([
                 'name'          => 'facebook',
-                'project_id'    => $project_count,
+                'project_id'    => $project_id,
                 'client_id'     => unique_random('project_oauth_providers', 'client_id'),
                 'client_secret' => unique_random('project_oauth_providers', 'client_secret'),
                 'callback_url'  => 'https://dbp4.org/login/callback/facebook',
@@ -51,7 +52,7 @@ class ProjectsSeeder extends Seeder
 
             ProjectOauthProvider::create([
                 'name'          => 'google',
-                'project_id'    => $project_count,
+                'project_id'    => $project_id,
                 'client_id'     => unique_random('project_oauth_providers', 'client_id'),
                 'client_secret' => unique_random('project_oauth_providers', 'client_secret'),
                 'callback_url'  => 'https://dbp4.org/login/callback/google',
