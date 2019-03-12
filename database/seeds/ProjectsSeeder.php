@@ -27,12 +27,11 @@ class ProjectsSeeder extends Seeder
             'sensitive'       => false
         ]);
 
-        $project_count = random_int(10, 50);
+        $project_count = random_int(3, 5);
         while ($project_count > 0) {
-            $i = 1;
-            $project_id = unique_random('projects', 'id');
+
             Project::create([
-                'id'              => $project_id,
+                'id'              => $project_count,
                 'name'            => $faker->company,
                 'url_avatar'      => $faker->url,
                 'url_avatar_icon' => $faker->url,
@@ -43,7 +42,7 @@ class ProjectsSeeder extends Seeder
 
             ProjectOauthProvider::create([
                 'name'          => 'facebook',
-                'project_id'    => $project_id,
+                'project_id'    => $project_count,
                 'client_id'     => unique_random('project_oauth_providers', 'client_id'),
                 'client_secret' => unique_random('project_oauth_providers', 'client_secret'),
                 'callback_url'  => 'https://dbp4.org/login/callback/facebook',
@@ -52,7 +51,7 @@ class ProjectsSeeder extends Seeder
 
             ProjectOauthProvider::create([
                 'name'          => 'google',
-                'project_id'    => $project_id,
+                'project_id'    => $project_count,
                 'client_id'     => unique_random('project_oauth_providers', 'client_id'),
                 'client_secret' => unique_random('project_oauth_providers', 'client_secret'),
                 'callback_url'  => 'https://dbp4.org/login/callback/google',
