@@ -22,12 +22,6 @@ class LexiconController extends APIController
         return $this->reply(Lexicon::filterByLanguage($language)->when($word, function ($query) use($word) {
             $query->where('def_short',$word);
         })->paginate());
-
-    }
-
-    public function search()
-    {
-
     }
 
 }
