@@ -11,19 +11,6 @@ use Spatie\Fractalistic\ArraySerializer;
 class ArclightController extends APIController
 {
 
-    protected $api_key;
-    protected $base_url;
-
-    /**
-     * ArclightController constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->api_key  = config('services.arclight.key');
-        $this->base_url = 'https://api.arclight.org/v2/';
-    }
-
     public function volumes($language = null)
     {
         $language = Language::where('iso',$language)->first();
@@ -242,53 +229,5 @@ class ArclightController extends APIController
         $current_file .= "#EXTINF:\n".$media_components->streamingUrls->m3u8[0]->url;
 
         return response($current_file, 200)->header('Content-Disposition', 'attachment; filename="'.'"')->header('Content-Type', 'application/x-mpegURL');
-    }
-
-    public function sync()
-    {
-        if (!file_exists(storage_path('data/jfm/languages'))) {
-            mkdir(storage_path('data/jfm/languages'), 0777, true);
-        }
-        if (!file_exists(storage_path('data/jfm/feature-films'))) {
-            mkdir(storage_path('data/jfm/feature-films'), 0777, true);
-        }
-
-        $this->syncLanguages();
-        $this->syncTypes();
-    }
-
-    private function syncTypes()
-    {
-        $media_components = $this->fetch('media-components');
-        foreach ($media_components->mediaComponents as $component) {
-            $output[$component->subType][$component->mediaComponentId] = $component->title;
-        }
-        file_put_contents(storage_path('/data/jfm/types.json'), json_encode(collect($output), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-    }
-
-    private function syncLanguages()
-    {
-        $languages = collect($this->fetch('media-languages')->mediaLanguages)->pluck('languageId', 'iso3');
-        file_put_contents(storage_path('/data/jfm/languages.json'), json_encode(collect($languages), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-    }
-
-    private function fetch($path, array $params = [])
-    {
-        $paramString = '';
-        foreach ($params as $key => $value) {
-            $paramString .= '&' . $key . '=' . $value;
-        }
-        $path = $this->base_url . $path . '?_format=json&apiKey=' . $this->api_key . '&limit=3000' . $paramString;
-
-        $results = json_decode(file_get_contents($path));
-        if (isset($results->_embedded)) {
-            return $results->_embedded;
-        }
-        return $results;
-    }
-
-    private function fetchLocal($path)
-    {
-        return json_decode(file_get_contents(storage_path("/data/jfm/$path")), true);
     }
 }

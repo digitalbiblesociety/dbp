@@ -8,11 +8,12 @@ use App\Models\Bible\BibleFileset;
 use App\Traits\CallsBucketsTrait;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
-
+use App\Traits\ArclightConnection;
 class VideoStreamController extends APIController
 {
 
     use CallsBucketsTrait;
+    use ArclightConnection;
 
     /**
      *
@@ -41,7 +42,11 @@ class VideoStreamController extends APIController
         foreach ($file->videoResolution as $resolution) {
             $current_file .= "\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=$resolution->bandwidth,RESOLUTION=".$resolution->resolution_width."x$resolution->resolution_height,CODECS=\"$resolution->codec\"\n$resolution->file_name" . '?key=' . $this->key . '&v=4&asset_id='.$asset_id;
         }
-        return response($current_file, 200)->header('Content-Disposition', 'attachment; filename="'.$file->file_name.'"')->header('Content-Type', 'application/x-mpegURL');
+
+        return response($current_file, 200, [
+            'Content-Disposition' => 'attachment; filename="'.$file->file_name.'"',
+            'Content-Type'        => 'application/x-mpegURL'
+        ]);
     }
 
     /**
@@ -89,6 +94,31 @@ class VideoStreamController extends APIController
         }
         $current_file .= "\n#EXT-X-ENDLIST";
 
-        return response($current_file, 200)->header('Content-Disposition', 'attachment; filename="'.$file->file_name.'"')->header('Content-Type', 'application/x-mpegURL');
+        return response($current_file, 200, [
+            'Content-Disposition' => 'attachment; filename="'.$file->file_name.'"',
+            'Content-Type'        => 'application/x-mpegURL'
+        ]);
     }
+
+    public function jesusFilms()
+    {
+        return collect($this->fetchArclight('media-languages')->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
+    }
+
+    public function jesusFilmStream()
+    {
+        $iso = checkParam('iso', true);
+
+        $chapter_verse_ref = implode(',', array_keys($this->getIdReferences()));
+        $arclight_language = LanguageCode::whereHas('language', function($query) use($iso) {
+            $query->where('iso', $iso);
+        })->where('source','arclight')->select('code')->first()->code;
+
+        return $this->fetchArclight('media-components/', [
+            'platform'    => 'ios',
+            'ids'         => $chapter_verse_ref,
+            'languageIds' => $arclight_language
+        ]);
+    }
+
 }
