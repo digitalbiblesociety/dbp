@@ -5,12 +5,18 @@ namespace App\Traits;
 trait ArclightConnection
 {
 
-    private function fetchArclight($path, $params = [])
+    private function fetchArclight($path, $language_id, $include_refs = false)
     {
         $base_url = 'https://api.arclight.org/v2/';
-        $key  = config('services.arclight.key');
+        $key      = config('services.arclight.key');
 
-        $results = json_decode(file_get_contents($base_url.$path.'?_format=json&apiKey='.$key.'&limit=3000&'.http_build_query($params)));
+        $path = $base_url.$path.'?_format=json&apiKey='.$key.'&limit=3000&platform=ios&languageIds='.$language_id;
+        if($include_refs) {
+            $refs = implode(',', array_keys($this->getIdReferences()));
+            $path .= '&ids='.$refs;
+        }
+
+        $results = json_decode(file_get_contents($path));
 
         if (isset($results->_embedded)) {
             return $results->_embedded;
@@ -54,7 +60,7 @@ trait ArclightConnection
 
     private function getIdReferences()
     {
-        return [
+        $references = [
             '1_jf6101-0-0' => ['Gen' => ['1' => ['1']]],
             '1_jf6102-0-0' => ['Luke' => ['1' => ['26','27','28','29','30','31','32','33','34','35']]],
             '1_jf6103-0-0' => ['Luke' => ['2' => ['21']]],
@@ -133,7 +139,7 @@ trait ArclightConnection
             '1_jf6151-0-0' => [
                 'Luke' => ['23' => ['33','34','35','36','37','38','39']],
                 'Matt' => ['27' => ['41','42']],
-                'Isa' => ['53' => ['12']]
+                'Isa'  => ['53' => ['12']]
             ],
             '1_jf6152-0-0' => ['John' => ['19' => ['23','24']],'Luke' => ['23' => ['34']]],
             '1_jf6153-0-0' => ['Luke' => ['23' => ['38']]],
@@ -153,6 +159,7 @@ trait ArclightConnection
             '1_jf6160-0-0' => ['Matt' => ['28' => ['18','19','20']]],
             '1_jf6161-0-0' => null,
         ];
+        return $references;
     }
 
 }

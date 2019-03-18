@@ -9,6 +9,9 @@ use App\Traits\CallsBucketsTrait;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use App\Traits\ArclightConnection;
+
+use App\Models\Language\LanguageCode;
+
 class VideoStreamController extends APIController
 {
 
@@ -100,25 +103,38 @@ class VideoStreamController extends APIController
         ]);
     }
 
-    public function jesusFilms()
+    public function jesusFilmsLanguages()
     {
-        return collect($this->fetchArclight('media-languages')->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
+        return collect($this->fetchArclight('media-languages', false)->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
     }
 
-    public function jesusFilmStream()
+    public function jesusFilmChapters($iso)
     {
-        $iso = checkParam('iso', true);
+        $iso = checkParam('iso', true, $iso);
 
-        $chapter_verse_ref = implode(',', array_keys($this->getIdReferences()));
         $arclight_language = LanguageCode::whereHas('language', function($query) use($iso) {
             $query->where('iso', $iso);
         })->where('source','arclight')->select('code')->first()->code;
 
-        return $this->fetchArclight('media-components/', [
-            'platform'    => 'ios',
-            'ids'         => $chapter_verse_ref,
-            'languageIds' => $arclight_language
-        ]);
+        $components = $this->fetchArclight('media-components/', $arclight_language);
+        $output = [];
+        foreach ($components->mediaComponents as $key => $component) {
+
+            $output['verses'] = $this->getIdReferences($component->mediaComponentId);
+            $output['file_name'] = route('v2_api_jesusFilm_stream', [
+                'id'          => $component->mediaComponentId,
+                'language_id' => $component->primaryLanguageId,
+                'v'           => $this->v,
+                'key'         => $this->key
+            ]);
+        }
+
+        return $this->reply($output);
+    }
+
+    public function jesusFilmFile()
+    {
+
     }
 
 }

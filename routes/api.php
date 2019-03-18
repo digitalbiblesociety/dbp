@@ -77,8 +77,11 @@ Route::name('v4_access_groups.update')->put('access/groups/{group_id}',         
 Route::name('v4_access_groups.destroy')->delete('access/groups/{group_id}',        'User\AccessGroupController@destroy');
 
 // VERSION 4 | Stream
-Route::name('v4_video_stream')->get('resources/jesus-films',                                  'Bible\VideoStreamController@jesusFilms');
-Route::name('v4_video_stream')->get('resources/jesus-films/{iso}.m3u8',                       'Bible\VideoStreamController@jesusFilmStream');
+Route::name('v4_video_jesus_film_languages')->get('resources/jesus-films/languages',                        'Bible\VideoStreamController@jesusFilmsLanguages');
+Route::name('v4_video_jesus_film_language')->get('resources/jesus-films/languages/{iso}',                   'Bible\VideoStreamController@jesusFilmChapters');
+Route::name('v4_video_jesus_film_language')->get('resources/jesus-films/{filename}',                        'Bible\VideoStreamController@jesusFilmChapters');
+
+
 Route::name('v4_video_stream')->get('bible/filesets/{fileset_id}/{file_id}/playlist.m3u8',    'Bible\VideoStreamController@index');
 Route::name('v4_video_stream_ts')->get('bible/filesets/{fileset_id}/{file_id}/{file_name}',   'Bible\VideoStreamController@transportStream');
 
@@ -108,6 +111,10 @@ Route::name('v4_text_search')->get('search',                                    
 Route::name('v4_commentary_index')->get('commentaries/',                                       'Bible\Study\CommentaryController@index');
 Route::name('v4_commentary_chapters')->get('commentaries/{commentary_id}/chapters',            'Bible\Study\CommentaryController@chapters');
 Route::name('v4_commentary_chapters')->get('commentaries/{commentary_id}/{book_id}/{chapter}', 'Bible\Study\CommentaryController@sections');
+
+// VERSION 4 | Study Lexicons
+
+Route::name('v4_lexicon_index')->get('lexicons',                                   'Bible\Study\LexiconController@index');
 
 // VERSION 4 | Timestamps
 Route::name('v4_timestamps')->get('timestamps',                                    'Bible\AudioController@availableTimestamps');
