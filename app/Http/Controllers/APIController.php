@@ -224,29 +224,33 @@ class APIController extends Controller
      */
     private function replyFormatter($object, array $meta, $format, $input)
     {
+        if(!is_array($object)) {
+            $object = $object->toArray();
+        }
+
         switch ($format) {
             case 'jsonp':
                 return response()->json($object, $this->statusCode)
                                  ->header('Content-Type', 'application/javascript; charset=utf-8')
                                  ->setCallback(request()->input('callback'));
             case 'xml':
-                $formatter = ArrayToXml::convert($object->toArray(), [
+                $formatter = ArrayToXml::convert($object, [
                     'rootElementName' => $meta['rootElementName'] ?? 'root',
                     '_attributes'     => $meta['rootAttributes'] ?? []
                 ], true, 'utf-8');
                 return response()->make($formatter, $this->statusCode)
                                  ->header('Content-Type', 'application/xml; charset=utf-8');
             case 'yaml':
-                $formatter = Yaml::dump($object->toArray());
+                $formatter = Yaml::dump($object);
                 return response()->make($formatter, $this->statusCode)
                                  ->header('Content-Type', 'text/yaml; charset=utf-8');
             case 'toml':
                 $tomlBuilder = new TomlBuilder();
-                $formatter   = $tomlBuilder->addValue('multiple', $object->toArray())->getTomlString();
+                $formatter   = $tomlBuilder->addValue('multiple', $object)->getTomlString();
                 return response()->make($formatter, $this->statusCode)
                                  ->header('Content-Type', 'text/yaml; charset=utf-8');
             case 'csv':
-                $formatter = Formatter::make($object->toArray(), Formatter::ARR);
+                $formatter = Formatter::make($object, Formatter::ARR);
                 return response()->make($formatter->toCsv(), $this->statusCode)
                                  ->header('Content-Type', 'text/csv; charset=utf-8');
             default:

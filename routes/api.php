@@ -203,5 +203,7 @@ Route::name('v4_api.stats')->get('/stats',                                      
 Route::name('v4_api.gitVersion')->get('/api/git/version',                          'ApiMetadataController@gitVersion');
 Route::name('v4_api.refreshDevCache')->get('/api/refresh-dev-cache',               'ApiMetadataController@refreshDevCache');
 
+Route::name('v4_api.changes')->get('/api/changelog',                               'ApiMetadataController@changelog');
+
 // VERSION 4 | GENERATOR
 Route::name('v4_api.generator')->get('/api/gen/bibles',                            'Connections\GeneratorController@bibles');

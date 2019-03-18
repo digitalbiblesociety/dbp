@@ -6,8 +6,10 @@ use App\Http\Controllers\APIController;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
 use App\Models\Organization\Asset;
+use App\Models\User\Changelog;
 use App\Traits\CallsBucketsTrait;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Input;
 
 class ApiMetadataController extends APIController
 {
@@ -303,6 +305,11 @@ class ApiMetadataController extends APIController
         }
         Cache::flush();
         return $this->reply('Cache Flushed successfully');
+    }
+
+    public function changelog()
+    {
+        return $this->reply(Changelog::orderBy('released_at', 'desc')->get()->groupBy('subheading'));
     }
 
 }
