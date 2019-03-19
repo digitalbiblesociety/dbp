@@ -8,6 +8,8 @@ class Lexicon extends Model
 {
     public $incrementing = false;
     public $connection = 'dbp';
+    protected $fillable = ['id', 'base_word', 'usage', 'definition', 'derived', 'part_of_speech', 'aramaic', 'comment'];
+    protected $keyType = 'string';
 
     /**
      *
@@ -24,6 +26,7 @@ class Lexicon extends Model
      * @var $id
      */
     protected $id;
+
     /**
      *
      * @OA\Property(
@@ -37,73 +40,84 @@ class Lexicon extends Model
      * @var $base_word
      */
     protected $base_word;
+
     /**
      *
      * @OA\Property(
-     *   title="id",
+     *   title="usage",
      *   type="string",
-     *   description="The way the word is commmonly translated in English Bibles",
+     *   description="",
      *   examples="calm",
      * )
      *
      * @var $usage
      */
     protected $usage;
+
     /**
      *
      * @OA\Property(
-     *   title="id",
+     *   title="definition",
      *   type="string",
-     *   description="The USFM 2.4 id for the books of the Bible",
+     *   description="",
      * )
      *
      * @var $definition
      */
     protected $definition;
+
     /**
      *
      * @OA\Property(
-     *   title="id",
+     *   title="derived",
      *   type="string",
-     *   description="The USFM 2.4 id for the books of the Bible",
+     *   description="",
      * )
      *
      * @var $derived
      */
     protected $derived;
+
     /**
      *
      * @OA\Property(
-     *   title="id",
+     *   title="part_of_speech",
      *   type="string",
-     *   description="The USFM 2.4 id for the books of the Bible",
+     *   description="",
      * )
      *
      * @var $part_of_speech
      */
     protected $part_of_speech;
+
     /**
      *
      * @OA\Property(
-     *   title="id",
+     *   title="aramaic",
      *   type="string",
-     *   description="The USFM 2.4 id for the books of the Bible",
+     *   description="",
      * )
      *
      * @var $aramaic
      */
     protected $aramaic;
+
     /**
      *
      * @OA\Property(
-     *   title="id",
+     *   title="comment",
      *   type="string",
-     *   description="The USFM 2.4 id for the books of the Bible",
+     *   description="",
      * )
      *
      * @var $comment
      */
     protected $comment;
+
+    public function definitions()
+    {
+        return $this->hasMany(LexicalDefinition::class);
+    }
 
     public function scopeFilterByLanguage($query, $language)
     {
@@ -114,7 +128,7 @@ class Lexicon extends Model
 
     public function scopeFilterByWord($query, $word, $exact_match)
     {
-        $query->when($word, function ($query, $word, $exact_match) {
+        $query->when($word, function ($query) use($word, $exact_match) {
             return $query->whereHas('definitions', function ($subquery) use($word, $exact_match) {
                 if(!$exact_match) {
                     $subquery->where('definition', $word);
