@@ -14,6 +14,7 @@ use App\Models\Organization\OrganizationTranslation;
 use App\Transformers\BibleTransformer;
 use App\Transformers\BooksTransformer;
 use App\Traits\AccessControlAPI;
+use Illuminate\Support\Str;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformers\Serializers\DataArraySerializer;
 use App\Http\Controllers\APIController;
@@ -215,8 +216,8 @@ class BiblesController extends APIController
                 })
                 ->when($asset_id, function ($q) use ($asset_id) {
                     $q->whereHas('filesets', function ($q) use ($asset_id) {
-                        $q->where('asset_id', $asset_id);
-                    })->get();
+                        $q->whereIn('asset_id', explode(',',$asset_id));
+                    });
                 })
                 ->when($organization_id, function ($q) use ($organization_id) {
                     $q->whereHas('organizations', function ($q) use ($organization_id) {
@@ -232,7 +233,7 @@ class BiblesController extends APIController
                 $bible->english_language_id = $language->id;
             }
 
-            return fractal($bibles, new BibleTransformer())->serializeWith($this->serializer);
+            return fractal($bibles, new BibleTransformer(), $this->serializer);
         });
         return $this->reply($bibles);
     }
