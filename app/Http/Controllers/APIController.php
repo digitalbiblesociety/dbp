@@ -17,6 +17,7 @@ use Symfony\Component\Yaml\Yaml;
 use Yosymfony\Toml\TomlBuilder;
 use Illuminate\Support\Str;
 
+
 class APIController extends Controller
 {
     // Top Level Swagger Docs
@@ -214,6 +215,7 @@ class APIController extends Controller
         ]], $this->statusCode);
     }
 
+
     /**
      * @param       $object
      * @param array $meta
@@ -224,9 +226,7 @@ class APIController extends Controller
      */
     private function replyFormatter($object, array $meta, $format, $input)
     {
-        if(!is_array($object)) {
-            $object = $object->toArray();
-        }
+        $object = json_decode(json_encode($object), true);
 
         switch ($format) {
             case 'jsonp':
