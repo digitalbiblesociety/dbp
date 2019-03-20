@@ -60,7 +60,7 @@ class ArclightController extends APIController
 
         $cache_string = 'arclight_media_components_'.$chapter_id.$language_id;
         $stream_file  = \Cache::remember($cache_string, now()->addDay(), function () use ($chapter_id, $language_id) {
-            $media_components = $this->fetchArclight('media-components/'.$chapter_id.'/languages/'.$language_id, false);
+            $media_components = $this->fetchArclight('media-components/'.$chapter_id.'/languages/'.$language_id, $language_id, false);
             return file_get_contents($media_components->streamingUrls->m3u8[0]->url);
         });
 
@@ -72,6 +72,7 @@ class ArclightController extends APIController
 
     public function volumes($iso = null)
     {
+        $iso = strtolower($iso);
         return \Cache::remember('media-languages_'.$iso, now()->addWeek(), function () use ($iso) {
 
             $languages = collect($this->fetchArclight('media-languages')->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
