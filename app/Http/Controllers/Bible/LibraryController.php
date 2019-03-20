@@ -333,6 +333,10 @@ class LibraryController extends APIController
      */
     public function volume()
     {
+        if($this->v == 3) {
+            return [];
+        }
+
         $dam_id             = checkParam('dam_id|fcbh_id');
         $media              = checkParam('media');
         $language_name      = checkParam('language');
