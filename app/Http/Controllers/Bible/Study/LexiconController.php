@@ -53,6 +53,23 @@ class LexiconController extends APIController
      *     )
      * )
      *
+     * @OA\Schema (
+     *     type="array",
+     *     schema="v4_lexicon_index",
+     *     title="The lexicon response",
+     *     @OA\Xml(name="v4_lexicon_index"),
+     *     @OA\Items(
+     *          @OA\Property(property="id",             ref="#/components/schemas/Lexicon/properties/id"),
+     *          @OA\Property(property="base_word",      ref="#/components/schemas/Lexicon/properties/base_word"),
+     *          @OA\Property(property="usage",          ref="#/components/schemas/Lexicon/properties/usage"),
+     *          @OA\Property(property="definition",     ref="#/components/schemas/Lexicon/properties/definition"),
+     *          @OA\Property(property="derived",        ref="#/components/schemas/Lexicon/properties/derived"),
+     *          @OA\Property(property="part_of_speech", ref="#/components/schemas/Lexicon/properties/part_of_speech"),
+     *          @OA\Property(property="aramaic",        ref="#/components/schemas/Lexicon/properties/aramaic"),
+     *          @OA\Property(property="comment",        ref="#/components/schemas/Lexicon/properties/comment")
+     *     )
+     * )
+     *
      * @return \Illuminate\Http\Response
      */
     public function index()
