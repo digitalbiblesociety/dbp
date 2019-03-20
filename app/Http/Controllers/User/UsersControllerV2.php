@@ -98,9 +98,7 @@ class UsersControllerV2 extends APIController
                 // Check if user already exists but just hasn't signed up with that account
                 $user    = User::firstOrCreate(['email' => $email]);
                 if(!isset($password)) {
-                    $account = Account::firstOrCreate(['provider_user_id' => request()->remote_id, 'provider_id' => request()->remote_type]);
-                    $account->user()->associate($user);
-                    $account->save();
+                    Account::firstOrCreate(['user_id' =>$user->id,'provider_user_id' => request()->remote_id, 'provider_id' => request()->remote_type]);
                 }
             }
 
