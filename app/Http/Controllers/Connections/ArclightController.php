@@ -70,7 +70,7 @@ class ArclightController extends APIController
         ]);
     }
 
-    private function volumes($iso = null)
+    public function volumes($iso = null)
     {
         return \Cache::remember('media-languages_'.$iso, now()->addWeek(), function () use ($iso) {
 
