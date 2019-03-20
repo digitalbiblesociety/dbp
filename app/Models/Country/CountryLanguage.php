@@ -22,6 +22,8 @@ class CountryLanguage extends Model
 {
     protected $connection = 'dbp';
     protected $table = 'country_language';
+    public $keyType = 'int';
+    public $primaryKey = 'language_id';
     public $timestamps = false;
     public $incrementing = false;
 
@@ -70,4 +72,10 @@ class CountryLanguage extends Model
     {
         return $this->belongsTo(Language::class);
     }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
 }
