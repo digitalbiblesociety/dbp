@@ -119,7 +119,7 @@ class LibraryVolumeTransformer extends BaseTransformer
                 return [
                     'dam_id'                    => $fileset->generated_id,
                     'fcbh_id'                   => $fileset->generated_id,
-                    'volume_name'               => $fileset->english_name,
+                    'volume_name'               => (string) $fileset->autonym_name ?? $fileset->english_name,
                     'status'                    => 'live',// for the moment these default to Live
                     'dbp_agreement'             => 'true',// for the moment these default to True
                     'expiration'                => '0000-00-00',
@@ -139,7 +139,7 @@ class LibraryVolumeTransformer extends BaseTransformer
                     'language_family_iso_2T'    => (string) $fileset->iso2T,
                     'language_family_iso_1'     => (string) $fileset->iso1,
                     'version_code'              => (string) substr($fileset->bible_id, 3),
-                    'version_name'              => (string) $fileset->autonym,
+                    'version_name'              => (string) $fileset->autonym_name ?? $fileset->english_name,
                     'version_english'           => (string) $fileset->english_name,
                     'collection_code'           => (string) substr($fileset->generated_id, -4, 1) === 'N' ? 'NT' : 'OT',
                     'rich'                      => (string) $fileset->set_type_code === 'text_format' ? '1' : '0',
