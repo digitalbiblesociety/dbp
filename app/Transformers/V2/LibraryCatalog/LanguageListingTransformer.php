@@ -83,15 +83,13 @@ class LanguageListingTransformer extends BaseTransformer
             case 'v2_library_volumeLanguageFamily':
                 return [
                     'language_family_code'    => strtoupper($language->iso),
-                    'language_family_name'    => (string) $language->name,
+                    'language_family_name'    => (string) $language->autonym,
                     'language_family_english' => (string) $language->name,
                     'language_family_iso'     => (string) $language->iso,
                     'language_family_iso_2B'  => (string) $language->iso2B,
                     'language_family_iso_2T'  => (string) $language->iso2T,
                     'language_family_iso_1'   => (string) $language->iso1,
-                    'language'                => [
-                        strtoupper($language->iso)
-                    ],
+                    'language'                => [strtoupper($language->iso)],
                     'media'                   => ['video', 'text'],
                     'delivery'                => ['mobile', 'web', 'subsplash'],
                     'resolution'              => ['lo']

@@ -377,15 +377,15 @@ class LanguageControllerV2 extends APIController
         $cache_string = strtolower('volumeLanguageFamily' . $root . $iso . $media . $organization_id);
         $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($root, $iso, $access_control, $media, $organization_id) {
             $languages = Language::with('bibles')->with('dialects')
+                    ->includeAutonymTranslation()
+                    ->includeCurrentTranslation()
                     ->whereHas('filesets', function ($query) use ($access_control,$organization_id,$media) {
                         $query->whereIn('hash_id', $access_control->hashes);
-
                         if ($organization_id) {
                             $query->whereHas('copyright', function ($query) use ($organization_id) {
                                 $query->where('organization_id', $organization_id);
                             });
                         }
-
                         if ($media) {
                             $query->where('set_type_code', 'LIKE', $media.'%');
                         }
@@ -399,9 +399,19 @@ class LanguageControllerV2 extends APIController
                     ->when($root, function ($query) use ($root) {
                         return $query->where('name', 'LIKE', '%' . $root . '%');
                     })
+                    ->select(
+                        [
+                            'current_translation.name as name',
+                            'autonym.name as autonym',
+                            'languages.iso',
+                            'languages.iso2B',
+                            'languages.iso2T',
+                            'languages.iso1'
+                        ]
+                    )
                     ->get();
 
-            return fractal($languages, new LanguageListingTransformer())->serializeWith($this->serializer);
+            return fractal($languages, new LanguageListingTransformer(), $this->serializer);
         });
         return $this->reply($languages);
     }
