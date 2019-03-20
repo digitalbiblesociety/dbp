@@ -42,7 +42,7 @@ class UsersControllerV2 extends APIController
                     'name' => request()->username,
                     'token' => unique_random('users', 'token')
                 ]);
-                return ['id' => $user->id];
+                return ['id' => (string) $user->id];
             }
         } else {
             $user = User::where('id', request()->id)->first();
