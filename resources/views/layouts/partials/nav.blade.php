@@ -25,8 +25,8 @@
 
                             <div class="column">
                                 <h1 class="title is-6 is-mega-menu-title">API Reference</h1>
-                                <a class="navbar-item" href="{{ route('swagger_v4') }}">{{ trans('about.api_v4_title') }}</a>
-                                <a class="navbar-item" href="{{ route('swagger_v2') }}">{{ trans('about.api_v2_title') }}</a>
+                                <a class="navbar-item" href="{{ route('swagger', ['version' => 'v4']) }}">{{ trans('about.api_v4_title') }}</a>
+                                <a class="navbar-item" href="{{ route('swagger', ['version' => 'v2']) }}">{{ trans('about.api_v2_title') }}</a>
                             </div>
 
                             <div class="column">

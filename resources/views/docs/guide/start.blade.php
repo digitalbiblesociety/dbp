@@ -169,7 +169,7 @@
                 <h4 class="title">The API Structure</h4>
                 <h2 class="subtitle">Bibles and Filesets</h2>
 
-                <div class="ribbon">If you want to jump right in to queries you can check out the <a href="{{ route('swagger_v4') }}">API reference documentation.</a></div>
+                <div class="ribbon">If you want to jump right in to queries you can check out the <a href="{{ route('swagger', ['version' => 4]) }}">API reference documentation.</a></div>
                 <p>Your first call to the DBP will probably be to /bibles. All Biblical content whether it be Audio, Video, or text is nested within bible_id.</p>
                 <p>All calls within version 4 of the API are separated into three general categories: Bibles, Wiki, and Community.</p>
 
