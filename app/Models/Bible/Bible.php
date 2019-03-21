@@ -8,6 +8,7 @@ use App\Models\Language\NumeralSystem;
 use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
+use Illuminate\Support\Str;
 
 /**
  * App\Models\Bible\Bible
@@ -297,7 +298,7 @@ class Bible extends Model
         return $query->whereHas('filesets', function ($q) use ($type_filters) {
             $q->whereIn('bible_filesets.hash_id', $type_filters['access_control']->hashes);
             if ($type_filters['asset_id']) {
-                $q->where('asset_id', $type_filters['asset_id']);
+                $q->whereIn('asset_id', explode(',', $type_filters['asset_id']));
             }
             if($type_filters['media']) {
                 $q->where('bible_filesets.set_type_code',$type_filters['media']);
@@ -315,7 +316,7 @@ class Bible extends Model
             $q->whereIn('bible_filesets.hash_id', $type_filters['access_control']->hashes)
               ->select(['id','set_type_code','set_size_code','asset_id']);
             if ($type_filters['asset_id']) {
-                $q->where('asset_id', $type_filters['asset_id']);
+                $q->whereIn('asset_id', explode(',', $type_filters['asset_id']));
             }
             if($type_filters['media']) {
                 $q->where('bible_filesets.set_type_code',$type_filters['media']);

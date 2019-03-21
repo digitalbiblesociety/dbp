@@ -22,7 +22,6 @@ class SeedBibleStrongs extends Seeder
         $this->seedLexicons('hebrew','H');
     }
 
-
     private function seedLexicons($language, $letter)
     {
         $lexicons = \DB::connection('dbp')->table('lexicon_'.$language)->get();
@@ -43,12 +42,6 @@ class SeedBibleStrongs extends Seeder
         if(!collect($lex)->keys()->diff($known_keys)->isEmpty()) {
             dd(collect($lex)->keys()->diff($known_keys));
         }
-
-        // ;
-        \App\Models\Bible\Study\LexicalLexeme::createMany([
-            []
-        ]);
-
 
         Lexicon::insert([
             'id'                    => $word_letter.$lex->strongs,
