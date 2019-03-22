@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Wiki;
 
 use App\Http\Controllers\APIController;
+use App\Models\Bible\BibleFileset;
 use App\Models\Country\CountryLanguage;
 use App\Models\Language\Language;
 use App\Traits\AccessControlAPI;
@@ -373,14 +374,18 @@ class LanguageControllerV2 extends APIController
         $organization_id = checkParam('organization_id');
 
         $access_control = $this->accessControl($this->key);
+        $hashes = BibleFileset::whereIn('hash_id', $access_control->hashes)
+                              ->where('set_type_code','!=','text_format')
+                              ->where('asset_id','dbp-prod')
+                              ->select('hash_id')->get()->pluck('hash_id');
 
         $cache_string = strtolower('volumeLanguageFamily' . $root . $iso . $media . $organization_id);
-        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($root, $iso, $access_control, $media, $organization_id) {
+        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($root, $iso, $hashes, $media, $organization_id) {
             $languages = Language::with('bibles')->with('dialects')
                     ->includeAutonymTranslation()
                     ->includeCurrentTranslation()
-                    ->whereHas('filesets', function ($query) use ($access_control,$organization_id,$media) {
-                        $query->whereIn('hash_id', $access_control->hashes);
+                    ->whereHas('filesets', function ($query) use ($hashes,$organization_id,$media) {
+                        $query->whereIn('hash_id',$hashes);
                         if ($organization_id) {
                             $query->whereHas('copyright', function ($query) use ($organization_id) {
                                 $query->where('organization_id', $organization_id);
