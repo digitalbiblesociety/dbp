@@ -352,6 +352,7 @@ class LibraryController extends APIController
             $language_id = $iso ? Language::where('iso', $iso)->first()->id : null;
 
             $filesets = BibleFileset::with('meta')->where('set_type_code', '!=', 'text_format')
+                ->where('bible_filesets.id', 'NOT LIKE', '%16')
                 ->whereIn('bible_filesets.hash_id', $access_control->hashes)
                 ->uniqueFileset($dam_id, 'dbp-prod', $media, true)
                 ->withBible($language_name, $language_id, $organization)
