@@ -392,9 +392,9 @@ class LibraryController extends APIController
         $filesets = fractal($filesets, new LibraryVolumeTransformer(), $this->serializer)->toArray();
 
         if(!empty($filesets)) {
-            $filesets = array_merge($filesets, $arclight->volumes());
+            $filesets = array_merge($filesets, $arclight->volumes($iso));
         }
-        
+
         return $this->reply($filesets);
     }
 
