@@ -22,7 +22,7 @@ class OAuthProvidersController extends APIController
      *     tags={"Users"},
      *     summary="A Project's oAuth Providers",
      *     description="Returns the oAuth providers being used by a project. This route can inform
-     *         developers about the potential login options provided to users by each project.",
+                developers about the potential login options provided to users by each project.",
      *     operationId="v4_projects_oAuthProvider.index",
      *     @OA\Parameter(name="project_id", in="path", required=true, description="The Project id", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
@@ -55,43 +55,6 @@ class OAuthProvidersController extends APIController
         return $this->reply($providers);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @OA\Post(
-     *     path="/projects/{project_id}/oauth-providers/",
-     *     tags={"Users"},
-     *     summary="Add a new oAuth provider to a project",
-     *     description="",
-     *     operationId="v4_projects_oAuthProvider.store",
-     *     @OA\Parameter(name="project_id", in="path", required=true, description="The Project id", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\RequestBody(required=true, description="Information supplied for oAuth Provider creation", @OA\MediaType(mediaType="application/json",
-     *          @OA\Schema(
-     *              @OA\Property(property="project_id",       ref="#/components/schemas/ProjectOauthProvider/properties/project_id"),
-     *              @OA\Property(property="name",             ref="#/components/schemas/ProjectOauthProvider/properties/name"),
-     *              @OA\Property(property="client_id",        ref="#/components/schemas/ProjectOauthProvider/properties/client_id"),
-     *              @OA\Property(property="client_secret",    ref="#/components/schemas/ProjectOauthProvider/properties/client_secret"),
-     *              @OA\Property(property="callback_url",     ref="#/components/schemas/ProjectOauthProvider/properties/callback_url"),
-     *              @OA\Property(property="description",      ref="#/components/schemas/ProjectOauthProvider/properties/description"),
-     *          )
-     *     )),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/ProjectOauthProvider"))
-     *     )
-     * )
-     *
-     * @param  \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $invalidRequest = $this->invalidOAuthProvider($request);
@@ -103,37 +66,6 @@ class OAuthProvidersController extends APIController
         return $this->setStatusCode(200)->reply($provider);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @OA\Put(
-     *     path="/projects/{project_id}/oauth-providers/{provider_id}",
-     *     tags={"Users"},
-     *     summary="Update a specific oAuth provider",
-     *     description="",
-     *     operationId="v4_projects_oAuthProvider.update",
-     *     @OA\Parameter(name="project_id", in="path", required=true, description="The Project id", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
-     *     @OA\Parameter(name="provider_id", in="path", required=true, description="The Provider id", @OA\Schema(ref="#/components/schemas/ProjectOauthProvider/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/ProjectOauthProvider"))
-     *     )
-     * )
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param                           $project_id
-     * @param                           $provider_id
-     *
-     * @return \Illuminate\Http\Response
-     *
-     */
     public function update(Request $request, $project_id, $provider_id)
     {
         $invalidRequest = $this->invalidOAuthProvider($request);
@@ -148,35 +80,6 @@ class OAuthProvidersController extends APIController
         return $this->setStatusCode(200)->reply($provider);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @OA\Delete(
-     *     path="/projects/{project_id}/oauth-providers/{provider_id}",
-     *     tags={"Users"},
-     *     summary="Delete a specific oAuth provider",
-     *     description="",
-     *     operationId="v4_projects_oAuthProvider.destroy",
-     *     @OA\Parameter(name="project_id", in="path", required=true, description="The Project id",  @OA\Schema(ref="#/components/schemas/Project/properties/id")),
-     *     @OA\Parameter(name="provider_id", in="path", required=true, description="The Provider id", @OA\Schema(ref="#/components/schemas/ProjectOauthProvider/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/ProjectOauthProvider"))
-     *     )
-     * )
-     *
-     * @param      $project_id
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($project_id, $id)
     {
         $project_id = checkParam('project_id', true, $project_id);

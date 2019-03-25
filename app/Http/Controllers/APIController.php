@@ -63,7 +63,6 @@ class APIController extends Controller
      * @OA\Tag(name="Library Video",    description="v2 These calls address the information needed to build and retrieve video information for each volume.")
      * @OA\Tag(name="Country Language", description="v2 These calls provide all information pertaining to country languages.")
      * @OA\Tag(name="Study Programs",   description="v2 These calls provide all information pertaining to Bible study programs.")
-     * @OA\Tag(name="API",              description="v2 These calls provide basic information regarding API specifics.")
      *
      */
 
