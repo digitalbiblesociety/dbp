@@ -23,7 +23,7 @@ class BookmarksController extends APIController
      *
      * @OA\Get(
      *     path="/users/{user_id}/bookmarks/",
-     *     tags={"User"},
+     *     tags={"Users"},
      *     summary="Returns a list of bookmarks for a specific user",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.index",
@@ -79,7 +79,7 @@ class BookmarksController extends APIController
      *
      * @OA\Post(
      *     path="/users/{user_id}/bookmarks/",
-     *     tags={"User"},
+     *     tags={"Users"},
      *     summary="Create a brand new bookmark for a specific user",
      *     description="Returns filtered permissions for a fileset dependent upon your authorization level and API key",
      *     operationId="v4_user_annotation_bookmarks.store",
@@ -134,7 +134,7 @@ class BookmarksController extends APIController
      *
      * @OA\Put(
      *     path="/users/{user_id}/bookmarks/{bookmark_id}",
-     *     tags={"User"},
+     *     tags={"Users"},
      *     summary="Update an existing bookmark for a specific user",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.update",
@@ -188,7 +188,7 @@ class BookmarksController extends APIController
      *
      * @OA\Delete(
      *     path="/users/{user_id}/bookmarks/{bookmark_id}",
-     *     tags={"User"},
+     *     tags={"Users"},
      *     summary="Delete a new bookmark from a specific user",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.delete",

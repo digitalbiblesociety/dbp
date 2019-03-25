@@ -2985,7 +2985,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
-//
 
 
 
@@ -9311,12 +9310,6 @@ var render = function() {
                                     }
                                   },
                                   [
-                                    _c(
-                                      "span",
-                                      { class: { entry: entry.method } },
-                                      [_vm._v(_vm._s(entry.method))]
-                                    ),
-                                    _vm._v(" "),
                                     _c("b", [_vm._v(_vm._s(entry.summary))]),
                                     _vm._v(" "),
                                     _c("small", {

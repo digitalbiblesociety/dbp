@@ -28,9 +28,9 @@ class ArclightController extends APIController
         $platform = checkParam('platform') ?? 'ios';
 
         $chapters = \Cache::remember('arclight_'. strtolower($iso), now()->addDay(), function () use ($iso, $platform) {
-            $language_id = LanguageCode::whereHas('language', function($query) use($iso) {
+            $language_id = optional(LanguageCode::whereHas('language', function($query) use($iso) {
                 $query->where('iso', $iso);
-            })->where('source','arclight')->select('code')->first()->code;
+            })->where('source','arclight')->select('code')->first())->code;
             if (!$language_id) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
             }

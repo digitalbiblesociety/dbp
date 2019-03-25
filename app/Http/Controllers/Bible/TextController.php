@@ -30,8 +30,8 @@ class TextController extends APIController
      *
      * @OA\Get(
      *     path="/bibles/{id}/{book}/{chapter}",
-     *     tags={"Bibles"},
-     *     summary="Returns Signed URLs or Text",
+     *     tags={"Text"},
+     *     summary="Get Bible Text",
      *     description="V4's base fileset route",
      *     operationId="v4_bible_filesets.chapter",
      *     @OA\Parameter(name="id", in="path", description="The Bible fileset ID", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
@@ -192,15 +192,31 @@ class TextController extends APIController
      *
      * @OA\Get(
      *     path="/search",
-     *     tags={"Bibles"},
-     *     summary="Run a text search on a specific fileset",
+     *     tags={"Text"},
+     *     summary="Search a bible for a word",
      *     description="",
      *     operationId="v4_text_search",
-     *     @OA\Parameter(name="fileset_id", in="query", description="The Bible fileset ID", required=true,
-     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+     *     @OA\Parameter(
+     *          name="query",
+     *          in="query",
+     *          description="The word or phrase being searched", required=true,
+     *          @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *          name="fileset_id",
+     *          in="query",
+     *          description="The Bible fileset ID", required=true,
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
+     *     ),
+     *     @OA\Parameter(
+     *          name="asset_id",
+     *          in="query",
+     *          description="The Bible fileset asset_id", required=false,
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")
+     *     ),
      *     @OA\Parameter(name="limit",  in="query", description="The number of search results to return",
      *          @OA\Schema(type="integer",default=15)),
-     *     @OA\Parameter(name="books",  in="query", description="The Books to search through",
+     *     @OA\Parameter(name="books",  in="query", description="The usfm book ids to search through seperated by a comma",
      *          @OA\Schema(type="string",example="GEN,EXO,MAT")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -224,11 +240,11 @@ class TextController extends APIController
             return view('docs.v2.text_search');
         }
 
-        $query   = checkParam('query', true);
+        $query      = checkParam('query', true);
         $fileset_id = checkParam('fileset_id|dam_id', true);
-        $limit    = checkParam('limit') ?? 15;
-        $book_id  = checkParam('book|book_id');
-        $asset_id = checkParam('asset_id') ?? 'dbp-prod';
+        $limit      = checkParam('limit') ?? 15;
+        $book_id    = checkParam('book|book_id|books');
+        $asset_id   = checkParam('asset_id') ?? 'dbp-prod';
 
         $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, 'text_plain')->first();
         if (!$fileset) {
@@ -239,7 +255,8 @@ class TextController extends APIController
         $verses = BibleVerse::where('hash_id', $fileset->hash_id)
             ->withVernacularMetaData($bible)
             ->when($book_id, function ($query) use ($book_id) {
-                $query->where('book_id', $book_id);
+                $books = explode(',', $book_id);
+                $query->whereIn('book_id', $books);
             })
             ->whereRaw(DB::raw("MATCH (verse_text) AGAINST(\"$query\" IN NATURAL LANGUAGE MODE)"))
             ->select([

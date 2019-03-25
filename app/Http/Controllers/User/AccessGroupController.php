@@ -15,30 +15,7 @@ class AccessGroupController extends APIController
 
     use AccessControlAPI;
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @OA\Get(
-     *     path="/access/groups/",
-     *     tags={"Bibles"},
-     *     summary="Update the specified Access group",
-     *     description="",
-     *     operationId="v4_access_groups.index",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/AccessGroup")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/AccessGroup")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/AccessGroup"))
-     *     )
-     * )
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         $cache_string = 'access_groups';
@@ -50,32 +27,6 @@ class AccessGroupController extends APIController
         return $this->reply($access_groups);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @OA\Post(
-     *     path="/access/groups/",
-     *     tags={"Bibles"},
-     *     summary="Create the specified Access group",
-     *     description="",
-     *     operationId="v4_access_groups.store",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/AccessGroup")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/AccessGroup")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/AccessGroup"))
-     *     )
-     * )
-     *
-     * @param Request $request
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $invalidUser = $this->validateUser();
@@ -108,38 +59,6 @@ class AccessGroupController extends APIController
     }
 
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @OA\Get(
-     *     path="/access/groups/{group_id}",
-     *     tags={"Bibles"},
-     *     summary="Update the specified Access group",
-     *     description="",
-     *     operationId="v4_access_groups.show",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(
-     *          name="group_id",
-     *          in="path",
-     *          required=true,
-     *          @OA\Schema(ref="#/components/schemas/AccessGroup/properties/id")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/AccessGroup")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/AccessGroup")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/AccessGroup"))
-     *     )
-     * )
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $cache_string = 'access_group:'.strtolower($id);
@@ -156,41 +75,6 @@ class AccessGroupController extends APIController
         return $this->reply($access_group);
     }
 
-    /**
-     *
-     * @OA\Get(
-     *     path="/access/current",
-     *     tags={"Bibles"},
-     *     summary="List filesets available to the current key",
-     *     description="Get the allowed fileset hash_ids for the currently used API key",
-     *     operationId="v4_access_groups.access",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/AccessCurrentKey")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/AccessCurrentKey")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/AccessCurrentKey"))
-     *     )
-     * )
-     *
-     * @OA\Schema (
-     *   type="object",
-     *   schema="AccessCurrentKey",
-     *   description="",
-     *   title="Current Key Access Response",
-     *   @OA\Xml(name="v4_access_groups.access"),
-     *   @OA\Property(property="hashes", @OA\Items(ref="#/components/schemas/BibleFileset/properties/hash_id")),
-     *   @OA\Property(property="string", type="string"),
-     *   @OA\Property(property="hash_count", type="integer")
-     * )
-     *
-     * @return JsonResponse
-     *
-     */
     public function current()
     {
         $cache_string = 'access_current:'.$this->key;

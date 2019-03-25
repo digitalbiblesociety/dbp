@@ -15,7 +15,7 @@ class LexiconController extends APIController
      *
      * @OA\Get(
      *     path="/lexicons/",
-     *     tags={"Study"},
+     *     tags={"StudyBible"},
      *     summary="",
      *     description="",
      *     operationId="v4_lexicon_index",
