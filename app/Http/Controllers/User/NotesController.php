@@ -22,8 +22,8 @@ class NotesController extends APIController
      *
      * @OA\Get(
      *     path="/users/{user_id}/notes",
-     *     tags={"Users"},
-     *     summary="Get a list of Notes for a user/project combination",
+     *     tags={"Annotations"},
+     *     summary="List a user's notes",
      *     description="Query information about a user's notes",
      *     operationId="v4_notes.index",
      *     @OA\Parameter(name="user_id",     in="path", required=true, description="The user who created the note", @OA\Schema(ref="#/components/schemas/User/properties/id")),
@@ -86,8 +86,8 @@ class NotesController extends APIController
      *
      * @OA\Get(
      *     path="/users/{user_id}/notes/{note_id}",
-     *     tags={"Users"},
-     *     summary="Get a single Note",
+     *     tags={"Annotations"},
+     *     summary="Get a Note",
      *     description="",
      *     operationId="v4_notes.show",
      *     @OA\Parameter(name="user_id",     in="path",required=true, description="The user who created the note", @OA\Schema(ref="#/components/schemas/User/properties/id")),
@@ -134,7 +134,7 @@ class NotesController extends APIController
      *
      * @OA\Post(
      *     path="/users/{user_id}/notes/",
-     *     tags={"Users"},
+     *     tags={"Annotations"},
      *     summary="Store a Note",
      *     description="",
      *     operationId="v4_notes.store",
@@ -203,7 +203,7 @@ class NotesController extends APIController
      *
      * @OA\Put(
      *     path="/users/{user_id}/notes/{note_id}",
-     *     tags={"Users"},
+     *     tags={"Annotations"},
      *     summary="Update a Note",
      *     description="",
      *     operationId="v4_notes.update",
@@ -265,7 +265,7 @@ class NotesController extends APIController
      *
      * @OA\Delete(
      *     path="/users/{user_id}/notes/{note_id}",
-     *     tags={"Users"},
+     *     tags={"Annotations"},
      *     summary="Delete a Note",
      *     description="",
      *     operationId="v4_notes.destroy",

@@ -26,8 +26,8 @@ class HighlightsController extends APIController
      *
      * @OA\Get(
      *     path="/users/{user_id}/highlights",
-     *     tags={"Users"},
-     *     summary="Get a list of highlights for a user/project combination",
+     *     tags={"Annotations"},
+     *     summary="List a user's highlights",
      *     description="The bible_id, book_id, and chapter parameters are optional but
      *          will allow you to specify which specific highlights you wish returned.",
      *     operationId="v4_highlights.index",
@@ -142,8 +142,8 @@ class HighlightsController extends APIController
      *
      * @OA\Post(
      *     path="/users/{user_id}/highlights",
-     *     tags={"Users"},
-     *     summary="Create a user highlight",
+     *     tags={"Annotations"},
+     *     summary="Create a highlight",
      *     description="",
      *     operationId="v4_highlights.store",
      *     @OA\Parameter(name="user_id",  in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
@@ -214,8 +214,8 @@ class HighlightsController extends APIController
      *
      * @OA\Put(
      *     path="/users/{user_id}/highlights/{highlight_id}",
-     *     tags={"Users"},
-     *     summary="Alter a user highlight",
+     *     tags={"Annotations"},
+     *     summary="Alter a highlight",
      *     description="",
      *     operationId="v4_highlights.update",
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
@@ -275,8 +275,8 @@ class HighlightsController extends APIController
      *
      * @OA\Delete(
      *     path="/users/{user_id}/highlights/{highlight_id}",
-     *     tags={"Users"},
-     *     summary="Delete a user highlight",
+     *     tags={"Annotations"},
+     *     summary="Delete a highlight",
      *     description="",
      *     operationId="v4_highlights.delete",
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),

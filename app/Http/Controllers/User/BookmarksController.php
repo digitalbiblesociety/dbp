@@ -23,8 +23,8 @@ class BookmarksController extends APIController
      *
      * @OA\Get(
      *     path="/users/{user_id}/bookmarks/",
-     *     tags={"Users"},
-     *     summary="Returns a list of bookmarks for a specific user",
+     *     tags={"Annotations"},
+     *     summary="List a user's bookmarks",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.index",
      *     @OA\Parameter(
@@ -79,8 +79,8 @@ class BookmarksController extends APIController
      *
      * @OA\Post(
      *     path="/users/{user_id}/bookmarks/",
-     *     tags={"Users"},
-     *     summary="Create a brand new bookmark for a specific user",
+     *     tags={"Annotations"},
+     *     summary="Create a bookmark",
      *     description="Returns filtered permissions for a fileset dependent upon your authorization level and API key",
      *     operationId="v4_user_annotation_bookmarks.store",
      *     @OA\Parameter(
@@ -134,8 +134,8 @@ class BookmarksController extends APIController
      *
      * @OA\Put(
      *     path="/users/{user_id}/bookmarks/{bookmark_id}",
-     *     tags={"Users"},
-     *     summary="Update an existing bookmark for a specific user",
+     *     tags={"Annotations"},
+     *     summary="Update a bookmark",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.update",
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
@@ -188,8 +188,8 @@ class BookmarksController extends APIController
      *
      * @OA\Delete(
      *     path="/users/{user_id}/bookmarks/{bookmark_id}",
-     *     tags={"Users"},
-     *     summary="Delete a new bookmark from a specific user",
+     *     tags={"Annotations"},
+     *     summary="Delete a bookmark",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.delete",
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
