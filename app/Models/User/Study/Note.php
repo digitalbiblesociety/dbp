@@ -4,6 +4,7 @@ namespace App\Models\User\Study;
 
 use App\Models\Bible\Book;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Crypt;
 
 /**
  * App\Models\User\Note
@@ -143,7 +144,7 @@ class Note extends Model
 
     public function getNotesAttribute($note)
     {
-        return decrypt($note);
+        return Crypt::decrypt($note);
     }
 
     /**
