@@ -59,10 +59,11 @@ class NotesController extends APIController
 
         $bible_id   = checkParam('bible_id');
         $book_id    = checkParam('book_id');
-        $chapter_id = checkParam('chapter_id');
-        $limit      = checkParam('limit') ?? 25;
+        $chapter_id = checkParam('chapter|chapter_id');
         $sort_by    = checkParam('sort_by');
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
+        $limit      = (int) checkParam('limit') ?? 25;
+        $limit      = ($limit > 50) ? 50 : $limit;
 
         $notes = Note::with('tags')->where('user_id', $user_id)
             ->when($bible_id, function ($q) use ($bible_id) {
