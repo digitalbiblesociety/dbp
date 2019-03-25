@@ -51,6 +51,22 @@ class Resource extends Model
     protected $hidden = ['created_at','updated_at'];
     public $table = 'resources';
 
+    protected static $rules = [
+        'unicode_pdf'         => 'url|nullable',
+        'slug'                => 'required|unique:dbp.resources,slug|string|maxLength:191|regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
+        'language_id'         => 'required|exists:dbp.languages,id',
+        'organization_id'     => 'required|exists:dbp.organizations,id',
+        'source_id'           => 'string|maxLength:191',
+        'cover'               => 'string|maxLength:191',
+        'cover_thumbnail'     => 'string|maxLength:191',
+        'date'                => 'date',
+        'type'                => 'string',
+        'translations.*.name' => 'required|unique:dbp.resource_translations,title|maxLength:191',
+        'translations.*.tag'  => 'boolean',
+        'links.*.url'         => 'required|url',
+        'links.*.title'       => 'string|maxLength:191'
+    ];
+
     /**
      *
      * @OA\Property(
@@ -170,4 +186,5 @@ class Resource extends Model
     {
         return $this->belongsTo(Organization::class);
     }
+
 }
