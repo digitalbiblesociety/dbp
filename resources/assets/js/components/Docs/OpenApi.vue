@@ -20,7 +20,6 @@
 												<ul class="menu-list">
 													<li>
 														<a :class="{'has-text-primary':selectedEntry === entry}" v-for="(entry, i) in entries" :key="i" v-on:click="select(entry)" style="display: block">
-															<span v-bind:class="{entry: entry.method}">{{ entry.method }}</span>
 															<b>{{ entry.summary }}</b>
 															<small v-html="entry.path.replace(/\//g,'<b>/</b>')"></small>
 														</a>

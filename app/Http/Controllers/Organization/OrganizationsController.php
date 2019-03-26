@@ -10,6 +10,7 @@ use App\Models\Organization\Organization;
 use App\Transformers\OrganizationTransformer;
 use App\Transformers\BibleTransformer;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class OrganizationsController extends APIController
 {
@@ -117,11 +118,17 @@ class OrganizationsController extends APIController
                 'links',
                 'translations',
                 'currentTranslation',
-                'resources',
+                'resources.translations',
                 'logos' => function ($query) {
                     $query->where('language_id', $GLOBALS['i18n_id']);
                 }
             ])->first();
+
+            foreach ($organization->resources as $resource) {
+                $resource->slug  = Str::slug(optional($resource->translations->where('language_id',6414)->first())->title ?? '');
+                $resource->name  = optional($resource->translations->where('language_id',6414)->first())->title ?? '';
+                $resource->vname = optional($resource->translations->where('vernacular',1)->first())->title ?? '';
+            }
 
             if (!$organization) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id' => $id]));

@@ -23,45 +23,6 @@ use Illuminate\Support\Str;
 class SocialController extends APIController
 {
 
-    /**
-     *
-     * @OAS\Get(
-     *     path="/users/login/{driver}",
-     *     tags={"Users"},
-     *     summary="Add a new oAuth provider to a project",
-     *     description="",
-     *     operationId="v4_projects_oAuthProvider.store",
-     *     @OAS\Parameter(ref="#/components/parameters/version_number"),
-     *     @OAS\Parameter(ref="#/components/parameters/key"),
-     *     @OAS\Parameter(ref="#/components/parameters/pretty"),
-     *     @OAS\Parameter(ref="#/components/parameters/format"),
-     *     @OAS\Parameter(
-     *          name="driver",
-     *          in="path",
-     *          required=true,
-     *          @OAS\Schema(ref="#/components/schemas/ProjectOauthProvider/properties/name"),
-     *          description="The Provider name, the currently supported providers are: facebook, bitbucket, github, & google",
-     *     ),
-     *     @OAS\Parameter(
-     *          name="project_id",
-     *          in="query",
-     *          required=true,
-     *          @OAS\Schema(ref="#/components/schemas/Project/properties/id"),
-     *          description="The Project id"
-     *     ),
-     *     @OAS\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OAS\MediaType(mediaType="application/json", @OAS\Schema(type="string")),
-     *         @OAS\MediaType(mediaType="application/xml",  @OAS\Schema(type="string")),
-     *         @OAS\MediaType(mediaType="text/x-yaml",      @OAS\Schema(type="string"))
-     *     )
-     * )
-     *
-     * @param $provider
-     * @return mixed
-     *
-     */
     public function redirect($provider = null)
     {
         $project_id = checkParam('project_id');

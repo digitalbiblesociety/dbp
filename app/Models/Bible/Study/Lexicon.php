@@ -4,6 +4,18 @@ namespace App\Models\Bible\Study;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class Lexicon
+ *
+ *  @OA\Schema (
+ *    type="object",
+ *    description="Lexicon",
+ *    title="Lexicon",
+ *    @OA\Xml(name="Lexicon")
+ * )
+ *
+ * @package App\Models\Bible\Study
+ */
 class Lexicon extends Model
 {
     public $incrementing = false;
@@ -47,7 +59,7 @@ class Lexicon extends Model
      *   title="usage",
      *   type="string",
      *   description="",
-     *   examples="calm",
+     *   example="calm",
      * )
      *
      * @var $usage

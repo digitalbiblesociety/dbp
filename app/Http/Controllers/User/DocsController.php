@@ -22,12 +22,7 @@ class DocsController extends APIController
         return view('docs.guide.start');
     }
 
-    public function swaggerV2()
-    {
-        return view('docs.swagger_docs');
-    }
-
-    public function swaggerV4()
+    public function swagger($version)
     {
         return view('docs.swagger_docs');
     }

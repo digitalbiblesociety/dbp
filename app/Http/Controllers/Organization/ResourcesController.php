@@ -21,66 +21,27 @@ class ResourcesController extends APIController
      */
     public function index()
     {
-        if (!$this->api) {
-            return view('resources.index');
-        }
         $iso             = checkParam('iso');
-        $language        = null;
-        if ($iso) {
-            $language        = Language::where('iso', $iso)->with('dialects')->first();
-            if (!$language) {
-                return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
-            }
-        }
         $limit           = checkParam('limit') ?? 2000;
         $organization    = checkParam('organization_id');
         $dialects        = checkParam('include_dialects');
 
-        if ($organization !== null) {
-            $organization = Organization::where('id', $organization)->orWhere('slug', $organization)->first();
-            if (!$organization) {
-                return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404'));
-            }
-        }
-
         $resources = Resource::with('translations', 'links', 'organization.translations', 'language')
-            ->when($language, function ($q) use ($language, $dialects) {
-                $q->where('language_id', $language->id);
-                if ($dialects) {
-                    $q->orWhereIn('language_id', $language->dialects->pluck('dialect_id'));
-                }
+            ->when($iso, function ($query) use ($iso, $dialects) {
+                $query->whereHas('language,', function($subquery) use($iso,$dialects) {
+                    if(!$dialects) {
+                        $subquery->where('iso', $iso);
+                    } else {
+                        $language = Language::with('dialects')->where('iso',$iso)->select('id')->get();
+                        $subquery->whereIn('id',$language->pluck('id'));
+                    }
+                });
             })
-            ->when($organization, function ($q) use ($organization) {
-                $q->where('organization_id', $organization->id);
+            ->when($organization, function ($query) use ($organization) {
+                $query->where('id', $organization)->orWhere('slug', $organization);
             })->take($limit)->get();
 
         return $this->reply(fractal($resources, new ResourcesTransformer(), $this->serializer));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return View
-     */
-    public function create()
-    {
-        return view('resources.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     *
-     * @return View
-     */
-    public function store(Request $request)
-    {
-        $invalidResource = $this->invalidResource($request);
-        if ($invalidResource) {
-            return $invalidResource;
-        }
-        return null;
     }
 
     /**
@@ -92,58 +53,8 @@ class ResourcesController extends APIController
      */
     public function show($id)
     {
-        if (!$this->api) {
-            return view('resources.show');
-        }
         $resource = Resource::with('translations', 'links', 'organization.translations')->find($id);
-
         return $this->reply(fractal($resource, new ResourcesTransformer()));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $resource = Resource::findOrFail($id);
-        return view('resources.edit', compact('resource'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     *
-     * @return View
-     */
-    public function update(Request $request, $id)
-    {
-        $invalidResource = $this->invalidResource($request);
-        if ($invalidResource) {
-            return $invalidResource;
-        }
-
-        $resource = Resource::findOrFail($id);
-
-        return view('resources.show', compact('resource'));
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     *
-     * @return View
-     */
-    public function destroy($id)
-    {
-        $resource = Resource::findOrFail($id);
-        return view('resources.index');
     }
 
     private function invalidResource(Request $request)
@@ -203,8 +114,8 @@ class ResourcesController extends APIController
         }
 
         $jesusFilm = Resource::with('translations')
-            ->when($language, function ($q) use ($language) {
-                $q->where('language_id', $language->id);
+            ->when($language, function ($query) use ($language) {
+                $query->where('language_id', $language->id);
             })->where('organization_id', $organization->id)->first();
 
         return $jesusFilm;

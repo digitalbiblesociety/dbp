@@ -77,11 +77,6 @@ Route::name('v4_access_groups.update')->put('access/groups/{group_id}',         
 Route::name('v4_access_groups.destroy')->delete('access/groups/{group_id}',        'User\AccessGroupController@destroy');
 
 // VERSION 4 | Stream
-Route::name('v4_video_jesus_film_languages')->get('resources/jesus-films/languages',                        'Bible\VideoStreamController@jesusFilmsLanguages');
-Route::name('v4_video_jesus_film_language')->get('resources/jesus-films/languages/{iso}',                   'Bible\VideoStreamController@jesusFilmChapters');
-Route::name('v4_video_jesus_film_language')->get('resources/jesus-films/{filename}',                        'Bible\VideoStreamController@jesusFilmChapters');
-
-
 Route::name('v4_video_stream')->get('bible/filesets/{fileset_id}/{file_id}/playlist.m3u8',    'Bible\VideoStreamController@index');
 Route::name('v4_video_stream_ts')->get('bible/filesets/{fileset_id}/{file_id}/{file_name}',   'Bible\VideoStreamController@transportStream');
 
@@ -195,6 +190,10 @@ Route::name('v4_resources.show')->get('resources/{resource_id}',                
 Route::name('v4_resources.update')->put('resources/{resource_id}',                 'Organization\ResourcesController@update');
 Route::name('v4_resources.store')->post('resources',                               'Organization\ResourcesController@store');
 Route::name('v4_resources.destroy')->delete('resources/{resource_id}',             'Organization\ResourcesController@destroy');
+
+Route::name('v4_video_jesus_film_languages')->get('arclight/jesus-film/languages', 'Bible\VideoStreamController@jesusFilmsLanguages');
+Route::name('v4_video_jesus_film_language')->get('arclight/jesus-film/chapters',   'Bible\VideoStreamController@jesusFilmChapters');
+Route::name('v4_video_jesus_film_language')->get('arclight/jesus-film',            'Bible\VideoStreamController@jesusFilmFile');
 
 // VERSION 4 | API METADATA
 Route::name('v4_api.versions')->get('/api/versions',                               'HomeController@versions');

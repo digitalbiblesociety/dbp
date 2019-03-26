@@ -23,8 +23,8 @@ class BookmarksController extends APIController
      *
      * @OA\Get(
      *     path="/users/{user_id}/bookmarks/",
-     *     tags={"User"},
-     *     summary="Returns a list of bookmarks for a specific user",
+     *     tags={"Annotations"},
+     *     summary="List a user's bookmarks",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.index",
      *     @OA\Parameter(
@@ -58,12 +58,15 @@ class BookmarksController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $book_id = checkParam('book_id');
-        $chapter = checkParam('chapter|chapter_id');
+        $bible_id     = checkParam('bible_id');
+        $book_id      = checkParam('book_id');
+        $chapter      = checkParam('chapter|chapter_id');
         $limit        = (int) (checkParam('limit') ?? 25);
 
         $bookmarks = Bookmark::with('tags')->where('user_id', $user_id)
-            ->when($book_id, function ($q) use ($book_id) {
+            ->when($book_id, function ($q) use ($bible_id) {
+                $q->where('bible_id', $bible_id);
+            })->when($book_id, function ($q) use ($book_id) {
                 $q->where('book_id', $book_id);
             })->when($chapter, function ($q) use ($chapter) {
                 $q->where('chapter', $chapter);
@@ -79,8 +82,8 @@ class BookmarksController extends APIController
      *
      * @OA\Post(
      *     path="/users/{user_id}/bookmarks/",
-     *     tags={"User"},
-     *     summary="Create a brand new bookmark for a specific user",
+     *     tags={"Annotations"},
+     *     summary="Create a bookmark",
      *     description="Returns filtered permissions for a fileset dependent upon your authorization level and API key",
      *     operationId="v4_user_annotation_bookmarks.store",
      *     @OA\Parameter(
@@ -134,8 +137,8 @@ class BookmarksController extends APIController
      *
      * @OA\Put(
      *     path="/users/{user_id}/bookmarks/{bookmark_id}",
-     *     tags={"User"},
-     *     summary="Update an existing bookmark for a specific user",
+     *     tags={"Annotations"},
+     *     summary="Update a bookmark",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.update",
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
@@ -188,8 +191,8 @@ class BookmarksController extends APIController
      *
      * @OA\Delete(
      *     path="/users/{user_id}/bookmarks/{bookmark_id}",
-     *     tags={"User"},
-     *     summary="Delete a new bookmark from a specific user",
+     *     tags={"Annotations"},
+     *     summary="Delete a bookmark",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.delete",
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),

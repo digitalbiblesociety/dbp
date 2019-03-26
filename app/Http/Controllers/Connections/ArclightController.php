@@ -28,9 +28,9 @@ class ArclightController extends APIController
         $platform = checkParam('platform') ?? 'ios';
 
         $chapters = \Cache::remember('arclight_'. strtolower($iso), now()->addDay(), function () use ($iso, $platform) {
-            $language_id = LanguageCode::whereHas('language', function($query) use($iso) {
+            $language_id = optional(LanguageCode::whereHas('language', function($query) use($iso) {
                 $query->where('iso', $iso);
-            })->where('source','arclight')->select('code')->first()->code;
+            })->where('source','arclight')->select('code')->first())->code;
             if (!$language_id) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
             }
@@ -60,7 +60,7 @@ class ArclightController extends APIController
 
         $cache_string = 'arclight_media_components_'.$chapter_id.$language_id;
         $stream_file  = \Cache::remember($cache_string, now()->addDay(), function () use ($chapter_id, $language_id) {
-            $media_components = $this->fetchArclight('media-components/'.$chapter_id.'/languages/'.$language_id, false);
+            $media_components = $this->fetchArclight('media-components/'.$chapter_id.'/languages/'.$language_id, $language_id, false);
             return file_get_contents($media_components->streamingUrls->m3u8[0]->url);
         });
 
@@ -70,8 +70,9 @@ class ArclightController extends APIController
         ]);
     }
 
-    private function volumes($iso = null)
+    public function volumes($iso = null)
     {
+        $iso = strtolower($iso);
         return \Cache::remember('media-languages_'.$iso, now()->addWeek(), function () use ($iso) {
 
             $languages = collect($this->fetchArclight('media-languages')->mediaLanguages)->pluck('languageId', 'iso3')->toArray();

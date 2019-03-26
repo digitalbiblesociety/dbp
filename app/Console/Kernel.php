@@ -42,6 +42,7 @@ class Kernel extends ConsoleKernel
         Commands\syncV2Notes::class,
 
         Commands\S3LogBackup::class,
+        Commands\CleanAndImportKD::class,
     ];
 
     /**

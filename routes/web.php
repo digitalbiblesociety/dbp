@@ -80,8 +80,7 @@ Localization::localizedRoutesGroup(function () {
 
         // Docs Routes
         Route::name('docs')->get('docs', 'User\DocsController@index');
-        Route::name('swagger_v4')->get('docs/swagger/v4', 'User\DocsController@swaggerV4');
-        Route::name('swagger_v2')->get('docs/swagger/v2', 'User\DocsController@swaggerV2');
+        Route::name('swagger')->get('docs/swagger/{version?}', 'User\DocsController@swagger');
         Route::name('history')->get('docs/history', 'User\DocsController@history');
         Route::name('docs.sdk')->get('sdk', 'User\DocsController@sdk');
         Route::name('docs.getting_started')->get('guides/getting-started', 'User\DocsController@start');

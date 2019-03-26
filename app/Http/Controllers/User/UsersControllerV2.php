@@ -7,6 +7,9 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleVerse;
 use App\Models\Bible\Book;
 use App\Models\User\Account;
+use App\Models\User\Project;
+use App\Models\User\ProjectMember;
+use App\Models\User\Role;
 use App\Models\User\Study\Bookmark;
 use App\Models\User\Study\Highlight;
 use App\Models\User\Study\HighlightColor;
@@ -42,7 +45,7 @@ class UsersControllerV2 extends APIController
                     'name' => request()->username,
                     'token' => unique_random('users', 'token')
                 ]);
-                return ['id' => $user->id];
+                return ['id' => (string) $user->id];
             }
         } else {
             $user = User::where('id', request()->id)->first();
@@ -98,11 +101,20 @@ class UsersControllerV2 extends APIController
                 // Check if user already exists but just hasn't signed up with that account
                 $user    = User::firstOrCreate(['email' => $email]);
                 if(!isset($password)) {
-                    $account = Account::firstOrCreate(['provider_user_id' => request()->remote_id, 'provider_id' => request()->remote_type]);
-                    $account->user()->associate($user);
-                    $account->save();
+                    Account::firstOrCreate([
+                        'project_id'       => Project::where('name', 'Bible.is')->first()->id,
+                        'user_id'          => $user->id,
+                        'provider_user_id' => request()->remote_id,
+                        'provider_id'      => request()->remote_type
+                    ]);
                 }
             }
+
+            ProjectMember::firstOrCreate([
+                'user_id'    => $user->id,
+                'project_id' => Project::where('name', 'Bible.is')->first()->id,
+                'role_id'    => Role::where('slug','user')->first()->id,
+            ]);
 
             return $this->reply([
                 'id'        => (string) $user->id,

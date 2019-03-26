@@ -17,6 +17,7 @@ use Symfony\Component\Yaml\Yaml;
 use Yosymfony\Toml\TomlBuilder;
 use Illuminate\Support\Str;
 
+
 class APIController extends Controller
 {
     // Top Level Swagger Docs
@@ -62,7 +63,6 @@ class APIController extends Controller
      * @OA\Tag(name="Library Video",    description="v2 These calls address the information needed to build and retrieve video information for each volume.")
      * @OA\Tag(name="Country Language", description="v2 These calls provide all information pertaining to country languages.")
      * @OA\Tag(name="Study Programs",   description="v2 These calls provide all information pertaining to Bible study programs.")
-     * @OA\Tag(name="API",              description="v2 These calls provide basic information regarding API specifics.")
      *
      */
 
@@ -214,6 +214,7 @@ class APIController extends Controller
         ]], $this->statusCode);
     }
 
+
     /**
      * @param       $object
      * @param array $meta
@@ -224,9 +225,7 @@ class APIController extends Controller
      */
     private function replyFormatter($object, array $meta, $format, $input)
     {
-        if(!is_array($object)) {
-            $object = $object->toArray();
-        }
+        $object = json_decode(json_encode($object), true);
 
         switch ($format) {
             case 'jsonp':
