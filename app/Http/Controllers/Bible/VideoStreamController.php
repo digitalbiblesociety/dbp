@@ -116,7 +116,7 @@ class VideoStreamController extends APIController
         $output = [];
         foreach ($components->mediaComponents as $key => $component) {
             $output['verses'] = $this->getIdReferences($component->mediaComponentId);
-            $output['duration_in_miliseconds'] = $component->lengthInMilliseconds;
+            $output['duration_in_milliseconds'] = $component->lengthInMilliseconds;
             $output['file_name'] = route('v2_api_jesusFilm_stream', [
                 'id'          => $component->mediaComponentId,
                 'language_id' => $component->primaryLanguageId,
