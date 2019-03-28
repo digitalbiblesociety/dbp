@@ -555,7 +555,6 @@ class ApiV2Test extends TestCase
      */
     public function countryLang()
     {
-        dd($this->getSchemaKeys('v2_country_lang'));
         $response = $this->withHeaders($this->params)->get(route('v2_country_lang'));
         echo "\nTesting: " . route('v2_country_lang', ['v' => 2, 'country_additional' => true, 'sort_by' => 'name']);
 
