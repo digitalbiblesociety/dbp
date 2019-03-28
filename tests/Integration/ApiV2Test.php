@@ -202,7 +202,7 @@ class ApiV2Test extends TestCase
         echo "\nTesting: " . route('v2_library_bookName', $this->params);
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->getSchemaKeys('BookName')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('v2_library_bookName')]);
 
         $this->params['language_code'] = strtoupper($this->params['language_code']);
         //$this->compareToOriginal($path, [$this->getSchemaKeys('BookName')]);
@@ -446,6 +446,7 @@ class ApiV2Test extends TestCase
 
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path, $this->params);
+
         $response->assertSuccessful();
         $response->assertJsonStructure([$this->getSchemaKeys('v2_volume_organization_list')]);
         //$this->compareToOriginal($path, [$this->getSchemaKeys('v2_volume_organization_list')]);
@@ -553,6 +554,7 @@ class ApiV2Test extends TestCase
      */
     public function countryLang()
     {
+        dd($this->getSchemaKeys('v2_country_lang'));
         $response = $this->withHeaders($this->params)->get(route('v2_country_lang'));
         echo "\nTesting: " . route('v2_country_lang', ['v' => 2, 'country_additional' => true, 'sort_by' => 'name']);
 
