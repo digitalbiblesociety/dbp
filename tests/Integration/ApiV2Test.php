@@ -370,7 +370,7 @@ class ApiV2Test extends TestCase
      */
     public function libraryVolume()
     {
-        $path = route('v2_library_volume', [], false);
+        $path = route('v2_library_volume', $this->params);
         echo "\nTesting: " . route('v2_library_volume', $this->params);
         $response = $this->withHeaders($this->params)->get(route('v2_library_volume'), $this->params);
         $response->assertSuccessful();
