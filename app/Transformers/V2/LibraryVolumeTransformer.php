@@ -112,10 +112,10 @@ class LibraryVolumeTransformer extends BaseTransformer
                     $delivery_types = ['mobile', 'web', 'local_bundled', 'subsplash'];
                 }
 
-                if($fileset->autonym && $fileset->english_name) {
-                    $fileset->languageCombinedName = $fileset->autonym . ' ('. $fileset->english_name . ')';
-                } elseif($fileset->autonym) {
-                    $fileset->languageCombinedName = $fileset->autonym;
+                if($fileset->autonym_name && $fileset->english_name) {
+                    $fileset->languageCombinedName = $fileset->autonym_name. ' ('. $fileset->english_name . ')';
+                } elseif($fileset->autonym_name) {
+                    $fileset->languageCombinedName = $fileset->autonym_name;
                 } elseif($fileset->english_name) {
                     $fileset->languageCombinedName = $fileset->english_name;
                 }
