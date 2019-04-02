@@ -71,6 +71,12 @@ class BiblesController extends APIController
      *          description="Will filter bibles based upon the size type of their filesets"
      *     ),
      *     @OA\Parameter(
+     *          name="bitrate",
+     *          in="query",
+     *          @OA\Schema(type="string",example="64kps"),
+     *          description="Will filter bibles based upon the bitrate of their filesets, the current values available are 16kbps & 64kbps"
+     *     ),
+     *     @OA\Parameter(
      *          name="size_exclude",
      *          in="query",
      *          @OA\Schema(type="string"),
@@ -105,6 +111,7 @@ class BiblesController extends APIController
         $media_exclude      = checkParam('media_exclude');
         $size               = checkParam('size');
         $size_exclude       = checkParam('size_exclude');
+        $bitrate            = checkParam('bitrate');
 
         if($media) {
             $media_types = BibleFilesetType::select('set_type_code')->get();
@@ -115,8 +122,8 @@ class BiblesController extends APIController
         }
 
         $access_control = $this->accessControl($this->key);
-        $cache_string = strtolower('bibles:'.$language_code.$organization.$country.$asset_id.$access_control->string.$media.$media_exclude.$size.$size_exclude);
-        $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude) {
+        $cache_string = strtolower('bibles:'.$language_code.$organization.$country.$asset_id.$access_control->string.$media.$media_exclude.$size.$size_exclude.$bitrate);
+        $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude, $bitrate) {
 
             $bibles = Bible::withRequiredFilesets([
                     'access_control' => $access_control,
@@ -124,7 +131,8 @@ class BiblesController extends APIController
                     'media'          => $media,
                     'media_exclude'  => $media_exclude,
                     'size'           => $size,
-                    'size_exclude'   => $size_exclude
+                    'size_exclude'   => $size_exclude,
+                    'bitrate'        => $bitrate
                 ])
                 ->leftJoin('bible_translations as ver_title', function ($join) {
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
