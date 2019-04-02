@@ -1,0 +1,7 @@
+all:
+  hosts:
+    local:
+      ansible_host: dbp4.test
+      ansible_port: 22
+      ansible_user: vagrant
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa

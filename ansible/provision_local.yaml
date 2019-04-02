@@ -1,0 +1,51 @@
+- hosts: local
+  vars:
+    composer_home: '{{ lookup("pipe", "composer -ng config home") }}'
+  roles:
+    - system
+    - lamp
+    - node
+  tasks:
+    - name: 'run handlers'
+      meta: flush_handlers
+    -
+      name: 'set git config values'
+      template:
+        src: '{{ composer_home }}/vendor/fostermadeco/rokanan/dependencies/ansible/files/gitconfig.j2'
+        dest: /home/vagrant/.gitconfig
+    -
+      name: 'change into project directory on login'
+      lineinfile:
+        path: ~/.bashrc
+        line: 'cd /var/www/{{ hostname }}'
+        state: present
+    -
+      name: 'install system tools'
+      become: yes
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items: ['make', 'g++']
+    -
+      name: 'install extra php modules'
+      become: yes
+      apt:
+        name: "php{{ php_version if php_version != 7.2 else '' }}-{{ item }}"
+        state: present
+      with_items: "{{ ['curl', 'mbstring', 'mongodb', 'dom'] + php_modules | default([]) }}"
+      tags:
+        - php_modules
+      notify:
+        - restart php
+    -
+      name: 'install bower'
+      become: yes
+      npm: >
+        name={{ item }}
+        state=present
+        global=yes
+      with_items: ['cross-env', 'bower']
+      tags: bower
+
+    # This is your provision file! Add any custom provisioning
+    # tasks you want below.

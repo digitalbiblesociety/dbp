@@ -1,0 +1,5 @@
+hostname: dbp4.test
+email_hostname: email.dbp4.test
+private_address: 192.168.203.107
+document_root: /var/www/dbp4.test/public
+php_version: 7.2

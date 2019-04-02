@@ -1,0 +1,27 @@
+public_dir: public
+
+document_root: /var/www/{{ hostname }}/{{ public_dir }}
+
+php_modules:
+  - intl
+  - xml
+  - curl
+  - mongodb
+  - mbstring
+  - gd
+
+php_config:
+  - option: upload_max_filesize
+    value: 20M
+  - option: post_max_size
+    value: 20M
+
+mysql_databases:
+  - dbp4
+
+packages:
+  - git
+  - libphp-predis
+  - unzip
+  - build-essential
+  - python-pip
