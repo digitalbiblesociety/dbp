@@ -36,7 +36,7 @@ class UsersControllerV2 extends APIController
 
     public function user()
     {
-        if (request()->getMethod() === 'POST') {
+        if (request()->method() === 'POST') {
             $user = $user = User::where('email', request()->email)->first();
             if (!$user) {
                 $user = User::create([
@@ -138,7 +138,13 @@ class UsersControllerV2 extends APIController
     }
 
     public function profile()
-    {
+    {           
+        /*
+        //TODO : May need to redirect to the following
+
+        return redirect()->route('v4_user.show', request()->all());
+        */
+
         return [
             ['Title' => 'Resource Invalid (improperly formatted request)'],
             ['Error' => ['You must enter a field name']]

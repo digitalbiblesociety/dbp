@@ -44,6 +44,6 @@ class AccessGroupFileset extends Model
 
     public function access()
     {
-        return $this->belongsTo(AccessGroup::class);
+        return $this->belongsTo(AccessGroup::class, 'access_group_id');
     }
 }

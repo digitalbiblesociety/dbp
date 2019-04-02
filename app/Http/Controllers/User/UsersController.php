@@ -102,7 +102,7 @@ class UsersController extends APIController
 
         $user = User::with('accounts', 'organizations', 'profile')
             ->whereHas('projectMembers', function ($query) use ($available_projects) {
-                    $query->whereIn('project_id', $available_projects);
+                if(!empty($available_projects)) $query->whereIn('project_id', $available_projects);
             })->where('id', $id)->first();
         if (!$user) {
             return $this->replyWithError(trans('api.users_errors_404', ['param' => $id]));

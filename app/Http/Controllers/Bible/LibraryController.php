@@ -409,7 +409,15 @@ class LibraryController extends APIController
     {
         $output = [];
         foreach ($filesets as $fileset) {
-            $has_nondrama = $fileset->where('id', 'LIKE', substr($fileset->id, 0, 6).'%')->where('set_type_code', 'audio')->get();
+            $has_nondrama = $fileset->where('id', 'LIKE', substr($fileset->id, 0, 6).'%')
+                                    ->where('set_type_code', 'audio')
+                                    ->whereHas('permissions', function($query){
+                                        $query->whereHas('access', function($query){
+                                            $query->where('name','!=','RESTRICTED');
+                                        });
+                                    })
+                                    ->get();
+
             $type_codes = $this->getV2TypeCode($fileset, !$has_nondrama->isEmpty());
 
             foreach ($type_codes as $type_code) {
