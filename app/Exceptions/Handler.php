@@ -74,11 +74,12 @@ class Handler extends ExceptionHandler
         if (\is_object($message)) {
             $message = $message->toArray();
         }
+
         return response()->json([
             'errors'      => Arr::wrap($message),
-            'status_code' => $exception->getStatusCode(),
+            'status_code' => method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : $exception->getCode(),
             'host_name'   => gethostname()
-        ], $exception->getStatusCode());
+        ], method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : http_response_code(500));
     }
 
     /**
