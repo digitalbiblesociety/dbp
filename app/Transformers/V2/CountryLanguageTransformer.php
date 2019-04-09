@@ -31,13 +31,13 @@ class CountryLanguageTransformer extends TransformerAbstract
          *          @OA\Property(property="family_id",             ref="#/components/schemas/Language/properties/name"),
          *          @OA\Property(property="primary_country_name",  ref="#/components/schemas/Language/properties/iso2T"),
          *          @OA\Property(property="country_image",         @OA\Schema(type="string",example="https://cdn.bible.build/img/flags/full/80X60/in.png")),
-         *          @OA\Property(property="country_additional",    @OA\Schema(type="string",example="BM: CH: CN: MM",description="The country names are delimited by both a colon and a space"))
+         *          @OA\Property(property="country_additional", @OA\Schema(type="string",required="false",example="BM: CH: CN: MM",description="The country names are delimited by both a colon and a space"))
          *     )
          *   )
          * )
          */
 
-        $output = [
+        return [
             'id'                   => (string) $country_language->language->id,
             'lang_code'            => (string) $country_language->language->iso,
             'region'               => (string) $country_language->language->area,
@@ -47,14 +47,8 @@ class CountryLanguageTransformer extends TransformerAbstract
             'regional_lang_name'   => $country_language->language->autonym ?? $country_language->language->name,
             'family_id'            => strtoupper($country_language->language->iso),
             'primary_country_name' => (string) optional($country_language->country)->name,
-            'country_image'        => $country_language->country_image
+            'country_image'        => $country_language->country_image,
+            'country_additional'   => optional($country_language)->language->relationLoaded('countries') ? strtoupper($country_language->language->countries->pluck('id')->implode(': ')) : ''
         ];
-
-
-        if(optional($country_language)->language->relationLoaded('countries')) {
-            $output['country_additional'] = strtoupper($country_language->language->countries->pluck('id')->implode(': '));
-        }
-
-        return $output;
     }
 }

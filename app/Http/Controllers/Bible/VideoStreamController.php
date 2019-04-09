@@ -110,16 +110,13 @@ class VideoStreamController extends APIController
 
     public function jesusFilmChapters()
     {
-        $iso = checkParam('iso', true);
-
-        $arclight_language = LanguageCode::whereHas('language', function($query) use($iso) {
-            $query->where('iso', $iso);
-        })->where('source','arclight')->select('code')->first()->code;
-        $components = $this->fetchArclight('media-components/', $arclight_language);
+        $arclight_id = checkParam('arclight_id', true);
+        $components = $this->fetchArclight('media-components/', $arclight_id);
 
         $output = [];
         foreach ($components->mediaComponents as $key => $component) {
             $output['verses'] = $this->getIdReferences($component->mediaComponentId);
+            $output['duration_in_milliseconds'] = $component->lengthInMilliseconds;
             $output['file_name'] = route('v2_api_jesusFilm_stream', [
                 'id'          => $component->mediaComponentId,
                 'language_id' => $component->primaryLanguageId,

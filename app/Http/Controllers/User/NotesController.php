@@ -73,7 +73,7 @@ class NotesController extends APIController
             })->when($sort_by, function ($q) use ($sort_by, $sort_dir) {
                 $q->orderBy($sort_by, $sort_dir);
             })->when($chapter_id, function ($q) use ($chapter_id) {
-                $q->where('chapter_id', $chapter_id);
+                $q->where('chapter', $chapter_id);
             })->paginate($limit);
 
         if (!$notes) {

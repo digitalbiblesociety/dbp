@@ -202,7 +202,7 @@ class ApiV2Test extends TestCase
         echo "\nTesting: " . route('v2_library_bookName', $this->params);
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
-        $response->assertJsonStructure([$this->getSchemaKeys('BookName')]);
+        $response->assertJsonStructure([$this->getSchemaKeys('v2_library_bookName')]);
 
         $this->params['language_code'] = strtoupper($this->params['language_code']);
         //$this->compareToOriginal($path, [$this->getSchemaKeys('BookName')]);
@@ -370,7 +370,7 @@ class ApiV2Test extends TestCase
      */
     public function libraryVolume()
     {
-        $path = route('v2_library_volume', [], false);
+        $path = route('v2_library_volume', $this->params);
         echo "\nTesting: " . route('v2_library_volume', $this->params);
         $response = $this->withHeaders($this->params)->get(route('v2_library_volume'), $this->params);
         $response->assertSuccessful();
@@ -446,6 +446,7 @@ class ApiV2Test extends TestCase
 
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path, $this->params);
+
         $response->assertSuccessful();
         $response->assertJsonStructure([$this->getSchemaKeys('v2_volume_organization_list')]);
         //$this->compareToOriginal($path, [$this->getSchemaKeys('v2_volume_organization_list')]);
@@ -513,6 +514,7 @@ class ApiV2Test extends TestCase
      */
     public function videoLocation()
     {
+        $this->markTestIncomplete('Skipping Location');
         $response = $this->withHeaders($this->params)->get(route('v2_video_location'), ['v' => 2]);
         echo "\nTesting: " . route('v2_video_location');
         $response->assertSuccessful();

@@ -401,9 +401,7 @@ class LibraryController extends APIController
     private function generateV2StyleId($filesets)
     {
         $output = [];
-        foreach ($filesets->groupBy('bible_id')->sortBy('set_type_code') as $bible => $fileset) {
-            $output = array_merge($output, $this->getV2Output($fileset));
-        }
+        $output = array_merge($output, $this->getV2Output($filesets));
         return $output;
     }
 
@@ -411,7 +409,9 @@ class LibraryController extends APIController
     {
         $output = [];
         foreach ($filesets as $fileset) {
-            $type_codes = $this->getV2TypeCode($fileset, false);
+            $has_nondrama = $fileset->where('id', 'LIKE', substr($fileset->id, 0, 6).'%')->where('set_type_code', 'audio')->get();
+            $type_codes = $this->getV2TypeCode($fileset, !$has_nondrama->isEmpty());
+
             foreach ($type_codes as $type_code) {
 
                 $ot_fileset_id = substr($fileset->id, 0, 6).'O'.$type_code;
@@ -461,9 +461,10 @@ class LibraryController extends APIController
         switch ($fileset->set_type_code) {
             case 'audio_drama':
                 return ['2DA'];
+                break;
             case 'audio':
-                $non_drama_exists = true;
                 return ['1DA'];
+                break;
             case 'text_plain':
                 if ($non_drama_exists) {
                     return ['2ET', '1ET'];

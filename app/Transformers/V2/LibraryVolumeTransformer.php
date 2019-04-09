@@ -112,28 +112,32 @@ class LibraryVolumeTransformer extends BaseTransformer
                     $delivery_types = ['mobile', 'web', 'local_bundled', 'subsplash'];
                 }
 
-                if($fileset->autonym && $fileset->language_name) {
-                    $fileset->languageCombinedName = $fileset->autonym . ' ('. $fileset->language_name . ')';
+                if($fileset->autonym && $fileset->english_name) {
+                    $fileset->languageCombinedName = $fileset->autonym . ' ('. $fileset->english_name . ')';
+                } elseif($fileset->autonym) {
+                    $fileset->languageCombinedName = $fileset->autonym;
+                } elseif($fileset->english_name) {
+                    $fileset->languageCombinedName = $fileset->english_name;
                 }
 
                 return [
                     'dam_id'                    => $fileset->generated_id,
                     'fcbh_id'                   => $fileset->generated_id,
-                    'volume_name'               => (string) $fileset->autonym_name ?? $fileset->english_name,
+                    'volume_name'               => (string) $fileset->languageCombinedName,
                     'status'                    => 'live',// for the moment these default to Live
                     'dbp_agreement'             => 'true',// for the moment these default to True
                     'expiration'                => '0000-00-00',
                     'language_code'             => strtoupper($fileset->iso),
-                    'language_name'             => $fileset->languageCombinedName ?? $fileset->language_name,
-                    'language_english'          => $fileset->languageCombinedName ?? $fileset->language_name,
+                    'language_name'             => $fileset->languageCombinedName,
+                    'language_english'          => $fileset->languageCombinedName,
                     'language_iso'              => (string) $fileset->iso,
                     'language_iso_2B'           => (string) $fileset->iso2B,
                     'language_iso_2T'           => (string) $fileset->iso2T,
                     'language_iso_1'            => (string) $fileset->iso1,
                     'language_iso_name'         => (string) $fileset->language_name,
                     'language_family_code'      => strtoupper($fileset->iso),
-                    'language_family_name'      => $fileset->languageCombinedName ?? $fileset->language_name,
-                    'language_family_english'   => $fileset->languageCombinedName ?? $fileset->language_name,
+                    'language_family_name'      => $fileset->languageCombinedName,
+                    'language_family_english'   => $fileset->languageCombinedName,
                     'language_family_iso'       => (string) $fileset->iso,
                     'language_family_iso_2B'    => (string) $fileset->iso2B,
                     'language_family_iso_2T'    => (string) $fileset->iso2T,

@@ -68,13 +68,6 @@ class CountriesController extends APIController
      */
     public function index()
     {
-        if (!$this->api) {
-            return view('wiki.countries.index');
-        }
-        if (config('app.env') === 'local') {
-            ini_set('memory_limit', '864M');
-        }
-
         $filesets = checkParam('has_filesets') ?? true;
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $languages = checkParam('include_languages');
@@ -194,9 +187,11 @@ class CountriesController extends APIController
             }
             return $country;
         });
+
         if (!is_a($country, Country::class)) {
             return $country;
         }
+
         $includes = $this->loadWorldFacts($country);
         return $this->reply(fractal($country, new CountryTransformer(), $this->serializer)->parseIncludes($includes));
     }
@@ -204,6 +199,7 @@ class CountriesController extends APIController
     private function loadWorldFacts($country)
     {
         $loadedProfiles = [];
+
         // World Factbook
         $profiles['communications'] = checkParam('communications') ?? 0;
         $profiles['economy']        = checkParam('economy') ?? 0;

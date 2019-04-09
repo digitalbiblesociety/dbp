@@ -174,7 +174,8 @@ class BibleTransformer extends BaseTransformer
                         return [$item['asset_id'] => [
                             'id' => $item['id'],
                             'type' => $item->set_type_code,
-                            'size' => $item->set_size_code
+                            'size' => $item->set_size_code,
+                            'bitrate' => optional($item->meta->first())->description
                         ]];
                     })
                 ];
