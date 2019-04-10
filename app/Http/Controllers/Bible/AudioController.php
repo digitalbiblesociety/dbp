@@ -222,7 +222,7 @@ class AudioController extends APIController
         $audioTimestamps = BibleFileTimestamp::whereIn('bible_file_id', $bible_files->pluck('id'))->orderBy('verse_start')->get();
 
         // Return Response
-        return $this->reply(fractal($audioTimestamps, new AudioTransformer(), $this->serializer));
+        return $this->reply($audioTimestamps);
     }
 
 
