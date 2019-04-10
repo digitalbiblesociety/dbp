@@ -38,8 +38,11 @@ class ResourcesController extends APIController
                 });
             })
             ->when($organization, function ($query) use ($organization) {
-                $query->where('id', $organization)->orWhere('slug', $organization);
-            })->take($limit)->get();
+                $query->whereHas('organization', function($subquery) use($organization) {
+                    $subquery->where('id', $organization)->orWhere('slug', $organization);
+                });
+            })
+            ->take($limit)->get();
 
         return $this->reply(fractal($resources, new ResourcesTransformer(), $this->serializer));
     }
