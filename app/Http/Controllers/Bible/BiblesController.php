@@ -99,10 +99,6 @@ class BiblesController extends APIController
      */
     public function index()
     {
-        if(!$this->api) {
-            return view('bibles.index');
-        }
-
         $language_code      = checkParam('language_id|language_code');
         $organization       = checkParam('organization_id');
         $country            = checkParam('country');
@@ -284,9 +280,6 @@ class BiblesController extends APIController
         });
         if (!$bible) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id]));
-        }
-        if (!$this->api) {
-            return view('bibles.show', compact('bible'));
         }
 
         return $this->reply(fractal($bible, new BibleTransformer(), $this->serializer));

@@ -69,8 +69,9 @@ Localization::localizedRoutesGroup(function () {
     Route::name('api_key_email')->post('keys/email',                     'User\Dashboard\KeysController@sendKeyEmail');
     Route::name('api_key_generate')->get('keys/generate/{email_token}',  'User\Dashboard\KeysController@generateAPIKey');
 
-    Route::name('wiki_bibles.one')->get('/wiki/bibles/{id}', 'Bible\BiblesController@show');
-    Route::name('wiki_bibles.all')->get('/wiki/bibles', 'Bible\BiblesController@index');
+    Route::name('wiki_home')->get('/wiki',                   'WikiController@home');
+    Route::name('wiki_bibles.one')->get('/wiki/bibles/{id}', 'WikiController@bible');
+    Route::name('wiki_bibles.all')->get('/wiki/bibles',      'WikiController@bibles');
 
     // Public Routes
     Route::group(['middleware' => ['web']], function () {
