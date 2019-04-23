@@ -11,8 +11,8 @@
         'subtitle' =>  $bible->translations->where('vernacular', 1)->first()->name ?? '',
         'breadcrumbs' => [
             '/' => 'Home',
-            '/wiki' => 'Wiki',
-            '/bibles' => 'Bibles',
+            '/' => 'Wiki',
+            route('wiki_bibles.all') => 'Bibles',
             '#'       => $bible->id,
         ]
     ])

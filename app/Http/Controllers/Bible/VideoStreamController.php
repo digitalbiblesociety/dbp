@@ -111,21 +111,18 @@ class VideoStreamController extends APIController
     public function jesusFilmChapters()
     {
         $arclight_id = checkParam('arclight_id', true);
-        $components = $this->fetchArclight('media-components/', $arclight_id);
+        $component = $this->fetchArclight('media-components/1_jf-0-0/languages/'.$arclight_id);
 
-        $output = [];
-        foreach ($components->mediaComponents as $key => $component) {
-            $output['verses'] = $this->getIdReferences($component->mediaComponentId);
-            $output['duration_in_milliseconds'] = $component->lengthInMilliseconds;
-            $output['file_name'] = route('v2_api_jesusFilm_stream', [
+        return $this->reply([
+            'verses'                   => $this->getIdReferences($component->mediaComponentId),
+            'duration_in_milliseconds' => $component->lengthInMilliseconds,
+            'file_name' => route('v2_api_jesusFilm_stream', [
                 'id'          => $component->mediaComponentId,
-                'language_id' => $component->primaryLanguageId,
+                'language_id' => $arclight_id,
                 'v'           => $this->v,
                 'key'         => $this->key
-            ]);
-        }
-
-        return $this->reply($output);
+            ])
+        ]);
     }
 
     public function jesusFilmFile()
