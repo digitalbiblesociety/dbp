@@ -56,8 +56,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'info@dbp4.org'),
-        'name'    => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'support@digitalbibleplatform.com'),
+        'name'    => env('MAIL_FROM_NAME', 'Digital Bible Platform Support'),
     ],
 
     /*

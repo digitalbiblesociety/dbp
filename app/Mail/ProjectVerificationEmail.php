@@ -39,7 +39,7 @@ class ProjectVerificationEmail extends Mailable
             'url'         => route('projects.connect', ['token' => $this->connection->token], false)
         ];
 
-        return $this->view('emails.transaction')->from('info@dbp4.org')->with([
+        return $this->view('emails.transaction')->from(config('mail.from.address'))->with([
             'project' => $this->project,
             'content' => $content,
             'actions' => $actions

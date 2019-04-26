@@ -40,7 +40,7 @@ class EmailPasswordReset extends Mailable
     public function build()
     {
         return $this->view('emails.password_reset')
-                    ->from('info@dbp4.org', $this->project->name)
+                    ->from(config('mail.from.address'), $this->project->name)
                     ->subject(trans('auth.reset_email_heading', [], $this->project->iso))
                     ->with(['user' => $this->user,'project' => $this->project]);
     }

@@ -32,6 +32,6 @@ class EmailVerification extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.verify')->from("info@dbp4.org")->with(['token' => $this->user->token]);
+        return $this->view('emails.verify')->from(config('mail.from.address'))->with(['token' => $this->user->token]);
     }
 }
