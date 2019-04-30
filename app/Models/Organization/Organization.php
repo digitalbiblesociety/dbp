@@ -4,6 +4,7 @@ namespace App\Models\Organization;
 
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFilesetConnection;
+use App\Models\Bible\BibleFilesetCopyrightOrganization;
 use App\Models\Bible\BibleLink;
 use App\Models\Language\Language;
 use App\Models\Resource\Resource;
@@ -320,7 +321,6 @@ class Organization extends Model
         });
     }
 
-
     public function translations()
     {
         return $this->hasMany(OrganizationTranslation::class, 'organization_id', 'id');
@@ -348,7 +348,7 @@ class Organization extends Model
 
     public function filesets()
     {
-        return $this->hasManyThrough(BibleFilesetConnection::class, BibleFileset::class);
+        return $this->hasManyThrough(BibleFilesetCopyrightOrganization::class, BibleFileset::class, 'hash_id','hash_id','id','hash_id');
     }
 
     public function resources()

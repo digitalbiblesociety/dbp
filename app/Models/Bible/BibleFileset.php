@@ -167,6 +167,11 @@ class BibleFileset extends Model
         return $this->hasMany(BibleFile::class, 'hash_id', 'hash_id');
     }
 
+    public function verses()
+    {
+        return $this->hasMany(BibleVerse::class, 'hash_id', 'hash_id');
+    }
+
     public function meta()
     {
         return $this->hasMany(BibleFilesetTag::class, 'hash_id', 'hash_id');
