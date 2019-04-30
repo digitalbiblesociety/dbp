@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
-use App\Models\Bible\BibleFilesetConnection;
-use App\Models\Bible\BibleTranslation;
-use App\Models\Bible\BibleVerse;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 
@@ -42,6 +39,7 @@ class ValidateController extends APIController
     public function bibles()
     {
         $bibles = Bible::withCount('filesets')->withCount('links')->get();
+
         return view('validations.bibles', compact('bibles'));
     }
 
@@ -55,6 +53,7 @@ class ValidateController extends APIController
                 'languages.name as backup_name',
                 'autonym.name as autonym'
             ])->get();
+
         return view('validations.languages', compact('languages'));
     }
 
@@ -73,7 +72,13 @@ class ValidateController extends APIController
     {
         $days = Input::get('days') ?? 31;
 
-        $filesets = BibleFileset::with('bible')->where('created_at','>', now()->subDays($days))->get();
+        $filesets = BibleFileset::with('bible')
+            ->where('created_at','>', now()->subDays($days))
+            ->orWhere('updated_at','>', now()->subDays($days))
+            ->orderBy('updated_at','DESC')
+            ->orderBy('created_at','DESC')
+            ->get();
+
         return view('validations.filesets', compact('filesets', 'days'));
     }
 

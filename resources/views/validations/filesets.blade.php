@@ -10,6 +10,8 @@
     @if($filesets->count() !== 0)
         <table class="table" width="100%">
             <thead>
+                    <th>Created At</th>
+                    <th>Updated At</th>
                     <th>Bible Id</th>
                     <th>Hash Id</th>
                     <th>Fileset Id</th>
@@ -19,6 +21,8 @@
             <tbody>
             @foreach($filesets as $fileset)
                 <tr>
+                    <td>{{ $fileset->created_at->diffForHumans() }}</td>
+                    <td>{{ $fileset->updated_at->diffForHumans() }}</td>
                     <td>{{ $fileset->bible->first()->id ?? '' }}</td>
                     <td>{{ $fileset->hash_id }}</td>
                     <td>{{ $fileset->id }}</td>
