@@ -166,7 +166,7 @@ class BiblesController extends APIController
                 })
                 ->when($organization, function ($q) use ($organization) {
                     $q->whereHas('organizations', function ($q) use ($organization) {
-                        $q->where('organization_id', $organization);
+                        $q->where('organization_id', $organization)->orWhere('slug', $organization);
                     })->get();
                 })
                 ->select(
