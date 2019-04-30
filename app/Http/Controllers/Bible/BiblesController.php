@@ -100,7 +100,7 @@ class BiblesController extends APIController
     public function index()
     {
         $language_code      = checkParam('language_id|language_code');
-        $organization       = checkParam('organization_id');
+        $organization_id    = checkParam('organization_id');
         $country            = checkParam('country');
         $asset_id           = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $media              = checkParam('media');
@@ -119,7 +119,7 @@ class BiblesController extends APIController
         }
 
         $access_control = (!$show_restricted) ? $this->accessControl($this->key) : (object) ['string' => null, 'hashes' => null];
-
+        $organization = $organization_id ? Organization::where('id', $organization_id)->orWhere('slug', $organization_id)->first() : null;
         $cache_string = strtolower('bibles:'.$language_code.$organization.$country.$asset_id.$access_control->string.$media.$media_exclude.$size.$size_exclude.$bitrate);
         $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude, $bitrate, $show_restricted) {
 
@@ -166,8 +166,10 @@ class BiblesController extends APIController
                 })
                 ->when($organization, function ($q) use ($organization) {
                     $q->whereHas('organizations', function ($q) use ($organization) {
-                        $q->where('organization_id', $organization)->orWhere('slug', $organization);
-                    })->get();
+                        $q->where('organization_id', $organization->id);
+                    })->orWhereHas('links', function ($q) use ($organization) {
+                        $q->where('organization_id', $organization->id);
+                    });
                 })
                 ->select(
                     \DB::raw(
