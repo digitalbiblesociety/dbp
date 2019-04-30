@@ -68,7 +68,7 @@
                         Filesets without Verses <small>(Only plain text)</small>
                     </h4>
                     @foreach($filesets_sine_bibleverses as $bible_verses)
-                        {{ $bible_verses }} |
+                        [{{ $bible_verses->id }} | {{ $bible_verses->hash_id }}]
                     @endforeach
                 </div>
 

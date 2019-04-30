@@ -18,7 +18,7 @@ class ValidateController extends APIController
         $bibles_sine_translations    = Bible::select('id')->whereDoesntHave('translations')->get();
         $bibles_sine_bookNames       = Bible::select('id')->whereDoesntHave('books')->whereHas('filesets')->get();
         $filesets_sine_bible_files   = BibleFileset::select(['hash_id','id'])->whereDoesntHave('files')->where('set_type_code', '!=', 'text_plain')->distinct()->get();
-        $filesets_sine_bibleverses   = BibleFileset::select(['hash_id','id'])->whereDoesntHave('verses')->where('set_type_code', 'text_plain')->distinct()->get()->pluck('hash_id')->unique();
+        $filesets_sine_bibleverses   = BibleFileset::select(['hash_id','id'])->whereDoesntHave('verses')->where('set_type_code', 'text_plain')->distinct()->get();
         $filesets_sine_connections   = BibleFileset::select(['hash_id','id'])->whereDoesntHave('connections')->get();
         $filesets_sine_copyrights    = BibleFileset::select(['hash_id','id'])->whereDoesntHave('copyright')->get();
         $filesets_sine_organizations = BibleFileset::select(['hash_id','id'])->whereDoesntHave('copyrightOrganization')->get();
@@ -79,13 +79,17 @@ class ValidateController extends APIController
 
     public function filesets()
     {
-        $days = Input::get('days') ?? 31;
+        $days = checkParam('days');
+        $media_type = checkParam('media_type');
 
         $filesets = BibleFileset::with('bible')
             ->where('created_at','>', now()->subDays($days))
             ->orWhere('updated_at','>', now()->subDays($days))
             ->orderBy('updated_at','DESC')
             ->orderBy('created_at','DESC')
+            ->when($media_type, function ($query) use ($media_type) {
+                $query->where('set_type_code', $media_type);
+            })
             ->get();
 
         return view('validations.filesets', compact('filesets', 'days'));
