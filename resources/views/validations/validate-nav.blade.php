@@ -16,5 +16,8 @@
         <li data-target="pane-5" id="5">
             <a href="{{ route('validate.organizations') }}">Organizations</a>
         </li>
+        <li>
+            <a href="{{ route('validations.placeholder_books') }}">Books with Placeholders</a>
+        </li>
     </ul>
 </div>

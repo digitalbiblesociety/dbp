@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bible\Bible;
+use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFileset;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
@@ -14,14 +15,14 @@ class ValidateController extends APIController
     public function index()
     {
         $bibles_sine_connections     = Bible::select('id')->whereDoesntHave('filesetConnections')->count();
-        $bibles_sine_translations    = Bible::whereDoesntHave('translations')->get();
-        $bibles_sine_bookNames       = Bible::whereDoesntHave('books')->whereHas('filesets')->get();
-        $filesets_sine_bible_files   = BibleFileset::select('hash_id')->whereDoesntHave('files')->where('set_type_code', '!=', 'text_plain')->distinct()->get();
-        $filesets_sine_bibleverses   = BibleFileset::whereDoesntHave('verses')->where('set_type_code', 'text_plain')->select('hash_id')->distinct()->get()->pluck('hash_id')->unique();
-        $filesets_sine_connections   = BibleFileset::select('hash_id')->whereDoesntHave('connections')->get();
-        $filesets_sine_copyrights    = BibleFileset::whereDoesntHave('copyright')->get();
-        $filesets_sine_organizations = BibleFileset::whereDoesntHave('copyrightOrganization')->get();
-        $filesets_sine_permissions   = BibleFileset::whereDoesntHave('permissions')->get();
+        $bibles_sine_translations    = Bible::select('id')->whereDoesntHave('translations')->get();
+        $bibles_sine_bookNames       = Bible::select('id')->whereDoesntHave('books')->whereHas('filesets')->get();
+        $filesets_sine_bible_files   = BibleFileset::select(['hash_id','id'])->whereDoesntHave('files')->where('set_type_code', '!=', 'text_plain')->distinct()->get();
+        $filesets_sine_bibleverses   = BibleFileset::select(['hash_id','id'])->whereDoesntHave('verses')->where('set_type_code', 'text_plain')->distinct()->get()->pluck('hash_id')->unique();
+        $filesets_sine_connections   = BibleFileset::select(['hash_id','id'])->whereDoesntHave('connections')->get();
+        $filesets_sine_copyrights    = BibleFileset::select(['hash_id','id'])->whereDoesntHave('copyright')->get();
+        $filesets_sine_organizations = BibleFileset::select(['hash_id','id'])->whereDoesntHave('copyrightOrganization')->get();
+        $filesets_sine_permissions   = BibleFileset::select(['hash_id','id'])->whereDoesntHave('permissions')->get();
 
         return view('validations.index', compact(
             'bibles_sine_connections',
@@ -36,10 +37,19 @@ class ValidateController extends APIController
         ));
     }
 
+    public function placeholder_books()
+    {
+        $books = BibleBook::select(['bible_id','book_id'])->where('name','LIKE','[%')->getQuery()->get()->groupBy('bible_id');
+        return view('validations.placeholder_books', compact('books'));
+    }
+
     public function bibles()
     {
-        $bibles = Bible::withCount('filesets')->withCount('links')->get();
-
+        $bibles = Bible::whereHas('filesets')
+            ->with('filesets.copyright','filesets.organization','filesets.permissions','translations')
+            ->whereHas('filesets', function ($q) {
+                $q->where('asset_id','dbp-prod');
+            })->get();
         return view('validations.bibles', compact('bibles'));
     }
 

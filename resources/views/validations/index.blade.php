@@ -51,9 +51,8 @@
             </div>
         </section>
 
-        <div class="columns">
-            <div class="is-size-6 column">
-                <div class="card mt50">
+        <div class="columns is-multiline is-mobile">
+                <div class="card mt50 column is-12">
                     <h4 class="is-size-5 has-text-centered">
                         {{ $filesets_sine_bible_files->count() }}
                         Filesets without Files <small>(Ignoring plain text)</small>
@@ -62,10 +61,8 @@
                         {{ $bible_file->hash_id }} |
                     @endforeach
                 </div>
-            </div>
 
-            <div class="is-size-6 column">
-                <div class="card mt50">
+                <div class="card mt50 column is-12">
                     <h4 class="is-size-5 has-text-centered">
                         {{ $filesets_sine_bibleverses->count() }}
                         Filesets without Verses <small>(Only plain text)</small>
@@ -74,91 +71,48 @@
                         {{ $bible_verses }} |
                     @endforeach
                 </div>
-            </div>
-        </div>
 
-        <div class="columns">
-            <div class="is-size-12 column">
-                <div class="card mt50">
+                <div class="card mt50 column is-12">
                     <h4 class="is-size-5 has-text-centered">Bibles without Titles:</h4>
                     @foreach($bibles_sine_translations as $bible)
                         {{ $bible->id }} |
                     @endforeach
                 </div>
-            </div>
-        </div>
 
-        <div class="columns">
-            <div class="is-size-6 column">
-                <div class="card mt50">
+                <div class="card mt50 column is-12">
                     <h4 class="is-size-5 has-text-centered">Bibles without Books:</h4>
                     @foreach($bibles_sine_bookNames as $bible)
                         {{ $bible->id }},
                     @endforeach
                 </div>
-            </div>
 
-            <div class="is-size-6 column">
-                <div class="card mt50">
+                <div class="card mt50 column is-12">
                     <h4 class="is-size-5 has-text-centered">Filesets without Copyrights:</h4>
                     @foreach($filesets_sine_copyrights as $fileset)
-                        {{ $fileset->hash_id }}
+                        [{{ $fileset->id }} | {{ $fileset->hash_id }}],
                     @endforeach
                 </div>
-            </div>
 
-        </div>
-
-        <div class="columns">
-
-            <div class="is-size-12 column">
-                <div class="card mt50">
+                <div class="card mt50 column is-12">
                     <h4 class="is-size-5 has-text-centered">Filesets without Organizations:</h4>
                     @foreach($filesets_sine_organizations as $fileset)
-                        {{ $fileset->hash_id }},
+                        [{{ $fileset->id }} | {{ $fileset->hash_id }}],
                     @endforeach
                 </div>
-            </div>
 
-        </div>
-
-        <div class="columns">
-
-            <div class="is-size-12 column">
-                <div class="card mt50">
+                <div class="card mt50 column is-12">
                     <h4 class="is-size-5 has-text-centered">Filesets without Permissions:</h4>
                     @foreach($filesets_sine_permissions as $fileset)
                         [{{ $fileset->id }} | {{ $fileset->hash_id }}],
                     @endforeach
                 </div>
-            </div>
 
-        </div>
-
-        <div class="columns">
-
-            <div class="is-size-12 column">
-                <div class="card mt50">
+                <div class="card mt50 column is-12">
                     <h4 class="is-size-5 has-text-centered">Filesets without Connections:</h4>
                     @foreach($filesets_sine_connections as $fileset)
-                        {{ $fileset->hash_id }},
+                        [{{ $fileset->id }} | {{ $fileset->hash_id }}],
                     @endforeach
                 </div>
-            </div>
-
-        </div>
-
-        <div class="columns">
-
-            <div class="is-size-12 column">
-                <div class="card mt50">
-                    <h4 class="is-size-5 has-text-centered">Filesets without Connections:</h4>
-                    @foreach($filesets_sine_connections as $fileset)
-                        {{ $fileset->hash_id }},
-                    @endforeach
-                </div>
-            </div>
-
         </div>
 
     </div>
