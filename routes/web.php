@@ -76,6 +76,12 @@ Localization::localizedRoutesGroup(function () {
     // Public Routes
     Route::group(['middleware' => ['web']], function () {
 
+        Route::name('validate.index')->get('/validate',                       'ValidateController@index');
+        Route::name('validate.bibles')->get('/validate/bibles',               'ValidateController@bibles');
+        Route::name('validate.filesets')->get('/validate/filesets',           'ValidateController@filesets');
+        Route::name('validate.languages')->get('/validate/languages',         'ValidateController@languages');
+        Route::name('validate.organizations')->get('/validate/organizations', 'ValidateController@organizations');
+
         // Getting Started
         Route::name('apiDocs_bible_equivalents')->get('/api/bible/bible-equivalents', 'Bible\BibleEquivalentsController@index');
 

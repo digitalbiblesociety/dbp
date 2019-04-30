@@ -42,7 +42,7 @@ class BibleLink extends Model
      *
      * @var array
      */
-    protected $fillable = ['link', 'type', 'organization_id','url','title'];
+    protected $fillable = ['bible_id', 'provider', 'link', 'type', 'organization_id','url','title'];
 
 
     /**
