@@ -69,8 +69,7 @@ class ValidateController extends APIController
 
     public function organizations()
     {
-        $organizations = Organization::withCount('links')
-            ->withCount('filesets')
+        $organizations = Organization::withCount('filesets')
             ->withCount('resources')
             ->with('logos','translations','relationships')
             ->get();

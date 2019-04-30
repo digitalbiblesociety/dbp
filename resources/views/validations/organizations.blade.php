@@ -25,7 +25,6 @@
                 <td>Logos</td>
                 <td>Relationships</td>
                 <td>Filesets</td>
-                <td>Bible Links</td>
                 <td>Resources</td>
                 <td>Total</td>
             </tr>
@@ -39,9 +38,8 @@
                     <td>{!! $organization->logos->pluck('url')->implode('<br>') !!}</td>
                     <td>{!! $organization->relationships->pluck('organization_parent_id')->implode('<br>') !!}</td>
                     <td>{{ $organization->filesets_count }}</td>
-                    <td>{{ $organization->links_count }}</td>
                     <td>{{ $organization->resources_count }}</td>
-                    <td @if(($organization->filesets_count + $organization->links_count + $organization->resources_count) === 0) style="background-color:#ad2462;color:#FFF" @endif
+                    <td @if(($organization->filesets_count + $organization->resources_count) === 0) style="background-color:#ad2462;color:#FFF" @endif
                     >{{ $organization->filesets_count + $organization->links_count + $organization->resources_count }}</td>
                 </tr>
             @endforeach
