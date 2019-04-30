@@ -341,11 +341,6 @@ class Organization extends Model
         return $this->belongsToMany(Bible::class, 'bible_organizations');
     }
 
-    public function links()
-    {
-        return $this->hasMany(BibleLink::class, 'provider', 'slug');
-    }
-
     public function filesets()
     {
         return $this->hasManyThrough(BibleFilesetCopyrightOrganization::class, BibleFileset::class, 'hash_id','hash_id','id','hash_id');
