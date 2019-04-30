@@ -6,29 +6,24 @@
 
     <small class="has-text-centered mb20">To customize the returned filesets apply the ?days={number} param to the url</small>
 
+    <div class="container">
     @if($filesets->count() !== 0)
-        <table>
+        <table class="table" width="100%">
             <thead>
-                <th>
-                    <td>Date</td>
-                    <td>Bible Id</td>
-                    <td>Hash Id</td>
-                    <td>Dam Id</td>
-                    <td>Language Id</td>
-                    <td>Language Name</td>
-                    <td>Media Type</td>
-                </th>
+                    <th>Bible Id</th>
+                    <th>Hash Id</th>
+                    <th>Fileset Id</th>
+                    <th>Language Id</th>
+                    <th>Media Type</th>
             </thead>
             <tbody>
             @foreach($filesets as $fileset)
                 <tr>
-                    <td>{{ $fileset->date }}</td>
-                    <td>{{ $fileset->bible_id }}</td>
+                    <td>{{ $fileset->bible->first()->id ?? '' }}</td>
                     <td>{{ $fileset->hash_id }}</td>
-                    <td>{{ $fileset->dam_id }}</td>
-                    <td>{{ $fileset->language_id }}</td>
-                    <td>{{ $fileset->language_name }}</td>
-                    <td>{{ $fileset->media_type }}</td>
+                    <td>{{ $fileset->id }}</td>
+                    <td>{{ $fileset->bible->first()->language_id ?? '' }}</td>
+                    <td>{{ $fileset->set_type_code }}</td>
                 </tr>
             @endforeach
             </tbody>
@@ -38,6 +33,7 @@
             No Filesets created Or updated in the last {{ $days }} Days
         </section>
     @endif
+    </div>
 
 
 @endsection
