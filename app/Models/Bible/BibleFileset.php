@@ -241,13 +241,13 @@ class BibleFileset extends Model
 
     public function getArtworkUrlAttribute()
     {
-        $s3 = \Storage::disk('s3');
-        $client = $s3->getDriver()->getAdapter()->getClient();
+        $storage = \Storage::disk('dbp-web');
+        $client = $storage->getDriver()->getAdapter()->getClient();
         $expiry = "+10 minutes";
         $fileset = $this->toArray();
 
         $command = $client->getCommand('GetObject', [
-            'Bucket' => config('filesystems.disks.s3.bucket'),
+            'Bucket' => config('filesystems.disks.dbp-web.bucket'),
             'Key'    => "audio/".$this->bible[0]->id."/".$fileset['id']."/Art/300x300/".$fileset['id'].".jpg"
         ]);
 
