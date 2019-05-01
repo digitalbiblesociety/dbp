@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
+use App\Models\Bible\Book;
 use App\Models\User\User;
 use App\Models\User\Study\HighlightColor;
 use App\Traits\AnnotationTags;
@@ -90,9 +91,12 @@ class HighlightsController extends APIController
     {
         // Validate Project / User Connection
         $user = User::where('id', $user_id)->select('id')->first();
+
         if (!$user) {
             return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
         }
+
+        $this->key = "52e62d4c-f7c8-4a8b-9008-8634d0fbddb0"; //=======>>>>>>>>> REMOVE
 
         $user_is_member = $this->compareProjects($user_id, $this->key);
         if (!$user_is_member) {
@@ -103,15 +107,8 @@ class HighlightsController extends APIController
         $book_id      = checkParam('book_id');
         $chapter_id   = checkParam('chapter|chapter_id');
         $limit        = (int) (checkParam('limit') ?? 25);
-        $dbp_database = config('database.connections.dbp.database');
-        $dbp_users_database = config('database.connections.dbp_users.database');
 
         $highlights = Highlight::with('color')->with('tags')->where('user_id', $user_id)
-            ->join($dbp_database.'.bibles as bibles', 'bibles.id', '=', $dbp_users_database.'.user_highlights.bible_id')
-            ->leftJoin($dbp_database . '.bible_books as book', function ($join) {
-                $join->on('bibles.id', '=', 'book.bible_id')
-                     ->on('book.book_id', '=', 'user_highlights.book_id');
-            })
             ->when($bible_id, function ($q) use ($bible_id) {
                 $q->where('user_highlights.bible_id', $bible_id);
             })->when($book_id, function ($q) use ($book_id) {
@@ -122,7 +119,6 @@ class HighlightsController extends APIController
                 'user_highlights.id',
                 'user_highlights.bible_id',
                 'user_highlights.book_id',
-                'book.name as book_name',
                 'user_highlights.chapter',
                 'user_highlights.verse_start',
                 'user_highlights.highlight_start',
@@ -130,8 +126,8 @@ class HighlightsController extends APIController
                 'user_highlights.highlighted_color'
             ])->orderBy('user_highlights.updated_at')->paginate($limit);
 
-
         $highlight_collection = $highlights->getCollection();
+
         $highlight_pagination = new IlluminatePaginatorAdapter($highlights);
 
         return $this->reply(fractal($highlight_collection, UserHighlightsTransformer::class)->paginateWith($highlight_pagination));
