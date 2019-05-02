@@ -243,20 +243,11 @@ class UsersControllerV2 extends APIController
         if (checkParam('hash', true) === $this->hash) {
             $user_id = checkParam('user_id');
             $highlights = Highlight::with('color')->where('user_id', $user_id)
-                ->join(config('database.connections.dbp.database').'.bible_books', function ($join) {
-                    $join->on('user_highlights.bible_id', '=', 'bible_books.bible_id')
-                         ->on('bible_books.book_id', '=', 'user_highlights.book_id');
-                })
-                    ->join(config('database.connections.dbp.database').'.books', 'books.id', '=', 'user_highlights.book_id')
                 ->when($fileset_id, function ($q) use ($bible_id) {
                     $q->where('user_highlights.bible_id', $bible_id);
                 })->select([
                     'user_highlights.id',
                     'user_highlights.bible_id',
-                    'books.id_osis as book_id',
-                    'bible_books.name as book_name',
-                    'books.protestant_order as protestant_order',
-                    'books.book_testament',
                     'user_highlights.user_id',
                     'user_highlights.chapter',
                     'user_highlights.verse_start',
