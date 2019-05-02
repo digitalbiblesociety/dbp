@@ -100,7 +100,7 @@ class BiblesController extends APIController
     public function index()
     {
         $language_code      = checkParam('language_id|language_code');
-        $organization       = checkParam('organization_id');
+        $organization_id    = checkParam('organization_id');
         $country            = checkParam('country');
         $asset_id           = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $media              = checkParam('media');
@@ -108,6 +108,7 @@ class BiblesController extends APIController
         $size               = checkParam('size');
         $size_exclude       = checkParam('size_exclude');
         $bitrate            = checkParam('bitrate');
+        $show_restricted    = checkParam('show_restricted');
 
         if($media) {
             $media_types = BibleFilesetType::select('set_type_code')->get();
@@ -117,19 +118,22 @@ class BiblesController extends APIController
             }
         }
 
-        $access_control = $this->accessControl($this->key);
+        $access_control = (!$show_restricted) ? $this->accessControl($this->key) : (object) ['string' => null, 'hashes' => null];
+        $organization = $organization_id ? Organization::where('id', $organization_id)->orWhere('slug', $organization_id)->first() : null;
         $cache_string = strtolower('bibles:'.$language_code.$organization.$country.$asset_id.$access_control->string.$media.$media_exclude.$size.$size_exclude.$bitrate);
-        $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude, $bitrate) {
+        $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude, $bitrate, $show_restricted) {
 
-            $bibles = Bible::withRequiredFilesets([
-                    'access_control' => $access_control,
-                    'asset_id'       => $asset_id,
-                    'media'          => $media,
-                    'media_exclude'  => $media_exclude,
-                    'size'           => $size,
-                    'size_exclude'   => $size_exclude,
-                    'bitrate'        => $bitrate
-                ])
+            $bibles = Bible::when(!$show_restricted, function ($query) use ($access_control, $asset_id, $media, $media_exclude, $size, $size_exclude, $bitrate) {
+                    $query->withRequiredFilesets([
+                        'access_control' => $access_control,
+                        'asset_id'       => $asset_id,
+                        'media'          => $media,
+                        'media_exclude'  => $media_exclude,
+                        'size'           => $size,
+                        'size_exclude'   => $size_exclude,
+                        'bitrate'        => $bitrate
+                    ]);
+                })
                 ->leftJoin('bible_translations as ver_title', function ($join) {
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
                 })
@@ -162,8 +166,10 @@ class BiblesController extends APIController
                 })
                 ->when($organization, function ($q) use ($organization) {
                     $q->whereHas('organizations', function ($q) use ($organization) {
-                        $q->where('organization_id', $organization);
-                    })->get();
+                        $q->where('organization_id', $organization->id);
+                    })->orWhereHas('links', function ($q) use ($organization) {
+                        $q->where('organization_id', $organization->id);
+                    });
                 })
                 ->select(
                     \DB::raw(
@@ -179,66 +185,10 @@ class BiblesController extends APIController
                     )
                 )
                 ->orderBy('bibles.priority', 'desc')->groupBy('bibles.id')->get();
+
             return fractal($bibles, new BibleTransformer(), new DataArraySerializer());
         });
 
-        return $this->reply($bibles);
-    }
-
-    public function archival()
-    {
-        $iso                = checkParam('iso');
-        $organization_id    = checkParam('organization_id');
-        $organization = '';
-        if ($organization_id) {
-            $organization = Organization::with('relationships')->where('slug', $organization_id)->orWhere('id', $organization_id)->first();
-            $organization_id = $organization->relationships->where('type', 'member')->pluck('organization_child_id');
-            $organization_id->push($organization->id);
-        }
-        $country              = checkParam('country');
-        $include_regionInfo   = checkParam('include_region_info');
-        $include_linkedBibles = checkParam('include_linked_bibles');
-        $dialects             = checkParam('include_dialects');
-        $language             = null;
-        $asset_id             = checkParam('bucket|bucket_id|asset_id');
-
-        $language = $iso ? Language::where('iso', $iso)->with('dialects')->first() : null;
-        $cache_string = strtolower('bibles_archival'.$iso.$organization.$country.$include_regionInfo.$dialects.$include_linkedBibles.$asset_id);
-        $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language, $organization_id, $country, $include_regionInfo, $dialects, $asset_id) {
-            $bibles = Bible::with(['translations', 'language','country','filesets.copyrightOrganization'])->withCount('links')
-                ->has('translations')->has('language')
-                ->when($country, function ($q) use ($country) {
-                    $q->whereHas('language.countries', function ($query) use ($country) {
-                        $query->where('country_id', $country);
-                    });
-                })
-                ->when($language, function ($q) use ($language, $dialects) {
-                    $q->where('language_id', $language->id);
-                    if ($dialects) {
-                        $q->orWhereIn('language_id', $language->dialects->pluck('dialect_id'));
-                    }
-                })
-                ->when($asset_id, function ($q) use ($asset_id) {
-                    $q->whereHas('filesets', function ($q) use ($asset_id) {
-                        $q->whereIn('asset_id', explode(',',$asset_id));
-                    });
-                })
-                ->when($organization_id, function ($q) use ($organization_id) {
-                    $q->whereHas('organizations', function ($q) use ($organization_id) {
-                        $q->whereIn('organization_id', $organization_id);
-                    })->orWhereHas('links', function ($q) use ($organization_id) {
-                        $q->whereIn('organization_id', $organization_id);
-                    })->get();
-                })->orderBy('priority', 'desc')
-                ->get();
-
-            $language = Language::where('iso', 'eng')->first();
-            foreach ($bibles as $bible) {
-                $bible->english_language_id = $language->id;
-            }
-
-            return fractal($bibles, new BibleTransformer(), $this->serializer);
-        });
         return $this->reply($bibles);
     }
 

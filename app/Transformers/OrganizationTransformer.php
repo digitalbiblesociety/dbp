@@ -89,15 +89,6 @@ class OrganizationTransformer extends BaseTransformer
      */
     public function transformForV4(Organization $organization)
     {
-
-        // If the Organization contains member organizations return their Bibles as well.
-        $bibles = $organization->bibles->toArray();
-        if ($organization->relationLoaded('memberships')) {
-            foreach ($organization->memberships as $member_organization) {
-                $bibles[] = $member_organization->childOrganization->bibles->toArray();
-            }
-        }
-
         switch ($this->route) {
             case 'v4_organizations.one':
                 return [
@@ -107,8 +98,6 @@ class OrganizationTransformer extends BaseTransformer
                     'description_short' => $organization->tagline,
                     'phone'             => $organization->phone,
                     'email'             => $organization->email,
-                    'bibles'            => $bibles,
-                    'resources'         => $organization->resources,
                     'logos'             => $organization->logos,
                     'colors' => [
                         'primary'      => $organization->primaryColor,

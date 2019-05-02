@@ -110,25 +110,12 @@ class OrganizationsController extends APIController
     public function show($id)
     {
         $organization = \Cache::remember($this->v . '_organizations:'.$id, now()->addDay(), function () use ($id) {
-            $organization = Organization::where('id', $id)->orWhere('slug', $id)->with([
-                'bibles.translations',
-                'bibles.language',
-                'memberships.childOrganization.bibles.translations',
-                'memberships.childOrganization.bibles.links',
-                'links',
-                'translations',
-                'currentTranslation',
-                'resources.translations',
-                'logos' => function ($query) {
-                    $query->where('language_id', $GLOBALS['i18n_id']);
-                }
-            ])->first();
-
-            foreach ($organization->resources as $resource) {
-                $resource->slug  = Str::slug(optional($resource->translations->where('language_id',6414)->first())->title ?? '');
-                $resource->name  = optional($resource->translations->where('language_id',6414)->first())->title ?? '';
-                $resource->vname = optional($resource->translations->where('vernacular',1)->first())->title ?? '';
-            }
+            $organization = Organization::includeLogos($GLOBALS['i18n_id'])
+                ->where('id', $id)->orWhere('slug', $id)
+                ->with([
+                    'translations',
+                    'currentTranslation'
+                ])->first();
 
             if (!$organization) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.organizations_errors_404', ['id' => $id]));
