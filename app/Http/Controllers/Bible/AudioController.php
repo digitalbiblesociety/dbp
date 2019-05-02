@@ -86,9 +86,10 @@ class AudioController extends APIController
         $book_id    = checkParam('book_id');
         $chapter_id = checkParam('chapter_id');
         $asset_id   = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $version = checkParam('v');
 
-        $cache_string = strtolower('audio_index:'.$asset_id.':'.$fileset_id.':'.$book_id.':'.$chapter_id);
-        $audioChapters = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset_id, $book_id, $chapter_id, $asset_id) {
+        $cache_string = strtolower("audio_index_{$version}:".$asset_id.':'.$fileset_id.':'.$book_id.':'.$chapter_id);
+        $audioChapters = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset_id, $book_id, $chapter_id, $asset_id, $version) {
             // Account for various book ids
             $book_id = optional(Book::selectByID('id', $book_id)->select('id')->first())->id;
 
@@ -99,12 +100,18 @@ class AudioController extends APIController
             }
 
             // Fetch The files
-            return BibleFile::with('book', 'bible')->where('hash_id', $hash_id)
+            $response = BibleFile::with('book', 'bible')->where('hash_id', $hash_id)
                 ->when($chapter_id, function ($query) use ($chapter_id) {
                     return $query->where('chapter_start', $chapter_id);
                 })->when($book_id, function ($query) use ($book_id) {
                     return $query->where('book_id', $book_id);
-                })->orderBy('file_name')->get();
+                })->orderBy('file_name');
+
+            if ($version == 2) {
+                $response = $response->take(1);
+            }
+
+            return $response->get();
         });
 
         // Transaction id to be passed to signedUrl
