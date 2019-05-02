@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 class AccessGroupKey extends Model
 {
     protected $connection = 'dbp_users';
-    public $table = 'dbp_users.access_group_api_keys';
+    public $table = 'access_group_api_keys';
     public $fillable = ['access_group_id','key_id'];
 
     /**

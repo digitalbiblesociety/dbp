@@ -96,9 +96,8 @@ class HighlightsController extends APIController
             return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
         }
 
-        $this->key = "52e62d4c-f7c8-4a8b-9008-8634d0fbddb0"; //=======>>>>>>>>> REMOVE
-
         $user_is_member = $this->compareProjects($user_id, $this->key);
+
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }

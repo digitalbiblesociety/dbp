@@ -3,6 +3,8 @@
 namespace App\Traits;
 
 use App\Models\User\AccessGroup;
+use App\Models\User\AccessGroupKey;
+use App\Models\User\AccessGroupFileset;
 use App\Models\User\AccessType;
 use App\Models\User\Key;
 
@@ -38,20 +40,19 @@ trait AccessControlAPI
             }
 
             $key = Key::select('id')->where('key', $api_key)->first();
-            $dbp_connection = config('database.connections.dbp.database');
-            $dbp_users_connection = config('database.connections.dbp_users.database');
-            $accessGroups = \DB::connection('dbp')
-               ->table('access_groups')
-               ->where('name', '!=', 'RESTRICTED')
-                ->join($dbp_users_connection.'.access_group_api_keys as keys', function ($join) use ($key) {
-                    $join->on('keys.access_group_id', 'access_groups.id')->where('key_id', $key->id);
-                })
-               ->join($dbp_connection.'.access_group_types as types', function ($join) use ($key) {
-                   $join->on('types.access_group_id', 'access_groups.id')->where('key_id', $key->id);
-               })->select(['access_groups.name','access_groups.id'])->get();
+
+            $accessGroups = AccessGroupKey::where('key_id', $key->id)
+                ->get()
+                ->pluck('access')
+                ->where('name', '!=', 'RESTRICTED')
+                ->map(function ($access) {
+                    return collect($access->toArray())
+                        ->only(['id', 'name'])
+                        ->all();
+                });
 
             // Use Eloquent everywhere except for this giant request
-            $filesets = \DB::connection('dbp')->table('access_group_filesets')->select('hash_id')
+            $filesets = AccessGroupFileset::select('hash_id')
                 ->whereIn('access_group_id', $accessGroups->pluck('id'))->distinct()->get()->pluck('hash_id');
 
             return (object) [
