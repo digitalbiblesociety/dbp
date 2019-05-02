@@ -243,4 +243,21 @@ class BibleFileset extends Model
     {
         // return
     }
+
+    public function getArtworkUrlAttribute()
+    {
+        $storage = \Storage::disk('dbp-web');
+        $client = $storage->getDriver()->getAdapter()->getClient();
+        $expiry = "+10 minutes";
+        $fileset = $this->toArray();
+
+        $command = $client->getCommand('GetObject', [
+            'Bucket' => config('filesystems.disks.dbp-web.bucket'),
+            'Key'    => "audio/".$this->bible[0]->id."/".$fileset['id']."/Art/300x300/".$fileset['id'].".jpg"
+        ]);
+
+        $request = $client->createPresignedRequest($command, $expiry);
+
+        return (string) $request->getUri();
+    }
 }
