@@ -55,6 +55,7 @@ class BooksControllerV2 extends APIController
         $testament = $this->getTestamentString($id);
 
         $fileset   = BibleFileset::with('bible')->uniqueFileset($id, $asset_id, null, null, $testament)->first();
+
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }

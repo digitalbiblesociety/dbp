@@ -95,6 +95,7 @@ class LibraryVolumeTransformer extends BaseTransformer
              *      @OA\Property(property="num_sample_audio",        @OA\Schema(type="integer",example=0)),
              *      @OA\Property(property="sku",                     ref="#/components/schemas/BibleEquivalent/properties/equivalent_id"),
              *      @OA\Property(property="audio_zip_path",          @OA\Schema(type="string")),
+             *      @OA\Property(property="artwork_url",             @OA\Schema(type="string")),
              *      @OA\Property(property="font",                    ref="#/components/schemas/AlphabetFont"),
              *      @OA\Property(property="arclight_language_id",    ref="#/components/schemas/LanguageCode/properties/code"),
              *      @OA\Property(property="media",                   @OA\Schema(type="string",example="Audio",enum={"Audio", "Text"})),

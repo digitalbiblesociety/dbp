@@ -250,17 +250,18 @@ class BibleFileset extends Model
         $client = $storage->getDriver()->getAdapter()->getClient();
         $expiry = "+10 minutes";
         $fileset = $this->toArray();
-        $bible_id = optional(BibleFileset::find($fileset['id'])->bible()->first())->id;
-
         $url = "";
 
-        if ($bible_id) {
-            $command = $client->getCommand('GetObject', [
-                'Bucket' => config('filesystems.disks.dbp-web.bucket'),
-                'Key'    => "audio/{$bible_id}/{$fileset['id']}/Art/300x300/{$fileset['id']}.jpg"
-            ]);
+        if (starts_with($fileset['set_type_code'], 'audio')) {
+            $bible_id = optional(BibleFileset::find($fileset['id'])->bible()->first())->id;
+            if ($bible_id) {
+                $command = $client->getCommand('GetObject', [
+                    'Bucket' => config('filesystems.disks.dbp-web.bucket'),
+                    'Key'    => "audio/{$bible_id}/{$fileset['id']}/Art/300x300/{$fileset['id']}.jpg"
+                ]);
 
-            $url = (string) $client->createPresignedRequest($command, $expiry)->getUri();
+                $url = (string) $client->createPresignedRequest($command, $expiry)->getUri();
+            }
         }
 
         return $url;
