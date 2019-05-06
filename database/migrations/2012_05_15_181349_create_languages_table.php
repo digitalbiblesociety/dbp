@@ -95,7 +95,7 @@ class CreateLanguagesTable extends Migration
                 $table->tinyInteger('bible_status')->nullable();
                 $table->boolean('bible_translation_need')->nullable();
                 $table->integer('bible_year')->nullable();
-                $table->integer('bible_year_newTestament')->nullable();
+                $table->integer('bible_year_new_testament')->nullable();
                 $table->integer('bible_year_portions')->nullable();
                 $table->text('bible_sample_text')->nullable();
                 $table->string('bible_sample_img')->nullable();
