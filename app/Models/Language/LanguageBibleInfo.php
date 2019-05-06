@@ -21,7 +21,8 @@ class LanguageBibleInfo extends Model
 {
     protected $connection = 'dbp';
     public $incrementing = false;
-    public $table = 'language_bibleInfo';
+    public $table = 'language_bible_info';
+    protected $hidden = ['created_at','updated_at'];
 
     /**
      *

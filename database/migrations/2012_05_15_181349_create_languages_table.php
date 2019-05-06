@@ -88,8 +88,8 @@ class CreateLanguagesTable extends Migration
             });
         }
 
-        if (!Schema::connection('dbp')->hasTable('language_bibleInfo')) {
-            Schema::connection('dbp')->create('language_bibleInfo', function (Blueprint $table) {
+        if (!Schema::connection('dbp')->hasTable('language_bible_info')) {
+            Schema::connection('dbp')->create('language_bible_info', function (Blueprint $table) {
                 $table->integer('language_id')->unsigned();
                 $table->foreign('language_id', 'FK_languages_language_bibleInfo')->references('id')->on(config('database.connections.dbp.database').'.languages')->onUpdate('cascade');
                 $table->tinyInteger('bible_status')->nullable();
@@ -186,7 +186,7 @@ class CreateLanguagesTable extends Migration
     {
         Schema::connection('dbp')->dropIfExists('language_classifications');
         Schema::connection('dbp')->dropIfExists('language_translations');
-        Schema::connection('dbp')->dropIfExists('language_bibleInfo');
+        Schema::connection('dbp')->dropIfExists('language_bible_info');
         Schema::connection('dbp')->dropIfExists('language_dialects');
         Schema::connection('dbp')->dropIfExists('language_codes');
         Schema::connection('dbp')->dropIfExists('country_regions');
