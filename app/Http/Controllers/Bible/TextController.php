@@ -240,8 +240,8 @@ class TextController extends APIController
             return view('docs.v2.text_search');
         }
 
-        $query      = checkParam('query', true);
-        $fileset_id = checkParam('fileset_id|dam_id', true);
+        $query      = checkParam('query|search', true);
+        $fileset_id = checkParam('fileset_id|dam_id|textid', true);
         $limit      = checkParam('limit') ?? 15;
         $book_id    = checkParam('book|book_id|books');
         $asset_id   = checkParam('asset_id') ?? 'dbp-prod';
