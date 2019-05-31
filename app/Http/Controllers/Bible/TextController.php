@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Bible;
 
 use App\Models\Bible\BibleVerse;
+use App\Transformers\Serializers\DataArraySerializer;
+use App\Transformers\Serializers\ResultsKeyArraySerializer;
 use DB;
 
 use Illuminate\Http\Response;
@@ -261,6 +263,7 @@ class TextController extends APIController
             ->whereRaw(DB::raw("MATCH (verse_text) AGAINST(\"$query\" IN NATURAL LANGUAGE MODE)"))
             ->select([
                 'bible_verses.book_id as book_id',
+                'books.id_usfx as book_id_usfx',
                 'books.name as book_name',
                 'bible_books.name as book_vernacular_name',
                 'bible_verses.chapter',
@@ -272,7 +275,7 @@ class TextController extends APIController
                 'glyph_end.glyph as verse_end_vernacular',
             ])->limit($limit)->get();
 
-        return $this->reply(fractal($verses, new TextTransformer(), $this->serializer));
+        return $this->reply(fractal($verses, new TextTransformer(), ($this->v === 5) ? new ResultsKeyArraySerializer() : new DataArraySerializer()));
     }
 
     /**

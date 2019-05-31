@@ -14,6 +14,8 @@ class TextTransformer extends BaseTransformer
             case 4:
             default:
                 return $this->transformForV4($text);
+            case 5:
+                return $this->transformForV5($text);
         }
     }
 
@@ -156,5 +158,10 @@ class TextTransformer extends BaseTransformer
             'verse_end_alt'    => (string) $text->verse_end_vernacular,
             'verse_text'       => (string) $text->verse_text
         ];
+    }
+
+    public function transformForV5($text)
+    {
+        return [$text->book_id_usfx.$text->chapter.'_'.$text->verse_start => $text->verse_text];
     }
 }
