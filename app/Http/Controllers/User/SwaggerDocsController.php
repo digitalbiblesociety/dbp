@@ -29,17 +29,25 @@ class SwaggerDocsController extends Controller
     {
         $swagger = \Cache::remember('OAS_'.$version, now()->addDay(), function () use ($version) {
             $swagger = \OpenApi\scan(app_path());
-            foreach ($swagger->components->schemas as $key => $component) {
-
-                if (!Str::startsWith($swagger->components->schemas[$key]->title, $version)) {
-                    unset($swagger->components->schemas[$key]);
-                }
-            }
             $swagger->tags  = $this->swaggerVersionTags($swagger->tags, $version);
             $swagger->paths = $this->swaggerVersionPaths($swagger->paths, $version);
+            $swagger->components  = $this->removeUnusedComponents($swagger, $version);
             return $swagger;
         });
         return response()->json($swagger)->header('Content-Type', 'application/json');
+    }
+
+    private function removeUnusedComponents($swagger, $version)
+    {
+        $schema_regex = '/(?<=schemas\\\\\/)(.*?)(?=\\\\\/|")/m';
+        preg_match_all($schema_regex, json_encode($swagger), $matches);
+        $schemas_used = array_unique($matches[0]);
+        foreach ($swagger->components->schemas as $key => $schema) {
+            if (!in_array($schema->schema, $schemas_used)) {
+                unset($swagger->components->schemas[$key]);
+            }
+        }
+        return $swagger->components;
     }
 
     private function swaggerVersionTags($tags, $version)
