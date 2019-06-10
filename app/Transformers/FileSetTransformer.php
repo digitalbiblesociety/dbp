@@ -45,18 +45,16 @@ class FileSetTransformer extends BaseTransformer
 
     public function transformForV4($fileset)
     {
-
         switch ($this->route) {
-            case 'v4_bible_filesets.podcast':
+            case 'v4_filesets.podcast':
                 $bible = $fileset->bible->first();
                 if (!$bible) {
                     return $this->replyWithError(trans('api.filesets_errors_404'));
                 }
-
-                $meta['channel']['title'] = $bible->translations->where('iso', $bible->iso)->first()->name.' - '.$bible->language->name ?? $bible->where('iso', 'eng')->first()->name.' - '.$bible->language->name;
+                $meta['channel']['title'] = $fileset->translations->where('iso', $bible->language->iso)->first()->name.' - '.$bible->language->name ?? $bible->where('iso', 'eng')->first()->name.' - '.$bible->language->name;
                 $meta['channel']['link'] = config('app.url_podcast');
                 $meta['channel']['atom:link']['_attributes'] = ['href'  => 'http://www.faithcomesbyhearing.com/feeds/audio-bibles/'.$bible->id.'.xml','rel'   => 'self','type'  => 'application/rss+xml'];
-                $meta['channel']['description'] = $bible->translations->where('iso', $bible->iso)->first()->description ?? $bible->where('iso', 'eng')->first()->description;
+                $meta['channel']['description'] = $bible->translations->where('iso', $bible->language->iso)->first()->description ?? $bible->where('iso', 'eng')->first()->description;
                 $meta['channel']['language'] = $bible->language->iso;
                 $meta['channel']['managingEditor'] = 'adhooker@fcbhmail.org';
                 $meta['channel']['webMaster'] = 'charles@faithcomesbyhearing.com';

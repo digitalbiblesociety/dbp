@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\User\Dashboard;
 
 use App\Http\Controllers\APIController;
+use App\Models\Bible\BibleFileset;
+use App\Models\User\Key;
+use Auth;
+use Validator;
 
 class BibleFilesetsManagementController extends APIController
 {
@@ -24,21 +28,25 @@ class BibleFilesetsManagementController extends APIController
      * @OA\Put(
      *     path="/bibles/filesets/{fileset_id}",
      *     tags={"Bibles"},
-     *     summary="Available fileset",
-     *     description="A list of all the file types that exist within the filesets",
+     *     summary="Update a bible fileset",
+     *     description="Update a bible fileset",
      *     operationId="v4_bible_filesets.update",
      *     @OA\Parameter(name="fileset_id", in="path", required=true, description="The fileset ID", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+     *     @OA\RequestBody(required=true, description="Fields for Bible Fileset Update",
+     *          @OA\MediaType(mediaType="application/json",                  @OA\Schema(ref="#/components/schemas/BibleFileset")),
+     *          @OA\MediaType(mediaType="application/x-www-form-urlencoded", @OA\Schema(ref="#/components/schemas/BibleFileset"))
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
-     *         response=200,
+     *         response=201,
      *         description="The fileset just edited",
-     *         @OA\MediaType(
-     *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/BibleFileset")
-     *         )
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/BibleFileset")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/BibleFileset")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/BibleFileset")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/BibleFileset"))
      *     )
      * )
      *
@@ -48,11 +56,17 @@ class BibleFilesetsManagementController extends APIController
      */
     public function update($id)
     {
-        $this->validateUser(Auth::user());
-        $this->validateBibleFileset(request());
-
+        $id    = checkParam('fileset_id', true, $id);
         $fileset = BibleFileset::find($id);
-        $fileset->fill(request()->all())->save();
+
+        $invalidUser = $this->validateUser($fileset);
+        if ($invalidUser) {
+            return $invalidUser;
+        }
+
+        $fileset->update(request()->all());
+        $fileset->save();
+
 
         if ($this->api) {
             return $this->setStatusCode(201)->reply($fileset);
@@ -79,14 +93,14 @@ class BibleFilesetsManagementController extends APIController
         }
         if (!$user->archivist && !$user->admin) {
             if ($fileset) {
-                $userIsAMember = $user->organizations->where('organization_id', $fileset->organization->id)->first();
+                $userIsAMember = $user->organizations->where('organization_id', $fileset->organization[0]->id)->first();
                 if ($userIsAMember) {
-                    return $user;
+                    return false;
                 }
             }
             return $this->setStatusCode(401)->replyWithError("You don't have permission to edit this filesets");
         }
-        return $user;
+        return false;
     }
 
     /**
@@ -98,9 +112,9 @@ class BibleFilesetsManagementController extends APIController
     {
         $validator = Validator::make(request()->all(), [
             'id'            => (request()->method() === 'POST') ? 'required|unique:bible_filesets,id|max:16|min:6' : 'required|exists:bible_filesets,id|max:16|min:6',
-            'asset_id'     => 'string|maxLength:64',
-            'set_type_code' => 'string|maxLength:16',
-            'set_size_code' => 'string|maxLength:9',
+            'asset_id'     => 'string|max:64',
+            'set_type_code' => 'string|max:16',
+            'set_size_code' => 'string|max:9',
             'hidden'        => 'boolean',
         ]);
 
@@ -127,7 +141,7 @@ class BibleFilesetsManagementController extends APIController
     /**
      *
      * @OA\Post(
-     *     path="/bibles/filesets/",
+     *     path="/bibles/filesets",
      *     tags={"Bibles"},
      *     summary="Create a brand new Fileset",
      *     description="Create a new Bible Fileset",
@@ -143,10 +157,10 @@ class BibleFilesetsManagementController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="The completed fileset",
-     *         @OA\MediaType(
-     *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/BibleFileset")
-     *         )
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/BibleFileset")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/BibleFileset")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/BibleFileset")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/BibleFileset"))
      *     )
      * )
      *
@@ -154,14 +168,24 @@ class BibleFilesetsManagementController extends APIController
      */
     public function store()
     {
-        $this->validateUser(Auth::user());
-        $this->validateBibleFileset();
+        $invalidUser = $this->validateUser();
+        if ($invalidUser) {
+            return $invalidUser;
+        }
+
+        $invalid = $this->validateBibleFileset();
+        if ($invalid) {
+            return $invalid;
+        }
 
         $fileset = BibleFileset::create(request()->all());
 
         // $bible = request()->file('file');
 
         // ProcessBible::dispatch($request->file('zip'), $fileset->id);
+        if ($this->api) {
+            return $this->setStatusCode(201)->reply($fileset);
+        }
         return view('bibles.filesets.thanks', compact('fileset'));
     }
 

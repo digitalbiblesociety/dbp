@@ -41,7 +41,7 @@ class HomeController extends APIController
      * Returns a List of Assets used by the API
      *
      * @OA\Get(
-     *     path="/api/assets",
+     *     path="/api/buckets",
      *     tags={"Bibles"},
      *     summary="Returns the asset paths currently being used by the api",
      *     description="",
@@ -55,7 +55,8 @@ class HomeController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_api_assets")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_api_assets")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_api_assets"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_api_assets")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_api_assets"))
      *     )
      * )
      *

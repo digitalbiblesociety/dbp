@@ -24,7 +24,7 @@ class BooksController extends APIController
      * @link https://dbp.test/eng/docs/swagger/v4#/Bible/v4_bible_books2 - V4 Test Docs
      *
      * @OA\Get(
-     *     path="/bibles/books/",
+     *     path="/bibles/books",
      *
      *     tags={"Bibles"},
      *     summary="Returns the books of the Bible",
@@ -37,10 +37,10 @@ class BooksController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(
-     *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/v4_bible_books_all")
-     *         )
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible_books_all")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible_books_all")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible_books_all")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_bible_books_all"))
      *     )
      * )
      *
@@ -65,7 +65,7 @@ class BooksController extends APIController
      * @link     https://dbp.test/eng/docs/swagger/v4#/Bible/v4_bible_filesets.books - V4 Test Docs
      *
      * @OA\Get(
-     *     path="/bibles/filesets/{fileset_id}/books/",
+     *     path="/bibles/filesets/{fileset_id}/books",
      *     tags={"Bibles"},
      *     summary="Returns the books of the Bible",
      *     description="Returns the books and chapters for a specific fileset",
@@ -89,16 +89,17 @@ class BooksController extends APIController
      *     @OA\Parameter(
      *         name="asset_id",
      *         in="query",
+     *         required=true,
      *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id"),
      *         description="The asset id to select the fileset by"
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(
-     *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/v4_bible_books_all")
-     *         )
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible_books_all")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible_books_all")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible_books_all")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_bible_books_all"))
      *     )
      * )
      *
