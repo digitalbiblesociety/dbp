@@ -127,7 +127,7 @@ class Highlight extends Model
       *
       * @OA\Property(
       *   title="highlighted_words",
-      *   type="string",
+      *   type="integer",
       *   description="The number of words being highlighted. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
       * )
       *

@@ -22,7 +22,7 @@ class BookmarksController extends APIController
      * Display a listing of the bookmarks.
      *
      * @OA\Get(
-     *     path="/users/{user_id}/bookmarks/",
+     *     path="/users/{user_id}/bookmarks",
      *     tags={"Annotations"},
      *     summary="List a user's bookmarks",
      *     description="",
@@ -34,6 +34,19 @@ class BookmarksController extends APIController
      *          description="The user_id",
      *          @OA\Schema(ref="#/components/schemas/User/properties/id")
      *     ),
+     *     @OA\Parameter(name="bible_id", in="query", description="Will filter the results by the given bible",
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
+     *     ),
+     *     @OA\Parameter(name="book_id", in="query", description="Will filter the results by the given book",
+     *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
+     *     ),
+     *     @OA\Parameter(name="chapter_id", in="query", description="Will filter the results by the given chapter",
+     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
+     *     ),
+     *     @OA\Parameter(name="limit",  in="query", description="The number of results to return",
+     *          @OA\Schema(type="integer",default=25)),
+     *     @OA\Parameter(name="page",  in="query", description="The current page of the results",
+     *          @OA\Schema(type="integer",default=1)),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -41,10 +54,10 @@ class BookmarksController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(
-     *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")
-     *         )
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_user_bookmarks"))
      *     )
      * )
      *
@@ -64,7 +77,7 @@ class BookmarksController extends APIController
         $limit        = (int) (checkParam('limit') ?? 25);
 
         $bookmarks = Bookmark::with('tags')->where('user_id', $user_id)
-            ->when($book_id, function ($q) use ($bible_id) {
+            ->when($bible_id, function ($q) use ($bible_id) {
                 $q->where('bible_id', $bible_id);
             })->when($book_id, function ($q) use ($book_id) {
                 $q->where('book_id', $book_id);
@@ -81,10 +94,10 @@ class BookmarksController extends APIController
      * Store a newly created resource in storage.
      *
      * @OA\Post(
-     *     path="/users/{user_id}/bookmarks/",
+     *     path="/users/{user_id}/bookmarks",
      *     tags={"Annotations"},
      *     summary="Create a bookmark",
-     *     description="Returns filtered permissions for a fileset dependent upon your authorization level and API key",
+     *     description="",
      *     operationId="v4_user_annotation_bookmarks.store",
      *     @OA\Parameter(
      *          name="user_id",
@@ -97,13 +110,22 @@ class BookmarksController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\RequestBody(required=true, description="Fields for User Bookmark Creation", @OA\MediaType(mediaType="application/json",
+     *          @OA\Schema(
+     *              @OA\Property(property="bible_id",                  ref="#/components/schemas/Bible/properties/id"),
+     *              @OA\Property(property="book_id",                   ref="#/components/schemas/Book/properties/id"),
+     *              @OA\Property(property="user_id",                   ref="#/components/schemas/User/properties/id"),
+     *              @OA\Property(property="chapter",                   ref="#/components/schemas/Bookmark/properties/chapter"),
+     *              @OA\Property(property="verse_start",               ref="#/components/schemas/Bookmark/properties/verse_start")
+     *          )
+     *     )),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(
-     *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")
-     *         )
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_user_bookmarks"))
      *     )
      * )
      *
@@ -147,13 +169,21 @@ class BookmarksController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\RequestBody(required=true, description="Fields for User Bookmark Creation", @OA\MediaType(mediaType="application/json",
+     *          @OA\Schema(
+     *              @OA\Property(property="bible_id",                  ref="#/components/schemas/Bible/properties/id"),
+     *              @OA\Property(property="book_id",                   ref="#/components/schemas/Book/properties/id"),
+     *              @OA\Property(property="chapter",                   ref="#/components/schemas/Bookmark/properties/chapter"),
+     *              @OA\Property(property="verse_start",               ref="#/components/schemas/Bookmark/properties/verse_start")
+     *          )
+     *     )),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(
-     *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")
-     *         )
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_user_bookmarks"))
      *     )
      * )
      *
@@ -204,10 +234,10 @@ class BookmarksController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(
-     *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/v4_user_bookmarks")
-     *         )
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(type="string"))
      *     )
      * )
      *

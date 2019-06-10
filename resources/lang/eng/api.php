@@ -47,6 +47,7 @@ return [
 
 	'users_highlights_create_200'            => 'Highlight successfully created',
 	'users_highlights_update_200'            => 'Highlight successfully updated',
+	'users_highlights_delete_200'            => 'Highlight successfully deleted',
 
 	'user_creation_permission_failed'        => 'You do not have permission to create users',
 	'user_notes_store_200'                   => 'Note successfully created',
