@@ -49,7 +49,8 @@ class NumbersController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_numbers_range")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_numbers_range")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_numbers_range"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_numbers_range")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_numbers_range"))
      *     )
      * )
      *
@@ -71,7 +72,7 @@ class NumbersController extends APIController
     public function customRange()
     {
         $script = checkParam('script|script_id', true);
-        $start  = checkParam('start');
+        $start  = checkParam('start') ?? 0;
         $end    = checkParam('end');
         if (($end - $start) > 200) {
             return $this->replyWithError(trans('api.numerals_range_error', ['num' => $end]));
@@ -90,7 +91,7 @@ class NumbersController extends APIController
      * @OA\Get(
      *     path="/numbers",
      *     tags={"Languages"},
-     *     summary="Return a all Alphabets that have a custom number sets",
+     *     summary="Return all Alphabets that have a custom number sets",
      *     description="Returns a range of numbers",
      *     operationId="v4_numbers.index",
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
@@ -105,6 +106,8 @@ class NumbersController extends APIController
      *         @OA\MediaType(mediaType="application/xml",
      *         @OA\Schema(ref="#/components/schemas/v4_alphabets_all_response")),
      *         @OA\MediaType(mediaType="text/x-yaml",
+     *         @OA\Schema(ref="#/components/schemas/v4_alphabets_all_response")),
+     *         @OA\MediaType(mediaType="text/csv",
      *         @OA\Schema(ref="#/components/schemas/v4_alphabets_all_response"))
      *     )
      * )
@@ -133,8 +136,8 @@ class NumbersController extends APIController
      *     summary="Return a single custom number set",
      *     description="Returns a range of numbers",
      *     operationId="v4_numbers.show",
-     *     @OA\Parameter(name="id", in="path", required=true, description="The Alphabet id",
-     *          @OA\Schema(ref="#/components/schemas/Alphabet/properties/script")),
+     *     @OA\Parameter(name="id", in="path", required=true, description="The NumeralSystem id",
+     *          @OA\Schema(ref="#/components/schemas/NumeralSystem/properties/id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -147,6 +150,8 @@ class NumbersController extends APIController
      *         @OA\MediaType(mediaType="application/xml",
      *              @OA\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
      *         @OA\MediaType(mediaType="text/x-yaml",
+     *              @OA\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+     *         @OA\MediaType(mediaType="text/csv",
      *              @OA\Schema(ref="#/components/schemas/v4_alphabets_one_response"))
      *     )
      * )

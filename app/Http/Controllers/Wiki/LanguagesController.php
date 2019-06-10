@@ -18,7 +18,7 @@ class LanguagesController extends APIController
      * Fetches the records from the database > passes them through fractal for transforming.
      *
      * @OA\Get(
-     *     path="/languages/",
+     *     path="/languages",
      *     tags={"Languages"},
      *     summary="Returns Languages",
      *     description="Returns the List of Languages",
@@ -38,27 +38,8 @@ class LanguagesController extends APIController
      *     @OA\Parameter(
      *          name="language_name",
      *          in="query",
-     *          @OA\Schema(type="object"),
+     *          @OA\Schema(type="string"),
      *          description="The language_name field will filter results by a specific language name"
-     *     ),
-     *     @OA\Parameter(
-     *          name="sort_by",
-     *          in="query",
-     *          @OA\Schema(type="object"),
-     *          description="The sort_by field will order results by a specific field"
-     *     ),
-     *     @OA\Parameter(
-     *          name="has_bibles",
-     *          in="query",
-     *          @OA\Schema(type="object"),
-     *          description="When set to true will filter language results depending whether or not they have bibles."
-     *     ),
-     *     @OA\Parameter(
-     *          name="has_filesets",
-     *          in="query",
-     *          @OA\Schema(type="object",default=null,example=true),
-     *          description="When set to true will filter language results depending whether or not they have filesets.
-     *              Will add new filesets_count field to the return."
      *     ),
      *     @OA\Parameter(
      *          name="asset_id",
@@ -77,10 +58,15 @@ class LanguagesController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(ref="#/components/parameters/sort_by"),
+     *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Language"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Language")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/Language")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/Language")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/Language"))
      *     )
      * )
      * @link https://api.dbp.test/languages?key=1234&v=4&pretty
@@ -100,7 +86,7 @@ class LanguagesController extends APIController
         $include_alt_names     = checkParam('include_alt_names');
         $show_restricted       = checkParam('show_restricted');
         $asset_id              = checkParam('bucket_id|asset_id');
-        $name                  = checkParam('name');
+        $name                  = checkParam('name|language_name');
 
         $access_control = $this->accessControl($this->key);
 
@@ -142,17 +128,21 @@ class LanguagesController extends APIController
      *     @OA\Parameter(
      *          name="id",
      *          in="path",
-     *          description="The languages ID",
+     *          description="The language ID",
      *          required=true,
      *          @OA\Schema(ref="#/components/schemas/Language/properties/id")
      *     ),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(
-     *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/Language")
-     *         )
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Language")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/Language")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/Language")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/Language"))
      *     )
      * )
      *
