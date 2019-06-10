@@ -145,6 +145,12 @@ Route::name('v4_user.oAuthCallback')->get('/login/{driver}/callback',           
 Route::name('v4_user.password_reset')->post('users/password/reset/{token?}',       'User\PasswordsController@validatePasswordReset');
 Route::name('v4_user.password_email')->post('users/password/email',                'User\PasswordsController@triggerPasswordResetEmail');
 
+// VERSION 4 | Accounts
+Route::name('v4_user_accounts.index')->get('accounts',                             'User\AccountsController@index');
+Route::name('v4_user_accounts.store')->post('accounts',                            'User\AccountsController@store');
+Route::name('v4_user_accounts.update')->put('accounts',                            'User\AccountsController@update');
+Route::name('v4_user_accounts.destroy')->delete('accounts',                        'User\AccountsController@destroy');
+
 // VERSION 4 | Annotations
 Route::name('v4_notes.index')->get('users/{user_id}/notes',                        'User\NotesController@index');
 Route::name('v4_notes.show')->get('users/{user_id}/notes/{id}',                    'User\NotesController@show');
