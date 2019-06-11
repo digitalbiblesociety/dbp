@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * App\Models\User\Account
@@ -109,5 +110,14 @@ class Account extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    protected function setKeysForSaveQuery(Builder $query)
+    {
+        $query
+            ->where('user_id', '=', $this->getAttribute('user_id'))
+            ->where('provider_id', '=', $this->getAttribute('provider_id'))
+            ->where('project_id', '=', $this->getAttribute('project_id'));
+        return $query;
     }
 }

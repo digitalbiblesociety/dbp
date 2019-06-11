@@ -42,12 +42,18 @@ class UsersController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(name="limit",  in="query", description="The number of search results to return",
+     *          @OA\Schema(type="integer",default=100)),
+     *     @OA\Parameter(name="page",  in="query", description="The current page of the results",
+     *          @OA\Schema(type="integer",default=1)),
+     *     @OA\Parameter(name="project_id", in="query", required=true, description="The Project id", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_user_index"))
      *     )
      * )
      *
@@ -61,7 +67,7 @@ class UsersController extends APIController
         $limit = checkParam('limit') ?? 100;
         $project_id = checkParam('project_id');
 
-        $users = \DB::table('users')->join('project_members', function ($join) use ($project_id) {
+        $users = \DB::table('dbp_users.users')->join('dbp_users.project_members', function ($join) use ($project_id) {
             $join->on('users.id', 'project_members.user_id')->where('project_members.project_id', $project_id);
         })->select(['id','name','email'])->paginate($limit);
 
@@ -88,7 +94,8 @@ class UsersController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_show")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_show")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_show"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_show")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_user_show"))
      *     )
      * )
      *
@@ -134,7 +141,7 @@ class UsersController extends APIController
     /**
      *
      * @OA\Post(
-     *     path="/users/login",
+     *     path="/login",
      *     tags={"Users"},
      *     summary="Login a user",
      *     description="",
@@ -157,7 +164,8 @@ class UsersController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_user_index"))
      *     )
      * )
      *
@@ -173,7 +181,7 @@ class UsersController extends APIController
 
         $user = User::with('accounts')->where('email', $request->email)->first();
         if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email'));
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => $request->email]));
         }
 
         $oldPassword = \Hash::check(md5($request->password), $user->password);
@@ -233,7 +241,8 @@ class UsersController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_user_index"))
      *     )
      * )
      *
@@ -315,7 +324,8 @@ class UsersController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_user_index"))
      *     )
      * )
      *

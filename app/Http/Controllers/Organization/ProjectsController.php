@@ -34,7 +34,8 @@ class ProjectsController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_projects_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_projects_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_projects_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_projects_index"))
      *     )
      * )
      *
@@ -73,7 +74,7 @@ class ProjectsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\RequestBody(required=true, description="Information supplied for user creation", @OA\MediaType(mediaType="application/json",
+     *     @OA\RequestBody(required=true, description="Information supplied for project creation", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name",                    ref="#/components/schemas/Project/properties/name"),
      *              @OA\Property(property="url_avatar",              ref="#/components/schemas/Project/properties/url_avatar"),
@@ -87,7 +88,8 @@ class ProjectsController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_projects_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_projects_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_projects_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_projects_index"))
      *     )
      * )
      *
@@ -156,7 +158,8 @@ class ProjectsController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_projects_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_projects_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_projects_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_projects_index"))
      *     )
      * )
      *
@@ -214,12 +217,22 @@ class ProjectsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\RequestBody(required=true, description="Information supplied for project update", @OA\MediaType(mediaType="application/json",
+     *          @OA\Schema(
+     *              @OA\Property(property="name",                    ref="#/components/schemas/Project/properties/name"),
+     *              @OA\Property(property="url_avatar",              ref="#/components/schemas/Project/properties/url_avatar"),
+     *              @OA\Property(property="url_avatar_icon",         ref="#/components/schemas/Project/properties/url_avatar_icon"),
+     *              @OA\Property(property="url_site",                ref="#/components/schemas/Project/properties/url_site"),
+     *              @OA\Property(property="description",             ref="#/components/schemas/Project/properties/description")
+     *          )
+     *     )),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_projects_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_projects_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_projects_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_projects_index"))
      *     )
      * )
      *
@@ -270,7 +283,8 @@ class ProjectsController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_projects_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_projects_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_projects_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_projects_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_projects_index"))
      *     )
      * )
      *

@@ -38,7 +38,7 @@ class PasswordsController extends APIController
     /**
      *
      * @OA\Post(
-     *     path="/users/reset/email",
+     *     path="/users/password/email",
      *     tags={"Users"},
      *     summary="Trigger a reset email",
      *     description="",
@@ -63,9 +63,10 @@ class PasswordsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_index")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_index"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(type="string"))
      *     )
      * )
      *
@@ -105,7 +106,7 @@ class PasswordsController extends APIController
     /**
      *
      * @OA\Post(
-     *     path="/users/reset/password",
+     *     path="/users/password/reset",
      *     tags={"Users"},
      *     summary="Reset the password for a user",
      *     description="This route handles resetting the password for a user that is a member of the project id provided
@@ -122,13 +123,13 @@ class PasswordsController extends APIController
      *         description="Information supplied for password reset",
      *         @OA\MediaType(mediaType="application/json",
      *             @OA\Schema (
-     *                required={"email","project_id","token_id","new_password","new_password_confirmed"},
+     *                required={"email","project_id","token_id","new_password","new_password_confirmation"},
      *                @OA\Property(property="email", ref="#/components/schemas/User/properties/email"),
      *                @OA\Property(property="project_id", ref="#/components/schemas/Project/properties/id"),
      *                @OA\Property(property="token_id", type="string",description="The token sent to the user's email"),
      *                @OA\Property(property="old_password", ref="#/components/schemas/User/properties/password"),
      *                @OA\Property(property="new_password", ref="#/components/schemas/User/properties/password"),
-     *                @OA\Property(property="new_password_confirmed", ref="#/components/schemas/User/properties/password")
+     *                @OA\Property(property="new_password_confirmation", ref="#/components/schemas/User/properties/password")
      *             ))
      *     ),
      *     @OA\Response(
@@ -136,7 +137,8 @@ class PasswordsController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_user_index"))
      *     )
      * )
      *
@@ -152,7 +154,7 @@ class PasswordsController extends APIController
             'email'            => 'required|email',
             'project_id'       => 'exists:dbp_users.projects,id',
             'token_id'         => ['required',
-            Rule::exists('password_resets', 'token')->where(function ($query) use ($request) {
+            Rule::exists('dbp_users.password_resets', 'token')->where(function ($query) use ($request) {
                 $query->where('email', $request->email);
             })]
         ]);

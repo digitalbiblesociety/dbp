@@ -33,7 +33,8 @@ class AccountsController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Account")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/Account")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/Account"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/Account")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/Account"))
      *     )
      * )
      *
@@ -79,7 +80,8 @@ class AccountsController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Account")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/Account")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/Account"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/Account")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/Account"))
      *     )
      * )
      *
@@ -103,7 +105,7 @@ class AccountsController extends APIController
      * Update the specified resource in storage.
      *
      * @OA\Put(
-     *     path="/accounts/{account_id}",
+     *     path="/accounts",
      *     tags={"Users"},
      *     summary="Update a specific Account",
      *     description="",
@@ -112,29 +114,31 @@ class AccountsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="account_id", in="path", required=true, description="The Account ID", required=true,
-     *          @OA\Schema(ref="#/components/schemas/Account/properties/id")),
      *     @OA\Parameter(name="project_id", in="query", description="The Project ID", required=true,
      *          @OA\Schema(ref="#/components/schemas/Project/properties/id")),
      *     @OA\Parameter(name="user_id", in="query", description="The User ID", required=true,
      *          @OA\Schema(ref="#/components/schemas/User/properties/id")),
+     *     @OA\Parameter(name="provider_id", in="query", description="The Provider ID", required=true,
+     *          @OA\Schema(ref="#/components/schemas/Account/properties/provider_id")),
+     *     @OA\Parameter(name="provider_user_id", in="query", description="The Provider User ID", required=true,
+     *          @OA\Schema(ref="#/components/schemas/Account/properties/provider_user_id")),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible.one")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible.one")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible.one"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Account")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/Account")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/Account")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/Account"))
      *     )
      * )
      *
      * @param  \Illuminate\Http\Request $request
-     * @param                           $account_id
      *
      * @return \Illuminate\Http\Response
      * @internal param int $id
      *
      */
-    public function update(Request $request, $account_id)
+    public function update(Request $request)
     {
         $invalidAccount = $this->invalidAccount();
         if ($invalidAccount) {
@@ -142,9 +146,18 @@ class AccountsController extends APIController
         }
 
         $user    = $this->verifyProjectUserConnection();
-        $account = Account::where('id', $account_id)->first();
+
+        $provider_id  = checkParam('provider_id');
+        $project_id   = checkParam('project_id');
+        $user_id      = checkParam('user_id');
+
+
+        $account = Account::where('provider_id', $provider_id)
+                    ->where('user_id', $user_id)
+                    ->where('project_id', $project_id)->first();
+        
         if (!$account) {
-            return $this->setStatusCode(404)->replyWithError('Account '. $account_id . ' not found');
+            return $this->setStatusCode(404)->replyWithError('Account not found');
         }
         $account->update($request->all());
 
@@ -155,7 +168,7 @@ class AccountsController extends APIController
      * Remove the specified resource from storage.
      *
      * @OA\Delete(
-     *     path="/accounts/{account_id}",
+     *     path="/accounts",
      *     tags={"Users"},
      *     summary="Delete an account",
      *     description="",
@@ -164,18 +177,19 @@ class AccountsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="account_id", in="path", required=true, description="The Account ID", required=true,
-     *          @OA\Schema(ref="#/components/schemas/Account/properties/id")),
      *     @OA\Parameter(name="project_id", in="query", description="The Project ID", required=true,
      *          @OA\Schema(ref="#/components/schemas/Project/properties/id")),
      *     @OA\Parameter(name="user_id", in="query", description="The User ID", required=true,
      *          @OA\Schema(ref="#/components/schemas/User/properties/id")),
+     *     @OA\Parameter(name="provider_id", in="query", description="The Provider ID", required=true,
+     *          @OA\Schema(ref="#/components/schemas/Account/properties/provider_id")),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Account")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/Account")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/Account"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/Account")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/Account"))
      *     )
      * )
      *
@@ -185,15 +199,24 @@ class AccountsController extends APIController
      * @internal param int $id
      *
      */
-    public function destroy($account_id)
+    public function destroy()
     {
+        $provider_id  = checkParam('provider_id');
+        $project_id   = checkParam('project_id');
+        $user_id      = checkParam('user_id');
+
         $user     = $this->verifyProjectUserConnection();
         $accounts = $user->accounts;
-        $account  = $accounts->where('id', $account_id)->first();
+        $account  = $accounts->where('provider_id', $provider_id)
+                            ->where('user_id', $user_id)
+                            ->where('project_id', $project_id)->first();
+        if (!$account) {
+            return $this->setStatusCode(404)->replyWithError('Account not found');
+        }
         $account->delete();
 
-
-        return $this->reply($accounts->where('id', '!=', $account_id)->all());
+        $user     = $this->verifyProjectUserConnection();
+        return $this->reply($user->accounts->all());
     }
 
     private function verifyProjectUserConnection()
@@ -216,7 +239,7 @@ class AccountsController extends APIController
      */
     private function invalidAccount()
     {
-        $requiredCondition = request()->method() === 'POST' ? 'required|' : '';
+        $requiredCondition = request()->method() === 'POST' || request()->method() === 'PUT' ? 'required|' : '';
         $validator = Validator::make(request()->all(), [
             'user_id'             => $requiredCondition. 'exists:dbp_users.users,id',
             'provider_id'         => $requiredCondition. 'string|in:cookie,facebook,google,twitter,test',

@@ -18,13 +18,14 @@ class OAuthProvidersController extends APIController
      * Display a listing of the resource.
      *
      * @OA\Get(
-     *     path="/projects/{project_id}/oauth-providers/",
+     *     path="/projects/{project_id}/oauth",
      *     tags={"Users"},
      *     summary="A Project's oAuth Providers",
      *     description="Returns the oAuth providers being used by a project. This route can inform
                 developers about the potential login options provided to users by each project.",
      *     operationId="v4_projects_oAuthProvider.index",
      *     @OA\Parameter(name="project_id", in="path", required=true, description="The Project id", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
+     *     @OA\Parameter(name="provider_id", in="query", description="The Provider id", @OA\Schema(ref="#/components/schemas/Account/properties/provider_id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -34,6 +35,7 @@ class OAuthProvidersController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
      *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/ProjectOauthProvider"))
      *     )
      * )

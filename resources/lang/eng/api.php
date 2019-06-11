@@ -39,6 +39,7 @@ return [
 
 	// Community Routes
 	'users_errors_404'                       => 'No user for the provided param could be found',
+	'users_errors_404_email'                 => 'No user with the email `:email` could be found',
 	'users_errors_422_email_disposable'      => 'Email is disposable',
 	'users_errors_422_email_nonexistent_host'=> 'The provided email host does not exist',
 	'users_errors_401_project'               => 'The user given is not a user of the project_id provided.',
