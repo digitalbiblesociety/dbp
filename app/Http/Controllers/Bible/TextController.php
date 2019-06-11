@@ -29,7 +29,7 @@ class TextController extends APIController
      * @param string|null $chapter_url_param
      *
      * @OA\Get(
-     *     path="/bibles/{id}/{book}/{chapter}",
+     *     path="/bibles/filesets/{id}/{book}/{chapter}",
      *     tags={"Text"},
      *     summary="Get Bible Text",
      *     description="V4's base fileset route",
@@ -37,6 +37,12 @@ class TextController extends APIController
      *     @OA\Parameter(name="id", in="path", description="The Bible fileset ID", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
      *     @OA\Parameter(name="book", in="path", description="The Book ID", required=true, @OA\Schema(ref="#/components/schemas/Book/properties/id")),
      *     @OA\Parameter(name="chapter", in="path", description="The chapter number", required=true, @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+     *     @OA\Parameter(name="verse_start", in="query", description="Will filter the results by the given start verse",
+     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/verse_start")
+     *     ),
+     *     @OA\Parameter(name="verse_end", in="query", description="Will filter the results by the given end verse",
+     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/verse_end")
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -46,7 +52,8 @@ class TextController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter"))
      *     )
      * )
      *
@@ -227,6 +234,7 @@ class TextController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter")),
      *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter"))
      *     )
      * )
@@ -256,7 +264,7 @@ class TextController extends APIController
             ->withVernacularMetaData($bible)
             ->when($book_id, function ($query) use ($book_id) {
                 $books = explode(',', $book_id);
-                $query->whereIn('book_id', $books);
+                $query->whereIn('bible_verses.book_id', $books);
             })
             ->whereRaw(DB::raw("MATCH (verse_text) AGAINST(\"$query\" IN NATURAL LANGUAGE MODE)"))
             ->select([
