@@ -131,6 +131,7 @@ Route::name('v4_alphabets.one')->get('alphabets/{alphabet_id}',                 
 Route::name('v4_alphabets.store')->post('alphabets',                               'Wiki\AlphabetsController@store');
 Route::name('v4_alphabets.update')->put('alphabets/{alphabet_id}',                 'Wiki\AlphabetsController@update');
 Route::name('v4_numbers.all')->get('numbers/',                                     'Wiki\NumbersController@index');
+Route::name('v4_numbers.range')->get('numbers/range',                              'Wiki\NumbersController@customRange');
 Route::name('v4_numbers.one')->get('numbers/{number_id}',                          'Wiki\NumbersController@show');
 
 // VERSION 4 | Users
