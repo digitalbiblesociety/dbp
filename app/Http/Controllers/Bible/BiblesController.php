@@ -50,7 +50,7 @@ class BiblesController extends APIController
      *          name="asset_id",
      *          in="query",
      *          @OA\Schema(type="string"),
-     *          description="The asset_id to filter results by. There are two buckets provided `dbp.test` & `dbs-web`"
+     *          description="The asset_id to filter results by. There are three buckets provided `dbp-prod`, `dbp-vid` & `dbs-web`"
      *     ),
      *     @OA\Parameter(
      *          name="media",
@@ -91,7 +91,8 @@ class BiblesController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible.all")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible.all")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible.all"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible.all")),
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_bible.all"))
      *     )
      * )
      *
@@ -205,6 +206,8 @@ class BiblesController extends APIController
      *     @OA\Parameter(name="id",in="path",required=true,@OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -238,7 +241,7 @@ class BiblesController extends APIController
     /**
      *
      * @OA\Get(
-     *     path="/bibles/{id}/book/",
+     *     path="/bibles/{id}/book",
      *     tags={"Bibles"},
      *     summary="Returns a list of translated book names and general information for the given Bible",
      *     description="The actual list of books may vary from fileset to fileset. For example, a King James Fileset may
@@ -247,6 +250,7 @@ class BiblesController extends APIController
      *     operationId="v4_bible.books",
      *     @OA\Parameter(name="id",in="path",required=true,@OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(name="book_id",in="query",@OA\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OA\Parameter(name="testament",in="query",@OA\Schema(ref="#/components/schemas/Book/properties/book_testament")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -256,7 +260,8 @@ class BiblesController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible.books")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible.books")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible.books"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible.books")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_bible.books"))
      *     )
      * )
      *
@@ -278,13 +283,16 @@ class BiblesController extends APIController
         $books = BibleBook::where('bible_id', $bible_id)
             ->with(['book' => function ($query) use ($testament) {
                 if ($testament) {
-                    $query->where('testament', $testament);
+                    $query->where('book_testament', $testament);
                 }
             }])
             ->when($book_id, function ($query) use ($book_id) {
                 $query->where('book_id', $book_id);
             })
-            ->get()->sortBy('book.'.$bible->versification.'_order')->flatten();
+            ->get()->sortBy('book.'.$bible->versification.'_order')
+            ->filter(function ($item) {
+                return $item->book;
+            })->flatten();
 
         return $this->reply(fractal($books, new BooksTransformer));
     }

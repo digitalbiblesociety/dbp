@@ -87,7 +87,7 @@ class BibleFileset extends Model
      *   title="set_type_code",
      *   type="string",
      *   description="The set_type_code indicating the type of the fileset",
-     *   maxLength=3
+     *   maxLength=16
      * )
      *
      */
@@ -99,7 +99,7 @@ class BibleFileset extends Model
      *   title="set_size_code",
      *   type="string",
      *   description="The set_size_code indicating the size of the fileset",
-     *   maxLength=3
+     *   maxLength=9
      * )
      *
      */

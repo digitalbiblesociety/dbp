@@ -95,6 +95,8 @@ Route::name('v4_filesets.podcast')->get('bibles/filesets/{fileset_id}/podcast', 
 Route::name('v4_filesets.download')->get('bibles/filesets/{fileset_id}/download',  'Bible\BibleFileSetsController@download');
 Route::name('v4_filesets.copyright')->get('bibles/filesets/{fileset_id}/copyright','Bible\BibleFileSetsController@copyright');
 Route::name('v4_filesets.show')->get('bibles/filesets/{fileset_id?}',              'Bible\BibleFileSetsController@show');
+Route::name('v4_filesets.update')->put('bibles/filesets/{fileset_id}',             'User\Dashboard\BibleFilesetsManagementController@update');
+Route::name('v4_filesets.store')->post('bibles/filesets',             'User\Dashboard\BibleFilesetsManagementController@store');
 Route::name('v4_filesets.books')->get('bibles/filesets/{fileset_id}/books',        'Bible\BooksController@show');
 
 // VERSION 4 | Text
@@ -113,7 +115,7 @@ Route::name('v4_lexicon_index')->get('lexicons',                                
 
 // VERSION 4 | Timestamps
 Route::name('v4_timestamps')->get('timestamps',                                    'Bible\AudioController@availableTimestamps');
-Route::name('v4_timestamps.tag')->get('/timestamps/search',                        'Bible\AudioController@timestampsByTag');
+Route::name('v4_timestamps.tag')->get('timestamps/search',                        'Bible\AudioController@timestampsByTag');
 Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',        'Bible\AudioController@timestampsByReference');
 
 // VERSION 4 | Countries

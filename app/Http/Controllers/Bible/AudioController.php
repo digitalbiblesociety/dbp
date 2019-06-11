@@ -141,13 +141,14 @@ class AudioController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible_timestamps")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible_timestamps")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible_timestamps"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible_timestamps")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_bible_timestamps"))
      *     )
      * )
      *
      *
      * @OA\Schema (
-     *   type="object",
+     *   type="array",
      *   schema="v4_bible_timestamps",
      *   description="The bibles hash returned for timestamps",
      *   title="Bible Timestamps",
@@ -244,14 +245,19 @@ class AudioController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="id", in="query", required=true, description="The specific fileset to return references for", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Parameter(name="query", in="query", required=true, description="The tag for which to return timestamps", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OA\Parameter(name="audio_fileset_id", in="query", description="The specific audio fileset to return references for", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+     *     @OA\Parameter(name="audio_asset_id", in="query", description="The specific audio asset id to return references for", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
+     *     @OA\Parameter(name="text_fileset_id", in="query", description="The specific text fileset to return references for", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+     *     @OA\Parameter(name="text_asset_id", in="query", description="The specific text asset id to return references for", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
+     *     @OA\Parameter(name="book_id", in="query", description="The specific book id to return references for", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OA\Parameter(name="query", in="query", required=true, description="The tag for which to return timestamps", @OA\Schema(type="string")),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_timestamps_tag")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_timestamps_tag")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_timestamps_tag"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_timestamps_tag")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_timestamps_tag")),
      *     )
      * )
      *
@@ -284,7 +290,7 @@ class AudioController extends APIController
         $verses = BibleVerse::where('hash_id', $text_fileset->hash_id)
                      ->whereRaw(\DB::raw("MATCH (verse_text) AGAINST($query IN NATURAL LANGUAGE MODE)"))
                      ->when($book_id, function ($query) use ($book_id) {
-                         return $query->where('book', $book_id);
+                         return $query->where('book_id', $book_id);
                      })
                      ->select(['book_id', 'chapter'])
                      ->take(50)

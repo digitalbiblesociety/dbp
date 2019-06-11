@@ -49,10 +49,7 @@ class BibleFileSetsController extends APIController
      *     @OA\Parameter(name="asset_id", in="query", description="Will filter the results by the given Asset",
      *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")
      *     ),
-     *     @OA\Parameter(name="versification", in="query", description="The versification system",
-     *          @OA\Schema(ref="#/components/schemas/Bible/properties/versification")
-     *     ),
-     *     @OA\Parameter(name="type", in="query", description="The fileset type",
+     *     @OA\Parameter(name="type", in="query", description="The fileset type", required=true,
      *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code")
      *     ),
      *     @OA\Response(
@@ -170,8 +167,11 @@ class BibleFileSetsController extends APIController
      *     @OA\Parameter(name="asset_id", in="query", required=true, description="The fileset ID",
      *          @OA\Schema(ref="#/components/schemas/Asset/properties/id")
      *     ),
+     *     @OA\Parameter(name="fileset_type", in="query", description="The type of fileset being queried"
+     *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code")
+     *     ),
      *     @OA\Parameter(name="book_ids", in="query", required=true,
-     *          description="The list of book ids to download content for seperated by commas",
+     *          description="The list of book ids to download content for separated by commas",
      *          example="GEN,EXO,MAT,REV",
      *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
      *     ),
@@ -251,16 +251,18 @@ class BibleFileSetsController extends APIController
      *          description="The set type code for the fileset"
      *     ),
      *     @OA\Parameter(
-     *         name="id",
-     *         in="query",
-     *         required=true,
-     *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id"),
-     *         description="The fileset ID",
+     *          name="iso",
+     *          in="query",
+     *          @OA\Schema(ref="#/components/schemas/Language/properties/iso", default="eng"),
+     *          description="The iso code to filter organization translations by"
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="The requested fileset copyright",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/BibleFileset"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/BibleFileset")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/BibleFileset")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/BibleFileset")),
+     *         @OA\MediaType(mediaType="text/-yaml", @OA\Schema(ref="#/components/schemas/BibleFileset"))
      *     )
      * )
      *
@@ -317,6 +319,14 @@ class BibleFileSetsController extends APIController
      *         ),
      *         @OA\MediaType(
      *            mediaType="application/xml",
+     *            @OA\Schema(type="object",example={"audio_drama"="Dramatized Audio","audio"="Audio","text_plain"="Plain Text","text_format"="Formatted Text","video"="Video","app"="Application"})
+     *         ),
+     *         @OA\MediaType(
+     *            mediaType="text/x-yaml",
+     *            @OA\Schema(type="object",example={"audio_drama"="Dramatized Audio","audio"="Audio","text_plain"="Plain Text","text_format"="Formatted Text","video"="Video","app"="Application"})
+     *         ),
+     *         @OA\MediaType(
+     *            mediaType="text/csv",
      *            @OA\Schema(type="object",example={"audio_drama"="Dramatized Audio","audio"="Audio","text_plain"="Plain Text","text_format"="Formatted Text","video"="Video","app"="Application"})
      *         )
      *     )

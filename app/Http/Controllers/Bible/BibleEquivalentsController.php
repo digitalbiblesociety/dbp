@@ -41,7 +41,8 @@ class BibleEquivalentsController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/BibleEquivalent")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/BibleEquivalent")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/BibleEquivalent"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/BibleEquivalent")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/BibleEquivalent"))
      *     )
      * )
      *
@@ -62,8 +63,8 @@ class BibleEquivalentsController extends APIController
                 $q->where('bible_id', $bible_id);
             })->get();
         });
-
-        if (!$bible_equivalents) {
+        
+        if ($bible_equivalents->count() === 0) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_equivalents_errors_404'));
         }
         return $this->reply($bible_equivalents);
