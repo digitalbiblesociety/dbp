@@ -14,7 +14,7 @@ class LexiconController extends APIController
      *
      *
      * @OA\Get(
-     *     path="/lexicons/",
+     *     path="/lexicons",
      *     tags={"StudyBible"},
      *     summary="",
      *     description="",
@@ -38,6 +38,7 @@ class LexiconController extends APIController
      *         @OA\Schema(type="boolean"),
      *         description="Enables"
      *     ),
+     *     @OA\Parameter(name="limit",  in="query", description="The Number of records to return", @OA\Schema(type="integer")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -46,10 +47,10 @@ class LexiconController extends APIController
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_lexicon_index")),
-     *         @OA\MediaType(mediaType="application/yaml", @OA\Schema(ref="#/components/schemas/v4_lexicon_index")),
-     *         @OA\MediaType(mediaType="application/toml", @OA\Schema(ref="#/components/schemas/v4_lexicon_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_lexicon_index")),
-     *         @OA\MediaType(mediaType="application/csv",  @OA\Schema(ref="#/components/schemas/v4_lexicon_index"))
+     *         @OA\MediaType(mediaType="application/toml", @OA\Schema(ref="#/components/schemas/v4_lexicon_index")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v4_lexicon_index")),
+     *         @OA\MediaType(mediaType="text/csv",  @OA\Schema(ref="#/components/schemas/v4_lexicon_index"))
      *     )
      * )
      *

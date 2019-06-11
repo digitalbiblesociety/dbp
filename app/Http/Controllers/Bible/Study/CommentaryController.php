@@ -20,11 +20,14 @@ class CommentaryController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Response(
      *         response=200,
      *         description="The fileset types",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Commentary")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/Commentary"))
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/Commentary")),
+     *         @OA\MediaType(mediaType="text/x-yaml",  @OA\Schema(ref="#/components/schemas/Commentary")),
+     *         @OA\MediaType(mediaType="text/csv",  @OA\Schema(ref="#/components/schemas/Commentary"))
      *     )
      * )
      *
@@ -46,18 +49,27 @@ class CommentaryController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(
      *          name="commentary_id",
      *          in="path",
      *          required=true,
      *          @OA\Schema(ref="#/components/schemas/Commentary/properties/id"),
-     *          description="The commentary id of the commentary"
+     *          description="The id of the commentary"
+     *     ),
+     *     @OA\Parameter(name="book_id", in="query", description="Will filter the results by the given book",
+     *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
+     *     ),
+     *     @OA\Parameter(name="chapter", in="query", description="Will filter the results by the given chapter",
+     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="The fileset types",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_commentaries_chapter_response")),
-     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v4_commentaries_chapter_response"))
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v4_commentaries_chapter_response")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v4_commentaries_chapter_response")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v4_commentaries_chapter_response"))
      *     )
      * )
      *
@@ -108,14 +120,15 @@ class CommentaryController extends APIController
     /**
      *
      * @OA\GET(
-     *     path="/commentaries/{commentary_id}/sections",
+     *     path="/commentaries/{commentary_id}/{book_id}/{chapter}",
      *     tags={"StudyBible"},
      *     summary="Commentary Sections",
      *     description="A list of all the chapter navigation for a specific commentary",
-     *     operationId="v4_commentary_chapter",
+     *     operationId="v4_commentary_section",
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(
      *          name="commentary_id",
      *          in="path",
@@ -123,16 +136,24 @@ class CommentaryController extends APIController
      *          @OA\Schema(ref="#/components/schemas/Commentary/properties/id"),
      *          description="The commentary id of the commentary"
      *     ),
+     *     @OA\Parameter(name="book_id", in="path", required=true, description="Will filter the results by the given book",
+     *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
+     *     ),
+     *     @OA\Parameter(name="chapter", in="path", required=true, description="Will filter the results by the given chapter",
+     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="The fileset types",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_commentaries_section_response")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_commentaries_section_response"))
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_commentaries_section_response")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v4_commentaries_section_response")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v4_commentaries_section_response"))
      *     )
      * )
      *
      * @OA\Schema(
-     *     type="object",
+     *     type="array",
      *     title="The commentary section response",
      *     description="",
      *     schema="v4_commentaries_section_response",
