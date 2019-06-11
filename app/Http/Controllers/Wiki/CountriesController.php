@@ -23,7 +23,7 @@ class CountriesController extends APIController
      * @return mixed $countries string - A JSON string that contains the status code and error messages if applicable.
      *
      * @OA\Get(
-     *     path="/countries/",
+     *     path="/countries",
      *     tags={"Countries"},
      *     summary="Returns Countries",
      *     description="Returns the List of Countries",
@@ -38,7 +38,7 @@ class CountriesController extends APIController
      *     @OA\Parameter(
      *          name="has_filesets",
      *          in="query",
-     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id"),
+     *          @OA\Schema(type="boolean"),
      *          description="Filter the returned countries to those containing languages that have filesets",
      *     ),
      *     @OA\Parameter(
@@ -54,11 +54,27 @@ class CountriesController extends APIController
      *          description="When set to true, the return will include the major languages used in each country.
      *                       You may optionally also include the language names by setting it to `with_names`",
      *     ),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(
      *            mediaType="application/json",
+     *            @OA\Schema(ref="#/components/schemas/v4_countries.all")
+     *         ),
+     *         @OA\MediaType(
+     *            mediaType="application/xml",
+     *            @OA\Schema(ref="#/components/schemas/v4_countries.all")
+     *         ),
+     *         @OA\MediaType(
+     *            mediaType="text/x-yaml",
+     *            @OA\Schema(ref="#/components/schemas/v4_countries.all")
+     *         ),
+     *         @OA\MediaType(
+     *            mediaType="text/csv",
      *            @OA\Schema(ref="#/components/schemas/v4_countries.all")
      *         )
      *     )
@@ -151,22 +167,23 @@ class CountriesController extends APIController
      *          required=true,
      *          @OA\Schema(ref="#/components/schemas/Country/properties/id")
      *     ),
-     *     @OA\Parameter(name="communications",in="query",@OA\Schema(ref="#/components/schemas/CountryCommunication")),
-     *     @OA\Parameter(name="economy",in="query",@OA\Schema(ref="#/components/schemas/CountryEconomy")),
-     *     @OA\Parameter(name="energy",in="query",@OA\Schema(ref="#/components/schemas/CountryEnergy")),
-     *     @OA\Parameter(name="geography",in="query",@OA\Schema(ref="#/components/schemas/CountryGeography")),
-     *     @OA\Parameter(name="government",in="query",@OA\Schema(ref="#/components/schemas/CountryGovernment")),
-     *     @OA\Parameter(name="issues",in="query",@OA\Schema(ref="#/components/schemas/CountryIssues")),
-     *     @OA\Parameter(name="people",in="query",@OA\Schema(ref="#/components/schemas/CountryPeople")),
-     *     @OA\Parameter(name="ethnicities",in="query",@OA\Schema(ref="#/components/schemas/CountryEthnicity")),
-     *     @OA\Parameter(name="regions",in="query",@OA\Schema(ref="#/components/schemas/CountryRegion")),
-     *     @OA\Parameter(name="religions",in="query",@OA\Schema(ref="#/components/schemas/CountryReligion")),
-     *     @OA\Parameter(name="transportation",in="query",@OA\Schema(ref="#/components/schemas/CountryTransportation")),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(
      *            mediaType="application/json",
+     *            @OA\Schema(ref="#/components/schemas/v4_countries.one")
+     *         ),
+     *         @OA\MediaType(
+     *            mediaType="application/xml",
+     *            @OA\Schema(ref="#/components/schemas/v4_countries.one")
+     *         ),
+     *         @OA\MediaType(
+     *            mediaType="text/x-yaml",
+     *            @OA\Schema(ref="#/components/schemas/v4_countries.one")
+     *         ),
+     *         @OA\MediaType(
+     *            mediaType="text/csv",
      *            @OA\Schema(ref="#/components/schemas/v4_countries.one")
      *         )
      *     )
