@@ -60,8 +60,14 @@ class HighlightsController extends APIController
      *     @OA\Parameter(
      *          name="limit",
      *          in="query",
-     *          @OA\Schema(type="integer",default=15),
+     *          @OA\Schema(type="integer",default=25),
      *          description="The number of highlights to include in each return"
+     *     ),
+     *     @OA\Parameter(
+     *          name="page",
+     *          in="query",
+     *          @OA\Schema(type="integer",default=1),
+     *          description="The current page of the results"
      *     ),
      *     @OA\Parameter(
      *          name="prefer_color",
@@ -79,7 +85,8 @@ class HighlightsController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_highlights_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_highlights_index"))
      *     )
      * )
      *
@@ -142,10 +149,6 @@ class HighlightsController extends APIController
      *     description="",
      *     operationId="v4_highlights.store",
      *     @OA\Parameter(name="user_id",  in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
-     *     @OA\Parameter(name="bible_id", in="query", @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
-     *     @OA\Parameter(name="book_id",  in="query", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
-     *     @OA\Parameter(name="chapter",  in="query", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
-     *     @OA\Parameter(name="paginate", in="query", @OA\Schema(type="integer",default=15)),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -157,7 +160,6 @@ class HighlightsController extends APIController
      *              @OA\Property(property="book_id",                   ref="#/components/schemas/Book/properties/id"),
      *              @OA\Property(property="chapter",                   ref="#/components/schemas/Highlight/properties/chapter"),
      *              @OA\Property(property="verse_start",               ref="#/components/schemas/Highlight/properties/verse_start"),
-     *              @OA\Property(property="reference",                 ref="#/components/schemas/Highlight/properties/reference"),
      *              @OA\Property(property="highlight_start",           ref="#/components/schemas/Highlight/properties/highlight_start"),
      *              @OA\Property(property="highlighted_words",         ref="#/components/schemas/Highlight/properties/highlighted_words"),
      *              @OA\Property(property="highlighted_color",         ref="#/components/schemas/Highlight/properties/highlighted_color"),
@@ -168,7 +170,8 @@ class HighlightsController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_highlights_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_highlights_index"))
      *     )
      * )
      *
@@ -219,12 +222,24 @@ class HighlightsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\RequestBody(required=true, description="Fields for User Highlight Update", @OA\MediaType(mediaType="application/json",
+     *          @OA\Schema(
+     *              @OA\Property(property="bible_id",                  ref="#/components/schemas/Bible/properties/id"),
+     *              @OA\Property(property="book_id",                   ref="#/components/schemas/Book/properties/id"),
+     *              @OA\Property(property="chapter",                   ref="#/components/schemas/Highlight/properties/chapter"),
+     *              @OA\Property(property="verse_start",               ref="#/components/schemas/Highlight/properties/verse_start"),
+     *              @OA\Property(property="highlight_start",           ref="#/components/schemas/Highlight/properties/highlight_start"),
+     *              @OA\Property(property="highlighted_words",         ref="#/components/schemas/Highlight/properties/highlighted_words"),
+     *              @OA\Property(property="highlighted_color",         ref="#/components/schemas/Highlight/properties/highlighted_color"),
+     *          )
+     *     )),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_highlights_index"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_highlights_index"))
      *     )
      * )
      *
@@ -283,9 +298,10 @@ class HighlightsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_highlights_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_highlights_index"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(type="string"))
      *     )
      * )
      *
@@ -367,7 +383,7 @@ class HighlightsController extends APIController
 
         $highlightColor = HighlightColor::where($selectedColor)->first();
         if (!$highlightColor) {
-            $selectedColor['color'] = 'generated_'.unique_random('user_highlight_colors', 'color', '8');
+            $selectedColor['color'] = 'generated_'.unique_random('dbp_users.user_highlight_colors', 'color', '8');
             $selectedColor['hex'] = dechex($selectedColor['red']).dechex($selectedColor['green']).dechex($selectedColor['blue']);
             $highlightColor = HighlightColor::create($selectedColor);
         }

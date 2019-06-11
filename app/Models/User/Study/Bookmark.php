@@ -37,7 +37,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Bookmark extends Model
 {
-
+    protected $connection = 'dbp_users';
     protected $table = 'user_bookmarks';
     protected $fillable = ['id','bible_id', 'v2_id', 'user_id', 'book_id', 'chapter', 'verse_start'];
 
