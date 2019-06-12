@@ -167,7 +167,7 @@ class BibleFileSetsController extends APIController
      *     @OA\Parameter(name="asset_id", in="query", required=true, description="The fileset ID",
      *          @OA\Schema(ref="#/components/schemas/Asset/properties/id")
      *     ),
-     *     @OA\Parameter(name="fileset_type", in="query", description="The type of fileset being queried"
+     *     @OA\Parameter(name="fileset_type", in="query", description="The type of fileset being queried",
      *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code")
      *     ),
      *     @OA\Parameter(name="book_ids", in="query", required=true,

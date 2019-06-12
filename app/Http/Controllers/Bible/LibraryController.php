@@ -186,7 +186,7 @@ class LibraryController extends APIController
      *     summary="Volume History List",
      *     description="This call gets the event history for volume changes to status, expiry, basic info, delivery, and organization association. The event reflects the previous state of the volume. In other words, it reflects the state up to the moment of the time of the event.",
      *     operationId="v2_volume_history",
-     *     @OA\Parameter(name="limit",  in="query", description="The Number of records to return"),
+     *     @OA\Parameter(name="limit",  in="query", description="The Number of records to return", @OA\Schema(type="integer",default=500)),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
