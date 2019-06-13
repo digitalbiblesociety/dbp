@@ -71,7 +71,10 @@ class AudioController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_audio_path"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_audio_path")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_audio_path")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_audio_path")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_audio_path"))
      *     )
      * )
      *
@@ -87,7 +90,7 @@ class AudioController extends APIController
         $chapter_id = checkParam('chapter_id');
         $asset_id   = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        $cache_string = strtolower("audio_index:".$asset_id.':'.$fileset_id.':'.$book_id.':'.$chapter_id);
+        $cache_string = strtolower('audio_index:'.$asset_id.':'.$fileset_id.':'.$book_id.':'.$chapter_id);
 
         $audioChapters = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset_id, $book_id, $chapter_id, $asset_id) {
             // Account for various book ids
@@ -326,7 +329,7 @@ class AudioController extends APIController
      *     description="This route offers information about the media distribution servers and the
                protocols they support. It is currently depreciated and only remains to account for
                the possibility that someone might still be using this old method of uri generation",
-     *     operationId="v2_audio_timestamps",
+     *     operationId="v2_audio_location",
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),

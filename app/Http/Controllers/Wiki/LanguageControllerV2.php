@@ -189,7 +189,7 @@ class LanguageControllerV2 extends APIController
      *     summary="Returns the list of languages",
      *     description="This method retrieves the list of languages for available volumes and the related volume data in
                the system according to the filter specified.",
-     *     operationId="v2_library_volumeLanguageFamily",
+     *     operationId="v2_library_volumeLanguage",
      *     @OA\Parameter(
      *         name="language_code",
      *         in="query",
