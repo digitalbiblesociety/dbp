@@ -181,7 +181,7 @@ class CountriesController extends APIController
     {
         $cache_string = strtolower('countries:'. $id .'_'. $GLOBALS['i18n_iso']);
         $country = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
-            $country = Country::with('languagesFiltered.bibles.translations')->where('countries.id',$id)->first();
+            $country = Country::with('languagesFiltered.bibles.translations')->find($id);
             if (!$country) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.countries_errors_404', ['id' => $id]));
             }

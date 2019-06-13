@@ -347,7 +347,7 @@ class Language extends Model
         });
     }
 
-    public function scopeIncludeExtraLanguages($query, $show_restricted, $access_control, $asset_id)
+    public function scopeIncludeExtraLanguages($query, $show_restricted, $access_control = null, $asset_id = null)
     {
         return $query->when(!$show_restricted, function ($query) use ($access_control, $asset_id) {
             $query->whereHas('filesets', function ($query) use ($access_control, $asset_id) {
