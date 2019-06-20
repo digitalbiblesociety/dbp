@@ -263,20 +263,6 @@ class LibraryController extends APIController
      *          @OA\Schema(ref="#/components/schemas/Language/properties/name")
      *     ),
      *     @OA\Parameter(
-     *          name="full_word",
-     *          in="query",
-     *          description="Consider the language name as being a full word. For instance, when false,
-    'new' will return volumes where the string 'new' is anywhere in the language name,
-    like in `Newari` and `Awa for Papua New Guinea`. When true, it will only return volumes
-    where the language name contains the word 'new', like in `Awa for Papua New Guinea`.",
-     *          @OA\Schema(ref="#/components/schemas/Language/properties/name")
-     *     ),
-     *     @OA\Parameter(
-     *          name="language_name",
-     *          in="query",
-     *          description="The language name to filter results by. For a complete list see the `/languages` route",
-     *          @OA\Schema(ref="#/components/schemas/Language/properties/name")),
-     *     @OA\Parameter(
      *          name="language_code",
      *          in="query",
      *          description="The iso code to filter results by. This will return results only in the language specified.",
@@ -310,11 +296,6 @@ class LibraryController extends APIController
      *          in="query",
      *          description="The direction to sort by the field specified in `sort_by`. Either `asc` or `desc`",
      *          @OA\Schema(type="string")),
-     *     @OA\Parameter(
-     *          name="filter_by_fileset",
-     *          in="query",
-     *          description="This field defaults to true but when set to false will return all Bible entries regardless of whether or not the API has content for that biblical text.",
-     *          @OA\Schema(type="string")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -322,9 +303,10 @@ class LibraryController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json",
-     *          @OA\Schema(ref="#/components/schemas/v2_library_volume")),
+     *         @OA\Schema(ref="#/components/schemas/v2_library_volume")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_library_volume")),
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_asset")),
+     *         @OA\MediaType(mediaType="text/csv",  @OA\Schema(ref="#/components/schemas/v2_library_volume")),
      *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v2_library_volume"))
      *     )
      * )
@@ -361,8 +343,8 @@ class LibraryController extends APIController
                         $subquery->where('language_id', $language_id);
                     });
                 })
-                ->leftJoin('language_codes as arclight', function ($q) {
-                    $q->on('arclight.language_id', 'languages.id')->where('source', 'arclight');
+                ->leftJoin('language_codes as arclight', function ($query) {
+                    $query->on('arclight.language_id', 'languages.id')->where('source', 'arclight');
                 })
                 ->select([
                     'english_name.name as english_name',
@@ -382,15 +364,14 @@ class LibraryController extends APIController
                     'languages.name as language_name',
                     'language_translations.name as autonym'
                 ])
-                ->when($updated, function ($q) use ($updated) {
-                    $q->where('updated_at', '>', $updated);
+                ->when($updated, function ($query) use ($updated) {
+                    $query->where('bible_filesets.updated_at', '>', $updated);
                 })->get();
 
             return $this->generateV2StyleId($filesets);
         });
 
         $filesets = fractal($filesets, new LibraryVolumeTransformer(), $this->serializer)->toArray();
-
         if(!empty($filesets)) {
             $filesets = array_merge($filesets, $arclight->volumes($iso));
         }

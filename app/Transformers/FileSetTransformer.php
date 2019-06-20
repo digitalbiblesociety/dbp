@@ -54,7 +54,7 @@ class FileSetTransformer extends BaseTransformer
                 $meta['channel']['title'] = $fileset->translations->where('iso', $bible->language->iso)->first()->name.' - '.$bible->language->name ?? $bible->where('iso', 'eng')->first()->name.' - '.$bible->language->name;
                 $meta['channel']['link'] = config('app.url_podcast');
                 $meta['channel']['atom:link']['_attributes'] = ['href'  => 'http://www.faithcomesbyhearing.com/feeds/audio-bibles/'.$bible->id.'.xml','rel'   => 'self','type'  => 'application/rss+xml'];
-                $meta['channel']['description'] = $bible->translations->where('iso', $bible->language->iso)->first()->description ?? $bible->where('iso', 'eng')->first()->description;
+                $meta['channel']['description'] = $bible->translations->where('iso', $bible->language->iso)->first()->description ?? $bible->language->where('iso', 'eng')->first()->description;
                 $meta['channel']['language'] = $bible->language->iso;
                 $meta['channel']['managingEditor'] = 'adhooker@fcbhmail.org';
                 $meta['channel']['webMaster'] = 'charles@faithcomesbyhearing.com';
@@ -69,7 +69,7 @@ class FileSetTransformer extends BaseTransformer
                 $meta['channel']['itunes:explicit'] = 'no';
                 $meta['channel']['itunes:owner']['itunes:name'] = 'Faith Comes By Hearing';
                 $meta['channel']['itunes:owner']['itunes:email'] = config('app.contact');
-                $meta['channel']['itunes:image'] = ['href' => 'http://bible.is/ImageSize300X300.jpg'];
+                $meta['channel']['itunes:image'] = ['href' =>  $fileset->artwork_url];
                 $meta['channel']['itunes:category'] = [
                     '_attributes' => ['text' => 'Religion & Spirituality']
                 ];
