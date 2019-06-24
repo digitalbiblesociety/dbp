@@ -18,7 +18,6 @@ use App\Traits\Uuids;
 /**
  * App\Models\Organization\Organization
  *
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bibles
  * @property-read \App\Models\Organization\OrganizationTranslation $currentTranslation
  * @property-read \App\Models\Organization\OrganizationRelationship $dbl
  * @property-read \App\Models\Organization\OrganizationLogo $logo
@@ -85,7 +84,7 @@ class Organization extends Model
 {
     protected $connection = 'dbp';
     // The attributes excluded from the model's JSON form.
-    protected $hidden = ['logo','facebook','twitter','id','code','created_at','updated_at','notes'];
+    protected $hidden = ['logo','facebook','twitter','code','created_at','updated_at','notes'];
     protected $fillable = ['name', 'email', 'password','facebook','twitter','website','address','phone'];
 
     /**
@@ -339,6 +338,11 @@ class Organization extends Model
     public function bibles()
     {
         return $this->belongsToMany(Bible::class, 'bible_organizations');
+    }
+
+    public function bibleLinks()
+    {
+        return $this->HasMany(BibleLink::class);
     }
 
     public function filesets()

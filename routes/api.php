@@ -205,4 +205,10 @@ Route::name('v4_api.refreshDevCache')->get('/api/refresh-dev-cache',            
 Route::name('v4_api.changes')->get('/api/changelog',                               'ApiMetadataController@changelog');
 
 // VERSION 4 | GENERATOR
-Route::name('v4_api.generator')->get('/api/gen/bibles',                            'Connections\GeneratorController@bibles');
+Route::name('v4_api.generator_languages')->get('/api/gen/stats',               'Connections\GeneratorController@stats');
+Route::name('v4_api.generator_bibles')->get('/api/gen/bibles',                 'Connections\GeneratorController@bibles');
+Route::name('v4_api.generator_languages')->get('/api/gen/languages',           'Connections\GeneratorController@languages');
+Route::name('v4_api.generator_countries')->get('/api/gen/countries',           'Connections\GeneratorController@countries');
+Route::name('v4_api.generator_alphabets')->get('/api/gen/alphabets',           'Connections\GeneratorController@alphabets');
+Route::name('v4_api.generator_organizations')->get('/api/gen/organizations',   'Connections\GeneratorController@organizations');
+Route::name('v4_api.generator_resources')->get('/api/gen/resources',           'Connections\GeneratorController@resources');
