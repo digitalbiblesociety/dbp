@@ -253,10 +253,6 @@ class APIController extends Controller
                 return response()->make($formatter->toCsv(), $this->statusCode)
                                  ->header('Content-Type', 'text/csv; charset=utf-8');
             default:
-                if (isset($_GET['pretty'])) {
-                    return response()->json($object, $this->statusCode, [], JSON_UNESCAPED_UNICODE)
-                        ->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
-                }
                 return response()->json($object, $this->statusCode, [], JSON_UNESCAPED_UNICODE)
                         ->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
         }

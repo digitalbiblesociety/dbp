@@ -18,7 +18,6 @@ use App\Traits\Uuids;
 /**
  * App\Models\Organization\Organization
  *
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bible\Bible[] $bibles
  * @property-read \App\Models\Organization\OrganizationTranslation $currentTranslation
  * @property-read \App\Models\Organization\OrganizationRelationship $dbl
  * @property-read \App\Models\Organization\OrganizationLogo $logo
@@ -339,6 +338,11 @@ class Organization extends Model
     public function bibles()
     {
         return $this->belongsToMany(Bible::class, 'bible_organizations');
+    }
+
+    public function bibleLinks()
+    {
+        return $this->HasMany(BibleLink::class);
     }
 
     public function filesets()

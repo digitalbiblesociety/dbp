@@ -15,8 +15,8 @@ class GeneratorController extends APIController
     use AccessControlAPI;
 
     public function __construct() {
-        if(config('app.env') != 'local') {
-            return $this->replyWithError('this can only be run locally');
+        if(config('app.api_key') != checkParam('key')) {
+            return $this->replyWithError('This is not a Generator Key');
         }
 
         set_time_limit(-1);
@@ -34,7 +34,19 @@ class GeneratorController extends APIController
 
     public function organizations()
     {
-        return Organization::with('bibles.translations','resources','translations','logos','relationships')->get();
+        $orgs = Organization::with('resources', 'translations', 'logos', 'relationships')->get();
+        foreach ($orgs as $key => $org) {
+            $bibles = [];
+
+            $bible_ids = $org->bibleLinks->pluck('bible_id');
+            $bible_ids = collect($bible_ids)->merge($org->bibles->pluck('id'))->unique();
+
+            $orgs[$key]->publishedBibles = Bible::with('translations')->whereIn('id', $bible_ids)->get();
+            unset($orgs[$key]->bibleLinks);
+            unset($orgs[$key]->bibles);
+        }
+
+        return $orgs;
     }
 
     public function bibles()
@@ -49,7 +61,7 @@ class GeneratorController extends APIController
 
     public function countries()
     {
-        return Country::with(['translations','languages' => function($query){
+        return Country::with(['translations','joshuaProject','geography','languages' => function($query){
             $query->withCount('bibles');
         }])->get();
     }
