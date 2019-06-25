@@ -72,8 +72,10 @@ class ArclightController extends APIController
 
     public function volumes($iso = null)
     {
-        $iso = strtolower($iso);
-        return \Cache::remember('media-languages_'.$iso, now()->addWeek(), function () use ($iso) {
+        $iso    = strtolower($iso);
+        $dam_id_param = checkParam('dam_id|fcbh_id');
+        $cache_string = 'media-languages_'.$iso.$dam_id_param;
+        return \Cache::remember($cache_string, now()->addWeek(), function () use ($iso, $dam_id_param) {
 
             $languages = collect($this->fetchArclight('media-languages')->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
             if($iso) {
@@ -85,8 +87,13 @@ class ArclightController extends APIController
 
             $language_names = Language::whereIn('iso', array_keys($languages))->get()->pluck('name','iso');
 
+            $jesusFilms = [];
+
             foreach ($languages as $iso => $arclight_language_id) {
                 $dam_id = strtoupper($iso).'JFVS2DV';
+                if(isset($dam_id_param) && $dam_id_param != $dam_id ){
+                    continue;
+                }
                 if(!isset($language_names[$iso])) {
                     continue;
                 }

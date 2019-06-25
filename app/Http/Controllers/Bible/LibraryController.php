@@ -259,7 +259,7 @@ class LibraryController extends APIController
      *     @OA\Parameter(
      *          name="language",
      *          in="query",
-     *          description="The language to filter results by",
+     *          description="The language to filter results by. For a complete list see the `name` field in the `/languages` route",
      *          @OA\Schema(ref="#/components/schemas/Language/properties/name")
      *     ),
      *     @OA\Parameter(
@@ -284,7 +284,12 @@ class LibraryController extends APIController
      *     @OA\Parameter(
      *          name="organization_id",
      *          in="query",
-     *          description="The owning organization to return bibles for. For a complete list see the `/organizations` route",
+     *          description="The owning organization to filter results by. For a complete list see the `/organizations` route",
+     *          @OA\Schema(type="string")),
+     *     @OA\Parameter(
+     *          name="version_code",
+     *          in="query",
+     *          description="The abbreviated `BibleFileset` id to filter results by.",
      *          @OA\Schema(type="string")),
      *     @OA\Parameter(
      *          name="sort_by",
@@ -366,17 +371,36 @@ class LibraryController extends APIController
                 ])
                 ->when($updated, function ($query) use ($updated) {
                     $query->where('bible_filesets.updated_at', '>', $updated);
-                })->get();
+                })
+                ->when($version_code, function ($query) use ($version_code) {
+                    $query->whereRaw("SUBSTRING(bibles.id,4) = ?", [$version_code]);
+                })
+                ->when($organization, function ($query) use ($organization) {
+                    $query->where("bible_organizations.organization_id", $organization);
+                })->get()->filter(function ($item) {
+                    return $item->english_name;
+                });
 
             return $this->generateV2StyleId($filesets);
         });
 
+        if($dam_id) {
+            $filesets = $this->filterById($filesets, $dam_id);
+        }
+
         $filesets = fractal($filesets, new LibraryVolumeTransformer(), $this->serializer)->toArray();
-        if(!empty($filesets)) {
+        if(!empty($filesets) && !isset($version_code)) {
             $filesets = array_merge($filesets, $arclight->volumes($iso));
         }
 
         return $this->reply($filesets);
+    }
+
+    private function filterById($filesets, $dam_id)
+    {
+        return array_filter($filesets, function($fileset) use ($dam_id) { 
+            return $fileset->generated_id == $dam_id;
+        });
     }
 
     private function generateV2StyleId($filesets)
