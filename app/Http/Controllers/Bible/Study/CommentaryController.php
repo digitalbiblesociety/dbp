@@ -57,7 +57,7 @@ class CommentaryController extends APIController
      *          @OA\Schema(ref="#/components/schemas/Commentary/properties/id"),
      *          description="The id of the commentary"
      *     ),
-     *     @OA\Parameter(name="book_id", in="query", description="Will filter the results by the given book",
+     *     @OA\Parameter(name="book_id", in="query", description="Will filter the results by the given book.  For a complete list see the `book_id` field in the `/bibles/books` route.",
      *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
      *     ),
      *     @OA\Parameter(name="chapter", in="query", description="Will filter the results by the given chapter",
@@ -136,7 +136,7 @@ class CommentaryController extends APIController
      *          @OA\Schema(ref="#/components/schemas/Commentary/properties/id"),
      *          description="The commentary id of the commentary"
      *     ),
-     *     @OA\Parameter(name="book_id", in="path", required=true, description="Will filter the results by the given book",
+     *     @OA\Parameter(name="book_id", in="path", required=true, description="Will filter the results by the given book.  For a complete list see the `book_id` field in the `/bibles/books` route.",
      *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
      *     ),
      *     @OA\Parameter(name="chapter", in="path", required=true, description="Will filter the results by the given chapter",

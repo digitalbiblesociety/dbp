@@ -33,7 +33,8 @@ class CountriesController extends APIController
      *          in="query",
      *          @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
      *          description="When set to a valid three letter language iso, the returning results will be localized in
-     *                       the language matching that iso. (If an applicable translation exists)."
+     *                       the language matching that iso. (If an applicable translation exists).
+     *                       For a complete list see the `iso` field in the `/languages` route"
      *     ),
      *     @OA\Parameter(
      *          name="has_filesets",

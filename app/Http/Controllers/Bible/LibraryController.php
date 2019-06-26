@@ -265,7 +265,7 @@ class LibraryController extends APIController
      *     @OA\Parameter(
      *          name="language_code",
      *          in="query",
-     *          description="The iso code to filter results by. This will return results only in the language specified.",
+     *          description="The iso code to filter results by. This will return results only in the language specified. For a complete list see the `iso` field in the `/languages` route",
      *          @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
      *          @OA\ExternalDocumentation(
      *              description="For a complete list see the `iso` field in the `/languages` route",

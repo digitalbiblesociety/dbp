@@ -66,7 +66,7 @@ class AudioController extends APIController
      *     @OA\Parameter(name="book_id",
      *         in="query",
      *         @OA\Schema(ref="#/components/schemas/Book/properties/id"),
-     *         description="The USFM 2.4 book ID."
+     *         description="The USFM 2.4 book ID. For a complete list see the `book_id` field in the `/bibles/books` route."
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -194,7 +194,7 @@ class AudioController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(name="fileset_id", in="query", description="The specific fileset to return references for", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Parameter(name="book", in="query", description="The Book ID for which to return timestamps", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OA\Parameter(name="book", in="query", description="The Book ID for which to return timestamps. For a complete list see the `book_id` field in the `/bibles/books` route.", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
      *     @OA\Parameter(name="chapter", in="query", description="The chapter for which to return timestamps", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
      *     @OA\Response(
      *         response=200,
@@ -252,7 +252,7 @@ class AudioController extends APIController
      *     @OA\Parameter(name="audio_asset_id", in="query", description="The specific audio asset id to return references for", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
      *     @OA\Parameter(name="text_fileset_id", in="query", description="The specific text fileset to return references for", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
      *     @OA\Parameter(name="text_asset_id", in="query", description="The specific text asset id to return references for", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
-     *     @OA\Parameter(name="book_id", in="query", description="The specific book id to return references for", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OA\Parameter(name="book_id", in="query", description="The specific book id to return references for.  For a complete list see the `book_id` field in the `/bibles/books` route.", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
      *     @OA\Parameter(name="query", in="query", required=true, description="The tag for which to return timestamps", @OA\Schema(type="string")),
      *     @OA\Response(
      *         response=200,
@@ -335,7 +335,7 @@ class AudioController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(name="fileset_id", in="query", description="The specific fileset to return references for", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Parameter(name="book", in="query", description="The Book ID for which to return timestamps", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OA\Parameter(name="book", in="query", description="The Book ID for which to return timestamps.  For a complete list see the `book_id` field in the `/bibles/books` route.", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
      *     @OA\Parameter(name="chapter", in="query", description="The chapter for which to return timestamps", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
      *     @OA\Response(
      *         response=200,
