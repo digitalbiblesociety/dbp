@@ -12,10 +12,12 @@ use App\Models\User\Account;
 use App\Models\User\Role;
 use App\Models\User\User;
 use App\Models\User\Key;
+use App\Models\User\Study\Note;
 
 use App\Transformers\Serializers\DataArraySerializer;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 use Socialite;
 use Image;
@@ -391,16 +393,84 @@ class UsersController extends APIController
         return view('dashboard.users.show', $id);
     }
 
+    /**
+     *
+     * @OA\Delete(
+     *     path="/users/{id}",
+     *     tags={"Users"},
+     *     summary="Delete an existing user",
+     *     description="",
+     *     operationId="v4_user.destroy",
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(name="id", in="path", description="The user ID.", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
+     *     @OA\RequestBody(required=true, description="Either `password` or the `social_provider_user_id` & `social_provider_id` are required for user deletion", @OA\MediaType(mediaType="application/json",
+     *          @OA\Schema(
+     *              @OA\Property(property="password",                  ref="#/components/schemas/User/properties/password"),
+     *              @OA\Property(property="social_provider_user_id",   ref="#/components/schemas/Account/properties/provider_user_id"),
+     *              @OA\Property(property="social_provider_id",        ref="#/components/schemas/Account/properties/provider_id"),
+     *          )
+     *     )),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(type="string"))
+     *     )
+     * )
+     *
+     * @param  int $id
+     *
+     * @return Response
+     */
     public function destroy($id)
     {
-        $project_id = checkParam('project_id');
-        $connection = ProjectMember::where('user_id', $id)->where('project_id', $project_id)->first();
-        if (!$connection) {
-            return $this->setStatusCode(404)->replyWithError('User/Project connection not found');
-        }
-        $connection->delete();
+        $password = checkParam('password');
+        $social_provider_user_id = checkParam('social_provider_user_id');
+        $social_provider_id = checkParam('social_provider_id');
 
-        return $this->reply('User Project connection successfully removed');
+        $user = User::with('accounts')->where('id', $id)->first();
+        if (!$user) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
+        }
+
+        $access_granted = false;
+        if ($password) {      
+            $oldPassword = \Hash::check(md5($password), $user->password);
+            $newPassword = \Hash::check($password, $user->password);
+            $access_granted = $oldPassword || $newPassword;
+        } else if ($social_provider_id){
+            $account  = $user->accounts->where('provider_id', $social_provider_id)
+                                ->where('provider_user_id', $social_provider_user_id)->first();
+            $access_granted = $account;
+        }
+
+        if (!$access_granted) {
+            return $this->setStatusCode(401)->replyWithError(trans('auth.failed'));
+        }
+
+        // Overwrite notes
+        Note::where('user_id', $id)->update(['notes' => encrypt('Deleted user note')]);
+
+        // Delete accounts
+        Account::where('user_id', $id)->delete();
+
+        // Overwrite personal user information and soft delete account
+        $user->fill([
+            'name' => 'deleted',
+            'first_name'  => 'deleted',
+            'last_name'  => 'user',
+            'email'  => $user->id.'@deleted.com',
+            'password'  => Str::random(40),
+        ])->save();;
+
+        $user->delete();
+
+        return $this->reply('User successfully deleted');
     }
 
     public function verify($token)
