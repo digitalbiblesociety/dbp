@@ -40,7 +40,7 @@ class BibleFileSetsController extends APIController
      *     @OA\Parameter(name="fileset_id", in="path", description="The fileset ID", required=true,
      *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
      *     ),
-     *     @OA\Parameter(name="book_id", in="query", description="Will filter the results by the given book",
+     *     @OA\Parameter(name="book_id", in="query", description="Will filter the results by the given book. For a complete list see the `book_id` field in the `/bibles/books` route.",
      *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
      *     ),
      *     @OA\Parameter(name="chapter_id", in="query", description="Will filter the results by the given chapter",
@@ -171,7 +171,7 @@ class BibleFileSetsController extends APIController
      *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/set_type_code")
      *     ),
      *     @OA\Parameter(name="book_ids", in="query", required=true,
-     *          description="The list of book ids to download content for separated by commas",
+     *          description="The list of book ids to download content for separated by commas. For a complete list see the `book_id` field in the `/bibles/books` route.",
      *          example="GEN,EXO,MAT,REV",
      *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
      *     ),
@@ -254,7 +254,7 @@ class BibleFileSetsController extends APIController
      *          name="iso",
      *          in="query",
      *          @OA\Schema(ref="#/components/schemas/Language/properties/iso", default="eng"),
-     *          description="The iso code to filter organization translations by"
+     *          description="The iso code to filter organization translations by. For a complete list see the `iso` field in the `/languages` route."
      *     ),
      *     @OA\Response(
      *         response=200,

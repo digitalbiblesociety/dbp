@@ -21,7 +21,7 @@ class LanguageControllerV2 extends APIController
      *     summary="Returns the list of languages",
      *     description="Returns the List of Languages",
      *     operationId="v2_library_language",
-     *     @OA\Parameter(in="query",name="code",description="Get the entry for a three letter language code",@OA\Schema(ref="#/components/schemas/Language/properties/iso")),
+     *     @OA\Parameter(in="query",name="code",description="Get the entry for a three letter language code. For a complete list see the `iso` field in the `/languages` route",@OA\Schema(ref="#/components/schemas/Language/properties/iso")),
      *     @OA\Parameter(in="query",name="name",description="Get the entry for a part of a language name in either native language or English",@OA\Schema(type="string",example="Spanish")),
      *     @OA\Parameter(in="query",name="full_word",description="Consider the language name as being a full word. For instance, when false, 'new' will return volumes where the string new is anywhere in the language name, like in Newari and Awa for Papua New Guinea. When true, it will only return volumes where the language name contains the full word 'new', like in `Awa for Papua New Guinea`. Default is false",@OA\Schema(type="boolean",default=false,example=false)),
      *     @OA\Parameter(in="query",deprecated=true,name="family_only",description="When set to true the returned list is of only legal language families. The default is false",@OA\Schema(type="boolean")),
@@ -89,7 +89,7 @@ class LanguageControllerV2 extends APIController
      *         name="lang_code",
      *         in="query",
      *         @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
-     *         description="Get records by ISO language code"
+     *         description="Get records by ISO language code. For a complete list see the `iso` field in the `/languages` route"
      *     ),
      *     @OA\Parameter(
      *         name="country_code",

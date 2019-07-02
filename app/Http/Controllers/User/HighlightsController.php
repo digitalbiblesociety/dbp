@@ -49,7 +49,7 @@ class HighlightsController extends APIController
      *          name="book_id",
      *          in="query",
      *          @OA\Schema(ref="#/components/schemas/Book/properties/id"),
-     *          description="The book to filter highlights by"
+     *          description="The book to filter highlights by. For a complete list see the `book_id` field in the `/bibles/books` route."
      *     ),
      *     @OA\Parameter(
      *          name="chapter",

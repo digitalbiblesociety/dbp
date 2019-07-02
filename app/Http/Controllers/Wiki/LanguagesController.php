@@ -33,7 +33,7 @@ class LanguagesController extends APIController
      *          name="iso",
      *          in="query",
      *          @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
-     *          description="The iso code to filter languages by"
+     *          description="The iso code to filter languages by. For a complete list see the `iso` field in the `/languages` route"
      *     ),
      *     @OA\Parameter(
      *          name="language_name",

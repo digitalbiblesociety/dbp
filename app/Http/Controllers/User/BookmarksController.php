@@ -37,7 +37,7 @@ class BookmarksController extends APIController
      *     @OA\Parameter(name="bible_id", in="query", description="Will filter the results by the given bible",
      *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
      *     ),
-     *     @OA\Parameter(name="book_id", in="query", description="Will filter the results by the given book",
+     *     @OA\Parameter(name="book_id", in="query", description="Will filter the results by the given book. For a complete list see the `book_id` field in the `/bibles/books` route.",
      *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
      *     ),
      *     @OA\Parameter(name="chapter_id", in="query", description="Will filter the results by the given chapter",
