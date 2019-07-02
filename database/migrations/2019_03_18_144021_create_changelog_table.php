@@ -13,14 +13,16 @@ class CreateChangelogTable extends Migration
      */
     public function up()
     {
-        Schema::connection('dbp_users')->create('changelog', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('subheading');
-            $table->string('title');
-            $table->text('description');
-            $table->timestamp('released_at')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::connection('dbp_users')->hasTable('changelog')) {
+            Schema::connection('dbp_users')->create('changelog', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('subheading');
+                $table->string('title');
+                $table->text('description');
+                $table->timestamp('released_at')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
