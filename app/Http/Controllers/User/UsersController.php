@@ -181,38 +181,66 @@ class UsersController extends APIController
             return view('auth.login');
         }
 
-        $user = User::with('accounts')->where('email', $request->email)->first();
+        $email = checkParam('email');
+        $social_provider_id = checkParam('social_provider_id');
+
+        if ($email) {
+            $password = checkParam('password');
+            $user = $this->loginWithEmail($email, $password);
+        } elseif ($social_provider_id) {
+            $social_provider_user_id = checkParam('social_provider_user_id');
+            $user = $this->loginWithSocialProvider($social_provider_id, $social_provider_user_id);
+        }
+
         if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => $request->email]));
+            return $this->setStatusCode(401)->replyWithError(trans('auth.failed'));
         }
 
-        $oldPassword = \Hash::check(md5($request->password), $user->password);
-        $newPassword = \Hash::check($request->password, $user->password);
-
-        if ($oldPassword || $newPassword) {
-            // Associate user with Project
-            $project_id = checkParam('project_id');
-            if ($project_id) {
-                $connection_exists = ProjectMember::where(['user_id' => $user->id, 'project_id' => $project_id])->exists();
-                if (!$connection_exists) {
-                    $role = Role::where('slug', 'user')->first();
-                    ProjectMember::create([
-                        'user_id'    => $user->id,
-                        'project_id' => $project_id,
-                        'role_id'    => $role->id ?? 'user'
-                    ]);
-                }
+        // Associate user with Project
+        $project_id = checkParam('project_id');
+        if ($project_id) {
+            $connection_exists = ProjectMember::where(['user_id' => $user->id, 'project_id' => $project_id])->exists();
+            if (!$connection_exists) {
+                $role = Role::where('slug', 'user')->first();
+                ProjectMember::create([
+                    'user_id'    => $user->id,
+                    'project_id' => $project_id,
+                    'role_id'    => $role->id ?? 'user'
+                ]);
             }
+        }  
 
-            if ($this->api) {
-                return $user;
-            }
-
-            Auth::login($user, true);
-            return redirect()->to('dashboard');
+        if ($this->api) {
+            return $user;
         }
 
-        return $this->setStatusCode(401)->replyWithError(trans('auth.failed'));
+        Auth::login($user, true);
+        return redirect()->to('dashboard');
+    }
+
+    private function loginWithEmail($email, $password)
+    {
+        $user = User::with('accounts')->where('email', $email)->first();
+        if (!$user) {
+            return false;
+        }
+
+        $oldPassword = \Hash::check(md5($password), $user->password);
+        $newPassword = \Hash::check($password, $user->password);
+        if (!$oldPassword && !$newPassword) {
+            return false;
+        }
+
+        return $user;
+    }
+
+    private function loginWithSocialProvider($provider_id, $provider_user_id)
+    {
+        $user = User::with('accounts')->whereHas('accounts', function ($query) use ($provider_id, $provider_user_id) {
+            $query->where('provider_id', $provider_id)->where('provider_user_id', $provider_user_id);
+        })->first();
+
+        return $user;
     }
 
     /**

@@ -79,6 +79,48 @@ class UsersControllerV2 extends APIController
         return '';
     }
     /**
+     *
+     * @OA\Post(
+     *     path="/users/login",
+     *     tags={"Users"},
+     *     summary="Login a user",
+     *     description="",
+     *     operationId="v2_user_login",
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\RequestBody(required=true, description="Either the `email` & `password` or the `remote_id` & `remote_type` are required for user Login", @OA\MediaType(mediaType="application/json",
+     *          @OA\Schema(
+     *              @OA\Property(property="email",                     ref="#/components/schemas/User/properties/email"),
+     *              @OA\Property(property="password",                  ref="#/components/schemas/User/properties/password"),
+     *              @OA\Property(property="remote_id",   ref="#/components/schemas/Account/properties/provider_user_id"),
+     *              @OA\Property(property="remote_type",        ref="#/components/schemas/Account/properties/provider_id"),
+     *          )
+     *     )),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_user_login")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_user_login")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v2_user_login")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v2_user_login"))
+     *     )
+     * )
+     * 
+     * @OA\Schema (
+     *    title="v2_user_login",
+     *    type="array",
+     *    schema="v2_user_login",
+     *    description="The v2 user login response",
+     *    @OA\Xml(name="v2_user_login"),
+     *    @OA\Items(
+     *        @OA\Property(property="id",       ref="#/components/schemas/User/properties/id"),
+     *        @OA\Property(property="user_data",    ref="#/components/schemas/User")
+     *    )
+     *  )
+     * @param Request $request
+     *
      * @return mixed
      */
     public function login()
@@ -93,22 +135,36 @@ class UsersControllerV2 extends APIController
                 return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
             }
 
-            $user = User::whereHas('accounts', function ($query) {
-                $query->where('provider_user_id', request()->remote_id)->where('provider_id', request()->remote_type);
-            })->where('email', $email)->first();
+            if ($email) {
+                $user = User::where('email', $email)->first();
+            } else if ($provider) {
+                $user = User::whereHas('accounts', function ($query) use ($provider) {
+                    $query->where('provider_user_id', request()->remote_id)->where('provider_id', $provider);
+                })->first();
+            }
 
-            if (!$user) {
-                // Check if user already exists but just hasn't signed up with that account
-                $user    = User::firstOrCreate(['email' => $email]);
-                if(!isset($password)) {
-                    Account::firstOrCreate([
-                        'project_id'       => Project::where('name', 'Bible.is')->first()->id,
-                        'user_id'          => $user->id,
-                        'provider_user_id' => request()->remote_id,
-                        'provider_id'      => request()->remote_type
-                    ]);
+            if ($user && $email) {
+                $oldPassword = \Hash::check(md5($password), $user->password);
+                $newPassword = \Hash::check($password, $user->password);
+                if (!$oldPassword && !$newPassword) {
+                    $user = false;
                 }
             }
+
+            if (!$user && $provider) {
+                $user    = User::firstOrCreate(['email' => $email]);
+                Account::firstOrCreate([
+                    'project_id'       => Project::where('name', 'Bible.is')->first()->id,
+                    'user_id'          => $user->id,
+                    'provider_user_id' => request()->remote_id,
+                    'provider_id'      => $provider
+                ]);
+            }
+
+            if (!$user) {
+                return $this->setStatusCode(401)->replyWithError(trans('auth.failed'));
+            }
+
 
             ProjectMember::firstOrCreate([
                 'user_id'    => $user->id,
