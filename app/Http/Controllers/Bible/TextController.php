@@ -221,6 +221,12 @@ class TextController extends APIController
      *          description="The Bible fileset asset_id", required=false,
      *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")
      *     ),
+     *     @OA\Parameter(
+     *          name="relevance_order",
+     *          in="query",
+     *          description="When set to true the returned result will be ordered by relevance",
+     *          @OA\Schema(type="boolean",default=false)
+     *     ),
      *     @OA\Parameter(name="limit",  in="query", description="The number of search results to return",
      *          @OA\Schema(type="integer",default=15)),
      *     @OA\Parameter(name="books",  in="query", description="The usfm book ids to search through seperated by a comma",
@@ -253,6 +259,7 @@ class TextController extends APIController
         $limit      = checkParam('limit') ?? 15;
         $book_id    = checkParam('book|book_id|books');
         $asset_id   = checkParam('asset_id') ?? 'dbp-prod';
+        $relevance_order   = checkParam('relevance_order');
 
         $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, 'text_plain')->first();
         if (!$fileset) {
@@ -278,7 +285,11 @@ class TextController extends APIController
                 'glyph_chapter.glyph as chapter_vernacular',
                 'glyph_start.glyph as verse_start_vernacular',
                 'glyph_end.glyph as verse_end_vernacular',
-            ])->limit($limit)->get();
+            ])
+            ->unless($relevance_order, function ($query) {
+                $query->orderByRaw('IFNULL(books.testament_order, books.protestant_order), bible_verses.chapter, bible_verses.verse_start');    
+            })
+            ->limit($limit)->get();
 
         return $this->reply(fractal($verses, new TextTransformer(), $this->serializer));
     }
