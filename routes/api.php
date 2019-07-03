@@ -215,3 +215,8 @@ Route::name('v4_api.changes')->get('/api/changelog',                            
 
 // VERSION 4 | GENERATOR
 Route::name('v4_api.generator')->get('/api/gen/bibles',                            'Connections\GeneratorController@bibles');
+
+// VERSION 4 | Playlists
+Route::name('v4_playlists.index')->get('playlists/{user_id}',                     'Playlist\PlaylistsController@index');
+Route::name('v4_playlists.store')->post('playlists/{user_id}',                    'Playlist\PlaylistsController@store');
+Route::name('v4_playlists.destroy')->delete('playlists/{user_id}/{playlist_id}',  'Playlist\PlaylistsController@destroy');
