@@ -19,16 +19,15 @@ class BooksControllerV2 extends APIController
      *
      * @version 2
      * @category v2_library_book
-     * @category v2_library_bookOrder
-     * @link http://dbt.io/library/bookorder - V2 Access
+     * @link http://dbt.io/library/book - V2 Access
      * @link http://api.dbp.test/library/bookorder?key=1234&v=2&dam_id=AMKWBT&pretty - V2 Test
      * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_book - V2 Test Docs
      *
      * @OA\Get(
      *     path="/library/book/",
      *     tags={"Library Catalog"},
-     *     summary="Returns books order",
-     *     description="Gets the book order and code listing for a volume.",
+     *     summary="Returns books",
+     *     description="Gets the book and code listing for a volume.",
      *     operationId="v2_library_book",
      *     @OA\Parameter(name="dam_id",in="query",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(name="asset_id",in="query", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
@@ -39,7 +38,10 @@ class BooksControllerV2 extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_book"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_book")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_book")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_book")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_book"))
      *     )
      * )
      *
@@ -97,6 +99,41 @@ class BooksControllerV2 extends APIController
         return $this->reply($libraryBook);
     }
 
+     /**
+     * Gets the book order and code listing for a volume.
+     *
+     * @version 2
+     * @category v2_library_bookOrder
+     * @link http://dbt.io/library/bookorder - V2 Access
+     * @link http://api.dbp.test/library/bookorder?key=1234&v=2&dam_id=AMKWBT&pretty - V2 Test
+     * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_book - V2 Test Docs
+     *
+     * @OA\Get(
+     *     path="/library/bookorder/",
+     *     tags={"Library Catalog"},
+     *     summary="Returns books order",
+     *     description="Gets the book order and code listing for a volume.",
+     *     operationId="v2_library_bookOrder",
+     *     @OA\Parameter(name="dam_id",in="query",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
+     *     @OA\Parameter(name="asset_id",in="query", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder"))
+     *     )
+     * )
+     *
+     * @param dam_id - the volume internal bible_id.
+     *
+     * @return Book string - A JSON string that contains the status code and error messages if applicable.
+     */
     public function bookOrder()
     {
         $id        = checkParam('dam_id', true);
@@ -158,7 +195,10 @@ class BooksControllerV2 extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_bookName"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_bookName")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_bookName")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_bookName")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_bookName"))
      *     )
      * )
      *
@@ -325,7 +365,10 @@ class BooksControllerV2 extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"}))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"})),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"})),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"})),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"}))
      *     )
      * )
      *
