@@ -83,7 +83,6 @@ Route::name('v4_video_stream_ts')->get('bible/filesets/{fileset_id}/{file_id}/{f
 // VERSION 4 | Bible
 Route::name('v4_bible.books')->get('bibles/{bible_id}/book/{book?}',               'Bible\BiblesController@books');
 Route::name('v4_bible_equivalents.all')->get('bible/equivalents',                  'Bible\BibleEquivalentsController@index');
-Route::name('v4_bible.archival')->get('bibles/archival',                           'Bible\BiblesController@archival');
 Route::name('v4_bible.links')->get('bibles/links',                                 'Bible\BibleLinksController@index');
 Route::name('v4_bible_books_all')->get('bibles/books/',                            'Bible\BooksController@index');
 Route::name('v4_bible.one')->get('bibles/{bible_id}',                              'Bible\BiblesController@show');
@@ -130,8 +129,6 @@ Route::name('v4_languages.one')->get('languages/{language_id}',                 
 // VERSION 4 | Alphabets
 Route::name('v4_alphabets.all')->get('alphabets',                                  'Wiki\AlphabetsController@index');
 Route::name('v4_alphabets.one')->get('alphabets/{alphabet_id}',                    'Wiki\AlphabetsController@show');
-Route::name('v4_alphabets.store')->post('alphabets',                               'Wiki\AlphabetsController@store');
-Route::name('v4_alphabets.update')->put('alphabets/{alphabet_id}',                 'Wiki\AlphabetsController@update');
 Route::name('v4_numbers.all')->get('numbers/',                                     'Wiki\NumbersController@index');
 Route::name('v4_numbers.range')->get('numbers/range',                              'Wiki\NumbersController@customRange');
 Route::name('v4_numbers.one')->get('numbers/{number_id}',                          'Wiki\NumbersController@show');
@@ -188,7 +185,6 @@ Route::name('v4_projects.update')->put('projects/{project_id}',                 
 Route::name('v4_projects.store')->post('projects',                                 'Organization\ProjectsController@store');
 Route::name('v4_projects.destroy')->delete('projects/{project_id}',                'Organization\ProjectsController@destroy');
 Route::name('v4_oAuth.index')->get('projects/{project_id}/oauth/',                 'Organization\OAuthProvidersController@index');
-Route::name('v4_oAuth.show')->get('projects/{project_id}/oauth/{id}',              'Organization\OAuthProvidersController@show');
 Route::name('v4_oAuth.update')->put('projects/{project_id}/oauth/{id}',            'Organization\OAuthProvidersController@update');
 Route::name('v4_oAuth.store')->post('projects/{project_id}/oauth',                 'Organization\OAuthProvidersController@store');
 Route::name('v4_oAuth.destroy')->delete('projects/{project_id}/oauth/{id}',        'Organization\OAuthProvidersController@destroy');
@@ -196,9 +192,6 @@ Route::name('v4_oAuth.destroy')->delete('projects/{project_id}/oauth/{id}',     
 // VERSION 4 | Resources
 Route::name('v4_resources.index')->get('resources',                                'Organization\ResourcesController@index');
 Route::name('v4_resources.show')->get('resources/{resource_id}',                   'Organization\ResourcesController@show');
-Route::name('v4_resources.update')->put('resources/{resource_id}',                 'Organization\ResourcesController@update');
-Route::name('v4_resources.store')->post('resources',                               'Organization\ResourcesController@store');
-Route::name('v4_resources.destroy')->delete('resources/{resource_id}',             'Organization\ResourcesController@destroy');
 
 Route::name('v4_video_jesus_film_languages')->get('arclight/jesus-film/languages', 'Bible\VideoStreamController@jesusFilmsLanguages');
 Route::name('v4_video_jesus_film_language')->get('arclight/jesus-film/chapters',   'Bible\VideoStreamController@jesusFilmChapters');
