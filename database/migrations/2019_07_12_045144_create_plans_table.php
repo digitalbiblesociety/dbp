@@ -19,6 +19,7 @@ class CreatePlansTable extends Migration
                 $table->string('name');
                 $table->boolean('featured')->default(false);
                 $table->integer('user_id')->unsigned();
+                $table->date('suggested_start_date');
                 $table->foreign('user_id', 'FK_plans')->references('id')->on(config('database.connections.dbp_users.database') . '.users')->onDelete('cascade')->onUpdate('cascade');
                 $table->softDeletes();
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
@@ -66,7 +67,6 @@ class CreatePlansTable extends Migration
                 $table->foreign('user_id', 'FK_users_user_plans')->references('id')->on(config('database.connections.dbp_users.database') . '.users')->onUpdate('cascade');
                 $table->bigInteger('plan_id')->unsigned();
                 $table->date('start_date')->nullable();
-                $table->date('suggested_start_date');
                 $table->integer('percentage_completed');
                 $table->text('days_completed');
                 $table->text('items_completed');

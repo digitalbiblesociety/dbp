@@ -34,8 +34,8 @@ class Plan extends Model
 
   protected $connection = 'dbp_users';
   public $table         = 'plans';
-  protected $fillable   = ['user_id', 'name'];
-  protected $hidden     = ['featured', 'user_id', 'deleted_at','plan_id'];
+  protected $fillable   = ['user_id', 'name', 'suggested_start_date'];
+  protected $hidden     = ['featured', 'user_id', 'deleted_at', 'plan_id'];
   protected $dates      = ['deleted_at'];
 
   /**

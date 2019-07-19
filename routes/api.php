@@ -222,8 +222,8 @@ Route::name('v4_playlists.store')->post('playlists/{user_id}',                  
 Route::name('v4_playlists.destroy')->delete('playlists/{user_id}/{playlist_id}',   'Playlist\PlaylistsController@destroy');
 
 // VERSION 4 | Plans
-Route::name('v4_plans.index')->get('plans/{user_id}',                              'Plan\PlansController@index');
-Route::name('v4_plans.show')->get('plans/{plan_id}/{user_id}',                     'Plan\PlansController@show');
-Route::name('v4_plans.update')->get('plans/{plan_id}/{user_id}',                   'Plan\PlansController@update');
+Route::name('v4_plans.index')->get('plans/{user_id?}',                             'Plan\PlansController@index');
 Route::name('v4_plans.store')->post('plans/{user_id}',                             'Plan\PlansController@store');
-Route::name('v4_plans.destroy')->delete('plans/{user_id}/{playlist_id}',           'Plan\PlansController@destroy');
+Route::name('v4_plans.show')->get('plans/{plan_id}/plan/{user_id?}',               'Plan\PlansController@show');
+Route::name('v4_plans.update')->put('plans/{plan_id}/plan/{user_id}',              'Plan\PlansController@update');
+Route::name('v4_plans.destroy')->delete('plans/{plan_id}/plan/{user_id}',          'Plan\PlansController@destroy');
