@@ -83,6 +83,8 @@ class APIController extends Controller
      * )
      * @OA\Tag(name="Bibles",          description="v4 Routes for obtaining Bibles Data")
      * @OA\Tag(name="Users",           description="v4 Routes for obtaining Users Data")
+     * @OA\Tag(name="Playlists",       description="v4 Routes for obtaining Playlists Data")
+     * @OA\Tag(name="Plans",           description="v4 Routes for obtaining Plans Data")
      *
      */
 

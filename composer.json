@@ -29,6 +29,7 @@
         "socialiteproviders/generators": "^2.0",
         "socialiteproviders/google": "^3.0",
         "spatie/array-to-xml": "^2.7",
+        "spatie/eloquent-sortable": "^3.6",
         "spatie/laravel-fractal": "^5.2",
         "sunra/php-simple-html-dom-parser": "^1.5",
         "symfony/process": "^4.1",

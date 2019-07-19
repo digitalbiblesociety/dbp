@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cae6c138a4c374f9a0ab2717123b40e0",
+    "content-hash": "ea3de7e419bcf554b58d24f7e5a82616",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -3852,6 +3852,56 @@
                 "xml"
             ],
             "time": "2018-11-29T16:24:53+00:00"
+        },
+        {
+            "name": "spatie/eloquent-sortable",
+            "version": "3.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/eloquent-sortable.git",
+                "reference": "a46a91d05d4ac66b6a2b8db2eb5e134a43d42277"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/eloquent-sortable/zipball/a46a91d05d4ac66b6a2b8db2eb5e134a43d42277",
+                "reference": "a46a91d05d4ac66b6a2b8db2eb5e134a43d42277",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "~5.8.0",
+                "php": "^7.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "~3.8.0",
+                "phpunit/phpunit": "^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\EloquentSortable\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be"
+                }
+            ],
+            "description": "Sortable behaviour for eloquent models",
+            "homepage": "https://github.com/spatie/eloquent-sortable",
+            "keywords": [
+                "behaviour",
+                "eloquent",
+                "laravel",
+                "model",
+                "sort",
+                "sortable"
+            ],
+            "time": "2019-04-01T07:05:06+00:00"
         },
         {
             "name": "spatie/fractalistic",
