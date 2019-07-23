@@ -7,6 +7,7 @@ use App\Http\Controllers\APIController;
 use App\Models\User\User;
 use App\Models\Playlist\Playlist;
 use App\Traits\CheckProjectMembership;
+use Illuminate\Http\Request;
 
 class PlaylistsController extends APIController
 {
@@ -17,24 +18,18 @@ class PlaylistsController extends APIController
      * Display a listing of the resource.
      *
      * @OA\Get(
-     *     path="/playlists/{user_id}",
+     *     path="/playlists",
      *     tags={"Playlists"},
      *     summary="List a user's playlists",
      *     description="",
      *     operationId="v4_playlists.index",
-     *     @OA\Parameter(
-     *          name="user_id",
-     *          in="path",
-     *          required=true,
-     *          @OA\Schema(ref="#/components/schemas/User/properties/id"),
-     *          description="The user who created the playlists"
-     *     ),
      *     @OA\Parameter(
      *          name="featured",
      *          in="query",
      *          @OA\Schema(ref="#/components/schemas/Playlist/properties/featured"),
      *          description="Return featured playlists"
      *     ),
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -63,29 +58,23 @@ class PlaylistsController extends APIController
      *   @OA\Items(ref="#/components/schemas/Playlist")
      * )
      */
-    public function index($user_id)
+    public function index(Request $request)
     {
-
+        $user = $request->user();
+        
         // Validate Project / User Connection
-        $user = User::where('id', $user_id)->select('id')->first();
-
-        if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
-        }
-
-        $user_is_member = $this->compareProjects($user_id, $this->key);
-
-        if (!$user_is_member) {
+        if (!empty($user) && !$this->compareProjects($user->id, $this->key)) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
         $featured = checkParam('featured');
-        $featured = $featured && $featured != 'false';
+        $featured = $featured && $featured != 'false' || empty($user);
 
-        $playlists = Playlist::with('items')->when($featured, function ($q) {
+        $playlists = Playlist::with('user')
+            ->when($featured || empty($user), function ($q) {
                 $q->where('user_playlists.featured', '1');
-            })->unless($featured, function ($q) use ($user_id) {
-                $q->where('user_playlists.user_id', $user_id);
+            })->unless($featured, function ($q) use ($user) {
+                $q->where('user_playlists.user_id', $user->id);
             })->orderBy('updated_at', 'desc')->get();
 
         return $this->reply($playlists);
@@ -95,18 +84,12 @@ class PlaylistsController extends APIController
      * Store a newly created playlist in storage.
      *
      * @OA\Post(
-     *     path="/playlists/{user_id}",
+     *     path="/playlists",
      *     tags={"Playlists"},
      *     summary="Crete a playlist",
      *     description="",
      *     operationId="v4_playlists.store",
-     *     @OA\Parameter(
-     *          name="user_id",
-     *          in="path",
-     *          required=true,
-     *          @OA\Schema(ref="#/components/schemas/User/properties/id"),
-     *          description="The user who is creating the playlist"
-     *     ),
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -128,17 +111,11 @@ class PlaylistsController extends APIController
      *
      * @return \Illuminate\Http\Response|array
      */
-    public function store($user_id)
+    public function store(Request $request)
     {
-
         // Validate Project / User Connection
-        $user = User::where('id', $user_id)->select('id')->first();
-
-        if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
-        }
-
-        $user_is_member = $this->compareProjects($user_id, $this->key);
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
 
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
@@ -147,8 +124,8 @@ class PlaylistsController extends APIController
         $name = checkParam('name', true);
 
         $playlist = Playlist::create([
-            'user_id'           => $user_id,
-            'name'              => request()->name,
+            'user_id'           => $user->id,
+            'name'              => $name,
             'featured'          => false
         ]);
 
@@ -159,12 +136,12 @@ class PlaylistsController extends APIController
      * Remove the specified playlist.
      *
      * @OA\Delete(
-     *     path="/playlists/{user_id}/{playlist_id}",
+     *     path="/playlists/{playlist_id}",
      *     tags={"Playlists"},
      *     summary="Delete a playlist",
      *     description="",
      *     operationId="v4_playlists.destroy",
-     *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(name="playlist_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Playlist/properties/id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -180,33 +157,26 @@ class PlaylistsController extends APIController
      *     )
      * )
      *
-     * @param  int $user_id
      * @param  int $playlist_id
      *
      * @return array|\Illuminate\Http\Response
      */
-    public function destroy($user_id, $playlist_id)
+    public function destroy(Request $request, $playlist_id)
     {
         // Validate Project / User Connection
-        $user = User::where('id', $user_id)->select('id')->first();
-
-        if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
-        }
-
-        $user_is_member = $this->compareProjects($user_id, $this->key);
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
 
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $playlist = Playlist::where('user_id', $user_id)->where('id', $playlist_id)->first();
+        $playlist = Playlist::where('user_id', $user->id)->where('id', $playlist_id)->first();
 
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
         }
 
-        $playlist->items()->delete();
         $playlist->delete();
 
         return $this->reply('Playlist Deleted');
