@@ -31,7 +31,12 @@ class UsersControllerV2 extends APIController
     {
         $this->preset_v = 2;
         parent::__construct();
-        $this->hash = md5(date('m/d/Y').config('services.bibleIs.key').config('services.bibleIs.secret'));
+        $keys = explode(",", config('services.bibleIs.key'));
+        $secrets = explode(",", config('services.bibleIs.secret'));
+        $this->hashes = [];
+        foreach($keys as $index => $key){
+            $this->hashes[] = md5(date('m/d/Y') . $key . $secrets[$index]);
+        }
     }
 
     public function user()
@@ -129,7 +134,7 @@ class UsersControllerV2 extends APIController
         $provider = request()->remote_type;
         $password = request()->password;
 
-        if ($this->hash === request()->hash) {
+        if (in_array(request()->hash, $this->hashes)) {
             $alt_url = checkParam('alt_url');
             if ($provider == 'twitter') {
                 return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
@@ -169,7 +174,7 @@ class UsersControllerV2 extends APIController
             ProjectMember::firstOrCreate([
                 'user_id'    => $user->id,
                 'project_id' => Project::where('name', 'Bible.is')->first()->id,
-                'role_id'    => Role::where('slug','user')->first()->id,
+                'role_id'    => Role::where('slug', 'user')->first()->id,
             ]);
 
             return $this->reply([
@@ -194,7 +199,7 @@ class UsersControllerV2 extends APIController
     }
 
     public function profile()
-    {           
+    {
         /*
         //TODO : May need to redirect to the following
 
@@ -241,7 +246,7 @@ class UsersControllerV2 extends APIController
         $user_id = checkParam('user_id');
 
         $bookmarks = Bookmark::where('user_id', $user_id)
-            ->with(['book','bible.filesets' => function($query) {
+            ->with(['book', 'bible.filesets' => function ($query) {
                 $query->where('asset_id', 'dbp-prod')->where('set_type_code', 'text_plain');
             }])
             ->skip($offset)
@@ -257,9 +262,9 @@ class UsersControllerV2 extends APIController
      */
     public function bookmarkAlter()
     {
-        if (request()->hash === $this->hash) {
+        if (in_array(request()->hash, $this->hashes)) {
 
-            if(request()->_method === 'delete') {
+            if (request()->_method === 'delete') {
                 Bookmark::where('id', request()->id)->delete();
                 return ['Status' => 'Done'];
             }
@@ -295,8 +300,9 @@ class UsersControllerV2 extends APIController
         $fileset_id = checkParam('dam_id');
         $bible_id = BibleFileset::where('id', $fileset_id)->first()->id ?? strtoupper(substr($fileset_id, 0, 6));
         $limit = checkParam('limit') ?? 1000;
+        $hash = checkParam('hash', true);
 
-        if (checkParam('hash', true) === $this->hash) {
+        if (in_array($hash, $this->hashes)) {
             $user_id = checkParam('user_id');
             $highlights = Highlight::with('color')->where('user_id', $user_id)
                 ->when($fileset_id, function ($q) use ($bible_id) {
@@ -327,7 +333,7 @@ class UsersControllerV2 extends APIController
      */
     public function highlightAlter()
     {
-        if ($this->hash === request()->hash) {
+        if (in_array(request()->hash, $this->hashes)) {
             if (request()->method() == 'DELETE') {
                 $deletedHighlight = Highlight::where('id', request()->id)->delete();
                 return [];
@@ -336,7 +342,7 @@ class UsersControllerV2 extends APIController
             $book = Book::where('id_osis', request()->book_id)->first();
             $fileset = BibleFileset::uniqueFileset(request()->dam_id, 'dbp-prod', 'text_plain')->first();
             $chapter = BibleVerse::where('hash_id', $fileset->hash_id)->where('chapter', request()->chapter_id)
-                        ->where('book_id', $book->id)->where('verse_start', request()->verse_id)->first();
+                ->where('book_id', $book->id)->where('verse_start', request()->verse_id)->first();
             if (!$chapter) {
                 return $this->setStatusCode(404)->replyWithError('No bible_fileset found');
             }
@@ -351,7 +357,7 @@ class UsersControllerV2 extends APIController
             ];
             $highlight = Highlight::where($highlight_content)->first();
 
-            if($highlight) {
+            if ($highlight) {
                 $highlight->highlighted_color = $highlightColor->id;
                 $highlight->save();
             } else {
@@ -382,7 +388,9 @@ class UsersControllerV2 extends APIController
      */
     public function note()
     {
-        if ($this->hash === checkParam('hash', true)) {
+        $hash = checkParam('hash', true);
+
+        if (in_array($hash, $this->hashes)) {
             $user_id = checkParam('user_id');
             $updated = Carbon::createFromDate(2000, 01, 01);
 
@@ -398,9 +406,9 @@ class UsersControllerV2 extends APIController
      */
     public function noteAlter()
     {
-        if ($this->hash === request()->hash) {
+        if (in_array(request()->hash, $this->hashes)) {
 
-            if(request()->_method === 'delete') {
+            if (request()->_method === 'delete') {
                 Note::where('id', request()->id)->delete();
                 return ['Status' => 'Done'];
             }
