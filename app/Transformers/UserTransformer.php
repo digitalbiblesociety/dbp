@@ -56,7 +56,8 @@ class UserTransformer extends BaseTransformer
                     'profile'   => $user->profile,
                     'organizations' => $user->organizations,
                     'accounts'  => $user->accounts,
-                    'keys'      => $user->keys
+                    'keys'      => $user->keys,
+                    'api_token' => $user->api_token,
                 ];
 
             /**

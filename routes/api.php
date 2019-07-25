@@ -15,7 +15,7 @@ Route::name('v2_library_chapter')->get('library/chapter',                       
 // VERSION 2 | Languages
 Route::name('v2_library_language')->get('library/language',                        'Wiki\LanguageControllerV2@languageListing');
 Route::name('v2_library_volumeLanguage')->get('library/volumelanguage',            'Wiki\LanguageControllerV2@volumeLanguage');
-Route::name('v2_library_volumeLanguageFamily')->get('library/volumelanguagefamily','Wiki\LanguageControllerV2@volumeLanguageFamily');
+Route::name('v2_library_volumeLanguageFamily')->get('library/volumelanguagefamily', 'Wiki\LanguageControllerV2@volumeLanguageFamily');
 Route::name('v2_country_lang')->get('country/countrylang',                         'Wiki\LanguageControllerV2@countryLang');
 
 // VERSION 2 | Library
@@ -49,9 +49,9 @@ Route::name('v2_api_jesusFilm_stream')->get('video/jesusfilm/{id}.m3u8',        
 
 // VERSION 2 | Users
 Route::name('v2_users_banners_banner')->get('/banners/banner',                     'User\UsersControllerV2@banner');
-Route::name('v2_users_user')->match(['get','post','options'], '/users/user',       'User\UsersControllerV2@user');
+Route::name('v2_users_user')->match(['get', 'post', 'options'], '/users/user',       'User\UsersControllerV2@user');
 Route::name('v2_users_profile')->post('/users/profile',                            'User\UsersControllerV2@profile');
-Route::name('v2_user_login')->match(['put','post','options'], '/users/login',      'User\UsersControllerV2@login');
+Route::name('v2_user_login')->match(['put', 'post', 'options'], '/users/login',      'User\UsersControllerV2@login');
 Route::name('v2_annotations')->get('/annotations/list',                            'User\UsersControllerV2@annotationList');
 Route::name('v2_bookmarks')->get('/annotations/bookmark',                          'User\UsersControllerV2@bookmark');
 Route::name('v2_bookmarks_alter')->post('/annotations/bookmark',                   'User\UsersControllerV2@bookmarkAlter');
@@ -92,7 +92,7 @@ Route::name('v4_bible.all')->get('bibles',                                      
 Route::name('v4_filesets.types')->get('bibles/filesets/media/types',               'Bible\BibleFileSetsController@mediaTypes');
 Route::name('v4_filesets.podcast')->get('bibles/filesets/{fileset_id}/podcast',    'Bible\BibleFilesetsPodcastController@index');
 Route::name('v4_filesets.download')->get('bibles/filesets/{fileset_id}/download',  'Bible\BibleFileSetsController@download');
-Route::name('v4_filesets.copyright')->get('bibles/filesets/{fileset_id}/copyright','Bible\BibleFileSetsController@copyright');
+Route::name('v4_filesets.copyright')->get('bibles/filesets/{fileset_id}/copyright', 'Bible\BibleFileSetsController@copyright');
 Route::name('v4_filesets.show')->get('bibles/filesets/{fileset_id?}',              'Bible\BibleFileSetsController@show');
 Route::name('v4_filesets.update')->put('bibles/filesets/{fileset_id}',             'User\Dashboard\BibleFilesetsManagementController@update');
 Route::name('v4_filesets.store')->post('bibles/filesets',             'User\Dashboard\BibleFilesetsManagementController@store');
@@ -138,7 +138,7 @@ Route::name('v4_user.index')->get('users',                                      
 Route::name('v4_user.store')->post('users',                                        'User\UsersController@store');
 Route::name('v4_user.show')->get('users/{user_id}',                                'User\UsersController@show');
 Route::name('v4_user.update')->put('users/{user_id}',                              'User\UsersController@update');
-Route::name('v4_user.destroy')->delete('users/{user_id}',                          'User\UsersController@destroy');
+Route::name('v4_user.destroy')->middleware('APIToken:check')->delete('users',      'User\UsersController@destroy');
 Route::name('v4_user.login')->post('/login',                                       'User\UsersController@login');
 Route::name('v4_user.oAuth')->get('/login/{driver}',                               'User\SocialController@redirect');
 Route::name('v4_user.oAuthCallback')->get('/login/{driver}/callback',              'User\SocialController@callback');
@@ -210,6 +210,9 @@ Route::name('v4_api.changes')->get('/api/changelog',                            
 Route::name('v4_api.generator')->get('/api/gen/bibles',                            'Connections\GeneratorController@bibles');
 
 // VERSION 4 | Playlists
-Route::name('v4_playlists.index')->get('playlists/{user_id}',                     'Playlist\PlaylistsController@index');
-Route::name('v4_playlists.store')->post('playlists/{user_id}',                    'Playlist\PlaylistsController@store');
-Route::name('v4_playlists.destroy')->delete('playlists/{user_id}/{playlist_id}',  'Playlist\PlaylistsController@destroy');
+Route::name('v4_playlists.index')
+    ->middleware('APIToken')->get('playlists',                                      'Playlist\PlaylistsController@index');
+Route::name('v4_playlists.store')
+    ->middleware('APIToken:check')->post('playlists',                               'Playlist\PlaylistsController@store');
+Route::name('v4_playlists.destroy')
+    ->middleware('APIToken:check')->delete('playlists/{playlist_id}',               'Playlist\PlaylistsController@destroy');

@@ -71,7 +71,7 @@ class UsersController extends APIController
 
         $users = \DB::table('dbp_users.users')->join('dbp_users.project_members', function ($join) use ($project_id) {
             $join->on('users.id', 'project_members.user_id')->where('project_members.project_id', $project_id);
-        })->select(['id','name','email'])->paginate($limit);
+        })->select(['id', 'name', 'email'])->paginate($limit);
 
         $userCollection = $users->getCollection();
         $userPagination = new IlluminatePaginatorAdapter($users);
@@ -111,7 +111,7 @@ class UsersController extends APIController
 
         $user = User::with('accounts', 'organizations', 'profile')
             ->whereHas('projectMembers', function ($query) use ($available_projects) {
-                if(!empty($available_projects)) $query->whereIn('project_id', $available_projects);
+                if (!empty($available_projects)) $query->whereIn('project_id', $available_projects);
             })->where('id', $id)->first();
         if (!$user) {
             return $this->replyWithError(trans('api.users_errors_404', ['param' => $id]));
@@ -181,38 +181,74 @@ class UsersController extends APIController
             return view('auth.login');
         }
 
-        $user = User::with('accounts')->where('email', $request->email)->first();
+        $email = checkParam('email');
+        $social_provider_id = checkParam('social_provider_id');
+
+        if ($email) {
+            $password = checkParam('password');
+            $user = $this->loginWithEmail($email, $password);
+        } elseif ($social_provider_id) {
+            $social_provider_user_id = checkParam('social_provider_user_id');
+            $user = $this->loginWithSocialProvider($social_provider_id, $social_provider_user_id);
+        }
+
         if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => $request->email]));
+            return $this->setStatusCode(401)->replyWithError(trans('auth.failed'));
         }
 
-        $oldPassword = \Hash::check(md5($request->password), $user->password);
-        $newPassword = \Hash::check($request->password, $user->password);
-
-        if ($oldPassword || $newPassword) {
-            // Associate user with Project
-            $project_id = checkParam('project_id');
-            if ($project_id) {
-                $connection_exists = ProjectMember::where(['user_id' => $user->id, 'project_id' => $project_id])->exists();
-                if (!$connection_exists) {
-                    $role = Role::where('slug', 'user')->first();
-                    ProjectMember::create([
-                        'user_id'    => $user->id,
-                        'project_id' => $project_id,
-                        'role_id'    => $role->id ?? 'user'
-                    ]);
-                }
+        // Associate user with Project
+        $project_id = checkParam('project_id');
+        if ($project_id) {
+            $connection_exists = ProjectMember::where(['user_id' => $user->id, 'project_id' => $project_id])->exists();
+            if (!$connection_exists) {
+                $role = Role::where('slug', 'user')->first();
+                ProjectMember::create([
+                    'user_id'    => $user->id,
+                    'project_id' => $project_id,
+                    'role_id'    => $role->id ?? 'user'
+                ]);
             }
-
-            if ($this->api) {
-                return $user;
-            }
-
-            Auth::login($user, true);
-            return redirect()->to('dashboard');
         }
 
-        return $this->setStatusCode(401)->replyWithError(trans('auth.failed'));
+        $token = Str::random(60);
+        $user->forceFill([
+            'api_token' => hash('sha256', $token),
+        ])->save();
+
+        $user->api_token = $token;
+
+
+        if ($this->api) {
+            return $user;
+        }
+
+        Auth::login($user, true);
+        return redirect()->to('dashboard');
+    }
+
+    private function loginWithEmail($email, $password)
+    {
+        $user = User::with('accounts')->where('email', $email)->first();
+        if (!$user) {
+            return false;
+        }
+
+        $oldPassword = \Hash::check(md5($password), $user->password);
+        $newPassword = \Hash::check($password, $user->password);
+        if (!$oldPassword && !$newPassword) {
+            return false;
+        }
+
+        return $user;
+    }
+
+    private function loginWithSocialProvider($provider_id, $provider_user_id)
+    {
+        $user = User::with('accounts')->whereHas('accounts', function ($query) use ($provider_id, $provider_user_id) {
+            $query->where('provider_id', $provider_id)->where('provider_user_id', $provider_user_id);
+        })->first();
+
+        return $user;
     }
 
     /**
@@ -287,7 +323,14 @@ class UsersController extends APIController
             ]);
         }
 
-        if(!$this->api) {
+        $token = Str::random(60);
+        $user->forceFill([
+            'api_token' => hash('sha256', $token),
+        ])->save();
+
+        $user->api_token = $token;
+
+        if (!$this->api) {
             Auth::login($user, true);
             return redirect()->to('home');
         }
@@ -360,32 +403,32 @@ class UsersController extends APIController
         }
 
         // If the request does not originate from an admin
-            $user_projects = $user->projects->pluck('id');
-            $developer_projects = $this->user->projectMembers->whereIn('role_id', [2,3,4])->pluck('project_id');
+        $user_projects = $user->projects->pluck('id');
+        $developer_projects = $this->user->projectMembers->whereIn('role_id', [2, 3, 4])->pluck('project_id');
 
-            if (!$developer_projects->contains(request()->project_id)) {
-                return $this->setStatusCode(401)->replyWithError(trans('api.projects_developer_not_a_member', [], $GLOBALS['i18n_iso']));
+        if (!$developer_projects->contains(request()->project_id)) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_developer_not_a_member', [], $GLOBALS['i18n_iso']));
+        }
+
+        if ($developer_projects->intersect($user_projects)->count() === 0) {
+            $project = Project::where('id', request()->project_id)->first();
+            if (!$project) {
+                return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
             }
+            $connection = $user->projectMembers()->create([
+                'user_id'       => $user->id,
+                'project_id'    => $project->id,
+                'role_id'       => 'user',
+                'token'         => unique_random(config('database.connections.dbp_users.database') . '.project_members', 'token'),
+                'subscribed'    => false
+            ]);
 
-            if ($developer_projects->intersect($user_projects)->count() === 0) {
-                $project = Project::where('id', request()->project_id)->first();
-                if (!$project) {
-                    return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
-                }
-                $connection = $user->projectMembers()->create([
-                    'user_id'       => $user->id,
-                    'project_id'    => $project->id,
-                    'role_id'       => 'user',
-                    'token'         => unique_random(config('database.connections.dbp_users.database').'.project_members', 'token'),
-                    'subscribed'    => false
-                ]);
-
-                Mail::to($user->email)->send(new ProjectVerificationEmail($connection, $project));
-                return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_needs_to_connect', [], $GLOBALS['i18n_iso']));
+            Mail::to($user->email)->send(new ProjectVerificationEmail($connection, $project));
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_needs_to_connect', [], $GLOBALS['i18n_iso']));
         }
 
         // Fetch Data
-        $user->fill($request->except(['v','key','pretty','project_id']))->save();
+        $user->fill($request->except(['v', 'key', 'pretty', 'project_id']))->save();
 
         if ($this->api) {
             return $this->reply(['success' => 'User updated', 'user' => $user]);
@@ -396,7 +439,7 @@ class UsersController extends APIController
     /**
      *
      * @OA\Delete(
-     *     path="/users/{id}",
+     *     path="/users",
      *     tags={"Users"},
      *     summary="Delete an existing user",
      *     description="",
@@ -405,7 +448,7 @@ class UsersController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(name="id", in="path", description="The user ID.", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
+     *     security={{"api_token":{}}},
      *     @OA\RequestBody(required=true, description="Either `password` or the `social_provider_user_id` & `social_provider_id` are required for user deletion", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="password",                  ref="#/components/schemas/User/properties/password"),
@@ -423,29 +466,24 @@ class UsersController extends APIController
      *     )
      * )
      *
-     * @param  int $id
-     *
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
+        $user = $request->user();
         $password = checkParam('password');
         $social_provider_user_id = checkParam('social_provider_user_id');
         $social_provider_id = checkParam('social_provider_id');
 
-        $user = User::with('accounts')->where('id', $id)->first();
-        if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
-        }
-
+        $user = User::with('accounts')->where('id', $user->id)->first();
         $access_granted = false;
-        if ($password) {      
+        if ($password) {
             $oldPassword = \Hash::check(md5($password), $user->password);
             $newPassword = \Hash::check($password, $user->password);
             $access_granted = $oldPassword || $newPassword;
-        } else if ($social_provider_id){
+        } else if ($social_provider_id) {
             $account  = $user->accounts->where('provider_id', $social_provider_id)
-                                ->where('provider_user_id', $social_provider_user_id)->first();
+                ->where('provider_user_id', $social_provider_user_id)->first();
             $access_granted = $account;
         }
 
@@ -454,17 +492,17 @@ class UsersController extends APIController
         }
 
         // Overwrite notes
-        Note::where('user_id', $id)->update(['notes' => encrypt('Deleted user note')]);
+        Note::where('user_id', $user->id)->update(['notes' => encrypt('Deleted user note')]);
 
         // Delete accounts
-        Account::where('user_id', $id)->delete();
+        Account::where('user_id', $user->id)->delete();
 
         // Overwrite personal user information and soft delete account
         $user->fill([
             'name' => 'deleted',
             'first_name'  => 'deleted',
             'last_name'  => 'user',
-            'email'  => $user->id.'@deleted.com',
+            'email'  => $user->id . '@deleted.com',
             'password'  => Str::random(40),
         ])->save();;
 
