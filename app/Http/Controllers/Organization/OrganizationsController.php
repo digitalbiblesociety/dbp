@@ -61,7 +61,10 @@ class OrganizationsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_volume_organization_list"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_volume_organization_list")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_volume_organization_list")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_volume_organization_list")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_volume_organization_list"))
      *     )
      * )
      *

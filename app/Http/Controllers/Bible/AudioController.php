@@ -196,12 +196,14 @@ class AudioController extends APIController
      *     @OA\Parameter(name="fileset_id", in="query", description="The specific fileset to return references for", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
      *     @OA\Parameter(name="book", in="query", description="The Book ID for which to return timestamps. For a complete list see the `book_id` field in the `/bibles/books` route.", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
      *     @OA\Parameter(name="chapter", in="query", description="The chapter for which to return timestamps", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+     *     @OA\Parameter(name="asset_id", in="query", description="The asset id for which to return timestamps.", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_audio_timestamps")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_audio_timestamps")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v2_audio_timestamps"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v2_audio_timestamps")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v2_audio_timestamps"))
      *     )
      * )
      *
@@ -212,7 +214,7 @@ class AudioController extends APIController
     {
         // Check Params
         $id       = checkParam('fileset_id|dam_id');
-        $asset_id = checkParam('asset_id');
+        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');;
         $book     = checkParam('book|osis_code');
         $chapter  = checkParam('chapter_id|chapter_number');
 

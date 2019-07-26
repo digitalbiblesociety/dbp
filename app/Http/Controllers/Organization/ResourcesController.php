@@ -88,23 +88,42 @@ class ResourcesController extends APIController
         return null;
     }
 
-    /**
+     /**
      *
-     * dam_id: DAM ID for the Jesus Film volume desired.
-     * encoding: [mp4|m3u8] The video encoding format desired.
-     * book_id (optional): OSIS book code to filter segments by references to book desired.
-     * chapter_id (optional): Chapter id to filter segments by references based on book and chapter.
-     * verse_id (optional): Verse id to filter segments by references based on book, chapter and verse.
+     * Returns an array of version return types
      *
+     * @category v2_api_jesusFilms
+     * @link http://api.dbp4.org/api/reply - V4 Access
+     * @link https://api.dbp.test/api/reply?key=1234&v=4&pretty - V4 Test Access
+     * @link https://dbp.test/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
+     *
+     * @OA\Get(
+     *     path="/library/jesusfilm",
+     *     tags={"Library Video"},
+     *     summary="",
+     *     description="",
+     *     operationId="v2_api_jesusFilms",
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Parameter(name="dam_id", in="query", description="DAM ID for the Jesus Film volume desired.", @OA\Schema(type="string",title="encoding")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_video_path")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_video_path")),
+     *         @OA\MediaType(mediaType="text/csv",  @OA\Schema(ref="#/components/schemas/v2_video_path")),
+     *         @OA\MediaType(mediaType="text/x-yaml",  @OA\Schema(ref="#/components/schemas/v2_video_path"))
+     *     )
+     * )
+     *
+     * @return mixed
      */
     public function jesusFilmListing()
     {
 
         $id         = checkParam('dam_id');
-        $encoding   = checkParam('encoding');
-        $book_id    = checkParam('book_id');
-        $chapter_id = checkParam('chapter_id');
-        $verse_id   = checkParam('verse_id');
 
         $organization = Organization::where('slug', 'the-jesus-film-project')->first();
         $iso          = strtolower(substr($id, 0, 3));

@@ -27,6 +27,8 @@ class SwaggerDocsController extends Controller
 
     public function swaggerDocsGen($version)
     {
+
+        define("API_URL_DOCS", 'https://'.config('app.api_url'));
         $swagger = \Cache::remember('OAS_'.$version, now()->addDay(), function () use ($version) {
             $swagger = \OpenApi\scan(app_path());
             $swagger->tags  = $this->swaggerVersionTags($swagger->tags, $version);

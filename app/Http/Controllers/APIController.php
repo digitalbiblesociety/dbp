@@ -33,7 +33,7 @@ class APIController extends Controller
      * )
      *
      * @OA\Server(
-     *     url="https://api.dbp4.org",
+     *     url=API_URL_DOCS,
      *     description="Live Server",
      *     @OA\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
      * )
@@ -58,7 +58,7 @@ class APIController extends Controller
      * @OA\Parameter(parameter="format",name="format",in="query",description="Setting this param to true will add format the return as a specific file type. The currently supported return types are `xml`, `csv`, `json`, and `yaml`",@OA\Schema(type="string",enum={"xml","csv","json","yaml"}))
      * @OA\Parameter(name="sort_by", in="query", description="The field to sort by", @OA\Schema(type="string"))
      * @OA\Parameter(name="sort_dir", in="query", description="The direction to sort by", @OA\Schema(type="string",enum={"asc","desc"}))
-     * @OA\Parameter(name="l10n", in="query", description="When set to a valid three letter language iso, the returning results will be localized in the language matching that iso. (If an applicable translation exists).", @OA\Schema(ref="#/components/schemas/Language/properties/iso")),
+     * @OA\Parameter(name="l10n", in="query", description="When set to a valid three letter language iso, the returning results will be localized in the language matching that iso. (If an applicable translation exists). For a complete list see the `iso` field in the `/languages` route", @OA\Schema(ref="#/components/schemas/Language/properties/iso")),
      *
      */
 

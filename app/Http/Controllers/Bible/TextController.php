@@ -43,6 +43,7 @@ class TextController extends APIController
      *     @OA\Parameter(name="verse_end", in="query", description="Will filter the results by the given end verse",
      *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/verse_end")
      *     ),
+     *     @OA\Parameter(name="asset_id", in="query", description="Will filter the results by the given Asset", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -160,12 +161,6 @@ class TextController extends APIController
      *          description="Search for a specific font by name",
      *          @OA\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
-     *          name="platform",
-     *          in="query",
-     *          description="Only return fonts that have been authorized for the specified platform. Available values are: `android`, `ios`, `web`, or `all`. All the current fonts are available cross-platform",
-     *          @OA\Schema(type="string",enum={"android","ios","web","all"},default="all")
-     *     ),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -175,7 +170,8 @@ class TextController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/font_response")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/font_response")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/font_response"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/font_response")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/font_response"))
      *     )
      * )
      *
@@ -258,7 +254,7 @@ class TextController extends APIController
         $fileset_id = checkParam('fileset_id|dam_id', true);
         $limit      = checkParam('limit') ?? 15;
         $book_id    = checkParam('book|book_id|books');
-        $asset_id   = checkParam('asset_id') ?? 'dbp-prod';
+        $asset_id   = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
         $relevance_order   = checkParam('relevance_order');
 
         $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, 'text_plain')->first();
@@ -316,6 +312,7 @@ class TextController extends APIController
      *          required=true,
      *          @OA\Schema(type="string")
      *     ),
+     *     @OA\Parameter(name="asset_id", in="query", description="Will filter the results by the given Asset", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -325,7 +322,8 @@ class TextController extends APIController
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_text_search_group")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_text_search_group")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v2_text_search_group"))
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v2_text_search_group")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v2_text_search_group"))
      *     )
      * )
      *
@@ -408,10 +406,16 @@ class TextController extends APIController
      *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
      *     ),
      *     @OA\Parameter(
+     *          name="asset_id",
+     *          in="query",
+     *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id"),
+     *          description="If specified returns verse text ONLY for the specified fileset"
+     *     ),
+     *     @OA\Parameter(
      *          name="chapter",
      *          in="path",
      *          required=true,
-     *          description=" If specified returns verse text ONLY for the specified chapter",
+     *          description="If specified returns verse text ONLY for the specified chapter",
      *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
      *     ),
      *     @OA\Parameter(
@@ -432,7 +436,9 @@ class TextController extends APIController
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_asset")),
-     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_asset"))
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_asset")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_asset")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_asset"))
      *     )
      * )
      *
