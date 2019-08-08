@@ -15,10 +15,6 @@ class GeneratorController extends APIController
     use AccessControlAPI;
 
     public function __construct() {
-        if(config('app.api_key') != checkParam('key')) {
-            return $this->replyWithError('This is not a Generator Key');
-        }
-
         set_time_limit(-1);
         ini_set('memory_limit','6000M');
     }
@@ -34,7 +30,7 @@ class GeneratorController extends APIController
 
     public function organizations()
     {
-        $orgs = Organization::with('resources', 'translations', 'logos', 'relationships')->get();
+        $orgs = Organization::with('resources', 'translations', 'relationships')->get();
         foreach ($orgs as $key => $org) {
             $bibles = [];
 
@@ -51,18 +47,19 @@ class GeneratorController extends APIController
 
     public function bibles()
     {
-        return Bible::with('language','alphabet','translations','filesets','links','country')->get();
+        return Bible::with('language','alphabet','translations','filesets','links')->get();
     }
 
     public function languages()
     {
-        return Language::with('bibles.translations','primaryCountry','resources.translations')->get();
+        return Language::withCount('bibles', 'resources')->with('bibles.translations','primaryCountry','resources.translations')->get();
     }
 
     public function countries()
     {
         return Country::with(['translations','joshuaProject','geography','languages' => function($query){
             $query->withCount('bibles');
+            $query->withCount('resources');
         }])->get();
     }
 
@@ -74,6 +71,11 @@ class GeneratorController extends APIController
     public function resources()
     {
         return Resource::with('translations','links', 'organization')->get();
+    }
+
+    public function libraries()
+    {
+        //return Library::with('translations','links', 'organization')->get();
     }
 
 }

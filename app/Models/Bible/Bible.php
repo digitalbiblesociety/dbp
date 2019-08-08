@@ -273,11 +273,6 @@ class Bible extends Model
         return $this->belongsTo(Language::class);
     }
 
-    public function country()
-    {
-        return $this->hasManyThrough(Country::class, Language::class, 'id', 'id', 'language_id', 'country_id')->select(['countries.id as country_id','countries.continent','countries.name']);
-    }
-
     public function alphabet()
     {
         return $this->hasOne(Alphabet::class, 'script', 'script')->select(['script','name','direction','unicode','requires_font']);

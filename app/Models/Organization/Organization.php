@@ -84,7 +84,7 @@ class Organization extends Model
 {
     protected $connection = 'dbp';
     // The attributes excluded from the model's JSON form.
-    protected $hidden = ['logo','facebook','twitter','code','created_at','updated_at','notes'];
+    protected $hidden = ['facebook','twitter','code','created_at','updated_at','notes'];
     protected $fillable = ['name', 'email', 'password','facebook','twitter','website','address','phone'];
 
     /**
