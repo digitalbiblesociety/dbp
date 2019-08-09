@@ -10,6 +10,7 @@ use App\Models\Bible\BookTranslation;
 use App\Models\Language\Language;
 use App\Transformers\V2\LibraryCatalog\BookTransformer;
 use App\Http\Controllers\APIController;
+use App\Models\Bible\BibleBook;
 
 class BooksControllerV2 extends APIController
 {
@@ -75,7 +76,8 @@ class BooksControllerV2 extends APIController
                 $chapter_field = 'chapter_start';
             }
 
-               $books = Book::whereIn('id', $booksChapters->pluck('book_id')->unique())
+                $book_ids = $booksChapters->pluck('book_id')->unique();
+                $books = Book::whereIn('id',$book_ids)
                             ->filterByTestament($testament)
                             ->orderBy('protestant_order')
                             ->get();
@@ -85,11 +87,13 @@ class BooksControllerV2 extends APIController
                 }
 
                 $bible_id = $fileset->bible->first()->id;
+                $book_translation = BibleBook::whereIn('book_id',$book_ids)->where('bible_id',$bible_id)->pluck('name', 'book_id');
                 foreach ($books as $key => $book) {
                     $books[$key]->source_id       = $id;
                     $books[$key]->bible_id        = $bible_id;
                     $books[$key]->number_chapters = $current_chapters[$key]->count();
                     $books[$key]->chapters        = $current_chapters[$key]->implode(',');
+                    $books[$key]->name            = $book_translation[$book->id];
                 }
 
                 return fractal($books, new BookTransformer(), $this->serializer);
@@ -422,7 +426,8 @@ class BooksControllerV2 extends APIController
 
     private function getTestamentString($id)
     {
-        $testament = false;
+        $testament = [];
+        
         switch ($id[\strlen($id) - 2]) {
             case 'O':
                 $testament = ['OT','C'];
@@ -436,7 +441,7 @@ class BooksControllerV2 extends APIController
                 $testament = ['NTOTP', 'NTP', 'NTPOTP', 'OTNTP', 'OTP', 'P'];
                 break;
         }
-        return [];
+        return $testament;
     }
 
 }
