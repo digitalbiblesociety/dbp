@@ -34,7 +34,10 @@ class LanguageControllerV2 extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_language"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_language")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_language")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_language")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_language"))
      *     )
      * )
      *
@@ -125,7 +128,10 @@ class LanguageControllerV2 extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_country_lang"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_country_lang")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_country_lang")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_country_lang")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_country_lang"))
      *     )
      * )
      *
@@ -241,7 +247,10 @@ class LanguageControllerV2 extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_language"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_language")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_language")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_language")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_language"))
      *     )
      * )
      *
@@ -328,29 +337,10 @@ class LanguageControllerV2 extends APIController
      *         description=""
      *     ),
      *     @OA\Parameter(
-     *         name="delivery",
+     *         name="organization_id",
      *         in="query",
-     *         deprecated=true,
-     *         @OA\Schema(type="string"),
-     *         description=""
-     *     ),
-     *     @OA\Parameter(
-     *         name="full_word",
-     *         in="query",
-     *         @OA\Schema(type="string"),
-     *         description=""
-     *     ),
-     *     @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         @OA\Schema(type="string"),
-     *         description=""
-     *     ),
-     *     @OA\Parameter(
-     *         name="resolution",
-     *         in="query",
-     *         @OA\Schema(type="string"),
-     *         description=""
+     *         description="The organization id to filter equivalents by",
+     *         @OA\Schema(ref="#/components/schemas/Organization/properties/id")
      *     ),
      *     @OA\Parameter(ref="#/components/parameters/l10n"),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
@@ -360,7 +350,10 @@ class LanguageControllerV2 extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_language"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_language")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_language")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_language")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_language"))
      *     )
      * )
      *

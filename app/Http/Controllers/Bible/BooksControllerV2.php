@@ -10,6 +10,7 @@ use App\Models\Bible\BookTranslation;
 use App\Models\Language\Language;
 use App\Transformers\V2\LibraryCatalog\BookTransformer;
 use App\Http\Controllers\APIController;
+use App\Models\Bible\BibleBook;
 
 class BooksControllerV2 extends APIController
 {
@@ -19,16 +20,15 @@ class BooksControllerV2 extends APIController
      *
      * @version 2
      * @category v2_library_book
-     * @category v2_library_bookOrder
-     * @link http://dbt.io/library/bookorder - V2 Access
+     * @link http://dbt.io/library/book - V2 Access
      * @link http://api.dbp.test/library/bookorder?key=1234&v=2&dam_id=AMKWBT&pretty - V2 Test
      * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_book - V2 Test Docs
      *
      * @OA\Get(
      *     path="/library/book/",
      *     tags={"Library Catalog"},
-     *     summary="Returns books order",
-     *     description="Gets the book order and code listing for a volume.",
+     *     summary="Returns books",
+     *     description="Gets the book and code listing for a volume.",
      *     operationId="v2_library_book",
      *     @OA\Parameter(name="dam_id",in="query",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(name="asset_id",in="query", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
@@ -39,7 +39,10 @@ class BooksControllerV2 extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_book"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_book")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_book")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_book")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_book"))
      *     )
      * )
      *
@@ -73,7 +76,8 @@ class BooksControllerV2 extends APIController
                 $chapter_field = 'chapter_start';
             }
 
-               $books = Book::whereIn('id', $booksChapters->pluck('book_id')->unique())
+                $book_ids = $booksChapters->pluck('book_id')->unique();
+                $books = Book::whereIn('id',$book_ids)
                             ->filterByTestament($testament)
                             ->orderBy('protestant_order')
                             ->get();
@@ -83,11 +87,13 @@ class BooksControllerV2 extends APIController
                 }
 
                 $bible_id = $fileset->bible->first()->id;
+                $book_translation = BibleBook::whereIn('book_id',$book_ids)->where('bible_id',$bible_id)->pluck('name', 'book_id');
                 foreach ($books as $key => $book) {
                     $books[$key]->source_id       = $id;
                     $books[$key]->bible_id        = $bible_id;
                     $books[$key]->number_chapters = $current_chapters[$key]->count();
                     $books[$key]->chapters        = $current_chapters[$key]->implode(',');
+                    $books[$key]->name            = $book_translation[$book->id];
                 }
 
                 return fractal($books, new BookTransformer(), $this->serializer);
@@ -97,6 +103,41 @@ class BooksControllerV2 extends APIController
         return $this->reply($libraryBook);
     }
 
+     /**
+     * Gets the book order and code listing for a volume.
+     *
+     * @version 2
+     * @category v2_library_bookOrder
+     * @link http://dbt.io/library/bookorder - V2 Access
+     * @link http://api.dbp.test/library/bookorder?key=1234&v=2&dam_id=AMKWBT&pretty - V2 Test
+     * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_book - V2 Test Docs
+     *
+     * @OA\Get(
+     *     path="/library/bookorder/",
+     *     tags={"Library Catalog"},
+     *     summary="Returns books order",
+     *     description="Gets the book order and code listing for a volume.",
+     *     operationId="v2_library_bookOrder",
+     *     @OA\Parameter(name="dam_id",in="query",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
+     *     @OA\Parameter(name="asset_id",in="query", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder"))
+     *     )
+     * )
+     *
+     * @param dam_id - the volume internal bible_id.
+     *
+     * @return Book string - A JSON string that contains the status code and error messages if applicable.
+     */
     public function bookOrder()
     {
         $id        = checkParam('dam_id', true);
@@ -158,7 +199,10 @@ class BooksControllerV2 extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_bookName"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_bookName")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_bookName")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_bookName")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_bookName"))
      *     )
      * )
      *
@@ -325,7 +369,10 @@ class BooksControllerV2 extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"}))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"})),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"})),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"})),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"}))
      *     )
      * )
      *
@@ -379,7 +426,8 @@ class BooksControllerV2 extends APIController
 
     private function getTestamentString($id)
     {
-        $testament = false;
+        $testament = [];
+        
         switch ($id[\strlen($id) - 2]) {
             case 'O':
                 $testament = ['OT','C'];
@@ -393,7 +441,7 @@ class BooksControllerV2 extends APIController
                 $testament = ['NTOTP', 'NTP', 'NTPOTP', 'OTNTP', 'OTP', 'P'];
                 break;
         }
-        return [];
+        return $testament;
     }
 
 }

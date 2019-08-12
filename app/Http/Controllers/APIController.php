@@ -33,7 +33,7 @@ class APIController extends Controller
      * )
      *
      * @OA\Server(
-     *     url="https://api.dbp4.org",
+     *     url=API_URL_DOCS,
      *     description="Live Server",
      *     @OA\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
      * )
@@ -43,6 +43,14 @@ class APIController extends Controller
      *     description="Development server",
      *     @OA\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
      * )
+     * 
+     * @OA\SecurityScheme(
+     *   securityScheme="api_token",
+     *   name="api_token",
+     *   in="query",
+     *   type="apiKey",
+     *   description="The key granted to the user upon sign up or login"
+     * )
      *
      * @OA\Parameter(parameter="version_number",name="v",in="query",description="The Version Number",required=true,@OA\Schema(type="integer",enum={2,4},example=4))
      * @OA\Parameter(parameter="key",name="key",in="query",description="The Key granted to the api user upon sign up",required=true,@OA\Schema(type="string",example="ar45g3h4ae644"))
@@ -50,7 +58,7 @@ class APIController extends Controller
      * @OA\Parameter(parameter="format",name="format",in="query",description="Setting this param to true will add format the return as a specific file type. The currently supported return types are `xml`, `csv`, `json`, and `yaml`",@OA\Schema(type="string",enum={"xml","csv","json","yaml"}))
      * @OA\Parameter(name="sort_by", in="query", description="The field to sort by", @OA\Schema(type="string"))
      * @OA\Parameter(name="sort_dir", in="query", description="The direction to sort by", @OA\Schema(type="string",enum={"asc","desc"}))
-     * @OA\Parameter(name="l10n", in="query", description="When set to a valid three letter language iso, the returning results will be localized in the language matching that iso. (If an applicable translation exists).", @OA\Schema(ref="#/components/schemas/Language/properties/iso")),
+     * @OA\Parameter(name="l10n", in="query", description="When set to a valid three letter language iso, the returning results will be localized in the language matching that iso. (If an applicable translation exists). For a complete list see the `iso` field in the `/languages` route", @OA\Schema(ref="#/components/schemas/Language/properties/iso")),
      *
      */
 
@@ -112,7 +120,7 @@ class APIController extends Controller
             $this->v   = (int) checkParam('v', true, $this->preset_v);
             $this->key = checkParam('key', true);
 
-            $cache_string = 'keys:'.$this->key;
+            $cache_string = 'keys:' . $this->key;
             $keyExists = \Cache::remember($cache_string, now()->addDay(), function () {
                 return Key::with('user')->where('key', $this->key)->first();
             });
@@ -125,9 +133,9 @@ class APIController extends Controller
             // i18n
             $i18n = checkParam('i18n') ?? 'eng';
 
-            $cache_string = 'selected_api_language:'.strtolower($i18n);
+            $cache_string = 'selected_api_language:' . strtolower($i18n);
             $current_language = \Cache::remember($cache_string, now()->addDay(), function () use ($i18n) {
-                $language = Language::where('iso', $i18n)->select(['iso','id'])->first();
+                $language = Language::where('iso', $i18n)->select(['iso', 'id'])->first();
                 return [
                     'i18n_iso' => $language->iso,
                     'i18n_id'  => $language->id
@@ -176,7 +184,7 @@ class APIController extends Controller
         if (is_a($object, JsonResponse::class)) {
             return $object;
         }
-        
+
         // Status Code, Headers, Params, Body, Time
         try {
             apiLogs(request(), $this->statusCode, $s3_transaction_id, request()->ip());
@@ -232,35 +240,35 @@ class APIController extends Controller
         switch ($format) {
             case 'jsonp':
                 return response()->json($object, $this->statusCode)
-                                 ->header('Content-Type', 'application/javascript; charset=utf-8')
-                                 ->setCallback(request()->input('callback'));
+                    ->header('Content-Type', 'application/javascript; charset=utf-8')
+                    ->setCallback(request()->input('callback'));
             case 'xml':
                 $formatter = ArrayToXml::convert($object, [
                     'rootElementName' => $meta['rootElementName'] ?? 'root',
                     '_attributes'     => $meta['rootAttributes'] ?? []
                 ], true, 'utf-8');
                 return response()->make($formatter, $this->statusCode)
-                                 ->header('Content-Type', 'application/xml; charset=utf-8');
+                    ->header('Content-Type', 'application/xml; charset=utf-8');
             case 'yaml':
                 $formatter = Yaml::dump($object);
                 return response()->make($formatter, $this->statusCode)
-                                 ->header('Content-Type', 'text/yaml; charset=utf-8');
+                    ->header('Content-Type', 'text/yaml; charset=utf-8');
             case 'toml':
                 $tomlBuilder = new TomlBuilder();
                 $formatter   = $tomlBuilder->addValue('multiple', $object)->getTomlString();
                 return response()->make($formatter, $this->statusCode)
-                                 ->header('Content-Type', 'text/yaml; charset=utf-8');
+                    ->header('Content-Type', 'text/yaml; charset=utf-8');
             case 'csv':
                 $formatter = Formatter::make($object, Formatter::ARR);
                 return response()->make($formatter->toCsv(), $this->statusCode)
-                                 ->header('Content-Type', 'text/csv; charset=utf-8');
+                    ->header('Content-Type', 'text/csv; charset=utf-8');
             default:
                 if (isset($_GET['pretty'])) {
                     return response()->json($object, $this->statusCode, [], JSON_UNESCAPED_UNICODE)
                         ->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
                 }
                 return response()->json($object, $this->statusCode, [], JSON_UNESCAPED_UNICODE)
-                        ->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
+                    ->header('Content-Type', 'application/json; charset=utf-8')->setCallback($input);
         }
     }
 }

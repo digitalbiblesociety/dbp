@@ -31,7 +31,12 @@ class UsersControllerV2 extends APIController
     {
         $this->preset_v = 2;
         parent::__construct();
-        $this->hash = md5(date('m/d/Y').config('services.bibleIs.key').config('services.bibleIs.secret'));
+        $keys = explode(",", config('services.bibleIs.key'));
+        $secrets = explode(",", config('services.bibleIs.secret'));
+        $this->hashes = [];
+        foreach($keys as $index => $key){
+            $this->hashes[] = md5(date('m/d/Y') . $key . $secrets[$index]);
+        }
     }
 
     public function user()
@@ -79,6 +84,48 @@ class UsersControllerV2 extends APIController
         return '';
     }
     /**
+     *
+     * @OA\Post(
+     *     path="/users/login",
+     *     tags={"Users"},
+     *     summary="Login a user",
+     *     description="",
+     *     operationId="v2_user_login",
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\RequestBody(required=true, description="Either the `email` & `password` or the `remote_id` & `remote_type` are required for user Login", @OA\MediaType(mediaType="application/json",
+     *          @OA\Schema(
+     *              @OA\Property(property="email",                     ref="#/components/schemas/User/properties/email"),
+     *              @OA\Property(property="password",                  ref="#/components/schemas/User/properties/password"),
+     *              @OA\Property(property="remote_id",   ref="#/components/schemas/Account/properties/provider_user_id"),
+     *              @OA\Property(property="remote_type",        ref="#/components/schemas/Account/properties/provider_id"),
+     *          )
+     *     )),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_user_login")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_user_login")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v2_user_login")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v2_user_login"))
+     *     )
+     * )
+     * 
+     * @OA\Schema (
+     *    title="v2_user_login",
+     *    type="array",
+     *    schema="v2_user_login",
+     *    description="The v2 user login response",
+     *    @OA\Xml(name="v2_user_login"),
+     *    @OA\Items(
+     *        @OA\Property(property="id",       ref="#/components/schemas/User/properties/id"),
+     *        @OA\Property(property="user_data",    ref="#/components/schemas/User")
+     *    )
+     *  )
+     * @param Request $request
+     *
      * @return mixed
      */
     public function login()
@@ -87,33 +134,47 @@ class UsersControllerV2 extends APIController
         $provider = request()->remote_type;
         $password = request()->password;
 
-        if ($this->hash === request()->hash) {
+        if (in_array(request()->hash, $this->hashes)) {
             $alt_url = checkParam('alt_url');
             if ($provider == 'twitter') {
                 return $this->setStatusCode(422)->replyWithError(trans('api.auth_errors_twitter_stateless'));
             }
 
-            $user = User::whereHas('accounts', function ($query) {
-                $query->where('provider_user_id', request()->remote_id)->where('provider_id', request()->remote_type);
-            })->where('email', $email)->first();
+            if ($email) {
+                $user = User::where('email', $email)->first();
+            } else if ($provider) {
+                $user = User::whereHas('accounts', function ($query) use ($provider) {
+                    $query->where('provider_user_id', request()->remote_id)->where('provider_id', $provider);
+                })->first();
+            }
 
-            if (!$user) {
-                // Check if user already exists but just hasn't signed up with that account
-                $user    = User::firstOrCreate(['email' => $email]);
-                if(!isset($password)) {
-                    Account::firstOrCreate([
-                        'project_id'       => Project::where('name', 'Bible.is')->first()->id,
-                        'user_id'          => $user->id,
-                        'provider_user_id' => request()->remote_id,
-                        'provider_id'      => request()->remote_type
-                    ]);
+            if ($user && $email) {
+                $oldPassword = \Hash::check(md5($password), $user->password);
+                $newPassword = \Hash::check($password, $user->password);
+                if (!$oldPassword && !$newPassword) {
+                    $user = false;
                 }
             }
+
+            if (!$user && $provider) {
+                $user    = User::firstOrCreate(['email' => $email]);
+                Account::firstOrCreate([
+                    'project_id'       => Project::where('name', 'Bible.is')->first()->id,
+                    'user_id'          => $user->id,
+                    'provider_user_id' => request()->remote_id,
+                    'provider_id'      => $provider
+                ]);
+            }
+
+            if (!$user) {
+                return $this->setStatusCode(401)->replyWithError(trans('auth.failed'));
+            }
+
 
             ProjectMember::firstOrCreate([
                 'user_id'    => $user->id,
                 'project_id' => Project::where('name', 'Bible.is')->first()->id,
-                'role_id'    => Role::where('slug','user')->first()->id,
+                'role_id'    => Role::where('slug', 'user')->first()->id,
             ]);
 
             return $this->reply([
@@ -138,7 +199,7 @@ class UsersControllerV2 extends APIController
     }
 
     public function profile()
-    {           
+    {
         /*
         //TODO : May need to redirect to the following
 
@@ -185,7 +246,7 @@ class UsersControllerV2 extends APIController
         $user_id = checkParam('user_id');
 
         $bookmarks = Bookmark::where('user_id', $user_id)
-            ->with(['book','bible.filesets' => function($query) {
+            ->with(['book', 'bible.filesets' => function ($query) {
                 $query->where('asset_id', 'dbp-prod')->where('set_type_code', 'text_plain');
             }])
             ->skip($offset)
@@ -201,9 +262,9 @@ class UsersControllerV2 extends APIController
      */
     public function bookmarkAlter()
     {
-        if (request()->hash === $this->hash) {
+        if (in_array(request()->hash, $this->hashes)) {
 
-            if(request()->_method === 'delete') {
+            if (request()->_method === 'delete') {
                 Bookmark::where('id', request()->id)->delete();
                 return ['Status' => 'Done'];
             }
@@ -239,8 +300,9 @@ class UsersControllerV2 extends APIController
         $fileset_id = checkParam('dam_id');
         $bible_id = BibleFileset::where('id', $fileset_id)->first()->id ?? strtoupper(substr($fileset_id, 0, 6));
         $limit = checkParam('limit') ?? 1000;
+        $hash = checkParam('hash', true);
 
-        if (checkParam('hash', true) === $this->hash) {
+        if (in_array($hash, $this->hashes)) {
             $user_id = checkParam('user_id');
             $highlights = Highlight::with('color')->where('user_id', $user_id)
                 ->when($fileset_id, function ($q) use ($bible_id) {
@@ -271,7 +333,7 @@ class UsersControllerV2 extends APIController
      */
     public function highlightAlter()
     {
-        if ($this->hash === request()->hash) {
+        if (in_array(request()->hash, $this->hashes)) {
             if (request()->method() == 'DELETE') {
                 $deletedHighlight = Highlight::where('id', request()->id)->delete();
                 return [];
@@ -280,7 +342,7 @@ class UsersControllerV2 extends APIController
             $book = Book::where('id_osis', request()->book_id)->first();
             $fileset = BibleFileset::uniqueFileset(request()->dam_id, 'dbp-prod', 'text_plain')->first();
             $chapter = BibleVerse::where('hash_id', $fileset->hash_id)->where('chapter', request()->chapter_id)
-                        ->where('book_id', $book->id)->where('verse_start', request()->verse_id)->first();
+                ->where('book_id', $book->id)->where('verse_start', request()->verse_id)->first();
             if (!$chapter) {
                 return $this->setStatusCode(404)->replyWithError('No bible_fileset found');
             }
@@ -295,7 +357,7 @@ class UsersControllerV2 extends APIController
             ];
             $highlight = Highlight::where($highlight_content)->first();
 
-            if($highlight) {
+            if ($highlight) {
                 $highlight->highlighted_color = $highlightColor->id;
                 $highlight->save();
             } else {
@@ -326,7 +388,9 @@ class UsersControllerV2 extends APIController
      */
     public function note()
     {
-        if ($this->hash === checkParam('hash', true)) {
+        $hash = checkParam('hash', true);
+
+        if (in_array($hash, $this->hashes)) {
             $user_id = checkParam('user_id');
             $updated = Carbon::createFromDate(2000, 01, 01);
 
@@ -342,9 +406,9 @@ class UsersControllerV2 extends APIController
      */
     public function noteAlter()
     {
-        if ($this->hash === request()->hash) {
+        if (in_array(request()->hash, $this->hashes)) {
 
-            if(request()->_method === 'delete') {
+            if (request()->_method === 'delete') {
                 Note::where('id', request()->id)->delete();
                 return ['Status' => 'Done'];
             }

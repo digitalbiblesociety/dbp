@@ -104,7 +104,6 @@ class Playlist extends Model
        */
       protected $created_at;
       protected $deleted_at;
-      
       public function user()
       {
         return $this->belongsTo(User::class)->select('id', 'name');

@@ -125,6 +125,8 @@ class ApiMetadataController extends APIController
      *     description="This call returns the file path information. This information can be used with the response of the locations calls to create a URI to retrieve files.",
      *     operationId="v2_library_asset",
      *     @OA\Parameter(name="dam_id", in="query", description="The DAM ID for which to retrieve file path info.", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+     *     @OA\Parameter(name="asset_id", in="query", description="Will filter the results by the given Asset", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
+     *     @OA\Parameter(name="asset_type", in="query", description="The asset type to filter result by.", @OA\Schema(ref="#/components/schemas/Asset/properties/asset_type")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -133,7 +135,9 @@ class ApiMetadataController extends APIController
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_asset")),
-     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_asset"))
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_asset")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_asset")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_asset"))
      *     )
      * )
      *
@@ -201,7 +205,9 @@ class ApiMetadataController extends APIController
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_api_versionLatest")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_api_versionLatest"))
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_api_versionLatest")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_api_versionLatest")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_api_versionLatest"))
      *     )
      * )
      *
@@ -244,7 +250,9 @@ class ApiMetadataController extends APIController
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_api_apiReply")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_api_apiReply"))
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_api_apiReply")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_api_apiReply")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_api_apiReply"))
      *     )
      * )
      *
