@@ -32,17 +32,17 @@ class CreatePlansTable extends Migration
                 $table->bigIncrements('id');
                 $table->bigInteger('plan_id')->unsigned();
                 $table->foreign('plan_id', 'FK_plan_days')->references('id')->on(config('database.connections.dbp_users.database') . '.plans')->onDelete('cascade')->onUpdate('cascade');
+                $table->bigInteger('playlist_id')->unsigned()->nullable();
+                $table->foreign('playlist_id', 'FK_playlist_plan')->references('id')->on(config('database.connections.dbp_users.database') . '.user_playlists')->onDelete('cascade')->onUpdate('cascade');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
                 $table->integer('order_column');
             });
         }
 
-        if (!Schema::connection('dbp_users')->hasTable('plan_playlist_items')) {
-            Schema::connection('dbp_users')->create('plan_playlist_items', function (Blueprint $table) {
+        if (!Schema::connection('dbp_users')->hasTable('playlist_items')) {
+            Schema::connection('dbp_users')->create('playlist_items', function (Blueprint $table) {
                 $table->bigIncrements('id');
-                $table->bigInteger('day_id')->unsigned()->nullable();
-                $table->foreign('day_id', 'FK_plan_days_items')->references('id')->on(config('database.connections.dbp_users.database') . '.plan_days')->onDelete('cascade')->onUpdate('cascade');
                 $table->bigInteger('playlist_id')->unsigned()->nullable();
                 $table->foreign('playlist_id', 'FK_playlists_items')->references('id')->on(config('database.connections.dbp_users.database') . '.user_playlists')->onDelete('cascade')->onUpdate('cascade');
                 $table->string('fileset_id', 16);
@@ -66,13 +66,33 @@ class CreatePlansTable extends Migration
                 $table->integer('user_id')->unsigned();
                 $table->foreign('user_id', 'FK_users_user_plans')->references('id')->on(config('database.connections.dbp_users.database') . '.users')->onUpdate('cascade');
                 $table->bigInteger('plan_id')->unsigned();
+                $table->foreign('plan_id', 'FK_plans_user_plans')->references('id')->on(config('database.connections.dbp_users.database') . '.plans')->onDelete('cascade')->onUpdate('cascade');
                 $table->date('start_date')->nullable();
                 $table->integer('percentage_completed');
-                $table->text('days_completed');
-                $table->text('items_completed');
-                $table->foreign('plan_id', 'FK_plans_user_plans')->references('id')->on(config('database.connections.dbp_users.database') . '.plans')->onDelete('cascade')->onUpdate('cascade');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            });
+        }
+
+        if (!Schema::connection('dbp_users')->hasTable('playlist_items_completed')) {
+            Schema::connection('dbp_users')->create('playlist_items_completed', function (Blueprint $table) {
+                $table->index(['user_id', 'playlist_item_id']);
+                $table->integer('user_id')->unsigned();
+                $table->foreign('user_id', 'FK_users_playlist_item_completed')->references('id')->on(config('database.connections.dbp_users.database') . '.users')->onUpdate('cascade');
+                $table->bigInteger('playlist_item_id')->unsigned();
+                $table->foreign('playlist_item_id', 'FK_playlist_playlist_item_completed')->references('id')->on(config('database.connections.dbp_users.database') . '.playlist_items')->onDelete('cascade')->onUpdate('cascade');
+                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            });
+        }
+
+        if (!Schema::connection('dbp_users')->hasTable('plan_days_completed')) {
+            Schema::connection('dbp_users')->create('plan_days_completed', function (Blueprint $table) {
+                $table->index(['user_id', 'plan_day_id']);
+                $table->integer('user_id')->unsigned();
+                $table->foreign('user_id', 'FK_users_plan_days_completed')->references('id')->on(config('database.connections.dbp_users.database') . '.users')->onUpdate('cascade');
+                $table->bigInteger('plan_day_id')->unsigned();
+                $table->foreign('plan_day_id', 'FK_plan_plan_days_completed')->references('id')->on(config('database.connections.dbp_users.database') . '.plan_days')->onDelete('cascade')->onUpdate('cascade');
+                $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             });
         }
     }
@@ -85,7 +105,9 @@ class CreatePlansTable extends Migration
     public function down()
     {
         Schema::connection('dbp_users')->dropIfExists('user_plans');
-        Schema::connection('dbp_users')->dropIfExists('plan_playlist_items');
+        Schema::connection('dbp_users')->dropIfExists('playlist_items_completed');
+        Schema::connection('dbp_users')->dropIfExists('plan_days_completed');
+        Schema::connection('dbp_users')->dropIfExists('playlist_items');
         Schema::connection('dbp_users')->dropIfExists('plan_days');
         Schema::connection('dbp_users')->dropIfExists('plans');
     }

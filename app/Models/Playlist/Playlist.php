@@ -35,7 +35,7 @@ class Playlist extends Model
     
     protected $connection = 'dbp_users';
     public $table         = 'user_playlists';
-    protected $fillable   = ['user_id','name'];
+    protected $fillable   = ['user_id', 'name', 'external_content'];
     protected $hidden     = ['featured', 'user_id', 'deleted_at'];
     protected $dates      = ['deleted_at'];
 
@@ -56,6 +56,16 @@ class Playlist extends Model
        *   title="name",
        *   type="string",
        *   description="The name of the playlist"
+       * )
+       *
+       */
+     protected $external_content;
+       /**
+       *
+       * @OA\Property(
+       *   title="external_content",
+       *   type="string",
+       *   description="The url to external content"
        * )
        *
        */

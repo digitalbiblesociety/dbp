@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Plan;
 
 use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
-use App\Models\User\User;
 use App\Models\Plan\Plan;
 use App\Traits\CheckProjectMembership;
 use App\Models\Plan\PlanDay;
 use App\Models\Plan\UserPlan;
+use App\Models\Playlist\Playlist;
+use Illuminate\Http\Request;
 
 class PlansController extends APIController
 {
@@ -19,23 +20,18 @@ class PlansController extends APIController
      * Display a listing of the resource.
      *
      * @OA\Get(
-     *     path="/plans/{user_id}",
+     *     path="/plans",
      *     tags={"Plans"},
      *     summary="List a user's plans",
      *     description="",
      *     operationId="v4_plans.index",
-     *     @OA\Parameter(
-     *          name="user_id",
-     *          in="path",
-     *          @OA\Schema(ref="#/components/schemas/User/properties/id"),
-     *          description="The user who is following the plans. If this value is not provided the response will be the featured plans"
-     *     ),
      *     @OA\Parameter(
      *          name="featured",
      *          in="query",
      *          @OA\Schema(ref="#/components/schemas/Plan/properties/featured"),
      *          description="Return featured plans"
      *     ),
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -49,8 +45,7 @@ class PlansController extends APIController
      *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_index"))
      *     )
      * )
-     *
-     * @param $user_id
+     * 
      *
      * @return mixed
      * 
@@ -64,34 +59,25 @@ class PlansController extends APIController
      *   @OA\Items(ref="#/components/schemas/Plan")
      * )
      */
-    public function index($user_id = null)
+    public function index(Request $request)
     {
+        $user = $request->user();
 
-        if ($user_id) {
-            // Validate Project / User Connection
-            $user = User::where('id', $user_id)->select('id')->first();
-
-            if (!$user) {
-                return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
-            }
-
-            $user_is_member = $this->compareProjects($user_id, $this->key);
-
-            if (!$user_is_member) {
-                return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
-            }
+        // Validate Project / User Connection
+        if (!empty($user) && !$this->compareProjects($user->id, $this->key)) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
         $featured = checkParam('featured');
-        $show_featured = ($featured && $featured != 'false') || !$user_id;
+        $featured = $featured && $featured != 'false' || empty($user);
 
         $plans = Plan::with('days')
             ->with('user')
-            ->when($show_featured, function ($q) {
+            ->when($featured || empty($user), function ($q) {
                 $q->where('plans.featured', '1');
-            })->unless($show_featured, function ($q) use ($user_id) {
-                $q->rightJoin('user_plans', function ($join) use ($user_id) {
-                    $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user_id);
+            })->unless($featured, function ($q) use ($user) {
+                $q->rightJoin('user_plans', function ($join) use ($user) {
+                    $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
                 });
             })->orderBy('plans.updated_at', 'desc')->get()
             ->filter(function ($item) {
@@ -110,18 +96,12 @@ class PlansController extends APIController
      * Store a newly created plan in storage.
      *
      * @OA\Post(
-     *     path="/plans/{user_id}",
+     *     path="/plans",
      *     tags={"Plans"},
      *     summary="Crete a plan",
      *     description="",
      *     operationId="v4_plans.store",
-     *     @OA\Parameter(
-     *          name="user_id",
-     *          in="path",
-     *          required=true,
-     *          @OA\Schema(ref="#/components/schemas/User/properties/id"),
-     *          description="The user who is creating the plan"
-     *     ),
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -147,17 +127,12 @@ class PlansController extends APIController
      *
      * @return \Illuminate\Http\Response|array
      */
-    public function store($user_id)
+    public function store(Request $request)
     {
 
         // Validate Project / User Connection
-        $user = User::where('id', $user_id)->select('id')->first();
-
-        if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
-        }
-
-        $user_is_member = $this->compareProjects($user_id, $this->key);
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
 
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
@@ -168,20 +143,26 @@ class PlansController extends APIController
         $suggested_start_date = checkParam('suggested_start_date');
 
         $plan = Plan::create([
-            'user_id'           => $user_id,
-            'name'              => $name,
-            'featured'          => false
+            'user_id'               => $user->id,
+            'name'                  => $name,
+            'featured'              => false,
+            'suggested_start_date'  => $suggested_start_date
         ]);
 
         for ($i = 0; $i < intval($days); $i++) {
-            $plan_day = new PlanDay(array('plan_id' => $plan->id));
-            $plan_day->save();
+            $playlist = Playlist::create([
+                'user_id'               => $user->id,
+            ]);
+
+            PlanDay::create([
+                'plan_id'               => $plan->id,
+                'playlist_id'           => $playlist->id,
+            ]);
         }
 
         UserPlan::create([
-            'user_id'               => $user_id,
-            'plan_id'               => $plan->id,
-            'suggested_start_date'  => $suggested_start_date,
+            'user_id'               => $user->id,
+            'plan_id'               => $plan->id
         ]);
 
         return $this->reply($plan);
@@ -191,23 +172,18 @@ class PlansController extends APIController
     /**
      *
      * @OA\Get(
-     *     path="/plans/{plan_id}/plan/{user_id}",
+     *     path="/plans/{plan_id}",
      *     tags={"Plans"},
      *     summary="A user's plan",
      *     description="",
      *     operationId="v4_plans.show",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(
      *          name="plan_id",
      *          in="path",
      *          required=true,
      *          @OA\Schema(ref="#/components/schemas/User/properties/id"),
      *          description="The plan id"
-     *     ),
-     *     @OA\Parameter(
-     *          name="user_id",
-     *          in="path",
-     *          @OA\Schema(ref="#/components/schemas/User/properties/id"),
-     *          description="The user who is following the plan. If this value is not provided the response will be the detail of the plan"
      *     ),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
@@ -224,46 +200,28 @@ class PlansController extends APIController
      * )
      *
      * @param $plan_id
-     * @param $user_id
      *
      * @return mixed
      * 
      * 
-     * @OA\Schema (
-     *   type="array",
-     *   schema="v4_plan_index",
-     *   description="The v4 plan index response.",
-     *   title="User plan",
-     *   @OA\Xml(name="v4_plan_index"),
-     *   @OA\Items(ref="#/components/schemas/Plan")
-     * )
      */
-    public function show($plan_id, $user_id = null)
+    public function show(Request $request, $plan_id)
     {
-        $user = User::where('id', $user_id)->select('id')->first();
-        if ($user_id) {
-            // Validate Project / User Connection
-            $user = User::where('id', $user_id)->select('id')->first();
+        $user = $request->user();
 
-            if (!$user) {
-                return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
-            }
-
-            $user_is_member = $this->compareProjects($user_id, $this->key);
-
-            if (!$user_is_member) {
-                return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
-            }
+        // Validate Project / User Connection
+        if (!empty($user) && !$this->compareProjects($user->id, $this->key)) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
         $plan = Plan::with('days')
             ->with('user')
             ->where('plans.id', $plan_id)
-            ->when($user_id, function ($q) use ($user_id) {
-                $q->rightJoin('user_plans', function ($join) use ($user_id) {
-                    $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user_id);
+            ->when(!empty($user), function ($q) use ($user) {
+                $q->rightJoin('user_plans', function ($join) use ($user) {
+                    $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
                 });
-            })->orderBy('plans.updated_at', 'desc')->first();
+            })->first();
 
         if (!$plan) {
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
@@ -276,13 +234,13 @@ class PlansController extends APIController
      * Update the specified plan.
      *
      * @OA\Put(
-     *     path="/plans/{plan_id}/plan/{user_id}",
+     *     path="/plans/{plan_id}",
      *     tags={"Plans"},
-     *     summary="Delete a plan",
+     *     summary="Update a plan",
      *     description="",
      *     operationId="v4_plans.update",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
-     *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\RequestBody(required=true, @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name", ref="#/components/schemas/Plan/properties/name"),
@@ -304,26 +262,20 @@ class PlansController extends APIController
      * )
      *
      * @param  int $plan_id
-     * @param  int $user_id
      *
      * @return array|\Illuminate\Http\Response
      */
-    public function update($plan_id, $user_id)
+    public function update(Request $request, $plan_id)
     {
         // Validate Project / User Connection
-        $user = User::where('id', $user_id)->select('id')->first();
-
-        if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
-        }
-
-        $user_is_member = $this->compareProjects($user_id, $this->key);
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
 
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $plan = Plan::where('user_id', $user_id)->where('id', $plan_id)->first();
+        $plan = Plan::where('user_id', $user->id)->where('id', $plan_id)->first();
 
         if (!$plan) {
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
@@ -350,13 +302,13 @@ class PlansController extends APIController
      * Remove the specified plan.
      *
      * @OA\Delete(
-     *     path="/plans/{plan_id}/plan/{user_id}",
+     *     path="/plans/{plan_id}",
      *     tags={"Plans"},
      *     summary="Delete a plan",
      *     description="",
      *     operationId="v4_plans.destroy",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
-     *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -372,31 +324,30 @@ class PlansController extends APIController
      * )
      *
      * @param  int $plan_id
-     * @param  int $user_id
      *
      * @return array|\Illuminate\Http\Response
      */
-    public function destroy($plan_id, $user_id)
+    public function destroy(Request $request, $plan_id)
     {
         // Validate Project / User Connection
-        $user = User::where('id', $user_id)->select('id')->first();
-
-        if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
-        }
-
-        $user_is_member = $this->compareProjects($user_id, $this->key);
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
 
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $plan = Plan::where('user_id', $user_id)->where('id', $plan_id)->first();
+        $plan = Plan::where('user_id', $user->id)->where('id', $plan_id)->first();
 
         if (!$plan) {
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
         }
 
+        $playlists_ids = $plan->days()->pluck('playlist_id')->unique();
+        $playlists = Playlist::whereIn('id', $playlists_ids);
+        $playlists->delete();
+        $user_plans = UserPlan::where('plan_id', $plan_id);
+        $user_plans->delete();
         $plan->days()->delete();
         $plan->delete();
 
