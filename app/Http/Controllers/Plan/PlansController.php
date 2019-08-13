@@ -446,6 +446,11 @@ class PlansController extends APIController
 
     private function getPlan($plan_id, $user)
     {
+        $select = ['plans.*'];
+        if(!empty($user)){
+            $select[]= 'user_plans.start_date';
+            $select[]= 'user_plans.percentage_completed';
+        }
         $plan = Plan::with('days')
             ->with('user')
             ->where('plans.id', $plan_id)
@@ -453,11 +458,7 @@ class PlansController extends APIController
                 $q->leftJoin('user_plans', function ($join) use ($user) {
                     $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
                 });
-            })->select([
-                'plans.*',
-                'user_plans.start_date',
-                'user_plans.percentage_completed'
-            ])->first();
+            })->select($select)->first();
 
         return $plan;
     }
