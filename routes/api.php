@@ -228,3 +228,5 @@ Route::name('v4_plans.update')
     ->middleware('APIToken:check')->put('plans/{plan_id}',                          'Plan\PlansController@update');
 Route::name('v4_plans.destroy')
     ->middleware('APIToken:check')->delete('plans/{plan_id}',                       'Plan\PlansController@destroy');
+Route::name('v4_plans.start')
+    ->middleware('APIToken:check')->post('plans/{plan_id}/start',                    'Plan\PlansController@start');

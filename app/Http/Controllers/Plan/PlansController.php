@@ -364,4 +364,81 @@ class PlansController extends APIController
         }
         return true;
     }
+
+    /**
+     * Start the specified plan.
+     *
+     * @OA\Post(
+     *     path="/plans/{plan_id}/start",
+     *     tags={"Plans"},
+     *     summary="Start a plan",
+     *     description="",
+     *     operationId="v4_plans.start",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
+     *     @OA\RequestBody(required=true, @OA\MediaType(mediaType="application/json",
+     *          @OA\Schema(
+     *              @OA\Property(property="start_date", type="string")
+     *          )
+     *     )),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_index")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_index")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_index"))
+     *     )
+     * )
+     *
+     * @param  int $plan_id
+     *
+     * @return array|\Illuminate\Http\Response
+     */
+    public function start(Request $request, $plan_id)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $plan = Plan::where('user_id', $user->id)->where('id', $plan_id)->first();
+
+        if (!$plan) {
+            return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+        }
+
+        $start_date = checkParam('start_date', true);
+
+        $user_plan = UserPlan::where('plan_id', $plan_id)->where('user_id', $user->id)->first();
+
+        if(!$user_plan){
+            $user_plan = UserPlan::create([
+                'user_id'               => $user->id,
+                'plan_id'               => $plan->id
+            ]);
+        }
+
+        $user_plan->start_date = $start_date;
+        $user_plan->save();
+
+
+        $plan = Plan::with('days')
+            ->with('user')
+            ->where('plans.id', $plan->id)
+            ->when(!empty($user), function ($q) use ($user) {
+                $q->rightJoin('user_plans', function ($join) use ($user) {
+                    $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
+                });
+            })->first();
+
+        return $this->reply($plan);
+    }
 }
