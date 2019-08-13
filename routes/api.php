@@ -214,12 +214,17 @@ Route::name('v4_playlists.index')
     ->middleware('APIToken')->get('playlists',                                      'Playlist\PlaylistsController@index');
 Route::name('v4_playlists.store')
     ->middleware('APIToken:check')->post('playlists',                               'Playlist\PlaylistsController@store');
+Route::name('v4_playlists.show')
+    ->middleware('APIToken')->get('playlists/{playlist_id}',                        'Playlist\PlaylistsController@show');
 Route::name('v4_playlists.update')
     ->middleware('APIToken:check')->put('playlists/{playlist_id}',                  'Playlist\PlaylistsController@update');
 Route::name('v4_playlists.destroy')
     ->middleware('APIToken:check')->delete('playlists/{playlist_id}',               'Playlist\PlaylistsController@destroy');
 Route::name('v4_playlists.follow')
     ->middleware('APIToken:check')->post('playlists/{playlist_id}/follow',          'Playlist\PlaylistsController@follow');
+Route::name('v4_playlists_items.store')
+    ->middleware('APIToken:check')->post('playlists/{playlist_id}/item',          'Playlist\PlaylistsController@storeItem');
+
 
 // VERSION 4 | Plans
 Route::name('v4_plans.index')
