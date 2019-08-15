@@ -61,7 +61,7 @@ class PlaylistsController extends APIController
     public function index(Request $request)
     {
         $user = $request->user();
-        
+
         // Validate Project / User Connection
         if (!empty($user) && !$this->compareProjects($user->id, $this->key)) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
@@ -71,6 +71,9 @@ class PlaylistsController extends APIController
         $featured = $featured && $featured != 'false' || empty($user);
 
         $playlists = Playlist::with('user')
+            ->whereNotIn('id', function ($query) {
+                $query->select('playlist_id')->from('plan_days');
+            })
             ->when($featured || empty($user), function ($q) {
                 $q->where('user_playlists.featured', '1');
             })->unless($featured, function ($q) use ($user) {
@@ -97,6 +100,7 @@ class PlaylistsController extends APIController
      *     @OA\RequestBody(required=true, description="Fields for User Playlist Creation", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name",                  ref="#/components/schemas/Playlist/properties/name"),
+     *              @OA\Property(property="external_content",      ref="#/components/schemas/Playlist/properties/external_content")
      *          )
      *     )),
      *     @OA\Response(
@@ -122,12 +126,19 @@ class PlaylistsController extends APIController
         }
 
         $name = checkParam('name', true);
+        $external_content = checkParam('external_content');
 
-        $playlist = Playlist::create([
+        $playlist_data = [
             'user_id'           => $user->id,
             'name'              => $name,
             'featured'          => false
-        ]);
+        ];
+
+        if ($external_content) {
+            $playlist_data['external_content'] = $external_content;
+        }
+
+        $playlist = Playlist::create($playlist_data);
 
         return $this->reply($playlist);
     }
@@ -193,5 +204,4 @@ class PlaylistsController extends APIController
         }
         return true;
     }
-
 }
