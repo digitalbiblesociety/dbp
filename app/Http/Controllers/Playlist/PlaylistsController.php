@@ -80,7 +80,8 @@ class PlaylistsController extends APIController
 
         $playlists = Playlist::with('user')
             ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
-                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user->id);
+                $user_id = empty($user) ? 0 : $user->id;
+                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user_id);
             })
             ->whereNotIn('id', function ($query) {
                 $query->select('playlist_id')->from('plan_days');
@@ -202,9 +203,15 @@ class PlaylistsController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
+        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
         $playlist = Playlist::with('items')
             ->with('user')
+            ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
+                $user_id = empty($user) ? 0 : $user->id;
+                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user_id);
+            })
             ->where('user_playlists.id', $playlist_id)
+            ->select($select)
             ->first();
 
         if (!$playlist) {

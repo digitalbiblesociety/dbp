@@ -31,9 +31,9 @@ class CreatePlansTable extends Migration
             Schema::connection('dbp_users')->create('plan_days', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->bigInteger('plan_id')->unsigned();
-                $table->foreign('plan_id', 'FK_plan_days')->references('id')->on(config('database.connections.dbp_users.database') . '.plans')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('plan_id', 'FK_plan_plan_days')->references('id')->on(config('database.connections.dbp_users.database') . '.plans')->onDelete('cascade')->onUpdate('cascade');
                 $table->bigInteger('playlist_id')->unsigned()->nullable();
-                $table->foreign('playlist_id', 'FK_playlist_plan')->references('id')->on(config('database.connections.dbp_users.database') . '.user_playlists')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreign('playlist_id', 'FK_playlist_plan_days')->references('id')->on(config('database.connections.dbp_users.database') . '.user_playlists')->onDelete('cascade')->onUpdate('cascade');
                 $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
                 $table->integer('order_column');
