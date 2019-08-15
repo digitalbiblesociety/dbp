@@ -9,6 +9,7 @@ use App\Models\Playlist\Playlist;
 use App\Models\Playlist\PlaylistFollower;
 use App\Traits\CheckProjectMembership;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PlaylistsController extends APIController
 {
@@ -74,23 +75,23 @@ class PlaylistsController extends APIController
         $featured = $featured && $featured != 'false' || empty($user);
         $limit    = (int) (checkParam('limit') ?? 25);
 
-        $select = ['user_playlists.*'];
+        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
 
         $playlists = Playlist::with('user')
+            ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
+                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user->id);
+            })
             ->whereNotIn('id', function ($query) {
                 $query->select('playlist_id')->from('plan_days');
             })
             ->when($featured || empty($user), function ($q) {
                 $q->where('user_playlists.featured', '1');
             })->unless($featured, function ($q) use ($user) {
-                $q->leftJoin('playlists_followers', function ($join) use ($user) {
-                    $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user->id);
-                });
                 $q->where('user_playlists.user_id', $user->id)
-                ->orWhere('playlists_followers.user_id', $user->id);
+                    ->orWhere('playlists_followers.user_id', $user->id);
             })
             ->select($select)
-            ->orderBy('updated_at', 'desc')->paginate($limit);
+            ->orderBy('name', 'asc')->paginate($limit);
 
         return $this->reply($playlists);
     }
