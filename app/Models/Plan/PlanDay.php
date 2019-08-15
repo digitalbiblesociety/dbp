@@ -13,5 +13,5 @@ class PlanDay extends Model implements Sortable
     protected $connection = 'dbp_users';
     public $table         = 'plan_days';
     protected $fillable   = ['plan_id', 'playlist_id'];
-    protected $hidden     = ['plan_id', 'created_at', 'updated_at', 'order_column'];
+    protected $hidden     = ['plan_id', 'created_at', 'updated_at', 'order_column', 'playlist_id'];
 }
