@@ -2,7 +2,7 @@
 
 namespace App\Models\Playlist;
 
-
+use App\Models\Playlist\PlaylistItems;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
@@ -118,5 +118,10 @@ class Playlist extends Model
       public function user()
       {
         return $this->belongsTo(User::class)->select('id', 'name');
+      }
+
+      public function items()
+      {
+        return $this->hasMany(PlaylistItems::class)->orderBy('order_column');;
       }
 }

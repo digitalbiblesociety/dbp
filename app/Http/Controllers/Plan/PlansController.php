@@ -234,7 +234,7 @@ class PlansController extends APIController
      *     operationId="v4_plans.update",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
-     *     @OA\Parameter(name="days", in="query", required=true,@OA\Schema(type="string"), description="Comma-separated ids of the days to be sorted or deleted"),
+     *     @OA\Parameter(name="days", in="query",@OA\Schema(type="string"), description="Comma-separated ids of the days to be sorted or deleted"),
      *     @OA\RequestBody(required=true, @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name", ref="#/components/schemas/Plan/properties/name"),

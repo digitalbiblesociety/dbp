@@ -7,6 +7,7 @@ use App\Http\Controllers\APIController;
 use App\Models\User\User;
 use App\Models\Playlist\Playlist;
 use App\Models\Playlist\PlaylistFollower;
+use App\Models\Playlist\PlaylistItems;
 use App\Traits\CheckProjectMembership;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -79,7 +80,8 @@ class PlaylistsController extends APIController
 
         $playlists = Playlist::with('user')
             ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
-                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user->id);
+                $user_id = empty($user) ? 0 : $user->id;
+                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user_id);
             })
             ->whereNotIn('id', function ($query) {
                 $query->select('playlist_id')->from('plan_days');
@@ -157,6 +159,69 @@ class PlaylistsController extends APIController
     }
 
     /**
+     *
+     * @OA\Get(
+     *     path="/playlists/{playlist_id}",
+     *     tags={"Playlists"},
+     *     summary="A user's playlist",
+     *     description="",
+     *     operationId="v4_playlists.show",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="playlist_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Playlist/properties/id"),
+     *          description="The playlist id"
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_playlist_index"))
+     *     )
+     * )
+     *
+     * @param $playlist_id
+     *
+     * @return mixed
+     * 
+     * 
+     */
+    public function show(Request $request, $playlist_id)
+    {
+        $user = $request->user();
+
+        // Validate Project / User Connection
+        if (!empty($user) && !$this->compareProjects($user->id, $this->key)) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
+        $playlist = Playlist::with('items')
+            ->with('user')
+            ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
+                $user_id = empty($user) ? 0 : $user->id;
+                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user_id);
+            })
+            ->where('user_playlists.id', $playlist_id)
+            ->select($select)
+            ->first();
+
+        if (!$playlist) {
+            return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
+        }
+
+        return $this->reply($playlist);
+    }
+
+    /**
      * Update the specified playlist.
      *
      * @OA\Put(
@@ -167,6 +232,7 @@ class PlaylistsController extends APIController
      *     operationId="v4_playlist.update",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="playlist_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Playlist/properties/id")),
+     *     @OA\Parameter(name="items", in="query", @OA\Schema(type="string"), description="Comma-separated ids of the playlist items to be sorted or deleted"),
      *     @OA\RequestBody(required=true, @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name", ref="#/components/schemas/Playlist/properties/name"),
@@ -201,7 +267,10 @@ class PlaylistsController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $playlist = Playlist::where('user_id', $user->id)->where('id', $playlist_id)->first();
+        $playlist = Playlist::with('items')
+            ->with('user')
+            ->where('user_id', $user->id)
+            ->where('id', $playlist_id)->first();
 
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
@@ -220,6 +289,20 @@ class PlaylistsController extends APIController
         }
 
         $playlist->update($update_values);
+
+        $items = checkParam('items');
+
+        if ($items) {
+            $items_ids = explode(',', $items);
+            PlaylistItems::setNewOrder($items_ids);
+            $deleted_items = PlaylistItems::whereNotIn('id', $items_ids)->where('playlist_id', $playlist->id);
+            $deleted_items->delete();
+        }
+
+        $playlist = Playlist::with('items')
+            ->with('user')
+            ->where('user_id', $user->id)
+            ->where('id', $playlist_id)->first();
 
         return $this->reply($playlist);
     }
@@ -339,6 +422,74 @@ class PlaylistsController extends APIController
         }
 
         return $this->reply('Playlist ' . $result);
+    }
+
+    /**
+     * Store a newly created playlist item.
+     *
+     * @OA\Post(
+     *     path="/playlists/{playlist_id}/item",
+     *     tags={"Playlists"},
+     *     summary="Crete a playlist item",
+     *     description="",
+     *     operationId="v4_playlists_items.store",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="playlist_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Playlist/properties/id")),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\RequestBody(required=true, description="Fields for Playlist item creation", @OA\MediaType(mediaType="application/json",
+     *          @OA\Schema(
+     *              @OA\Property(property="fileset_id", ref="#/components/schemas/PlaylistItems/properties/fileset_id"),
+     *              @OA\Property(property="book_id", ref="#/components/schemas/PlaylistItems/properties/book_id"),
+     *              @OA\Property(property="chapter_start", ref="#/components/schemas/PlaylistItems/properties/chapter_start"),
+     *              @OA\Property(property="chapter_end", ref="#/components/schemas/PlaylistItems/properties/chapter_end"),
+     *              @OA\Property(property="verse_start", ref="#/components/schemas/PlaylistItems/properties/verse_start"),
+     *              @OA\Property(property="verse_end", ref="#/components/schemas/PlaylistItems/properties/verse_end")
+     *          )
+     *     )),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/PlaylistItems")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/PlaylistItems")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/PlaylistItems")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/PlaylistItems"))
+     *     )
+     * )
+     *
+     * @return mixed
+     */
+    public function storeItem(Request $request, $playlist_id)
+    {
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $playlist = Playlist::with('items')
+            ->with('user')
+            ->where('user_id', $user->id)
+            ->where('id', $playlist_id)->first();
+
+        if (!$playlist) {
+            return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
+        }
+
+        $playlistItem = PlaylistItems::create([
+            'playlist_id'       => $playlist->id,
+            'fileset_id'        => request()->fileset_id,
+            'book_id'           => request()->book_id,
+            'chapter_start'     => request()->chapter_start,
+            'chapter_end'        => request()->chapter_end,
+            'verse_start'       => request()->verse_start,
+            'verse_end'       => request()->verse_end
+        ]);
+
+        return $this->reply($playlistItem);
     }
 
     private function validatePlaylist()
