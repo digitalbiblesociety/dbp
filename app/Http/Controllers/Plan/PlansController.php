@@ -463,13 +463,21 @@ class PlansController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/PlanDay")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/PlanDay")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/PlanDay")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/PlanDay"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plans_days")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plans_days")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plans_days")),
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_plans_days"))
      *     )
      * )
      *
+     * @OA\Schema (
+     *   type="array",
+     *   schema="v4_plans_days",
+     *   description="The v4 plan days creation response.",
+     *   title="User plan",
+     *   @OA\Xml(name="v4_plans_days"),
+     *   @OA\Items(ref="#/components/schemas/PlanDay")
+     * )
      * @return mixed
      */
     public function storeDay(Request $request, $plan_id)
