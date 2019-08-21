@@ -439,16 +439,7 @@ class PlaylistsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\RequestBody(required=true, description="Fields for Playlist item creation", @OA\MediaType(mediaType="application/json",
-     *          @OA\Schema(
-     *              @OA\Property(property="fileset_id", ref="#/components/schemas/PlaylistItems/properties/fileset_id"),
-     *              @OA\Property(property="book_id", ref="#/components/schemas/PlaylistItems/properties/book_id"),
-     *              @OA\Property(property="chapter_start", ref="#/components/schemas/PlaylistItems/properties/chapter_start"),
-     *              @OA\Property(property="chapter_end", ref="#/components/schemas/PlaylistItems/properties/chapter_end"),
-     *              @OA\Property(property="verse_start", ref="#/components/schemas/PlaylistItems/properties/verse_start"),
-     *              @OA\Property(property="verse_end", ref="#/components/schemas/PlaylistItems/properties/verse_end")
-     *          )
-     *     )),
+     *     @OA\RequestBody(ref="#/components/requestBodies/PlaylistItems"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -456,6 +447,23 @@ class PlaylistsController extends APIController
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/PlaylistItems")),
      *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/PlaylistItems")),
      *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/PlaylistItems"))
+     *     )
+     * )
+     * 
+     * @OA\RequestBody(
+     *     request="PlaylistItems",
+     *     required=true,
+     *     description="Fields for Playlist item creation",
+     *     @OA\JsonContent(
+     *         type="array",
+     *         @OA\Items(
+     *              @OA\Property(property="fileset_id", ref="#/components/schemas/PlaylistItems/properties/fileset_id"),
+     *              @OA\Property(property="book_id", ref="#/components/schemas/PlaylistItems/properties/book_id"),
+     *              @OA\Property(property="chapter_start", ref="#/components/schemas/PlaylistItems/properties/chapter_start"),
+     *              @OA\Property(property="chapter_end", ref="#/components/schemas/PlaylistItems/properties/chapter_end"),
+     *              @OA\Property(property="verse_start", ref="#/components/schemas/PlaylistItems/properties/verse_start"),
+     *              @OA\Property(property="verse_end", ref="#/components/schemas/PlaylistItems/properties/verse_end")
+     *         )
      *     )
      * )
      *
@@ -479,17 +487,28 @@ class PlaylistsController extends APIController
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
         }
 
-        $playlistItem = PlaylistItems::create([
-            'playlist_id'       => $playlist->id,
-            'fileset_id'        => request()->fileset_id,
-            'book_id'           => request()->book_id,
-            'chapter_start'     => request()->chapter_start,
-            'chapter_end'        => request()->chapter_end,
-            'verse_start'       => request()->verse_start,
-            'verse_end'       => request()->verse_end
-        ]);
+        $playlist_items = json_decode($request->getContent());
+        $single_item = checkParam('fileset_id');
 
-        return $this->reply($playlistItem);
+        if ($single_item) {
+            $playlist_items = [$playlist_items];
+        }
+
+        $created_playlist_items = [];
+
+        foreach ($playlist_items as $playlist_item) {
+            $created_playlist_items[] = PlaylistItems::create([
+                'playlist_id'       => $playlist->id,
+                'fileset_id'        => $playlist_item->fileset_id,
+                'book_id'           => $playlist_item->book_id,
+                'chapter_start'     => $playlist_item->chapter_start,
+                'chapter_end'       => $playlist_item->chapter_end,
+                'verse_start'       => $playlist_item->verse_start,
+                'verse_end'         => $playlist_item->verse_end
+            ]);
+        }
+
+        return $this->reply($single_item ? $created_playlist_items[0] : $created_playlist_items);
     }
 
     private function validatePlaylist()
