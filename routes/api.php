@@ -223,7 +223,7 @@ Route::name('v4_playlists.destroy')
 Route::name('v4_playlists.follow')
     ->middleware('APIToken:check')->post('playlists/{playlist_id}/follow',          'Playlist\PlaylistsController@follow');
 Route::name('v4_playlists_items.store')
-    ->middleware('APIToken:check')->post('playlists/{playlist_id}/item',          'Playlist\PlaylistsController@storeItem');
+    ->middleware('APIToken:check')->post('playlists/{playlist_id}/item',            'Playlist\PlaylistsController@storeItem');
 
 
 // VERSION 4 | Plans
@@ -238,4 +238,6 @@ Route::name('v4_plans.update')
 Route::name('v4_plans.destroy')
     ->middleware('APIToken:check')->delete('plans/{plan_id}',                       'Plan\PlansController@destroy');
 Route::name('v4_plans.start')
-    ->middleware('APIToken:check')->post('plans/{plan_id}/start',                    'Plan\PlansController@start');
+    ->middleware('APIToken:check')->post('plans/{plan_id}/start',                   'Plan\PlansController@start');
+Route::name('v4_plans_days.store')
+    ->middleware('APIToken:check')->post('plans/{plan_id}/day',                     'Plan\PlansController@storeDay');

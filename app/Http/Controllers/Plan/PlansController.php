@@ -444,12 +444,72 @@ class PlansController extends APIController
         return $this->reply($plan);
     }
 
+    /**
+     * Store the newly created plan days.
+     *
+     * @OA\Post(
+     *     path="/plans/{plan_id}/day",
+     *     tags={"Plans"},
+     *     summary="Create plan days",
+     *     description="",
+     *     operationId="v4_plans_days.store",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
+     *     @OA\Parameter(name="days", in="query", required=true, @OA\Schema(type="integer"), description="Number of days to add to the plan"),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/PlanDay")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/PlanDay")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/PlanDay")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/PlanDay"))
+     *     )
+     * )
+     *
+     * @return mixed
+     */
+    public function storeDay(Request $request, $plan_id)
+    {
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $plan = Plan::where('user_id', $user->id)->where('id', $plan_id)->first();
+
+        if (!$plan) {
+            return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+        }
+
+        $days = checkParam('days', true);
+
+        $created_plan_days = [];
+
+        for ($i = 0; $i < intval($days); $i++) {
+            $playlist = Playlist::create([
+                'user_id'               => $user->id,
+            ]);
+
+            $created_plan_days[] = PlanDay::create([
+                'plan_id'               => $plan->id,
+                'playlist_id'           => $playlist->id,
+            ]);
+        }
+
+        return $this->reply($created_plan_days);
+    }
+
     private function getPlan($plan_id, $user)
     {
         $select = ['plans.*'];
-        if(!empty($user)){
-            $select[]= 'user_plans.start_date';
-            $select[]= 'user_plans.percentage_completed';
+        if (!empty($user)) {
+            $select[] = 'user_plans.start_date';
+            $select[] = 'user_plans.percentage_completed';
         }
         $plan = Plan::with('days')
             ->with('user')
