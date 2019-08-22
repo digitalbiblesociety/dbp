@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Playlist;
 
 use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
-use App\Models\User\User;
 use App\Models\Playlist\Playlist;
 use App\Models\Playlist\PlaylistFollower;
 use App\Models\Playlist\PlaylistItems;
@@ -203,16 +202,7 @@ class PlaylistsController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
-        $playlist = Playlist::with('items')
-            ->with('user')
-            ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
-                $user_id = empty($user) ? 0 : $user->id;
-                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user_id);
-            })
-            ->where('user_playlists.id', $playlist_id)
-            ->select($select)
-            ->first();
+        $playlist = $this->getPlaylist($user, $playlist_id);
 
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
@@ -299,10 +289,7 @@ class PlaylistsController extends APIController
             $deleted_items->delete();
         }
 
-        $playlist = Playlist::with('items')
-            ->with('user')
-            ->where('user_id', $user->id)
-            ->where('id', $playlist_id)->first();
+        $playlist = $this->getPlaylist($user, $playlist_id);
 
         return $this->reply($playlist);
     }
@@ -407,8 +394,6 @@ class PlaylistsController extends APIController
         $follow = $follow && $follow != 'false';
 
 
-        $result = $follow ? 'followed' : 'unfollowed';
-
         if ($follow) {
             $follower = PlaylistFollower::firstOrNew([
                 'user_id'               => $user->id,
@@ -421,7 +406,8 @@ class PlaylistsController extends APIController
             $follower->delete();
         }
 
-        return $this->reply('Playlist ' . $result);
+        $playlist = $this->getPlaylist($user, $playlist_id);
+        return $this->reply($playlist);
     }
 
     /**
@@ -509,6 +495,21 @@ class PlaylistsController extends APIController
         }
 
         return $this->reply($single_item ? $created_playlist_items[0] : $created_playlist_items);
+    }
+
+    private function getPlaylist($user, $playlist_id)
+    {
+        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
+        $playlist = Playlist::with('items')
+            ->with('user')
+            ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
+                $user_id = empty($user) ? 0 : $user->id;
+                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user_id);
+            })
+            ->where('user_playlists.id', $playlist_id)
+            ->select($select)
+            ->first();
+        return $playlist;
     }
 
     private function validatePlaylist()
