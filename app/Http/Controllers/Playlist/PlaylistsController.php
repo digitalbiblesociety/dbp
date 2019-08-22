@@ -39,6 +39,8 @@ class PlaylistsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(ref="#/components/parameters/limit"),
      *     @OA\Parameter(ref="#/components/parameters/page"),
+     *     @OA\Parameter(ref="#/components/parameters/sort_by"),
+     *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -72,6 +74,9 @@ class PlaylistsController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
+        $sort_by    = checkParam('sort_by') ?? 'name';
+        $sort_dir   = checkParam('sort_dir') ?? 'asc';
+
         $featured = checkParam('featured');
         $featured = $featured && $featured != 'false' || empty($user);
         $limit    = (int) (checkParam('limit') ?? 25);
@@ -93,7 +98,7 @@ class PlaylistsController extends APIController
                     ->orWhere('playlists_followers.user_id', $user->id);
             })
             ->select($select)
-            ->orderBy('name', 'asc')->paginate($limit);
+            ->orderBy($sort_by, $sort_dir)->paginate($limit);
 
         return $this->reply($playlists);
     }
