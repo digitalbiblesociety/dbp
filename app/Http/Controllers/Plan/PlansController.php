@@ -165,6 +165,7 @@ class PlansController extends APIController
             'plan_id'               => $plan->id
         ]);
 
+        $plan = $this->getPlan($plan->id, $user);
         return $this->reply($plan);
     }
 
