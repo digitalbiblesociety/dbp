@@ -37,7 +37,7 @@ class Playlist extends Model
     protected $connection = 'dbp_users';
     public $table         = 'user_playlists';
     protected $fillable   = ['user_id', 'name', 'external_content'];
-    protected $hidden     = ['featured', 'user_id', 'deleted_at'];
+    protected $hidden     = ['user_id', 'deleted_at'];
     protected $dates      = ['deleted_at'];
 
     /**
@@ -115,6 +115,17 @@ class Playlist extends Model
        */
       protected $created_at;
       protected $deleted_at;
+      
+      public function getFeaturedAttribute($featured)
+      {
+        return (bool) $featured;
+      }
+
+      public function getFollowingAttribute($following)
+      {
+        return (bool) $following;
+      }
+
       public function user()
       {
         return $this->belongsTo(User::class)->select('id', 'name');
