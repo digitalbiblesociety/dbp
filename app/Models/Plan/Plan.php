@@ -35,7 +35,7 @@ class Plan extends Model
   protected $connection = 'dbp_users';
   public $table         = 'plans';
   protected $fillable   = ['user_id', 'name', 'suggested_start_date'];
-  protected $hidden     = ['featured', 'user_id', 'deleted_at', 'plan_id'];
+  protected $hidden     = ['user_id', 'deleted_at', 'plan_id'];
   protected $dates      = ['deleted_at'];
 
   /**
@@ -103,6 +103,11 @@ class Plan extends Model
    */
   protected $created_at;
   protected $deleted_at;
+
+  public function getFeaturedAttribute($featured)
+  {
+    return (bool) $featured;
+  }
 
   public function user()
   {
