@@ -128,9 +128,18 @@ class Playlist extends Model
         return (bool) $following;
       }
 
+      /**
+       *
+       * @OA\Property(
+       *   title="verses",
+       *   type="integer",
+       *   description="The playlist verses count"
+       * )
+       *
+       */
       public function getVersesAttribute()
       {
-        return $this['items']->sum('verses');
+        return PlaylistItems::where('playlist_id', $this['id'])->get()->sum('verses');
       }
 
       public function user()
