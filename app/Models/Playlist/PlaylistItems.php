@@ -3,6 +3,7 @@
 namespace App\Models\Playlist;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 
@@ -173,4 +174,44 @@ class PlaylistItems extends Model implements Sortable
      * @public Carbon $created_at
      */
     protected $created_at;
+
+    protected $appends = array('completed');
+
+    /**
+     * @OA\Property(
+     *   title="completed",
+     *   type="boolean",
+     *   description="If the playlist item is completed"
+     * )
+     */
+    public function getCompletedAttribute()
+    {
+        $user = Auth::user();
+        if (empty($user)) {
+            return false;
+        }
+
+        $complete = PlaylistItemsComplete::where('playlist_item_id', $this->attributes['id'])
+            ->where('user_id', $user->id)->first();
+
+        return !empty($complete);
+    }
+
+    public function complete()
+    {
+        $user = Auth::user();
+        $completed_item = PlaylistItemsComplete::firstOrNew([
+            'user_id'               => $user->id,
+            'playlist_item_id'      => $this['id']
+        ]);
+        $completed_item->save();
+    }
+
+    public function unComplete()
+    {
+        $user = Auth::user();
+        $completed_item = PlaylistItemsComplete::where('playlist_item_id', $this['id'])
+            ->where('user_id', $user->id);
+        $completed_item->delete();
+    }
 }

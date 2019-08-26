@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Models\Plan;
+namespace App\Models\Playlist;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-class UserPlan extends Model
+class PlaylistItemsComplete extends Model
 {
 
     protected $connection = 'dbp_users';
-    protected $primaryKey = ['user_id', 'plan_id'];
-    public $incrementing = false;
-    public $table         = 'user_plans';
-    protected $fillable   = ['plan_id', 'user_id', 'start_date', 'suggested_start_date', 'percentage_completed'];
-    protected $hidden     = ['plan_id', 'created_at', 'updated_at'];
+    public $table         = 'playlist_items_completed';
+    protected $primaryKey = ['user_id', 'playlist_item_id'];
+    protected $fillable   = ['user_id', 'playlist_item_id'];
+    public $incrementing  = false;
+    public $timestamps = false;
 
     /**
      * Set the keys for a save update query.
@@ -52,16 +52,5 @@ class UserPlan extends Model
         }
 
         return $this->getAttribute($keyName);
-    }
-
-    public function calculatePercentageCompleted()
-    {
-        $completed_per_day = PlanDay::where('plan_id', $this->plan_id)->get()
-            ->map(function ($plan_day) {
-                $completed = $plan_day->verifyDayCompleted();
-                return $completed;
-            });;
-        $this->percentage_completed = $completed_per_day->sum('total_items_completed') / $completed_per_day->sum('total_items') * 100;
-        return $this;
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\APIController;
 use App\Models\Plan\Plan;
 use App\Traits\CheckProjectMembership;
 use App\Models\Plan\PlanDay;
+use App\Models\Plan\PlanDayComplete;
 use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
 use Illuminate\Http\Request;
@@ -167,7 +168,6 @@ class PlansController extends APIController
 
         return $this->reply($plan);
     }
-
 
     /**
      *
@@ -510,6 +510,79 @@ class PlansController extends APIController
         }
 
         return $this->reply($created_plan_days);
+    }
+
+    /**
+     * Complete a plan day.
+     *
+     * @OA\Post(
+     *     path="/plans/day/{day_id}/complete",
+     *     tags={"Plans"},
+     *     summary="Complete a plan day",
+     *     description="",
+     *     operationId="v4_plans_days.complete",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="day_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/PlanDay/properties/id")),
+     *     @OA\Parameter(name="complete", in="query", @OA\Schema(type="boolean")),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/PlanDay")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/PlanDay")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/PlanDay")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/PlanDay"))
+     *     )
+     * )
+     * 
+     *
+     * @return mixed
+     */
+    public function completeDay(Request $request, $day_id)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $plan_day = PlanDay::where('id', $day_id)->first();
+
+        if (!$plan_day) {
+            return $this->setStatusCode(404)->replyWithError('Plan Day Not Found');
+        }
+
+        $user_plan = UserPlan::join('plans', function ($join) use ($user) {
+            $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
+        })->where('user_plans.plan_id',$plan_day->plan_id)
+        ->select('user_plans.*')
+        ->first();
+
+        if (!$user_plan) {
+            return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
+        }
+
+        $complete = checkParam('complete') ?? true;
+        $complete = $complete && $complete !== 'false';
+
+        if ($complete) {
+            $plan_day->complete();
+        } else {
+            $plan_day->unComplete();
+        }
+
+        $result = $complete ? 'completed' : 'not completed';
+        $user_plan->calculatePercentageCompleted()->save();
+
+        return $this->reply([
+            'percentage_completed' => $user_plan->percentage_completed,
+            'message' => 'Plan Day ' . $result
+        ]);
     }
 
     private function getPlan($plan_id, $user)
