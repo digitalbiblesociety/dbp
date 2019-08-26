@@ -116,6 +116,8 @@ class Playlist extends Model
       protected $created_at;
       protected $deleted_at;
       
+      protected $appends = array('verses');
+
       public function getFeaturedAttribute($featured)
       {
         return (bool) $featured;
@@ -124,6 +126,11 @@ class Playlist extends Model
       public function getFollowingAttribute($following)
       {
         return (bool) $following;
+      }
+
+      public function getVersesAttribute()
+      {
+        return $this['items']->sum('verses');
       }
 
       public function user()

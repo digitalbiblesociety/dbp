@@ -2,6 +2,8 @@
 
 namespace App\Models\Playlist;
 
+use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleVerse;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -173,4 +175,29 @@ class PlaylistItems extends Model implements Sortable
      * @public Carbon $created_at
      */
     protected $created_at;
+    protected $appends = array('verses');
+
+    /**
+     *
+     * @OA\Property(
+     *   title="verses",
+     *   type="integer",
+     *   description="The playlist item verses count"
+     * )
+     *
+     */
+    public function getVersesAttribute()
+    {
+        $fileset = BibleFileset::where('id', $this['fileset_id'])
+            ->whereNotIn('set_type_code', ['text_format'])
+            ->first();
+        $verses_middle = BibleVerse::where('hash_id', $fileset->hash_id)
+            ->where([
+                ['book_id', $this['book_id']],
+                ['chapter', '>=', $this['chapter_start']],
+                ['chapter', '<', $this['chapter_end']],
+            ])
+            ->count();
+        return  $verses_middle - ($this['verse_start'] - 1) + $this['verse_end'];
+    }
 }
