@@ -39,6 +39,8 @@ class PlansController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(ref="#/components/parameters/limit"),
      *     @OA\Parameter(ref="#/components/parameters/page"),
+     *     @OA\Parameter(ref="#/components/parameters/sort_by"),
+     *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -74,6 +76,8 @@ class PlansController extends APIController
         $featured = checkParam('featured');
         $featured = $featured && $featured != 'false' || empty($user);
         $limit        = (int) (checkParam('limit') ?? 25);
+        $sort_by    = checkParam('sort_by') ?? 'name';
+        $sort_dir   = checkParam('sort_dir') ?? 'asc';
 
         $plans = Plan::with('days')
             ->with('user')
@@ -83,7 +87,8 @@ class PlansController extends APIController
                 $q->join('user_plans', function ($join) use ($user) {
                     $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
                 });
-            })->orderBy('plans.updated_at', 'desc')->paginate($limit);
+            })
+            ->orderBy($sort_by, $sort_dir)->paginate($limit);
 
         foreach ($plans as $plan) {
             $plan->total_days = sizeof($plan->days);
@@ -166,6 +171,7 @@ class PlansController extends APIController
             'plan_id'               => $plan->id
         ]);
 
+        $plan = $this->getPlan($plan->id, $user);
         return $this->reply($plan);
     }
 

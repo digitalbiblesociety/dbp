@@ -40,6 +40,8 @@ class PlaylistsController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(ref="#/components/parameters/limit"),
      *     @OA\Parameter(ref="#/components/parameters/page"),
+     *     @OA\Parameter(ref="#/components/parameters/sort_by"),
+     *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -73,6 +75,9 @@ class PlaylistsController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
+        $sort_by    = checkParam('sort_by') ?? 'name';
+        $sort_dir   = checkParam('sort_dir') ?? 'asc';
+
         $featured = checkParam('featured');
         $featured = $featured && $featured != 'false' || empty($user);
         $limit    = (int) (checkParam('limit') ?? 25);
@@ -94,7 +99,7 @@ class PlaylistsController extends APIController
                     ->orWhere('playlists_followers.user_id', $user->id);
             })
             ->select($select)
-            ->orderBy('name', 'asc')->paginate($limit);
+            ->orderBy($sort_by, $sort_dir)->paginate($limit);
 
         return $this->reply($playlists);
     }
@@ -204,16 +209,7 @@ class PlaylistsController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
-        $playlist = Playlist::with('items')
-            ->with('user')
-            ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
-                $user_id = empty($user) ? 0 : $user->id;
-                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user_id);
-            })
-            ->where('user_playlists.id', $playlist_id)
-            ->select($select)
-            ->first();
+        $playlist = $this->getPlaylist($user, $playlist_id);
 
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
@@ -300,10 +296,7 @@ class PlaylistsController extends APIController
             $deleted_items->delete();
         }
 
-        $playlist = Playlist::with('items')
-            ->with('user')
-            ->where('user_id', $user->id)
-            ->where('id', $playlist_id)->first();
+        $playlist = $this->getPlaylist($user, $playlist_id);
 
         return $this->reply($playlist);
     }
@@ -408,8 +401,6 @@ class PlaylistsController extends APIController
         $follow = $follow && $follow != 'false';
 
 
-        $result = $follow ? 'followed' : 'unfollowed';
-
         if ($follow) {
             $follower = PlaylistFollower::firstOrNew([
                 'user_id'               => $user->id,
@@ -422,7 +413,8 @@ class PlaylistsController extends APIController
             $follower->delete();
         }
 
-        return $this->reply('Playlist ' . $result);
+        $playlist = $this->getPlaylist($user, $playlist_id);
+        return $this->reply($playlist);
     }
 
     /**
@@ -560,11 +552,11 @@ class PlaylistsController extends APIController
         $user_plan = UserPlan::join('plans', function ($join) use ($user) {
             $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
         })
-        ->join('plan_days', function ($join) use ($playlist_item) {
-            $join->on('plan_days.plan_id', '=', 'plans.id')->where('plan_days.playlist_id', $playlist_item->playlist_id);
-        })
-        ->select('user_plans.*')
-        ->first();
+            ->join('plan_days', function ($join) use ($playlist_item) {
+                $join->on('plan_days.plan_id', '=', 'plans.id')->where('plan_days.playlist_id', $playlist_item->playlist_id);
+            })
+            ->select('user_plans.*')
+            ->first();
 
         if (!$user_plan) {
             return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
@@ -586,6 +578,21 @@ class PlaylistsController extends APIController
             'percentage_completed' => $user_plan->percentage_completed,
             'message' => 'Playlist Item ' . $result
         ]);
+    }
+
+    private function getPlaylist($user, $playlist_id)
+    {
+        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
+        $playlist = Playlist::with('items')
+            ->with('user')
+            ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
+                $user_id = empty($user) ? 0 : $user->id;
+                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user_id);
+            })
+            ->where('user_playlists.id', $playlist_id)
+            ->select($select)
+            ->first();
+        return $playlist;
     }
 
     private function validatePlaylist()
