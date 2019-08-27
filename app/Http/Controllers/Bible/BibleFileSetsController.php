@@ -33,10 +33,6 @@ class BibleFileSetsController extends APIController
      *     summary="Returns Bibles Filesets",
      *     description="Returns a list of bible filesets",
      *     operationId="v4_bible_filesets.show",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(name="fileset_id", in="path", description="The fileset ID", required=true,
      *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
      *     ),
@@ -157,10 +153,6 @@ class BibleFileSetsController extends APIController
      *     summary="Download a Fileset",
      *     description="Returns a an entire fileset or a selected portion of a fileset for download",
      *     operationId="v4_bible_filesets.download",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(name="fileset_id", in="path", required=true, description="The fileset ID",
      *          @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
      *     ),
@@ -225,10 +217,6 @@ class BibleFileSetsController extends APIController
      *     summary="Fileset Copyright information",
      *     description="A fileset's copyright information and organizational connections",
      *     operationId="v4_bible_filesets.copyright",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(
      *          name="fileset_id",
      *          in="path",
@@ -306,10 +294,6 @@ class BibleFileSetsController extends APIController
      *     summary="Available fileset types",
      *     description="A list of all the file types that exist within the filesets",
      *     operationId="v4_bible_filesets.types",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="The fileset types",

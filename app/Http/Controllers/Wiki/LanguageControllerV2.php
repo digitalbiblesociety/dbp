@@ -27,10 +27,6 @@ class LanguageControllerV2 extends APIController
      *     @OA\Parameter(in="query",deprecated=true,name="family_only",description="When set to true the returned list is of only legal language families. The default is false",@OA\Schema(type="boolean")),
      *     @OA\Parameter(in="query",deprecated=true,name="possibilities",description="When set to true the returned list is a combination of DBP languages and ISO languages not yet defined in DBP that meet any of the criteria",@OA\Schema(type="boolean",default=true,example=true)),
      *     @OA\Parameter(in="query",name="sort_by",description="Primary criteria by which to sort. 'name' refers to the native language name. The default is 'english'",@OA\Schema(ref="#/components/schemas/Asset/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -84,10 +80,6 @@ class LanguageControllerV2 extends APIController
                Country flags can also be retrieved by requesting one of the permitted image sizes. Languages can also be
                sorted by the country code (default) and the language code.",
      *     operationId="v2_country_lang",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(
      *         name="lang_code",
      *         in="query",
@@ -240,10 +232,6 @@ class LanguageControllerV2 extends APIController
      *         @OA\Schema(type="string"),
      *         description="The organization id to filter languages by."
      *     ),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -343,10 +331,6 @@ class LanguageControllerV2 extends APIController
      *         @OA\Schema(ref="#/components/schemas/Organization/properties/id")
      *     ),
      *     @OA\Parameter(ref="#/components/parameters/l10n"),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",

@@ -23,7 +23,6 @@ class PlansController extends APIController
      *     path="/plans",
      *     tags={"Plans"},
      *     summary="List a user's plans",
-     *     description="",
      *     operationId="v4_plans.index",
      *     @OA\Parameter(
      *          name="featured",
@@ -32,10 +31,6 @@ class PlansController extends APIController
      *          description="Return featured plans"
      *     ),
      *     security={{"api_token":{}}},
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(ref="#/components/parameters/limit"),
      *     @OA\Parameter(ref="#/components/parameters/page"),
      *     @OA\Parameter(ref="#/components/parameters/sort_by"),
@@ -122,30 +117,18 @@ class PlansController extends APIController
      *     path="/plans",
      *     tags={"Plans"},
      *     summary="Crete a plan",
-     *     description="",
      *     operationId="v4_plans.store",
      *     security={{"api_token":{}}},
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\RequestBody(required=true, description="Fields for User Plan Creation",
      *           @OA\MediaType(mediaType="application/json",
      *              @OA\Schema(
      *                  @OA\Property(property="name", ref="#/components/schemas/Plan/properties/name"),
-     *                  @OA\Property(property="suggested_start_date", type="string"),
+     *                  @OA\Property(property="suggested_start_date", ref="#/components/schemas/Plan/properties/suggested_start_date"),
      *                  @OA\Property(property="days",type="integer")
      *              )
      *          )
      *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
-     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_plan_detail"))
-     *     )
+     *     @OA\Response(response=200, ref="#/components/responses/plan")
      * )
      *
      * @return \Illuminate\Http\Response|array
@@ -198,7 +181,6 @@ class PlansController extends APIController
      *     path="/plans/{plan_id}",
      *     tags={"Plans"},
      *     summary="A user's plan",
-     *     description="",
      *     operationId="v4_plans.show",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(
@@ -208,18 +190,7 @@ class PlansController extends APIController
      *          @OA\Schema(ref="#/components/schemas/User/properties/id"),
      *          description="The plan id"
      *     ),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_detail"))
-     *     )
+     *     @OA\Response(response=200, ref="#/components/responses/plan")
      * )
      *
      * @param $plan_id
@@ -253,7 +224,6 @@ class PlansController extends APIController
      *     path="/plans/{plan_id}",
      *     tags={"Plans"},
      *     summary="Update a plan",
-     *     description="",
      *     operationId="v4_plans.update",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
@@ -261,21 +231,10 @@ class PlansController extends APIController
      *     @OA\RequestBody(required=true, @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name", ref="#/components/schemas/Plan/properties/name"),
-     *              @OA\Property(property="suggested_start_date", type="string")
+     *              @OA\Property(property="suggested_start_date", ref="#/components/schemas/Plan/properties/suggested_start_date")
      *          )
      *     )),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_detail"))
-     *     )
+     *     @OA\Response(response=200, ref="#/components/responses/plan")
      * )
      *
      * @param  int $plan_id
@@ -337,14 +296,9 @@ class PlansController extends APIController
      *     path="/plans/{plan_id}",
      *     tags={"Plans"},
      *     summary="Delete a plan",
-     *     description="",
      *     operationId="v4_plans.destroy",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -404,27 +358,15 @@ class PlansController extends APIController
      *     path="/plans/{plan_id}/start",
      *     tags={"Plans"},
      *     summary="Start a plan",
-     *     description="",
      *     operationId="v4_plans.start",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
      *     @OA\RequestBody(required=true, @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
-     *              @OA\Property(property="start_date", type="string")
+     *              @OA\Property(property="start_date", ref="#/components/schemas/UserPlan/properties/start_date")
      *          )
      *     )),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_detail"))
-     *     )
+     *     @OA\Response(response=200, ref="#/components/responses/plan")
      * )
      *
      * @param  int $plan_id
@@ -474,15 +416,10 @@ class PlansController extends APIController
      *     path="/plans/{plan_id}/day",
      *     tags={"Plans"},
      *     summary="Create plan days",
-     *     description="",
      *     operationId="v4_plans_days.store",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
      *     @OA\Parameter(name="days", in="query", required=true, @OA\Schema(type="integer"), description="Number of days to add to the plan"),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -541,15 +478,10 @@ class PlansController extends APIController
      *     path="/plans/day/{day_id}/complete",
      *     tags={"Plans"},
      *     summary="Complete a plan day",
-     *     description="",
      *     operationId="v4_plans_days.complete",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="day_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/PlanDay/properties/id")),
      *     @OA\Parameter(name="complete", in="query", @OA\Schema(type="boolean")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -641,6 +573,15 @@ class PlansController extends APIController
      *      @OA\Schema(ref="#/components/schemas/v4_plan"),
      *   },
      *   @OA\Property(property="days",type="array",@OA\Items(ref="#/components/schemas/PlanDay"))
+     * )
+     * 
+     * @OA\Response(
+     *   response="plan",
+     *   description="Plan Object",
+     *   @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *   @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *   @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *   @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_plan_detail"))
      * )
      */
 

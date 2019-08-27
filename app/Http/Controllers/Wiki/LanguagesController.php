@@ -54,10 +54,6 @@ class LanguagesController extends APIController
      *          description="The include_alt_names"
      *     ),
      *     @OA\Parameter(ref="#/components/parameters/l10n"),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(ref="#/components/parameters/sort_by"),
      *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
      *     @OA\Response(
@@ -132,10 +128,6 @@ class LanguagesController extends APIController
      *          required=true,
      *          @OA\Schema(ref="#/components/schemas/Language/properties/id")
      *     ),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",

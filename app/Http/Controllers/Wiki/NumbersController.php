@@ -19,10 +19,6 @@ class NumbersController extends APIController
      *     summary="Return a range of numbers",
      *     description="This route returns the vernacular numbers for a set range.",
      *     operationId="v4_numbers.range",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(
      *          name="script_id",
      *          in="query",
@@ -94,10 +90,6 @@ class NumbersController extends APIController
      *     summary="Return all Alphabets that have a custom number sets",
      *     description="Returns a range of numbers",
      *     operationId="v4_numbers.index",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -138,10 +130,6 @@ class NumbersController extends APIController
      *     operationId="v4_numbers.show",
      *     @OA\Parameter(name="id", in="path", required=true, description="The NumeralSystem id",
      *          @OA\Schema(ref="#/components/schemas/NumeralSystem/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",

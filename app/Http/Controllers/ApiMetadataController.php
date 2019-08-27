@@ -127,10 +127,6 @@ class ApiMetadataController extends APIController
      *     @OA\Parameter(name="dam_id", in="query", description="The DAM ID for which to retrieve file path info.", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
      *     @OA\Parameter(name="asset_id", in="query", description="Will filter the results by the given Asset", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
      *     @OA\Parameter(name="asset_type", in="query", description="The asset type to filter result by.", @OA\Schema(ref="#/components/schemas/Asset/properties/asset_type")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -197,10 +193,6 @@ class ApiMetadataController extends APIController
      *     summary="Returns version information",
      *     description="Gives information about return types of the different versions of the APIs",
      *     operationId="v2_api_versionLatest",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -242,10 +234,6 @@ class ApiMetadataController extends APIController
      *     summary="Returns version information",
      *     description="Gives information about return types of the different versions of the APIs",
      *     operationId="v2_api_apiReply",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",

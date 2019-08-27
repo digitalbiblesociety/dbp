@@ -43,10 +43,6 @@ class PasswordsController extends APIController
      *     summary="Trigger a reset email",
      *     description="",
      *     operationId="v4_user.reset",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Information supplied for password reset",
@@ -114,10 +110,6 @@ class PasswordsController extends APIController
      *          them a verification email by setting the optional fields `password` and `new_password` fields within the
      *          request.",
      *     operationId="v4_user.resetPassword",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Information supplied for password reset",

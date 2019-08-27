@@ -34,10 +34,6 @@ class NotesController extends APIController
      *     @OA\Parameter(name="paginate",    in="query", description="When set to false will disable pagination", @OA\Schema(type="boolean",example=false)),
      *     @OA\Parameter(name="page",  in="query", description="The current page of the results",
      *          @OA\Schema(type="integer",default=1)),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(ref="#/components/parameters/sort_by"),
      *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
      *     @OA\Response(
@@ -96,10 +92,6 @@ class NotesController extends APIController
      *     operationId="v4_notes.show",
      *     @OA\Parameter(name="user_id",     in="path",required=true, description="The user who created the note", @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(name="note_id",     in="path",required=true, description="The note currently being altered", @OA\Schema(ref="#/components/schemas/Note/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -150,10 +142,6 @@ class NotesController extends APIController
      *              @OA\Property(property="notes",                     ref="#/components/schemas/Note/properties/notes"),
      *          )
      *     )),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -206,10 +194,6 @@ class NotesController extends APIController
      *     operationId="v4_notes.update",
      *     @OA\Parameter(name="user_id", in="path", required=true, description="The user who created the note", @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(name="note_id", in="path", required=true, description="The note currently being altered", @OA\Schema(ref="#/components/schemas/Note/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\RequestBody(required=true, description="Fields for Note Creation", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="bible_id",                  ref="#/components/schemas/Bible/properties/id"),
@@ -275,10 +259,6 @@ class NotesController extends APIController
      *     operationId="v4_notes.destroy",
      *     @OA\Parameter(name="user_id", in="path", required=true, description="The user who created the note", @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(name="note_id", in="path", required=true, description="The note currently being deleted", @OA\Schema(ref="#/components/schemas/Note/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",

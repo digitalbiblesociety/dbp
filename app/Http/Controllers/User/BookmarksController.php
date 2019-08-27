@@ -47,10 +47,6 @@ class BookmarksController extends APIController
      *          @OA\Schema(type="integer",default=25)),
      *     @OA\Parameter(name="page",  in="query", description="The current page of the results",
      *          @OA\Schema(type="integer",default=1)),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -106,10 +102,6 @@ class BookmarksController extends APIController
      *          description="The user_id",
      *          @OA\Schema(ref="#/components/schemas/User/properties/id")
      *     ),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\RequestBody(required=true, description="Fields for User Bookmark Creation", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="bible_id",                  ref="#/components/schemas/Bible/properties/id"),
@@ -165,10 +157,6 @@ class BookmarksController extends APIController
      *     operationId="v4_user_annotation_bookmarks.update",
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(name="bookmark_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\RequestBody(required=true, description="Fields for User Bookmark Creation", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="bible_id",                  ref="#/components/schemas/Bible/properties/id"),
@@ -227,10 +215,6 @@ class BookmarksController extends APIController
      *     operationId="v4_user_annotation_bookmarks.delete",
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(name="bookmark_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",

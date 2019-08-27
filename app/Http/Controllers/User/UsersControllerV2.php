@@ -91,10 +91,6 @@ class UsersControllerV2 extends APIController
      *     summary="Login a user",
      *     description="",
      *     operationId="v2_user_login",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\RequestBody(required=true, description="Either the `email` & `password` or the `remote_id` & `remote_type` are required for user Login", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="email",                     ref="#/components/schemas/User/properties/email"),

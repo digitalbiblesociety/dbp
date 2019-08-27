@@ -19,8 +19,7 @@ use Spatie\EloquentSortable\SortableTrait;
  * @OA\Schema (
  *     type="object",
  *     description="The day of a Plan",
- *     title="Plan day",
- *     @OA\Xml(name="PlanDay")
+ *     title="Plan day"
  * )
  *
  */
@@ -98,7 +97,7 @@ class PlanDay extends Model implements Sortable
             'plan_day_id'           => $this['id']
         ]);
         $completed_item->save();
-        PlaylistItems::where('playlist_id', $this['playlist_id'])->each(function ($playlist_item) { 
+        PlaylistItems::where('playlist_id', $this['playlist_id'])->each(function ($playlist_item) {
             $playlist_item->complete();
         });
     }
@@ -109,7 +108,7 @@ class PlanDay extends Model implements Sortable
         $completed_item = PlanDayComplete::where('plan_day_id', $this['id'])
             ->where('user_id', $user->id);
         $completed_item->delete();
-        PlaylistItems::where('playlist_id', $this['playlist_id'])->each(function ($playlist_item) { 
+        PlaylistItems::where('playlist_id', $this['playlist_id'])->each(function ($playlist_item) {
             $playlist_item->unComplete();
         });
     }

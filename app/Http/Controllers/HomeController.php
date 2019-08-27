@@ -46,10 +46,6 @@ class HomeController extends APIController
      *     summary="Returns the asset paths currently being used by the api",
      *     description="",
      *     operationId="v4_api.assets",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",

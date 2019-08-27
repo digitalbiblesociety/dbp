@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @OA\Schema (
  *     type="object",
  *     description="The User Plan data",
- *     title="UserPlan",
- *     @OA\Xml(name="UserPlan")
+ *     title="UserPlan"
  * )
  */
 class UserPlan extends Model
@@ -28,6 +27,7 @@ class UserPlan extends Model
      * @OA\Property(
      *   title="start_date",
      *   type="string",
+     *   format="date",
      *   description="The start date of the plan"
      * )
      *

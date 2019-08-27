@@ -29,10 +29,6 @@ class AlphabetsController extends APIController
      *     you if you'd like to query information about fonts, alphabets, and the world's writing systems. Some fileset
      *     returns may not display correctly without a font delivered by these via the `alphabets/{id}` routes.",
      *     operationId="v4_alphabets.all",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -86,10 +82,6 @@ class AlphabetsController extends APIController
      *     summary="Return a single Alphabets",
      *     description="Returns a single alphabet along with whatever bibles and languages using it.",
      *     operationId="v4_alphabets.one",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(
      *          name="id",
      *          in="path",
