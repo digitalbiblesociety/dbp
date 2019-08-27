@@ -5,6 +5,14 @@ namespace App\Models\Plan;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * @OA\Schema (
+ *     type="object",
+ *     description="The User Plan data",
+ *     title="UserPlan",
+ *     @OA\Xml(name="UserPlan")
+ * )
+ */
 class UserPlan extends Model
 {
 
@@ -12,8 +20,30 @@ class UserPlan extends Model
     protected $primaryKey = ['user_id', 'plan_id'];
     public $incrementing = false;
     public $table         = 'user_plans';
-    protected $fillable   = ['plan_id', 'user_id', 'start_date', 'suggested_start_date', 'percentage_completed'];
+    protected $fillable   = ['plan_id', 'user_id', 'start_date', 'percentage_completed'];
     protected $hidden     = ['plan_id', 'created_at', 'updated_at'];
+
+    /**
+     *
+     * @OA\Property(
+     *   title="start_date",
+     *   type="string",
+     *   description="The start date of the plan"
+     * )
+     *
+     */
+    protected $start_date;
+
+    /**
+     *
+     * @OA\Property(
+     *   title="percentage_completed",
+     *   type="integer",
+     *   description="The percentage completed of the plan"
+     * )
+     *
+     */
+    protected $percentage_completed;
 
     /**
      * Set the keys for a save update query.

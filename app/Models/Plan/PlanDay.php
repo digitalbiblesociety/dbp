@@ -4,7 +4,6 @@ namespace App\Models\Plan;
 
 use App\Models\Playlist\Playlist;
 use App\Models\Playlist\PlaylistItems;
-use Illuminate\Auth\TokenGuard;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
@@ -52,6 +51,7 @@ class PlanDay extends Model implements Sortable
 
     /**
      * @OA\Property(
+     *   property="completed",
      *   title="completed",
      *   type="boolean",
      *   description="If the plan day is completed"

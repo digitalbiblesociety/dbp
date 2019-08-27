@@ -7,7 +7,6 @@ use App\Http\Controllers\APIController;
 use App\Models\Plan\Plan;
 use App\Traits\CheckProjectMembership;
 use App\Models\Plan\PlanDay;
-use App\Models\Plan\PlanDayComplete;
 use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
 use Illuminate\Http\Request;
@@ -56,14 +55,31 @@ class PlansController extends APIController
      * 
      * 
      * @OA\Schema (
-     *   type="array",
+     *   type="object",
+     *   schema="v4_plan_index_detail",
+     *   allOf={
+     *      @OA\Schema(ref="#/components/schemas/v4_plan"),
+     *   },
+     *   @OA\Property(property="total_days", type="integer")
+     * )
+     * 
+     * @OA\Schema (
+     *   type="object",
      *   schema="v4_plan_index",
      *   description="The v4 plan index response.",
-     *   title="User plan",
-     *   @OA\Xml(name="v4_plan_index"),
-     *   @OA\Items(ref="#/components/schemas/Plan")
+     *   title="User plans",
+     *   allOf={
+     *      @OA\Schema(ref="#/components/schemas/pagination"),
+     *   },
+     *   @OA\Property(
+     *      property="data",
+     *      type="array",
+     *      @OA\Items(ref="#/components/schemas/v4_plan_index_detail")
+     *   )
      * )
      */
+
+
     public function index(Request $request)
     {
         $user = $request->user();
@@ -87,6 +103,7 @@ class PlansController extends APIController
                 $q->join('user_plans', function ($join) use ($user) {
                     $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
                 });
+                $q->select(['plans.*', 'user_plans.start_date', 'user_plans.percentage_completed']);
             })
             ->orderBy($sort_by, $sort_dir)->paginate($limit);
 
@@ -124,10 +141,10 @@ class PlansController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_index")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_index")),
-     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_plan_index"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_plan_detail"))
      *     )
      * )
      *
@@ -198,10 +215,10 @@ class PlansController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_index")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_index")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_index"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_detail"))
      *     )
      * )
      *
@@ -254,10 +271,10 @@ class PlansController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_index")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_index")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_index"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_detail"))
      *     )
      * )
      *
@@ -403,10 +420,10 @@ class PlansController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_index")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_index")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_index"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_detail")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_detail"))
      *     )
      * )
      *
@@ -479,9 +496,8 @@ class PlansController extends APIController
      * @OA\Schema (
      *   type="array",
      *   schema="v4_plans_days",
+     *   title="User created plan days",
      *   description="The v4 plan days creation response.",
-     *   title="User plan",
-     *   @OA\Xml(name="v4_plans_days"),
      *   @OA\Items(ref="#/components/schemas/PlanDay")
      * )
      * @return mixed
@@ -537,14 +553,19 @@ class PlansController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/PlanDay")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/PlanDay")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/PlanDay")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/PlanDay"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_complete_day")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_complete_day")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_complete_day")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_complete_day"))
      *     )
      * )
      * 
-     *
+     * @OA\Schema (
+     *   schema="v4_complete_day",
+     *   description="The v4 plan day complete response",
+     *   @OA\Property(property="message", type="string"),
+     *   @OA\Property(property="percentage_completed", ref="#/components/schemas/UserPlan/properties/percentage_completed")
+     * )
      * @return mixed
      */
     public function completeDay(Request $request, $day_id)
@@ -565,9 +586,9 @@ class PlansController extends APIController
 
         $user_plan = UserPlan::join('plans', function ($join) use ($user) {
             $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
-        })->where('user_plans.plan_id',$plan_day->plan_id)
-        ->select('user_plans.*')
-        ->first();
+        })->where('user_plans.plan_id', $plan_day->plan_id)
+            ->select('user_plans.*')
+            ->first();
 
         if (!$user_plan) {
             return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
@@ -590,6 +611,38 @@ class PlansController extends APIController
             'message' => 'Plan Day ' . $result
         ]);
     }
+    /**
+     *  @OA\Schema (
+     *   type="object",
+     *   schema="v4_plan",
+     *   @OA\Property(property="id", ref="#/components/schemas/Plan/properties/id"),
+     *   @OA\Property(property="name", ref="#/components/schemas/Plan/properties/name"),
+     *   @OA\Property(property="featured", ref="#/components/schemas/Plan/properties/featured"),
+     *   @OA\Property(property="suggested_start_date", ref="#/components/schemas/Plan/properties/suggested_start_date"),
+     *   @OA\Property(property="created_at", ref="#/components/schemas/Plan/properties/created_at"),
+     *   @OA\Property(property="updated_at", ref="#/components/schemas/Plan/properties/updated_at"),
+     *   @OA\Property(property="start_date", ref="#/components/schemas/UserPlan/properties/start_date"),
+     *   @OA\Property(property="percentage_completed", ref="#/components/schemas/UserPlan/properties/percentage_completed"),
+     *   @OA\Property(property="user", ref="#/components/schemas/v4_plan_index_user"),
+     * )
+     * 
+     * @OA\Schema (
+     *   type="object",
+     *   schema="v4_plan_index_user",
+     *   description="The user who created the plan",
+     *   @OA\Property(property="id", type="integer"),
+     *   @OA\Property(property="name", type="string")
+     * )
+     * 
+     * @OA\Schema (
+     *   type="object",
+     *   schema="v4_plan_detail",
+     *   allOf={
+     *      @OA\Schema(ref="#/components/schemas/v4_plan"),
+     *   },
+     *   @OA\Property(property="days",type="array",@OA\Items(ref="#/components/schemas/PlanDay"))
+     * )
+     */
 
     private function getPlan($plan_id, $user)
     {
