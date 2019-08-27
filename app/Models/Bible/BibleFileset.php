@@ -212,12 +212,17 @@ class BibleFileset extends Model
 
     public function scopeUniqueFileset($query, $id = null, $asset_id = null, $fileset_type = null, $ambigious_fileset_type = false, $testament_filter = null)
     {
-        return $query->when($id, function ($query) use ($id) {
-            $query->where(function ($query) use ($id) {
+        $version = (int)request()->v;
+        return $query->when($id, function ($query) use ($id, $version) {
+            $query->where(function ($query) use ($id, $version) {
+                if($version  === 2) {
                     $query->where('bible_filesets.id', $id)
                           ->orWhere('bible_filesets.id', substr($id, 0, -4))
                           ->orWhere('bible_filesets.id', 'like',  substr($id, 0, 6))
                           ->orWhere('bible_filesets.id', 'like', substr($id, 0, -2).'%');
+                } else {
+                    $query->where('bible_filesets.id', $id);
+                }
             });
         })
         ->when($asset_id, function ($query) use ($asset_id) {
