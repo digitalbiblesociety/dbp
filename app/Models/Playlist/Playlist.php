@@ -37,7 +37,6 @@ class Playlist extends Model
   protected $fillable   = ['user_id', 'name', 'external_content'];
   protected $hidden     = ['user_id', 'deleted_at'];
   protected $dates      = ['deleted_at'];
-
   /**
    *
    * @OA\Property(
@@ -113,10 +112,24 @@ class Playlist extends Model
    */
   protected $created_at;
   protected $deleted_at;
+  protected $appends = array('verses');
 
   public function getFeaturedAttribute($featured)
   {
     return (bool) $featured;
+  }
+  /**
+   *
+   * @OA\Property(
+   *   title="verses",
+   *   type="integer",
+   *   description="The playlist verses count"
+   * )
+   *
+   */
+  public function getVersesAttribute()
+  {
+    return PlaylistItems::where('playlist_id', $this['id'])->get()->sum('verses');
   }
 
   /**

@@ -241,6 +241,8 @@ Route::name('v4_plans.destroy')
     ->middleware('APIToken:check')->delete('plans/{plan_id}',                       'Plan\PlansController@destroy');
 Route::name('v4_plans.start')
     ->middleware('APIToken:check')->post('plans/{plan_id}/start',                   'Plan\PlansController@start');
+Route::name('v4_plans.reset')
+    ->middleware('APIToken:check')->post('plans/{plan_id}/reset',                   'Plan\PlansController@reset');
 Route::name('v4_plans_days.store')
     ->middleware('APIToken:check')->post('plans/{plan_id}/day',                     'Plan\PlansController@storeDay');
 Route::name('v4_plans_days.complete')
