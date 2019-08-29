@@ -79,6 +79,16 @@ class Plan extends Model
    *
    */
   protected $featured;
+  /**
+   *
+   * @OA\Property(
+   *   title="suggested_start_date",
+   *   type="string",
+   *   description="The suggested start date of the plan"
+   * )
+   *
+   */
+  protected $suggested_start_date;
   /** @OA\Property(
    *   title="updated_at",
    *   type="string",

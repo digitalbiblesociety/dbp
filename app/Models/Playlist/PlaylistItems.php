@@ -29,8 +29,7 @@ use Spatie\EloquentSortable\SortableTrait;
  * @OA\Schema (
  *     type="object",
  *     description="The Playlist Item",
- *     title="Playlist Item",
- *     @OA\Xml(name="PlaylistItem")
+ *     title="Playlist Item"
  * )
  *
  */
@@ -204,6 +203,7 @@ class PlaylistItems extends Model implements Sortable
 
     /**
      * @OA\Property(
+     *   property="completed",
      *   title="completed",
      *   type="boolean",
      *   description="If the playlist item is completed"

@@ -123,6 +123,16 @@ class Playlist extends Model
         return (bool) $featured;
       }
 
+      /**
+       *
+       * @OA\Property(
+       *   property="following",
+       *   title="following",
+       *   type="boolean",
+       *   description="If the current user follows the playlist"
+       * )
+       *
+       */
       public function getFollowingAttribute($following)
       {
         return (bool) $following;
