@@ -17,10 +17,6 @@ class CommentaryController extends APIController
      *     summary="Commentaries",
      *     description="A list of all the commentaries that can be retrieved",
      *     operationId="v4_commentary_index",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Response(
      *         response=200,
      *         description="The fileset types",
@@ -46,10 +42,6 @@ class CommentaryController extends APIController
      *     summary="Commentary Chapters",
      *     description="A list of all the chapter navigation for a specific commentary",
      *     operationId="v4_commentary_chapter",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(
      *          name="commentary_id",
      *          in="path",
@@ -125,10 +117,6 @@ class CommentaryController extends APIController
      *     summary="Commentary Sections",
      *     description="A list of all the chapter navigation for a specific commentary",
      *     operationId="v4_commentary_section",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
      *     @OA\Parameter(
      *          name="commentary_id",
      *          in="path",

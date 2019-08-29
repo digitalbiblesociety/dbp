@@ -32,10 +32,6 @@ class BibleEquivalentsController extends APIController
      *        description="The Bible id to return equivalents for",
      *        @OA\Schema(ref="#/components/schemas/Bible/properties/id")
      *     ),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",

@@ -39,10 +39,6 @@ class LexiconController extends APIController
      *         description="Enables"
      *     ),
      *     @OA\Parameter(name="limit",  in="query", description="The Number of records to return", @OA\Schema(type="integer")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use OpenApi\Annotations\Parameter;
 
 class SwaggerDocsController extends Controller
 {
@@ -33,6 +34,7 @@ class SwaggerDocsController extends Controller
             $swagger = \OpenApi\scan(app_path());
             $swagger->tags  = $this->swaggerVersionTags($swagger->tags, $version);
             $swagger->paths = $this->swaggerVersionPaths($swagger->paths, $version);
+            $swagger->paths = $this->addCommonParameters($swagger->paths);
             $swagger->components  = $this->removeUnusedComponents($swagger, $version);
             return $swagger;
         });
@@ -82,5 +84,36 @@ class SwaggerDocsController extends Controller
         }
 
         return $paths;
+    }
+
+    private function addCommonParameters($paths)
+    {
+        foreach ($paths as $path) {
+            if (isset($path->get->operationId)) {
+                $path->get->parameters = $this->addCommonParametersToPath($path->get->parameters);
+            }
+            if (isset($path->post->operationId)) {
+                $path->post->parameters = $this->addCommonParametersToPath($path->post->parameters);
+            }
+            if (isset($path->put->operationId)) {
+                $path->put->parameters = $this->addCommonParametersToPath($path->put->parameters);
+            }
+            if (isset($path->delete->operationId)) {
+                $path->delete->parameters  = $this->addCommonParametersToPath($path->delete->parameters);
+            }
+        }
+        return $paths;
+    }
+
+    private function addCommonParametersToPath($parameters)
+    {
+        if (gettype($parameters) == 'string') {
+            $parameters = [];
+        }
+        $parameters[] = new Parameter(['ref' => '#/components/parameters/format']);
+        $parameters[] = new Parameter(['ref' => '#/components/parameters/key']);
+        $parameters[] = new Parameter(['ref' => '#/components/parameters/pretty']);
+        $parameters[] = new Parameter(['ref' => '#/components/parameters/version_number']);
+        return $parameters;
     }
 }

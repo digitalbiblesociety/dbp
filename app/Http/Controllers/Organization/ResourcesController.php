@@ -103,10 +103,6 @@ class ResourcesController extends APIController
      *     summary="",
      *     description="",
      *     operationId="v2_api_jesusFilms",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(name="dam_id", in="query", description="DAM ID for the Jesus Film volume desired.", @OA\Schema(type="string",title="encoding")),
      *     @OA\Response(
      *         response=200,

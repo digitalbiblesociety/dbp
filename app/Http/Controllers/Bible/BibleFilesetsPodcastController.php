@@ -17,10 +17,6 @@ class BibleFilesetsPodcastController extends APIController
      *     summary="Audio Filesets as Podcasts",
      *     description="An audio Fileset in an RSS format suitable for consumption by iTunes",
      *     operationId="v4_bible_filesets.podcast",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(name="fileset_id", in="path", required=true, description="The fileset ID", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
      *     @OA\Response(
      *         response=200,

@@ -36,10 +36,6 @@ class AudioController extends APIController
                This information can be used with the response of the /audio/location call to create
                a URI to retrieve the audio files.",
      *     operationId="v2_audio_path",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(name="dam_id",
      *         in="path",
      *         description="The DAM ID for which to retrieve file path info.",
@@ -134,10 +130,6 @@ class AudioController extends APIController
                with them. This data could be used to search audio bibles for a specific term, make
                karaoke verse & audio readings, or to jump to a specific location in an audio file.",
      *     operationId="v4_timestamps",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(response=204, description="No timestamps are available at this time"),
      *     @OA\Response(
      *         response=200,
@@ -189,10 +181,6 @@ class AudioController extends APIController
                combination for a fileset. Note that the fileset id must be available via the path
                `/timestamps`. At first, only a few filesets may have timestamps metadata applied.",
      *     operationId="v2_audio_timestamps",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(name="fileset_id", in="query", description="The specific fileset to return references for", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
      *     @OA\Parameter(name="book", in="query", description="The Book ID for which to return timestamps. For a complete list see the `book_id` field in the `/bibles/books` route.", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
      *     @OA\Parameter(name="chapter", in="query", description="The chapter for which to return timestamps", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
@@ -246,10 +234,6 @@ class AudioController extends APIController
      *     description="This route will search the text for a specific word or phrase and return a
                collection of timestamps associated with the verse references connected to the term",
      *     operationId="v4_timestamps.tag",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(name="audio_fileset_id", in="query", description="The specific audio fileset to return references for", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
      *     @OA\Parameter(name="audio_asset_id", in="query", description="The specific audio asset id to return references for", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/asset_id")),
      *     @OA\Parameter(name="text_fileset_id", in="query", description="The specific text fileset to return references for", @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
@@ -332,10 +316,6 @@ class AudioController extends APIController
                protocols they support. It is currently depreciated and only remains to account for
                the possibility that someone might still be using this old method of uri generation",
      *     operationId="v2_audio_location",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(name="fileset_id", in="query", description="The specific fileset to return references for", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
      *     @OA\Parameter(name="book", in="query", description="The Book ID for which to return timestamps.  For a complete list see the `book_id` field in the `/bibles/books` route.", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
      *     @OA\Parameter(name="chapter", in="query", description="The chapter for which to return timestamps", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),

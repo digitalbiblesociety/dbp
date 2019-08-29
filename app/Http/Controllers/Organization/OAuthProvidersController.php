@@ -26,10 +26,6 @@ class OAuthProvidersController extends APIController
      *     operationId="v4_projects_oAuthProvider.index",
      *     @OA\Parameter(name="project_id", in="path", required=true, description="The Project id", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
      *     @OA\Parameter(name="provider_id", in="query", description="The Provider id", @OA\Schema(ref="#/components/schemas/Account/properties/provider_id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",

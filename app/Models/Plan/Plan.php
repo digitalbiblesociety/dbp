@@ -23,8 +23,7 @@ use App\Models\User\User;
  * @OA\Schema (
  *     type="object",
  *     description="The User created Plan",
- *     title="Plan",
- *     @OA\Xml(name="Plan")
+ *     title="Plan"
  * )
  *
  */
@@ -84,6 +83,7 @@ class Plan extends Model
    * @OA\Property(
    *   title="suggested_start_date",
    *   type="string",
+   *   format="date",
    *   description="The suggested start date of the plan"
    * )
    *

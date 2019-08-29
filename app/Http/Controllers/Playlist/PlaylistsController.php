@@ -24,7 +24,6 @@ class PlaylistsController extends APIController
      *     path="/playlists",
      *     tags={"Playlists"},
      *     summary="List a user's playlists",
-     *     description="",
      *     operationId="v4_playlists.index",
      *     @OA\Parameter(
      *          name="featured",
@@ -33,10 +32,6 @@ class PlaylistsController extends APIController
      *          description="Return featured playlists"
      *     ),
      *     security={{"api_token":{}}},
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(ref="#/components/parameters/limit"),
      *     @OA\Parameter(ref="#/components/parameters/page"),
      *     @OA\Parameter(ref="#/components/parameters/sort_by"),
@@ -116,27 +111,15 @@ class PlaylistsController extends APIController
      *     path="/playlists",
      *     tags={"Playlists"},
      *     summary="Crete a playlist",
-     *     description="",
      *     operationId="v4_playlists.store",
      *     security={{"api_token":{}}},
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\RequestBody(required=true, description="Fields for User Playlist Creation", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name",                  ref="#/components/schemas/Playlist/properties/name"),
      *              @OA\Property(property="external_content",      ref="#/components/schemas/Playlist/properties/external_content")
      *          )
      *     )),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
-     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_playlist_detail"))
-     *     )
+     *     @OA\Response(response=200, ref="#/components/responses/playlist")
      * )
      *
      * @return \Illuminate\Http\Response|array
@@ -175,7 +158,6 @@ class PlaylistsController extends APIController
      *     path="/playlists/{playlist_id}",
      *     tags={"Playlists"},
      *     summary="A user's playlist",
-     *     description="",
      *     operationId="v4_playlists.show",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(
@@ -185,18 +167,7 @@ class PlaylistsController extends APIController
      *          @OA\Schema(ref="#/components/schemas/Playlist/properties/id"),
      *          description="The playlist id"
      *     ),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
-     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_playlist_detail"))
-     *     )
+     *     @OA\Response(response=200, ref="#/components/responses/playlist")
      * )
      *
      * @param $playlist_id
@@ -230,7 +201,6 @@ class PlaylistsController extends APIController
      *     path="/playlists/{playlist_id}",
      *     tags={"Playlists"},
      *     summary="Update a playlist",
-     *     description="",
      *     operationId="v4_playlist.update",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="playlist_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Playlist/properties/id")),
@@ -241,18 +211,7 @@ class PlaylistsController extends APIController
      *              @OA\Property(property="external_content", type="string")
      *          )
      *     )),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
-     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_playlist_detail"))
-     *     )
+     *     @OA\Response(response=200, ref="#/components/responses/playlist")
      * )
      *
      * @param  int $playlist_id
@@ -313,14 +272,9 @@ class PlaylistsController extends APIController
      *     path="/playlists/{playlist_id}",
      *     tags={"Playlists"},
      *     summary="Delete a playlist",
-     *     description="",
      *     operationId="v4_playlists.destroy",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="playlist_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Playlist/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -363,23 +317,11 @@ class PlaylistsController extends APIController
      *     path="/playlists/{playlist_id}/follow",
      *     tags={"Playlists"},
      *     summary="Follow a playlist",
-     *     description="",
      *     operationId="v4_playlists.start",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="playlist_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Playlist/properties/id")),
      *     @OA\Parameter(name="follow", in="query", @OA\Schema(type="boolean")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
-     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_playlist_detail"))
-     *     )
+     *     @OA\Response(response=200, ref="#/components/responses/playlist")
      * )
      *
      * @param  int $playlist_id
@@ -429,14 +371,9 @@ class PlaylistsController extends APIController
      *     path="/playlists/{playlist_id}/item",
      *     tags={"Playlists"},
      *     summary="Crete a playlist item",
-     *     description="",
      *     operationId="v4_playlists_items.store",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="playlist_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Playlist/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\RequestBody(ref="#/components/requestBodies/PlaylistItems"),
      *     @OA\Response(
      *         response=200,
@@ -523,15 +460,10 @@ class PlaylistsController extends APIController
      *     path="/playlists/item/{item_id}/complete",
      *     tags={"Playlists"},
      *     summary="Complete a playlist item",
-     *     description="",
      *     operationId="v4_playlists_items.complete",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="item_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/PlaylistItems/properties/id")),
      *     @OA\Parameter(name="complete", in="query", @OA\Schema(type="boolean")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -640,6 +572,15 @@ class PlaylistsController extends APIController
      *   },
      *   @OA\Property(property="items",type="array",@OA\Items(ref="#/components/schemas/PlaylistItemDetail"))
      * )
+     * 
+     * @OA\Response(
+     *   response="playlist",
+     *   description="Playlist Object",
+     *   @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *   @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *   @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *   @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_playlist_detail"))
+     * )
      */
 
     private function getPlaylist($user, $playlist_id)
@@ -655,17 +596,5 @@ class PlaylistsController extends APIController
             ->select($select)
             ->first();
         return $playlist;
-    }
-
-    private function validatePlaylist()
-    {
-        $validator = Validator::make(request()->all(), [
-            'user_id'           => 'required|exists:dbp_users.users,id',
-            'name'              => 'required|string'
-        ]);
-        if ($validator->fails()) {
-            return ['errors' => $validator->errors()];
-        }
-        return true;
     }
 }

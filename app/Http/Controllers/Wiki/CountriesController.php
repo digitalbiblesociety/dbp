@@ -55,10 +55,6 @@ class CountriesController extends APIController
      *          description="When set to true, the return will include the major languages used in each country.
      *                       You may optionally also include the language names by setting it to `with_names`",
      *     ),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -158,10 +154,6 @@ class CountriesController extends APIController
      *     summary="Returns a single Country",
      *     description="Returns a single Country",
      *     operationId="v4_countries.one",
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Parameter(
      *          name="id",
      *          in="path",

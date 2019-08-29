@@ -32,10 +32,6 @@ class BooksControllerV2 extends APIController
      *     operationId="v2_library_book",
      *     @OA\Parameter(name="dam_id",in="query",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(name="asset_id",in="query", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -120,10 +116,6 @@ class BooksControllerV2 extends APIController
      *     operationId="v2_library_bookOrder",
      *     @OA\Parameter(name="dam_id",in="query",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(name="asset_id",in="query", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -192,10 +184,6 @@ class BooksControllerV2 extends APIController
      *     description="Gets the book order and code listing for a volume.",
      *     operationId="v2_library_bookName",
      *     @OA\Parameter(name="language_code",in="query",description="The language_code. For a complete list see the `iso` field in the `/languages` route",required=true, @OA\Schema(ref="#/components/schemas/Language/properties/iso")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -362,10 +350,6 @@ class BooksControllerV2 extends APIController
      *     @OA\Parameter(name="dam_id",in="query",description="The bible_id",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(name="asset_id",in="query",description="The asset_id", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
      *     @OA\Parameter(name="book_id",in="query",description="The book_id. For a complete list see the `book_id` field in the `/bibles/books` route.",required=true, @OA\Schema(ref="#/components/schemas/Book/properties/id")),
-     *     @OA\Parameter(ref="#/components/parameters/version_number"),
-     *     @OA\Parameter(ref="#/components/parameters/key"),
-     *     @OA\Parameter(ref="#/components/parameters/pretty"),
-     *     @OA\Parameter(ref="#/components/parameters/format"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
