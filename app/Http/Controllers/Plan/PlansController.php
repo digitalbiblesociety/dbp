@@ -601,7 +601,7 @@ class PlansController extends APIController
      *     operationId="v4_plans.reset",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
-     *     @OA\RequestBody(required=true, @OA\MediaType(mediaType="application/json",
+     *     @OA\RequestBody(@OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="start_date", type="string")
      *          )
