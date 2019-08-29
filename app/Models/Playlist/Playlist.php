@@ -116,6 +116,8 @@ class Playlist extends Model
       protected $created_at;
       protected $deleted_at;
       
+      protected $appends = array('verses');
+
       public function getFeaturedAttribute($featured)
       {
         return (bool) $featured;
@@ -124,6 +126,20 @@ class Playlist extends Model
       public function getFollowingAttribute($following)
       {
         return (bool) $following;
+      }
+
+      /**
+       *
+       * @OA\Property(
+       *   title="verses",
+       *   type="integer",
+       *   description="The playlist verses count"
+       * )
+       *
+       */
+      public function getVersesAttribute()
+      {
+        return PlaylistItems::where('playlist_id', $this['id'])->get()->sum('verses');
       }
 
       public function user()
