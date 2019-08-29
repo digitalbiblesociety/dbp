@@ -564,9 +564,9 @@ class PlansController extends APIController
 
         $user_plan = UserPlan::join('plans', function ($join) use ($user) {
             $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
-        })->where('user_plans.plan_id',$plan_day->plan_id)
-        ->select('user_plans.*')
-        ->first();
+        })->where('user_plans.plan_id', $plan_day->plan_id)
+            ->select('user_plans.*')
+            ->first();
 
         if (!$user_plan) {
             return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
@@ -590,25 +590,6 @@ class PlansController extends APIController
         ]);
     }
 
-    private function getPlan($plan_id, $user)
-    {
-        $select = ['plans.*'];
-        if (!empty($user)) {
-            $select[] = 'user_plans.start_date';
-            $select[] = 'user_plans.percentage_completed';
-        }
-        $plan = Plan::with('days')
-            ->with('user')
-            ->where('plans.id', $plan_id)
-            ->when(!empty($user), function ($q) use ($user) {
-                $q->leftJoin('user_plans', function ($join) use ($user) {
-                    $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
-                });
-            })->select($select)->first();
-
-        return $plan;
-    }
-
     /**
      * Reset the specified plan.
      *
@@ -620,6 +601,11 @@ class PlansController extends APIController
      *     operationId="v4_plans.reset",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
+     *     @OA\RequestBody(required=true, @OA\MediaType(mediaType="application/json",
+     *          @OA\Schema(
+     *              @OA\Property(property="start_date", type="string")
+     *          )
+     *     )),
      *     @OA\Parameter(ref="#/components/parameters/version_number"),
      *     @OA\Parameter(ref="#/components/parameters/key"),
      *     @OA\Parameter(ref="#/components/parameters/pretty"),
@@ -660,8 +646,30 @@ class PlansController extends APIController
         if (!$user_plan) {
             return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
         }
-        $user_plan->reset()->save();
+
+        $start_date = checkParam('start_date');
+
+        $user_plan->reset($start_date)->save();
         $plan = $this->getPlan($plan_id, $user);
         return $this->reply($plan);
+    }
+
+    private function getPlan($plan_id, $user)
+    {
+        $select = ['plans.*'];
+        if (!empty($user)) {
+            $select[] = 'user_plans.start_date';
+            $select[] = 'user_plans.percentage_completed';
+        }
+        $plan = Plan::with('days')
+            ->with('user')
+            ->where('plans.id', $plan_id)
+            ->when(!empty($user), function ($q) use ($user) {
+                $q->leftJoin('user_plans', function ($join) use ($user) {
+                    $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
+                });
+            })->select($select)->first();
+
+        return $plan;
     }
 }

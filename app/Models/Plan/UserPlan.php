@@ -65,14 +65,14 @@ class UserPlan extends Model
         return $this;
     }
 
-    public function reset()
+    public function reset($start_date = null)
     {
         PlanDay::where('plan_id', $this->plan_id)->get()
             ->map(function ($plan_day) {
                 $plan_day->unComplete();
             });;
         $this->percentage_completed = 0;
-        $this->start_date = 0;
+        $this->start_date = $start_date;
         return $this;
     }
 }
