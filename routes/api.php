@@ -224,6 +224,8 @@ Route::name('v4_playlists.follow')
     ->middleware('APIToken:check')->post('playlists/{playlist_id}/follow',          'Playlist\PlaylistsController@follow');
 Route::name('v4_playlists_items.store')
     ->middleware('APIToken:check')->post('playlists/{playlist_id}/item',            'Playlist\PlaylistsController@storeItem');
+Route::name('v4_playlists_items.complete')
+    ->middleware('APIToken:check')->post('playlists/item/{item_id}/complete',       'Playlist\PlaylistsController@completeItem');
 
 
 // VERSION 4 | Plans
@@ -239,5 +241,9 @@ Route::name('v4_plans.destroy')
     ->middleware('APIToken:check')->delete('plans/{plan_id}',                       'Plan\PlansController@destroy');
 Route::name('v4_plans.start')
     ->middleware('APIToken:check')->post('plans/{plan_id}/start',                   'Plan\PlansController@start');
+Route::name('v4_plans.reset')
+    ->middleware('APIToken:check')->post('plans/{plan_id}/reset',                   'Plan\PlansController@reset');
 Route::name('v4_plans_days.store')
     ->middleware('APIToken:check')->post('plans/{plan_id}/day',                     'Plan\PlansController@storeDay');
+Route::name('v4_plans_days.complete')
+    ->middleware('APIToken:check')->post('plans/day/{day_id}/complete',             'Plan\PlansController@completeDay');

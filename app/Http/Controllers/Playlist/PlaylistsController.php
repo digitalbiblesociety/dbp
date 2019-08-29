@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Playlist;
 
 use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
+use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
 use App\Models\Playlist\PlaylistFollower;
 use App\Models\Playlist\PlaylistItems;
@@ -56,12 +57,18 @@ class PlaylistsController extends APIController
      * 
      * 
      * @OA\Schema (
-     *   type="array",
+     *   type="object",
      *   schema="v4_playlist_index",
      *   description="The v4 playlist index response.",
-     *   title="User playlist",
-     *   @OA\Xml(name="v4_playlist_index"),
-     *   @OA\Items(ref="#/components/schemas/Playlist")
+     *   title="User playlists",
+     *   allOf={
+     *      @OA\Schema(ref="#/components/schemas/pagination"),
+     *   },
+     *   @OA\Property(
+     *      property="data",
+     *      type="array",
+     *      @OA\Items(ref="#/components/schemas/v4_playlist")
+     *   )
      * )
      */
     public function index(Request $request)
@@ -125,10 +132,10 @@ class PlaylistsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_playlist_index"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_playlist_detail"))
      *     )
      * )
      *
@@ -185,10 +192,10 @@ class PlaylistsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_playlist_index"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_playlist_detail"))
      *     )
      * )
      *
@@ -241,10 +248,10 @@ class PlaylistsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_playlist_index"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_playlist_detail"))
      *     )
      * )
      *
@@ -368,10 +375,10 @@ class PlaylistsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_index")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_playlist_index"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_detail")),
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_playlist_detail"))
      *     )
      * )
      *
@@ -392,7 +399,7 @@ class PlaylistsController extends APIController
         $playlist = Playlist::where('id', $playlist_id)->first();
 
         if (!$playlist) {
-            return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+            return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
         }
 
         $follow = checkParam('follow');
@@ -434,10 +441,10 @@ class PlaylistsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/PlaylistItems")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/PlaylistItems")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/PlaylistItems")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/PlaylistItems"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_playlist_items")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_playlist_items")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_playlist_items")),
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_playlist_items"))
      *     )
      * )
      * 
@@ -458,6 +465,13 @@ class PlaylistsController extends APIController
      *     )
      * )
      *
+     * @OA\Schema (
+     *   type="array",
+     *   schema="v4_playlist_items",
+     *   title="User created playlist items",
+     *   description="The v4 playlist items creation response.",
+     *   @OA\Items(ref="#/components/schemas/PlaylistItemDetail")
+     * )
      * @return mixed
      */
     public function storeItem(Request $request, $playlist_id)
@@ -503,6 +517,132 @@ class PlaylistsController extends APIController
 
         return $this->reply($single_item ? $created_playlist_items[0] : $created_playlist_items);
     }
+
+    /**
+     * Complete a playlist item.
+     *
+     * @OA\Post(
+     *     path="/playlists/item/{item_id}/complete",
+     *     tags={"Playlists"},
+     *     summary="Complete a playlist item",
+     *     description="",
+     *     operationId="v4_playlists_items.complete",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="item_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/PlaylistItems/properties/id")),
+     *     @OA\Parameter(name="complete", in="query", @OA\Schema(type="boolean")),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_complete_playlist_item")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_complete_playlist_item")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_complete_playlist_item")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_complete_playlist_item"))
+     *     )
+     * )
+     * 
+     * @OA\Schema (
+     *   schema="v4_complete_playlist_item",
+     *   description="The v4 plan day complete response",
+     *   @OA\Property(property="message", type="string"),
+     *   @OA\Property(property="percentage_completed", ref="#/components/schemas/UserPlan/properties/percentage_completed")
+     * )
+     * @return mixed
+     */
+    public function completeItem(Request $request, $item_id)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $playlist_item = PlaylistItems::where('id', $item_id)->first();
+
+        if (!$playlist_item) {
+            return $this->setStatusCode(404)->replyWithError('Playlist Item Not Found');
+        }
+
+        $user_plan = UserPlan::join('plans', function ($join) use ($user) {
+            $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
+        })
+            ->join('plan_days', function ($join) use ($playlist_item) {
+                $join->on('plan_days.plan_id', '=', 'plans.id')->where('plan_days.playlist_id', $playlist_item->playlist_id);
+            })
+            ->select('user_plans.*')
+            ->first();
+
+        if (!$user_plan) {
+            return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
+        }
+
+        $complete = checkParam('complete') ?? true;
+        $complete = $complete && $complete !== 'false';
+
+        if ($complete) {
+            $playlist_item->complete();
+        } else {
+            $playlist_item->unComplete();
+        }
+
+        $result = $complete ? 'completed' : 'not completed';
+        $user_plan->calculatePercentageCompleted()->save();
+
+        return $this->reply([
+            'percentage_completed' => $user_plan->percentage_completed,
+            'message' => 'Playlist Item ' . $result
+        ]);
+    }
+
+    /**
+     * @OA\Schema (
+     *   type="object",
+     *   schema="PlaylistItemDetail",
+     *   @OA\Property(property="id", ref="#/components/schemas/PlaylistItems/properties/id"),
+     *   @OA\Property(property="fileset_id", ref="#/components/schemas/PlaylistItems/properties/fileset_id"),
+     *   @OA\Property(property="book_id", ref="#/components/schemas/PlaylistItems/properties/book_id"),
+     *   @OA\Property(property="chapter_start", ref="#/components/schemas/PlaylistItems/properties/chapter_start"),
+     *   @OA\Property(property="chapter_end", ref="#/components/schemas/PlaylistItems/properties/chapter_end"),
+     *   @OA\Property(property="verse_start", ref="#/components/schemas/PlaylistItems/properties/verse_start"),
+     *   @OA\Property(property="verse_end", ref="#/components/schemas/PlaylistItems/properties/verse_end"),
+     *   @OA\Property(property="duration", ref="#/components/schemas/PlaylistItems/properties/duration"),
+     *   @OA\Property(property="completed", ref="#/components/schemas/PlaylistItems/properties/completed")
+     * )
+     * @OA\Schema (
+     *   type="object",
+     *   schema="v4_playlist",
+     *   @OA\Property(property="id", ref="#/components/schemas/Playlist/properties/id"),
+     *   @OA\Property(property="name", ref="#/components/schemas/Playlist/properties/name"),
+     *   @OA\Property(property="featured", ref="#/components/schemas/Playlist/properties/featured"),
+     *   @OA\Property(property="created_at", ref="#/components/schemas/Playlist/properties/created_at"),
+     *   @OA\Property(property="updated_at", ref="#/components/schemas/Playlist/properties/updated_at"),
+     *   @OA\Property(property="external_content", ref="#/components/schemas/Playlist/properties/external_content"),
+     *   @OA\Property(property="following", ref="#/components/schemas/Playlist/properties/following"),
+     *   @OA\Property(property="user", ref="#/components/schemas/v4_playlist_index_user"),
+     * )
+     * 
+     * @OA\Schema (
+     *   type="object",
+     *   schema="v4_playlist_index_user",
+     *   description="The user who created the playlist",
+     *   @OA\Property(property="id", type="integer"),
+     *   @OA\Property(property="name", type="string")
+     * )
+     * 
+     * @OA\Schema (
+     *   type="object",
+     *   schema="v4_playlist_detail",
+     *   allOf={
+     *      @OA\Schema(ref="#/components/schemas/v4_playlist"),
+     *   },
+     *   @OA\Property(property="items",type="array",@OA\Items(ref="#/components/schemas/PlaylistItemDetail"))
+     * )
+     */
 
     private function getPlaylist($user, $playlist_id)
     {

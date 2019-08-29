@@ -2,8 +2,11 @@
 
 namespace App\Models\Playlist;
 
+use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleVerse;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 
@@ -27,8 +30,7 @@ use Spatie\EloquentSortable\SortableTrait;
  * @OA\Schema (
  *     type="object",
  *     description="The Playlist Item",
- *     title="Playlist Item",
- *     @OA\Xml(name="PlaylistItem")
+ *     title="Playlist Item"
  * )
  *
  */
@@ -236,5 +238,69 @@ class PlaylistItems extends Model implements Sortable
         });
 
         return $timestamps->sum('duration');
+    }
+    protected $appends = array('verses', 'completed');
+
+    /**
+     *
+     * @OA\Property(
+     *   title="verses",
+     *   type="integer",
+     *   description="The playlist item verses count"
+     * )
+     *
+     */
+    public function getVersesAttribute()
+    {
+        $fileset = BibleFileset::where('id', $this['fileset_id'])
+            ->whereNotIn('set_type_code', ['text_format'])
+            ->first();
+        $verses_middle = BibleVerse::where('hash_id', $fileset->hash_id)
+            ->where([
+                ['book_id', $this['book_id']],
+                ['chapter', '>=', $this['chapter_start']],
+                ['chapter', '<', $this['chapter_end']],
+            ])
+            ->count();
+        return  $verses_middle - ($this['verse_start'] - 1) + $this['verse_end'];
+    }
+
+    /**
+     * @OA\Property(
+     *   property="completed",
+     *   title="completed",
+     *   type="boolean",
+     *   description="If the playlist item is completed"
+     * )
+     */
+    public function getCompletedAttribute()
+    {
+        $user = Auth::user();
+        if (empty($user)) {
+            return false;
+        }
+
+        $complete = PlaylistItemsComplete::where('playlist_item_id', $this->attributes['id'])
+            ->where('user_id', $user->id)->first();
+
+        return !empty($complete);
+    }
+
+    public function complete()
+    {
+        $user = Auth::user();
+        $completed_item = PlaylistItemsComplete::firstOrNew([
+            'user_id'               => $user->id,
+            'playlist_item_id'      => $this['id']
+        ]);
+        $completed_item->save();
+    }
+
+    public function unComplete()
+    {
+        $user = Auth::user();
+        $completed_item = PlaylistItemsComplete::where('playlist_item_id', $this['id'])
+            ->where('user_id', $user->id);
+        $completed_item->delete();
     }
 }
