@@ -64,4 +64,15 @@ class UserPlan extends Model
         $this->percentage_completed = $completed_per_day->sum('total_items_completed') / $completed_per_day->sum('total_items') * 100;
         return $this;
     }
+
+    public function reset()
+    {
+        PlanDay::where('plan_id', $this->plan_id)->get()
+            ->map(function ($plan_day) {
+                $plan_day->unComplete();
+            });;
+        $this->percentage_completed = 0;
+        $this->start_date = 0;
+        return $this;
+    }
 }

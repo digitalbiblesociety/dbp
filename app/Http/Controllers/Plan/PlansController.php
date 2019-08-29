@@ -7,7 +7,6 @@ use App\Http\Controllers\APIController;
 use App\Models\Plan\Plan;
 use App\Traits\CheckProjectMembership;
 use App\Models\Plan\PlanDay;
-use App\Models\Plan\PlanDayComplete;
 use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
 use Illuminate\Http\Request;
@@ -608,5 +607,61 @@ class PlansController extends APIController
             })->select($select)->first();
 
         return $plan;
+    }
+
+    /**
+     * Reset the specified plan.
+     *
+     * @OA\Post(
+     *     path="/plans/{plan_id}/reset",
+     *     tags={"Plans"},
+     *     summary="Reset a plan",
+     *     description="",
+     *     operationId="v4_plans.reset",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_plan_index")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_plan_index")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_plan_index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_index"))
+     *     )
+     * )
+     *
+     * @param  int $plan_id
+     *
+     * @return array|\Illuminate\Http\Response
+     */
+    public function reset(Request $request, $plan_id)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $plan = Plan::where('user_id', $user->id)->where('id', $plan_id)->first();
+
+        if (!$plan) {
+            return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+        }
+
+
+        $user_plan = UserPlan::where('plan_id', $plan_id)->where('user_id', $user->id)->first();
+
+        if (!$user_plan) {
+            return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
+        }
+        $user_plan->reset()->save();
+        $plan = $this->getPlan($plan_id, $user);
+        return $this->reply($plan);
     }
 }
