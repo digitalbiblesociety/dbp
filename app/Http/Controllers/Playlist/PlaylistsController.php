@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Playlist;
 
 use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
+use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
 use App\Models\Playlist\PlaylistFollower;
 use App\Models\Playlist\PlaylistItems;
+use App\Models\Playlist\PlaylistItemsComplete;
 use App\Traits\CheckProjectMembership;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -392,7 +394,7 @@ class PlaylistsController extends APIController
         $playlist = Playlist::where('id', $playlist_id)->first();
 
         if (!$playlist) {
-            return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+            return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
         }
 
         $follow = checkParam('follow');
@@ -500,6 +502,82 @@ class PlaylistsController extends APIController
         }
 
         return $this->reply($single_item ? $created_playlist_items[0] : $created_playlist_items);
+    }
+
+    /**
+     * Complete a playlist item.
+     *
+     * @OA\Post(
+     *     path="/playlists/item/{item_id}/complete",
+     *     tags={"Playlists"},
+     *     summary="Complete a playlist item",
+     *     description="",
+     *     operationId="v4_playlists_items.complete",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="item_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/PlaylistItems/properties/id")),
+     *     @OA\Parameter(name="complete", in="query", @OA\Schema(type="boolean")),
+     *     @OA\Parameter(ref="#/components/parameters/version_number"),
+     *     @OA\Parameter(ref="#/components/parameters/key"),
+     *     @OA\Parameter(ref="#/components/parameters/pretty"),
+     *     @OA\Parameter(ref="#/components/parameters/format"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/PlaylistItems")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/PlaylistItems")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/PlaylistItems")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/PlaylistItems"))
+     *     )
+     * )
+     * 
+     *
+     * @return mixed
+     */
+    public function completeItem(Request $request, $item_id)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $playlist_item = PlaylistItems::where('id', $item_id)->first();
+
+        if (!$playlist_item) {
+            return $this->setStatusCode(404)->replyWithError('Playlist Item Not Found');
+        }
+
+        $user_plan = UserPlan::join('plans', function ($join) use ($user) {
+            $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
+        })
+            ->join('plan_days', function ($join) use ($playlist_item) {
+                $join->on('plan_days.plan_id', '=', 'plans.id')->where('plan_days.playlist_id', $playlist_item->playlist_id);
+            })
+            ->select('user_plans.*')
+            ->first();
+
+        if (!$user_plan) {
+            return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
+        }
+
+        $complete = checkParam('complete') ?? true;
+        $complete = $complete && $complete !== 'false';
+
+        if ($complete) {
+            $playlist_item->complete();
+        } else {
+            $playlist_item->unComplete();
+        }
+
+        $result = $complete ? 'completed' : 'not completed';
+        $user_plan->calculatePercentageCompleted()->save();
+
+        return $this->reply([
+            'percentage_completed' => $user_plan->percentage_completed,
+            'message' => 'Playlist Item ' . $result
+        ]);
     }
 
     private function getPlaylist($user, $playlist_id)

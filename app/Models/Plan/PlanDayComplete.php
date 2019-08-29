@@ -5,15 +5,15 @@ namespace App\Models\Plan;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-class UserPlan extends Model
+class PlanDayComplete extends Model
 {
 
     protected $connection = 'dbp_users';
-    protected $primaryKey = ['user_id', 'plan_id'];
-    public $incrementing = false;
-    public $table         = 'user_plans';
-    protected $fillable   = ['plan_id', 'user_id', 'start_date', 'suggested_start_date', 'percentage_completed'];
-    protected $hidden     = ['plan_id', 'created_at', 'updated_at'];
+    public $table         = 'plan_days_completed';
+    protected $primaryKey = ['user_id', 'plan_day_id'];
+    protected $fillable   = ['user_id', 'plan_day_id'];
+    public $incrementing  = false;
+    public $timestamps = false;
 
     /**
      * Set the keys for a save update query.
@@ -52,27 +52,5 @@ class UserPlan extends Model
         }
 
         return $this->getAttribute($keyName);
-    }
-
-    public function calculatePercentageCompleted()
-    {
-        $completed_per_day = PlanDay::where('plan_id', $this->plan_id)->get()
-            ->map(function ($plan_day) {
-                $completed = $plan_day->verifyDayCompleted();
-                return $completed;
-            });;
-        $this->percentage_completed = $completed_per_day->sum('total_items_completed') / $completed_per_day->sum('total_items') * 100;
-        return $this;
-    }
-
-    public function reset($start_date = null)
-    {
-        PlanDay::where('plan_id', $this->plan_id)->get()
-            ->map(function ($plan_day) {
-                $plan_day->unComplete();
-            });;
-        $this->percentage_completed = 0;
-        $this->start_date = $start_date;
-        return $this;
     }
 }
