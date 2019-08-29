@@ -3,6 +3,7 @@
 namespace App\Models\Playlist;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 
@@ -173,4 +174,67 @@ class PlaylistItems extends Model implements Sortable
      * @public Carbon $created_at
      */
     protected $created_at;
+
+    public function calculateDuration()
+    {
+        $playlist_item = (object) $this->attributes;
+        $timestamps = $this->getTimeStamps($playlist_item);
+        $duration = $this->getDuration($timestamps, $playlist_item);
+        $this->attributes['duration'] =  $duration;
+        return $this;
+    }
+
+    private function getTimeStamps($playlist_item)
+    {
+        return DB::connection('dbp')->table('bible_file_timestamps')
+            ->join('bible_files', 'bible_files.id', 'bible_file_timestamps.bible_file_id')
+            ->join('bible_filesets', 'bible_filesets.hash_id', 'bible_files.hash_id')
+            ->where('bible_filesets.id', $playlist_item->fileset_id)
+            ->where('bible_files.book_id', $playlist_item->book_id)
+            ->where('bible_files.chapter_start', '>=', $playlist_item->chapter_start)
+            ->where('bible_files.chapter_start', '<=', $playlist_item->chapter_end)
+            ->select([
+                'bible_files.chapter_start as chapter',
+                'bible_files.duration as total_duration',
+                'bible_file_timestamps.verse_start as verse',
+                'bible_file_timestamps.timestamp'
+            ])
+            ->get();
+    }
+
+    private function getDuration($timestamps, $playlist_item)
+    {
+        $chapters_size = $timestamps->groupBy('chapter')->map(function ($chapter) {
+            return sizeof($chapter);
+        });
+
+        $timestamps = $timestamps->map(function ($timestamp, $key) use ($chapters_size, $timestamps, $playlist_item) {
+
+            if ($timestamp->chapter === $playlist_item->chapter_start && $timestamp->verse < $playlist_item->verse_start) {
+                $timestamp->duration = 0;
+                return $timestamp;
+            }
+
+            if ($timestamp->chapter === $playlist_item->chapter_end && $timestamp->verse > $playlist_item->verse_end) {
+                $timestamp->duration = 0;
+                return $timestamp;
+            }
+
+            $next_timestamp = 0;
+            if (
+                $chapters_size[$timestamp->chapter] === $timestamp->verse
+                || sizeof($timestamps) <= ($key + 1)
+            ) {
+                $next_timestamp = $timestamp->total_duration;
+            } else {
+                $next_timestamp = $timestamps[$key + 1]->timestamp;
+            }
+
+            $timestamp->duration = $next_timestamp - $timestamp->timestamp;
+
+            return $timestamp;
+        });
+
+        return $timestamps->sum('duration');
+    }
 }
