@@ -612,39 +612,6 @@ class PlansController extends APIController
         ]);
     }
     /**
-     *  @OA\Schema (
-     *   type="object",
-     *   schema="v4_plan",
-     *   @OA\Property(property="id", ref="#/components/schemas/Plan/properties/id"),
-     *   @OA\Property(property="name", ref="#/components/schemas/Plan/properties/name"),
-     *   @OA\Property(property="featured", ref="#/components/schemas/Plan/properties/featured"),
-     *   @OA\Property(property="suggested_start_date", ref="#/components/schemas/Plan/properties/suggested_start_date"),
-     *   @OA\Property(property="created_at", ref="#/components/schemas/Plan/properties/created_at"),
-     *   @OA\Property(property="updated_at", ref="#/components/schemas/Plan/properties/updated_at"),
-     *   @OA\Property(property="start_date", ref="#/components/schemas/UserPlan/properties/start_date"),
-     *   @OA\Property(property="percentage_completed", ref="#/components/schemas/UserPlan/properties/percentage_completed"),
-     *   @OA\Property(property="user", ref="#/components/schemas/v4_plan_index_user"),
-     * )
-     * 
-     * @OA\Schema (
-     *   type="object",
-     *   schema="v4_plan_index_user",
-     *   description="The user who created the plan",
-     *   @OA\Property(property="id", type="integer"),
-     *   @OA\Property(property="name", type="string")
-     * )
-     * 
-     * @OA\Schema (
-     *   type="object",
-     *   schema="v4_plan_detail",
-     *   allOf={
-     *      @OA\Schema(ref="#/components/schemas/v4_plan"),
-     *   },
-     *   @OA\Property(property="days",type="array",@OA\Items(ref="#/components/schemas/PlanDay"))
-     * )
-     */
-
-    /**
      * Reset the specified plan.
      *
      * @OA\Post(
@@ -707,6 +674,39 @@ class PlansController extends APIController
         $plan = $this->getPlan($plan_id, $user);
         return $this->reply($plan);
     }
+
+     /**
+     *  @OA\Schema (
+     *   type="object",
+     *   schema="v4_plan",
+     *   @OA\Property(property="id", ref="#/components/schemas/Plan/properties/id"),
+     *   @OA\Property(property="name", ref="#/components/schemas/Plan/properties/name"),
+     *   @OA\Property(property="featured", ref="#/components/schemas/Plan/properties/featured"),
+     *   @OA\Property(property="suggested_start_date", ref="#/components/schemas/Plan/properties/suggested_start_date"),
+     *   @OA\Property(property="created_at", ref="#/components/schemas/Plan/properties/created_at"),
+     *   @OA\Property(property="updated_at", ref="#/components/schemas/Plan/properties/updated_at"),
+     *   @OA\Property(property="start_date", ref="#/components/schemas/UserPlan/properties/start_date"),
+     *   @OA\Property(property="percentage_completed", ref="#/components/schemas/UserPlan/properties/percentage_completed"),
+     *   @OA\Property(property="user", ref="#/components/schemas/v4_plan_index_user"),
+     * )
+     * 
+     * @OA\Schema (
+     *   type="object",
+     *   schema="v4_plan_index_user",
+     *   description="The user who created the plan",
+     *   @OA\Property(property="id", type="integer"),
+     *   @OA\Property(property="name", type="string")
+     * )
+     * 
+     * @OA\Schema (
+     *   type="object",
+     *   schema="v4_plan_detail",
+     *   allOf={
+     *      @OA\Schema(ref="#/components/schemas/v4_plan"),
+     *   },
+     *   @OA\Property(property="days",type="array",@OA\Items(ref="#/components/schemas/PlanDay"))
+     * )
+     */
 
     private function getPlan($plan_id, $user)
     {
