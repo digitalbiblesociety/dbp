@@ -13,7 +13,7 @@ use App\Models\User\Role;
 use App\Models\User\User;
 use App\Models\User\Key;
 use App\Models\User\Study\Note;
-
+use App\Traits\CheckProjectMembership;
 use App\Transformers\Serializers\DataArraySerializer;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
@@ -30,6 +30,7 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class UsersController extends APIController
 {
+    use CheckProjectMembership;
 
     /**
      * Returns an index of all users within the system
@@ -212,6 +213,43 @@ class UsersController extends APIController
 
         Auth::login($user, true);
         return redirect()->to('dashboard');
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/logout",
+     *     tags={"Users"},
+     *     summary="Logout a user",
+     *     operationId="v4_user.logout",
+     *     security={{"api_token":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(type="string"))
+     *     )
+     * )
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     */
+    public function logout(Request $request)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+        $user->forceFill([
+            'api_token' => null,
+        ])->save();
+
+        return $this->reply('User logged out');
     }
 
     private function loginWithEmail($email, $password)
