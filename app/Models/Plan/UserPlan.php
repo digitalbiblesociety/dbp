@@ -91,7 +91,7 @@ class UserPlan extends Model
                 $completed = $plan_day->verifyDayCompleted();
                 return $completed;
             });;
-        $this->percentage_completed = $completed_per_day->sum('total_items_completed') / $completed_per_day->sum('total_items') * 100;
+        $this->attributes['percentage_completed'] = $completed_per_day->sum('total_items_completed') / $completed_per_day->sum('total_items') * 100;
         return $this;
     }
 
@@ -101,8 +101,8 @@ class UserPlan extends Model
             ->map(function ($plan_day) {
                 $plan_day->unComplete();
             });;
-        $this->percentage_completed = 0;
-        $this->start_date = $start_date;
+        $this->attributes['percentage_completed'] = 0;
+        $this->attributes['start_date'] = $start_date;
         return $this;
     }
 }
