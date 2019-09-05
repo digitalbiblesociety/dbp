@@ -8,7 +8,7 @@
         'size'      => 'medium',
         'image'     => '/images/dbp_icon.svg',
         'actions'   => [
-            route('docs.getting_started') => 'Get Started'
+            config('app.getting_started_url') => 'Get Started'
         ]
     ])
 
