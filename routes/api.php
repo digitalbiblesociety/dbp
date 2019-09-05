@@ -144,6 +144,8 @@ Route::name('v4_user.oAuth')->get('/login/{driver}',                            
 Route::name('v4_user.oAuthCallback')->get('/login/{driver}/callback',              'User\SocialController@callback');
 Route::name('v4_user.password_reset')->post('users/password/reset/{token?}',       'User\PasswordsController@validatePasswordReset');
 Route::name('v4_user.password_email')->post('users/password/email',                'User\PasswordsController@triggerPasswordResetEmail');
+Route::name('v4_user.logout')
+    ->middleware('APIToken:check')->post('/logout',                                'User\UsersController@logout');
 
 // VERSION 4 | Accounts
 Route::name('v4_user_accounts.index')->get('accounts',                             'User\AccountsController@index');

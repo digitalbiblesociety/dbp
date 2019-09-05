@@ -576,14 +576,14 @@ class PlansController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $plan = Plan::where('user_id', $user->id)->where('id', $plan_id)->first();
+        $plan = Plan::where('id', $plan_id)->first();
 
         if (!$plan) {
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
         }
 
 
-        $user_plan = UserPlan::where('plan_id', $plan_id)->where('user_id', $user->id)->first();
+        $user_plan = UserPlan::where('plan_id', $plan->id)->where('user_id', $user->id)->first();
 
         if (!$user_plan) {
             return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
@@ -592,7 +592,7 @@ class PlansController extends APIController
         $start_date = checkParam('start_date');
 
         $user_plan->reset($start_date)->save();
-        $plan = $this->getPlan($plan_id, $user);
+        $plan = $this->getPlan($plan->id, $user);
         return $this->reply($plan);
     }
 
