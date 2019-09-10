@@ -177,6 +177,7 @@ class Note extends Model
 
     /**
      * @OA\Property(
+     *   property="verse_text",
      *   title="verse_text",
      *   type="string",
      *   description="The text of the Bible Verse"
