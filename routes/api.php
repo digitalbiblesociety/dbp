@@ -249,12 +249,3 @@ Route::name('v4_plans_days.store')
     ->middleware('APIToken:check')->post('plans/{plan_id}/day',                     'Plan\PlansController@storeDay');
 Route::name('v4_plans_days.complete')
     ->middleware('APIToken:check')->post('plans/day/{day_id}/complete',             'Plan\PlansController@completeDay');
-
-// Errors
-
-Route::fallback(function () {
-    return response()->json(['error' => [
-        'message' => 'Route Not Found.',
-        'status_code' => 404
-    ]], 404);
-});
