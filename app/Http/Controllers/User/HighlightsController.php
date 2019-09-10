@@ -32,6 +32,7 @@ class HighlightsController extends APIController
      *     description="The bible_id, book_id, and chapter parameters are optional but
      *          will allow you to specify which specific highlights you wish returned.",
      *     operationId="v4_highlights.index",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(
      *          name="user_id",
      *          in="path",
@@ -90,8 +91,11 @@ class HighlightsController extends APIController
      *
      * @return mixed
      */
-    public function index($user_id)
+    public function index(Request $request, $user_id)
     {
+        $user = $request->user();
+        $user_id = $user ? $user->id : $request->user_id;
+       
         // Validate Project / User Connection
         $user = User::where('id', $user_id)->select('id')->first();
 
@@ -144,6 +148,7 @@ class HighlightsController extends APIController
      *     summary="Create a highlight",
      *     description="",
      *     operationId="v4_highlights.store",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(name="user_id",  in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\RequestBody(required=true, description="Fields for User Highlight Creation", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
@@ -169,10 +174,13 @@ class HighlightsController extends APIController
      *
      * @return \Illuminate\Http\Response|array
      */
-    public function store()
+    public function store(Request $request)
     {
+        $user = $request->user();
+        $request['user_id'] = $user ? $user->id : $request->user_id;
+        
         // Validate Project / User Connection
-        $user_is_member = $this->compareProjects(request()->user_id, $this->key);
+        $user_is_member = $this->compareProjects($request->user_id, $this->key);
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
@@ -183,16 +191,16 @@ class HighlightsController extends APIController
             return $highlight_validation;
         }
 
-        request()->highlighted_color = $this->selectColor(request()->highlighted_color);
+        $request->highlighted_color = $this->selectColor($request->highlighted_color);
         $highlight = Highlight::create([
-            'user_id'           => request()->user_id,
-            'bible_id'          => request()->bible_id,
-            'book_id'           => request()->book_id,
-            'chapter'           => request()->chapter,
-            'verse_start'       => request()->verse_start,
-            'highlight_start'   => request()->highlight_start,
-            'highlighted_words' => request()->highlighted_words,
-            'highlighted_color' => request()->highlighted_color,
+            'user_id'           => $request->user_id,
+            'bible_id'          => $request->bible_id,
+            'book_id'           => $request->book_id,
+            'chapter'           => $request->chapter,
+            'verse_start'       => $request->verse_start,
+            'highlight_start'   => $request->highlight_start,
+            'highlighted_words' => $request->highlighted_words,
+            'highlighted_color' => $request->highlighted_color,
         ]);
 
         $this->handleTags($highlight);
@@ -208,6 +216,7 @@ class HighlightsController extends APIController
      *     summary="Alter a highlight",
      *     description="",
      *     operationId="v4_highlights.update",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(name="highlight_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Highlight/properties/id")),
      *     @OA\RequestBody(required=true, description="Fields for User Highlight Update", @OA\MediaType(mediaType="application/json",
@@ -239,6 +248,8 @@ class HighlightsController extends APIController
      */
     public function update(Request $request, $user_id, $id)
     {
+        $user = $request->user();
+        $user_id = $user ? $user->id : $user_id;
         // Validate Project / User Connection
         $user_is_member = $this->compareProjects($user_id, $this->key);
         if (!$user_is_member) {
@@ -277,6 +288,7 @@ class HighlightsController extends APIController
      *     summary="Delete a highlight",
      *     description="",
      *     operationId="v4_highlights.delete",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(name="highlight_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Highlight/properties/id")),
      *     @OA\Response(
@@ -294,8 +306,10 @@ class HighlightsController extends APIController
      *
      * @return array|\Illuminate\Http\Response
      */
-    public function destroy($user_id, $id)
+    public function destroy(Request $request, $user_id, $id)
     {
+        $user = $request->user();
+        $user_id = $user ? $user->id : $user_id;
         // Validate Project / User Connection
         $user_is_member = $this->compareProjects($user_id, $this->key);
         if (!$user_is_member) {
