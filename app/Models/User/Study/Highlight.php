@@ -5,6 +5,7 @@ namespace App\Models\User\Study;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleVerse;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -154,5 +155,28 @@ class Highlight extends Model
     public function tags()
     {
         return $this->hasMany(AnnotationTag::class, 'highlight_id', 'id');
+    }
+
+    public function getVerseTextAttribute()
+    {
+      $highlight = $this->toArray();
+      $chapter = $highlight['chapter'];
+      $verse_start = $highlight['verse_start'];
+      $bible = Bible::where('id', $highlight['bible_id'])->first();
+      $fileset = BibleFileset::join('bible_fileset_connections as connection', 'connection.hash_id', 'bible_filesets.hash_id')
+        ->where('bible_filesets.set_type_code', 'text_plain')->where('connection.bible_id', $bible->id)->first();
+      if (!$fileset) {
+        return "";
+      }
+      $verses = BibleVerse::withVernacularMetaData($bible)
+        ->where('hash_id', $fileset->hash_id)
+        ->where('bible_verses.book_id', $highlight['book_id'])
+        ->where('verse_start', $verse_start)
+        ->where('chapter', $chapter)
+        ->orderBy('verse_start')
+        ->select([
+          'bible_verses.verse_text',
+        ])->get()->pluck('verse_text');
+      return implode(' ', $verses->toArray());
     }
 }

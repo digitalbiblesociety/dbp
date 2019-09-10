@@ -21,7 +21,8 @@ class UserHighlightsTransformer extends TransformerAbstract
      *              @OA\Property(property="book_id",                ref="#/components/schemas/Book/properties/id"),
      *              @OA\Property(property="book_name",              ref="#/components/schemas/BibleBook/properties/name"),
      *              @OA\Property(property="chapter",                ref="#/components/schemas/BibleFile/properties/chapter_start"),
-     *              @OA\Property(property="verse",                  ref="#/components/schemas/BibleFile/properties/verse_start"),
+     *              @OA\Property(property="verse_start",                  ref="#/components/schemas/BibleFile/properties/verse_start"),
+     *              @OA\Property(property="verse_text",             ref="#/components/schemas/BibleFile/properties/verse_text"),
      *              @OA\Property(property="highlight_start",        ref="#/components/schemas/Highlight/properties/highlight_start"),
      *              @OA\Property(property="highlighted_words",      ref="#/components/schemas/Highlight/properties/highlighted_words"),
      *              @OA\Property(property="highlighted_color",      ref="#/components/schemas/Highlight/properties/highlighted_color")
@@ -44,6 +45,7 @@ class UserHighlightsTransformer extends TransformerAbstract
             'book_name'         => (string) optional($highlight->book)->name,
             'chapter'           => (int) $highlight->chapter,
             'verse_start'       => (int) $highlight->verse_start,
+            'verse_text'        => (string) $highlight->verse_text,
             'highlight_start'   => (int) $highlight->highlight_start,
             'highlighted_words' => $highlight->highlighted_words,
             'highlighted_color' => $highlight->color,
