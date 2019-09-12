@@ -10,15 +10,26 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Book;
 use App\Models\Language\AlphabetFont;
 use App\Traits\AccessControlAPI;
+use App\Traits\CheckProjectMembership;
 use App\Traits\CallsBucketsTrait;
 use App\Transformers\FontsTransformer;
 use App\Transformers\TextTransformer;
 use App\Http\Controllers\APIController;
+use App\Models\Plan\Plan;
+use App\Models\Playlist\Playlist;
+use App\Models\User\Study\Bookmark;
+use App\Models\User\Study\Highlight;
+use App\Models\User\Study\Note;
+use App\Transformers\UserBookmarksTransformer;
+use App\Transformers\UserHighlightsTransformer;
+use App\Transformers\UserNotesTransformer;
+use Illuminate\Http\Request;
 
 class TextController extends APIController
 {
     use CallsBucketsTrait;
     use AccessControlAPI;
+    use CheckProjectMembership;
 
     /**
      * Display a listing of the Verses
@@ -272,6 +283,119 @@ class TextController extends APIController
             ->limit($limit)->get();
 
         return $this->reply(fractal($verses, new TextTransformer(), $this->serializer));
+    }
+
+    /**
+     *
+     * @OA\Get(
+     *     path="/search/library",
+     *     tags={"Text"},
+     *     summary="Search Playlist, Plans, Notes, Highlights and Bookmarks",
+     *     operationId="v4_library_search",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="query",
+     *          in="query",
+     *          description="The word or phrase being searched", required=true,
+     *          @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_library_search")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_library_search")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_library_search")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_library_search"))
+     *     )
+     * )
+     *
+     * @return Response
+     * 
+     * 
+     * @OA\Schema (
+     *   type="object",
+     *   schema="v4_library_search",
+     *   description="The v4 library search response.",
+     *   title="Library Search plans",
+     *   @OA\Property(property="bookmarks", ref="#/components/schemas/v4_user_bookmarks"),
+     *   @OA\Property(property="highlights", ref="#/components/schemas/v4_highlights_index"),
+     *   @OA\Property(property="notes", ref="#/components/schemas/v4_notes_index"),
+     *   @OA\Property(
+     *      property="plans",
+     *      type="array",
+     *      @OA\Items(ref="#/components/schemas/v4_plan_index_detail")
+     *   ),
+     *   @OA\Property(
+     *      property="playlists",
+     *      type="array",
+     *      @OA\Items(ref="#/components/schemas/v4_playlist")
+     *   )
+     * )
+     */
+    public function searchLibrary(Request $request)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+        $query = strtolower(checkParam('query', true));
+        $plans = Plan::with('days')
+            ->with('user')
+            ->where('plans.name', 'like', '%' . $query . '%')
+            ->join('user_plans', function ($join) use ($user) {
+                $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
+            })
+            ->select(['plans.*', 'user_plans.start_date', 'user_plans.percentage_completed'])
+            ->orderBy('name', 'asc')->get();
+        foreach ($plans as $plan) {
+            $plan->total_days = sizeof($plan->days);
+            unset($plan->days);
+        }
+
+        $playlists = Playlist::with('user')
+            ->where('user_playlists.name', 'like', '%' . $query . '%')
+            ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
+                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user->id);
+            })
+            ->whereNotIn('id', function ($query) {
+                $query->select('playlist_id')->from('plan_days');
+            })
+            ->where('user_playlists.user_id', $user->id)
+            ->orWhere('playlists_followers.user_id', $user->id)
+            ->select(['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')])
+            ->orderBy('name', 'asc')->get();
+
+        $highlights = Highlight::with('color')->with('tags')
+            ->where('user_id', $user->id)
+            ->orderBy('user_highlights.updated_at')->get()
+            ->filter(function ($highlight) use ($query) {
+                return str_contains(strtolower($highlight->book->name . ' ' . $highlight->verse_text), $query);
+            });
+
+        $bookmarks = Bookmark::with('tags')
+            ->where('user_id', $user->id)
+            ->get()
+            ->filter(function ($bookmark) use ($query) {
+                return str_contains(strtolower($bookmark->book->name . ' ' . $bookmark->verse_text), $query);
+            });;
+
+        $notes = Note::with('tags')
+            ->where('user_id', $user->id)
+            ->get()
+            ->filter(function ($note) use ($query) {
+                return str_contains(strtolower($note->book->name . ' ' . $note->verse_text . ' ' . $note->notes), $query);
+            });;
+
+        return $this->reply([
+            'bookmarks' => fractal($bookmarks, UserBookmarksTransformer::class)->toArray()['data'],
+            'highlights' => fractal($highlights, UserHighlightsTransformer::class)->toArray()['data'],
+            'notes' => fractal($notes, UserNotesTransformer::class)->toArray()['data'],
+            'plans' => $plans,
+            'playlists' => $playlists,
+        ]);
     }
 
     /**
