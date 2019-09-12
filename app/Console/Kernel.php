@@ -57,6 +57,12 @@ class Kernel extends ConsoleKernel
         $schedule->command('SyncEbible')->daily();
         $schedule->command('SyncTalkingBibles')->daily();
 
+        $schedule->command('syncV2Users')->daily();
+        $schedule->command('syncV2Profiles')->daily();
+        $schedule->command('syncV2Highlights')->daily();
+        $schedule->command('syncV2Notes')->daily();
+        $schedule->command('syncV2Bookmarks')->daily();
+
         $schedule->command('BackUpLogs')->cron('5 * * * *');
     }
 
