@@ -362,6 +362,18 @@ class Language extends Model
         });
     }
 
+    public function scopeIncludeCountryPopulation($query, $country)
+    {
+        return $query->when($country, function ($query) use ($country) {
+        $query->leftJoin('country_language as country_population', function ($join) use ($country) {
+            $join->on('country_population.language_id', '=', 'languages.id')
+                    ->where('country_population.country_id', '=', $country)
+                    ->limit(1);
+            });
+        });
+
+    }
+
     public function scopeFilterableByIsoCode($query, $code)
     {
         return $query->when($code, function ($query) use ($code) {
@@ -384,6 +396,13 @@ class Language extends Model
         return $query->when($name, function ($query) use ($name, $name_expression) {
             $query->where('languages.name', 'like', $name_expression);
         });
+    }
+
+    public function countryPopulation()
+    {
+        return $this->hasOne(CountryLanguage::class, 'language_id')
+                    ->where('language_id', $this->id)
+                    ->select('country_id', 'population');
     }
 
     public function population()
