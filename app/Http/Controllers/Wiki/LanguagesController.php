@@ -89,10 +89,11 @@ class LanguagesController extends APIController
         $cache_string = 'v'.$this->v.'_l_'.$country.$code.$GLOBALS['i18n_id'].$sort_by.$name.
                         $show_restricted.$include_alt_names.$asset_id.$access_control->string;
 
-        $order = $country ? 'country_population.population' : 'name';
+        $order = $country ? 'country_population.population' : 'languages.name';
+        $order_dir = $country ? 'desc' : 'asc';
         $select_country_population = $country ? 'country_population.population' : 'null';
 
-        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control, $order, $select_country_population) {
+        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control, $order, $order_dir, $select_country_population) {
             $languages = Language::includeCurrentTranslation()
                 ->includeAutonymTranslation()
                 ->includeExtraLanguages($show_restricted, $access_control, $asset_id)
@@ -101,7 +102,7 @@ class LanguagesController extends APIController
                 ->filterableByCountry($country)
                 ->filterableByIsoCode($code)
                 ->filterableByName($name)
-                ->orderBy($order, 'desc')
+                ->orderBy($order, $order_dir)
                 ->select([
                     'languages.id',
                     'languages.glotto_id',
@@ -109,7 +110,7 @@ class LanguagesController extends APIController
                     'languages.name as backup_name',
                     'current_translation.name as name',
                     'autonym.name as autonym',
-                    \DB::raw($select_country_population.' as country_population'),
+                    \DB::raw($select_country_population.' as country_population')
                 ])->withCount('bibles')->withCount('filesets')->get();
             return fractal($languages, new LanguageTransformer(), $this->serializer);
         });
