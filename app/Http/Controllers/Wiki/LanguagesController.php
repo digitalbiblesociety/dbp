@@ -90,7 +90,7 @@ class LanguagesController extends APIController
                         $show_restricted.$include_alt_names.$asset_id.$access_control->string;
 
         $order = $country ? 'country_population.population' : 'name';
-        $select_country_population = $country ? 'country_population.population' : '';
+        $select_country_population = $country ? 'country_population.population' : 'null';
 
         $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control, $order, $select_country_population) {
             $languages = Language::includeCurrentTranslation()
@@ -109,7 +109,7 @@ class LanguagesController extends APIController
                     'languages.name as backup_name',
                     'current_translation.name as name',
                     'autonym.name as autonym',
-                    $select_country_population.' as country_population',
+                    \DB::raw($select_country_population.' as country_population'),
                 ])->withCount('bibles')->withCount('filesets')->get();
             return fractal($languages, new LanguageTransformer(), $this->serializer);
         });
