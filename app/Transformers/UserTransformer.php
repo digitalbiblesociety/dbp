@@ -4,7 +4,6 @@ namespace App\Transformers;
 
 class UserTransformer extends BaseTransformer
 {
-
     public function transform($user)
     {
         switch ($this->version) {

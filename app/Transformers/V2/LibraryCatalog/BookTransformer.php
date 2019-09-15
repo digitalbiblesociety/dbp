@@ -15,7 +15,6 @@ class BookTransformer extends BaseTransformer
      */
     public function transform($book)
     {
-
         switch ($this->route) {
 
             /**

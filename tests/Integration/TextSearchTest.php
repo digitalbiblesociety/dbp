@@ -134,7 +134,7 @@ class TextSearchTest extends ApiV4Test
 
         // return one word taken from the top 5 longest, stripped of punctuation
         $word = preg_replace("/(?![.=$'€%-])\p{P}/u", '', collect($words)->take(5)->random(1)->first());
-        $word = rtrim($word,'.');
+        $word = rtrim($word, '.');
         return $word;
     }
 }

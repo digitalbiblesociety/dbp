@@ -11,11 +11,9 @@ use App\Models\Organization\Organization;
 use App\Models\Bible\Bible;
 use App\Models\Resource\Resource;
 use App\Traits\CallsBucketsTrait;
-use Illuminate\Support\Facades\Cache;
 
 class HomeController extends APIController
 {
-
     use CallsBucketsTrait;
 
     /**

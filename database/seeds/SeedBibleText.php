@@ -2,9 +2,9 @@
 
 use Illuminate\Database\Seeder;
 use App\Models\Bible\Book;
-use App\Models\Bible\BibleVerse;
 use App\Models\Bible\BibleFileset;
 use Illuminate\Support\Str;
+
 class SeedBibleText extends Seeder
 {
     /**

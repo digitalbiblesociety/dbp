@@ -5,6 +5,7 @@ namespace App\Transformers\V2;
 use App\Models\Bible\BibleFileset;
 use App\Transformers\BaseTransformer;
 use Illuminate\Support\Str;
+
 /**
  * Class LibraryVolumeTransformer
  *
@@ -108,16 +109,16 @@ class LibraryVolumeTransformer extends BaseTransformer
              */
             case 'v2_library_volume':
 
-                $delivery_types = $fileset->meta->where('name', 'LIKE','v2_access_%')->pluck('description');
-                if(count($delivery_types) === 0) {
+                $delivery_types = $fileset->meta->where('name', 'LIKE', 'v2_access_%')->pluck('description');
+                if (count($delivery_types) === 0) {
                     $delivery_types = ['mobile', 'web', 'local_bundled', 'subsplash'];
                 }
 
-                if($fileset->autonym_name && $fileset->english_name) {
+                if ($fileset->autonym_name && $fileset->english_name) {
                     $fileset->languageCombinedName = $fileset->autonym_name. ' ('. $fileset->english_name . ')';
-                } elseif($fileset->autonym_name) {
+                } elseif ($fileset->autonym_name) {
                     $fileset->languageCombinedName = $fileset->autonym_name;
-                } elseif($fileset->english_name) {
+                } elseif ($fileset->english_name) {
                     $fileset->languageCombinedName = $fileset->english_name;
                 }
 
@@ -154,7 +155,7 @@ class LibraryVolumeTransformer extends BaseTransformer
                     'right_to_left'             => $fileset->direction === 'rtl' ? 'true' : 'false',
                     'num_art'                   => '0',
                     'num_sample_audio'          => '0',
-                    'sku'                       => $fileset->meta->where('name','sku')->first()->description ?? '',
+                    'sku'                       => $fileset->meta->where('name', 'sku')->first()->description ?? '',
                     'audio_zip_path'            => $fileset->generated_id.'/'.$fileset->generated_id.'.zip',
                     'artwork_url'               => $fileset->artwork_url,
                     'font'                      => null,

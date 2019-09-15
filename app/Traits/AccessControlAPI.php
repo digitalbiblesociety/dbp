@@ -2,7 +2,6 @@
 
 namespace App\Traits;
 
-use App\Models\User\AccessGroup;
 use App\Models\User\AccessGroupKey;
 use App\Models\User\AccessGroupFileset;
 use App\Models\User\AccessType;

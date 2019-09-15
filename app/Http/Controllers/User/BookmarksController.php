@@ -14,7 +14,6 @@ use App\Traits\AnnotationTags;
 
 class BookmarksController extends APIController
 {
-
     use AnnotationTags;
     use CheckProjectMembership;
 

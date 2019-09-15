@@ -7,7 +7,6 @@ use App\Models\Bible\Bible;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class BibleFilePermissionsRequest extends Mailable
 {

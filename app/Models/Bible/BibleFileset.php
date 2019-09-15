@@ -192,13 +192,13 @@ class BibleFileset extends Model
             ->leftJoin('alphabets', 'bibles.script', 'alphabets.script')
             ->leftJoin('bible_translations as english_name', function ($q) use ($bible_name) {
                 $q->on('english_name.bible_id', 'bibles.id')->where('english_name.language_id', 6414);
-                $q->when($bible_name, function ($subQuery) use($bible_name) {
+                $q->when($bible_name, function ($subQuery) use ($bible_name) {
                     $subQuery->where('english_name.name', 'LIKE', '%'.$bible_name.'%');
                 });
             })
             ->leftJoin('bible_translations as autonym', function ($q) use ($bible_name) {
                 $q->on('autonym.bible_id', 'bibles.id')->where('autonym.vernacular', true);
-                $q->when($bible_name, function ($subQuery) use($bible_name) {
+                $q->when($bible_name, function ($subQuery) use ($bible_name) {
                     $subQuery->where('autonym.name', 'LIKE', '%'.$bible_name.'%');
                 });
             })
@@ -215,7 +215,7 @@ class BibleFileset extends Model
         $version = (int)request()->v;
         return $query->when($id, function ($query) use ($id, $version) {
             $query->where(function ($query) use ($id, $version) {
-                if($version  === 2) {
+                if ($version  === 2) {
                     $query->where('bible_filesets.id', $id)
                           ->orWhere('bible_filesets.id', substr($id, 0, -4))
                           ->orWhere('bible_filesets.id', 'like',  substr($id, 0, 6))
@@ -249,9 +249,9 @@ class BibleFileset extends Model
     {
         $storage = \Storage::disk('dbp-web');
         $client = $storage->getDriver()->getAdapter()->getClient();
-        $expiry = "+10 minutes";
+        $expiry = '+10 minutes';
         $fileset = $this->toArray();
-        $url = "";
+        $url = '';
 
         if (starts_with($fileset['set_type_code'], 'audio')) {
             $bible_id = optional(BibleFileset::find($fileset['id'])->bible()->first())->id;

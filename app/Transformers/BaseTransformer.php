@@ -13,7 +13,6 @@ use Route;
 
 class BaseTransformer extends TransformerAbstract
 {
-
     protected $currentScope = [];
 
     protected $version;

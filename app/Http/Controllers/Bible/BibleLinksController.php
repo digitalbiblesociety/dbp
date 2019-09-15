@@ -6,7 +6,6 @@ use App\Models\Language\Language;
 use App\Transformers\BibleLinksTransformer;
 use App\Models\Organization\Organization;
 use App\Http\Controllers\APIController;
-use Illuminate\Http\JsonResponse;
 
 class BibleLinksController extends APIController
 {

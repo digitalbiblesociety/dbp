@@ -96,7 +96,7 @@ class TextController extends APIController
         $bible = optional($fileset->bible)->first();
 
         $access_blocked = $this->blockedByAccessControl($fileset);
-        if($access_blocked) {
+        if ($access_blocked) {
             return $access_blocked;
         }
 
@@ -267,7 +267,7 @@ class TextController extends APIController
                 'glyph_end.glyph as verse_end_vernacular',
             ])
             ->unless($relevance_order, function ($query) {
-                $query->orderByRaw('IFNULL(books.testament_order, books.protestant_order), bible_verses.chapter, bible_verses.verse_start');    
+                $query->orderByRaw('IFNULL(books.testament_order, books.protestant_order), bible_verses.chapter, bible_verses.verse_start');
             })
             ->limit($limit)->get();
 
@@ -429,7 +429,7 @@ class TextController extends APIController
         $verse_end   = checkParam('verse_end');
         $asset_id    = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
 
-        $fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'text_plain')->select('hash_id','id')->first();
+        $fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'text_plain')->select('hash_id', 'id')->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }

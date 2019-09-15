@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PlanDayComplete extends Model
 {
-
     protected $connection = 'dbp_users';
     public $table         = 'plan_days_completed';
     protected $primaryKey = ['user_id', 'plan_day_id'];

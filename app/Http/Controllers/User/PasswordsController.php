@@ -12,14 +12,12 @@ use App\Models\User\PasswordReset;
 use App\Mail\EmailPasswordReset;
 
 use Validator;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 class PasswordsController extends APIController
 {
-
     public function showResetForm(Request $request, $token = null)
     {
         $reset_request = PasswordReset::where('token', $token)->first();
@@ -78,7 +76,7 @@ class PasswordsController extends APIController
             return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
         }
 
-        $connection = ProjectMember::with('project')->where('project_id',$request->project_id)->where('user_id',$user->id)->first();
+        $connection = ProjectMember::with('project')->where('project_id', $request->project_id)->where('user_id', $user->id)->first();
         if (!$connection) {
             return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project'));
         }
@@ -92,7 +90,7 @@ class PasswordsController extends APIController
         $user->token = $generatedToken->token;
 
         \Mail::to($user)->send(new EmailPasswordReset($user, $connection->project));
-        if(!$this->api) {
+        if (!$this->api) {
             return view('auth.passwords.email-sent');
         }
 
@@ -140,7 +138,6 @@ class PasswordsController extends APIController
      */
     public function validatePasswordReset(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'new_password'     => 'confirmed|required|min:8',
             'email'            => 'required|email',
@@ -155,11 +152,11 @@ class PasswordsController extends APIController
             $token = $request->token_id;
             $errors = $validator->errors();
 
-            if($this->api) {
+            if ($this->api) {
                 return $this->setStatusCode(401)->replyWithError($errors);
             }
 
-            return view('auth.passwords.reset', compact('token','errors'));
+            return view('auth.passwords.reset', compact('token', 'errors'));
         }
 
         $user = User::where('email', $request->email)->first();
@@ -171,12 +168,11 @@ class PasswordsController extends APIController
         $user->password = \Hash::needsRehash($new_password) ? \Hash::make($new_password) : $new_password;
         $user->save();
 
-        $reset = PasswordReset::where('email',$user->email)->where('token', $request->token_id)->first();
+        $reset = PasswordReset::where('email', $user->email)->where('token', $request->token_id)->first();
         $reset->delete();
 
-        if($this->api) {
+        if ($this->api) {
             return $this->setStatusCode(200)->reply($user);
         }
     }
-
 }

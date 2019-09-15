@@ -75,7 +75,6 @@ Localization::localizedRoutesGroup(function () {
 
     // Public Routes
     Route::group(['middleware' => ['web']], function () {
-
         Route::name('validate.index')->get('/validate',                                  'ValidateController@index');
         Route::name('validate.bibles')->get('/validate/bibles',                          'ValidateController@bibles');
         Route::name('validate.filesets')->get('/validate/filesets',                      'ValidateController@filesets');
@@ -116,8 +115,7 @@ Localization::localizedRoutesGroup(function () {
         Route::name('social.handle')->get('/login/{provider}/callback',   'User\SocialController@callback');
     });
 
-    Route::group(['middleware' => ['auth']],  function() {
-
+    Route::group(['middleware' => ['auth']],  function () {
         Route::name('dashboard.bibles')->get('dashboard/bibles',                            'User\Dashboard\BibleManagementController@index');
         Route::name('dashboard.bibles.create')->get('dashboard/bibles/create',              'User\Dashboard\BibleManagementController@create');
         Route::name('dashboard.bibles.store')->post('dashboard/bibles',                     'User\Dashboard\BibleManagementController@store');
@@ -147,10 +145,7 @@ Localization::localizedRoutesGroup(function () {
         // Profiles
         Route::name('profile')->get('profile',                                              'User\Dashboard\ProfileController@profile');
         Route::name('profile.update')->put('profile/{user_id}',                             'User\Dashboard\ProfileController@updateProfile');
-
     });
-
-
 });
 
 Route::name('api_status')->get('/api/status', 'ApiMetadataController@getStatus');

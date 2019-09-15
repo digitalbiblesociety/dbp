@@ -5,9 +5,6 @@ namespace App\Http\Controllers\Bible;
 use App\Models\Organization\Asset;
 use App\Traits\AccessControlAPI;
 use App\Traits\CallsBucketsTrait;
-use Validator;
-use Auth;
-use Illuminate\Http\Request;
 use App\Http\Controllers\APIController;
 
 use App\Models\Bible\Bible;
@@ -80,7 +77,7 @@ class BibleFileSetsController extends APIController
             }
 
             $access_blocked = $this->blockedByAccessControl($fileset);
-            if($access_blocked) {
+            if ($access_blocked) {
                 return $access_blocked;
             }
 
@@ -349,6 +346,4 @@ class BibleFileSetsController extends APIController
 
         return $fileset_chapters;
     }
-
-
 }

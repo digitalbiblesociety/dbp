@@ -175,5 +175,4 @@ class LanguagesController extends APIController
 
         return $this->reply($language);
     }
-
 }

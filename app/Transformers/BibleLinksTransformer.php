@@ -2,7 +2,6 @@
 
 namespace App\Transformers;
 
-use App\Models\Bible\BibleLink;
 use League\Fractal\TransformerAbstract;
 
 class BibleLinksTransformer extends TransformerAbstract

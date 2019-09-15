@@ -56,5 +56,4 @@ class CommentaryTranslation extends Model
     {
         return $this->belongsTo(Commentary::class);
     }
-
 }

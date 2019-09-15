@@ -81,6 +81,6 @@ class LibraryMetadataTransformer extends TransformerAbstract
                 'organization_phone'    => $organization->phone,
             ];
         }
-            return $output;
+        return $output;
     }
 }

@@ -13,5 +13,4 @@ class LexicalPronunciation extends Model
     public $incrementing = false;
 
     protected $fillable = ['lexicon_id', 'ipa', 'ipa_mod', 'sbl', 'dic', 'dic_mod'];
-
 }

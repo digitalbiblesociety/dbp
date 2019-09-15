@@ -145,26 +145,25 @@ class LanguageControllerV2 extends APIController
 
         $countryLang = \Cache::remember($cache_string, now()->addDay(),
             function () use ($sort_by, $lang_code, $country_code, $additional, $img_size, $img_type, $access_control) {
-
-                $country_langs = CountryLanguage::with(['country', 'language' => function($query) use($additional) {
-                        $query->when($additional, function ($subquery) {
-                            $subquery->with('countries');
-                        });
-                    }])
-                    ->whereHas('language', function($query) use($access_control, $lang_code, $additional) {
+                $country_langs = CountryLanguage::with(['country', 'language' => function ($query) use ($additional) {
+                    $query->when($additional, function ($subquery) {
+                        $subquery->with('countries');
+                    });
+                }])
+                    ->whereHas('language', function ($query) use ($access_control, $lang_code, $additional) {
                         $query->whereHas('filesets', function ($subquery) use ($access_control, $lang_code) {
                             $subquery->whereIn('hash_id', $access_control->hashes);
-                            if($lang_code) {
+                            if ($lang_code) {
                                 $subquery->where('iso', $lang_code);
                             }
                         });
                     })
-                    ->whereHas('country', function($query) use($country_code) {
+                    ->whereHas('country', function ($query) use ($country_code) {
                         $query->when($country_code, function ($subquery) use ($country_code) {
                             $subquery->where('country_id', $country_code);
                         });
                     })
-                    ->orderBy($sort_by, 'desc')->get()->each(function ($item, $key) use($img_size, $img_type) {
+                    ->orderBy($sort_by, 'desc')->get()->each(function ($item, $key) use ($img_size, $img_type) {
                         $path  = 'https://dbp-mcdn.s3.us-west-2.amazonaws.com/flags/full';
                         $path .= (($img_type === 'svg') ? '/svg/' : "/$img_size/");
                         $path .= strtoupper($item->country_id).'.'.$img_type;
@@ -254,7 +253,7 @@ class LanguageControllerV2 extends APIController
         
         $cache_string = strtolower('volumeLanguage' . $root . $iso . $media . $organization_id);
         $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($root, $iso, $media, $full_word, $organization_id) {
-                $languages = Language::has('filesets')
+            $languages = Language::has('filesets')
                     ->includeCurrentTranslation()
                     ->includeAutonymTranslation()
                     ->filterableByIsoCode($iso)
@@ -276,8 +275,8 @@ class LanguageControllerV2 extends APIController
                         'autonym.name as autonym'
                     ])->with('parent')->get();
 
-                return fractal($languages, new LanguageListingTransformer(), $this->serializer);
-            }
+            return fractal($languages, new LanguageListingTransformer(), $this->serializer);
+        }
         );
         return $this->reply($languages);
     }
@@ -352,8 +351,8 @@ class LanguageControllerV2 extends APIController
 
         $access_control = $this->accessControl($this->key);
         $hashes = BibleFileset::whereIn('hash_id', $access_control->hashes)
-                              ->where('set_type_code','!=','text_format')
-                              ->where('asset_id','dbp-prod')
+                              ->where('set_type_code', '!=', 'text_format')
+                              ->where('asset_id', 'dbp-prod')
                               ->select('hash_id')->get()->pluck('hash_id');
 
         $cache_string = strtolower('volumeLanguageFamily' . $root . $iso . $media . $organization_id);
@@ -362,7 +361,7 @@ class LanguageControllerV2 extends APIController
                     ->includeAutonymTranslation()
                     ->includeCurrentTranslation()
                     ->whereHas('filesets', function ($query) use ($hashes,$organization_id,$media) {
-                        $query->whereIn('hash_id',$hashes);
+                        $query->whereIn('hash_id', $hashes);
                         if ($organization_id) {
                             $query->whereHas('copyright', function ($query) use ($organization_id) {
                                 $query->where('organization_id', $organization_id);

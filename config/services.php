@@ -59,19 +59,19 @@ return [
         'redirect'      => env('TWITCH_REDIRECT_URI'),
     ],
 
-	// Bible APIs
-	'bibleIs' => [
-		'key' => env('BIS_API_KEY'),
-		'secret' => env('BIS_API_SECRET')
-	],
+    // Bible APIs
+    'bibleIs' => [
+        'key' => env('BIS_API_KEY'),
+        'secret' => env('BIS_API_SECRET')
+    ],
 
     'talkingBibles' => [
         'key' => env('TALKING_BIBLES_API')
     ],
 
-	'arclight' => [
-		'key' => env('ARCLIGHT_API')
-	],
+    'arclight' => [
+        'key' => env('ARCLIGHT_API')
+    ],
 
     // Testing
 

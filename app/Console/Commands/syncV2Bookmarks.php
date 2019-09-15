@@ -38,51 +38,52 @@ class syncV2Bookmarks extends Command
         $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
 
         $filesets = BibleFileset::with('bible')->get();
-        $books = Book::select('id_osis','id')->get()->pluck('id','id_osis')->toArray();
+        $books = Book::select('id_osis', 'id')->get()->pluck('id', 'id_osis')->toArray();
 
         \DB::connection('dbp_users_v2')->table('bookmark')
-           ->where('status','current')
+           ->where('status', 'current')
            ->where('created', '>', $from_date)
-           ->orderBy('id')->chunk(500, function ($bookmarks) use($filesets, $books) {
-                foreach ($bookmarks as $bookmark) {
+           ->orderBy('id')->chunk(500, function ($bookmarks) use ($filesets, $books) {
+               foreach ($bookmarks as $bookmark) {
+                   $user_exists = User::where('v2_id', $bookmark->user_id)->first();
+                   while (!$user_exists) {
+                       $v2_user = \DB::connection('dbp_users_v2')->table('user')->where('id', $bookmark->user_id)->first();
+                       $user_exists = User::where('email', $v2_user->email)->first();
+                       if (isset($user_exists)) {
+                           $user_exists->v2_id = $v2_user->id;
+                           $user_exists->save();
+                           echo "\nUser v2 id updated";
+                       } else {
+                           sleep(15);
+                           echo 'waiting for users seeder';
+                           continue;
+                       }
+                   }
 
-                    $user_exists = User::where('v2_id',$bookmark->user_id)->first();
-                    while(!$user_exists) {
+                   $fileset = $filesets->where('id', $bookmark->dam_id)->first();
+                   if (!$fileset) {
+                       $fileset = $filesets->where('id', substr($bookmark->dam_id, 0, -4))->first();
+                   }
+                   if (!$fileset) {
+                       $fileset = $filesets->where('id', substr($bookmark->dam_id, 0, -2))->first();
+                   }
 
-                        $v2_user = \DB::connection('dbp_users_v2')->table('user')->where('id',$bookmark->user_id)->first();
-                        $user_exists = User::where('email', $v2_user->email)->first();
-                        if(isset($user_exists)) {
-                            $user_exists->v2_id = $v2_user->id;
-                            $user_exists->save();
-                            echo "\nUser v2 id updated";
-                        } else {
-                            sleep(15);
-                            echo 'waiting for users seeder';
-                            continue;
-                        }
+                   if (!$fileset) {
+                       echo "\nSkipping $bookmark->dam_id";
+                       continue;
+                   }
 
-                    }
+                   if (!$fileset->bible->first()) {
+                       echo "\n Skipping". $bookmark->dam_id;
+                       continue;
+                   }
 
-                    $fileset = $filesets->where('id', $bookmark->dam_id)->first();
-                    if(!$fileset) $fileset = $filesets->where('id', substr($bookmark->dam_id, 0, -4))->first();
-                    if(!$fileset) $fileset = $filesets->where('id', substr($bookmark->dam_id, 0, -2))->first();
+                   if (!isset($books[$bookmark->book_id])) {
+                       echo "\n Skipping $bookmark->book_id";
+                       continue;
+                   }
 
-                    if(!$fileset) {
-                        echo "\nSkipping $bookmark->dam_id";
-                        continue;
-                    }
-
-                    if(!$fileset->bible->first()) {
-                        echo "\n Skipping". $bookmark->dam_id;
-                        continue;
-                    }
-
-                    if(!isset($books[$bookmark->book_id])) {
-                        echo "\n Skipping $bookmark->book_id";
-                        continue;
-                    }
-
-                    $bookmark = Bookmark::firstOrNew([
+                   $bookmark = Bookmark::firstOrNew([
                         'user_id'     => $user_exists->id,
                         'bible_id'    => $fileset->bible->first()->id,
                         'book_id'     => $books[$bookmark->book_id],
@@ -91,12 +92,12 @@ class syncV2Bookmarks extends Command
                         'created_at'  => Carbon::createFromTimeString($bookmark->created)->toDateString(),
                         'updated_at'  => Carbon::createFromTimeString($bookmark->updated)->toDateString()
                     ]);
-                    $bookmark->v2_id = $bookmark->id;
-                    $bookmark->save();
+                   $bookmark->v2_id = $bookmark->id;
+                   $bookmark->save();
 
 
-                    echo "\n".$bookmark->id;
-                }
-            });
+                   echo "\n".$bookmark->id;
+               }
+           });
     }
 }

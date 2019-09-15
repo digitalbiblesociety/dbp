@@ -95,7 +95,6 @@ class BibleTransformer extends BaseTransformer
 
     public function transformForV4($bible)
     {
-
         switch ($this->route) {
 
             /**
@@ -172,7 +171,7 @@ class BibleTransformer extends BaseTransformer
                     'date'              => $bible->date
                 ];
 
-                if($bible->relationLoaded('filesets')) {
+                if ($bible->relationLoaded('filesets')) {
                     $output['filesets'] = $bible->filesets->mapToGroups(function ($item, $key) {
                         return [$item['asset_id'] => [
                             'id' => $item['id'],

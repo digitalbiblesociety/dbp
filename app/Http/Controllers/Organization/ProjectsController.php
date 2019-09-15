@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\APIController;
-use App\Models\User\Key;
 use App\Models\User\Project;
 use App\Models\User\ProjectMember;
 use App\Models\User\Role;

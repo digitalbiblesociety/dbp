@@ -3,7 +3,6 @@
 namespace App\Models\Bible\Study;
 
 use App\Models\Bible\Bible;
-use App\Models\Bible\Book;
 use App\Bible\VerseReference;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,7 +20,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class GlossaryPersonName extends Model
 {
-
     protected $connection = 'dbp';
 
     protected $fillable = ['id', 'glossary_person_id', 'extended_strongs', 'vernacular'];
@@ -57,5 +55,4 @@ class GlossaryPersonName extends Model
     {
         return $this->hasOne(VerseReference::class);
     }
-
 }

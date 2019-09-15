@@ -21,7 +21,8 @@ function checkParam(string $paramName, $required = false, $inPathValue = null)
 
     // Authorization params (with key => Authorization translation)
     if ($paramName === 'key' && request()->header('Authorization')) {
-        return str_replace('Bearer ','', request()->header('Authorization'));;
+        return str_replace('Bearer ', '', request()->header('Authorization'));
+        ;
     }
 
     foreach (explode('|', $paramName) as $current_param) {
@@ -87,7 +88,7 @@ if (! function_exists('csvToArray')) {
                 }
                 $rowcount++;
             }
-//echo "Totally $rowcount rows found\n";
+            //echo "Totally $rowcount rows found\n";
             fclose($handle);
         } else {
             error_log("csvreader: Could not read CSV \"$csvfile\"");
@@ -110,7 +111,6 @@ if (! function_exists('unique_random')) {
      */
     function unique_random($table, $col, $chars = 16)
     {
-
         $unique = false;
 
         // Store tested results in array to not test them again
@@ -147,5 +147,4 @@ if (! function_exists('unique_random')) {
 
         return $random;
     }
-
 }

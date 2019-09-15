@@ -2,7 +2,6 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\Language\Alphabet;
 
 class AlphabetTransformer extends BaseTransformer

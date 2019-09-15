@@ -21,13 +21,13 @@
                 <code>{{ route('api_bibles.equivalents', 'ENGKJV') }}</code>
 
                 <code><pre><?php
-	                $arrContextOptions=array(
-		                "ssl"=>array(
-			                "verify_peer"=>false,
-			                "verify_peer_name"=>false,
-		                ),
-	                );
-	                echo json_decode(json_encode(file_get_contents( route('api_bibles.equivalents', 'ENGKJV', ['v' => 2]), false, stream_context_create($arrContextOptions))), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?>
+                    $arrContextOptions=[
+                        'ssl'=>[
+                            'verify_peer'=>false,
+                            'verify_peer_name'=>false,
+                        ],
+                    ];
+                    echo json_decode(json_encode(file_get_contents(route('api_bibles.equivalents', 'ENGKJV', ['v' => 2]), false, stream_context_create($arrContextOptions))), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?>
                 </pre></code>
 
             </div>

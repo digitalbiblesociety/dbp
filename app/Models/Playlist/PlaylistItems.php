@@ -13,7 +13,7 @@ use Spatie\EloquentSortable\SortableTrait;
 /**
  * App\Models\Playlist
  * @mixin \Eloquent
- * 
+ *
  * @property int $id
  * @property int $playlist_id
  * @property string $fileset_id
@@ -211,7 +211,6 @@ class PlaylistItems extends Model implements Sortable
         });
 
         $timestamps = $timestamps->map(function ($timestamp, $key) use ($chapters_size, $timestamps, $playlist_item) {
-
             if ($timestamp->chapter === $playlist_item->chapter_start && $timestamp->verse < $playlist_item->verse_start) {
                 $timestamp->duration = 0;
                 return $timestamp;
@@ -239,7 +238,7 @@ class PlaylistItems extends Model implements Sortable
 
         return $timestamps->sum('duration');
     }
-    protected $appends = array('verses', 'completed');
+    protected $appends = ['verses', 'completed'];
 
     /**
      *

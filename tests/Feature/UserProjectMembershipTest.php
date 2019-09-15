@@ -9,12 +9,9 @@ use App\Models\User\Project;
 use App\Traits\CheckProjectMembership;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UserProjectMembershipTest extends TestCase
 {
-
     use CheckProjectMembership;
 
     /**

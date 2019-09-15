@@ -41,7 +41,6 @@ class OAuthProvidersController extends APIController
      */
     public function index(string $project_id)
     {
-
         $project_id = checkParam('project_id', true, $project_id);
         $provider_id = checkParam('provider_id');
 
@@ -86,8 +85,8 @@ class OAuthProvidersController extends APIController
             return $this->setStatusCode(404)->replyWithError(trans('api.projects_404'));
         }
 
-        $roles = Role::where('slug','admin')->orWhere('slug','developer')->select('id')->get()->pluck('id')->toArray();
-        $access_allowed = ProjectMember::where('project_id',$project_id)
+        $roles = Role::where('slug', 'admin')->orWhere('slug', 'developer')->select('id')->get()->pluck('id')->toArray();
+        $access_allowed = ProjectMember::where('project_id', $project_id)
             ->where('user_id', $this->user->id)
             ->whereIn('role_id', $roles)->first();
         if (!$access_allowed) {

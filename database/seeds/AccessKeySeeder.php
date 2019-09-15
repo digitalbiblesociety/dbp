@@ -14,10 +14,10 @@ class AccessKeySeeder extends Seeder
      */
     public function run()
     {
-        $access_groups = AccessGroup::where('name','!=','RESTRICTED')->get();
+        $access_groups = AccessGroup::where('name', '!=', 'RESTRICTED')->get();
         $keys = \App\Models\User\Key::all();
         foreach ($keys as $key) {
-            $key_count = random_int(1,$access_groups->count());
+            $key_count = random_int(1, $access_groups->count());
             while ($key_count > 0) {
                 AccessGroupKey::create([
                     'key_id'          => $key->key,

@@ -7,11 +7,9 @@ use Illuminate\Console\Command;
 use Carbon\Carbon;
 use Storage;
 use Log;
-use Aws\Ec2\Ec2Client;
 
 class S3LogBackup extends Command
 {
-
     use CallsBucketsTrait;
     /**
      * The name and signature of the console command.

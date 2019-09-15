@@ -2,7 +2,6 @@
 
 namespace App\Transformers\Factbook;
 
-use App\Models\Country\FactBook\CountryPeople;
 use League\Fractal\TransformerAbstract;
 
 class PeopleTransformer extends TransformerAbstract

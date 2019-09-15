@@ -2,7 +2,6 @@
 
 namespace App\Transformers\Factbook;
 
-use App\Models\Country\FactBook\CountryIssues;
 use League\Fractal\TransformerAbstract;
 
 class IssuesTransformer extends TransformerAbstract

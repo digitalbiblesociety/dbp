@@ -37,5 +37,4 @@ class ProfileController extends Controller
         $user->save();
         return view('dashboard.profiles.edit', compact('user'));
     }
-
 }

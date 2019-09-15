@@ -12,6 +12,7 @@ use Response;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
 use Illuminate\Support\Arr;
+
 class Handler extends ExceptionHandler
 {
     /**

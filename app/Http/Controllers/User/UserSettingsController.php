@@ -20,7 +20,7 @@ class UserSettingsController extends APIController
     public function show($id)
     {
         $project_id = checkParam('project_id', true);
-        return UserSetting::where('user_id',$id)->where('project_id',$project_id)->first();
+        return UserSetting::where('user_id', $id)->where('project_id', $project_id)->first();
     }
 
     /**
@@ -33,14 +33,14 @@ class UserSettingsController extends APIController
     {
         $request = request()->except(['v','key']);
         $request['user_id'] = $id;
-        $request['language_id'] = optional(Language::where('id',request()->language_id)->select('id')->first())->id;
+        $request['language_id'] = optional(Language::where('id', request()->language_id)->select('id')->first())->id;
 
         $invalid_settings = $this->invalidSettings($request);
         if ($invalid_settings) {
             return $invalid_settings;
         }
 
-        return UserSetting::updateOrCreate(['user_id' => $id],$request);
+        return UserSetting::updateOrCreate(['user_id' => $id], $request);
     }
 
     private function invalidSettings($request)
@@ -65,5 +65,4 @@ class UserSettingsController extends APIController
         }
         return false;
     }
-
 }

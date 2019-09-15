@@ -37,23 +37,33 @@ class syncV2Notes extends Command
         $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
 
         $filesets = BibleFileset::with('bible')->get();
-        $books = Book::select('id_osis','id')->get()->pluck('id','id_osis')->toArray();
+        $books = Book::select('id_osis', 'id')->get()->pluck('id', 'id_osis')->toArray();
 
         \DB::connection('dbp_users_v2')->table('note')->where('created', '>', $from_date)
-           ->orderBy('id')->chunk(5000, function ($notes) use($filesets, $books) {
-                foreach($notes as $note) {
-                    $fileset = $filesets->where('id', $note->dam_id)->first();
-                    if(!$fileset) $fileset = $filesets->where('id',substr($note->dam_id,0,-4))->first();
-                    if(!$fileset) $fileset = $filesets->where('id',substr($note->dam_id,0,-2))->first();
-                    if(!$fileset) {continue;}
-                    if($fileset->bible->first()) {
-                        if(!isset($fileset->bible->first()->id)) {continue;}
-                    } else {
-                        continue;
-                    }
-                    if(!isset($books[$note->book_id])) {continue;}
+           ->orderBy('id')->chunk(5000, function ($notes) use ($filesets, $books) {
+               foreach ($notes as $note) {
+                   $fileset = $filesets->where('id', $note->dam_id)->first();
+                   if (!$fileset) {
+                       $fileset = $filesets->where('id', substr($note->dam_id, 0, -4))->first();
+                   }
+                   if (!$fileset) {
+                       $fileset = $filesets->where('id', substr($note->dam_id, 0, -2))->first();
+                   }
+                   if (!$fileset) {
+                       continue;
+                   }
+                   if ($fileset->bible->first()) {
+                       if (!isset($fileset->bible->first()->id)) {
+                           continue;
+                       }
+                   } else {
+                       continue;
+                   }
+                   if (!isset($books[$note->book_id])) {
+                       continue;
+                   }
 
-                    $note = Note::create([
+                   $note = Note::create([
                         'v2_id'       => $note->id,
                         'user_id'     => $note->user_id,
                         'bible_id'    => $fileset->bible->first()->id,    //  => "ENGESVO2ET"
@@ -64,8 +74,8 @@ class syncV2Notes extends Command
                         'created_at'  => Carbon::createFromTimeString($note->created)->toDateString(),
                         'updated_at'  => Carbon::createFromTimeString($note->updated)->toDateString(),
                     ]);
-                    echo "\n Note Processed: ". $note->id;
-                }
-            });
+                   echo "\n Note Processed: ". $note->id;
+               }
+           });
     }
 }

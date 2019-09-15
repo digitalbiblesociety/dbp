@@ -12,7 +12,6 @@ use App\Traits\ArclightConnection;
 
 class ArclightController extends APIController
 {
-
     use ArclightConnection;
 
     /**
@@ -28,9 +27,9 @@ class ArclightController extends APIController
         $platform = checkParam('platform') ?? 'ios';
 
         $chapters = \Cache::remember('arclight_'. strtolower($iso), now()->addDay(), function () use ($iso, $platform) {
-            $language_id = optional(LanguageCode::whereHas('language', function($query) use($iso) {
+            $language_id = optional(LanguageCode::whereHas('language', function ($query) use ($iso) {
                 $query->where('iso', $iso);
-            })->where('source','arclight')->select('code')->first())->code;
+            })->where('source', 'arclight')->select('code')->first())->code;
             if (!$language_id) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.languages_errors_404'));
             }
@@ -76,25 +75,24 @@ class ArclightController extends APIController
         $dam_id_param = checkParam('dam_id|fcbh_id');
         $cache_string = 'media-languages_'.$iso.$dam_id_param;
         return \Cache::remember($cache_string, now()->addWeek(), function () use ($iso, $dam_id_param) {
-
             $languages = collect($this->fetchArclight('media-languages')->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
-            if($iso) {
-                if(!isset($languages[$iso])) {
+            if ($iso) {
+                if (!isset($languages[$iso])) {
                     return [];
                 }
                 $languages = [$iso => $languages[$iso]];
             }
 
-            $language_names = Language::whereIn('iso', array_keys($languages))->get()->pluck('name','iso');
+            $language_names = Language::whereIn('iso', array_keys($languages))->get()->pluck('name', 'iso');
 
             $jesusFilms = [];
 
             foreach ($languages as $iso => $arclight_language_id) {
                 $dam_id = strtoupper($iso).'JFVS2DV';
-                if(isset($dam_id_param) && $dam_id_param != $dam_id ){
+                if (isset($dam_id_param) && $dam_id_param != $dam_id) {
                     continue;
                 }
-                if(!isset($language_names[$iso])) {
+                if (!isset($language_names[$iso])) {
                     continue;
                 }
 
@@ -141,6 +139,5 @@ class ArclightController extends APIController
             }
             return $jesusFilms;
         });
-
     }
 }
