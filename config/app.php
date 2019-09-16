@@ -169,7 +169,8 @@ return [
         App\Providers\ComposerServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         App\Providers\LocalEnvironmentServiceProvider::class,
-        Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class
+        Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
+        Sentry\Laravel\ServiceProvider::class,
     ],
 
     /*
@@ -223,6 +224,7 @@ return [
         'Localization' => Lunaweb\Localization\Facades\Localization::class,
         'i18n'         => Lunaweb\Localization\Facades\Localization::class,
         'Bugsnag'      => Bugsnag\BugsnagLaravel\Facades\Bugsnag::class,
+        'Sentry' => Sentry\Laravel\Facade::class,
     ],
 
 ];

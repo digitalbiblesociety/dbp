@@ -50,6 +50,10 @@ class Handler extends ExceptionHandler
             $this->sendEmail($exception);
         }
 
+        if (app()->bound('sentry') && $this->shouldReport($exception) && config('app.env') == 'production') {
+            app('sentry')->captureException($exception);
+        }
+
         parent::report($exception);
     }
 
