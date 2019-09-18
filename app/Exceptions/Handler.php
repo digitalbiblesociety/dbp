@@ -8,10 +8,12 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Mail;
-use Response;
+use ReflectionClass;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
 use Illuminate\Support\Arr;
+use Symfony\Component\HttpFoundation\Response;
+
 class Handler extends ExceptionHandler
 {
     /**
@@ -67,19 +69,65 @@ class Handler extends ExceptionHandler
             return parent::render($request, $exception);
         }
 
-        $message = $exception->getMessage();
-        if ($message === '') {
-            $message = 'Something has gone wrong';
-        }
-        if (\is_object($message)) {
-            $message = $message->toArray();
+        return $this->handleApiException($request, $exception);
+    }
+
+    private function handleApiException($request, Exception $exception)
+    {
+        $exception = $this->prepareException($exception);
+
+        if ($exception instanceof \Illuminate\Http\Exception\HttpResponseException) {
+            $exception = $exception->getResponse();
         }
 
-        return response()->json([
-            'errors'      => Arr::wrap($message),
-            'status_code' => method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : $exception->getCode(),
-            'host_name'   => gethostname()
-        ], method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : http_response_code(500));
+        if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+            $exception = $this->unauthenticated($request, $exception);
+        }
+
+        if ($exception instanceof \Illuminate\Validation\ValidationException) {
+            $exception = $this->convertValidationExceptionToResponse($exception, $request);
+        }
+
+        return $this->customApiResponse($exception);
+    }
+
+    private function customApiResponse($exception)
+    {
+        if (method_exists($exception, 'getStatusCode')) {
+            $statusCode = $exception->getStatusCode();
+        } else {
+            $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+        }
+
+        $response = [];
+        $response['error'] = Response::$statusTexts[$statusCode];
+
+        $class = new ReflectionClass(new Response());
+        $constants = (object) $class->getConstants();
+
+        foreach ($constants as $key => $value) {
+            if ($value === $statusCode) {
+                $response['type'] = $key;
+            }
+        }
+
+        if ($statusCode === Response::HTTP_UNPROCESSABLE_ENTITY) {
+            $message = $exception->getMessage();
+            if($message === ''){
+                $message = Response::$statusTexts[$statusCode];
+            }
+            if (\is_object($message)) {
+                $message = $message->toArray();
+            }
+            $response['error'] = $message;
+        }
+
+        if (config('app.debug')) {
+            $response['trace'] = $exception->getTrace();
+        }
+        $response['status_code'] = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : $exception->getCode();
+        $response['host_name'] = gethostname();
+        return response()->json($response, $statusCode);
     }
 
     /**
@@ -93,7 +141,7 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            return response()->json(['error' => 'Unauthenticated.'], Response::HTTP_UNAUTHORIZED);
         }
 
         return redirect()->guest(route('login'));
