@@ -215,7 +215,7 @@ class BibleFileset extends Model
         $version = (int)request()->v;
         return $query->when($id, function ($query) use ($id, $version) {
             $query->where(function ($query) use ($id, $version) {
-                if($version  === 2) {
+                if($version  <= 2) {
                     $query->where('bible_filesets.id', $id)
                           ->orWhere('bible_filesets.id', substr($id, 0, -4))
                           ->orWhere('bible_filesets.id', 'like',  substr($id, 0, 6))
