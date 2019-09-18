@@ -101,6 +101,7 @@ Route::name('v4_filesets.books')->get('bibles/filesets/{fileset_id}/books',     
 // VERSION 4 | Text
 Route::name('v4_filesets.chapter')->get('bibles/filesets/{fileset_id}/{book}/{chapter}', 'Bible\TextController@index');
 Route::name('v4_text_search')->get('search',                                             'Bible\TextController@search');
+Route::name('v4_library_search')->middleware('APIToken:check')->get('search/library',    'Bible\TextController@searchLibrary');
 
 // VERSION 4 | Commentaries
 
