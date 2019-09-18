@@ -153,20 +153,22 @@ Route::name('v4_user_accounts.store')->post('accounts',                         
 Route::name('v4_user_accounts.update')->put('accounts',                            'User\AccountsController@update');
 Route::name('v4_user_accounts.destroy')->delete('accounts',                        'User\AccountsController@destroy');
 
-// VERSION 4 | Annotations
-Route::name('v4_notes.index')->get('users/{user_id}/notes',                        'User\NotesController@index');
-Route::name('v4_notes.show')->get('users/{user_id}/notes/{id}',                    'User\NotesController@show');
-Route::name('v4_notes.store')->post('users/{user_id}/notes',                       'User\NotesController@store');
-Route::name('v4_notes.update')->put('users/{user_id}/notes/{id}',                  'User\NotesController@update');
-Route::name('v4_notes.destroy')->delete('users/{user_id}/notes/{id}',              'User\NotesController@destroy');
-Route::name('v4_bookmarks.index')->get('users/{user_id}/bookmarks',                'User\BookmarksController@index');
-Route::name('v4_bookmarks.store')->post('users/{user_id}/bookmarks',               'User\BookmarksController@store');
-Route::name('v4_bookmarks.update')->put('users/{user_id}/bookmarks/{id}',          'User\BookmarksController@update');
-Route::name('v4_bookmarks.destroy')->delete('users/{user_id}/bookmarks/{id}',      'User\BookmarksController@destroy');
-Route::name('v4_highlights.index')->get('users/{user_id}/highlights',              'User\HighlightsController@index');
-Route::name('v4_highlights.store')->post('users/{user_id}/highlights',             'User\HighlightsController@store');
-Route::name('v4_highlights.update')->put('users/{user_id}/highlights/{id}',        'User\HighlightsController@update');
-Route::name('v4_highlights.destroy')->delete('users/{user_id}/highlights/{id}',    'User\HighlightsController@destroy');
+// VERSION 4 | Annotations with api_token
+Route::middleware('APIToken')->group(function () {
+    Route::name('v4_notes.index')->get('users/{user_id}/notes',                        'User\NotesController@index');
+    Route::name('v4_notes.show')->get('users/{user_id}/notes/{id}',                    'User\NotesController@show');
+    Route::name('v4_notes.store')->post('users/{user_id}/notes',                       'User\NotesController@store');
+    Route::name('v4_notes.update')->put('users/{user_id}/notes/{id}',                  'User\NotesController@update');
+    Route::name('v4_notes.destroy')->delete('users/{user_id}/notes/{id}',              'User\NotesController@destroy');
+    Route::name('v4_bookmarks.index')->get('users/{user_id}/bookmarks',                'User\BookmarksController@index');
+    Route::name('v4_bookmarks.store')->post('users/{user_id}/bookmarks',               'User\BookmarksController@store');
+    Route::name('v4_bookmarks.update')->put('users/{user_id}/bookmarks/{id}',          'User\BookmarksController@update');
+    Route::name('v4_bookmarks.destroy')->delete('users/{user_id}/bookmarks/{id}',      'User\BookmarksController@destroy');
+    Route::name('v4_highlights.index')->get('users/{user_id}/highlights',              'User\HighlightsController@index');
+    Route::name('v4_highlights.store')->post('users/{user_id}/highlights',             'User\HighlightsController@store');
+    Route::name('v4_highlights.update')->put('users/{user_id}/highlights/{id}',        'User\HighlightsController@update');
+    Route::name('v4_highlights.destroy')->delete('users/{user_id}/highlights/{id}',    'User\HighlightsController@destroy');
+});
 
 // VERSION 4 | User Settings
 Route::name('v4_UserSettings.show')->get('users/{user_id}/settings',               'User\UserSettingsController@show');
