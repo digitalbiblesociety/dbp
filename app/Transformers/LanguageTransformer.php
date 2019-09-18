@@ -115,14 +115,18 @@ class LanguageTransformer extends BaseTransformer
             default:
             case 'v4_languages.all':
                 $output = [
-                    'id'        => $language->id,
-                    'glotto_id' => $language->glotto_id,
-                    'iso'       => $language->iso,
-                    'name'      => $language->name ?? $language->backup_name,
-                    'autonym'   => $language->autonym,
-                    'bibles'    => $language->bibles_count,
-                    'filesets'  => $language->filesets_count,
+                    'id'         => $language->id,
+                    'glotto_id'  => $language->glotto_id,
+                    'iso'        => $language->iso,
+                    'name'       => $language->name ?? $language->backup_name,
+                    'autonym'    => $language->autonym,
+                    'bibles'     => $language->bibles_count,
+                    'filesets'   => $language->filesets_count,
                 ];
+
+                if($language->country_population)
+                $output['country_population'] = $language->country_population;
+                
                 if ($language->relationLoaded('translations')) {
                     $output['translations'] = $language->translations->pluck('name', 'language_translation_id');
                 }
