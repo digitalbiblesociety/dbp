@@ -11,7 +11,6 @@ use Mail;
 use ReflectionClass;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
-use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\Response;
 
 class Handler extends ExceptionHandler
@@ -117,7 +116,7 @@ class Handler extends ExceptionHandler
 
         if ($statusCode === Response::HTTP_UNPROCESSABLE_ENTITY) {
             $message = $exception->getMessage();
-            if($message === ''){
+            if ($message === '') {
                 $message = Response::$statusTexts[$statusCode];
             }
             if (\is_object($message)) {

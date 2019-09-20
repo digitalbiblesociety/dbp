@@ -43,7 +43,7 @@ class AdminDetailsController extends APIController
         $s = preg_replace('/<th[^>]*>([^<]+)<\/th>/', '<info>\1</info>', $s);
         $s = preg_replace('/<td[^>]*>([^<]+)<\/td>/', '<info>\1</info>', $s);
         $t = preg_split('/(<h2[^>]*>[^<]+<\/h2>)/', $s, -1, PREG_SPLIT_DELIM_CAPTURE);
-        $r = array();
+        $r = [];
         $count = \count($t);
         $p1 = '<info>([^<]+)<\/info>';
         $p2 = '/'.$p1.'\s*'.$p1.'\s*'.$p1.'/';
@@ -54,7 +54,7 @@ class AdminDetailsController extends APIController
                 $vals = explode("\n", $t[$i + 1]);
                 foreach ($vals as $val) {
                     if (preg_match($p2, $val, $matchs)) { // 3cols
-                        $r[$name][trim($matchs[1])] = array(trim($matchs[2]), trim($matchs[3]));
+                        $r[$name][trim($matchs[1])] = [trim($matchs[2]), trim($matchs[3])];
                     } elseif (preg_match($p3, $val, $matchs)) { // 2cols
                         $r[$name][trim($matchs[1])] = trim($matchs[2]);
                     }

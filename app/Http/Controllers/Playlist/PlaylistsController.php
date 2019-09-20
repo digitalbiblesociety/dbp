@@ -49,8 +49,8 @@ class PlaylistsController extends APIController
      * @param $user_id
      *
      * @return mixed
-     * 
-     * 
+     *
+     *
      * @OA\Schema (
      *   type="object",
      *   schema="v4_playlist_index",
@@ -173,8 +173,8 @@ class PlaylistsController extends APIController
      * @param $playlist_id
      *
      * @return mixed
-     * 
-     * 
+     *
+     *
      */
     public function show(Request $request, $playlist_id)
     {
@@ -241,12 +241,12 @@ class PlaylistsController extends APIController
 
         $name = checkParam('name');
         if ($name) {
-            $update_values["name"] = $name;
+            $update_values['name'] = $name;
         }
 
         $external_content = checkParam('external_content');
         if ($external_content) {
-            $update_values["external_content"] = $external_content;
+            $update_values['external_content'] = $external_content;
         }
 
         $playlist->update($update_values);
@@ -384,7 +384,7 @@ class PlaylistsController extends APIController
      *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_playlist_items"))
      *     )
      * )
-     * 
+     *
      * @OA\RequestBody(
      *     request="PlaylistItems",
      *     required=true,
@@ -475,7 +475,7 @@ class PlaylistsController extends APIController
      *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_complete_playlist_item"))
      *     )
      * )
-     * 
+     *
      * @OA\Schema (
      *   schema="v4_complete_playlist_item",
      *   description="The v4 plan day complete response",
@@ -557,7 +557,7 @@ class PlaylistsController extends APIController
      *   @OA\Property(property="following", ref="#/components/schemas/Playlist/properties/following"),
      *   @OA\Property(property="user", ref="#/components/schemas/v4_playlist_index_user"),
      * )
-     * 
+     *
      * @OA\Schema (
      *   type="object",
      *   schema="v4_playlist_index_user",
@@ -565,7 +565,7 @@ class PlaylistsController extends APIController
      *   @OA\Property(property="id", type="integer"),
      *   @OA\Property(property="name", type="string")
      * )
-     * 
+     *
      * @OA\Schema (
      *   type="object",
      *   schema="v4_playlist_detail",
@@ -574,7 +574,7 @@ class PlaylistsController extends APIController
      *   },
      *   @OA\Property(property="items",type="array",@OA\Items(ref="#/components/schemas/PlaylistItemDetail"))
      * )
-     * 
+     *
      * @OA\Response(
      *   response="playlist",
      *   description="Playlist Object",

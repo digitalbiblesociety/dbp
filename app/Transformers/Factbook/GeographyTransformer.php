@@ -2,7 +2,6 @@
 
 namespace App\Transformers\Factbook;
 
-use App\Models\Country\FactBook\CountryGeography;
 use League\Fractal\TransformerAbstract;
 
 class GeographyTransformer extends TransformerAbstract

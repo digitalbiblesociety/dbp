@@ -46,7 +46,6 @@ use App\Models\User\AccessGroupType;
 use App\Models\User\AccessGroup;
 use App\Models\User\AccessType;
 
-
 class RealDataSeeder extends Seeder
 {
     /**
@@ -111,7 +110,6 @@ class RealDataSeeder extends Seeder
             if ($current_count % 1000 === 0) {
                 echo "\n Seeded ".$current_count .' of '. $entries_count;
             }
-
         }
     }
 }

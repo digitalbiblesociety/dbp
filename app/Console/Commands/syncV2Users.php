@@ -35,7 +35,7 @@ class syncV2Users extends Command
 
         \DB::connection('dbp_users_v2')->table('user')->where('created', '>', $from_date)->orderBy('id')
            ->chunk(50000, function ($users) {
-               foreach($users as $user) {
+               foreach ($users as $user) {
                    User::firstOrCreate([
                        'v2_id'            => $user->id,
                        'name'             => $user->username ?? $user->email,

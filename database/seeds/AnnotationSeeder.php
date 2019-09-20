@@ -57,6 +57,5 @@ class AnnotationSeeder extends Seeder
                 $bookmark_count--;
             }
         }
-
     }
 }

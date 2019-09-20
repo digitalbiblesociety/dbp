@@ -28,17 +28,17 @@ class ResourcesController extends APIController
 
         $resources = Resource::with('translations', 'links', 'organization.translations', 'language')
             ->when($iso, function ($query) use ($iso, $dialects) {
-                $query->whereHas('language', function($subquery) use($iso,$dialects) {
-                    if(!$dialects) {
+                $query->whereHas('language', function ($subquery) use ($iso,$dialects) {
+                    if (!$dialects) {
                         $subquery->where('iso', $iso);
                     } else {
-                        $language = Language::with('dialects')->where('iso',$iso)->select('id')->get();
+                        $language = Language::with('dialects')->where('iso', $iso)->select('id')->get();
                         $subquery->whereIn('id', $language->pluck('id'));
                     }
                 });
             })
             ->when($organization, function ($query) use ($organization) {
-                $query->whereHas('organization', function($subquery) use($organization) {
+                $query->whereHas('organization', function ($subquery) use ($organization) {
                     $subquery->where('id', $organization)->orWhere('slug', $organization);
                 });
             })
@@ -88,37 +88,36 @@ class ResourcesController extends APIController
         return null;
     }
 
-     /**
-     *
-     * Returns an array of version return types
-     *
-     * @category v2_api_jesusFilms
-     * @link http://api.dbp4.org/api/reply - V4 Access
-     * @link https://api.dbp.test/api/reply?key=1234&v=4&pretty - V4 Test Access
-     * @link https://dbp.test/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
-     *
-     * @OA\Get(
-     *     path="/library/jesusfilm",
-     *     tags={"Library Video"},
-     *     summary="",
-     *     description="",
-     *     operationId="v2_api_jesusFilms",
-     *     @OA\Parameter(name="dam_id", in="query", description="DAM ID for the Jesus Film volume desired.", @OA\Schema(type="string",title="encoding")),
-     *     @OA\Response(
-     *         response=200,
-     *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_video_path")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_video_path")),
-     *         @OA\MediaType(mediaType="text/csv",  @OA\Schema(ref="#/components/schemas/v2_video_path")),
-     *         @OA\MediaType(mediaType="text/x-yaml",  @OA\Schema(ref="#/components/schemas/v2_video_path"))
-     *     )
-     * )
-     *
-     * @return mixed
-     */
+    /**
+    *
+    * Returns an array of version return types
+    *
+    * @category v2_api_jesusFilms
+    * @link http://api.dbp4.org/api/reply - V4 Access
+    * @link https://api.dbp.test/api/reply?key=1234&v=4&pretty - V4 Test Access
+    * @link https://dbp.test/eng/docs/swagger/gen#/Version_2/v2_api_apiReply - V4 Test Docs
+    *
+    * @OA\Get(
+    *     path="/library/jesusfilm",
+    *     tags={"Library Video"},
+    *     summary="",
+    *     description="",
+    *     operationId="v2_api_jesusFilms",
+    *     @OA\Parameter(name="dam_id", in="query", description="DAM ID for the Jesus Film volume desired.", @OA\Schema(type="string",title="encoding")),
+    *     @OA\Response(
+    *         response=200,
+    *         description="successful operation",
+    *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_video_path")),
+    *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_video_path")),
+    *         @OA\MediaType(mediaType="text/csv",  @OA\Schema(ref="#/components/schemas/v2_video_path")),
+    *         @OA\MediaType(mediaType="text/x-yaml",  @OA\Schema(ref="#/components/schemas/v2_video_path"))
+    *     )
+    * )
+    *
+    * @return mixed
+    */
     public function jesusFilmListing()
     {
-
         $id         = checkParam('dam_id');
 
         $organization = Organization::where('slug', 'the-jesus-film-project')->first();
@@ -127,7 +126,7 @@ class ResourcesController extends APIController
         if ($iso !== null) {
             $language = Language::where('iso', $iso)->first();
             if (!$language) {
-                return $this->setStatusCode(404)->replyWithError("Language not found for provided iso");
+                return $this->setStatusCode(404)->replyWithError('Language not found for provided iso');
             }
         }
 

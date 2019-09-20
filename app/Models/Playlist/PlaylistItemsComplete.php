@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PlaylistItemsComplete extends Model
 {
-
     protected $connection = 'dbp_users';
     public $table         = 'playlist_items_completed';
     protected $primaryKey = ['user_id', 'playlist_item_id'];

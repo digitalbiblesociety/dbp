@@ -128,12 +128,12 @@ class EmptyLineFormatter extends NormalizerFormatter
     {
         if ($this->allowInlineLineBreaks) {
             if (0 === strpos($str, '{')) {
-                return str_replace(array('\r', '\n'), array("\r", "\n"), $str);
+                return str_replace(['\r', '\n'], ["\r", "\n"], $str);
             }
 
             return $str;
         }
 
-        return str_replace(array("\r\n", "\r", "\n"), ' ', $str);
+        return str_replace(["\r\n", "\r", "\n"], ' ', $str);
     }
 }

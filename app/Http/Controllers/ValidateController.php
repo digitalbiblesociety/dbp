@@ -8,8 +8,6 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 
-use Illuminate\Support\Facades\Input;
-
 class ValidateController extends APIController
 {
     public function index()
@@ -39,16 +37,16 @@ class ValidateController extends APIController
 
     public function placeholder_books()
     {
-        $books = BibleBook::select(['bible_id','book_id'])->where('name','LIKE','[%')->getQuery()->get()->groupBy('bible_id');
+        $books = BibleBook::select(['bible_id','book_id'])->where('name', 'LIKE', '[%')->getQuery()->get()->groupBy('bible_id');
         return view('validations.placeholder_books', compact('books'));
     }
 
     public function bibles()
     {
         $bibles = Bible::whereHas('filesets')
-            ->with('filesets.copyright','filesets.organization','filesets.permissions','translations')
+            ->with('filesets.copyright', 'filesets.organization', 'filesets.permissions', 'translations')
             ->whereHas('filesets', function ($q) {
-                $q->where('asset_id','dbp-prod');
+                $q->where('asset_id', 'dbp-prod');
             })->get();
         return view('validations.bibles', compact('bibles'));
     }
@@ -71,7 +69,7 @@ class ValidateController extends APIController
     {
         $organizations = Organization::withCount('filesets')
             ->withCount('resources')
-            ->with('logos','translations','relationships')
+            ->with('logos', 'translations', 'relationships')
             ->get();
 
         return view('validations.organizations', compact('organizations'));
@@ -83,10 +81,10 @@ class ValidateController extends APIController
         $media_type = checkParam('media_type');
 
         $filesets = BibleFileset::with('bible')
-            ->where('created_at','>', now()->subDays($days))
-            ->orWhere('updated_at','>', now()->subDays($days))
-            ->orderBy('updated_at','DESC')
-            ->orderBy('created_at','DESC')
+            ->where('created_at', '>', now()->subDays($days))
+            ->orWhere('updated_at', '>', now()->subDays($days))
+            ->orderBy('updated_at', 'DESC')
+            ->orderBy('created_at', 'DESC')
             ->when($media_type, function ($query) use ($media_type) {
                 $query->where('set_type_code', $media_type);
             })
@@ -94,6 +92,4 @@ class ValidateController extends APIController
 
         return view('validations.filesets', compact('filesets', 'days'));
     }
-
-
 }

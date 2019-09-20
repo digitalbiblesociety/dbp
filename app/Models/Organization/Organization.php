@@ -3,17 +3,11 @@
 namespace App\Models\Organization;
 
 use App\Models\Bible\BibleFileset;
-use App\Models\Bible\BibleFilesetConnection;
 use App\Models\Bible\BibleFilesetCopyrightOrganization;
-use App\Models\Bible\BibleLink;
-use App\Models\Language\Language;
 use App\Models\Resource\Resource;
 use App\Models\Bible\Bible;
 use App\Models\User\Role;
-use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Organization\OrganizationTranslation;
-use App\Traits\Uuids;
 
 /**
  * App\Models\Organization\Organization
@@ -343,7 +337,7 @@ class Organization extends Model
 
     public function filesets()
     {
-        return $this->hasManyThrough(BibleFilesetCopyrightOrganization::class, BibleFileset::class, 'hash_id','hash_id','id','hash_id');
+        return $this->hasManyThrough(BibleFilesetCopyrightOrganization::class, BibleFileset::class, 'hash_id', 'hash_id', 'id', 'hash_id');
     }
 
     public function resources()

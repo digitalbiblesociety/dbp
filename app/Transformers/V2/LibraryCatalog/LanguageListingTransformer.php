@@ -4,7 +4,6 @@ namespace App\Transformers\V2\LibraryCatalog;
 
 use App\Models\Language\Language;
 use App\Transformers\BaseTransformer;
-use League\Fractal\TransformerAbstract;
 
 class LanguageListingTransformer extends BaseTransformer
 {

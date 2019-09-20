@@ -8,7 +8,6 @@ use App\Models\Language\NumeralSystem;
 use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Language\Language;
-use Illuminate\Support\Str;
 
 /**
  * App\Models\Bible\Bible
@@ -300,20 +299,20 @@ class Bible extends Model
             if ($type_filters['asset_id']) {
                 $q->whereIn('asset_id', explode(',', $type_filters['asset_id']));
             }
-            if($type_filters['media']) {
-                $q->where('bible_filesets.set_type_code',$type_filters['media']);
+            if ($type_filters['media']) {
+                $q->where('bible_filesets.set_type_code', $type_filters['media']);
             }
-            if($type_filters['media_exclude']) {
+            if ($type_filters['media_exclude']) {
                 $q->where('bible_filesets.set_type_code', '!=', $type_filters['media_exclude']);
             }
-            if($type_filters['size']) {
+            if ($type_filters['size']) {
                 $q->where('bible_filesets.set_size_code', '=', $type_filters['size']);
             }
-            if($type_filters['size_exclude']) {
+            if ($type_filters['size_exclude']) {
                 $q->where('bible_filesets.set_size_code', '!=', $type_filters['size_exclude']);
             }
-            if($type_filters['bitrate']) {
-                $q->whereHas('meta', function ($subQuery) use($type_filters) {
+            if ($type_filters['bitrate']) {
+                $q->whereHas('meta', function ($subQuery) use ($type_filters) {
                     $subQuery->where('name', 'bitrate')->where('description', $type_filters['bitrate']);
                 });
             }
@@ -323,32 +322,31 @@ class Bible extends Model
             if ($type_filters['asset_id']) {
                 $q->whereIn('asset_id', explode(',', $type_filters['asset_id']));
             }
-            if($type_filters['media']) {
-                $q->where('bible_filesets.set_type_code',$type_filters['media']);
+            if ($type_filters['media']) {
+                $q->where('bible_filesets.set_type_code', $type_filters['media']);
             }
-            if($type_filters['media_exclude']) {
+            if ($type_filters['media_exclude']) {
                 $q->where('bible_filesets.set_type_code', '!=', $type_filters['media_exclude']);
             }
-            if($type_filters['size']) {
+            if ($type_filters['size']) {
                 $q->where('bible_filesets.set_size_code', '=', $type_filters['size']);
             }
-            if($type_filters['size_exclude']) {
+            if ($type_filters['size_exclude']) {
                 $q->where('bible_filesets.set_size_code', '!=', $type_filters['size_exclude']);
             }
-        }])->when($type_filters['bitrate'], function($q) use($type_filters) {
-            $q->with(['filesets.meta' => function($subQuery) use($type_filters) {
+        }])->when($type_filters['bitrate'], function ($q) use ($type_filters) {
+            $q->with(['filesets.meta' => function ($subQuery) use ($type_filters) {
                 $subQuery->where('name', 'bitrate');
             }]);
         });
     }
 
-    public function scopeFilterByLanguage($query,$language_codes)
+    public function scopeFilterByLanguage($query, $language_codes)
     {
         $query->when($language_codes, function ($q) use ($language_codes) {
-            $language_codes = explode(',',$language_codes);
+            $language_codes = explode(',', $language_codes);
             $languages = Language::whereIn('iso', $language_codes)->orWhereIn('id', $language_codes)->get();
             $q->whereIn('bibles.language_id', $languages->pluck('id'));
         });
     }
-
 }

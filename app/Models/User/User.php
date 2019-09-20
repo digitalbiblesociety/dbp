@@ -7,7 +7,6 @@ use App\Models\User\Study\Highlight;
 use App\Models\User\Study\Note;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Auth\Authenticatable as AuthenticableTrait;
 
 use App\Models\Organization\Organization;
 

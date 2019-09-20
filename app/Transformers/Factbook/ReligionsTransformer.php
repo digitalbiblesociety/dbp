@@ -2,7 +2,6 @@
 
 namespace App\Transformers\Factbook;
 
-use App\Models\Country\FactBook\CountryReligion;
 use League\Fractal\TransformerAbstract;
 
 class ReligionsTransformer extends TransformerAbstract

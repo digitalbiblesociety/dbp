@@ -29,7 +29,6 @@ class ProjectsSeeder extends Seeder
 
         $project_count = random_int(3, 5);
         while ($project_count > 0) {
-
             Project::create([
                 'id'              => $project_count,
                 'name'            => $faker->company,

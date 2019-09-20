@@ -139,7 +139,7 @@ class Bookmark extends Model
         $fileset = BibleFileset::join('bible_fileset_connections as connection', 'connection.hash_id', 'bible_filesets.hash_id')
             ->where('bible_filesets.set_type_code', 'text_plain')->where('connection.bible_id', $bible->id)->first();
         if (!$fileset) {
-            return "";
+            return '';
         }
         $verses = BibleVerse::withVernacularMetaData($bible)
             ->where('hash_id', $fileset->hash_id)

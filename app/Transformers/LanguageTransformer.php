@@ -4,6 +4,7 @@ namespace App\Transformers;
 
 use App\Models\Language\Language;
 use Illuminate\Support\Arr;
+
 class LanguageTransformer extends BaseTransformer
 {
     public function transform(Language $language)
@@ -124,8 +125,9 @@ class LanguageTransformer extends BaseTransformer
                     'filesets'   => $language->filesets_count,
                 ];
 
-                if($language->country_population)
-                $output['country_population'] = $language->country_population;
+                if ($language->country_population) {
+                    $output['country_population'] = $language->country_population;
+                }
                 
                 if ($language->relationLoaded('translations')) {
                     $output['translations'] = $language->translations->pluck('name', 'language_translation_id');

@@ -1,18 +1,28 @@
 <?php
 
+require_once __DIR__.'/fixers/PrettierPHPFixer.php';
+
 $finder = PhpCsFixer\Finder::create()
-    ->exclude('somedir')
-    ->notPath('src/Symfony/Component/Translation/Tests/fixtures/resources.php')
+    ->exclude('vendor')
     ->in(__DIR__)
+    ->name('*.php')
+    ->ignoreDotFiles(true)
+    ->ignoreVCS(true);
 ;
 
 return PhpCsFixer\Config::create()
+    ->registerCustomFixers([
+        (new PrettierPHPFixer()),
+    ])
     ->setRules([
+        'Prettier/php' => true,
         '@PSR2'                 => true,
-        'strict_param'          => true,
         'method_argument_space' => [
             'ensure_fully_multiline' => false,
             'keep_multiple_spaces_after_comma' => true
         ],
         'array_syntax' => ['syntax' => 'short'],
+        'no_unused_imports' => true,
+        'single_quote' => true,
+        'no_trailing_comma_in_list_call' => false,
     ])->setFinder($finder);

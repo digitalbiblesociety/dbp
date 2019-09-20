@@ -8,5 +8,4 @@ class LexicalDefinition extends Model
 {
     protected $connection = 'dbp';
     protected $fillable = ['definition', 'lexicon_id', 'literal'];
-
 }

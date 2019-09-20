@@ -332,8 +332,8 @@ class Language extends Model
     public function scopeIncludeCurrentTranslation($query)
     {
         $query->leftJoin('language_translations as current_translation', function ($join) {
-        $priority_q = \DB::raw('(select max(`priority`) from language_translations WHERE language_source_id = languages.id LIMIT 1)');
-        $join->on('current_translation.language_source_id', 'languages.id')
+            $priority_q = \DB::raw('(select max(`priority`) from language_translations WHERE language_source_id = languages.id LIMIT 1)');
+            $join->on('current_translation.language_source_id', 'languages.id')
              ->where('current_translation.language_translation_id', '=', $GLOBALS['i18n_id'])
              ->where('current_translation.priority', '=', $priority_q)
              ->orderBy('current_translation.priority', 'desc')->limit(1);
@@ -365,18 +365,17 @@ class Language extends Model
     public function scopeIncludeCountryPopulation($query, $country)
     {
         return $query->when($country, function ($query) use ($country) {
-        $query->leftJoin('country_language as country_population', function ($join) use ($country) {
-            $join->on('country_population.language_id', 'languages.id')
+            $query->leftJoin('country_language as country_population', function ($join) use ($country) {
+                $join->on('country_population.language_id', 'languages.id')
                     ->where('country_population.country_id', $country);
             });
         });
-
     }
 
     public function scopeFilterableByIsoCode($query, $code)
     {
         return $query->when($code, function ($query) use ($code) {
-            $query->whereIn('iso', explode(',',$code));
+            $query->whereIn('iso', explode(',', $code));
         });
     }
 

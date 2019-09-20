@@ -22,9 +22,8 @@ class InternalStatusTest extends ApiV4Test
 
         $this->assertTrue($response->bibles_count > 0);
         $this->assertSame(200, $response->systems->status_code);
-        $this->assertSame('live',$response->systems->cache);
-        $this->assertSame('live',$response->database->users);
-        $this->assertSame('live',$response->database->dbp);
-
+        $this->assertSame('live', $response->systems->cache);
+        $this->assertSame('live', $response->database->users);
+        $this->assertSame('live', $response->database->dbp);
     }
 }

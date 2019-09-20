@@ -6,7 +6,6 @@ use App\Http\Controllers\APIController;
 
 use App\Models\User\Account;
 use App\Models\User\ProjectMember;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Validator;
 

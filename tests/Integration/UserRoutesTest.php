@@ -3,10 +3,8 @@
 namespace Tests\Integration;
 
 use App\Models\User\AccessGroup;
-use App\Models\User\Account;
 use App\Models\User\Key;
 use App\Models\User\PasswordReset;
-use App\Models\User\Project;
 use App\Models\User\ProjectMember;
 use App\Models\User\ProjectOauthProvider;
 use App\Models\User\User;
@@ -89,8 +87,8 @@ class UserRoutesTest extends ApiV4Test
      */
     public function users()
     {
-        $key = Key::with('user.projectMembers')->where('key',$this->key)->first();
-        $project_id = $key->user->projectMembers->whereIn('role_id',[2,4])->first()->project_id;
+        $key = Key::with('user.projectMembers')->where('key', $this->key)->first();
+        $project_id = $key->user->projectMembers->whereIn('role_id', [2,4])->first()->project_id;
 
         $path = route('v4_user.index', Arr::add($this->params, 'project_id', $project_id));
         echo "\nTesting: $path";
@@ -164,7 +162,7 @@ class UserRoutesTest extends ApiV4Test
      */
     public function userOAuth()
     {
-        $projectOAuth = ProjectOauthProvider::whereIn('name',['google','github','facebook'])->inRandomOrder()->first();
+        $projectOAuth = ProjectOauthProvider::whereIn('name', ['google','github','facebook'])->inRandomOrder()->first();
         $path = route('v4_user.oAuth', array_merge($this->params, ['driver' => $projectOAuth->name, 'project_id' => $projectOAuth->project_id]));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
@@ -182,10 +180,10 @@ class UserRoutesTest extends ApiV4Test
      */
     public function userPasswordReset()
     {
-        $project_member = ProjectMember::with('user')->where('role_id',1)->inRandomOrder()->first();
+        $project_member = ProjectMember::with('user')->where('role_id', 1)->inRandomOrder()->first();
         $password_reset = PasswordReset::create([
             'email' => $project_member->user->email,
-            'token' => unique_random('password_resets','token')
+            'token' => unique_random('password_resets', 'token')
         ]);
 
         $account = [
@@ -213,7 +211,7 @@ class UserRoutesTest extends ApiV4Test
      */
     public function userPasswordEmail()
     {
-        $project_member = ProjectMember::with('user')->where('role_id',1)->inRandomOrder()->first();
+        $project_member = ProjectMember::with('user')->where('role_id', 1)->inRandomOrder()->first();
 
         $path = route('v4_user.password_email', array_merge([
             'email'      => $project_member->user->email,
@@ -236,7 +234,7 @@ class UserRoutesTest extends ApiV4Test
      */
     public function notes()
     {
-        $key = Key::where('key',$this->key)->first();
+        $key = Key::where('key', $this->key)->first();
         $path = route('v4_notes.index', Arr::add($this->params, 'user_id', $key->user_id));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);

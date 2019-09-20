@@ -18,7 +18,7 @@ class BibleManagementController extends Controller
 {
     public function index()
     {
-        $bibles = BibleTranslation::select('bible_id','name')->where('language_id', '6414')->distinct()->get();
+        $bibles = BibleTranslation::select('bible_id', 'name')->where('language_id', '6414')->distinct()->get();
         return view('dashboard.bibles.home', compact('bibles'));
     }
 
@@ -106,9 +106,9 @@ class BibleManagementController extends Controller
         $organizations = OrganizationTranslation::select(['name', 'organization_id'])->where('language_id', '6466')->get();
         $alphabets     = Alphabet::select('script')->get();
         $languages     = Language::select(['iso', 'name'])->orderBy('iso')->get();
-        $language_current = Language::select(['iso', 'name'])->where('id',$bible->language_id)->first();
+        $language_current = Language::select(['iso', 'name'])->where('id', $bible->language_id)->first();
 
-        return view('dashboard.bibles.edit', compact('languages', 'organizations', 'alphabets', 'bible','bibles','books', 'language_current'));
+        return view('dashboard.bibles.edit', compact('languages', 'organizations', 'alphabets', 'bible', 'bibles', 'books', 'language_current'));
     }
 
 

@@ -391,17 +391,18 @@ class Book extends Model
      */
     protected $updated_at;
 
-    public function scopeSelectByID($query, $id) {
+    public function scopeSelectByID($query, $id)
+    {
         $query->where('id', $id)->orWhere('id_osis', $id)->orWhere('id_usfx', $id);
     }
 
     public function scopeFilterByTestament($query, $testament)
     {
         $query->when($testament, function ($q) use ($testament) {
-            if(\in_array('NT', $testament)) {
+            if (\in_array('NT', $testament)) {
                 $q->where('books.book_testament', 'NT');
             }
-            if(\in_array('OT', $testament)) {
+            if (\in_array('OT', $testament)) {
                 $q->where('books.book_testament', 'OT');
             }
         });

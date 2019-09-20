@@ -2,8 +2,6 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
-
 class ArclightTransformer extends BaseTransformer
 {
     /**

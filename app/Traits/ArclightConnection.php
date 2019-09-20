@@ -4,7 +4,6 @@ namespace App\Traits;
 
 trait ArclightConnection
 {
-
     private function fetchArclight($path, $language_id = null, $include_refs = false)
     {
         $base_url = 'https://api.arclight.org/v2/';
@@ -12,11 +11,11 @@ trait ArclightConnection
 
         $path = $base_url.$path.'?_format=json&apiKey='.$key.'&limit=3000&platform=ios';
 
-        if($language_id) {
+        if ($language_id) {
             $path .= '&languageIds='.$language_id;
         }
 
-        if($include_refs) {
+        if ($include_refs) {
             $refs = implode(',', array_keys($this->getIdReferences()));
             $path .= '&ids='.$refs;
         }
@@ -166,5 +165,4 @@ trait ArclightConnection
         ];
         return $references;
     }
-
 }

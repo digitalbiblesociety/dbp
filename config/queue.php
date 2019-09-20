@@ -36,7 +36,7 @@ return [
 
         'database' => [
             'driver'      => 'database',
-	        'connection'  => env('DBP_USERS_DATABASE'),
+            'connection'  => env('DBP_USERS_DATABASE'),
             'table'       => 'jobs',
             'queue'       => 'default',
             'retry_after' => 90,

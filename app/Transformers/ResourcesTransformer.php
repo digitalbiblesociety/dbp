@@ -20,7 +20,6 @@ class ResourcesTransformer extends BaseTransformer
 
     public function transformForV4($resource)
     {
-
         $vname = optional($resource->translations->where('tag', 0)->where('vernacular', 1)->first())->title;
         $vname_description = optional($resource->translations->where('tag', 0)->where('vernacular', 1)->first())->description;
         $name = optional($resource->translations->where('tag', 0)->where('language_id', 6414)->first())->title;

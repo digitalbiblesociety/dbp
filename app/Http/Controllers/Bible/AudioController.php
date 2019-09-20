@@ -12,7 +12,6 @@ use App\Models\Bible\BibleFileTimestamp;
 
 use App\Traits\CallsBucketsTrait;
 use App\Transformers\AudioTransformer;
-use Illuminate\Http\JsonResponse;
 
 class AudioController extends APIController
 {
@@ -202,7 +201,8 @@ class AudioController extends APIController
     {
         // Check Params
         $id       = checkParam('fileset_id|dam_id');
-        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');;
+        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
+        ;
         $book     = checkParam('book|osis_code');
         $chapter  = checkParam('chapter_id|chapter_number');
 

@@ -17,7 +17,6 @@ use Symfony\Component\Yaml\Yaml;
 use Yosymfony\Toml\TomlBuilder;
 use Illuminate\Support\Str;
 
-
 class APIController extends Controller
 {
     // Top Level Swagger Docs
@@ -43,7 +42,7 @@ class APIController extends Controller
      *     description="Development server",
      *     @OA\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
      * )
-     * 
+     *
      * @OA\SecurityScheme(
      *   securityScheme="api_token",
      *   name="api_token",

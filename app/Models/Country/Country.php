@@ -168,12 +168,12 @@ class Country extends Model
     {
         return $this->hasOne(CountryTranslation::class, 'country_id', 'id')->where('language_id', $GLOBALS['i18n_id']);
     }
-/*
- *	public function vernacularTranslation()
- *	{
- *		return $this->HasOne(CountryTranslation::class,'country_id','id')->where('language_id', $this->primary_language_id);
- *	}
- */
+    /*
+     *	public function vernacularTranslation()
+     *	{
+     *		return $this->HasOne(CountryTranslation::class,'country_id','id')->where('language_id', $this->primary_language_id);
+     *	}
+     */
     public function languages()
     {
         return $this->belongsToMany(Language::class)->distinct();

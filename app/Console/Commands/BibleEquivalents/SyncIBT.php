@@ -4,7 +4,6 @@ namespace App\Console\Commands\BibleEquivalents;
 
 use App\Models\Bible\BibleLink;
 use App\Models\Bible\BibleTranslation;
-use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Models\User\User;
 use App\Notifications\BibleNeedsCreation;
@@ -54,9 +53,7 @@ class SyncIBT extends Command
 
         foreach ($response as $language => $bibles) {
             foreach ($bibles as $bible) {
-
                 foreach ($bible as $type => $linkData) {
-
                     switch ($type) {
                         case 'ebook':
                             $type_equivalent = 'epub';
@@ -73,7 +70,7 @@ class SyncIBT extends Command
                     }
 
                     $bibleTranslation = BibleTranslation::where('name', $linkData->name)->first();
-                    if(!isset($bibleTranslation)) {
+                    if (!isset($bibleTranslation)) {
                         // Notification::send(config('app.contact'), new BibleNeedsCreation($bible));
                         continue;
                     }
@@ -86,12 +83,8 @@ class SyncIBT extends Command
                         'url'             => $linkData->url_en,
                         'type'            => $type_equivalent,
                     ]);
-
                 }
-
-
             }
         }
-
     }
 }

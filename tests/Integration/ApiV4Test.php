@@ -8,7 +8,6 @@ use App\Http\Controllers\User\SwaggerDocsController;
 
 class ApiV4Test extends TestCase
 {
-
     protected $params;
     protected $swagger;
     protected $schemas;
@@ -58,7 +57,6 @@ class ApiV4Test extends TestCase
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
         $response->assertJson(['versions' => [2,4]]);
-
     }
 
     /**
@@ -94,5 +92,4 @@ class ApiV4Test extends TestCase
         $response = $this->withHeaders($this->params)->get($path);
         $response->assertSuccessful();
     }
-
 }

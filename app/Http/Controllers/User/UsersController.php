@@ -6,7 +6,6 @@ use App\Http\Controllers\APIController;
 use App\Mail\ProjectVerificationEmail;
 
 use App\Models\User\Project;
-use App\Models\User\ProjectOauthProvider;
 use App\Models\User\ProjectMember;
 use App\Models\User\Account;
 use App\Models\User\Role;
@@ -14,17 +13,13 @@ use App\Models\User\User;
 use App\Models\User\Key;
 use App\Models\User\Study\Note;
 use App\Traits\CheckProjectMembership;
-use App\Transformers\Serializers\DataArraySerializer;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-use Socialite;
-use Image;
 use Mail;
 use Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
@@ -104,7 +99,9 @@ class UsersController extends APIController
 
         $user = User::with('accounts', 'organizations', 'profile')
             ->whereHas('projectMembers', function ($query) use ($available_projects) {
-                if (!empty($available_projects)) $query->whereIn('project_id', $available_projects);
+                if (!empty($available_projects)) {
+                    $query->whereIn('project_id', $available_projects);
+                }
             })->where('id', $id)->first();
         if (!$user) {
             return $this->replyWithError(trans('api.users_errors_404', ['param' => $id]));
@@ -495,7 +492,7 @@ class UsersController extends APIController
             $oldPassword = \Hash::check(md5($password), $user->password);
             $newPassword = \Hash::check($password, $user->password);
             $access_granted = $oldPassword || $newPassword;
-        } else if ($social_provider_id) {
+        } elseif ($social_provider_id) {
             $account  = $user->accounts->where('provider_id', $social_provider_id)
                 ->where('provider_user_id', $social_provider_user_id)->first();
             $access_granted = $account;
@@ -518,7 +515,8 @@ class UsersController extends APIController
             'last_name'  => 'user',
             'email'  => $user->id . '@deleted.com',
             'password'  => Str::random(40),
-        ])->save();;
+        ])->save();
+        ;
 
         $user->delete();
 

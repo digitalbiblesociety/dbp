@@ -4,18 +4,12 @@ namespace App\Http\Controllers\Bible;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
-use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFilesetType;
-use App\Models\Bible\BookTranslation;
-use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
-use App\Models\Organization\OrganizationTranslation;
 use App\Transformers\BibleTransformer;
 use App\Transformers\BooksTransformer;
 use App\Traits\AccessControlAPI;
-use Illuminate\Support\Str;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformers\Serializers\DataArraySerializer;
 use App\Http\Controllers\APIController;
 
@@ -114,10 +108,10 @@ class BiblesController extends APIController
         $show_restricted    = checkParam('show_all|show_restricted');
         $show_restricted = $show_restricted && $show_restricted != 'false';
 
-        if($media) {
+        if ($media) {
             $media_types = BibleFilesetType::select('set_type_code')->get();
             $media_type_exists = $media_types->where('set_type_code', $media);
-            if($media_type_exists->isEmpty()) {
+            if ($media_type_exists->isEmpty()) {
                 return $this->setStatusCode(404)->replyWithError('media type not found. must be one of ' . $media_types->pluck('set_type_code')->implode(','));
             }
         }
@@ -126,9 +120,8 @@ class BiblesController extends APIController
         $organization = $organization_id ? Organization::where('id', $organization_id)->orWhere('slug', $organization_id)->first() : null;
         $cache_string = strtolower('bibles:'.$language_code.$organization.$country.$asset_id.$access_control->string.$media.$media_exclude.$size.$size_exclude.$bitrate);
         $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude, $bitrate, $show_restricted) {
-
             $bibles = Bible::when(!$show_restricted, function ($query) use ($access_control, $asset_id, $media, $media_exclude, $size, $size_exclude, $bitrate) {
-                    $query->withRequiredFilesets([
+                $query->withRequiredFilesets([
                         'access_control' => $access_control,
                         'asset_id'       => $asset_id,
                         'media'          => $media,
@@ -137,13 +130,13 @@ class BiblesController extends APIController
                         'size_exclude'   => $size_exclude,
                         'bitrate'        => $bitrate
                     ]);
-                })
+            })
                 ->leftJoin('bible_translations as ver_title', function ($join) {
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
                 })
                 ->leftJoin('bible_translations as current_title', function ($join) {
                     $join->on('current_title.bible_id', '=', 'bibles.id');
-                    if(isset($GLOBALS['i18n_id'])) {
+                    if (isset($GLOBALS['i18n_id'])) {
                         $join->where('current_title.language_id', '=', $GLOBALS['i18n_id']);
                     }
                 })
@@ -158,7 +151,7 @@ class BiblesController extends APIController
                 ->leftJoin('language_translations as language_current', function ($join) {
                     $join->on('language_current.language_source_id', '=', 'bibles.language_id')
                          ->orderBy('priority', 'desc');
-                    if(isset($GLOBALS['i18n_id'])) {
+                    if (isset($GLOBALS['i18n_id'])) {
                         $join->where('language_current.language_translation_id', '=', $GLOBALS['i18n_id']);
                     }
                 })
@@ -223,10 +216,9 @@ class BiblesController extends APIController
     public function show($id)
     {
         $access_control = $this->accessControl($this->key);
-        $cache_string = strtolower('bible_show:' . $id . ':' . $access_control->string);
-        $bible = \Cache::remember($cache_string, now()->addDay(), function () use ($access_control, $id) {
-            return Bible::with([
-                'translations', 'books.book', 'links', 'organizations.logo', 'organizations.logoIcon', 'organizations.translations', 'alphabet.primaryFont', 'equivalents',
+        $cache_string = strtolower('bible_show:'.$id.':'.$access_control->string);
+        $bible = \Cache::remember($cache_string, now()->addDay(), function () use ($access_control,$id) {
+            return Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
                 'filesets' => function ($query) use ($access_control) {
                     $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
                 }
@@ -247,8 +239,8 @@ class BiblesController extends APIController
      *     tags={"Bibles"},
      *     summary="Returns a list of translated book names and general information for the given Bible",
      *     description="The actual list of books may vary from fileset to fileset. For example, a King James Fileset may
-               contain deuterocanonical books that are missing from one of it's sibling filesets nested within the bible
-               parent.",
+     *          contain deuterocanonical books that are missing from one of it's sibling filesets nested within the bible
+     *          parent.",
      *     operationId="v4_bible.books",
      *     @OA\Parameter(name="id",in="path",required=true,@OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(name="book_id",in="query", description="The book id. For a complete list see the `book_id` field in the `/bibles/books` route.",@OA\Schema(ref="#/components/schemas/Book/properties/id")),
@@ -274,7 +266,7 @@ class BiblesController extends APIController
         $testament = checkParam('testament');
 
         $bible = Bible::find($bible_id);
-        if(!$bible) {
+        if (!$bible) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $bible_id]));
         }
 
@@ -294,5 +286,4 @@ class BiblesController extends APIController
 
         return $this->reply(fractal($books, new BooksTransformer));
     }
-
 }

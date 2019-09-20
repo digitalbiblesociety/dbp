@@ -89,8 +89,11 @@
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover"
         ],
+	  	"cs": [
+		  	"php-cs-fixer fix --dry-run"
+	  	],
 	  	"cs-fix": [
-		  	"php-cs-fixer fix src --rules=@PSR2"
+		  	"php-cs-fixer fix"
 	  	]
     },
     "config": {

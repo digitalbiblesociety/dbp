@@ -40,16 +40,16 @@ class syncV2Highlights extends Command
         $from_date = $this->argument('date') ?? '00-00-00';
         $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
 
-        $this->highlightColors = HighlightColor::select('color', 'id')->get()->pluck('id','color')->toArray();
-        $filesets = BibleFileset::where('set_type_code','text_plain')->where('asset_id','dbp-prod')->get();
+        $this->highlightColors = HighlightColor::select('color', 'id')->get()->pluck('id', 'color')->toArray();
+        $filesets = BibleFileset::where('set_type_code', 'text_plain')->where('asset_id', 'dbp-prod')->get();
         $books = Book::select(['id_osis','id_usfx','id','protestant_order'])->get();
 
         \DB::connection('dbp_users_v2')
            ->table('highlight')
            ->where('created', '>', $from_date)
            ->orderBy('created')
-           ->chunk(10000, function ($highlights) use($filesets, $books) {
-               foreach($highlights as $highlight) {
+           ->chunk(10000, function ($highlights) use ($filesets, $books) {
+               foreach ($highlights as $highlight) {
                    $this->syncHighlight($highlight, $filesets, $books);
                }
            });
@@ -57,27 +57,27 @@ class syncV2Highlights extends Command
 
     private function syncHighlight($highlight, $filesets, $books)
     {
-        $fileset = $filesets->where('id',substr($highlight->dam_id,0,6))->first();
-        if(!$fileset) {
+        $fileset = $filesets->where('id', substr($highlight->dam_id, 0, 6))->first();
+        if (!$fileset) {
             Log::driver('seed_errors')->info('bb_nfd_'.$highlight->dam_id);
-            echo "\n Error!! Could not find FILESET_ID: ".substr($highlight->dam_id,0,6);
+            echo "\n Error!! Could not find FILESET_ID: ".substr($highlight->dam_id, 0, 6);
             return;
         }
         $book = $books->where('id_osis', $highlight->book_id)->first();
-        if(!$book) {
-            $book = $books->where('protestant_order',$highlight->book_id);
+        if (!$book) {
+            $book = $books->where('protestant_order', $highlight->book_id);
             echo "\n Error!! Could not find BOOK_ID: ".$highlight->book_id;
             return;
         }
 
-        if($book === null) {
+        if ($book === null) {
             Log::driver('seed_errors')->info('bb_nfb_'.$highlight->book_id);
             echo "\n Error!! Could not find BOOK_ID: ".$highlight->book_id;
             return;
         }
 
-        $user_exists = User::where('v2_id',$highlight->user_id)->first();
-        if(!$user_exists) {
+        $user_exists = User::where('v2_id', $highlight->user_id)->first();
+        if (!$user_exists) {
             Log::driver('seed_errors')->info('bb_nfu_'.$highlight->user_id);
             echo "\n Error!! Could not find USER_ID: ".$highlight->user_id;
             return;
@@ -90,7 +90,7 @@ class syncV2Highlights extends Command
             'chapter'           => $highlight->chapter_id,
             'verse_start'       => $highlight->verse_id,
             'highlight_start'   => 1,
-            'highlighted_chars' => NULL,
+            'highlighted_chars' => null,
             'highlighted_color' => $this->getRelatedColorIdForHighlightColorString($highlight->color),
             'created_at'        => Carbon::createFromTimeString($highlight->created),
             'updated_at'        => Carbon::createFromTimeString($highlight->updated),

@@ -4,15 +4,12 @@ namespace App\Traits;
 
 use App\Models\Organization\Asset;
 use Aws\CloudFront\CloudFrontClient;
-use Aws\S3\S3Client;
 use Carbon\Carbon;
 use Curl\Curl;
 use Cache;
-use Illuminate\Http\JsonResponse;
 
 trait CallsBucketsTrait
 {
-
     public function authorizeAWS($source)
     {
         $security_token = Cache::remember('iam_assumed_role', 60, function () {

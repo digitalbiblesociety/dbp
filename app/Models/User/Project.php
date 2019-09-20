@@ -168,10 +168,10 @@ class Project extends Model
      * @method static Project whereUpdatedAt($value)
      */
     protected $updated_at;
-/**
- *
- * @property-read Highlight[] $highlights
- */
+    /**
+     *
+     * @property-read Highlight[] $highlights
+     */
     protected $highlights;
 
     public function members()
@@ -193,7 +193,7 @@ class Project extends Model
 
     public function users()
     {
-        return $this->hasManyThrough(User::class, ProjectMember::class, 'project_id','id','project_id','user_id');
+        return $this->hasManyThrough(User::class, ProjectMember::class, 'project_id', 'id', 'project_id', 'user_id');
     }
 
     public function notes()

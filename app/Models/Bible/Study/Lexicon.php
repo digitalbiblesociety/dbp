@@ -134,15 +134,15 @@ class Lexicon extends Model
     public function scopeFilterByLanguage($query, $language)
     {
         $query->when($language, function ($query, $language) {
-            return $query->where('id','LIKE', $language.'%');
+            return $query->where('id', 'LIKE', $language.'%');
         });
     }
 
     public function scopeFilterByWord($query, $word, $exact_match)
     {
-        $query->when($word, function ($query) use($word, $exact_match) {
-            return $query->whereHas('definitions', function ($subquery) use($word, $exact_match) {
-                if(!$exact_match) {
+        $query->when($word, function ($query) use ($word, $exact_match) {
+            return $query->whereHas('definitions', function ($subquery) use ($word, $exact_match) {
+                if (!$exact_match) {
                     $subquery->where('definition', $word);
                 } else {
                     $subquery->where('definition', 'like', '%'.$word.'%');
@@ -150,5 +150,4 @@ class Lexicon extends Model
             });
         });
     }
-
 }

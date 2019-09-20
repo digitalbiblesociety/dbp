@@ -18,7 +18,6 @@ use \Illuminate\Session\Middleware\StartSession;
 use \Illuminate\View\Middleware\ShareErrorsFromSession;
 use \Illuminate\Routing\Middleware\SubstituteBindings;
 use \App\Http\Middleware\VerifyCsrfToken;
-use \App\Http\Middleware\Laravel2step;
 use \Lunaweb\Localization\Middleware\LocalizationHandler;
 
 class Kernel extends HttpKernel

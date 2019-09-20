@@ -49,56 +49,56 @@ class Highlight extends Model
     protected $fillable = ['user_id','v2_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','highlight_start','highlighted_words','highlighted_color'];
     protected $hidden = ['user_id','project_id'];
 
-     /**
-      *
-      * @OA\Property(
-      *   title="id",
-      *   type="integer",
-      *   description="The highlight id",
-      *   minimum=0
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *   title="id",
+     *   type="integer",
+     *   description="The highlight id",
+     *   minimum=0
+     * )
+     *
+     */
     protected $id;
-     /**
-      *
-      * @OA\Property(
-      *   title="user_id",
-      *   type="string",
-      *   description="The user that created the highlight"
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *   title="user_id",
+     *   type="string",
+     *   description="The user that created the highlight"
+     * )
+     *
+     */
     protected $user_id;
 
     /**
      * @OA\Property(ref="#/components/schemas/Bible/properties/id")
      */
     protected $bible_id;
-     /**
-      * @OA\Property(ref="#/components/schemas/Book/properties/id")
-      */
+    /**
+     * @OA\Property(ref="#/components/schemas/Book/properties/id")
+     */
     protected $book_id;
-     /**
-      *
-      * @OA\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
-      */
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
+     */
     protected $chapter;
-     /**
-      *
-      * @OA\Property(
-      *   title="highlighted_color",
-      *   type="string",
-      *   description="The highlight's highlighted color in either hex, rgb, or rgba notation.",
-      *   example="#4488bb"
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *   title="highlighted_color",
+     *   type="string",
+     *   description="The highlight's highlighted color in either hex, rgb, or rgba notation.",
+     *   example="#4488bb"
+     * )
+     *
+     */
     protected $highlighted_color;
-     /**
-      *
-      * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
-      */
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
+     */
     protected $verse_start;
 
     /**
@@ -108,31 +108,31 @@ class Highlight extends Model
      */
     protected $reference;
 
-     /**
-      *
-      * @OA\Property(ref="#/components/schemas/Project/properties/id")
-      */
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/Project/properties/id")
+     */
     protected $project_id;
-     /**
-      *
-      * @OA\Property(
-      *   title="highlight_start",
-      *   type="integer",
-      *   description="The number of words from the beginning of the verse to start the highlight at. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
-      *   minimum=0
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *   title="highlight_start",
+     *   type="integer",
+     *   description="The number of words from the beginning of the verse to start the highlight at. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
+     *   minimum=0
+     * )
+     *
+     */
     protected $highlight_start;
-     /**
-      *
-      * @OA\Property(
-      *   title="highlighted_words",
-      *   type="integer",
-      *   description="The number of words being highlighted. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *   title="highlighted_words",
+     *   type="integer",
+     *   description="The number of words being highlighted. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
+     * )
+     *
+     */
     protected $highlighted_words;
 
 
@@ -159,16 +159,16 @@ class Highlight extends Model
 
     public function getVerseTextAttribute()
     {
-      $highlight = $this->toArray();
-      $chapter = $highlight['chapter'];
-      $verse_start = $highlight['verse_start'];
-      $bible = Bible::where('id', $highlight['bible_id'])->first();
-      $fileset = BibleFileset::join('bible_fileset_connections as connection', 'connection.hash_id', 'bible_filesets.hash_id')
+        $highlight = $this->toArray();
+        $chapter = $highlight['chapter'];
+        $verse_start = $highlight['verse_start'];
+        $bible = Bible::where('id', $highlight['bible_id'])->first();
+        $fileset = BibleFileset::join('bible_fileset_connections as connection', 'connection.hash_id', 'bible_filesets.hash_id')
         ->where('bible_filesets.set_type_code', 'text_plain')->where('connection.bible_id', $bible->id)->first();
-      if (!$fileset) {
-        return "";
-      }
-      $verses = BibleVerse::withVernacularMetaData($bible)
+        if (!$fileset) {
+            return '';
+        }
+        $verses = BibleVerse::withVernacularMetaData($bible)
         ->where('hash_id', $fileset->hash_id)
         ->where('bible_verses.book_id', $highlight['book_id'])
         ->where('verse_start', $verse_start)
@@ -177,6 +177,6 @@ class Highlight extends Model
         ->select([
           'bible_verses.verse_text',
         ])->get()->pluck('verse_text');
-      return implode(' ', $verses->toArray());
+        return implode(' ', $verses->toArray());
     }
 }

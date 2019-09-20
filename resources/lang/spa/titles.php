@@ -15,7 +15,7 @@ return [
     'createProfile'     => 'Create Profile',
 
     'adminDropdownNav'  => 'Admin',
-	'archivistDropdownNav'  => 'Archivist',
+    'archivistDropdownNav'  => 'Archivist',
 
     'activation'        => 'Registration Started  | Activation Required',
     'exceeded'          => 'Activation Error',

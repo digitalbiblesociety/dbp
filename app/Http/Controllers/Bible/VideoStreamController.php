@@ -10,11 +10,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use App\Traits\ArclightConnection;
 
-use App\Models\Language\LanguageCode;
-
 class VideoStreamController extends APIController
 {
-
     use CallsBucketsTrait;
     use ArclightConnection;
 
@@ -31,7 +28,7 @@ class VideoStreamController extends APIController
     {
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh_video.bucket');
 
-        $fileset = BibleFileset::uniqueFileset($id, $asset_id)->select('hash_id','id')->first();
+        $fileset = BibleFileset::uniqueFileset($id, $asset_id)->select('hash_id', 'id')->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
@@ -67,7 +64,7 @@ class VideoStreamController extends APIController
     {
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh_video.bucket');
 
-        $fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'video_stream')->select('hash_id','id','asset_id')->first();
+        $fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'video_stream')->select('hash_id', 'id', 'asset_id')->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
@@ -141,5 +138,4 @@ class VideoStreamController extends APIController
             'Content-Type'        => 'application/x-mpegURL'
         ]);
     }
-
 }

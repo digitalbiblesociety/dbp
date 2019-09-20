@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class VerseReference extends Model
 {
-
     public $table = 'verse_references';
 
     protected $book_id;
@@ -25,6 +24,4 @@ class VerseReference extends Model
     {
         return $this->belongsTo(Book::class);
     }
-
-
 }

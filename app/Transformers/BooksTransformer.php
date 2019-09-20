@@ -117,7 +117,6 @@ class BooksTransformer extends BaseTransformer
      */
     public function transformForV4($book)
     {
-
         switch ($this->route) {
             case 'v4_bible_books_all':
                 return [

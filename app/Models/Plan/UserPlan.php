@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class UserPlan extends Model
 {
-
     protected $connection = 'dbp_users';
     protected $primaryKey = ['user_id', 'plan_id'];
     public $incrementing = false;
@@ -90,7 +89,8 @@ class UserPlan extends Model
             ->map(function ($plan_day) {
                 $completed = $plan_day->verifyDayCompleted();
                 return $completed;
-            });;
+            });
+        ;
         $this->attributes['percentage_completed'] = $completed_per_day->sum('total_items_completed') / $completed_per_day->sum('total_items') * 100;
         return $this;
     }
@@ -100,7 +100,8 @@ class UserPlan extends Model
         PlanDay::where('plan_id', $this->plan_id)->get()
             ->map(function ($plan_day) {
                 $plan_day->unComplete();
-            });;
+            });
+        ;
         $this->attributes['percentage_completed'] = 0;
         $this->attributes['start_date'] = $start_date;
         return $this;

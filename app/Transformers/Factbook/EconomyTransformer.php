@@ -2,7 +2,6 @@
 
 namespace App\Transformers\Factbook;
 
-use App\Models\Country\FactBook\CountryEconomy;
 use League\Fractal\TransformerAbstract;
 
 class EconomyTransformer extends TransformerAbstract
