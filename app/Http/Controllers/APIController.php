@@ -242,7 +242,7 @@ class APIController extends Controller
 
         return response()->json(['error' => [
             'message'     => $message,
-            'status code' => $this->statusCode,
+            'status_code' => $this->statusCode,
             'action'      => $action ?? ''
         ]], $this->statusCode);
     }

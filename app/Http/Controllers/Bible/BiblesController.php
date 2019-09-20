@@ -31,14 +31,14 @@ class BiblesController extends APIController
      *          in="query",
      *          @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
      *          description="The iso code to filter results by. This will return results only in the language specified.
-                    For a complete list see the `iso` field in the `/languages` route",
+     *          For a complete list see the `iso` field in the `/languages` route",
      *     ),
      *     @OA\Parameter(
      *          name="organization_id",
      *          in="query",
      *          @OA\Schema(type="string"),
      *          description="The owning organization to return bibles for. For a complete list of ids see the route
-                    `/organizations`."
+     *              `/organizations`."
      *     ),
      *     @OA\Parameter(
      *          name="asset_id",
@@ -76,6 +76,12 @@ class BiblesController extends APIController
      *          @OA\Schema(type="string"),
      *          description="Will exclude bibles based upon the size type of their filesets"
      *     ),
+     *     @OA\Parameter(
+     *          name="show_all",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Will show all entries"
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -99,7 +105,8 @@ class BiblesController extends APIController
         $size               = checkParam('size');
         $size_exclude       = checkParam('size_exclude');
         $bitrate            = checkParam('bitrate');
-        $show_restricted    = checkParam('show_restricted');
+        $show_restricted    = checkParam('show_all|show_restricted');
+        $show_restricted = $show_restricted && $show_restricted != 'false';
 
         if ($media) {
             $media_types = BibleFilesetType::select('set_type_code')->get();
@@ -214,9 +221,11 @@ class BiblesController extends APIController
             return Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
                 'filesets' => function ($query) use ($access_control) {
                     $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
-                }])->find($id);
+                }
+            ])->find($id);
         });
-        if (!$bible) {
+        
+        if (!$bible || !sizeof($bible->filesets)) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id]));
         }
 
@@ -230,8 +239,8 @@ class BiblesController extends APIController
      *     tags={"Bibles"},
      *     summary="Returns a list of translated book names and general information for the given Bible",
      *     description="The actual list of books may vary from fileset to fileset. For example, a King James Fileset may
-               contain deuterocanonical books that are missing from one of it's sibling filesets nested within the bible
-               parent.",
+     *          contain deuterocanonical books that are missing from one of it's sibling filesets nested within the bible
+     *          parent.",
      *     operationId="v4_bible.books",
      *     @OA\Parameter(name="id",in="path",required=true,@OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(name="book_id",in="query", description="The book id. For a complete list see the `book_id` field in the `/bibles/books` route.",@OA\Schema(ref="#/components/schemas/Book/properties/id")),

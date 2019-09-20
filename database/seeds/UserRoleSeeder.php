@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Seeder;
 
-
 class UserRoleSeeder extends Seeder
 {
     /**

@@ -8,7 +8,6 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 
-
 class ValidateController extends APIController
 {
     public function index()

@@ -25,6 +25,7 @@
         "league/flysystem-aws-s3-v3": "~1.0",
         "maennchen/zipstream-php": "^0.5.1",
         "pusher/pusher-php-server": "^3.0",
+        "sentry/sentry-laravel": "^1.2",
         "soapbox/laravel-formatter": "^2.0",
         "socialiteproviders/generators": "^2.0",
         "socialiteproviders/google": "^3.0",
@@ -89,10 +90,10 @@
             "@php artisan package:discover"
         ],
 	  	"cs": [
-		  	"php-cs-fixer fix ./ --dry-run"
+		  	"php-cs-fixer fix --dry-run"
 	  	],
 	  	"cs-fix": [
-		  	"php-cs-fixer fix ./"
+		  	"php-cs-fixer fix"
 	  	]
     },
     "config": {

@@ -53,6 +53,12 @@ class LanguagesController extends APIController
      *          @OA\Schema(ref="#/components/schemas/Language/properties/name"),
      *          description="The include_alt_names"
      *     ),
+     *     @OA\Parameter(
+     *          name="show_all",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Will show all entries"
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/l10n"),
      *     @OA\Parameter(ref="#/components/parameters/sort_by"),
      *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
@@ -80,31 +86,38 @@ class LanguagesController extends APIController
         $code                  = checkParam('code|iso');
         $sort_by               = checkParam('sort_by') ?? 'name';
         $include_alt_names     = checkParam('include_alt_names');
-        $show_restricted       = checkParam('show_restricted');
         $asset_id              = checkParam('bucket_id|asset_id');
         $name                  = checkParam('name|language_name');
+        $show_restricted       = checkParam('show_all|show_restricted');
+        $show_restricted       = $show_restricted && $show_restricted != 'false';
 
         $access_control = $this->accessControl($this->key);
 
         $cache_string = 'v'.$this->v.'_l_'.$country.$code.$GLOBALS['i18n_id'].$sort_by.$name.
                         $show_restricted.$include_alt_names.$asset_id.$access_control->string;
 
-        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control) {
+        $order = $country ? 'country_population.population' : 'languages.name';
+        $order_dir = $country ? 'desc' : 'asc';
+        $select_country_population = $country ? 'country_population.population' : 'null';
+
+        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control, $order, $order_dir, $select_country_population) {
             $languages = Language::includeCurrentTranslation()
                 ->includeAutonymTranslation()
                 ->includeExtraLanguages($show_restricted, $access_control, $asset_id)
                 ->includeExtraLanguageTranslations($include_alt_names)
+                ->includeCountryPopulation($country)
                 ->filterableByCountry($country)
                 ->filterableByIsoCode($code)
                 ->filterableByName($name)
-                ->orderBy('languages.id')
+                ->orderBy($order, $order_dir)
                 ->select([
                     'languages.id',
                     'languages.glotto_id',
                     'languages.iso',
                     'languages.name as backup_name',
                     'current_translation.name as name',
-                    'autonym.name as autonym'
+                    'autonym.name as autonym',
+                    \DB::raw($select_country_population.' as country_population')
                 ])->withCount('bibles')->withCount('filesets')->get();
             return fractal($languages, new LanguageTransformer(), $this->serializer);
         });
@@ -142,9 +155,12 @@ class LanguagesController extends APIController
      */
     public function show($id)
     {
-        $cache_string = 'language:'. strtolower($id);
-        $language = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
-            $language = Language::where('id', $id)->orWhere('iso', $id)->first();
+        $access_control = $this->accessControl($this->key);
+        $cache_string = 'language:' . strtolower($id) . $access_control->string;
+        $language = \Cache::remember($cache_string, now()->addDay(), function () use ($id, $access_control) {
+            $language = Language::where('id', $id)->orWhere('iso', $id)
+                ->includeExtraLanguages(false, $access_control, false)
+                ->first();
             if (!$language) {
                 return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
             }

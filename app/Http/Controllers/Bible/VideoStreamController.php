@@ -10,7 +10,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use App\Traits\ArclightConnection;
 
-
 class VideoStreamController extends APIController
 {
     use CallsBucketsTrait;
