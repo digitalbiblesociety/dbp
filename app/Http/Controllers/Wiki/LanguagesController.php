@@ -7,6 +7,7 @@ use App\Http\Controllers\APIController;
 use App\Models\Language\Language;
 use App\Transformers\LanguageTransformer;
 use App\Traits\AccessControlAPI;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class LanguagesController extends APIController
 {
@@ -62,6 +63,8 @@ class LanguagesController extends APIController
      *     @OA\Parameter(ref="#/components/parameters/l10n"),
      *     @OA\Parameter(ref="#/components/parameters/sort_by"),
      *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
+     *     @OA\Parameter(ref="#/components/parameters/page"),
+     *     @OA\Parameter(ref="#/components/parameters/limit"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -90,17 +93,19 @@ class LanguagesController extends APIController
         $name                  = checkParam('name|language_name');
         $show_restricted       = checkParam('show_all|show_restricted');
         $show_restricted       = $show_restricted && $show_restricted != 'false';
+        $limit      = checkParam('limit');
+        $page       = checkParam('page');
 
         $access_control = $this->accessControl($this->key);
 
-        $cache_string = 'v'.$this->v.'_l_'.$country.$code.$GLOBALS['i18n_id'].$sort_by.$name.
-                        $show_restricted.$include_alt_names.$asset_id.$access_control->string;
+        $cache_string = 'v' . $this->v . '_l_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $name .
+            $show_restricted . $include_alt_names . $asset_id . $access_control->string . $limit . $page;
 
         $order = $country ? 'country_population.population' : 'languages.name';
         $order_dir = $country ? 'desc' : 'asc';
         $select_country_population = $country ? 'country_population.population' : 'null';
 
-        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control, $order, $order_dir, $select_country_population) {
+        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control, $order, $order_dir, $select_country_population, $limit, $page) {
             $languages = Language::includeCurrentTranslation()
                 ->includeAutonymTranslation()
                 ->includeExtraLanguages($show_restricted, $access_control, $asset_id)
@@ -117,8 +122,15 @@ class LanguagesController extends APIController
                     'languages.name as backup_name',
                     'current_translation.name as name',
                     'autonym.name as autonym',
-                    \DB::raw($select_country_population.' as country_population')
-                ])->withCount('bibles')->withCount('filesets')->get();
+                    \DB::raw($select_country_population . ' as country_population')
+                ])->withCount('bibles')->withCount('filesets');
+
+            if ($page) {
+                $languages  = $languages->paginate($limit);
+                return $this->reply(fractal($languages->getCollection(), LanguageTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($languages)));
+            }
+
+            $languages = $languages->limit($limit)->get();
             return fractal($languages, new LanguageTransformer(), $this->serializer);
         });
 
@@ -184,7 +196,7 @@ class LanguagesController extends APIController
 
     public function valid($id)
     {
-        $cache_string = 'language_single_valid:'. strtolower($id);
+        $cache_string = 'language_single_valid:' . strtolower($id);
         $language = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
             return Language::where('iso', $id)->exists();
         });

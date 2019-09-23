@@ -22,6 +22,7 @@ use App\Models\User\Study\Highlight;
 use App\Models\User\Study\Note;
 use App\Transformers\UserBookmarksTransformer;
 use App\Transformers\UserHighlightsTransformer;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformers\UserNotesTransformer;
 use Illuminate\Http\Request;
 
@@ -111,8 +112,8 @@ class TextController extends APIController
             return $access_blocked;
         }
 
-        $cache_string = strtolower('bible_text:'.$asset_id.':'.$fileset_id.':'.$book_id.':'.$chapter.':'.$verse_start.'_'.$verse_end);
-        $verses = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset,$bible,$book,$chapter,$verse_start,$verse_end) {
+        $cache_string = strtolower('bible_text:' . $asset_id . ':' . $fileset_id . ':' . $book_id . ':' . $chapter . ':' . $verse_start . '_' . $verse_end);
+        $verses = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset, $bible, $book, $chapter, $verse_start, $verse_end) {
             return BibleVerse::withVernacularMetaData($bible)
                 ->where('hash_id', $fileset->hash_id)
                 ->where('bible_verses.book_id', $book->id)
@@ -224,6 +225,7 @@ class TextController extends APIController
      *     ),
      *     @OA\Parameter(name="limit",  in="query", description="The number of search results to return",
      *          @OA\Schema(type="integer",default=15)),
+     *     @OA\Parameter(ref="#/components/parameters/page"),
      *     @OA\Parameter(name="books",  in="query", description="The usfm book ids to search through seperated by a comma",
      *          @OA\Schema(type="string",example="GEN,EXO,MAT")),
      *     @OA\Response(
@@ -247,10 +249,11 @@ class TextController extends APIController
 
         $query      = checkParam('query', true);
         $fileset_id = checkParam('fileset_id|dam_id', true);
-        $limit      = checkParam('limit') ?? 15;
         $book_id    = checkParam('book|book_id|books');
         $asset_id   = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
         $relevance_order   = checkParam('relevance_order');
+        $limit      = checkParam('limit') ?? 15;
+        $page       = checkParam('page');
 
         $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, 'text_plain')->first();
         if (!$fileset) {
@@ -279,9 +282,13 @@ class TextController extends APIController
             ])
             ->unless($relevance_order, function ($query) {
                 $query->orderByRaw('IFNULL(books.testament_order, books.protestant_order), bible_verses.chapter, bible_verses.verse_start');
-            })
-            ->limit($limit)->get();
+            });
 
+        if ($page) {
+            $verses  = $verses->paginate($limit);
+            return $this->reply(fractal($verses->getCollection(), TextTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($verses)));
+        }
+        $verses  = $verses->limit($limit)->get();
         return $this->reply(fractal($verses, new TextTransformer(), $this->serializer));
     }
 
