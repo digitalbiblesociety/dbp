@@ -199,8 +199,8 @@ Route::name('v4_resources.index')->get('resources',                             
 Route::name('v4_resources.show')->get('resources/{resource_id}',                   'Organization\ResourcesController@show');
 
 Route::name('v4_video_jesus_film_languages')->get('arclight/jesus-film/languages', 'Bible\VideoStreamController@jesusFilmsLanguages');
-Route::name('v4_video_jesus_film_language')->get('arclight/jesus-film/chapters',   'Bible\VideoStreamController@jesusFilmChapters');
-Route::name('v4_video_jesus_film_language')->get('arclight/jesus-film',            'Bible\VideoStreamController@jesusFilmFile');
+Route::name('v4_video_jesus_film_chapters')->get('arclight/jesus-film/chapters',   'Bible\VideoStreamController@jesusFilmChapters');
+Route::name('v4_video_jesus_film_file')->get('arclight/jesus-film',                'Bible\VideoStreamController@jesusFilmFile');
 
 // VERSION 4 | API METADATA
 Route::name('v4_api.versions')->get('/api/versions',                               'HomeController@versions');
