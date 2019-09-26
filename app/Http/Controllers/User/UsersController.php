@@ -8,6 +8,7 @@ use App\Mail\ProjectVerificationEmail;
 use App\Models\User\Project;
 use App\Models\User\ProjectMember;
 use App\Models\User\Account;
+use App\Models\User\APIToken;
 use App\Models\User\Role;
 use App\Models\User\User;
 use App\Models\User\Key;
@@ -197,9 +198,10 @@ class UsersController extends APIController
         }
 
         $token = Str::random(60);
-        $user->forceFill([
+        APIToken::create([
+            'user_id'   => $user->id,
             'api_token' => hash('sha256', $token),
-        ])->save();
+        ]);
 
         $user->api_token = $token;
 
@@ -245,6 +247,9 @@ class UsersController extends APIController
         $user->forceFill([
             'api_token' => null,
         ])->save();
+
+        $api_token = APIToken::where('api_token', hash('sha256', $request->api_token))->first();
+        $api_token->delete();
 
         return $this->reply('User logged out');
     }
@@ -343,9 +348,11 @@ class UsersController extends APIController
         }
 
         $token = Str::random(60);
-        $user->forceFill([
+
+        APIToken::create([
+            'user_id'   => $user->id,
             'api_token' => hash('sha256', $token),
-        ])->save();
+        ]);
 
         $user->api_token = $token;
 

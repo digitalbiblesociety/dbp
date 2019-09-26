@@ -39,7 +39,7 @@ class APIToken
      */
     public function handle($request, Closure $next, $type = '')
     {
-        $guard = 'api';
+        $guard = 'tokens';
 
         if ($type === 'check') {
             if (!$this->auth->guard($guard)->check()) {
