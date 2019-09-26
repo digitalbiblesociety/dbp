@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Bible;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFilesetType;
-use App\Models\Language\Language;
 use App\Models\Organization\Organization;
 use App\Transformers\BibleTransformer;
 use App\Transformers\BooksTransformer;
 use App\Traits\AccessControlAPI;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformers\Serializers\DataArraySerializer;
 use App\Http\Controllers\APIController;
 
@@ -82,6 +82,8 @@ class BiblesController extends APIController
      *          @OA\Schema(type="boolean"),
      *          description="Will show all entries"
      *     ),
+     *     @OA\Parameter(ref="#/components/parameters/page"),
+     *     @OA\Parameter(ref="#/components/parameters/limit"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -107,6 +109,8 @@ class BiblesController extends APIController
         $bitrate            = checkParam('bitrate');
         $show_restricted    = checkParam('show_all|show_restricted');
         $show_restricted = $show_restricted && $show_restricted != 'false';
+        $limit      = checkParam('limit');
+        $page       = checkParam('page');
 
         if ($media) {
             $media_types = BibleFilesetType::select('set_type_code')->get();
@@ -118,18 +122,18 @@ class BiblesController extends APIController
 
         $access_control = (!$show_restricted) ? $this->accessControl($this->key) : (object) ['string' => null, 'hashes' => null];
         $organization = $organization_id ? Organization::where('id', $organization_id)->orWhere('slug', $organization_id)->first() : null;
-        $cache_string = strtolower('bibles:'.$language_code.$organization.$country.$asset_id.$access_control->string.$media.$media_exclude.$size.$size_exclude.$bitrate);
-        $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude, $bitrate, $show_restricted) {
+        $cache_string = strtolower('bibles:' . $language_code . $organization . $country . $asset_id . $access_control->string . $media . $media_exclude . $size . $size_exclude . $bitrate . $limit . $page);
+        $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude, $bitrate, $show_restricted, $limit, $page) {
             $bibles = Bible::when(!$show_restricted, function ($query) use ($access_control, $asset_id, $media, $media_exclude, $size, $size_exclude, $bitrate) {
                 $query->withRequiredFilesets([
-                        'access_control' => $access_control,
-                        'asset_id'       => $asset_id,
-                        'media'          => $media,
-                        'media_exclude'  => $media_exclude,
-                        'size'           => $size,
-                        'size_exclude'   => $size_exclude,
-                        'bitrate'        => $bitrate
-                    ]);
+                    'access_control' => $access_control,
+                    'asset_id'       => $asset_id,
+                    'media'          => $media,
+                    'media_exclude'  => $media_exclude,
+                    'size'           => $size,
+                    'size_exclude'   => $size_exclude,
+                    'bitrate'        => $bitrate
+                ]);
             })
                 ->leftJoin('bible_translations as ver_title', function ($join) {
                     $join->on('ver_title.bible_id', '=', 'bibles.id')->where('ver_title.vernacular', 1);
@@ -145,12 +149,12 @@ class BiblesController extends APIController
                 })
                 ->leftJoin('language_translations as language_autonym', function ($join) {
                     $join->on('language_autonym.language_source_id', '=', 'bibles.language_id')
-                         ->on('language_autonym.language_translation_id', '=', 'bibles.language_id')
-                         ->orderBy('priority', 'desc');
+                        ->on('language_autonym.language_translation_id', '=', 'bibles.language_id')
+                        ->orderBy('priority', 'desc');
                 })
                 ->leftJoin('language_translations as language_current', function ($join) {
                     $join->on('language_current.language_source_id', '=', 'bibles.language_id')
-                         ->orderBy('priority', 'desc');
+                        ->orderBy('priority', 'desc');
                     if (isset($GLOBALS['i18n_id'])) {
                         $join->where('language_current.language_translation_id', '=', $GLOBALS['i18n_id']);
                     }
@@ -170,7 +174,7 @@ class BiblesController extends APIController
                 })
                 ->select(
                     \DB::raw(
-                       'MIN(current_title.name) as ctitle,
+                        'MIN(current_title.name) as ctitle,
                         MIN(ver_title.name) as vtitle,
                         MIN(bibles.language_id) as language_id,
                         MIN(languages.iso) as iso,
@@ -181,8 +185,14 @@ class BiblesController extends APIController
                         MIN(bibles.id) as id'
                     )
                 )
-                ->orderBy('bibles.priority', 'desc')->groupBy('bibles.id')->get();
+                ->orderBy('bibles.priority', 'desc')->groupBy('bibles.id');
 
+            if ($page) {
+                $bibles  = $bibles->paginate($limit);
+                return $this->reply(fractal($bibles->getCollection(), BibleTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($bibles)));
+            }
+            
+            $bibles = $bibles->limit($limit)->get();
             return fractal($bibles, new BibleTransformer(), new DataArraySerializer());
         });
 
