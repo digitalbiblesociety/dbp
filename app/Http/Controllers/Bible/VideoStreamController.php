@@ -35,16 +35,16 @@ class VideoStreamController extends APIController
 
         $file = BibleFile::with('videoResolution')->where('hash_id', $fileset->hash_id)->where('id', $file_id)->first();
         if (!$file) {
-            return $this->replyWithError(trans('api.bible_file_errors_404', ['id'=> $file_id]));
+            return $this->replyWithError(trans('api.bible_file_errors_404', ['id' => $file_id]));
         }
 
         $current_file = '#EXTM3U';
         foreach ($file->videoResolution as $resolution) {
-            $current_file .= "\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=$resolution->bandwidth,RESOLUTION=".$resolution->resolution_width."x$resolution->resolution_height,CODECS=\"$resolution->codec\"\n$resolution->file_name" . '?key=' . $this->key . '&v=4&asset_id='.$asset_id;
+            $current_file .= "\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=$resolution->bandwidth,RESOLUTION=" . $resolution->resolution_width . "x$resolution->resolution_height,CODECS=\"$resolution->codec\"\n$resolution->file_name" . '?key=' . $this->key . '&v=4&asset_id=' . $asset_id;
         }
 
         return response($current_file, 200, [
-            'Content-Disposition' => 'attachment; filename="'.$file->file_name.'"',
+            'Content-Disposition' => 'attachment; filename="' . $file->file_name . '"',
             'Content-Type'        => 'application/x-mpegURL'
         ]);
     }
@@ -71,7 +71,7 @@ class VideoStreamController extends APIController
 
         $file = BibleFile::with('videoResolution.transportStream')->whereId($file_id)->first();
         if (!$file) {
-            return $this->replyWithError(trans('api.bible_file_errors_404', ['id'=> $file_id]));
+            return $this->replyWithError(trans('api.bible_file_errors_404', ['id' => $file_id]));
         }
 
         $bible_path    = $fileset->bible->first() !== null ? $fileset->bible->first()->id . '/' : '';
@@ -95,7 +95,7 @@ class VideoStreamController extends APIController
         $current_file .= "\n#EXT-X-ENDLIST";
 
         return response($current_file, 200, [
-            'Content-Disposition' => 'attachment; filename="'.$file->file_name.'"',
+            'Content-Disposition' => 'attachment; filename="' . $file->file_name . '"',
             'Content-Type'        => 'application/x-mpegURL'
         ]);
     }
@@ -107,15 +107,70 @@ class VideoStreamController extends APIController
 
     public function jesusFilmChapters()
     {
-        $arclight_id = checkParam('arclight_id', true);
-        $component = $this->fetchArclight('media-components/1_jf-0-0/languages/'.$arclight_id);
+        $iso = checkParam('iso');
+        if ($iso) {
+            $cache_string =  'arclight_languages';
+            $languages = \Cache::remember($cache_string, now()->addDay(), function () {
+                $languages = collect($this->fetchArclight('media-languages', false)->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
+                return $languages;
+            });
+            if (!isset($languages[$iso])) {
+                return $this->setStatusCode(404)->replyWithError('No language could be found for the iso code specified');
+            }
+            $arclight_id = $languages[$iso];
+        } else {
+            $arclight_id = checkParam('arclight_id', true);
+        }
+
+        $cache_string =  'arclight_chapters_' . $arclight_id;
+
+        $component = \Cache::remember($cache_string, now()->addDay(), function () use ($arclight_id) {
+            $component = $this->fetchArclight('media-components/1_jf-0-0/languages/' . $arclight_id);
+            return $component;
+        });
+
+        $cache_string =  'arclight_chapters_language_tag' . $arclight_id;
+
+        $media_languages = \Cache::remember($cache_string, now()->addDay(), function () use ($arclight_id) {
+            $media_languages = $this->fetchArclight('media-languages/' . $arclight_id);
+            return $media_languages;
+        });
+
+        $cache_string =  'arclight_chapters_metadata' . $arclight_id;
+
+        $metadataLanguageTag = isset($media_languages->bcp47) ? $media_languages->bcp47 : '';
+
+        $metadata = \Cache::remember($cache_string, now()->addDay(), function () use ($arclight_id, $metadataLanguageTag) {
+            $media_components = $this->fetchArclight('media-components', $arclight_id, true, 'metadataLanguageTags=' . $metadataLanguageTag . ',en');
+            $metadata = collect($media_components->mediaComponents)
+                ->map(function ($component) use ($arclight_id) {
+                    return [
+                        'mediaComponentId' => $component->mediaComponentId,
+                        'meta' => [
+                            'thumbnail' => $component->imageUrls->thumbnail,
+                            'thumbnail_high' => $component->imageUrls->mobileCinematicHigh,
+                            'title' => $component->title,
+                            'shortDescription' => $component->shortDescription,
+                            'longDescription' => $component->longDescription,
+                            'file_name' => route('v4_video_jesus_film_file', [
+                                'chapter_id'  => $component->mediaComponentId,
+                                'arclight_id' => $arclight_id,
+                                'v'           => $this->v,
+                                'key'         => $this->key
+                            ])
+                        ]
+                    ];
+                })->pluck('meta', 'mediaComponentId');
+            return $metadata;
+        });
 
         return $this->reply([
             'verses'                   => $this->getIdReferences($component->mediaComponentId),
+            'meta'                     => $metadata,
             'duration_in_milliseconds' => $component->lengthInMilliseconds,
-            'file_name' => route('v2_api_jesusFilm_stream', [
-                'id'          => $component->mediaComponentId,
-                'language_id' => $arclight_id,
+            'file_name' => route('v4_video_jesus_film_file', [
+                'chapter_id'  => $component->mediaComponentId,
+                'arclight_id' => $arclight_id,
                 'v'           => $this->v,
                 'key'         => $this->key
             ])
@@ -127,9 +182,9 @@ class VideoStreamController extends APIController
         $language_id  = checkParam('arclight_id', true);
         $chapter_id   = checkParam('chapter_id') ?? '1_jf-0-0';
 
-        $cache_string = 'arclight_media_components_'.$chapter_id.$language_id;
+        $cache_string = 'arclight_media_components_' . $chapter_id . $language_id;
         $stream_file  = \Cache::remember($cache_string, now()->addDay(), function () use ($chapter_id, $language_id) {
-            $media_components = $this->fetchArclight('media-components/'.$chapter_id.'/languages/'.$language_id, $language_id, false);
+            $media_components = $this->fetchArclight('media-components/' . $chapter_id . '/languages/' . $language_id, $language_id, false);
             return file_get_contents($media_components->streamingUrls->m3u8[0]->url);
         });
 
