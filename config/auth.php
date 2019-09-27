@@ -46,6 +46,11 @@ return [
             'provider' => 'users',
             'hash' => true,
         ],
+
+        'tokens' => [
+            'driver' => 'tokens',
+            'provider' => 'users',
+        ],
     ],
 
     /*
