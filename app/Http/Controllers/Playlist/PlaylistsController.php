@@ -585,7 +585,7 @@ class PlaylistsController extends APIController
      * )
      */
 
-    private function getPlaylist($user, $playlist_id)
+    public function getPlaylist($user, $playlist_id)
     {
         $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
         $playlist = Playlist::with('items')

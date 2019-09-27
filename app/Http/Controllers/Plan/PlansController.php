@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Plan;
 
 use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
+use App\Http\Controllers\Playlist\PlaylistsController;
 use App\Models\Plan\Plan;
 use App\Traits\CheckProjectMembership;
 use App\Models\Plan\PlanDay;
@@ -190,6 +191,12 @@ class PlansController extends APIController
      *          @OA\Schema(ref="#/components/schemas/User/properties/id"),
      *          description="The plan id"
      *     ),
+     *     @OA\Parameter(
+     *          name="show_details",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Give full details of the plan"
+     *     ),
      *     @OA\Response(response=200, ref="#/components/responses/plan")
      * )
      *
@@ -209,10 +216,19 @@ class PlansController extends APIController
         }
 
         $plan = $this->getPlan($plan_id, $user);
-        ;
 
         if (!$plan) {
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+        }
+
+        $show_details = checkParam('show_details');
+        $show_details = $show_details && $show_details != 'false';
+
+        $playlist_controller = new PlaylistsController();
+        if ($show_details) {
+            foreach ($plan->days as $day) {
+                $day->playlist = $playlist_controller->getPlaylist($user, $day->playlist_id);
+            }
         }
 
         return $this->reply($plan);
