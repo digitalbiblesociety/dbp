@@ -105,9 +105,6 @@ class StreamController extends APIController
         }
         $current_file .= "\n#EXT-X-ENDLIST";
 
-        echo $current_file;
-        die();
-
         return response($current_file, 200, [
             'Content-Disposition' => 'attachment; filename="' . $file->file_name . '"',
             'Content-Type'        => 'application/x-mpegURL'
