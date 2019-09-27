@@ -332,9 +332,9 @@ class BibleFileSetsController extends APIController
      */
     private function generateFilesetChapters($fileset, $fileset_chapters, $bible, $asset_id)
     {
-        if ($fileset->set_type_code === 'video_stream') {
+        if ($fileset->set_type_code === 'video_stream' || $fileset->set_type_code === 'audio_stream') {
             foreach ($fileset_chapters as $key => $fileSet_chapter) {
-                $fileset_chapters[$key]->file_name = route('v4_video_stream', ['fileset_id' => $fileset->id, 'file_id' => $fileSet_chapter->id]);
+                $fileset_chapters[$key]->file_name = route('v4_media_stream', ['fileset_id' => $fileset->id, 'file_id' => $fileSet_chapter->id]);
             }
         }
 
