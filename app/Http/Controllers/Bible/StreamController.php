@@ -86,7 +86,6 @@ class StreamController extends APIController
         }
 
         $bible_path    = $fileset->bible->first() !== null ? $fileset->bible->first()->id . '/' : '';
-        $current_file = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-ALLOW-CACHE:YES\n#EXT-X-TARGETDURATION:4";
 
         $currentBandwidth = $file->streamBandwidth->where('file_name', $file_name)->first();
         if (!$currentBandwidth) {
@@ -98,6 +97,8 @@ class StreamController extends APIController
         } catch (\Exception $e) {
             Log::error($e);
         }
+
+        $current_file = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-ALLOW-CACHE:YES\n#EXT-X-TARGETDURATION:" . ceil($currentBandwidth->transportStream->max('runtime'));
 
         foreach ($currentBandwidth->transportStream as $stream) {
             $current_file_path = $this->signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $stream->file_name, $fileset->asset_id, $transaction_id);
