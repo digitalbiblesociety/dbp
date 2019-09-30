@@ -77,8 +77,8 @@ Route::name('v4_access_groups.update')->put('access/groups/{group_id}',         
 Route::name('v4_access_groups.destroy')->delete('access/groups/{group_id}',        'User\AccessGroupController@destroy');
 
 // VERSION 4 | Stream
-Route::name('v4_video_stream')->get('bible/filesets/{fileset_id}/{file_id}/playlist.m3u8',    'Bible\VideoStreamController@index');
-Route::name('v4_video_stream_ts')->get('bible/filesets/{fileset_id}/{file_id}/{file_name}',   'Bible\VideoStreamController@transportStream');
+Route::name('v4_media_stream')->get('bible/filesets/{fileset_id}/{file_id}/playlist.m3u8',    'Bible\StreamController@index');
+Route::name('v4_media_stream_ts')->get('bible/filesets/{fileset_id}/{file_id}/{file_name}',   'Bible\StreamController@transportStream');
 
 // VERSION 4 | Bible
 Route::name('v4_bible.books')->get('bibles/{bible_id}/book/{book?}',               'Bible\BiblesController@books');

@@ -233,8 +233,8 @@ class BibleFile extends Model
         return $this->hasOne(BibleFileTitle::class, 'file_id', 'id');
     }
 
-    public function videoResolution()
+    public function streamBandwidth()
     {
-        return $this->hasMany(VideoResolution::class);
+        return $this->hasMany(StreamBandwidth::class);
     }
 }
