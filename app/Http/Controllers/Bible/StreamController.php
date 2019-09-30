@@ -42,7 +42,10 @@ class StreamController extends APIController
             if ($bandwidth->resolution_width) {
                 $current_file .= ',RESOLUTION=' . $bandwidth->resolution_width . "x$bandwidth->resolution_height";
             }
-            $current_file .= ",CODECS=\"$bandwidth->codec\"\n$bandwidth->file_name" . '?key=' . $this->key . '&v=4&asset_id=' . $asset_id;
+            if ($bandwidth->codec) {
+                $current_file .= ",CODECS=\"$bandwidth->codec\"";
+            }
+            $current_file .= "\n$bandwidth->file_name" . '?key=' . $this->key . '&v=4&asset_id=' . $asset_id;
         }
 
         return response($current_file, 200, [
