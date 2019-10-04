@@ -91,7 +91,7 @@ class UserPlan extends Model
                 return $completed;
             });
         ;
-        $this->attributes['percentage_completed'] = $completed_per_day->sum('total_items_completed') / $completed_per_day->sum('total_items') * 100;
+        $this->attributes['percentage_completed'] = $completed_per_day->sum('total_items') ? $completed_per_day->sum('total_items_completed') / $completed_per_day->sum('total_items') * 100 : 0;
         return $this;
     }
 

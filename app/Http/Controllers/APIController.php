@@ -38,7 +38,7 @@ class APIController extends Controller
      * )
      *
      * @OA\Server(
-     *     url="https://api.dbp.test",
+     *     url="https://dbp.test/api",
      *     description="Development server",
      *     @OA\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
      * )
@@ -137,8 +137,8 @@ class APIController extends Controller
     public function __construct()
     {
         $url           = explode('.', url()->current());
-        $subdomain     = array_shift($url);
-        if (Str::contains($subdomain, 'api')) {
+        $path     = array_pop($url);
+        if (Str::contains($path, 'api')) {
             $this->api = true;
             $this->v   = (int) checkParam('v', true, $this->preset_v);
             $this->key = checkParam('key', true);
