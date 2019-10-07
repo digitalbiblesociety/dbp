@@ -149,7 +149,7 @@ class Highlight extends Model
 
     public function book()
     {
-        return $this->hasOne(BibleBook::class, 'book_id', 'book_id');
+        return $this->hasOne(BibleBook::class, 'book_id', 'book_id')->where('bible_id', $this['bible_id']);
     }
 
     public function tags()
