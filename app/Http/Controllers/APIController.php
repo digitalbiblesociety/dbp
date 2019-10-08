@@ -136,9 +136,8 @@ class APIController extends Controller
 
     public function __construct()
     {
-        $url           = explode('.', url()->current());
-        $path     = array_pop($url);
-        if (Str::contains($path, 'api')) {
+        $url = url()->current();
+        if (Str::contains($url, '/api')) {
             $this->api = true;
             $this->v   = (int) checkParam('v', true, $this->preset_v);
             $this->key = checkParam('key', true);
