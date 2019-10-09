@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $chapter
  * @property string|null $highlighted_color
  * @property int $verse_start
+ * @property int $verse_end
  * @property string|null $project_id
  * @property int $highlight_start
  * @property int $highlighted_words
@@ -95,11 +96,18 @@ class Highlight extends Model
      *
      */
     protected $highlighted_color;
+
     /**
      *
      * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
      */
     protected $verse_start;
+
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_end")
+     */
+    protected $verse_end;
 
     /**
      *
@@ -162,6 +170,7 @@ class Highlight extends Model
         $highlight = $this->toArray();
         $chapter = $highlight['chapter'];
         $verse_start = $highlight['verse_start'];
+        $verse_end = $highlight['verse_end'] ?? $verse_start;
         $bible = Bible::where('id', $highlight['bible_id'])->first();
         $fileset = BibleFileset::join('bible_fileset_connections as connection', 'connection.hash_id', 'bible_filesets.hash_id')
         ->where('bible_filesets.set_type_code', 'text_plain')->where('connection.bible_id', $bible->id)->first();
@@ -171,7 +180,8 @@ class Highlight extends Model
         $verses = BibleVerse::withVernacularMetaData($bible)
         ->where('hash_id', $fileset->hash_id)
         ->where('bible_verses.book_id', $highlight['book_id'])
-        ->where('verse_start', $verse_start)
+        ->where('verse_start', '>=',$verse_start)
+        ->where('verse_end', '<=',$verse_end)
         ->where('chapter', $chapter)
         ->orderBy('verse_start')
         ->select([
