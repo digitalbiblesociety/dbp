@@ -143,7 +143,8 @@ Route::name('v4_user.destroy')->middleware('APIToken:check')->delete('users',   
 Route::name('v4_user.login')->post('/login',                                       'User\UsersController@login');
 Route::name('v4_user.oAuth')->get('/login/{driver}',                               'User\SocialController@redirect');
 Route::name('v4_user.oAuthCallback')->get('/login/{driver}/callback',              'User\SocialController@callback');
-Route::name('v4_user.password_reset')->post('users/password/reset/{token?}',       'User\PasswordsController@validatePasswordReset');
+Route::name('v4_user.password_reset')
+    ->middleware('APIToken')->post('users/password/reset/{token?}',                'User\PasswordsController@validatePasswordReset');
 Route::name('v4_user.password_email')->post('users/password/email',                'User\PasswordsController@triggerPasswordResetEmail');
 Route::name('v4_user.logout')
     ->middleware('APIToken:check')->post('/logout',                                'User\UsersController@logout');
