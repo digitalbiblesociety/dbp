@@ -38,7 +38,7 @@ class HighlightTransformer extends TransformerAbstract
                 'chapter_id'       => (string) $highlight->chapter,
                 'chapter_title'    => 'Chapter '.$highlight->chapter,
                 'verse_id'         => (string) $highlight->verse_start,
-                'verse_text'       => '',
+                'verse_text'       => $highlight->verse_text,
                 'paragraph_number' => '1'
             ]]
         ];
