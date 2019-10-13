@@ -523,11 +523,87 @@ class UsersController extends APIController
             'email'  => $user->id . '@deleted.com',
             'password'  => Str::random(40),
         ])->save();
-        ;
 
         $user->delete();
 
         return $this->reply('User successfully deleted');
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/token/validate",
+     *     tags={"Users"},
+     *     summary="Validate user api_token ",
+     *     operationId="v4_api_token.validate",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="renew_token",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Renew the user token"
+     *     ),
+     *     @OA\Parameter(
+     *          name="user_details",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Retrieve user details"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean"))),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean"))),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean"))),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean"))),
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="unsuccessful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean", example=false))),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean", example=false))),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean", example=false))),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean", example=false))),
+     *     )
+     * )
+     * @param Request $request
+     *
+     * @return mixed
+     */
+    public function validateApiToken(Request $request)
+    {
+        $user = $request->user();
+        if (empty($user)) {
+            return $this->setStatusCode(401)->reply(['valid' => false]);
+        }
+
+        $user_details = checkParam('user_details');
+        $user_details = $user_details && $user_details != 'false';
+
+        $renew_token = checkParam('renew_token');
+        $renew_token = $renew_token && $renew_token != 'false';
+
+        $response = ['valid' => true];
+        $api_token = checkParam('api_token');
+
+        if ($renew_token) {
+            $api_token = APIToken::where('api_token', hash('sha256', $api_token))->first();
+            $api_token->delete();
+            $token = Str::random(60);
+            APIToken::create([
+                'user_id'   => $user->id,
+                'api_token' => hash('sha256', $token),
+            ]);
+            $user->api_token = $token;
+            $response['api_token'] = $token;
+        } else {
+            $user->api_token = $api_token;
+        }
+
+        if ($user_details) {
+            $response['user'] = $user;
+        }
+
+        return $this->reply($response);
     }
 
     public function verify($token)
