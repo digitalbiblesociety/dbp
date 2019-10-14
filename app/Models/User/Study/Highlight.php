@@ -180,8 +180,8 @@ class Highlight extends Model
         $verses = BibleVerse::withVernacularMetaData($bible)
         ->where('hash_id', $fileset->hash_id)
         ->where('bible_verses.book_id', $highlight['book_id'])
-        ->where('verse_start', '>=',$verse_start)
-        ->where('verse_end', '<=',$verse_end)
+        ->where('verse_start', '>=', $verse_start)
+        ->where('verse_end', '<=', $verse_end)
         ->where('chapter', $chapter)
         ->orderBy('verse_start')
         ->select([
