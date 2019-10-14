@@ -304,6 +304,7 @@ class UsersControllerV2 extends APIController
                 })->select([
                     'user_highlights.id',
                     'user_highlights.bible_id',
+                    'user_highlights.book_id',
                     'user_highlights.user_id',
                     'user_highlights.chapter',
                     'user_highlights.verse_start',
