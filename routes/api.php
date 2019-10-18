@@ -115,7 +115,7 @@ Route::name('v4_lexicon_index')->get('lexicons',                                
 
 // VERSION 4 | Timestamps
 Route::name('v4_timestamps')->get('timestamps',                                    'Bible\AudioController@availableTimestamps');
-Route::name('v4_timestamps.tag')->get('timestamps/search',                        'Bible\AudioController@timestampsByTag');
+Route::name('v4_timestamps.tag')->get('timestamps/search',                         'Bible\AudioController@timestampsByTag');
 Route::name('v4_timestamps.verse')->get('timestamps/{id}/{book}/{chapter}',        'Bible\AudioController@timestampsByReference');
 
 // VERSION 4 | Countries
@@ -147,6 +147,8 @@ Route::name('v4_user.password_reset')->post('users/password/reset/{token?}',    
 Route::name('v4_user.password_email')->post('users/password/email',                'User\PasswordsController@triggerPasswordResetEmail');
 Route::name('v4_user.logout')
     ->middleware('APIToken:check')->post('/logout',                                'User\UsersController@logout');
+Route::name('v4_api_token.validate')
+    ->middleware('APIToken')->post('/token/validate',                               'User\UsersController@validateApiToken');
 
 // VERSION 4 | Accounts
 Route::name('v4_user_accounts.index')->get('accounts',                             'User\AccountsController@index');
