@@ -87,6 +87,7 @@ Route::name('v4_bible.links')->get('bibles/links',                              
 Route::name('v4_bible_books_all')->get('bibles/books/',                            'Bible\BooksController@index');
 Route::name('v4_bible.one')->get('bibles/{bible_id}',                              'Bible\BiblesController@show');
 Route::name('v4_bible.all')->get('bibles',                                         'Bible\BiblesController@index');
+Route::name('v4_bible.defaults')->get('bibles/defaults/types',                           'Bible\BiblesController@defaults');
 
 // VERSION 4 | Filesets
 Route::name('v4_filesets.types')->get('bibles/filesets/media/types',               'Bible\BibleFileSetsController@mediaTypes');

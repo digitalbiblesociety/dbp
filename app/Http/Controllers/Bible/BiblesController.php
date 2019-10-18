@@ -12,6 +12,7 @@ use App\Traits\AccessControlAPI;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformers\Serializers\DataArraySerializer;
 use App\Http\Controllers\APIController;
+use App\Models\Bible\BibleDefault;
 
 class BiblesController extends APIController
 {
@@ -295,5 +296,61 @@ class BiblesController extends APIController
             })->flatten();
 
         return $this->reply(fractal($books, new BooksTransformer));
+    }
+
+
+    /**
+     * @OA\GET(
+     *     path="/bibles/defaults/types",
+     *     tags={"Bibles"},
+     *     summary="Available bible defaults per language code",
+     *     description="Available bible defaults per language code",
+     *     operationId="v4_bible.defaults",
+     *     @OA\Parameter(
+     *          name="language_code",
+     *          in="query",
+     *          @OA\Schema(type="string",example="en"),
+     *          description="The language code to filter results by"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bibles_defaults")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bibles_defaults")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bibles_defaults")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_bibles_defaults"))
+     *     )
+     * )
+     *
+     * @OA\Schema (
+     *    type="array",
+     *    schema="v4_bibles_defaults",
+     *    description="The bible defaults",
+     *    title="v4_bibles_defaults",
+     *    @OA\Xml(name="v4_bibles_defaults"),
+     *    @OA\Items(
+     *          @OA\Property(property="video",             ref="#/components/schemas/BibleFileset/properties/id"),
+     *          @OA\Property(property="audio",             ref="#/components/schemas/BibleFileset/properties/id"),
+     *          @OA\Property(property="language_code",     type="string"),
+     *     )
+     *   )
+     * )
+     *
+     */
+    public function defaults()
+    {
+        $language_code = checkParam('language_code');
+        $defaults = BibleDefault::when($language_code, function ($q) use ($language_code) {
+            $q->where('language_code', $language_code);
+        })
+        ->get();
+        $result = [];
+        foreach ($defaults as $default) {
+            if (!isset($result[$default->language_code])) {
+                $result[$default->language_code] = [];
+            }
+            $result[$default->language_code][$default->type] = $default->bible_id;
+        }
+        return $this->reply($result);
     }
 }
