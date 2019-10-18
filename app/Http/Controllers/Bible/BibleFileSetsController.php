@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Bible;
 
+use Illuminate\Support\Str;
 use App\Models\Organization\Asset;
 use App\Traits\AccessControlAPI;
 use App\Traits\CallsBucketsTrait;
@@ -139,6 +140,7 @@ class BibleFileSetsController extends APIController
                 $fileset_type = 'text';
                 break;
         }
+
         return $fileset_type . '/' . ($bible ? $bible->id . '/' : '') . $fileset->id . '/' . $fileset_chapter->file_name;
     }
 
@@ -333,6 +335,8 @@ class BibleFileSetsController extends APIController
     private function generateFilesetChapters($fileset, $fileset_chapters, $bible, $asset_id)
     {
         $is_stream = $fileset->set_type_code === 'video_stream' || $fileset->set_type_code === 'audio_stream';
+        $is_video = Str::contains($fileset->set_type_code, 'video');
+
         if ($is_stream) {
             foreach ($fileset_chapters as $key => $fileSet_chapter) {
                 $fileset_chapters[$key]->file_name = route('v4_media_stream', ['fileset_id' => $fileset->id, 'file_id' => $fileSet_chapter->id]);
@@ -342,6 +346,13 @@ class BibleFileSetsController extends APIController
         if (!$is_stream) {
             foreach ($fileset_chapters as $key => $fileset_chapter) {
                 $fileset_chapters[$key]->file_name = $this->signedUrl($this->signedPath($bible, $fileset, $fileset_chapter), $asset_id, random_int(0, 10000000));
+            }
+        }
+
+        
+        if ($is_video) {
+            foreach ($fileset_chapters as $key => $fileset_chapter) {
+                $fileset_chapters[$key]->thumbnail = $this->signedUrl('video/thumbnails/' . $fileset_chapters[$key]->book_id . '_' . str_pad($fileset_chapter->chapter_start, 2, '0', STR_PAD_LEFT) . '.jpg', $asset_id, random_int(0, 10000000));
             }
         }
 
