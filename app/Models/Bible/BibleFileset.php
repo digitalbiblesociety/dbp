@@ -39,8 +39,8 @@ class BibleFileset extends Model
     protected $connection = 'dbp';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $hidden = ['created_at','updated_at','response_time','hidden','bible_id','hash_id'];
-    protected $fillable = ['name','set_type','organization_id','variation_id','bible_id','set_copyright'];
+    protected $hidden = ['created_at', 'updated_at', 'response_time', 'hidden', 'bible_id', 'hash_id'];
+    protected $fillable = ['name', 'set_type', 'organization_id', 'variation_id', 'bible_id', 'set_copyright'];
 
 
     /**
@@ -187,19 +187,19 @@ class BibleFileset extends Model
             ->leftJoin('languages', 'bibles.language_id', 'languages.id')
             ->join('language_translations', function ($q) {
                 $q->on('languages.id', 'language_translations.language_source_id')
-                  ->on('languages.id', 'language_translations.language_translation_id');
+                    ->on('languages.id', 'language_translations.language_translation_id');
             })
             ->leftJoin('alphabets', 'bibles.script', 'alphabets.script')
             ->leftJoin('bible_translations as english_name', function ($q) use ($bible_name) {
                 $q->on('english_name.bible_id', 'bibles.id')->where('english_name.language_id', 6414);
                 $q->when($bible_name, function ($subQuery) use ($bible_name) {
-                    $subQuery->where('english_name.name', 'LIKE', '%'.$bible_name.'%');
+                    $subQuery->where('english_name.name', 'LIKE', '%' . $bible_name . '%');
                 });
             })
             ->leftJoin('bible_translations as autonym', function ($q) use ($bible_name) {
                 $q->on('autonym.bible_id', 'bibles.id')->where('autonym.vernacular', true);
                 $q->when($bible_name, function ($subQuery) use ($bible_name) {
-                    $subQuery->where('autonym.name', 'LIKE', '%'.$bible_name.'%');
+                    $subQuery->where('autonym.name', 'LIKE', '%' . $bible_name . '%');
                 });
             })
             ->leftJoin('bible_organizations', function ($q) use ($organization) {
@@ -212,32 +212,32 @@ class BibleFileset extends Model
 
     public function scopeUniqueFileset($query, $id = null, $asset_id = null, $fileset_type = null, $ambigious_fileset_type = false, $testament_filter = null)
     {
-        $version = (int)request()->v;
+        $version = (int) checkParam('v');
         return $query->when($id, function ($query) use ($id, $version) {
             $query->where(function ($query) use ($id, $version) {
                 if ($version  <= 2) {
                     $query->where('bible_filesets.id', $id)
-                          ->orWhere('bible_filesets.id', substr($id, 0, -4))
-                          ->orWhere('bible_filesets.id', 'like',  substr($id, 0, 6))
-                          ->orWhere('bible_filesets.id', 'like', substr($id, 0, -2).'%');
+                        ->orWhere('bible_filesets.id', substr($id, 0, -4))
+                        ->orWhere('bible_filesets.id', 'like',  substr($id, 0, 6))
+                        ->orWhere('bible_filesets.id', 'like', substr($id, 0, -2) . '%');
                 } else {
                     $query->where('bible_filesets.id', $id);
                 }
             });
         })
-        ->when($asset_id, function ($query) use ($asset_id) {
-            $query->where('bible_filesets.asset_id', $asset_id);
-        })
-        ->when($testament_filter, function ($query) use ($testament_filter) {
-            $query->whereIn('bible_filesets.set_size_code', $testament_filter);
-        })
-        ->when($fileset_type, function ($query) use ($fileset_type, $ambigious_fileset_type) {
-            if ($ambigious_fileset_type) {
-                $query->where('bible_filesets.set_type_code', 'LIKE', $fileset_type.'%');
-            } else {
-                $query->where('bible_filesets.set_type_code', $fileset_type);
-            }
-        });
+            ->when($asset_id, function ($query) use ($asset_id) {
+                $query->where('bible_filesets.asset_id', $asset_id);
+            })
+            ->when($testament_filter, function ($query) use ($testament_filter) {
+                $query->whereIn('bible_filesets.set_size_code', $testament_filter);
+            })
+            ->when($fileset_type, function ($query) use ($fileset_type, $ambigious_fileset_type) {
+                if ($ambigious_fileset_type) {
+                    $query->where('bible_filesets.set_type_code', 'LIKE', $fileset_type . '%');
+                } else {
+                    $query->where('bible_filesets.set_type_code', $fileset_type);
+                }
+            });
     }
 
     public function scopeLanguage()
