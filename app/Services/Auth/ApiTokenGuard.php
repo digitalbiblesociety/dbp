@@ -41,7 +41,7 @@ class APITokenGuard implements Guard
         $token = $this->getTokenForRequest();
 
         if (!empty($token)) {
-            $api_token = APIToken::where('api_token', hash('sha256', $token))->first();
+            $api_token = $this->getApiToken($token);
             if ($api_token) {
                 $user = $this->provider->retrieveById($api_token->user_id);
             }
@@ -75,8 +75,8 @@ class APITokenGuard implements Guard
         }
 
         $token =  $credentials[$this->inputKey];
-        $api_token = APIToken::where('api_token', hash('sha256', $token))->first();
 
+        $api_token = $this->getApiToken($token);
         if (!$api_token) {
             return false;
         }
@@ -93,5 +93,12 @@ class APITokenGuard implements Guard
         $this->request = $request;
 
         return $this;
+    }
+
+    private function getApiToken($token)
+    {
+        return  APIToken::where('api_token', hash('sha256', $token))
+            ->where('created_at', '>', \DB::raw('DATE_SUB(NOW(), INTERVAL 1 YEAR)'))
+            ->first();
     }
 }
