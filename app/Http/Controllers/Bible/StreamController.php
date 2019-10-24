@@ -101,11 +101,26 @@ class StreamController extends APIController
             Log::error($e);
         }
 
-        $current_file = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-ALLOW-CACHE:YES\n#EXT-X-TARGETDURATION:" . ceil($currentBandwidth->transportStream->max('runtime'));
+        $current_file = "#EXTM3U\n";
+        $current_file .= '#EXT-X-TARGETDURATION:' . ceil($currentBandwidth->transportStream->max('runtime')) . "\n";
+        $current_file .= "#EXT-X-VERSION:4\n";
+        $current_file .= "#EXT-X-MEDIA-SEQUENCE:0\n";
+        $current_file .= '#EXT-X-ALLOW-CACHE:YES';
+
+        $signed_files = [];
 
         foreach ($currentBandwidth->transportStream as $stream) {
-            $current_file_path = $this->signedUrl($fileset_type . '/' . $bible_path . $fileset->id . '/' . $stream->file_name, $fileset->asset_id, $transaction_id);
-            $current_file .= "\n#EXTINF:$stream->runtime\n$current_file_path";
+            $current_file .= "\n#EXTINF:$stream->runtime,";
+            if (isset($stream->offset)) {
+                $current_file .= "\n#EXT-X-BYTERANGE:$stream->bytes@$stream->offset";
+                $fileset = $stream->timestamp->bibleFile->fileset;
+                $stream->file_name = $stream->timestamp->bibleFile->file_name;
+            }
+            $file_path = $fileset_type . '/' . $bible_path . $fileset->id . '/' . $stream->file_name;
+            if (!isset($signed_files[$file_path])) {
+                $signed_files[$file_path] = $this->signedUrl($file_path, $fileset->asset_id, $transaction_id);
+            }
+            $current_file .= "\n" . $signed_files[$file_path];
         }
         $current_file .= "\n#EXT-X-ENDLIST";
 
