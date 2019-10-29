@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\User\User;
 use App\Models\User\PasswordReset;
 use App\Mail\EmailPasswordReset;
-
+use App\Traits\CheckProjectMembership;
 use Validator;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
@@ -18,6 +18,8 @@ use Illuminate\Support\Str;
 
 class PasswordsController extends APIController
 {
+    use CheckProjectMembership;
+
     public function showResetForm(Request $request, $token = null)
     {
         $reset_request = PasswordReset::where('token', $token)->first();
@@ -108,12 +110,13 @@ class PasswordsController extends APIController
      *          them a verification email by setting the optional fields `password` and `new_password` fields within the
      *          request.",
      *     operationId="v4_user.resetPassword",
+     *     security={{"api_token":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Information supplied for password reset",
      *         @OA\MediaType(mediaType="application/json",
      *             @OA\Schema (
-     *                required={"email","project_id","token_id","new_password","new_password_confirmation"},
+     *                required={"project_id","new_password","new_password_confirmation"},
      *                @OA\Property(property="email", ref="#/components/schemas/User/properties/email"),
      *                @OA\Property(property="project_id", ref="#/components/schemas/Project/properties/id"),
      *                @OA\Property(property="token_id", type="string",description="The token sent to the user's email"),
@@ -138,14 +141,25 @@ class PasswordsController extends APIController
      */
     public function validatePasswordReset(Request $request)
     {
+        $user = $request->user();
+        $is_logged = !empty($user);
+
+        // Validate Project / User Connection
+        if ($is_logged && !$this->compareProjects($user->id, $this->key)) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
         $validator = Validator::make($request->all(), [
             'new_password'     => 'confirmed|required|min:8',
-            'email'            => 'required|email',
+            'old_password'     =>  $is_logged ? 'required' : '',
+            'email'            => $is_logged ? 'email' : 'required|email',
             'project_id'       => 'exists:dbp_users.projects,id',
-            'token_id'         => ['required',
-            Rule::exists('dbp_users.password_resets', 'token')->where(function ($query) use ($request) {
-                $query->where('email', $request->email);
-            })]
+            'token_id'         => [
+                $is_logged || $request->old_password ? '' : 'required',
+                Rule::exists('dbp_users.password_resets', 'token')->where(function ($query) use ($request) {
+                    $query->where('email', $request->email);
+                })
+            ]
         ]);
 
         if ($validator->fails()) {
@@ -159,19 +173,28 @@ class PasswordsController extends APIController
             return view('auth.passwords.reset', compact('token', 'errors'));
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = $is_logged ? $user : User::where('email', $request->email)->first();
+
         if (!$user) {
             return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
+        }
+
+        $password_match = \Hash::check($request->old_password, $user->password);
+        if ($request->old_password && !$password_match) {
+            return $this->setStatusCode(401)->replyWithError(trans('auth.failed'));
         }
 
         $new_password = $request->new_password;
         $user->password = \Hash::needsRehash($new_password) ? \Hash::make($new_password) : $new_password;
         $user->save();
 
-        $reset = PasswordReset::where('email', $user->email)->where('token', $request->token_id)->first();
-        $reset->delete();
+        if ($request->token_id) {
+            $reset = PasswordReset::where('email', $user->email)->where('token', $request->token_id)->first();
+            $reset->delete();
+        }
 
         if ($this->api) {
+            unset($user->api_token);
             return $this->setStatusCode(200)->reply($user);
         }
     }

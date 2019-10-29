@@ -11,6 +11,7 @@ use App\Models\User\Account;
 use App\Models\User\APIToken;
 use App\Models\User\Role;
 use App\Models\User\User;
+use App\Models\User\Profile;
 use App\Models\User\Key;
 use App\Models\User\Study\Note;
 use App\Traits\CheckProjectMembership;
@@ -329,6 +330,24 @@ class UsersController extends APIController
             'notes'         => $request->notes,
             'password'      => \Hash::make($request->password),
         ]);
+
+        $sex = checkParam('sex') ?? 0;
+        $profile = Profile::create([
+            'user_id' => $user->id,
+            'bio' => $request->bio,
+            'address_1' => $request->address_1,
+            'address_2' => $request->address_2,
+            'address_3' => $request->address_3,
+            'city' => $request->city,
+            'state' => $request->state,
+            'zip' => $request->zip,
+            'country_id' => $request->country_id,
+            'avatar' => $request->avatar,
+            'phone' => $request->phone,
+            'birthday' => $request->birthday,
+            'sex' => $sex,
+        ]);
+
         if ($request->project_id) {
             $user_role = Role::where('slug', 'user')->first();
             if (!$user_role) {
@@ -360,7 +379,7 @@ class UsersController extends APIController
             Auth::login($user, true);
             return redirect()->to('home');
         }
-
+        
         return $this->setStatusCode(200)->reply(fractal($user, new UserTransformer())->addMeta(['success' => 'User created']));
     }
 
@@ -665,9 +684,9 @@ class UsersController extends APIController
             'project_id'              => 'required|exists:dbp_users.projects,id',
             'social_provider_id'      => 'required_with:social_provider_user_id',
             'social_provider_user_id' => 'required_with:social_provider_id',
-            'name'                    => 'string|max:191',
-            'first_name'              => 'string|max:64',
-            'last_name'               => 'string|max:64',
+            'name'                    => 'string|max:191|nullable',
+            'first_name'              => 'string|max:64|nullable',
+            'last_name'               => 'string|max:64|nullable',
             'remember_token'          => 'max:100',
             'verified'                => 'boolean'
         ]);

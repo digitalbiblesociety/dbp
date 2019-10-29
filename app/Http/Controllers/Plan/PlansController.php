@@ -620,6 +620,7 @@ class PlansController extends APIController
      *   @OA\Property(property="id", ref="#/components/schemas/Plan/properties/id"),
      *   @OA\Property(property="name", ref="#/components/schemas/Plan/properties/name"),
      *   @OA\Property(property="featured", ref="#/components/schemas/Plan/properties/featured"),
+     *   @OA\Property(property="thumbnail", ref="#/components/schemas/Plan/properties/thumbnail"),
      *   @OA\Property(property="suggested_start_date", ref="#/components/schemas/Plan/properties/suggested_start_date"),
      *   @OA\Property(property="created_at", ref="#/components/schemas/Plan/properties/created_at"),
      *   @OA\Property(property="updated_at", ref="#/components/schemas/Plan/properties/updated_at"),
