@@ -24,6 +24,8 @@ class UsersNameColumnNullable extends Migration
      */
     public function down()
     {
-        $table->string('name', 191)->change();
+        Schema::table('users', function ($table) {
+            $table->string('name', 191)->nullable(false)->change();
+        });
     }
 }
