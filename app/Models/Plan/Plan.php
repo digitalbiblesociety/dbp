@@ -81,6 +81,17 @@ class Plan extends Model
     /**
      *
      * @OA\Property(
+     *   title="thumbnail",
+     *   type="string",
+     *   description="The image url",
+     *   maxLength=191
+     * )
+     *
+     */
+    protected $thumbnail;
+    /**
+     *
+     * @OA\Property(
      *   title="suggested_start_date",
      *   type="string",
      *   format="date",
