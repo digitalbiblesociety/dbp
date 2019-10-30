@@ -250,7 +250,7 @@ class BiblesController extends APIController
 
         if ($asset_id) {
             $bible->filesets = $bible->filesets->filter(function ($fileset) use ($asset_id) {
-                return $fileset->asset_id === $asset_id;
+                return in_array($fileset->asset_id, explode(',', $asset_id));
             });
         }
 

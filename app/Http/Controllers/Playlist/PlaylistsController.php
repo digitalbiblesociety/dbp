@@ -4,18 +4,24 @@ namespace App\Http\Controllers\Playlist;
 
 use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
+use App\Models\Bible\BibleFile;
 use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
 use App\Models\Playlist\PlaylistFollower;
 use App\Models\Playlist\PlaylistItems;
+use App\Traits\CallsBucketsTrait;
 use App\Traits\CheckProjectMembership;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PlaylistsController extends APIController
 {
     use AccessControlAPI;
     use CheckProjectMembership;
+    use CallsBucketsTrait;
 
     /**
      * Display a listing of the resource.
@@ -30,6 +36,12 @@ class PlaylistsController extends APIController
      *          in="query",
      *          @OA\Schema(ref="#/components/schemas/Playlist/properties/featured"),
      *          description="Return featured playlists"
+     *     ),
+     *     @OA\Parameter(
+     *          name="show_details",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Give full details of the playlist"
      *     ),
      *     security={{"api_token":{}}},
      *     @OA\Parameter(ref="#/components/parameters/limit"),
@@ -84,7 +96,12 @@ class PlaylistsController extends APIController
 
         $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
 
+        $show_details = checkParam('show_details');
+        $show_details = $show_details && $show_details != 'false';
         $playlists = Playlist::with('user')
+            ->when($show_details, function ($query) {
+                $query->with('items');
+            })
             ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
                 $user_id = empty($user) ? 0 : $user->id;
                 $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user_id);
@@ -100,6 +117,12 @@ class PlaylistsController extends APIController
             })
             ->select($select)
             ->orderBy($sort_by, $sort_dir)->paginate($limit);
+
+        if ($show_details) {
+            foreach ($playlists->getCollection() as $playlist) {
+                $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist->id, 'v' => $this->v, 'key' => $this->key]);
+            }
+        }
 
         return $this->reply($playlists);
     }
@@ -186,6 +209,7 @@ class PlaylistsController extends APIController
         }
 
         $playlist = $this->getPlaylist($user, $playlist_id);
+        $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist_id, 'v' => $this->v, 'key' => $this->key]);
 
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
@@ -529,6 +553,125 @@ class PlaylistsController extends APIController
             'percentage_completed' => $user_plan->percentage_completed,
             'message' => 'Playlist Item ' . $result
         ]);
+    }
+
+    public function hls(Response $response, $playlist_id)
+    {
+        $playlist = Playlist::with('items')->find($playlist_id);
+        if (!$playlist) {
+            return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
+        }
+
+        $signed_files = [];
+        $transaction_id = random_int(0, 10000000);
+        try {
+            apiLogs(request(), $response->getStatusCode(), $transaction_id);
+        } catch (\Exception $e) {
+            Log::error($e);
+        }
+        $durations = [];
+        $hls_items = '';
+        foreach ($playlist->items as $item) {
+            $fileset = $item->fileset;
+            if (!Str::contains($fileset->set_type_code, 'audio')) {
+                continue;
+            }
+            $bible_files = BibleFile::with('streamBandwidth.transportStream')->where([
+                'hash_id' => $fileset->hash_id,
+                'book_id' => $item->book_id,
+            ])
+                ->where('chapter_start', '>=', $item->chapter_start)
+                ->where('chapter_start', '<=', $item->chapter_end)
+                ->get();
+            if ($fileset->set_type_code === 'audio_stream') {
+                $hls_items = $this->processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item);
+                $durations[] = $this->getMaxRuntime($bible_files);
+            } else {
+                $hls_items = $this->processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id);
+                $durations[] = $bible_files->max('duration');
+            }
+        }
+
+        $current_file = "#EXTM3U\n";
+        $current_file .= '#EXT-X-TARGETDURATION:' . ceil(collect($durations)->max()) . "\n";
+        $current_file .= "#EXT-X-VERSION:4\n";
+        $current_file .= "#EXT-X-MEDIA-SEQUENCE:0\n";
+        $current_file .= '#EXT-X-ALLOW-CACHE:YES';
+        $current_file .= $hls_items;
+        $current_file .= "\n#EXT-X-ENDLIST";
+
+        return response($current_file, 200, [
+            'Content-Disposition' => 'attachment; filename="' . $playlist_id . '.m3u8"',
+            'Content-Type'        => 'application/x-mpegURL'
+        ]);
+    }
+
+    private function getMaxRuntime($bible_files)
+    {
+        $runtimes = [];
+        foreach ($bible_files as $bible_file) {
+            foreach ($bible_file->streamBandwidth as $bandwidth) {
+                $runtimes[] = $bandwidth->transportStream->max('runtime');
+            }
+        }
+        return collect($runtimes)->max();
+    }
+
+    private function processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item)
+    {
+        foreach ($bible_files as $bible_file) {
+            $transportStream = $bible_file->streamBandwidth->first()->transportStream;
+            if ($item->chapter_end  === $item->chapter_start) {
+                $transportStream = $transportStream->splice(1, $item->verse_end)->all();
+                $transportStream = collect($transportStream)->slice($item->verse_start - 1)->all();
+            } else {
+                $transportStream = $transportStream->splice(1)->all();
+                if ($bible_file->chapter_start === $item->chapter_start) {
+                    $transportStream = collect($transportStream)->slice($item->verse_start - 1)->all();
+                }
+                if ($bible_file->chapter_start === $item->chapter_end) {
+                    $transportStream = collect($transportStream)->splice(0, $item->verse_end)->all();
+                }
+            }
+
+            $fileset = $bible_file->fileset;
+
+            foreach ($transportStream as $stream) {
+                $hls_items .= "\n#EXTINF:$stream->runtime,";
+                if (isset($stream->timestamp)) {
+                    $hls_items .= "\n#EXT-X-BYTERANGE:$stream->bytes@$stream->offset";
+                    $fileset = $stream->timestamp->bibleFile->fileset;
+                    $stream->file_name = $stream->timestamp->bibleFile->file_name;
+                }
+                $bible_path = $bible_file->fileset->bible->first()->id;
+                $file_path = 'audio/' . $bible_path . '/' . $fileset->id . '/' . $stream->file_name;
+                if (!isset($signed_files[$file_path])) {
+                    $signed_files[$file_path] = $this->signedUrl($file_path, $fileset->asset_id, $transaction_id);
+                }
+                $hls_items .= "\n" . $signed_files[$file_path];
+            }
+            $hls_items .= "\n" . '#EXT-X-DISCONTINUITY';
+        }
+        return $hls_items;
+    }
+
+    private function processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id)
+    {
+        foreach ($bible_files as $bible_file) {
+            $default_duration = $bible_file->duration ?? 180;
+            $hls_items .= "\n#EXTINF:$default_duration,";
+
+            $bible_path = $bible_file->fileset->bible->first()->id;
+            $file_path = 'audio/' . $bible_path . '/' . $bible_file->fileset->id . '/' . $bible_file->file_name;
+            $hls_items .= "\n";
+            if (!isset($signed_files[$file_path])) {
+                $signed_files[$file_path] = $this->signedUrl($file_path, $bible_file->fileset->asset_id, $transaction_id);
+            }
+            $hls_items .= $signed_files[$file_path];
+            $hls_items .= "\n" . '#EXT-X-DISCONTINUITY';
+        }
+
+        return $hls_items;
     }
 
     /**
