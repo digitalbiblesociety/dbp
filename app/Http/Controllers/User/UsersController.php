@@ -332,7 +332,7 @@ class UsersController extends APIController
         ]);
 
         $sex = checkParam('sex') ?? 0;
-        $profile = Profile::create([
+        Profile::create([
             'user_id' => $user->id,
             'bio' => $request->bio,
             'address_1' => $request->address_1,
@@ -379,7 +379,7 @@ class UsersController extends APIController
             Auth::login($user, true);
             return redirect()->to('home');
         }
-        
+
         return $this->setStatusCode(200)->reply(fractal($user, new UserTransformer())->addMeta(['success' => 'User created']));
     }
 
@@ -398,7 +398,6 @@ class UsersController extends APIController
      *              @OA\Property(property="avatar",                  ref="#/components/schemas/User/properties/avatar"),
      *              @OA\Property(property="email",                   ref="#/components/schemas/User/properties/email"),
      *              @OA\Property(property="name",                    ref="#/components/schemas/User/properties/name"),
-     *              @OA\Property(property="password",                ref="#/components/schemas/User/properties/password"),
      *              @OA\Property(property="project_id",              ref="#/components/schemas/ProjectMember/properties/project_id"),
      *              @OA\Property(property="subscribed",              ref="#/components/schemas/ProjectMember/properties/subscribed"),
      *              @OA\Property(property="social_provider_id",      ref="#/components/schemas/Account/properties/provider_id"),
@@ -688,7 +687,8 @@ class UsersController extends APIController
             'first_name'              => 'string|max:64|nullable',
             'last_name'               => 'string|max:64|nullable',
             'remember_token'          => 'max:100',
-            'verified'                => 'boolean'
+            'verified'                => 'boolean',
+            'password'                => (request()->method() === 'POST') ? 'required|min:8' : '',
         ]);
 
         if ($validator->fails()) {
