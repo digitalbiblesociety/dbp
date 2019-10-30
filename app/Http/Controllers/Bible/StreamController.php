@@ -111,7 +111,7 @@ class StreamController extends APIController
 
         foreach ($currentBandwidth->transportStream as $stream) {
             $current_file .= "\n#EXTINF:$stream->runtime,";
-            if (isset($stream->offset)) {
+            if (isset($stream->timestamp)) {
                 $current_file .= "\n#EXT-X-BYTERANGE:$stream->bytes@$stream->offset";
                 $fileset = $stream->timestamp->bibleFile->fileset;
                 $stream->file_name = $stream->timestamp->bibleFile->file_name;

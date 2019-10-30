@@ -338,8 +338,8 @@ class BibleFileSetsController extends APIController
         $is_video = Str::contains($fileset->set_type_code, 'video');
 
         if ($is_stream) {
-            foreach ($fileset_chapters as $key => $fileSet_chapter) {
-                $fileset_chapters[$key]->file_name = route('v4_media_stream', ['fileset_id' => $fileset->id, 'file_id' => $fileSet_chapter->id]);
+            foreach ($fileset_chapters as $key => $fileset_chapter) {
+                $fileset_chapters[$key]->file_name = route('v4_media_stream', ['fileset_id' => $fileset->id, 'file_id' => $fileset_chapter->id]);
             }
         }
 

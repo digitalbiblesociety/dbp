@@ -12,6 +12,6 @@ class StreamSegment extends Model
 
     public function timestamp()
     {
-        return $this->belongsTo(Timestamp::class);
+        return $this->belongsTo(BibleFileTimestamp::class);
     }
 }
