@@ -688,7 +688,7 @@ class UsersController extends APIController
             'last_name'               => 'string|max:64|nullable',
             'remember_token'          => 'max:100',
             'verified'                => 'boolean',
-            'password'                => (request()->method() === 'POST') ? 'required|min:8' : '',
+            'password'                => (request()->method() === 'POST') ? 'required_without:social_provider_id|min:8' : '',
         ]);
 
         if ($validator->fails()) {
