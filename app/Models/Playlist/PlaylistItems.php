@@ -2,8 +2,8 @@
 
 namespace App\Models\Playlist;
 
+use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
-use App\Models\Bible\BibleVerse;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -238,7 +238,7 @@ class PlaylistItems extends Model implements Sortable
 
         return $timestamps->sum('duration');
     }
-    protected $appends = ['verses', 'completed'];
+    protected $appends = ['verses', 'completed', 'full_chapter'];
 
     /**
      *
@@ -254,13 +254,20 @@ class PlaylistItems extends Model implements Sortable
         $fileset = BibleFileset::where('id', $this['fileset_id'])
             ->whereNotIn('set_type_code', ['text_format'])
             ->first();
-        $verses_middle = BibleVerse::where('hash_id', $fileset->hash_id)
+        $bible_files = BibleFile::where('hash_id', $fileset->hash_id)
             ->where([
                 ['book_id', $this['book_id']],
-                ['chapter', '>=', $this['chapter_start']],
-                ['chapter', '<', $this['chapter_end']],
+                ['chapter_start', '>=', $this['chapter_start']],
+                ['chapter_start', '<', $this['chapter_end']],
             ])
-            ->count();
+            ->get();
+        $verses_middle = 0;
+        foreach ($bible_files as $bible_file) {
+            $verses_middle += ($bible_file->verse_start - 1) + $bible_file->verse_end;
+        }
+        if (!$this['verse_start'] && !$this['verse_start']) {
+            return $verses_middle;
+        }
         return  $verses_middle - ($this['verse_start'] - 1) + $this['verse_end'];
     }
 
@@ -283,6 +290,24 @@ class PlaylistItems extends Model implements Sortable
             ->where('user_id', $user->id)->first();
 
         return !empty($complete);
+    }
+
+    /**
+     * @OA\Property(
+     *   property="full_chapter",
+     *   title="full_chapter",
+     *   type="boolean",
+     *   description="If the playlist item is a full chapter item"
+     * )
+     */
+    public function getFullChapterAttribute()
+    {
+        return (bool) !$this->attributes['verse_start'] && !$this->attributes['verse_end'];
+    }
+
+    public function fileset()
+    {
+        return $this->belongsTo(BibleFileset::class);
     }
 
     public function complete()

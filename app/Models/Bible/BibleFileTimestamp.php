@@ -87,6 +87,11 @@ class BibleFileTimestamp extends Model
 
     public $incrementing = false;
 
+    public function bibleFile()
+    {
+        return $this->belongsTo(BibleFile::class);
+    }
+
     public function book()
     {
         return $this->belongsTo(Book::class);
