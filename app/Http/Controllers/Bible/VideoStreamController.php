@@ -19,8 +19,11 @@ class VideoStreamController extends APIController
         $iso = checkParam('iso');
         if ($iso) {
             $cache_string =  'arclight_languages';
-            $languages = \Cache::remember($cache_string, now()->addDay(), function () {
-                $languages = collect($this->fetchArclight('media-languages', false)->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
+            $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($iso) {
+                $languages = collect($this->fetchArclight('media-languages', false, false, 'iso3=' . $iso)->mediaLanguages);
+                $languages = $languages->where('counts.speakerCount.value', $languages->max('counts.speakerCount.value'))->keyBy('iso3')->map(function ($item) {
+                    return $item->languageId;
+                });
                 return $languages;
             });
             if (!isset($languages[$iso])) {
@@ -44,7 +47,6 @@ class VideoStreamController extends APIController
             $media_languages = $this->fetchArclight('media-languages/' . $arclight_id);
             return $media_languages;
         });
-
         $cache_string =  'arclight_chapters_metadata' . $arclight_id;
 
         $metadataLanguageTag = isset($media_languages->bcp47) ? $media_languages->bcp47 : '';
