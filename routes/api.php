@@ -257,3 +257,12 @@ Route::name('v4_plans_days.store')
     ->middleware('APIToken:check')->post('plans/{plan_id}/day',                     'Plan\PlansController@storeDay');
 Route::name('v4_plans_days.complete')
     ->middleware('APIToken:check')->post('plans/day/{day_id}/complete',             'Plan\PlansController@completeDay');
+
+// VERSION 4 | Push tokens
+
+Route::name('v4_push_tokens.index')
+    ->middleware('APIToken:check')->get('push_notifications',                       'User\PushTokensController@index');
+Route::name('v4_push_tokens.store')
+    ->middleware('APIToken:check')->post('push_notifications',                      'User\PushTokensController@store');
+Route::name('v4_push_tokens.destroy')
+    ->middleware('APIToken:check')->delete('push_notifications/{token}',            'User\PushTokensController@destroy');
