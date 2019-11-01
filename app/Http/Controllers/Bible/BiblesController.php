@@ -12,6 +12,7 @@ use App\Traits\AccessControlAPI;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformers\Serializers\DataArraySerializer;
 use App\Http\Controllers\APIController;
+use App\Models\Bible\BibleDefault;
 
 class BiblesController extends APIController
 {
@@ -191,7 +192,7 @@ class BiblesController extends APIController
                 $bibles  = $bibles->paginate($limit);
                 return $this->reply(fractal($bibles->getCollection(), BibleTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($bibles)));
             }
-            
+
             $bibles = $bibles->limit($limit)->get();
             return fractal($bibles, new BibleTransformer(), new DataArraySerializer());
         });
@@ -210,6 +211,12 @@ class BiblesController extends APIController
      *     description="",
      *     operationId="v4_bible.one",
      *     @OA\Parameter(name="id",in="path",required=true,@OA\Schema(ref="#/components/schemas/Bible/properties/id")),
+     *     @OA\Parameter(
+     *          name="asset_id",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="The asset_id to filter results by. There are three buckets provided `dbp-prod`, `dbp-vid` & `dbs-web`"
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -225,18 +232,26 @@ class BiblesController extends APIController
      */
     public function show($id)
     {
+        $asset_id = checkParam('asset_id');
         $access_control = $this->accessControl($this->key);
-        $cache_string = strtolower('bible_show:'.$id.':'.$access_control->string);
-        $bible = \Cache::remember($cache_string, now()->addDay(), function () use ($access_control,$id) {
-            return Bible::with(['translations', 'books.book', 'links', 'organizations.logo','organizations.logoIcon','organizations.translations', 'alphabet.primaryFont','equivalents',
+        $cache_string = strtolower('bible_show:' . $id . ':' . $access_control->string);
+        $bible = \Cache::remember($cache_string, now()->addDay(), function () use ($access_control, $id) {
+            return Bible::with([
+                'translations', 'books.book', 'links', 'organizations.logo', 'organizations.logoIcon', 'organizations.translations', 'alphabet.primaryFont', 'equivalents',
                 'filesets' => function ($query) use ($access_control) {
                     $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
                 }
             ])->find($id);
         });
-        
+
         if (!$bible || !sizeof($bible->filesets)) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $id]));
+        }
+
+        if ($asset_id) {
+            $bible->filesets = $bible->filesets->filter(function ($fileset) use ($asset_id) {
+                return in_array($fileset->asset_id, explode(',', $asset_id));
+            });
         }
 
         return $this->reply(fractal($bible, new BibleTransformer(), $this->serializer));
@@ -289,11 +304,67 @@ class BiblesController extends APIController
             ->when($book_id, function ($query) use ($book_id) {
                 $query->where('book_id', $book_id);
             })
-            ->get()->sortBy('book.'.$bible->versification.'_order')
+            ->get()->sortBy('book.' . $bible->versification . '_order')
             ->filter(function ($item) {
                 return $item->book;
             })->flatten();
 
         return $this->reply(fractal($books, new BooksTransformer));
+    }
+
+
+    /**
+     * @OA\GET(
+     *     path="/bibles/defaults/types",
+     *     tags={"Bibles"},
+     *     summary="Available bible defaults per language code",
+     *     description="Available bible defaults per language code",
+     *     operationId="v4_bible.defaults",
+     *     @OA\Parameter(
+     *          name="language_code",
+     *          in="query",
+     *          @OA\Schema(type="string",example="en"),
+     *          description="The language code to filter results by"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bibles_defaults")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bibles_defaults")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bibles_defaults")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_bibles_defaults"))
+     *     )
+     * )
+     *
+     * @OA\Schema (
+     *    type="array",
+     *    schema="v4_bibles_defaults",
+     *    description="The bible defaults",
+     *    title="v4_bibles_defaults",
+     *    @OA\Xml(name="v4_bibles_defaults"),
+     *    @OA\Items(
+     *          @OA\Property(property="video",             ref="#/components/schemas/BibleFileset/properties/id"),
+     *          @OA\Property(property="audio",             ref="#/components/schemas/BibleFileset/properties/id"),
+     *          @OA\Property(property="language_code",     type="string"),
+     *     )
+     *   )
+     * )
+     *
+     */
+    public function defaults()
+    {
+        $language_code = checkParam('language_code');
+        $defaults = BibleDefault::when($language_code, function ($q) use ($language_code) {
+            $q->where('language_code', $language_code);
+        })
+            ->get();
+        $result = [];
+        foreach ($defaults as $default) {
+            if (!isset($result[$default->language_code])) {
+                $result[$default->language_code] = [];
+            }
+            $result[$default->language_code][$default->type] = $default->bible_id;
+        }
+        return $this->reply($result);
     }
 }

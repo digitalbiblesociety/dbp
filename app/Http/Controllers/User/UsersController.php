@@ -11,6 +11,7 @@ use App\Models\User\Account;
 use App\Models\User\APIToken;
 use App\Models\User\Role;
 use App\Models\User\User;
+use App\Models\User\Profile;
 use App\Models\User\Key;
 use App\Models\User\Study\Note;
 use App\Traits\CheckProjectMembership;
@@ -329,6 +330,24 @@ class UsersController extends APIController
             'notes'         => $request->notes,
             'password'      => \Hash::make($request->password),
         ]);
+
+        $sex = checkParam('sex') ?? 0;
+        Profile::create([
+            'user_id' => $user->id,
+            'bio' => $request->bio,
+            'address_1' => $request->address_1,
+            'address_2' => $request->address_2,
+            'address_3' => $request->address_3,
+            'city' => $request->city,
+            'state' => $request->state,
+            'zip' => $request->zip,
+            'country_id' => $request->country_id,
+            'avatar' => $request->avatar,
+            'phone' => $request->phone,
+            'birthday' => $request->birthday,
+            'sex' => $sex,
+        ]);
+
         if ($request->project_id) {
             $user_role = Role::where('slug', 'user')->first();
             if (!$user_role) {
@@ -379,7 +398,6 @@ class UsersController extends APIController
      *              @OA\Property(property="avatar",                  ref="#/components/schemas/User/properties/avatar"),
      *              @OA\Property(property="email",                   ref="#/components/schemas/User/properties/email"),
      *              @OA\Property(property="name",                    ref="#/components/schemas/User/properties/name"),
-     *              @OA\Property(property="password",                ref="#/components/schemas/User/properties/password"),
      *              @OA\Property(property="project_id",              ref="#/components/schemas/ProjectMember/properties/project_id"),
      *              @OA\Property(property="subscribed",              ref="#/components/schemas/ProjectMember/properties/subscribed"),
      *              @OA\Property(property="social_provider_id",      ref="#/components/schemas/Account/properties/provider_id"),
@@ -665,11 +683,12 @@ class UsersController extends APIController
             'project_id'              => 'required|exists:dbp_users.projects,id',
             'social_provider_id'      => 'required_with:social_provider_user_id',
             'social_provider_user_id' => 'required_with:social_provider_id',
-            'name'                    => 'string|max:191',
-            'first_name'              => 'string|max:64',
-            'last_name'               => 'string|max:64',
+            'name'                    => 'string|max:191|nullable',
+            'first_name'              => 'string|max:64|nullable',
+            'last_name'               => 'string|max:64|nullable',
             'remember_token'          => 'max:100',
-            'verified'                => 'boolean'
+            'verified'                => 'boolean',
+            'password'                => (request()->method() === 'POST') ? 'required_without:social_provider_id|min:8' : '',
         ]);
 
         if ($validator->fails()) {

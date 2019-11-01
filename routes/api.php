@@ -87,6 +87,7 @@ Route::name('v4_bible.links')->get('bibles/links',                              
 Route::name('v4_bible_books_all')->get('bibles/books/',                            'Bible\BooksController@index');
 Route::name('v4_bible.one')->get('bibles/{bible_id}',                              'Bible\BiblesController@show');
 Route::name('v4_bible.all')->get('bibles',                                         'Bible\BiblesController@index');
+Route::name('v4_bible.defaults')->get('bibles/defaults/types',                           'Bible\BiblesController@defaults');
 
 // VERSION 4 | Filesets
 Route::name('v4_filesets.types')->get('bibles/filesets/media/types',               'Bible\BibleFileSetsController@mediaTypes');
@@ -143,7 +144,8 @@ Route::name('v4_user.destroy')->middleware('APIToken:check')->delete('users',   
 Route::name('v4_user.login')->post('/login',                                       'User\UsersController@login');
 Route::name('v4_user.oAuth')->get('/login/{driver}',                               'User\SocialController@redirect');
 Route::name('v4_user.oAuthCallback')->get('/login/{driver}/callback',              'User\SocialController@callback');
-Route::name('v4_user.password_reset')->post('users/password/reset/{token?}',       'User\PasswordsController@validatePasswordReset');
+Route::name('v4_user.password_reset')
+    ->middleware('APIToken')->post('users/password/reset/{token?}',                'User\PasswordsController@validatePasswordReset');
 Route::name('v4_user.password_email')->post('users/password/email',                'User\PasswordsController@triggerPasswordResetEmail');
 Route::name('v4_user.logout')
     ->middleware('APIToken:check')->post('/logout',                                'User\UsersController@logout');
@@ -233,6 +235,7 @@ Route::name('v4_playlists_items.store')
     ->middleware('APIToken:check')->post('playlists/{playlist_id}/item',            'Playlist\PlaylistsController@storeItem');
 Route::name('v4_playlists_items.complete')
     ->middleware('APIToken:check')->post('playlists/item/{item_id}/complete',       'Playlist\PlaylistsController@completeItem');
+Route::name('v4_playlists.hls')->get('playlists/{playlist_id}/hls',                 'Playlist\PlaylistsController@hls');
 
 
 // VERSION 4 | Plans

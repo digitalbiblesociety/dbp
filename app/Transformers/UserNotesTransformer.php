@@ -18,6 +18,7 @@ class UserNotesTransformer extends TransformerAbstract
      *          @OA\Property(property="id",             ref="#/components/schemas/Note/properties/id"),
      *          @OA\Property(property="bible_id",       ref="#/components/schemas/Note/properties/bible_id"),
      *          @OA\Property(property="book_id",        ref="#/components/schemas/Note/properties/book_id"),
+     *          @OA\Property(property="book_name",              ref="#/components/schemas/BibleBook/properties/name"),
      *          @OA\Property(property="chapter",        ref="#/components/schemas/Note/properties/chapter"),
      *          @OA\Property(property="verse_start",    ref="#/components/schemas/Note/properties/verse_start"),
      *          @OA\Property(property="verse_end",      ref="#/components/schemas/Note/properties/verse_end"),
@@ -36,17 +37,18 @@ class UserNotesTransformer extends TransformerAbstract
     public function transform(Note $note)
     {
         return [
-            'id'            => (int) $note->id,
-            'bible_id'      => (string) $note->bible_id,
-            'book_id'       => (string) $note->book_id,
-            'chapter'       => (int) $note->chapter,
-            'verse_start'   => (int) $note->verse_start,
-            'verse_end'     => (int) $note->verse_end,
-            'verse_text'    => (string) $note->verse_text,
-            'notes'         => (string) $note->notes,
-            'created_at'    => (string) $note->created_at,
-            'updated_at'    => (string) $note->updated_at,
-            'tags'          => $note->tags,
-        ];
+      'id' => (int) $note->id,
+      'bible_id' => (string) $note->bible_id,
+      'book_id' => (string) $note->book_id,
+      'book_name' => (string) optional($note->book)->name,
+      'chapter' => (int) $note->chapter,
+      'verse_start' => (int) $note->verse_start,
+      'verse_end' => (int) $note->verse_end,
+      'verse_text' => (string) $note->verse_text,
+      'notes' => (string) $note->notes,
+      'created_at' => (string) $note->created_at,
+      'updated_at' => (string) $note->updated_at,
+      'tags' => $note->tags
+    ];
     }
 }
