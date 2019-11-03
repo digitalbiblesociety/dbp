@@ -361,6 +361,7 @@ class UsersController extends APIController
         }
         if ($request->social_provider_id) {
             $user->accounts()->create([
+                'project_id' => $request->project_id,
                 'provider_id'      => $request->social_provider_id,
                 'provider_user_id' => $request->social_provider_user_id,
             ]);
@@ -692,7 +693,7 @@ class UsersController extends APIController
         ]);
 
         if ($validator->fails()) {
-            return $this->replyWithError($validator->errors());
+            return $this->setStatusCode(422)->replyWithError($validator->errors());
         }
         return false;
     }
