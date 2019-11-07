@@ -4,7 +4,6 @@ namespace App\Http\Controllers\User\Dashboard;
 
 use App\Http\Controllers\APIController;
 use App\Models\User\Key;
-use App\Models\User\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
