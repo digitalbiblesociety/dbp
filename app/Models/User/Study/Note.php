@@ -6,7 +6,7 @@ use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleVerse;
-use App\Models\Bible\Book;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 
@@ -160,7 +160,11 @@ class Note extends Model
 
     public function getNotesAttribute($note)
     {
-        return Crypt::decrypt($note);
+        try {
+            return Crypt::decrypt($note);
+        } catch (DecryptException $e) {
+            return '';
+        }
     }
 
     /**
