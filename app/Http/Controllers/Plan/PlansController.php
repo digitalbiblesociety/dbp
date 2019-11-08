@@ -227,7 +227,9 @@ class PlansController extends APIController
         $playlist_controller = new PlaylistsController();
         if ($show_details) {
             foreach ($plan->days as $day) {
-                $day->playlist = $playlist_controller->getPlaylist($user, $day->playlist_id);
+                $day_playlist = $playlist_controller->getPlaylist($user, $day->playlist_id);
+                $day_playlist->path = route('v4_playlists.hls', ['playlist_id'  => $day_playlist->id, 'v' => $this->v, 'key' => $this->key]);
+                $day->playlist = $day_playlist;
             }
         }
 
