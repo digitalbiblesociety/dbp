@@ -183,7 +183,7 @@ class NotesController extends APIController
             'chapter'     => $request->chapter,
             'verse_start' => $request->verse_start,
             'verse_end'   => $request->verse_end ?? $request->verse_start,
-            'notes'       => isset($request->notes) ? encrypt($request->notes) : null,
+            'notes'       =>  encrypt(isset($request->notes) ? $request->notes : ''),
         ]);
 
         $this->handleTags($note);
@@ -248,7 +248,7 @@ class NotesController extends APIController
             return $this->setStatusCode(404)->replyWithError(trans('api.user_notes_404'));
         }
 
-        $note->fill($request->only(['bible_id','book_id','chapter','verse_start','verse_end','notes']));
+        $note->fill($request->only(['bible_id', 'book_id', 'chapter', 'verse_start', 'verse_end']));
         if (isset($request->notes)) {
             $note->notes = encrypt($request->notes);
         }

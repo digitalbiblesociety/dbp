@@ -305,6 +305,7 @@ class TextController extends APIController
      *          description="The word or phrase being searched", required=true,
      *          @OA\Schema(type="string")
      *     ),
+     *     @OA\Parameter(ref="#/components/parameters/limit"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -343,6 +344,7 @@ class TextController extends APIController
         // Validate Project / User Connection
         $user = $request->user();
         $user_is_member = $this->compareProjects($user->id, $this->key);
+        $limit      = checkParam('limit') ?? 100;
 
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
@@ -376,26 +378,25 @@ class TextController extends APIController
 
         $highlights = Highlight::with('color')->with('tags')
             ->where('user_id', $user->id)
-            ->orderBy('user_highlights.updated_at')->get()
+            ->orderBy('user_highlights.updated_at')->limit($limit)->get()
             ->filter(function ($highlight) use ($query) {
                 return str_contains(strtolower($highlight->book->name . ' ' . $highlight->verse_text), $query);
             });
 
         $bookmarks = Bookmark::with('tags')
             ->where('user_id', $user->id)
-            ->get()
+            ->limit($limit)->get()
             ->filter(function ($bookmark) use ($query) {
                 return str_contains(strtolower($bookmark->book->name . ' ' . $bookmark->verse_text), $query);
             });
-        ;
 
         $notes = Note::with('tags')
             ->where('user_id', $user->id)
-            ->get()
+            ->limit($limit)->get()
             ->filter(function ($note) use ($query) {
                 return str_contains(strtolower($note->book->name . ' ' . $note->verse_text . ' ' . $note->notes), $query);
             });
-        ;
+
 
         return $this->reply([
             'bookmarks' => fractal($bookmarks, UserBookmarksTransformer::class)->toArray()['data'],
