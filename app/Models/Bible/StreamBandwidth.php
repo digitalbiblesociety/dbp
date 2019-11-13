@@ -15,8 +15,13 @@ class StreamBandwidth extends Model
         return $this->belongsTo(BibleFile::class, 'bible_file_id', 'id');
     }
 
-    public function transportStream()
+    public function transportStreamTS()
     {
-        return $this->hasMany(StreamSegment::class);
+        return $this->hasMany(StreamTS::class);
+    }
+
+    public function transportStreamBytes()
+    {
+        return $this->hasMany(StreamBytes::class);
     }
 }
