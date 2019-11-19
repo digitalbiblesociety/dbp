@@ -83,7 +83,7 @@ class StreamController extends APIController
             $fileset_type = 'video';
         }
 
-        $file = BibleFile::with('streamBandwidth.transportStream')->whereId($file_id)->first();
+        $file = BibleFile::with('streamBandwidth.transportStreamTS')->with('streamBandwidth.transportStreamBytes')->whereId($file_id)->first();
         if (!$file) {
             return $this->replyWithError(trans('api.bible_file_errors_404', ['id' => $file_id]));
         }
@@ -100,6 +100,7 @@ class StreamController extends APIController
         } catch (\Exception $e) {
             Log::error($e);
         }
+        $currentBandwidth->transportStream = sizeof($currentBandwidth->transportStreamBytes) ? $currentBandwidth->transportStreamBytes : $currentBandwidth->transportStreamTS;
 
         $current_file = "#EXTM3U\n";
         $current_file .= '#EXT-X-TARGETDURATION:' . ceil($currentBandwidth->transportStream->max('runtime')) . "\n";

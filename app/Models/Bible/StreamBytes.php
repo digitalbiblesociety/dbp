@@ -4,11 +4,10 @@ namespace App\Models\Bible;
 
 use Illuminate\Database\Eloquent\Model;
 
-class StreamSegment extends Model
+class StreamBytes extends Model
 {
     protected $connection = 'dbp';
-    protected $table = 'bible_file_stream_segments';
-    protected $fillable = ['file_name','runtime'];
+    protected $table = 'bible_file_stream_bytes';
 
     public function timestamp()
     {
