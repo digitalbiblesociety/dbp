@@ -85,6 +85,9 @@ class Handler extends ExceptionHandler
 
         if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
             $exception = $this->unauthenticated($request, $exception);
+            if (!config('app.env') !== 'debug') {
+                return $exception;
+            }
         }
 
         if ($exception instanceof \Illuminate\Validation\ValidationException) {
@@ -143,8 +146,15 @@ class Handler extends ExceptionHandler
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], Response::HTTP_UNAUTHORIZED);
+        if ($request->expectsJson() || $exception->api_response) {
+            $response = [];
+            $response['error'] = Response::$statusTexts[Response::HTTP_UNAUTHORIZED];
+            if (config('app.debug')) {
+                $response['trace'] = $exception->getTrace();
+            }
+            $response['status_code'] = Response::HTTP_UNAUTHORIZED;
+            $response['host_name'] = gethostname();
+            return response()->json($response, Response::HTTP_UNAUTHORIZED);
         }
 
         return redirect()->guest(route('login'));
