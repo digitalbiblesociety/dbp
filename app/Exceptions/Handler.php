@@ -85,6 +85,9 @@ class Handler extends ExceptionHandler
 
         if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
             $exception = $this->unauthenticated($request, $exception);
+            if (!config('app.env') !== 'debug') {
+                return $exception;
+            }
         }
 
         if ($exception instanceof \Illuminate\Validation\ValidationException) {
