@@ -576,7 +576,7 @@ class PlaylistsController extends APIController
             if (!Str::contains($fileset->set_type_code, 'audio')) {
                 continue;
             }
-            $bible_files = BibleFile::with('streamBandwidth.transportStream')->where([
+            $bible_files = BibleFile::with('streamBandwidth.transportStreamTS')->with('streamBandwidth.transportStreamBytes')->where([
                 'hash_id' => $fileset->hash_id,
                 'book_id' => $item->book_id,
             ])
@@ -611,7 +611,8 @@ class PlaylistsController extends APIController
         $runtimes = [];
         foreach ($bible_files as $bible_file) {
             foreach ($bible_file->streamBandwidth as $bandwidth) {
-                $runtimes[] = $bandwidth->transportStream->max('runtime');
+                $runtimes[] = $bandwidth->transportStreamTS->max('runtime');
+                $runtimes[] = $bandwidth->transportStreamBytes->max('runtime');
             }
         }
         return collect($runtimes)->max();
@@ -620,7 +621,9 @@ class PlaylistsController extends APIController
     private function processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item)
     {
         foreach ($bible_files as $bible_file) {
-            $transportStream = $bible_file->streamBandwidth->first()->transportStream;
+            $currentBandwidth = $bible_file->streamBandwidth->first();
+
+            $transportStream = sizeof($currentBandwidth->transportStreamBytes) ? $currentBandwidth->transportStreamBytes : $currentBandwidth->transportStreamTS;
             if ($item->chapter_end  === $item->chapter_start) {
                 $transportStream = $transportStream->splice(1, $item->verse_end)->all();
                 $transportStream = collect($transportStream)->slice($item->verse_start - 1)->all();

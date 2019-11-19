@@ -43,7 +43,9 @@ class APIToken
 
         if ($type === 'check') {
             if (!$this->auth->guard($guard)->check()) {
-                throw new AuthenticationException(trans('auth.failed'));
+                $exception = new AuthenticationException(trans('auth.failed'));
+                $exception->api_response = true;
+                throw $exception;
             }
         }
 
