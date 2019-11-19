@@ -7,43 +7,43 @@ class UserTransformer extends BaseTransformer
     public function transform($user)
     {
         switch ($this->version) {
-            case 2:
-            case 3:
-                return $this->transformForV2($user);
-            case 4:
-            default:
-                return $this->transformForV4($user);
-        }
+      case 2:
+      case 3:
+        return $this->transformForV2($user);
+      case 4:
+      default:
+        return $this->transformForV4($user);
+    }
     }
 
     public function transformForV4($user)
     {
         switch ($this->route) {
-            /**
-             *
-             * @see Controller: \App\Http\Controllers\User\UsersControllerV2::index
-             * @see https://api.dbp.test/users?key=test_key&v=4
-             *
-             * @OA\Schema (
-             *    title="v4_user_index",
-             *    type="array",
-             *    schema="v4_user_index",
-             *    description="The v4 user index response",
-             *    @OA\Xml(name="v4_user_index"),
-             *    @OA\Items(
-             *        @OA\Property(property="id",       ref="#/components/schemas/User/properties/id"),
-             *        @OA\Property(property="name",     ref="#/components/schemas/User/properties/name"),
-             *        @OA\Property(property="email",    ref="#/components/schemas/User/properties/email")
-             *    )
-             *  )
-             *
-             */
-            case 'v4_user.index':
-                return [
-                    'id'        => $user->id,
-                    'name'      => $user->name,
-                    'email'     => $user->email
-                ];
+      /**
+       *
+       * @see Controller: \App\Http\Controllers\User\UsersControllerV2::index
+       * @see https://api.dbp.test/users?key=test_key&v=4
+       *
+       * @OA\Schema (
+       *    title="v4_user_index",
+       *    type="array",
+       *    schema="v4_user_index",
+       *    description="The v4 user index response",
+       *    @OA\Xml(name="v4_user_index"),
+       *    @OA\Items(
+       *        @OA\Property(property="id",       ref="#/components/schemas/User/properties/id"),
+       *        @OA\Property(property="name",     ref="#/components/schemas/User/properties/name"),
+       *        @OA\Property(property="email",    ref="#/components/schemas/User/properties/email")
+       *    )
+       *  )
+       *
+       */
+      case 'v4_user.index':
+        return [
+          'id' => $user->id,
+          'name' => $user->name,
+          'email' => $user->email
+        ];
 
             case 'v4_user.store':
                 return [
@@ -59,6 +59,7 @@ class UserTransformer extends BaseTransformer
                     'accounts'  => $user->accounts,
                     'keys'      => $user->keys,
                     'api_token' => $user->api_token,
+                    'freshchat_restore_id' => $user ->freshchat_restore_id
                 ];
 
             /**
@@ -89,6 +90,7 @@ class UserTransformer extends BaseTransformer
                     'profile'   => $user->profile,
                     'organizations' => $user->organizations,
                     'accounts'  => $user->accounts,
+                    'freshchat_restore_id' => $user ->freshchat_restore_id
                 ];
         }
     }
