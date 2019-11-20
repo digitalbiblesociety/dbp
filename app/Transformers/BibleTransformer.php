@@ -177,8 +177,7 @@ class BibleTransformer extends BaseTransformer
                             'id' => $item['id'],
                             'type' => $item->set_type_code,
                             'size' => $item->set_size_code,
-                            'bitrate' => optional($item->meta->first())->description,
-                            'hash_id' => $item->hash_id
+                            'bitrate' => optional($item->meta->first())->description
                         ]];
                     });
                 }
@@ -243,7 +242,7 @@ class BibleTransformer extends BaseTransformer
                     })->values(),
                     'links'        => $bible->links,
                     'filesets'     => $bible->filesets->mapToGroups(function ($item, $key) {
-                        return [$item['asset_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code, 'hash_id' => $item->hash_id]];
+                        return [$item['asset_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
                     })
                 ];
 

@@ -318,7 +318,7 @@ class Bible extends Model
             }
         })->with(['filesets' => function ($q) use ($type_filters) {
             $q->whereIn('bible_filesets.hash_id', $type_filters['access_control']->hashes)
-              ->select(['id','set_type_code','set_size_code','asset_id', 'bible_filesets.hash_id']);
+              ->select(['id','set_type_code','set_size_code','asset_id']);
             if ($type_filters['asset_id']) {
                 $q->whereIn('asset_id', explode(',', $type_filters['asset_id']));
             }
