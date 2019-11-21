@@ -48,6 +48,8 @@ class BookmarksController extends APIController
      *          @OA\Schema(type="integer",default=25)),
      *     @OA\Parameter(name="page",  in="query", description="The current page of the results",
      *          @OA\Schema(type="integer",default=1)),
+     *     @OA\Parameter(ref="#/components/parameters/sort_by"),
+     *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -74,6 +76,8 @@ class BookmarksController extends APIController
         $book_id      = checkParam('book_id');
         $chapter      = checkParam('chapter|chapter_id');
         $limit        = (int) (checkParam('limit') ?? 25);
+        $sort_by    = checkParam('sort_by');
+        $sort_dir   = checkParam('sort_dir') ?? 'asc';
 
         $bookmarks = Bookmark::with('tags')->where('user_id', $user_id)
             ->when($bible_id, function ($q) use ($bible_id) {
@@ -82,6 +86,8 @@ class BookmarksController extends APIController
                 $q->where('book_id', $book_id);
             })->when($chapter, function ($q) use ($chapter) {
                 $q->where('chapter', $chapter);
+            })->when($sort_by, function ($q) use ($sort_by, $sort_dir) {
+                $q->orderBy($sort_by, $sort_dir);
             })->paginate($limit);
 
         $bookmarkCollection = $bookmarks->getCollection();
