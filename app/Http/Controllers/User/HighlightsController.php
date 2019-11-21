@@ -83,6 +83,8 @@ class HighlightsController extends APIController
      *          description="One or more six letter hexadecimal colors to filter highlights by.",
      *          example="aabbcc,eedd11,112233")
      *     ),
+     *     @OA\Parameter(ref="#/components/parameters/sort_by"),
+     *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -101,6 +103,8 @@ class HighlightsController extends APIController
     {
         $user = $request->user();
         $user_id = $user ? $user->id : $request->user_id;
+        $sort_by    = checkParam('sort_by') ?? 'updated_at';
+        $sort_dir   = checkParam('sort_dir') ?? 'asc';
 
         // Validate Project / User Connection
         $user = User::where('id', $user_id)->select('id')->first();
@@ -143,7 +147,7 @@ class HighlightsController extends APIController
                 'user_highlights.highlight_start',
                 'user_highlights.highlighted_words',
                 'user_highlights.highlighted_color',
-            ])->orderBy('user_highlights.updated_at')->paginate($limit);
+            ])->orderBy('user_highlights.'.$sort_by, $sort_dir)->paginate($limit);
 
         $highlight_collection = $highlights->getCollection();
 
