@@ -175,6 +175,10 @@ Route::middleware('APIToken')->group(function () {
     Route::name('v4_highlights.destroy')->delete('users/{user_id}/highlights/{id}',    'User\HighlightsController@destroy');
 });
 
+Route::middleware('APIToken:check')->group(function () {
+    Route::name('v4_highlights.colors')->get('users/highlights/colors',                'User\HighlightsController@colors');
+});
+
 // VERSION 4 | User Settings
 Route::name('v4_UserSettings.show')->get('users/{user_id}/settings',               'User\UserSettingsController@show');
 Route::name('v4_UserSettings.store')->post('users/{user_id}/settings',             'User\UserSettingsController@store');

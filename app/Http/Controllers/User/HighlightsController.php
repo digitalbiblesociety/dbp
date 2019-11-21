@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
-use App\Models\Bible\Book;
 use App\Models\User\User;
 use App\Models\User\Study\HighlightColor;
 use App\Traits\AnnotationTags;
@@ -81,7 +80,8 @@ class HighlightsController extends APIController
      *          name="color",
      *          in="query",
      *          @OA\Schema(type="string",
-     *          description="The six letter hexadecimal color to filter highlights by."
+     *          description="One or more six letter hexadecimal colors to filter highlights by.",
+     *          example="aabbcc,eedd11,112233")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -121,8 +121,7 @@ class HighlightsController extends APIController
         $color        = checkParam('color');
         $limit        = (int) (checkParam('limit') ?? 25);
 
-        $highlights = Highlight::with('tags')
-            ->join('user_highlight_colors', 'user_highlights.highlighted_color', '=', 'user_highlight_colors.id')
+        $highlights = Highlight::join('user_highlight_colors', 'user_highlights.highlighted_color', '=', 'user_highlight_colors.id')
             ->where('user_id', $user_id)
             ->when($bible_id, function ($q) use ($bible_id) {
                 $q->where('user_highlights.bible_id', $bible_id);
@@ -131,7 +130,9 @@ class HighlightsController extends APIController
             })->when($chapter_id, function ($q) use ($chapter_id) {
                 $q->where('chapter', $chapter_id);
             })->when($color, function ($q) use ($color) {
-                $q->where('user_highlight_colors.hex', $color);
+                $color = str_replace('#', '', $color);
+                $color = explode(',', $color);
+                $q->whereIn('user_highlight_colors.hex', $color);
             })->select([
                 'user_highlights.id',
                 'user_highlights.bible_id',
@@ -337,6 +338,56 @@ class HighlightsController extends APIController
         $highlight->delete();
 
         return $this->reply(['success' => trans('api.users_highlights_delete_200')]);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @OA\Get(
+     *     path="/users/highlights/colors",
+     *     tags={"Annotations"},
+     *     summary="List a user's highlights colors",
+     *     description="List a user's highlights colors",
+     *     operationId="v4_highlights.colors",
+     *     security={{"api_token":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_highlights_colors")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_highlights_colors")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_highlights_colors")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_highlights_colors"))
+     *     )
+     * )
+     *
+     * @OA\Schema (
+     *    type="array",
+     *    schema="v4_highlights_colors",
+     *    description="The v4 highlights colors index response.",
+     *    title="v4_highlights_colors",
+     *   @OA\Xml(name="v4_highlights_colors"),
+     *    @OA\Items(ref="#/components/schemas/Highlight/properties/highlighted_color"),
+     *     )
+     *   )
+     * )
+     *
+     */
+    public function colors(Request $request)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+        $colors = Highlight::join('user_highlight_colors', 'user_highlights.highlighted_color', '=', 'user_highlight_colors.id')
+            ->where('user_id', $user->id)
+            ->select(['user_highlight_colors.*'])
+            ->groupBy('user_highlight_colors.id')->get();
+
+
+        return $this->reply($colors);
     }
 
     private function validateHighlight()
