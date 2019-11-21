@@ -125,9 +125,9 @@ class AudioController extends APIController
      *     path="/timestamps",
      *     tags={"Bibles"},
      *     summary="Returns Bible Filesets which have Audio timestamps",
-     *     description="This call returns a list of hashes that have timestamp metadata associated
-               with them. This data could be used to search audio bibles for a specific term, make
-               karaoke verse & audio readings, or to jump to a specific location in an audio file.",
+     *     description="This call returns a list of fileset that have timestamp metadata associated
+     *         with them. This data could be used to search audio bibles for a specific term, make
+     *         karaoke verse & audio readings, or to jump to a specific location in an audio file.",
      *     operationId="v4_timestamps",
      *     @OA\Response(response=204, description="No timestamps are available at this time"),
      *     @OA\Response(
@@ -159,14 +159,16 @@ class AudioController extends APIController
      */
     public function availableTimestamps()
     {
-        $cache_string = 'audio_timestamp_hashes';
-        $hashes = \Cache::remember($cache_string, 4800, function () {
-            return BibleFile::has('timestamps')->select('hash_id')->distinct()->get();
+        $cache_string = 'audio_timestamp_filesets';
+        $filesets = \Cache::remember($cache_string, 4800, function () {
+            $hashes = BibleFile::has('timestamps')->select('hash_id')->distinct()->get()->values('hash_id');
+            $filesets_id = BibleFileset::whereIn('hash_id', $hashes)->select('id as fileset_id')->get();
+            return $filesets_id;
         });
-        if ($hashes->count() === 0) {
+        if ($filesets->count() === 0) {
             return $this->setStatusCode(204)->replyWithError('No timestamps are available at this time');
         }
-        return $this->reply($hashes);
+        return $this->reply($filesets);
     }
 
     /**
