@@ -17,6 +17,7 @@ use App\Models\Language\Language;
 use App\Models\User\Key;
 
 use App\Transformers\FileSetTransformer;
+use Illuminate\Http\Request;
 
 class BibleFileSetsController extends APIController
 {
@@ -69,7 +70,7 @@ class BibleFileSetsController extends APIController
         $asset_id      = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $type          = checkParam('type', true);
 
-        $cache_string = 'bible_filesets_show:'.$this->v.':'.$fileset_id.$book_id.$type.$chapter_id.$asset_id;
+        $cache_string = 'bible_filesets_show:' . $this->v . ':' . $fileset_id . $book_id . $type . $chapter_id . $asset_id;
         $fileset_chapters = \Cache::remember($cache_string, now()->addMinutes(20), function () use ($fileset_id, $book_id, $type, $chapter_id, $asset_id) {
             $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
             $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, $type)->first();
@@ -84,16 +85,16 @@ class BibleFileSetsController extends APIController
 
             $bible = optional($fileset->bible)->first();
             $fileset_chapters = BibleFile::where('hash_id', $fileset->hash_id)
-                ->leftJoin(config('database.connections.dbp.database').'.bible_books', function ($q) use ($bible) {
+                ->leftJoin(config('database.connections.dbp.database') . '.bible_books', function ($q) use ($bible) {
                     $q->on('bible_books.book_id', 'bible_files.book_id')->where('bible_books.bible_id', $bible->id);
                 })
-                ->leftJoin(config('database.connections.dbp.database').'.books', 'books.id', 'bible_files.book_id')
+                ->leftJoin(config('database.connections.dbp.database') . '.books', 'books.id', 'bible_files.book_id')
                 ->when($chapter_id, function ($query) use ($chapter_id) {
                     return $query->where('bible_files.chapter_start', $chapter_id);
                 })->when($book, function ($query) use ($book) {
                     return $query->where('bible_files.book_id', $book->id);
                 })
-                  ->select([
+                ->select([
                     'bible_files.duration',
                     'bible_files.hash_id',
                     'bible_files.id',
@@ -263,20 +264,21 @@ class BibleFileSetsController extends APIController
         $type = checkParam('type', true);
         $asset_id = checkParam('bucket|bucket_id|asset_id') ?? 'dbp-prod';
 
-        $cache_string = strtolower('bible_fileset_copyright:'.$asset_id.':'.$id.':'.$type.$iso);
+        $cache_string = strtolower('bible_fileset_copyright:' . $asset_id . ':' . $id . ':' . $type . $iso);
         $fileset = \Cache::remember($cache_string, now()->addDay(), function () use ($iso, $type, $asset_id, $id) {
             $language_id = optional(Language::where('iso', $iso)->select('id')->first())->id;
             return BibleFileset::where('id', $id)->with([
                 'copyright.organizations.logos',
                 'copyright.organizations.translations' => function ($q) use ($language_id) {
                     $q->where('language_id', $language_id);
-                }])
+                }
+            ])
                 ->when($asset_id, function ($q) use ($asset_id) {
                     $q->where('asset_id', $asset_id);
                 })
                 ->when($type, function ($q) use ($type) {
                     $q->where('set_type_code', $type);
-                })->select(['hash_id','id','asset_id','set_type_code as type','set_size_code as size'])->first();
+                })->select(['hash_id', 'id', 'asset_id', 'set_type_code as type', 'set_size_code as size'])->first();
         });
 
         return $this->reply($fileset);
@@ -324,6 +326,73 @@ class BibleFileSetsController extends APIController
     }
 
     /**
+     * @OA\POST(
+     *     path="/bibles/filesets/check/types",
+     *     tags={"Bibles"},
+     *     summary="Check fileset types",
+     *     description="Check Bible File locations if they have audio or video.",
+     *     operationId="v4_bible_filesets.checkTypes",
+     *     @OA\RequestBody(ref="#/components/requestBodies/PlaylistItems"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_fileset_check")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_fileset_check")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_fileset_check")),
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_fileset_check"))
+     *     )
+     * )
+     *
+     * @OA\Schema (
+     *   type="array",
+     *   schema="v4_fileset_check",
+     *   title="Fileset check types response",
+     *   description="The v4 fileset check types response.",
+     *   @OA\Items(
+     *      @OA\Property(property="fileset_id", ref="#/components/schemas/PlaylistItems/properties/fileset_id"),
+     *      @OA\Property(property="book_id", ref="#/components/schemas/PlaylistItems/properties/book_id"),
+     *      @OA\Property(property="chapter_start", ref="#/components/schemas/PlaylistItems/properties/chapter_start"),
+     *      @OA\Property(property="chapter_end", ref="#/components/schemas/PlaylistItems/properties/chapter_end"),
+     *      @OA\Property(property="verse_start", ref="#/components/schemas/PlaylistItems/properties/verse_start"),
+     *      @OA\Property(property="verse_end", ref="#/components/schemas/PlaylistItems/properties/verse_end"),
+     *      @OA\Property(property="has_audio", type="boolean"),
+     *      @OA\Property(property="has_video", type="boolean")
+     *   )
+     * )
+     */
+    public function checkTypes(Request $request)
+    {
+        $bible_locations = json_decode($request->getContent());
+        $result = [];
+        foreach ($bible_locations as $bible_location) {
+            $cache_string = 'v4_bible_filesets.checkTypes' . $bible_location->fileset_id;
+            $hashes = \Cache::remember($cache_string, now()->addMonth(), function () use ($bible_location) {
+                $filesets = BibleFileset::where('id', $bible_location->fileset_id)
+                    ->whereNotIn('set_type_code', ['text_format'])
+                    ->first()
+                    ->bible
+                    ->first()->filesets;
+                $audio_filesets_hashes = $filesets->whereIn('set_type_code', ['audio_drama', 'audio', 'audio_stream'])->pluck('hash_id')->flatten();
+                $video_filesets_hashes = $filesets->where('set_type_code', 'video_stream')->flatten();
+                return ['audio' => $audio_filesets_hashes, 'video' => $video_filesets_hashes];
+            });
+            $where_fields = [
+                ['book_id', $bible_location->book_id],
+                ['chapter_start', '>=', $bible_location->chapter_start],
+                ['chapter_start', '<=', $bible_location->chapter_end],
+                ['verse_start', '>=', $bible_location->verse_start],
+                ['verse_start', '<=', $bible_location->verse_end],
+            ];
+            $bible_location->has_audio = !!BibleFile::whereIn('hash_id', $hashes['audio'])->where($where_fields)->first();
+            $bible_location->has_video = !!BibleFile::whereIn('hash_id', $hashes['video'])->where($where_fields)->first();
+            $result[] = $bible_location;
+        }
+
+
+        return $this->reply($result);
+    }
+
+    /**
      * @param      $fileset
      * @param      $fileset_chapters
      * @param      $bible
@@ -349,7 +418,7 @@ class BibleFileSetsController extends APIController
             }
         }
 
-        
+
         if ($is_video) {
             foreach ($fileset_chapters as $key => $fileset_chapter) {
                 $fileset_chapters[$key]->thumbnail = $this->signedUrl('video/thumbnails/' . $fileset_chapters[$key]->book_id . '_' . str_pad($fileset_chapter->chapter_start, 2, '0', STR_PAD_LEFT) . '.jpg', $asset_id, random_int(0, 10000000));
