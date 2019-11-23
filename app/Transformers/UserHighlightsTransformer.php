@@ -12,7 +12,7 @@ class UserHighlightsTransformer extends TransformerAbstract
      *    type="array",
      *    schema="v4_highlights_index",
      *    description="The v4 highlights index response. Note the fileset_id is being used to identify the item instead of the bible_id.
-    This is important as different filesets may have different numbers for the highlighted words field depending on their revision.",
+     *    This is important as different filesets may have different numbers for the highlighted words field depending on their revision.",
      *    title="v4_highlights_index",
      *  @OA\Xml(name="v4_highlights_index"),
      *  @OA\Items(
