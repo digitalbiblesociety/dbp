@@ -379,12 +379,12 @@ class BibleFileSetsController extends APIController
             $where_fields = [
                 ['book_id', $bible_location->book_id],
                 ['chapter_start', '>=', $bible_location->chapter_start],
-                ['chapter_start', '<=', $bible_location->chapter_end],
-                ['verse_start', '>=', $bible_location->verse_start],
-                ['verse_start', '<=', $bible_location->verse_end],
+                [\DB::raw('IFNULL( chapter_end, chapter_start)'), '<=', $bible_location->chapter_end],
+                ['verse_start', '<=', $bible_location->verse_start],
+                [\DB::raw('IFNULL( chapter_end, ' . (int) $bible_location->verse_end . ')'), '>=', $bible_location->verse_end],
             ];
-            $bible_location->has_audio = !!BibleFile::whereIn('hash_id', $hashes['audio'])->where($where_fields)->first();
-            $bible_location->has_video = !!BibleFile::whereIn('hash_id', $hashes['video'])->where($where_fields)->first();
+            $bible_location->has_audio = BibleFile::whereIn('hash_id', $hashes['audio'])->where($where_fields)->exists();
+            $bible_location->has_video = BibleFile::whereIn('hash_id', $hashes['video'])->where($where_fields)->exists();
             $result[] = $bible_location;
         }
 
