@@ -4,9 +4,9 @@ namespace App\Models\User\Study;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
-use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleVerse;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
  * App\Models\User\Highlight
@@ -165,28 +165,35 @@ class Highlight extends Model
         return $this->hasMany(AnnotationTag::class, 'highlight_id', 'id');
     }
 
-    public function getVerseTextAttribute()
+    public function getFilesetInfoAttribute()
     {
         $highlight = $this->toArray();
         $chapter = $highlight['chapter'];
         $verse_start = $highlight['verse_start'];
         $verse_end = $highlight['verse_end'] ?? $verse_start;
         $bible = Bible::where('id', $highlight['bible_id'])->first();
-        $fileset = BibleFileset::join('bible_fileset_connections as connection', 'connection.hash_id', 'bible_filesets.hash_id')
-        ->where('bible_filesets.set_type_code', 'text_plain')->where('connection.bible_id', $bible->id)->first();
-        if (!$fileset) {
-            return '';
+        $filesets = $bible->filesets;
+        $text_fileset = $filesets->firstWhere('set_type_code', 'text_plain');
+        $audio_filesets = $filesets->filter(function ($fs) {
+            return Str::contains($fs->set_type_code, 'audio');
+        })->flatten()->toArray();
+        
+        $verses = '';
+        if ($text_fileset) {
+            $verses = BibleVerse::withVernacularMetaData($bible)
+            ->where('hash_id', $text_fileset->hash_id)
+            ->where('bible_verses.book_id', $highlight['book_id'])
+            ->where('verse_start', '>=', $verse_start)
+            ->where('verse_end', '<=', $verse_end)
+            ->where('chapter', $chapter)
+            ->orderBy('verse_start')
+            ->select([
+              'bible_verses.verse_text',
+            ])->get()->pluck('verse_text');
         }
-        $verses = BibleVerse::withVernacularMetaData($bible)
-        ->where('hash_id', $fileset->hash_id)
-        ->where('bible_verses.book_id', $highlight['book_id'])
-        ->where('verse_start', '>=', $verse_start)
-        ->where('verse_end', '<=', $verse_end)
-        ->where('chapter', $chapter)
-        ->orderBy('verse_start')
-        ->select([
-          'bible_verses.verse_text',
-        ])->get()->pluck('verse_text');
-        return implode(' ', $verses->toArray());
+        
+        $verse_text = implode(' ', $verses->toArray());
+
+        return collect(['verse_text' => $verse_text, 'audio_filesets' => $audio_filesets]);
     }
 }
