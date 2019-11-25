@@ -171,6 +171,7 @@ class PlaylistsController extends APIController
         }
 
         $playlist = Playlist::create($playlist_data);
+        $playlist->user;
 
         return $this->reply($playlist);
     }
@@ -558,7 +559,7 @@ class PlaylistsController extends APIController
             'message' => 'Playlist Item ' . $result
         ]);
     }
-
+    
     public function hls(Response $response, $playlist_id)
     {
         $playlist = Playlist::with('items')->find($playlist_id);

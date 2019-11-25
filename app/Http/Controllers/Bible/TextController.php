@@ -25,6 +25,7 @@ use App\Transformers\UserHighlightsTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformers\UserNotesTransformer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class TextController extends APIController
 {
@@ -259,6 +260,9 @@ class TextController extends APIController
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
         $bible = $fileset->bible->first();
+        $audio_filesets = $bible->filesets->filter(function ($fs) {
+            return Str::contains($fs->set_type_code, 'audio');
+        })->flatten()->toArray();
 
         $verses = BibleVerse::where('hash_id', $fileset->hash_id)
             ->withVernacularMetaData($bible)
@@ -282,15 +286,16 @@ class TextController extends APIController
             ->unless($relevance_order, function ($query) {
                 $query->orderByRaw('IFNULL(books.testament_order, books.protestant_order), bible_verses.chapter, bible_verses.verse_start');
             });
-
+            
         if ($page) {
             $verses  = $verses->paginate($limit);
+            return $this->reply(['audio_filesets' => $audio_filesets, 'verses' => fractal($verses->getCollection(), TextTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($verses))]);
+
             return $this->reply(fractal($verses->getCollection(), TextTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($verses)));
         }
         $verses  = $verses->limit($limit)->get();
-        return $this->reply(fractal($verses, new TextTransformer(), $this->serializer));
+        return $this->reply(['audio_filesets' => $audio_filesets, 'verses' => fractal($verses, new TextTransformer(), $this->serializer)]);
     }
-
     /**
      *
      * @OA\Get(

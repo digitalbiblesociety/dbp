@@ -38,6 +38,9 @@ class UserHighlightsTransformer extends TransformerAbstract
     public function transform(Highlight $highlight)
     {
         $this->checkColorPreference($highlight);
+        $highlight_fileset_info = $highlight->fileset_info;
+        $verse_text = $highlight_fileset_info->get('verse_text');
+        $audio_filesets = $highlight_fileset_info->get('audio_filesets');
 
         return [
             'id'                => (int) $highlight->id,
@@ -47,11 +50,12 @@ class UserHighlightsTransformer extends TransformerAbstract
             'chapter'           => (int) $highlight->chapter,
             'verse_start'       => (int) $highlight->verse_start,
             'verse_end'         => (int) $highlight->verse_end,
-            'verse_text'        => (string) $highlight->verse_text,
+            'verse_text'        => (string) $verse_text,
             'highlight_start'   => (int) $highlight->highlight_start,
             'highlighted_words' => $highlight->highlighted_words,
             'highlighted_color' => $highlight->color,
-            'tags'              => $highlight->tags
+            'tags'              => $highlight->tags,
+            'audio_filesets'    => $audio_filesets
         ];
     }
 
