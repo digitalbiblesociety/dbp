@@ -8,13 +8,11 @@ use App\Traits\AccessControlAPI;
 use App\Traits\CallsBucketsTrait;
 use App\Http\Controllers\APIController;
 
-use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFilesetType;
 use App\Models\Bible\Book;
 use App\Models\Language\Language;
-use App\Models\User\Key;
 
 use App\Transformers\FileSetTransformer;
 use Illuminate\Http\Request;
