@@ -217,6 +217,12 @@ class BiblesController extends APIController
      *          @OA\Schema(type="string"),
      *          description="The asset_id to filter results by. There are three buckets provided `dbp-prod`, `dbp-vid` & `dbs-web`"
      *     ),
+     *     @OA\Parameter(
+     *          name="asset_id",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="The asset_id to filter results by. There are three buckets provided `dbp-prod`, `dbp-vid` & `dbs-web`"
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -270,6 +276,12 @@ class BiblesController extends APIController
      *     @OA\Parameter(name="id",in="path",required=true,@OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(name="book_id",in="query", description="The book id. For a complete list see the `book_id` field in the `/bibles/books` route.",@OA\Schema(ref="#/components/schemas/Book/properties/id")),
      *     @OA\Parameter(name="testament",in="query",@OA\Schema(ref="#/components/schemas/Book/properties/book_testament")),
+     *     @OA\Parameter(
+     *          name="verify_content",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Filter all the books that have content"
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -290,28 +302,81 @@ class BiblesController extends APIController
         $book_id   = checkParam('book_id', false, $book_id);
         $testament = checkParam('testament');
 
+        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $verify_content = checkParam('verify_content');
+        $verify_content = $verify_content && $verify_content != 'false';
+
         $bible = Bible::find($bible_id);
+        $access_control = $this->accessControl($this->key);
+        $cache_string = strtolower('bible_books_bible:' . $bible_id . ':' . $access_control->string . ':' . $verify_content . ':' . $asset_id);
+        $bible = \Cache::remember($cache_string, now()->addDay(), function () use ($access_control, $bible_id, $asset_id, $verify_content) {
+            if (!$verify_content) {
+                return Bible::find($bible_id);
+            }
+
+            return  Bible::with([
+                'filesets' => function ($query) use ($access_control, $asset_id) {
+                    $query->whereIn('bible_filesets.hash_id', $access_control->hashes);
+                    if ($asset_id) {
+                        $query->whereIn('bible_filesets.asset_id', explode(',', $asset_id));
+                    }
+                }
+            ])->find($bible_id);
+        });
+
+
         if (!$bible) {
             return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $bible_id]));
         }
 
-        $books = BibleBook::where('bible_id', $bible_id)
-            ->with(['book' => function ($query) use ($testament) {
-                if ($testament) {
+        $cache_string = strtolower('bible_books_books:' . $bible_id . ':' . $testament . ':' . $book_id);
+        $books = \Cache::remember($cache_string, now()->addDay(), function () use ($bible_id, $testament, $book_id, $bible) {
+            $books = BibleBook::where('bible_id', $bible_id)
+                ->when($testament, function ($query) use ($testament) {
                     $query->where('book_testament', $testament);
+                })
+                ->when($book_id, function ($query) use ($book_id) {
+                    $query->where('book_id', $book_id);
+                })
+                ->get()->sortBy('book.' . $bible->versification . '_order')
+                ->filter(function ($item) {
+                    return $item->book;
+                })->flatten();
+            return $books;
+        });
+
+        if ($verify_content) {
+            $cache_string = strtolower('bible_books_books_verified:' . $bible_id . ':' . $access_control->string . ':' . $verify_content . ':' . $asset_id . ':' . $testament . ':' . $book_id);
+            $books = \Cache::remember($cache_string, now()->addDay(), function () use ($books, $bible) {
+                $book_controller = new BooksController();
+                $active_books = [];
+                foreach ($bible->filesets as $fileset) {
+                    $books_fileset = $book_controller->getActiveBooksFromFileset($fileset->id, $fileset->asset_id, $fileset->set_type_code)->pluck('id');
+                    $active_books = $this->processActiveBooks($books_fileset, $active_books, $fileset->set_type_code);
                 }
-            }])
-            ->when($book_id, function ($query) use ($book_id) {
-                $query->where('book_id', $book_id);
-            })
-            ->get()->sortBy('book.' . $bible->versification . '_order')
-            ->filter(function ($item) {
-                return $item->book;
-            })->flatten();
+
+                return $books->map(function ($book) use ($active_books) {
+                    if (isset($active_books[$book->book_id])) {
+                        $book->content_types = array_unique($active_books[$book->book_id]);
+                    }
+                    return $book;
+                })->filter(function ($book) {
+                    return $book->content_types;
+                });
+            });
+        }
 
         return $this->reply(fractal($books, new BooksTransformer));
     }
 
+    private function processActiveBooks($books, $active_books, $set_type_code)
+    {
+        foreach ($books as $book) {
+            $active_books[$book] =  $active_books[$book] ?? [];
+            $active_books[$book][] = $set_type_code;
+        }
+        return $active_books;
+    }
 
     /**
      * @OA\GET(

@@ -45,7 +45,7 @@ class BooksTransformer extends BaseTransformer
                     'dam_id'       => $book->bible_id,
                     'chapter_list' => implode(',', $book->sophia_chapters),
                     '_links'       => [
-                        'self' => [ 'href' => 'http://v3.dbt.io/search/'.$manufactured_id ]
+                        'self' => ['href' => 'http://v3.dbt.io/search/' . $manufactured_id]
                     ]
                 ];
 
@@ -61,7 +61,7 @@ class BooksTransformer extends BaseTransformer
                     'chapters'     => $book->chapters,
                     'chapter_list' => $book->chapters->pluck('number')->implode(','),
                     '_links'       => [
-                        'self' => [ 'href' => 'http://v3.dbt.io/search/'.$manufactured_id ]
+                        'self' => ['href' => 'http://v3.dbt.io/search/' . $manufactured_id]
                     ]
                 ];
         }
@@ -132,7 +132,7 @@ class BooksTransformer extends BaseTransformer
                 ];
 
             case 'v4_bible.books':
-                return [
+                $result = [
                     'book_id'         => $book->book->id,
                     'book_id_usfx'    => $book->book->id_usfx,
                     'book_id_osis'    => $book->book->id_osis,
@@ -143,6 +143,10 @@ class BooksTransformer extends BaseTransformer
                     'book_group'      => $book->book->book_group,
                     'chapters'        => array_map('\intval', explode(',', $book->chapters)),
                 ];
+                if ($book->content_types) {
+                    $result['content_types'] = $book->content_types;
+                }
+                return $result;
 
             case 'v4_bible_filesets.books':
             default:
