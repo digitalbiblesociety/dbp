@@ -217,6 +217,12 @@ class BiblesController extends APIController
      *          @OA\Schema(type="string"),
      *          description="The asset_id to filter results by. There are three buckets provided `dbp-prod`, `dbp-vid` & `dbs-web`"
      *     ),
+     *     @OA\Parameter(
+     *          name="asset_id",
+     *          in="query",
+     *          @OA\Schema(type="string"),
+     *          description="The asset_id to filter results by. There are three buckets provided `dbp-prod`, `dbp-vid` & `dbs-web`"
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -270,6 +276,12 @@ class BiblesController extends APIController
      *     @OA\Parameter(name="id",in="path",required=true,@OA\Schema(ref="#/components/schemas/Bible/properties/id")),
      *     @OA\Parameter(name="book_id",in="query", description="The book id. For a complete list see the `book_id` field in the `/bibles/books` route.",@OA\Schema(ref="#/components/schemas/Book/properties/id")),
      *     @OA\Parameter(name="testament",in="query",@OA\Schema(ref="#/components/schemas/Book/properties/book_testament")),
+     *     @OA\Parameter(
+     *          name="verify_content",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Filter all the books that have content"
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
