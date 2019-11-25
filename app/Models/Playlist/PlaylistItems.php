@@ -22,6 +22,7 @@ use Spatie\EloquentSortable\SortableTrait;
  * @property int $chapter_end
  * @property int $verse_start
  * @property int $verse_end
+ * @property int $verses
  * @property int $duration
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -41,7 +42,7 @@ class PlaylistItems extends Model implements Sortable
 
     protected $connection = 'dbp_users';
     public $table         = 'playlist_items';
-    protected $fillable   = ['playlist_id', 'fileset_id', 'book_id', 'chapter_start', 'chapter_end', 'verse_start', 'verse_end', 'duration'];
+    protected $fillable   = ['playlist_id', 'fileset_id', 'book_id', 'chapter_start', 'chapter_end', 'verse_start', 'verse_end', 'duration', 'verses'];
     protected $hidden     = ['playlist_id', 'created_at', 'updated_at', 'order_column'];
 
     /**
@@ -153,6 +154,17 @@ class PlaylistItems extends Model implements Sortable
      */
     protected $duration;
 
+    /**
+     *
+     * @OA\Property(
+     *   title="verses",
+     *   type="integer",
+     *   description="The playlist item verses count"
+     * )
+     *
+     */
+    protected $verses;
+
     /** @OA\Property(
      *   title="updated_at",
      *   type="string",
@@ -238,18 +250,10 @@ class PlaylistItems extends Model implements Sortable
 
         return $timestamps->sum('duration');
     }
-    protected $appends = ['verses', 'completed', 'full_chapter'];
+    protected $appends = ['completed', 'full_chapter'];
 
-    /**
-     *
-     * @OA\Property(
-     *   title="verses",
-     *   type="integer",
-     *   description="The playlist item verses count"
-     * )
-     *
-     */
-    public function getVersesAttribute()
+
+    public function calculateVerses()
     {
         $fileset = BibleFileset::where('id', $this['fileset_id'])
             ->whereNotIn('set_type_code', ['text_format'])
@@ -265,10 +269,14 @@ class PlaylistItems extends Model implements Sortable
         foreach ($bible_files as $bible_file) {
             $verses_middle += ($bible_file->verse_start - 1) + $bible_file->verse_end;
         }
-        if (!$this['verse_start'] && !$this['verse_start']) {
-            return $verses_middle;
+        if (!$this['verse_start'] && !$this['verse_end']) {
+            $verses = $verses_middle;
+        } else {
+            $verses = $verses_middle - ($this['verse_start'] - 1) + $this['verse_end'];
         }
-        return  $verses_middle - ($this['verse_start'] - 1) + $this['verse_end'];
+
+        $this->attributes['verses'] =  $verses;
+        return $this;
     }
 
     /**

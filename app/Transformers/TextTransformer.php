@@ -144,17 +144,18 @@ class TextTransformer extends BaseTransformer
      */
     public function transformForV4($text)
     {
-        return [
-            'book_id'          => $text->book_id ?? '',
-            'book_name'        => $text->book_name ?? '',
-            'book_name_alt'    => $text->book_vernacular_name ?? '',
-            'chapter'          => (integer) $text->chapter,
-            'chapter_alt'      => (string) $text->chapter_vernacular,
-            'verse_start'      => (integer) $text->verse_start,
-            'verse_start_alt'  => (string) $text->verse_start_vernacular,
-            'verse_end'        => (integer) $text->verse_end,
-            'verse_end_alt'    => (string) $text->verse_end_vernacular,
-            'verse_text'       => (string) $text->verse_text
+        return  [
+                'book_id'          => $text->book_id ?? '',
+                'book_name'        => $text->book_name ?? '',
+                'book_name_alt'    => $text->book_vernacular_name ?? '',
+                'chapter'          => (integer) $text->chapter,
+                'chapter_alt'      => (string) $text->chapter_vernacular,
+                'verse_start'      => (integer) $text->verse_start,
+                'verse_start_alt'  => (string) $text->verse_start_vernacular,
+                'verse_end'        => (integer) $text->verse_end,
+                'verse_end_alt'    => (string) $text->verse_end_vernacular,
+                'verse_text'       => (string) $text->verse_text
+            
         ];
     }
 }

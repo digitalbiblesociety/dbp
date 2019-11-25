@@ -171,6 +171,7 @@ class PlaylistsController extends APIController
         }
 
         $playlist = Playlist::create($playlist_data);
+        $playlist->user;
 
         return $this->reply($playlist);
     }
@@ -470,9 +471,13 @@ class PlaylistsController extends APIController
                 'chapter_start'     => $playlist_item->chapter_start,
                 'chapter_end'       => $playlist_item->chapter_end,
                 'verse_start'       => $playlist_item->verse_start,
-                'verse_end'         => $playlist_item->verse_end
+                'verse_end'         => $playlist_item->verse_end,
+                'verses'            => $playlist_item->verses
             ]);
             $created_playlist_item->calculateDuration()->save();
+            if (!$playlist_item->verses) {
+                $created_playlist_item->calculateVerses()->save();
+            }
             $created_playlist_items[] = $created_playlist_item;
         }
 
@@ -554,7 +559,7 @@ class PlaylistsController extends APIController
             'message' => 'Playlist Item ' . $result
         ]);
     }
-
+    
     public function hls(Response $response, $playlist_id)
     {
         $playlist = Playlist::with('items')->find($playlist_id);

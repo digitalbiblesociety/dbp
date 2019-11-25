@@ -91,6 +91,7 @@ Route::name('v4_bible.defaults')->get('bibles/defaults/types',                  
 
 // VERSION 4 | Filesets
 Route::name('v4_filesets.types')->get('bibles/filesets/media/types',               'Bible\BibleFileSetsController@mediaTypes');
+Route::name('v4_filesets.checkTypes')->post('bibles/filesets/check/types',         'Bible\BibleFileSetsController@checkTypes');
 Route::name('v4_filesets.podcast')->get('bibles/filesets/{fileset_id}/podcast',    'Bible\BibleFilesetsPodcastController@index');
 Route::name('v4_filesets.download')->get('bibles/filesets/{fileset_id}/download',  'Bible\BibleFileSetsController@download');
 Route::name('v4_filesets.copyright')->get('bibles/filesets/{fileset_id}/copyright', 'Bible\BibleFileSetsController@copyright');
@@ -173,6 +174,10 @@ Route::middleware('APIToken')->group(function () {
     Route::name('v4_highlights.store')->post('users/{user_id}/highlights',             'User\HighlightsController@store');
     Route::name('v4_highlights.update')->put('users/{user_id}/highlights/{id}',        'User\HighlightsController@update');
     Route::name('v4_highlights.destroy')->delete('users/{user_id}/highlights/{id}',    'User\HighlightsController@destroy');
+});
+
+Route::middleware('APIToken:check')->group(function () {
+    Route::name('v4_highlights.colors')->get('users/highlights/colors',                'User\HighlightsController@colors');
 });
 
 // VERSION 4 | User Settings
