@@ -260,6 +260,8 @@ class TextController extends APIController
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
         $bible = $fileset->bible->first();
+        // echo json_encode($bible->filesets);
+        // die();
         $audio_filesets = $bible->filesets->filter(function ($fs) {
             return Str::contains($fs->set_type_code, 'audio');
         })->flatten()->toArray();
