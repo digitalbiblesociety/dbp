@@ -464,6 +464,8 @@ class PlaylistsController extends APIController
         $created_playlist_items = [];
 
         foreach ($playlist_items as $playlist_item) {
+            $verses = $playlist_items->verses ?? 0;
+
             $created_playlist_item = PlaylistItems::create([
                 'playlist_id'       => $playlist->id,
                 'fileset_id'        => $playlist_item->fileset_id,
@@ -472,10 +474,10 @@ class PlaylistsController extends APIController
                 'chapter_end'       => $playlist_item->chapter_end,
                 'verse_start'       => $playlist_item->verse_start,
                 'verse_end'         => $playlist_item->verse_end,
-                'verses'            => $playlist_item->verses
+                'verses'            => $verses
             ]);
             $created_playlist_item->calculateDuration()->save();
-            if (!$playlist_item->verses) {
+            if (!$verses) {
                 $created_playlist_item->calculateVerses()->save();
             }
             $created_playlist_items[] = $created_playlist_item;
