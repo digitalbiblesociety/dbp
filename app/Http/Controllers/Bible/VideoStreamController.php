@@ -18,7 +18,7 @@ class VideoStreamController extends APIController
     {
         $iso = checkParam('iso');
         if ($iso) {
-            $cache_string =  'arclight_languages';
+            $cache_string =  'arclight_languages' . $iso;
             $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($iso) {
                 $languages = collect($this->fetchArclight('media-languages', false, false, 'iso3=' . $iso)->mediaLanguages);
                 $languages = $languages->where('counts.speakerCount.value', $languages->max('counts.speakerCount.value'))->keyBy('iso3')->map(function ($item) {
@@ -26,7 +26,12 @@ class VideoStreamController extends APIController
                 });
                 return $languages;
             });
-            if (!isset($languages[$iso])) {
+
+            $has_language = $languages->contains(function ($value, $key) use ($iso) {
+                return $key === $iso;
+            });
+
+            if (!$has_language) {
                 return $this->setStatusCode(404)->replyWithError('No language could be found for the iso code specified');
             }
             $arclight_id = $languages[$iso];
