@@ -561,7 +561,7 @@ class PlaylistsController extends APIController
             'message' => 'Playlist Item ' . $result
         ]);
     }
-    
+
     public function hls(Response $response, $playlist_id)
     {
         $playlist = Playlist::with('items')->find($playlist_id);
@@ -631,23 +631,14 @@ class PlaylistsController extends APIController
             $currentBandwidth = $bible_file->streamBandwidth->first();
 
             $transportStream = sizeof($currentBandwidth->transportStreamBytes) ? $currentBandwidth->transportStreamBytes : $currentBandwidth->transportStreamTS;
-            if ($item->chapter_end  === $item->chapter_start) {
-                $transportStream = $transportStream->splice(1, $item->verse_end)->all();
-                $transportStream = collect($transportStream)->slice($item->verse_start - 1)->all();
-            } else {
-                $transportStream = $transportStream->splice(1)->all();
-                if ($bible_file->chapter_start === $item->chapter_start) {
-                    $transportStream = collect($transportStream)->slice($item->verse_start - 1)->all();
-                }
-                if ($bible_file->chapter_start === $item->chapter_end) {
-                    $transportStream = collect($transportStream)->splice(0, $item->verse_end)->all();
-                }
+            if ($item->verse_end && $item->verse_start) {
+                $transportStream = $this->processVersesOnTransportStream($item, $transportStream, $bible_file);
             }
 
             $fileset = $bible_file->fileset;
 
             foreach ($transportStream as $stream) {
-                $hls_items .= "\n#EXTINF:$stream->runtime,";
+                $hls_items .= "\n#EXTINF:$stream->runtime," . $item->id;
                 if (isset($stream->timestamp)) {
                     $hls_items .= "\n#EXT-X-BYTERANGE:$stream->bytes@$stream->offset";
                     $fileset = $stream->timestamp->bibleFile->fileset;
@@ -682,6 +673,24 @@ class PlaylistsController extends APIController
         }
 
         return $hls_items;
+    }
+
+    private function processVersesOnTransportStream($item, $transportStream, $bible_file)
+    {
+        if ($item->chapter_end  === $item->chapter_start) {
+            $transportStream = $transportStream->splice(1, $item->verse_end)->all();
+            return collect($transportStream)->slice($item->verse_start - 1)->all();
+        }
+
+        $transportStream = $transportStream->splice(1)->all();
+        if ($bible_file->chapter_start === $item->chapter_start) {
+            return collect($transportStream)->slice($item->verse_start - 1)->all();
+        }
+        if ($bible_file->chapter_start === $item->chapter_end) {
+            return collect($transportStream)->splice(0, $item->verse_end)->all();
+        }
+
+        return $transportStream;
     }
 
     /**
