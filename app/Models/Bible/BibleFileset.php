@@ -221,7 +221,17 @@ class BibleFileset extends Model
                         ->orWhere('bible_filesets.id', 'like',  substr($id, 0, 6))
                         ->orWhere('bible_filesets.id', 'like', substr($id, 0, -2) . '%');
                 } else {
-                    $query->where('bible_filesets.id', $id);
+                    $connections = \DB::table('bible_fileset_connections')
+                    ->select('hash_id')
+                     ->where('bible_id', 'LIKE', $id . '%')->get()->map(function ($item) {
+                         return $item->hash_id;
+                     });
+
+                    if ($connections) {
+                        $query->whereIn('bible_filesets.hash_id', $connections);
+                    } else {
+                        $query->where('bible_filesets.id', $id);
+                    }
                 }
             });
         })
