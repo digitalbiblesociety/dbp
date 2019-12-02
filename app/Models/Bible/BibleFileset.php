@@ -223,9 +223,7 @@ class BibleFileset extends Model
                 } else {
                     $connections = \DB::table('bible_fileset_connections')
                     ->select('hash_id')
-                     ->where('bible_id', 'LIKE', $id . '%')->get()->map(function ($item) {
-                         return $item->hash_id;
-                     });
+                     ->where('bible_id', 'LIKE', $id . '%')->get()->pluck('hash_id');
 
                     if ($connections) {
                         $query->whereIn('bible_filesets.hash_id', $connections);
