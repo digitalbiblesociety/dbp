@@ -225,11 +225,10 @@ class BibleFileset extends Model
                     ->select('hash_id')
                      ->where('bible_id', 'LIKE', $id . '%')->get()->pluck('hash_id');
 
-                    if ($connections) {
-                        $query->whereIn('bible_filesets.hash_id', $connections);
-                    } else {
-                        $query->where('bible_filesets.id', $id);
-                    }
+                    $query->where('bible_filesets.id', $id)
+                     ->when($connections, function ($q) use ($connections) {
+                         $q->orWhereIn('bible_filesets.hash_id', $connections);
+                     });
                 }
             });
         })
