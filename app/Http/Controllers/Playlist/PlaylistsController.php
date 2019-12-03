@@ -202,6 +202,9 @@ class PlaylistsController extends APIController
      */
     public function show(Request $request, $playlist_id)
     {
+        // Fetch and Assign $_GET params
+        $asset_id    = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3.bucket');
+
         $user = $request->user();
 
         // Validate Project / User Connection
