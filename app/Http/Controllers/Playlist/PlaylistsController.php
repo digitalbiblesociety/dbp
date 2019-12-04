@@ -565,7 +565,7 @@ class PlaylistsController extends APIController
     public function hls(Response $response, $playlist_id)
     {
         $download = checkParam('download');
-        $mp3_files = [];
+        $download = $download && $download != 'false';
         $playlist = Playlist::with('items')->find($playlist_id);
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
