@@ -248,7 +248,7 @@ class BibleTransformer extends BaseTransformer
                     'fonts' => $bible->filesets->reduce(function ($carry, $item) {
                         foreach ($item->fonts as $font) {
                             if (!isset($carry[$font->name])) {
-                                $carry = ['name' => $font->name, 'data' => $font->data, 'type' => $font->type];
+                                $carry[$font->name] = ['data' => $font->data, 'type' => $font->type];
                             }
                         }
                         return $carry;
