@@ -36,10 +36,10 @@ class BibleTransformer extends BaseTransformer
         // Compute v2 ID
         if (isset($bible->bible)) {
             $iso = $bible->bible->first()->language->iso;
-            $v2id = $iso.substr($bible->first()->id, 3, 3);
+            $v2id = $iso . substr($bible->first()->id, 3, 3);
         } elseif (isset($bible->id)) {
             $iso = $bible->language->iso ?? null;
-            $v2id = $iso.substr($bible->id, 3, 3);
+            $v2id = $iso . substr($bible->id, 3, 3);
         }
 
         $parent = optional($bible->language->parent);
@@ -97,14 +97,14 @@ class BibleTransformer extends BaseTransformer
     {
         switch ($this->route) {
 
-            /**
+                /**
              * @OA\Schema (
-            *   type="object",
-            *   schema="v4_bible.all",
-            *   description="The bibles being returned",
-            *   title="v4_bible.all",
-            *   @OA\Xml(name="v4_bible.all"),
-            *   @OA\Items(
+             *   type="object",
+             *   schema="v4_bible.all",
+             *   description="The bibles being returned",
+             *   title="v4_bible.all",
+             *   @OA\Xml(name="v4_bible.all"),
+             *   @OA\Items(
              *              @OA\Property(property="abbr",              ref="#/components/schemas/Bible/properties/id"),
              *              @OA\Property(property="name",              ref="#/components/schemas/BibleTranslation/properties/name"),
              *              @OA\Property(property="vname",             ref="#/components/schemas/BibleTranslation/properties/name"),
@@ -184,37 +184,38 @@ class BibleTransformer extends BaseTransformer
 
                 return $output;
 
-            /**
-             * @OA\Schema (
-            *   type="array",
-            *   schema="v4_bible.one",
-            *   description="The bible being returned",
-            *   title="v4_bible.one",
-            *   @OA\Xml(name="v4_bible.one"),
-            *   @OA\Items(
-             *              @OA\Property(property="abbr",          ref="#/components/schemas/Bible/properties/id"),
-             *              @OA\Property(property="alphabet",      ref="#/components/schemas/Alphabet/properties/script"),
-             *              @OA\Property(property="mark",          ref="#/components/schemas/Bible/properties/copyright"),
-             *              @OA\Property(property="name",          ref="#/components/schemas/BibleTranslation/properties/name"),
-             *              @OA\Property(property="description",   ref="#/components/schemas/BibleTranslation/properties/description"),
-             *              @OA\Property(property="vname",         ref="#/components/schemas/BibleTranslation/properties/name"),
-             *              @OA\Property(property="vdescription",  ref="#/components/schemas/BibleTranslation/properties/description"),
-             *              @OA\Property(property="publishers",    ref="#/components/schemas/Organization"),
-             *              @OA\Property(property="providers",     ref="#/components/schemas/Organization"),
-             *              @OA\Property(property="language",      ref="#/components/schemas/Language/properties/name"),
-             *              @OA\Property(property="iso",           ref="#/components/schemas/Language/properties/iso"),
-             *              @OA\Property(property="date",          ref="#/components/schemas/Bible/properties/date"),
-             *              @OA\Property(property="country",       ref="#/components/schemas/Country/properties/name"),
-             *              @OA\Property(property="books",         ref="#/components/schemas/Book/properties/id"),
-             *              @OA\Property(property="links",         ref="#/components/schemas/BibleLink"),
-             *              @OA\Property(property="filesets",      ref="#/components/schemas/BibleFileset"),
-             *     )
-             *   )
-             * )
-             */
+                /**
+                 * @OA\Schema (
+                 *   type="array",
+                 *   schema="v4_bible.one",
+                 *   description="The bible being returned",
+                 *   title="v4_bible.one",
+                 *   @OA\Xml(name="v4_bible.one"),
+                 *   @OA\Items(
+                 *              @OA\Property(property="abbr",          ref="#/components/schemas/Bible/properties/id"),
+                 *              @OA\Property(property="alphabet",      ref="#/components/schemas/Alphabet/properties/script"),
+                 *              @OA\Property(property="mark",          ref="#/components/schemas/Bible/properties/copyright"),
+                 *              @OA\Property(property="name",          ref="#/components/schemas/BibleTranslation/properties/name"),
+                 *              @OA\Property(property="description",   ref="#/components/schemas/BibleTranslation/properties/description"),
+                 *              @OA\Property(property="vname",         ref="#/components/schemas/BibleTranslation/properties/name"),
+                 *              @OA\Property(property="vdescription",  ref="#/components/schemas/BibleTranslation/properties/description"),
+                 *              @OA\Property(property="publishers",    ref="#/components/schemas/Organization"),
+                 *              @OA\Property(property="providers",     ref="#/components/schemas/Organization"),
+                 *              @OA\Property(property="language",      ref="#/components/schemas/Language/properties/name"),
+                 *              @OA\Property(property="iso",           ref="#/components/schemas/Language/properties/iso"),
+                 *              @OA\Property(property="date",          ref="#/components/schemas/Bible/properties/date"),
+                 *              @OA\Property(property="country",       ref="#/components/schemas/Country/properties/name"),
+                 *              @OA\Property(property="books",         ref="#/components/schemas/Book/properties/id"),
+                 *              @OA\Property(property="links",         ref="#/components/schemas/BibleLink"),
+                 *              @OA\Property(property="filesets",      ref="#/components/schemas/BibleFileset"),
+                 *     )
+                 *   )
+                 * )
+                 */
             case 'v4_bible.one':
                 $currentTranslation = optional($bible->translations->where('language_id', $GLOBALS['i18n_id']));
-                return [
+                $fonts = [];
+                $bible = [
                     'abbr'          => $bible->id,
                     'alphabet'      => $bible->alphabet,
                     'mark'          => $bible->copyright,
@@ -230,7 +231,7 @@ class BibleTransformer extends BaseTransformer
                     'iso'           => optional($bible->language)->iso,
                     'date'          => $bible->date,
                     'country'       => $bible->language->primaryCountry->name ?? '',
-                    'books'         => $bible->books->sortBy('book.'.$bible->versification.'_order')->each(function ($book) {
+                    'books'         => $bible->books->sortBy('book.' . $bible->versification . '_order')->each(function ($book) {
                         // convert to integer array
                         $chapters = explode(',', $book->chapters);
                         foreach ($chapters as $key => $chapter) {
@@ -241,10 +242,20 @@ class BibleTransformer extends BaseTransformer
                         return $book;
                     })->values(),
                     'links'        => $bible->links,
-                    'filesets'     => $bible->filesets->mapToGroups(function ($item, $key) {
-                        return [$item['asset_id'] => ['id' => $item['id'],'type' => $item->set_type_code, 'size' => $item->set_size_code]];
-                    })
+                    'filesets'     => $bible->filesets->mapToGroups(function ($item, $key) use ($fonts) {
+                        return [$item['asset_id'] => ['id' => $item['id'], 'type' => $item->set_type_code, 'size' => $item->set_size_code]];
+                    }),
+                    'fonts' => $bible->filesets->reduce(function ($carry, $item) {
+                        foreach ($item->fonts as $font) {
+                            if (!isset($carry[$font->name])) {
+                                $carry[$font->name] = ['data' => $font->data, 'type' => $font->type];
+                            }
+                        }
+                        return $carry;
+                    }, [])
                 ];
+
+                return $bible;
 
             default:
                 return [];

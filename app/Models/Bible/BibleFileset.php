@@ -177,6 +177,11 @@ class BibleFileset extends Model
         return $this->hasMany(BibleFilesetTag::class, 'hash_id', 'hash_id');
     }
 
+    public function fonts()
+    {
+        return $this->hasManyThrough(Font::class, BibleFilesetFont::class, 'hash_id', 'id', 'hash_id', 'font_id');
+    }
+
     public function scopeWithBible($query, $bible_name, $language_id, $organization)
     {
         return $query
