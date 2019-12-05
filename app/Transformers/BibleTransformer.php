@@ -252,7 +252,7 @@ class BibleTransformer extends BaseTransformer
                             }
                         }
                         return $carry;
-                    }, [])
+                    }, null)
                 ];
 
                 return $bible;
