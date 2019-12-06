@@ -177,6 +177,11 @@ class BibleFileset extends Model
         return $this->hasMany(BibleFilesetTag::class, 'hash_id', 'hash_id');
     }
 
+    public function fonts()
+    {
+        return $this->hasManyThrough(Font::class, BibleFilesetFont::class, 'hash_id', 'id', 'hash_id', 'font_id');
+    }
+
     public function scopeWithBible($query, $bible_name, $language_id, $organization)
     {
         return $query
@@ -221,7 +226,14 @@ class BibleFileset extends Model
                         ->orWhere('bible_filesets.id', 'like',  substr($id, 0, 6))
                         ->orWhere('bible_filesets.id', 'like', substr($id, 0, -2) . '%');
                 } else {
-                    $query->where('bible_filesets.id', $id);
+                    $connections = \DB::table('bible_fileset_connections')
+                    ->select('hash_id')
+                     ->where('bible_id', 'LIKE', $id . '%')->get()->pluck('hash_id');
+
+                    $query->where('bible_filesets.id', $id)
+                     ->when($connections, function ($q) use ($connections) {
+                         $q->orWhereIn('bible_filesets.hash_id', $connections);
+                     });
                 }
             });
         })

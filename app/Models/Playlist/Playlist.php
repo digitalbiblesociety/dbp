@@ -154,6 +154,5 @@ class Playlist extends Model
     public function items()
     {
         return $this->hasMany(PlaylistItems::class)->orderBy('order_column');
-        ;
     }
 }
