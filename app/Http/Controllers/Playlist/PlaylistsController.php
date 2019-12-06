@@ -564,6 +564,8 @@ class PlaylistsController extends APIController
 
     public function hls(Response $response, $playlist_id)
     {
+        $download = checkParam('download');
+        $download = $download && $download != 'false';
         $playlist = Playlist::with('items')->find($playlist_id);
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
@@ -591,10 +593,14 @@ class PlaylistsController extends APIController
                 ->where('chapter_start', '<=', $item->chapter_end)
                 ->get();
             if ($fileset->set_type_code === 'audio_stream') {
-                $hls_items = $this->processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item);
+                $result = $this->processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download);
+                $hls_items = $result->hls_items;
+                $signed_files = $result->signed_files;
                 $durations[] = $this->getMaxRuntime($bible_files);
             } else {
-                $hls_items = $this->processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id);
+                $result = $this->processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download);
+                $hls_items = $result->hls_items;
+                $signed_files = $result->signed_files;
                 $durations[] = $bible_files->max('duration');
             }
         }
@@ -606,6 +612,10 @@ class PlaylistsController extends APIController
         $current_file .= '#EXT-X-ALLOW-CACHE:YES';
         $current_file .= $hls_items;
         $current_file .= "\n#EXT-X-ENDLIST";
+
+        if ($download) {
+            return $this->reply(['hls' => $current_file, 'signed_files' => $signed_files]);
+        }
 
         return response($current_file, 200, [
             'Content-Disposition' => 'attachment; filename="' . $playlist_id . '.m3u8"',
@@ -625,7 +635,7 @@ class PlaylistsController extends APIController
         return collect($runtimes)->max();
     }
 
-    private function processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item)
+    private function processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download)
     {
         foreach ($bible_files as $bible_file) {
             $currentBandwidth = $bible_file->streamBandwidth->first();
@@ -649,14 +659,16 @@ class PlaylistsController extends APIController
                 if (!isset($signed_files[$file_path])) {
                     $signed_files[$file_path] = $this->signedUrl($file_path, $fileset->asset_id, $transaction_id);
                 }
-                $hls_items .= "\n" . $signed_files[$file_path];
+                $hls_file_path = $download ? $file_path : $signed_files[$file_path];
+                $hls_items .= "\n" . $hls_file_path;
             }
             $hls_items .= "\n" . '#EXT-X-DISCONTINUITY';
         }
-        return $hls_items;
+
+        return (object) ['hls_items' => $hls_items, 'signed_files' => $signed_files];
     }
 
-    private function processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id)
+    private function processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download)
     {
         foreach ($bible_files as $bible_file) {
             $default_duration = $bible_file->duration ?? 180;
@@ -668,11 +680,12 @@ class PlaylistsController extends APIController
             if (!isset($signed_files[$file_path])) {
                 $signed_files[$file_path] = $this->signedUrl($file_path, $bible_file->fileset->asset_id, $transaction_id);
             }
-            $hls_items .= $signed_files[$file_path];
+            $hls_file_path = $download ? $file_path : $signed_files[$file_path];
+            $hls_items .= "\n" . $hls_file_path;
             $hls_items .= "\n" . '#EXT-X-DISCONTINUITY';
         }
 
-        return $hls_items;
+        return (object) ['hls_items' => $hls_items, 'signed_files' => $signed_files];
     }
 
     private function processVersesOnTransportStream($item, $transportStream, $bible_file)
@@ -698,6 +711,7 @@ class PlaylistsController extends APIController
      *   type="object",
      *   schema="PlaylistItemDetail",
      *   @OA\Property(property="id", ref="#/components/schemas/PlaylistItems/properties/id"),
+     *   @OA\Property(property="bible_id", ref="#/components/schemas/Bible/properties/id"),
      *   @OA\Property(property="fileset_id", ref="#/components/schemas/PlaylistItems/properties/fileset_id"),
      *   @OA\Property(property="book_id", ref="#/components/schemas/PlaylistItems/properties/book_id"),
      *   @OA\Property(property="chapter_start", ref="#/components/schemas/PlaylistItems/properties/chapter_start"),
@@ -759,6 +773,16 @@ class PlaylistsController extends APIController
             ->where('user_playlists.id', $playlist_id)
             ->select($select)
             ->first();
+
+        $playlist->items = $playlist->items->map(function ($item) {
+            $bible = $item->fileset->bible->first();
+            if ($bible) {
+                $item->bible_id = $bible->id;
+            }
+            unset($item->fileset);
+            return $item;
+        });
+
         return $playlist;
     }
 }
