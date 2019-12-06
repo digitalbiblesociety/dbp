@@ -472,8 +472,8 @@ class PlaylistsController extends APIController
                 'book_id'           => $playlist_item->book_id,
                 'chapter_start'     => $playlist_item->chapter_start,
                 'chapter_end'       => $playlist_item->chapter_end,
-                'verse_start'       => $playlist_item->verse_start,
-                'verse_end'         => $playlist_item->verse_end,
+                'verse_start'       => $playlist_item->verse_start ?? null,
+                'verse_end'         => $playlist_item->verse_end ?? null,
                 'verses'            => $verses
             ]);
             $created_playlist_item->calculateDuration()->save();
