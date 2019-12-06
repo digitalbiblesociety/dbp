@@ -598,7 +598,7 @@ class PlaylistsController extends APIController
                 $signed_files = $result->signed_files;
                 $durations[] = $this->getMaxRuntime($bible_files);
             } else {
-                $result = $this->processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download);
+                $result = $this->processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download, $item);
                 $hls_items = $result->hls_items;
                 $signed_files = $result->signed_files;
                 $durations[] = $bible_files->max('duration');
@@ -668,11 +668,11 @@ class PlaylistsController extends APIController
         return (object) ['hls_items' => $hls_items, 'signed_files' => $signed_files];
     }
 
-    private function processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download)
+    private function processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download, $item)
     {
         foreach ($bible_files as $bible_file) {
             $default_duration = $bible_file->duration ?? 180;
-            $hls_items .= "\n#EXTINF:$default_duration,";
+            $hls_items .= "\n#EXTINF:$default_duration," . $item->id;
 
             $bible_path = $bible_file->fileset->bible->first()->id;
             $file_path = 'audio/' . $bible_path . '/' . $bible_file->fileset->id . '/' . $bible_file->file_name;
