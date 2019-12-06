@@ -202,9 +202,6 @@ class PlaylistsController extends APIController
      */
     public function show(Request $request, $playlist_id)
     {
-        // Fetch and Assign $_GET params
-        $asset_id    = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3.bucket');
-
         $user = $request->user();
 
         // Validate Project / User Connection
@@ -671,7 +668,7 @@ class PlaylistsController extends APIController
         return (object) ['hls_items' => $hls_items, 'signed_files' => $signed_files];
     }
 
-    private function processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, , $download, $item)
+    private function processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download, $item)
     {
         foreach ($bible_files as $bible_file) {
             $default_duration = $bible_file->duration ?? 180;
