@@ -6,6 +6,7 @@ use App\Models\Organization\Asset;
 use App\Models\Organization\Organization;
 use App\Models\User\AccessGroupFileset;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Bible\BibleFileset
@@ -226,14 +227,14 @@ class BibleFileset extends Model
                         ->orWhere('bible_filesets.id', 'like',  substr($id, 0, 6))
                         ->orWhere('bible_filesets.id', 'like', substr($id, 0, -2) . '%');
                 } else {
-                    $connections = \DB::table('bible_fileset_connections')
-                    ->select('hash_id')
-                     ->where('bible_id', 'LIKE', $id . '%')->get()->pluck('hash_id');
+                    $connections = DB::table(config('database.connections.dbp.database') . '.bible_fileset_connections')
+                        ->select('hash_id')
+                        ->where('bible_id', 'LIKE', $id . '%')->get()->pluck('hash_id');
 
                     $query->where('bible_filesets.id', $id)
-                     ->when($connections, function ($q) use ($connections) {
-                         $q->orWhereIn('bible_filesets.hash_id', $connections);
-                     });
+                        ->when($connections, function ($q) use ($connections) {
+                            $q->orWhereIn('bible_filesets.hash_id', $connections);
+                        });
                 }
             });
         })
