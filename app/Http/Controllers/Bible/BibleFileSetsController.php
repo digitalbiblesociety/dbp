@@ -82,7 +82,7 @@ class BibleFileSetsController extends APIController
             }
 
             $bible = optional($fileset->bible)->first();
-            $fileset_chapters = BibleFile::where('hash_id', $fileset->hash_id)
+            $query = BibleFile::where('hash_id', $fileset->hash_id)
                 ->leftJoin(config('database.connections.dbp.database') . '.bible_books', function ($q) use ($bible) {
                     $q->on('bible_books.book_id', 'bible_files.book_id')->where('bible_books.bible_id', $bible->id);
                 })
@@ -104,7 +104,15 @@ class BibleFileSetsController extends APIController
                     'bible_files.file_name',
                     'bible_books.name as book_name',
                     'books.protestant_order as book_order'
-                ])->get();
+                ]);
+
+            if ($type === 'video_stream') {
+                $query->orderByRaw("FIELD(bible_files.book_id, 'MAT', 'MRK', 'LUK', 'JHN') ASC")
+                ->orderBy('chapter_start', 'ASC')
+                ->orderBy('verse_start', 'ASC');
+            }
+            
+            $fileset_chapters = $query->get();
 
             if ($fileset_chapters->count() === 0) {
                 return $this->setStatusCode(404)->replyWithError('No Fileset Chapters Found for the provided params');
