@@ -90,14 +90,12 @@ class PlaylistsController extends APIController
         $sort_by    = checkParam('sort_by') ?? 'name';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
 
-        $featured = checkParam('featured');
-        $featured = $featured && $featured != 'false' || empty($user);
+        $featured = checkBoolean('featured') || empty($user);
         $limit    = (int) (checkParam('limit') ?? 25);
 
         $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
 
-        $show_details = checkParam('show_details');
-        $show_details = $show_details && $show_details != 'false';
+        $show_details = checkBoolean('show_details');
         $playlists = Playlist::with('user')
             ->when($show_details, function ($query) {
                 $query->with('items');
@@ -369,8 +367,7 @@ class PlaylistsController extends APIController
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
         }
 
-        $follow = checkParam('follow');
-        $follow = $follow && $follow != 'false';
+        $follow = checkBoolean('follow');
 
 
         if ($follow) {
@@ -564,8 +561,7 @@ class PlaylistsController extends APIController
 
     public function hls(Response $response, $playlist_id)
     {
-        $download = checkParam('download');
-        $download = $download && $download != 'false';
+        $download = checkBoolean('download');
         $playlist = Playlist::with('items')->find($playlist_id);
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');

@@ -60,6 +60,12 @@ class LanguagesController extends APIController
      *          @OA\Schema(type="boolean"),
      *          description="Will show all entries"
      *     ),
+     *     @OA\Parameter(
+     *          name="show_bibles",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Will show all bibles details"
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/l10n"),
      *     @OA\Parameter(ref="#/components/parameters/sort_by"),
      *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
@@ -91,15 +97,15 @@ class LanguagesController extends APIController
         $include_alt_names     = checkParam('include_alt_names');
         $asset_id              = checkParam('bucket_id|asset_id');
         $name                  = checkParam('name|language_name');
-        $show_restricted       = checkParam('show_all|show_restricted');
-        $show_restricted       = $show_restricted && $show_restricted != 'false';
+        $show_restricted       = checkBoolean('show_all|show_restricted');
+        $show_bibles           = checkBoolean('show_bibles');
         $limit      = checkParam('limit');
         $page       = checkParam('page');
 
         $access_control = $this->accessControl($this->key);
 
         $cache_string = 'v' . $this->v . '_l_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $name .
-            $show_restricted . $include_alt_names . $asset_id . $access_control->string . $limit . $page;
+            $show_restricted . $include_alt_names . $asset_id . $access_control->string . $limit . $page . $show_bibles;
 
         $order = $country ? 'country_population.population' : 'languages.name';
         $order_dir = $country ? 'desc' : 'asc';
@@ -123,7 +129,25 @@ class LanguagesController extends APIController
                     'current_translation.name as name',
                     'autonym.name as autonym',
                     \DB::raw($select_country_population . ' as country_population')
-                ])->withCount('bibles')->withCount('filesets');
+                ])
+                ->with(['bibles' => function ($query) use ($asset_id) {
+                    $query->whereHas('filesets', function ($query) use ($asset_id) {
+                        if ($asset_id) {
+                            $asset_id = explode(',', $asset_id);
+                            $query->whereIn('asset_id', $asset_id);
+                        }
+                    });
+                }])
+                ->withCount([
+                    'filesets' => function ($query) use ($asset_id) {
+                        if ($asset_id) {
+                            $dbp = config('database.connections.dbp.database');
+                            $query->leftJoin($dbp . '.bible_filesets', 'bible_filesets.hash_id', '=', 'bible_fileset_connections.hash_id');
+                            $asset_id = explode(',', $asset_id);
+                            $query->whereIn('asset_id', $asset_id);
+                        }
+                    }
+                ]);
 
             if ($page) {
                 $languages  = $languages->paginate($limit);

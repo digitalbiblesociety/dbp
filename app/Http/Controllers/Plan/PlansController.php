@@ -85,8 +85,7 @@ class PlansController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $featured = checkParam('featured');
-        $featured = $featured && $featured != 'false' || empty($user);
+        $featured = checkBoolean('featured') || empty($user);
         $limit        = (int) (checkParam('limit') ?? 25);
         $sort_by    = checkParam('sort_by') ?? 'name';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
@@ -221,8 +220,7 @@ class PlansController extends APIController
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
         }
 
-        $show_details = checkParam('show_details');
-        $show_details = $show_details && $show_details != 'false';
+        $show_details = checkBoolean('show_details');
 
         $playlist_controller = new PlaylistsController();
         if ($show_details) {
