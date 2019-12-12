@@ -45,7 +45,7 @@ class LanguageTransformer extends BaseTransformer
                     'language_family_iso_2T'    => ($language->parent ? $language->parent->iso2T : $language->iso2T) ?? '',
                     'language_family_iso_1'     => ($language->parent ? $language->parent->iso1 : $language->iso1) ?? '',
                     'media'                     => ['text'],
-                    'delivery'                  => ['mobile','web','subsplash'],
+                    'delivery'                  => ['mobile', 'web', 'subsplash'],
                     'resolution'                => []
                 ];
 
@@ -103,32 +103,33 @@ class LanguageTransformer extends BaseTransformer
                     'resources'            => $language->resources
                 ];
 
-            /**
-             * @OA\Response(
-             *   response="v4_languages.all",
-             *   description="The minimized language return for the single language route",
-             *   @OA\MediaType(
-             *     mediaType="application/json",
-             *     @OA\Schema(ref="#/components/schemas/Language")
-             *   )
-             * )
-             */
+                /**
+                 * @OA\Response(
+                 *   response="v4_languages.all",
+                 *   description="The minimized language return for the single language route",
+                 *   @OA\MediaType(
+                 *     mediaType="application/json",
+                 *     @OA\Schema(ref="#/components/schemas/Language")
+                 *   )
+                 * )
+                 */
             default:
             case 'v4_languages.all':
+                $show_bibles = checkBoolean('show_bibles');
                 $output = [
                     'id'         => $language->id,
                     'glotto_id'  => $language->glotto_id,
                     'iso'        => $language->iso,
                     'name'       => $language->name ?? $language->backup_name,
                     'autonym'    => $language->autonym,
-                    'bibles'     => $language->bibles_count,
+                    'bibles'     => $show_bibles ? $language->bibles : $language->bibles->count(),
                     'filesets'   => $language->filesets_count,
                 ];
 
                 if ($language->country_population) {
                     $output['country_population'] = $language->country_population;
                 }
-                
+
                 if ($language->relationLoaded('translations')) {
                     $output['translations'] = $language->translations->pluck('name', 'language_translation_id');
                 }

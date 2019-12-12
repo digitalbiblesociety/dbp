@@ -108,8 +108,7 @@ class BiblesController extends APIController
         $size               = checkParam('size');
         $size_exclude       = checkParam('size_exclude');
         $bitrate            = checkParam('bitrate');
-        $show_restricted    = checkParam('show_all|show_restricted');
-        $show_restricted = $show_restricted && $show_restricted != 'false';
+        $show_restricted    = checkBoolean('show_all|show_restricted');
         $limit      = checkParam('limit');
         $page       = checkParam('page');
 
@@ -303,8 +302,7 @@ class BiblesController extends APIController
         $testament = checkParam('testament');
 
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
-        $verify_content = checkParam('verify_content');
-        $verify_content = $verify_content && $verify_content != 'false';
+        $verify_content = checkBoolean('verify_content');
 
         $bible = Bible::find($bible_id);
         $access_control = $this->accessControl($this->key);
