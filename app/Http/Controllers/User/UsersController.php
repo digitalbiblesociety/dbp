@@ -595,11 +595,9 @@ class UsersController extends APIController
             return $this->setStatusCode(401)->reply(['valid' => false]);
         }
 
-        $user_details = checkParam('user_details');
-        $user_details = $user_details && $user_details != 'false';
+        $user_details = checkBoolean('user_details');
 
-        $renew_token = checkParam('renew_token');
-        $renew_token = $renew_token && $renew_token != 'false';
+        $renew_token = checkBoolean('renew_token');
 
         $response = ['valid' => true];
         $api_token = checkParam('api_token');
