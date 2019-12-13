@@ -619,18 +619,6 @@ class PlaylistsController extends APIController
         ]);
     }
 
-    private function getMaxRuntime($bible_files)
-    {
-        $runtimes = [];
-        foreach ($bible_files as $bible_file) {
-            foreach ($bible_file->streamBandwidth as $bandwidth) {
-                $runtimes[] = $bandwidth->transportStreamTS->max('runtime');
-                $runtimes[] = $bandwidth->transportStreamBytes->max('runtime');
-            }
-        }
-        return collect($runtimes)->max();
-    }
-
     private function processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download)
     {
         $durations = [];
