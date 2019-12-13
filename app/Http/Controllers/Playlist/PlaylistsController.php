@@ -592,12 +592,12 @@ class PlaylistsController extends APIController
                 $result = $this->processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download);
                 $hls_items = $result->hls_items;
                 $signed_files = $result->signed_files;
-                $durations[] = $this->getMaxRuntime($bible_files);
+                $durations[] = collect($result->durations)->max();
             } else {
                 $result = $this->processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download, $item);
                 $hls_items = $result->hls_items;
                 $signed_files = $result->signed_files;
-                $durations[] = $bible_files->max('duration');
+                $durations[] = collect($result->durations)->max();
             }
         }
 
@@ -633,6 +633,7 @@ class PlaylistsController extends APIController
 
     private function processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download)
     {
+        $durations = [];
         foreach ($bible_files as $bible_file) {
             $currentBandwidth = $bible_file->streamBandwidth->first();
 
@@ -644,6 +645,7 @@ class PlaylistsController extends APIController
             $fileset = $bible_file->fileset;
 
             foreach ($transportStream as $stream) {
+                $durations[] = $stream->runtime;
                 $hls_items .= "\n#EXTINF:$stream->runtime," . $item->id;
                 if (isset($stream->timestamp)) {
                     $hls_items .= "\n#EXT-X-BYTERANGE:$stream->bytes@$stream->offset";
@@ -661,13 +663,15 @@ class PlaylistsController extends APIController
             $hls_items .= "\n" . '#EXT-X-DISCONTINUITY';
         }
 
-        return (object) ['hls_items' => $hls_items, 'signed_files' => $signed_files];
+        return (object) ['hls_items' => $hls_items, 'signed_files' => $signed_files, 'durations' => $durations];
     }
 
     private function processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download, $item)
     {
+        $durations = [];
         foreach ($bible_files as $bible_file) {
             $default_duration = $bible_file->duration ?? 180;
+            $durations[] = $default_duration;
             $hls_items .= "\n#EXTINF:$default_duration," . $item->id;
 
             $bible_path = $bible_file->fileset->bible->first()->id;
@@ -681,7 +685,7 @@ class PlaylistsController extends APIController
             $hls_items .= "\n" . '#EXT-X-DISCONTINUITY';
         }
 
-        return (object) ['hls_items' => $hls_items, 'signed_files' => $signed_files];
+        return (object) ['hls_items' => $hls_items, 'signed_files' => $signed_files, 'durations' => $durations];
     }
 
     private function processVersesOnTransportStream($item, $transportStream, $bible_file)
