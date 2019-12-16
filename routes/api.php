@@ -259,7 +259,7 @@ Route::name('v4_plans.start')
 Route::name('v4_plans.reset')
     ->middleware('APIToken:check')->post('plans/{plan_id}/reset',                   'Plan\PlansController@reset');
 Route::name('v4_plans.stop')
-    ->middleware('APIToken:check')->get('plans/{plan_id}/stop',                    'Plan\PlansController@stop');
+    ->middleware('APIToken:check')->delete('plans/{plan_id}/stop',                    'Plan\PlansController@stop');
 Route::name('v4_plans_days.store')
     ->middleware('APIToken:check')->post('plans/{plan_id}/day',                     'Plan\PlansController@storeDay');
 Route::name('v4_plans_days.complete')

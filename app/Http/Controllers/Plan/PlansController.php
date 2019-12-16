@@ -672,7 +672,8 @@ class PlansController extends APIController
         $days_completed->delete();
         $playlist_items_completed->delete();
         $user_plan->delete();
-        return $this->reply('Plan Stopped');
+        $plan = $this->getPlan($plan->id, $user);
+        return $this->reply($plan);
     }
 
     /**
