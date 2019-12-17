@@ -11,7 +11,26 @@ class VideoStreamController extends APIController
 
     public function jesusFilmsLanguages()
     {
-        return collect($this->fetchArclight('media-languages', false)->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
+        $show_detail = checkBoolean('show_detail');
+        $metadata_tag = checkParam('metadata_tag') ?? 'en';
+        if (!$show_detail) {
+            return collect($this->fetchArclight('media-languages', false)->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
+        }
+
+        $cache_string =  'arclight_languages_detail' . $metadata_tag;
+        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($metadata_tag) {
+            $languages = collect($this->fetchArclight('media-languages', false, false, 'contentTypes=video&metadataLanguageTags=' . $metadata_tag . ',en')->mediaLanguages);
+            return $languages->where('counts.speakerCount.value', '>', 0)->map(function ($language) {
+                return [
+                    'jesus_film_id' => $language->languageId,
+                    'iso' => $language->iso3,
+                    'name' => $language->name,
+                    'autonym' => $language->nameNative
+                ];
+            })->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)->values()->all();
+        });
+
+        return $languages;
     }
 
     public function jesusFilmChapters()
