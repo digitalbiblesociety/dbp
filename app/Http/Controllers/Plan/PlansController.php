@@ -673,6 +673,12 @@ class PlansController extends APIController
         $playlist_items_completed->delete();
         $user_plan->delete();
         $plan = $this->getPlan($plan->id, $user);
+        $playlist_controller = new PlaylistsController();
+        foreach ($plan->days as $day) {
+            $day_playlist = $playlist_controller->getPlaylist($user, $day->playlist_id);
+            $day_playlist->path = route('v4_playlists.hls', ['playlist_id'  => $day_playlist->id, 'v' => $this->v, 'key' => $this->key]);
+            $day->playlist = $day_playlist;
+        }
         return $this->reply($plan);
     }
 
