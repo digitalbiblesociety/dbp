@@ -70,7 +70,7 @@ class StreamController extends APIController
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh_video.bucket');
 
         $video_fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'video_stream')->select('hash_id', 'id', 'asset_id')->first();
-        $audio_fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'audio_stream')->select('hash_id', 'id', 'asset_id')->first();
+        $audio_fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'audio', true)->select('hash_id', 'id', 'asset_id')->first();
         if (!$video_fileset && !$audio_fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
