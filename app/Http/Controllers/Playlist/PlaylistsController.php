@@ -588,7 +588,7 @@ class PlaylistsController extends APIController
                 ->where('chapter_start', '>=', $item->chapter_start)
                 ->where('chapter_start', '<=', $item->chapter_end)
                 ->get();
-            if ($fileset->set_type_code === 'audio_stream') {
+            if ($fileset->set_type_code === 'audio_stream' || $fileset->set_type_code === 'audio_drama_stream') {
                 $result = $this->processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download);
                 $hls_items = $result->hls_items;
                 $signed_files = $result->signed_files;
