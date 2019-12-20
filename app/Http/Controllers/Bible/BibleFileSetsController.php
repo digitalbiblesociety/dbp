@@ -295,7 +295,7 @@ class BibleFileSetsController extends APIController
     /**
      * Returns the Available Media Types for Filesets within the API.
      *
-     * @OA\GET(
+     * @OA\Get(
      *     path="/bibles/filesets/media/types",
      *     tags={"Bibles"},
      *     summary="Available fileset types",
@@ -332,7 +332,7 @@ class BibleFileSetsController extends APIController
     }
 
     /**
-     * @OA\POST(
+     * @OA\Post(
      *     path="/bibles/filesets/check/types",
      *     tags={"Bibles"},
      *     summary="Check fileset types",
