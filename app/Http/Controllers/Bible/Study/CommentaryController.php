@@ -11,7 +11,7 @@ class CommentaryController extends APIController
 
     /**
      *
-     * @OA\GET(
+     * @OA\Get(
      *     path="/commentaries",
      *     tags={"StudyBible"},
      *     summary="Commentaries",
@@ -36,7 +36,7 @@ class CommentaryController extends APIController
 
     /**
      *
-     * @OA\GET(
+     * @OA\Get(
      *     path="/commentaries/{commentary_id}/chapters",
      *     tags={"StudyBible"},
      *     summary="Commentary Chapters",
@@ -111,7 +111,7 @@ class CommentaryController extends APIController
 
     /**
      *
-     * @OA\GET(
+     * @OA\Get(
      *     path="/commentaries/{commentary_id}/{book_id}/{chapter}",
      *     tags={"StudyBible"},
      *     summary="Commentary Sections",
