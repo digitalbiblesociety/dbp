@@ -377,7 +377,7 @@ class BiblesController extends APIController
     }
 
     /**
-     * @OA\GET(
+     * @OA\Get(
      *     path="/bibles/defaults/types",
      *     tags={"Bibles"},
      *     summary="Available bible defaults per language code",
