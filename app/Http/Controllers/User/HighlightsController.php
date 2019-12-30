@@ -11,6 +11,7 @@ use App\Models\User\Study\Highlight;
 use App\Traits\CheckProjectMembership;
 use App\Transformers\V2\Annotations\HighlightTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use Illuminate\Support\Facades\DB;
 use Validator;
 
 use Illuminate\Http\Request;
@@ -83,6 +84,12 @@ class HighlightsController extends APIController
      *          description="One or more six letter hexadecimal colors to filter highlights by.",
      *          example="aabbcc,eedd11,112233")
      *     ),
+     *     @OA\Parameter(
+     *          name="query",
+     *          in="query",
+     *          description="The word or phrase to filter highlights by.",
+     *          @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/sort_by"),
      *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
      *     @OA\Response(
@@ -105,6 +112,7 @@ class HighlightsController extends APIController
         $user_id = $user ? $user->id : $request->user_id;
         $sort_by    = checkParam('sort_by') ?? 'updated_at';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
+        $query      = checkParam('query');
 
         // Validate Project / User Connection
         $user = User::where('id', $user_id)->select('id')->first();
@@ -137,6 +145,21 @@ class HighlightsController extends APIController
                 $color = str_replace('#', '', $color);
                 $color = explode(',', $color);
                 $q->whereIn('user_highlight_colors.hex', $color);
+            })->when($query, function ($q) use ($query) {
+                $dbp_database = config('database.connections.dbp.database');
+                $q->join($dbp_database . '.bible_fileset_connections as connection', 'connection.bible_id', 'user_highlights.bible_id');
+                $q->join($dbp_database . '.bible_filesets as filesets', function ($join) {
+                    $join->on('filesets.hash_id', '=', 'connection.hash_id');
+                });
+                $q->where('filesets.set_type_code', 'text_plain');
+                $q->join($dbp_database . '.bible_verses as bible_verses', function ($join) use ($query) {
+                    $join->on('connection.hash_id', '=', 'bible_verses.hash_id')
+                    ->where('bible_verses.book_id', DB::raw('user_highlights.book_id'))
+                    ->where('bible_verses.chapter', DB::raw('user_highlights.chapter'))
+                    ->where('bible_verses.verse_start', '>=', DB::raw('user_highlights.verse_start'))
+                    ->where('bible_verses.verse_end', '<=', DB::raw('user_highlights.verse_end'))
+                    ->where('bible_verses.verse_text', 'like', '%'.$query.'%');
+                });
             })->select([
                 'user_highlights.id',
                 'user_highlights.bible_id',
