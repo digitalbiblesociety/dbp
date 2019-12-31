@@ -264,13 +264,15 @@ class TextController extends APIController
             return Str::contains($fs->set_type_code, 'audio');
         })->flatten()->toArray();
 
+        $search_text  = '%' . $query . '%';
+
         $verses = BibleVerse::where('hash_id', $fileset->hash_id)
             ->withVernacularMetaData($bible)
             ->when($book_id, function ($query) use ($book_id) {
                 $books = explode(',', $book_id);
                 $query->whereIn('bible_verses.book_id', $books);
             })
-            ->whereRaw(DB::raw("MATCH (verse_text) AGAINST(\"$query\" IN NATURAL LANGUAGE MODE)"))
+            ->where('bible_verses.verse_text', 'like', $search_text)
             ->select([
                 'bible_verses.book_id as book_id',
                 'books.name as book_name',
@@ -286,7 +288,7 @@ class TextController extends APIController
             ->unless($relevance_order, function ($query) {
                 $query->orderByRaw('IFNULL(books.testament_order, books.protestant_order), bible_verses.chapter, bible_verses.verse_start');
             });
-            
+
         if ($page) {
             $verses  = $verses->paginate($limit);
             return $this->reply(['audio_filesets' => $audio_filesets, 'verses' => fractal($verses->getCollection(), TextTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($verses))]);
@@ -458,6 +460,7 @@ class TextController extends APIController
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
 
+        $search_text  = \DB::connection()->getPdo()->quote($query);
         $verses = \DB::connection('dbp')->table('bible_verses')
             ->where('bible_verses.hash_id', $fileset->hash_id)
             ->join('bible_filesets', 'bible_filesets.hash_id', 'bible_verses.hash_id')
@@ -475,7 +478,7 @@ class TextController extends APIController
                     MIN(books.protestant_order) as protestant_order'
                 )
             )
-            ->whereRaw(DB::raw("MATCH (verse_text) AGAINST(\"$query\" IN NATURAL LANGUAGE MODE)"))
+            ->whereRaw(DB::raw("MATCH (verse_text) AGAINST($search_text IN NATURAL LANGUAGE MODE)"))
             ->groupBy('book_id')->orderBy('protestant_order')->get();
 
         return $this->reply([
