@@ -170,7 +170,7 @@ class HighlightsController extends APIController
                 'user_highlights.highlight_start',
                 'user_highlights.highlighted_words',
                 'user_highlights.highlighted_color',
-            ])->orderBy('user_highlights.'.$sort_by, $sort_dir)->paginate($limit);
+            ])->orderBy('user_highlights.' . $sort_by, $sort_dir)->paginate($limit);
 
         $highlight_collection = $highlights->getCollection();
 
@@ -452,6 +452,7 @@ class HighlightsController extends APIController
         preg_match_all('/#[a-zA-Z0-9]{6}/i', $highlightedColor, $matches, PREG_SET_ORDER);
         if (isset($matches[0][0])) {
             $selectedColor = $this->hexToRgb($color);
+            $selectedColor['hex'] = str_replace('#', '', $color);
         }
 
         // Try RGB
@@ -475,7 +476,7 @@ class HighlightsController extends APIController
         $highlightColor = HighlightColor::where($selectedColor)->first();
         if (!$highlightColor) {
             $selectedColor['color'] = 'generated_' . unique_random('dbp_users.user_highlight_colors', 'color', '8');
-            $selectedColor['hex'] = dechex($selectedColor['red']) . dechex($selectedColor['green']) . dechex($selectedColor['blue']);
+            $selectedColor['hex'] = sprintf('%02x%02x%02x', $selectedColor['red'], $selectedColor['green'], $selectedColor['blue']);
             $highlightColor = HighlightColor::create($selectedColor);
         }
         return $highlightColor->id;
