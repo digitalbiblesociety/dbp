@@ -248,6 +248,7 @@ class PlansController extends APIController
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
      *     @OA\Parameter(name="days", in="query",@OA\Schema(type="string"), description="Comma-separated ids of the days to be sorted or deleted"),
+     *     @OA\Parameter(name="delete_days", in="query",@OA\Schema(type="boolean"), description="Will delete all days"),
      *     @OA\RequestBody(required=true, @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name", ref="#/components/schemas/Plan/properties/name"),
@@ -293,10 +294,14 @@ class PlansController extends APIController
         $plan->update($update_values);
 
         $days = checkParam('days');
+        $delete_days = checkBoolean('delete_days');
 
-        if ($days) {
-            $days_ids = explode(',', $days);
-            PlanDay::setNewOrder($days_ids);
+        if ($days || $delete_days) {
+            $days_ids = [];
+            if (!$delete_days) {
+                $days_ids = explode(',', $days);
+                PlanDay::setNewOrder($days_ids);
+            }
             $deleted_days = PlanDay::whereNotIn('id', $days_ids)->where('plan_id', $plan->id);
             $playlists_ids = $deleted_days->pluck('playlist_id')->unique();
             $playlists = Playlist::whereIn('id', $playlists_ids);
