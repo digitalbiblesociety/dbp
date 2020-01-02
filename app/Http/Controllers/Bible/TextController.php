@@ -286,14 +286,12 @@ class TextController extends APIController
                 'glyph_end.glyph as verse_end_vernacular',
             ])
             ->unless($relevance_order, function ($query) {
-                $query->orderByRaw('IFNULL(books.testament_order, books.protestant_order), bible_verses.chapter, bible_verses.verse_start');
+                $query->orderByRaw('books.book_testament DESC, IFNULL(books.testament_order, books.protestant_order), bible_verses.chapter, bible_verses.verse_start');
             });
 
         if ($page) {
             $verses  = $verses->paginate($limit);
             return $this->reply(['audio_filesets' => $audio_filesets, 'verses' => fractal($verses->getCollection(), TextTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($verses))]);
-
-            return $this->reply(fractal($verses->getCollection(), TextTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($verses)));
         }
         $verses  = $verses->limit($limit)->get();
         return $this->reply(['audio_filesets' => $audio_filesets, 'verses' => fractal($verses, new TextTransformer(), $this->serializer)]);
