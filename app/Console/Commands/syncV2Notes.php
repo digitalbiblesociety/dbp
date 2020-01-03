@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Book;
 use App\Models\User\Study\Note;
+use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -78,9 +79,15 @@ class syncV2Notes extends Command
             return;
         }
 
+        $user_exists = User::where('v2_id', $note->user_id)->first();
+        if (!$user_exists) {
+            echo "\n Error!! Could not find USER_ID: " . $note->user_id;
+            return;
+        }
+
         $v4Note = Note::firstOrNew([
             'v2_id'       => $note->id,
-            'user_id'     => $note->user_id,
+            'user_id'     => $user_exists->id,
             'bible_id'    => $fileset->bible->first()->id,
             'book_id'     => $books[$note->book_id],
             'chapter'     => $note->chapter_id,
@@ -95,5 +102,6 @@ class syncV2Notes extends Command
             $v4Note->save();
         }
         echo "\n Note Processed: " . $note->id;
+        die();
     }
 }
