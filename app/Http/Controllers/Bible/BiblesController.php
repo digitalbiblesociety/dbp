@@ -216,12 +216,6 @@ class BiblesController extends APIController
      *          @OA\Schema(type="string"),
      *          description="The asset_id to filter results by. There are three buckets provided `dbp-prod`, `dbp-vid` & `dbs-web`"
      *     ),
-     *     @OA\Parameter(
-     *          name="asset_id",
-     *          in="query",
-     *          @OA\Schema(type="string"),
-     *          description="The asset_id to filter results by. There are three buckets provided `dbp-prod`, `dbp-vid` & `dbs-web`"
-     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -377,7 +371,7 @@ class BiblesController extends APIController
     }
 
     /**
-     * @OA\GET(
+     * @OA\Get(
      *     path="/bibles/defaults/types",
      *     tags={"Bibles"},
      *     summary="Available bible defaults per language code",

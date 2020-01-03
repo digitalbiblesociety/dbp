@@ -8,8 +8,11 @@ use App\Http\Controllers\Playlist\PlaylistsController;
 use App\Models\Plan\Plan;
 use App\Traits\CheckProjectMembership;
 use App\Models\Plan\PlanDay;
+use App\Models\Plan\PlanDayComplete;
 use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
+use App\Models\Playlist\PlaylistItems;
+use App\Models\Playlist\PlaylistItemsComplete;
 use Illuminate\Http\Request;
 
 class PlansController extends APIController
@@ -245,6 +248,7 @@ class PlansController extends APIController
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
      *     @OA\Parameter(name="days", in="query",@OA\Schema(type="string"), description="Comma-separated ids of the days to be sorted or deleted"),
+     *     @OA\Parameter(name="delete_days", in="query",@OA\Schema(type="boolean"), description="Will delete all days"),
      *     @OA\RequestBody(required=true, @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name", ref="#/components/schemas/Plan/properties/name"),
@@ -290,10 +294,14 @@ class PlansController extends APIController
         $plan->update($update_values);
 
         $days = checkParam('days');
+        $delete_days = checkBoolean('delete_days');
 
-        if ($days) {
-            $days_ids = explode(',', $days);
-            PlanDay::setNewOrder($days_ids);
+        if ($days || $delete_days) {
+            $days_ids = [];
+            if (!$delete_days) {
+                $days_ids = explode(',', $days);
+                PlanDay::setNewOrder($days_ids);
+            }
             $deleted_days = PlanDay::whereNotIn('id', $days_ids)->where('plan_id', $plan->id);
             $playlists_ids = $deleted_days->pluck('playlist_id')->unique();
             $playlists = Playlist::whereIn('id', $playlists_ids);
@@ -610,6 +618,72 @@ class PlansController extends APIController
 
         $user_plan->reset($start_date)->save();
         $plan = $this->getPlan($plan->id, $user);
+        return $this->reply($plan);
+    }
+
+    /**
+     * Stop the specified plan.
+     *
+     * @OA\Delete(
+     *     path="/plans/{plan_id}/stop",
+     *     tags={"Plans"},
+     *     summary="Stop a plan",
+     *     description="",
+     *     operationId="v4_plans.stop",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(type="string"))
+     *     )
+     * )
+     *
+     * @param  int $plan_id
+     *
+     * @return array|\Illuminate\Http\Response
+     */
+    public function stop(Request $request, $plan_id)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $plan = Plan::where('id', $plan_id)->first();
+
+        if (!$plan) {
+            return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+        }
+
+        $user_plan = UserPlan::where('plan_id', $plan->id)->where('user_id', $user->id)->first();
+
+        if (!$user_plan) {
+            return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
+        }
+
+        $plan_days_ids = $plan->days()->pluck('id')->unique();
+        $days_completed = PlanDayComplete::where('user_id', $user->id)->whereIn('plan_day_id', $plan_days_ids);
+        $playlists_ids = $plan->days()->pluck('playlist_id')->unique();
+        $playlist_items_ids = PlaylistItems::whereIn('playlist_id', $playlists_ids)->get()->pluck('id');
+        $playlist_items_completed = PlaylistItemsComplete::whereIn('playlist_item_id', $playlist_items_ids)->where('user_id', $user->id);
+
+        $days_completed->delete();
+        $playlist_items_completed->delete();
+        $user_plan->delete();
+        $plan = $this->getPlan($plan->id, $user);
+        $playlist_controller = new PlaylistsController();
+        foreach ($plan->days as $day) {
+            $day_playlist = $playlist_controller->getPlaylist($user, $day->playlist_id);
+            $day_playlist->path = route('v4_playlists.hls', ['playlist_id'  => $day_playlist->id, 'v' => $this->v, 'key' => $this->key]);
+            $day->playlist = $day_playlist;
+        }
         return $this->reply($plan);
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
 use App\Models\User\User;
+use Illuminate\Support\Facades\Redirect;
 
 class DocsController extends APIController
 {
@@ -19,7 +20,7 @@ class DocsController extends APIController
 
     public function start()
     {
-        return view('docs.guide.start');
+        return Redirect::to(config('app.get_started_url'));
     }
 
     public function swagger($version)

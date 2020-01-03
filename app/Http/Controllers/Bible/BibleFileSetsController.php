@@ -108,10 +108,10 @@ class BibleFileSetsController extends APIController
 
             if ($type === 'video_stream') {
                 $query->orderByRaw("FIELD(bible_files.book_id, 'MAT', 'MRK', 'LUK', 'JHN') ASC")
-                ->orderBy('chapter_start', 'ASC')
-                ->orderBy('verse_start', 'ASC');
+                    ->orderBy('chapter_start', 'ASC')
+                    ->orderBy('verse_start', 'ASC');
             }
-            
+
             $fileset_chapters = $query->get();
 
             if ($fileset_chapters->count() === 0) {
@@ -295,7 +295,7 @@ class BibleFileSetsController extends APIController
     /**
      * Returns the Available Media Types for Filesets within the API.
      *
-     * @OA\GET(
+     * @OA\Get(
      *     path="/bibles/filesets/media/types",
      *     tags={"Bibles"},
      *     summary="Available fileset types",
@@ -332,7 +332,7 @@ class BibleFileSetsController extends APIController
     }
 
     /**
-     * @OA\POST(
+     * @OA\Post(
      *     path="/bibles/filesets/check/types",
      *     tags={"Bibles"},
      *     summary="Check fileset types",
@@ -378,7 +378,7 @@ class BibleFileSetsController extends APIController
                     ->first()
                     ->bible
                     ->first()->filesets;
-                $audio_filesets_hashes = $filesets->whereIn('set_type_code', ['audio_drama', 'audio', 'audio_stream'])->pluck('hash_id')->flatten();
+                $audio_filesets_hashes = $filesets->whereIn('set_type_code', ['audio_drama', 'audio', 'audio_stream', 'audio_drama_stream'])->pluck('hash_id')->flatten();
                 $video_filesets_hashes = $filesets->where('set_type_code', 'video_stream')->flatten();
                 return ['audio' => $audio_filesets_hashes, 'video' => $video_filesets_hashes];
             });
@@ -411,7 +411,7 @@ class BibleFileSetsController extends APIController
      */
     private function generateFilesetChapters($fileset, $fileset_chapters, $bible, $asset_id)
     {
-        $is_stream = $fileset->set_type_code === 'video_stream' || $fileset->set_type_code === 'audio_stream';
+        $is_stream = $fileset->set_type_code === 'video_stream' || $fileset->set_type_code === 'audio_stream' || $fileset->set_type_code === 'audio_drama_stream';
         $is_video = Str::contains($fileset->set_type_code, 'video');
 
         if ($is_stream) {

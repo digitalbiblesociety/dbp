@@ -228,6 +228,7 @@ class PlaylistsController extends APIController
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="playlist_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Playlist/properties/id")),
      *     @OA\Parameter(name="items", in="query", @OA\Schema(type="string"), description="Comma-separated ids of the playlist items to be sorted or deleted"),
+     *     @OA\Parameter(name="delete_items", in="query",@OA\Schema(type="boolean"), description="Will delete all items"),
      *     @OA\RequestBody(required=true, @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name", ref="#/components/schemas/Playlist/properties/name"),
@@ -275,10 +276,14 @@ class PlaylistsController extends APIController
         $playlist->update($update_values);
 
         $items = checkParam('items');
+        $delete_items = checkBoolean('delete_items');
 
-        if ($items) {
-            $items_ids = explode(',', $items);
-            PlaylistItems::setNewOrder($items_ids);
+        if ($items || $delete_items) {
+            $items_ids = [];
+            if (!$delete_items) {
+                $items_ids = explode(',', $items);
+                PlaylistItems::setNewOrder($items_ids);
+            }
             $deleted_items = PlaylistItems::whereNotIn('id', $items_ids)->where('playlist_id', $playlist->id);
             $deleted_items->delete();
         }
@@ -588,7 +593,7 @@ class PlaylistsController extends APIController
                 ->where('chapter_start', '>=', $item->chapter_start)
                 ->where('chapter_start', '<=', $item->chapter_end)
                 ->get();
-            if ($fileset->set_type_code === 'audio_stream') {
+            if ($fileset->set_type_code === 'audio_stream' || $fileset->set_type_code === 'audio_drama_stream') {
                 $result = $this->processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download);
                 $hls_items = $result->hls_items;
                 $signed_files = $result->signed_files;
