@@ -35,10 +35,14 @@ class syncV2Highlights extends Command
      */
     public function handle()
     {
-        $from_date = $this->argument('date') ?? '00-00-00';
-        $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
+        $from_date = $this->argument('date');
+        if ($from_date) {
+            $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
+        } else {
+            $from_date = Carbon::now()->startOfDay();
+        }
 
-        $this->highlightColors = HighlightColor::select('color', 'id')->get()->pluck('id', 'color')->toArray();
+        $this->initColors();
         $filesets = BibleFileset::where('set_type_code', 'text_plain')->where('asset_id', 'dbp-prod')->get();
         $books = Book::select(['id_osis', 'id_usfx', 'id', 'protestant_order'])->get();
 
@@ -82,19 +86,50 @@ class syncV2Highlights extends Command
         }
 
         $v4Highlight = Highlight::firstOrNew([
+            'v2_id'             => $highlight->id,
             'user_id'           => $user_exists->id,
-            'hash_id'          => $fileset->hash_id,
+            'bible_id'          => $fileset->bible->first()->id,
             'book_id'           => $book->id,
             'chapter'           => $highlight->chapter_id,
             'verse_start'       => $highlight->verse_id,
+            'verse_end'         => $highlight->verse_id,
             'highlight_start'   => 1,
-            'highlighted_chars' => null,
+            'highlighted_words' => null,
             'highlighted_color' => $this->getRelatedColorIdForHighlightColorString($highlight->color),
-            'created_at'        => Carbon::createFromTimeString($highlight->created),
-            'updated_at'        => Carbon::createFromTimeString($highlight->updated),
         ]);
-        $v4Highlight->v2_id = $highlight->id;
-        $v4Highlight->save();
+
+        if (!$v4Highlight->id) {
+            $v4Highlight->created_at = Carbon::createFromTimeString($highlight->created);
+            $v4Highlight->updated_at = Carbon::createFromTimeString($highlight->updated);
+            $v4Highlight->save();
+        }
         echo "\n Highlight Processed: " . $highlight->id;
+    }
+
+    private function initColors()
+    {
+        $this->highlightColors = HighlightColor::select('color', 'id')->get()->pluck('id', 'color')->toArray();
+    }
+
+    private function getRelatedColorIdForHighlightColorString($color)
+    {
+        $green = ['color' => 'green', 'hex' => 'addd79', 'red' => 173, 'green' => 221, 'blue' => 121, 'opacity' => 0.7];
+        $blue = ['color' => 'blue', 'hex' => '87adcc', 'red' => 135, 'green' => 173, 'blue' => 204, 'opacity' => 0.7];
+        $pink = ['color' => 'pink', 'hex' => 'ea9dcf', 'red' => 234, 'green' => 157, 'blue' => 207, 'opacity' => 0.7];
+        $yellow = ['color' => 'yellow', 'hex' => 'e9de7f', 'red' => 223, 'green' => 222, 'blue' => 127, 'opacity' => 0.7];
+        $purple = ['color' => 'purple', 'hex' => '8967ac', 'red' => 137, 'green' => 103, 'blue' => 172, 'opacity' => 0.7];
+        $v2_colors = [
+            'orange' => $purple,
+            'green' => $green,
+            'blue' => $blue,
+            'pink' => $pink,
+            'yellow' => $yellow,
+        ];
+        if (isset($this->highlightColors[$color])) {
+            return $this->highlightColors[$color];
+        }
+        $highlightColor = HighlightColor::create($v2_colors[$color]);
+        $this->initColors();
+        return $highlightColor->id;
     }
 }
