@@ -2,8 +2,8 @@
 
 namespace App\Models\Playlist;
 
+use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
-use App\Models\Bible\BibleVerse;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +13,7 @@ use Spatie\EloquentSortable\SortableTrait;
 /**
  * App\Models\Playlist
  * @mixin \Eloquent
- * 
+ *
  * @property int $id
  * @property int $playlist_id
  * @property string $fileset_id
@@ -22,6 +22,7 @@ use Spatie\EloquentSortable\SortableTrait;
  * @property int $chapter_end
  * @property int $verse_start
  * @property int $verse_end
+ * @property int $verses
  * @property int $duration
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -41,7 +42,7 @@ class PlaylistItems extends Model implements Sortable
 
     protected $connection = 'dbp_users';
     public $table         = 'playlist_items';
-    protected $fillable   = ['playlist_id', 'fileset_id', 'book_id', 'chapter_start', 'chapter_end', 'verse_start', 'verse_end', 'duration'];
+    protected $fillable   = ['playlist_id', 'fileset_id', 'book_id', 'chapter_start', 'chapter_end', 'verse_start', 'verse_end', 'duration', 'verses'];
     protected $hidden     = ['playlist_id', 'created_at', 'updated_at', 'order_column'];
 
     /**
@@ -153,6 +154,17 @@ class PlaylistItems extends Model implements Sortable
      */
     protected $duration;
 
+    /**
+     *
+     * @OA\Property(
+     *   title="verses",
+     *   type="integer",
+     *   description="The playlist item verses count"
+     * )
+     *
+     */
+    protected $verses;
+
     /** @OA\Property(
      *   title="updated_at",
      *   type="string",
@@ -211,7 +223,6 @@ class PlaylistItems extends Model implements Sortable
         });
 
         $timestamps = $timestamps->map(function ($timestamp, $key) use ($chapters_size, $timestamps, $playlist_item) {
-
             if ($timestamp->chapter === $playlist_item->chapter_start && $timestamp->verse < $playlist_item->verse_start) {
                 $timestamp->duration = 0;
                 return $timestamp;
@@ -239,30 +250,33 @@ class PlaylistItems extends Model implements Sortable
 
         return $timestamps->sum('duration');
     }
-    protected $appends = array('verses', 'completed');
+    protected $appends = ['completed', 'full_chapter'];
 
-    /**
-     *
-     * @OA\Property(
-     *   title="verses",
-     *   type="integer",
-     *   description="The playlist item verses count"
-     * )
-     *
-     */
-    public function getVersesAttribute()
+
+    public function calculateVerses()
     {
         $fileset = BibleFileset::where('id', $this['fileset_id'])
             ->whereNotIn('set_type_code', ['text_format'])
             ->first();
-        $verses_middle = BibleVerse::where('hash_id', $fileset->hash_id)
+        $bible_files = BibleFile::where('hash_id', $fileset->hash_id)
             ->where([
                 ['book_id', $this['book_id']],
-                ['chapter', '>=', $this['chapter_start']],
-                ['chapter', '<', $this['chapter_end']],
+                ['chapter_start', '>=', $this['chapter_start']],
+                ['chapter_start', '<', $this['chapter_end']],
             ])
-            ->count();
-        return  $verses_middle - ($this['verse_start'] - 1) + $this['verse_end'];
+            ->get();
+        $verses_middle = 0;
+        foreach ($bible_files as $bible_file) {
+            $verses_middle += ($bible_file->verse_start - 1) + $bible_file->verse_end;
+        }
+        if (!$this['verse_start'] && !$this['verse_end']) {
+            $verses = $verses_middle;
+        } else {
+            $verses = $verses_middle - ($this['verse_start'] - 1) + $this['verse_end'];
+        }
+
+        $this->attributes['verses'] =  $verses;
+        return $this;
     }
 
     /**
@@ -284,6 +298,24 @@ class PlaylistItems extends Model implements Sortable
             ->where('user_id', $user->id)->first();
 
         return !empty($complete);
+    }
+
+    /**
+     * @OA\Property(
+     *   property="full_chapter",
+     *   title="full_chapter",
+     *   type="boolean",
+     *   description="If the playlist item is a full chapter item"
+     * )
+     */
+    public function getFullChapterAttribute()
+    {
+        return (bool) !$this->attributes['verse_start'] && !$this->attributes['verse_end'];
+    }
+
+    public function fileset()
+    {
+        return $this->belongsTo(BibleFileset::class);
     }
 
     public function complete()

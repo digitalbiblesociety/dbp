@@ -10,15 +10,28 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Book;
 use App\Models\Language\AlphabetFont;
 use App\Traits\AccessControlAPI;
+use App\Traits\CheckProjectMembership;
 use App\Traits\CallsBucketsTrait;
 use App\Transformers\FontsTransformer;
 use App\Transformers\TextTransformer;
 use App\Http\Controllers\APIController;
+use App\Models\Plan\Plan;
+use App\Models\Playlist\Playlist;
+use App\Models\User\Study\Bookmark;
+use App\Models\User\Study\Highlight;
+use App\Models\User\Study\Note;
+use App\Transformers\UserBookmarksTransformer;
+use App\Transformers\UserHighlightsTransformer;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Transformers\UserNotesTransformer;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class TextController extends APIController
 {
     use CallsBucketsTrait;
     use AccessControlAPI;
+    use CheckProjectMembership;
 
     /**
      * Display a listing of the Verses
@@ -78,16 +91,13 @@ class TextController extends APIController
     {
         // Fetch and Assign $_GET params
         $fileset_id  = checkParam('dam_id|fileset_id', true, $bible_url_param);
-        $book_id     = checkParam('book_id', true, $book_url_param);
+        $book_id     = checkParam('book_id', false, $book_url_param);
         $chapter     = checkParam('chapter_id', false, $chapter_url_param);
         $verse_start = checkParam('verse_start') ?? 1;
         $verse_end   = checkParam('verse_end');
         $asset_id    = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3.bucket');
 
         $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->first();
-        if (!$book) {
-            return $this->setStatusCode(404)->replyWithError('No book could be found for the given ID');
-        }
 
         $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, 'text_plain')->first();
         if (!$fileset) {
@@ -96,15 +106,17 @@ class TextController extends APIController
         $bible = optional($fileset->bible)->first();
 
         $access_blocked = $this->blockedByAccessControl($fileset);
-        if($access_blocked) {
+        if ($access_blocked) {
             return $access_blocked;
         }
 
-        $cache_string = strtolower('bible_text:'.$asset_id.':'.$fileset_id.':'.$book_id.':'.$chapter.':'.$verse_start.'_'.$verse_end);
-        $verses = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset,$bible,$book,$chapter,$verse_start,$verse_end) {
+        $cache_string = strtolower('bible_text:' . $asset_id . ':' . $fileset_id . ':' . $book_id . ':' . $chapter . ':' . $verse_start . '_' . $verse_end);
+        $verses = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset, $bible, $book, $chapter, $verse_start, $verse_end) {
             return BibleVerse::withVernacularMetaData($bible)
                 ->where('hash_id', $fileset->hash_id)
-                ->where('bible_verses.book_id', $book->id)
+                ->when($book, function ($query) use ($book) {
+                    return $query->where('bible_verses.book_id', $book->id);
+                })
                 ->when($verse_start, function ($query) use ($verse_start) {
                     return $query->where('verse_end', '>=', $verse_start);
                 })
@@ -213,6 +225,7 @@ class TextController extends APIController
      *     ),
      *     @OA\Parameter(name="limit",  in="query", description="The number of search results to return",
      *          @OA\Schema(type="integer",default=15)),
+     *     @OA\Parameter(ref="#/components/parameters/page"),
      *     @OA\Parameter(name="books",  in="query", description="The usfm book ids to search through seperated by a comma",
      *          @OA\Schema(type="string",example="GEN,EXO,MAT")),
      *     @OA\Response(
@@ -236,16 +249,20 @@ class TextController extends APIController
 
         $query      = checkParam('query', true);
         $fileset_id = checkParam('fileset_id|dam_id', true);
-        $limit      = checkParam('limit') ?? 15;
         $book_id    = checkParam('book|book_id|books');
         $asset_id   = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
         $relevance_order   = checkParam('relevance_order');
+        $limit      = checkParam('limit') ?? 15;
+        $page       = checkParam('page');
 
         $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, 'text_plain')->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
         $bible = $fileset->bible->first();
+        $audio_filesets = $bible->filesets->filter(function ($fs) {
+            return Str::contains($fs->set_type_code, 'audio');
+        })->flatten()->toArray();
 
         $verses = BibleVerse::where('hash_id', $fileset->hash_id)
             ->withVernacularMetaData($bible)
@@ -267,11 +284,132 @@ class TextController extends APIController
                 'glyph_end.glyph as verse_end_vernacular',
             ])
             ->unless($relevance_order, function ($query) {
-                $query->orderByRaw('IFNULL(books.testament_order, books.protestant_order), bible_verses.chapter, bible_verses.verse_start');    
-            })
-            ->limit($limit)->get();
+                $query->orderByRaw('IFNULL(books.testament_order, books.protestant_order), bible_verses.chapter, bible_verses.verse_start');
+            });
+            
+        if ($page) {
+            $verses  = $verses->paginate($limit);
+            return $this->reply(['audio_filesets' => $audio_filesets, 'verses' => fractal($verses->getCollection(), TextTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($verses))]);
 
-        return $this->reply(fractal($verses, new TextTransformer(), $this->serializer));
+            return $this->reply(fractal($verses->getCollection(), TextTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($verses)));
+        }
+        $verses  = $verses->limit($limit)->get();
+        return $this->reply(['audio_filesets' => $audio_filesets, 'verses' => fractal($verses, new TextTransformer(), $this->serializer)]);
+    }
+    /**
+     *
+     * @OA\Get(
+     *     path="/search/library",
+     *     tags={"Text"},
+     *     summary="Search Playlist, Plans, Notes, Highlights and Bookmarks",
+     *     operationId="v4_library_search",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="query",
+     *          in="query",
+     *          description="The word or phrase being searched", required=true,
+     *          @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/limit"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_library_search")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_library_search")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_library_search")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_library_search"))
+     *     )
+     * )
+     *
+     * @return Response
+     *
+     *
+     * @OA\Schema (
+     *   type="object",
+     *   schema="v4_library_search",
+     *   description="The v4 library search response.",
+     *   title="Library Search plans",
+     *   @OA\Property(property="bookmarks", ref="#/components/schemas/v4_user_bookmarks"),
+     *   @OA\Property(property="highlights", ref="#/components/schemas/v4_highlights_index"),
+     *   @OA\Property(property="notes", ref="#/components/schemas/v4_notes_index"),
+     *   @OA\Property(
+     *      property="plans",
+     *      type="array",
+     *      @OA\Items(ref="#/components/schemas/v4_plan_index_detail")
+     *   ),
+     *   @OA\Property(
+     *      property="playlists",
+     *      type="array",
+     *      @OA\Items(ref="#/components/schemas/v4_playlist")
+     *   )
+     * )
+     */
+    public function searchLibrary(Request $request)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+        $limit      = checkParam('limit') ?? 100;
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+        $query = strtolower(checkParam('query', true));
+        $plans = Plan::with('days')
+            ->with('user')
+            ->where('plans.name', 'like', '%' . $query . '%')
+            ->join('user_plans', function ($join) use ($user) {
+                $join->on('user_plans.plan_id', '=', 'plans.id')->where('user_plans.user_id', $user->id);
+            })
+            ->select(['plans.*', 'user_plans.start_date', 'user_plans.percentage_completed'])
+            ->orderBy('name', 'asc')->get();
+        foreach ($plans as $plan) {
+            $plan->total_days = sizeof($plan->days);
+            unset($plan->days);
+        }
+
+        $playlists = Playlist::with('user')
+            ->where('user_playlists.name', 'like', '%' . $query . '%')
+            ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
+                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user->id);
+            })
+            ->whereNotIn('id', function ($query) {
+                $query->select('playlist_id')->from('plan_days');
+            })
+            ->where('user_playlists.user_id', $user->id)
+            ->orWhere('playlists_followers.user_id', $user->id)
+            ->select(['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')])
+            ->orderBy('name', 'asc')->get();
+
+        $highlights = Highlight::with('color')->with('tags')
+            ->where('user_id', $user->id)
+            ->orderBy('user_highlights.updated_at')->limit($limit)->get()
+            ->filter(function ($highlight) use ($query) {
+                return str_contains(strtolower($highlight->book->name . ' ' . $highlight->verse_text), $query);
+            });
+
+        $bookmarks = Bookmark::with('tags')
+            ->where('user_id', $user->id)
+            ->limit($limit)->get()
+            ->filter(function ($bookmark) use ($query) {
+                return str_contains(strtolower($bookmark->book->name . ' ' . $bookmark->verse_text), $query);
+            });
+
+        $notes = Note::with('tags')
+            ->where('user_id', $user->id)
+            ->limit($limit)->get()
+            ->filter(function ($note) use ($query) {
+                return str_contains(strtolower($note->book->name . ' ' . $note->verse_text . ' ' . $note->notes), $query);
+            });
+
+
+        return $this->reply([
+            'bookmarks' => fractal($bookmarks, UserBookmarksTransformer::class)->toArray()['data'],
+            'highlights' => fractal($highlights, UserHighlightsTransformer::class)->toArray()['data'],
+            'notes' => fractal($notes, UserNotesTransformer::class)->toArray()['data'],
+            'plans' => $plans,
+            'playlists' => $playlists,
+        ]);
     }
 
     /**
@@ -429,7 +567,7 @@ class TextController extends APIController
         $verse_end   = checkParam('verse_end');
         $asset_id    = checkParam('asset_id') ?? config('filesystems.disks.s3.bucket');
 
-        $fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'text_plain')->select('hash_id','id')->first();
+        $fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'text_plain')->select('hash_id', 'id')->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }

@@ -80,7 +80,7 @@ class SyncScriptureEarth extends Command
 
     /**
      *
-     * 
+     *
      *
      * @param $link_text
      */
@@ -98,13 +98,11 @@ class SyncScriptureEarth extends Command
 
         preg_match('/<option.*?value="(.*?)">/', $link_text, $select_links);
         if (isset($generic_links[1])) {
-            $current_language .= "\n".implode(',',$select_links);
+            $current_language .= "\n".implode(',', $select_links);
         }
 
         if (isset($current_language)) {
             file_put_contents(storage_path('data/ScriptureEarth/' . $language->iso . '.json'), $current_language, FILE_APPEND);
         }
     }
-
-
 }

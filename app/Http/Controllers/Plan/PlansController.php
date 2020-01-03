@@ -4,11 +4,15 @@ namespace App\Http\Controllers\Plan;
 
 use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
+use App\Http\Controllers\Playlist\PlaylistsController;
 use App\Models\Plan\Plan;
 use App\Traits\CheckProjectMembership;
 use App\Models\Plan\PlanDay;
+use App\Models\Plan\PlanDayComplete;
 use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
+use App\Models\Playlist\PlaylistItems;
+use App\Models\Playlist\PlaylistItemsComplete;
 use Illuminate\Http\Request;
 
 class PlansController extends APIController
@@ -44,11 +48,11 @@ class PlansController extends APIController
      *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_plan_index"))
      *     )
      * )
-     * 
+     *
      *
      * @return mixed
-     * 
-     * 
+     *
+     *
      * @OA\Schema (
      *   type="object",
      *   schema="v4_plan_index_detail",
@@ -57,7 +61,7 @@ class PlansController extends APIController
      *   },
      *   @OA\Property(property="total_days", type="integer")
      * )
-     * 
+     *
      * @OA\Schema (
      *   type="object",
      *   schema="v4_plan_index",
@@ -84,8 +88,7 @@ class PlansController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $featured = checkParam('featured');
-        $featured = $featured && $featured != 'false' || empty($user);
+        $featured = checkBoolean('featured') || empty($user);
         $limit        = (int) (checkParam('limit') ?? 25);
         $sort_by    = checkParam('sort_by') ?? 'name';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
@@ -190,14 +193,20 @@ class PlansController extends APIController
      *          @OA\Schema(ref="#/components/schemas/User/properties/id"),
      *          description="The plan id"
      *     ),
+     *     @OA\Parameter(
+     *          name="show_details",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Give full details of the plan"
+     *     ),
      *     @OA\Response(response=200, ref="#/components/responses/plan")
      * )
      *
      * @param $plan_id
      *
      * @return mixed
-     * 
-     * 
+     *
+     *
      */
     public function show(Request $request, $plan_id)
     {
@@ -208,10 +217,21 @@ class PlansController extends APIController
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $plan = $this->getPlan($plan_id, $user);;
+        $plan = $this->getPlan($plan_id, $user);
 
         if (!$plan) {
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+        }
+
+        $show_details = checkBoolean('show_details');
+
+        $playlist_controller = new PlaylistsController();
+        if ($show_details) {
+            foreach ($plan->days as $day) {
+                $day_playlist = $playlist_controller->getPlaylist($user, $day->playlist_id);
+                $day_playlist->path = route('v4_playlists.hls', ['playlist_id'  => $day_playlist->id, 'v' => $this->v, 'key' => $this->key]);
+                $day->playlist = $day_playlist;
+            }
         }
 
         return $this->reply($plan);
@@ -262,12 +282,12 @@ class PlansController extends APIController
 
         $name = checkParam('name');
         if ($name) {
-            $update_values["name"] = $name;
+            $update_values['name'] = $name;
         }
 
         $suggested_start_date = checkParam('suggested_start_date');
         if ($suggested_start_date) {
-            $update_values["suggested_start_date"] = $suggested_start_date;
+            $update_values['suggested_start_date'] = $suggested_start_date;
         }
 
         $plan->update($update_values);
@@ -491,7 +511,7 @@ class PlansController extends APIController
      *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_complete_day"))
      *     )
      * )
-     * 
+     *
      * @OA\Schema (
      *   schema="v4_complete_day",
      *   description="The v4 plan day complete response",
@@ -597,12 +617,79 @@ class PlansController extends APIController
     }
 
     /**
+     * Stop the specified plan.
+     *
+     * @OA\Delete(
+     *     path="/plans/{plan_id}/stop",
+     *     tags={"Plans"},
+     *     summary="Stop a plan",
+     *     description="",
+     *     operationId="v4_plans.stop",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(type="string"))
+     *     )
+     * )
+     *
+     * @param  int $plan_id
+     *
+     * @return array|\Illuminate\Http\Response
+     */
+    public function stop(Request $request, $plan_id)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $plan = Plan::where('id', $plan_id)->first();
+
+        if (!$plan) {
+            return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+        }
+
+        $user_plan = UserPlan::where('plan_id', $plan->id)->where('user_id', $user->id)->first();
+
+        if (!$user_plan) {
+            return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
+        }
+
+        $plan_days_ids = $plan->days()->pluck('id')->unique();
+        $days_completed = PlanDayComplete::where('user_id', $user->id)->whereIn('plan_day_id', $plan_days_ids);
+        $playlists_ids = $plan->days()->pluck('playlist_id')->unique();
+        $playlist_items_ids = PlaylistItems::whereIn('playlist_id', $playlists_ids)->get()->pluck('id');
+        $playlist_items_completed = PlaylistItemsComplete::whereIn('playlist_item_id', $playlist_items_ids)->where('user_id', $user->id);
+
+        $days_completed->delete();
+        $playlist_items_completed->delete();
+        $user_plan->delete();
+        $plan = $this->getPlan($plan->id, $user);
+        $playlist_controller = new PlaylistsController();
+        foreach ($plan->days as $day) {
+            $day_playlist = $playlist_controller->getPlaylist($user, $day->playlist_id);
+            $day_playlist->path = route('v4_playlists.hls', ['playlist_id'  => $day_playlist->id, 'v' => $this->v, 'key' => $this->key]);
+            $day->playlist = $day_playlist;
+        }
+        return $this->reply($plan);
+    }
+
+    /**
      *  @OA\Schema (
      *   type="object",
      *   schema="v4_plan",
      *   @OA\Property(property="id", ref="#/components/schemas/Plan/properties/id"),
      *   @OA\Property(property="name", ref="#/components/schemas/Plan/properties/name"),
      *   @OA\Property(property="featured", ref="#/components/schemas/Plan/properties/featured"),
+     *   @OA\Property(property="thumbnail", ref="#/components/schemas/Plan/properties/thumbnail"),
      *   @OA\Property(property="suggested_start_date", ref="#/components/schemas/Plan/properties/suggested_start_date"),
      *   @OA\Property(property="created_at", ref="#/components/schemas/Plan/properties/created_at"),
      *   @OA\Property(property="updated_at", ref="#/components/schemas/Plan/properties/updated_at"),
@@ -610,7 +697,7 @@ class PlansController extends APIController
      *   @OA\Property(property="percentage_completed", ref="#/components/schemas/UserPlan/properties/percentage_completed"),
      *   @OA\Property(property="user", ref="#/components/schemas/v4_plan_index_user"),
      * )
-     * 
+     *
      * @OA\Schema (
      *   type="object",
      *   schema="v4_plan_index_user",
@@ -618,7 +705,7 @@ class PlansController extends APIController
      *   @OA\Property(property="id", type="integer"),
      *   @OA\Property(property="name", type="string")
      * )
-     * 
+     *
      * @OA\Schema (
      *   type="object",
      *   schema="v4_plan_detail",
@@ -628,7 +715,7 @@ class PlansController extends APIController
      *   @OA\Property(property="days",type="array",@OA\Items(ref="#/components/schemas/PlanDay"))
      * )
      *
-     * 
+     *
      * @OA\Response(
      *   response="plan",
      *   description="Plan Object",

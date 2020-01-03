@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\APIController;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
 use App\Models\Organization\Asset;
 use App\Models\User\Changelog;
 use App\Traits\CallsBucketsTrait;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Input;
 
 class ApiMetadataController extends APIController
 {
-
     use CallsBucketsTrait;
 
     /**
@@ -267,7 +264,7 @@ class ApiMetadataController extends APIController
 
     public function refreshDevCache()
     {
-        if(config('app.server_name') != 'APP_DEV') {
+        if (config('app.server_name') != 'APP_DEV') {
             return $this->setStatusCode(422)->replyWithError('This is not the dev server');
         }
         Cache::flush();
@@ -278,5 +275,4 @@ class ApiMetadataController extends APIController
     {
         return $this->reply(Changelog::orderBy('released_at', 'desc')->get()->groupBy('subheading'));
     }
-
 }

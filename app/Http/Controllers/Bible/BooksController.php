@@ -100,51 +100,55 @@ class BooksController extends APIController
      */
     public function show($id)
     {
-        $fileset_type = checkParam('fileset_type', true);
+        $fileset_type = checkParam('fileset_type') ?? 'text_plain';
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        $cache_string = strtolower('v4_books:'.$asset_id.':'.$id.'_'.$fileset_type);
+        $cache_string = strtolower('v4_books:' . $asset_id . ':' . $id . '_' . $fileset_type);
         $books = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset_type, $asset_id, $id) {
-            $fileset = BibleFileset::with('bible')->where('id', $id)->where('asset_id', $asset_id)->where('set_type_code', $fileset_type)->first();
-            if (!$fileset) {
-                return $this->replyWithError('Fileset Not Found');
-            }
-            $is_plain_text = BibleVerse::where('hash_id', $fileset->hash_id)->exists();
-
-            $versification = optional($fileset->bible->first())->versification;
-            $book_order_column_exists = \Schema::connection('dbp')->hasColumn('books', $versification.'_order');
-            $book_order_column = $book_order_column_exists ? 'books.'.$versification.'_order' : 'books.protestant_order';
-
-            $dbp_database = config('database.connections.dbp.database');
-            $books = \DB::connection('dbp')->table($dbp_database.'.bible_filesets as fileset')
-                ->where('fileset.id', $id)->where('fileset.asset_id', $asset_id)
-                ->leftJoin($dbp_database.'.bible_fileset_connections as connection', 'connection.hash_id', 'fileset.hash_id')
-                ->leftJoin($dbp_database.'.bibles', 'bibles.id', 'connection.bible_id')
-                ->when($fileset_type, function ($q) use ($fileset_type) {
-                    $q->where('set_type_code', $fileset_type);
-                })
-                ->when($is_plain_text, function ($query) use ($fileset) {
-                    $this->compareFilesetToSophiaBooks($query, $fileset->hash_id);
-                }, function ($query) use ($fileset) {
-                    $this->compareFilesetToFileTableBooks($query, $fileset->hash_id);
-                })
-                ->orderBy($book_order_column)->select([
-                    'books.id',
-                    'books.id_usfx',
-                    'books.id_osis',
-                    'books.book_testament',
-                    'books.testament_order',
-                    'books.book_group',
-                    'bible_books.chapters',
-                    'bible_books.name',
-                    'books.protestant_order',
-                    $book_order_column.' as book_order_column'
-                ])->get();
-
+            $books = $this->getActiveBooksFromFileset($id, $asset_id, $fileset_type);
             return fractal($books, new BooksTransformer(), $this->serializer);
         });
 
         return $this->reply($books);
+    }
+
+    public function getActiveBooksFromFileset($id, $asset_id, $fileset_type)
+    {
+        $fileset = BibleFileset::with('bible')->where('id', $id)->where('asset_id', $asset_id)->where('set_type_code', $fileset_type)->first();
+        if (!$fileset) {
+            return $this->replyWithError('Fileset Not Found');
+        }
+        $is_plain_text = BibleVerse::where('hash_id', $fileset->hash_id)->exists();
+
+        $versification = optional($fileset->bible->first())->versification;
+        $book_order_column_exists = \Schema::connection('dbp')->hasColumn('books', $versification . '_order');
+        $book_order_column = $book_order_column_exists ? 'books.' . $versification . '_order' : 'books.protestant_order';
+
+        $dbp_database = config('database.connections.dbp.database');
+        return \DB::connection('dbp')->table($dbp_database . '.bible_filesets as fileset')
+            ->where('fileset.id', $id)->where('fileset.asset_id', $asset_id)
+            ->leftJoin($dbp_database . '.bible_fileset_connections as connection', 'connection.hash_id', 'fileset.hash_id')
+            ->leftJoin($dbp_database . '.bibles', 'bibles.id', 'connection.bible_id')
+            ->when($fileset_type, function ($q) use ($fileset_type) {
+                $q->where('set_type_code', $fileset_type);
+            })
+            ->when($is_plain_text, function ($query) use ($fileset) {
+                $this->compareFilesetToSophiaBooks($query, $fileset->hash_id);
+            }, function ($query) use ($fileset) {
+                $this->compareFilesetToFileTableBooks($query, $fileset->hash_id);
+            })
+            ->orderBy($book_order_column)->select([
+                'books.id',
+                'books.id_usfx',
+                'books.id_osis',
+                'books.book_testament',
+                'books.testament_order',
+                'books.book_group',
+                'bible_books.chapters',
+                'bible_books.name',
+                'books.protestant_order',
+                $book_order_column . ' as book_order_column'
+            ])->get();
     }
 
     /**
@@ -159,10 +163,10 @@ class BooksController extends APIController
         $sophia_books = BibleVerse::where('hash_id', $hash_id)->select('book_id')->distinct()->get();
 
         // Join the books for the books returned from Sophia
-        $query->join($dbp_database.'.bible_books', function ($join) use ($sophia_books) {
+        $query->join($dbp_database . '.bible_books', function ($join) use ($sophia_books) {
             $join->on('bible_books.bible_id', 'bibles.id')
-                 ->whereIn('bible_books.book_id', $sophia_books->pluck('book_id'));
-        })->rightJoin($dbp_database.'.books', 'books.id', 'bible_books.book_id');
+                ->whereIn('bible_books.book_id', $sophia_books->pluck('book_id'));
+        })->rightJoin($dbp_database . '.books', 'books.id', 'bible_books.book_id');
     }
 
     /**
@@ -183,9 +187,9 @@ class BooksController extends APIController
             ->pluck('book_id');
 
         // Join the books for the books returned from bible_files
-        $query->join($dbp_database.'.bible_books', function ($join) use ($fileset_book_ids) {
+        $query->join($dbp_database . '.bible_books', function ($join) use ($fileset_book_ids) {
             $join->on('bible_books.bible_id', 'bibles.id')
-                 ->whereIn('bible_books.book_id', $fileset_book_ids);
-        })->rightJoin($dbp_database.'.books', 'books.id', 'bible_books.book_id');
+                ->whereIn('bible_books.book_id', $fileset_book_ids);
+        })->rightJoin($dbp_database . '.books', 'books.id', 'bible_books.book_id');
     }
 }

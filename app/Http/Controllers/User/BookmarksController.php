@@ -8,13 +8,13 @@ use App\Models\User\Study\Bookmark;
 use App\Traits\CheckProjectMembership;
 use App\Transformers\UserBookmarksTransformer;
 use App\Transformers\V2\Annotations\BookmarkTransformer;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Traits\AnnotationTags;
 
 class BookmarksController extends APIController
 {
-
     use AnnotationTags;
     use CheckProjectMembership;
 
@@ -27,6 +27,7 @@ class BookmarksController extends APIController
      *     summary="List a user's bookmarks",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.index",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(
      *          name="user_id",
      *          in="path",
@@ -47,6 +48,8 @@ class BookmarksController extends APIController
      *          @OA\Schema(type="integer",default=25)),
      *     @OA\Parameter(name="page",  in="query", description="The current page of the results",
      *          @OA\Schema(type="integer",default=1)),
+     *     @OA\Parameter(ref="#/components/parameters/sort_by"),
+     *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -60,8 +63,10 @@ class BookmarksController extends APIController
      * @param int $user_id
      * @return \Illuminate\Http\Response
      */
-    public function index($user_id)
+    public function index(Request $request, $user_id)
     {
+        $user = $request->user();
+        $user_id = $user ? $user->id : $request->user_id;
         $user_is_member = $this->compareProjects($user_id, $this->key);
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
@@ -71,6 +76,8 @@ class BookmarksController extends APIController
         $book_id      = checkParam('book_id');
         $chapter      = checkParam('chapter|chapter_id');
         $limit        = (int) (checkParam('limit') ?? 25);
+        $sort_by    = checkParam('sort_by');
+        $sort_dir   = checkParam('sort_dir') ?? 'asc';
 
         $bookmarks = Bookmark::with('tags')->where('user_id', $user_id)
             ->when($bible_id, function ($q) use ($bible_id) {
@@ -79,6 +86,8 @@ class BookmarksController extends APIController
                 $q->where('book_id', $book_id);
             })->when($chapter, function ($q) use ($chapter) {
                 $q->where('chapter', $chapter);
+            })->when($sort_by, function ($q) use ($sort_by, $sort_dir) {
+                $q->orderBy($sort_by, $sort_dir);
             })->paginate($limit);
 
         $bookmarkCollection = $bookmarks->getCollection();
@@ -95,6 +104,7 @@ class BookmarksController extends APIController
      *     summary="Create a bookmark",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.store",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(
      *          name="user_id",
      *          in="path",
@@ -123,23 +133,25 @@ class BookmarksController extends APIController
      *
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(Request $request)
     {
-        $user_is_member = $this->compareProjects(request()->user_id, $this->key);
+        $user = $request->user();
+        $request['user_id'] = $user ? $user->id : $request->user_id;
+        $user_is_member = $this->compareProjects($request->user_id, $this->key);
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
 
-        $book = Book::where('id', request()->book_id)->first();
-        request()->book_id = $book->id;
-        request()->bible_id = request()->dam_id ?? request()->bible_id;
+        $book = Book::where('id', $request->book_id)->first();
+        $request['book_id'] = $book->id;
+        $request['bible_id'] = $request->dam_id ?? $request->bible_id;
 
         $invalidBookmark = $this->validateBookmark();
         if ($invalidBookmark) {
             return $this->setStatusCode(422)->replyWithError($invalidBookmark);
         }
 
-        $bookmark = Bookmark::create(request()->all());
+        $bookmark = Bookmark::create($request->all());
 
         $this->handleTags($bookmark);
 
@@ -155,6 +167,7 @@ class BookmarksController extends APIController
      *     summary="Update a bookmark",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.update",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(name="bookmark_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\RequestBody(required=true, description="Fields for User Bookmark Creation", @OA\MediaType(mediaType="application/json",
@@ -180,8 +193,10 @@ class BookmarksController extends APIController
      *
      * @return \Illuminate\Http\Response
      */
-    public function update($user_id, $bookmark_id)
+    public function update(Request $request, $user_id, $bookmark_id)
     {
+        $user = $request->user();
+        $user_id = $user ? $user->id : $user_id;
         $user_is_member = $this->compareProjects($user_id, $this->key);
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
@@ -196,7 +211,7 @@ class BookmarksController extends APIController
         if (!$bookmark) {
             return $this->setStatusCode(404)->replyWithError('Bookmark not found');
         }
-        $bookmark->fill(request()->all());
+        $bookmark->fill($request->all());
         $bookmark->save();
 
         $this->handleTags($bookmark);
@@ -213,6 +228,7 @@ class BookmarksController extends APIController
      *     summary="Delete a bookmark",
      *     description="",
      *     operationId="v4_user_annotation_bookmarks.delete",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(name="bookmark_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Response(
@@ -229,8 +245,10 @@ class BookmarksController extends APIController
      * @param  int  $bookmark_id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($user_id, $bookmark_id)
+    public function destroy(Request $request, $user_id, $bookmark_id)
     {
+        $user = $request->user();
+        $user_id = $user ? $user->id : $user_id;
         $user_is_member = $this->compareProjects($user_id, $this->key);
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));

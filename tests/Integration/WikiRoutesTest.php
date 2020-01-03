@@ -7,6 +7,7 @@ use App\Models\Language\Alphabet;
 use App\Models\Language\Language;
 use App\Models\Language\NumeralSystem;
 use Illuminate\Support\Arr;
+
 class WikiRoutesTest extends ApiV4Test
 {
 

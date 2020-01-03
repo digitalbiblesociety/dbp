@@ -2,7 +2,11 @@
 
 namespace App\Models\User\Study;
 
-use App\Models\Bible\Book;
+use App\Models\Bible\Bible;
+use App\Models\Bible\BibleBook;
+use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleVerse;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 
@@ -35,7 +39,19 @@ class Note extends Model
     protected $connection = 'dbp_users';
     protected $table = 'user_notes';
     protected $hidden = ['user_id'];
-    protected $fillable = ['id','v2_id','user_id','bible_id','book_id','chapter','verse_start','verse_end','notes','created_at','updated_at'];
+    protected $fillable = [
+    'id',
+    'v2_id',
+    'user_id',
+    'bible_id',
+    'book_id',
+    'chapter',
+    'verse_start',
+    'verse_end',
+    'notes',
+    'created_at',
+    'updated_at'
+  ];
 
     /**
      *
@@ -144,7 +160,11 @@ class Note extends Model
 
     public function getNotesAttribute($note)
     {
-        return Crypt::decrypt($note);
+        try {
+            return Crypt::decrypt($note);
+        } catch (DecryptException $e) {
+            return '';
+        }
     }
 
     /**
@@ -169,6 +189,48 @@ class Note extends Model
 
     public function book()
     {
-        return $this->belongsTo(Book::class);
+        return $this->hasOne(BibleBook::class, 'book_id', 'book_id')->where(
+      'bible_id',
+      $this['bible_id']
+    );
+    }
+
+    /**
+     * @OA\Property(
+     *   property="verse_text",
+     *   title="verse_text",
+     *   type="string",
+     *   description="The text of the Bible Verse"
+     * )
+     */
+    public function getVerseTextAttribute()
+    {
+        $note = $this->toArray();
+        $chapter = $note['chapter'];
+        $verse_start = $note['verse_start'];
+        $verse_end = $note['verse_end'] ? $note['verse_end'] : $verse_start;
+        $bible = Bible::where('id', $note['bible_id'])->first();
+        $fileset = BibleFileset::join(
+      'bible_fileset_connections as connection',
+      'connection.hash_id',
+      'bible_filesets.hash_id'
+    )
+      ->where('bible_filesets.set_type_code', 'text_plain')
+      ->where('connection.bible_id', $bible->id)
+      ->first();
+        if (!$fileset) {
+            return '';
+        }
+        $verses = BibleVerse::withVernacularMetaData($bible)
+      ->where('hash_id', $fileset->hash_id)
+      ->where('bible_verses.book_id', $note['book_id'])
+      ->where('verse_start', '>=', $verse_start)
+      ->where('verse_end', '<=', $verse_end)
+      ->where('chapter', $chapter)
+      ->orderBy('verse_start')
+      ->select(['bible_verses.verse_text'])
+      ->get()
+      ->pluck('verse_text');
+        return implode(' ', $verses->toArray());
     }
 }

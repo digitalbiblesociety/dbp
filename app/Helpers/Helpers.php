@@ -21,7 +21,8 @@ function checkParam(string $paramName, $required = false, $inPathValue = null)
 
     // Authorization params (with key => Authorization translation)
     if ($paramName === 'key' && request()->header('Authorization')) {
-        return str_replace('Bearer ','', request()->header('Authorization'));;
+        return str_replace('Bearer ', '', request()->header('Authorization'));
+        ;
     }
 
     foreach (explode('|', $paramName) as $current_param) {
@@ -49,15 +50,22 @@ function checkParam(string $paramName, $required = false, $inPathValue = null)
     }
 }
 
+function checkBoolean(string $paramName, $required = false, $inPathValue = null)
+{
+    $param = checkParam($paramName, $required, $inPathValue);
+    $param = $param && $param != 'false';
+    return $param;
+}
+
 function apiLogs($request, $status_code, $s3_string = false, $ip_address = null)
 {
-    $log_string = time().'∞'.config('app.server_name').'∞'.$status_code.'∞'.$request->path().'∞';
-    $log_string .= '"'.$request->header('User-Agent').'"'.'∞';
+    $log_string = time() . '∞' . config('app.server_name') . '∞' . $status_code . '∞' . $request->path() . '∞';
+    $log_string .= '"' . $request->header('User-Agent') . '"' . '∞';
     foreach ($_GET as $header => $value) {
-        $log_string .= ($value !== '') ? $header.'='.$value.'|' : $header.'|';
+        $log_string .= ($value !== '') ? $header . '=' . $value . '|' : $header . '|';
     }
     $log_string = rtrim($log_string, '|');
-    $log_string .= '∞'.$ip_address.'∞';
+    $log_string .= '∞' . $ip_address . '∞';
     if ($s3_string) {
         $log_string .= $s3_string;
     }
@@ -67,7 +75,7 @@ function apiLogs($request, $status_code, $s3_string = false, $ip_address = null)
     }
 }
 
-if (! function_exists('csvToArray')) {
+if (!function_exists('csvToArray')) {
     function csvToArray($csvfile)
     {
         $csv      = [];
@@ -87,7 +95,7 @@ if (! function_exists('csvToArray')) {
                 }
                 $rowcount++;
             }
-//echo "Totally $rowcount rows found\n";
+            //echo "Totally $rowcount rows found\n";
             fclose($handle);
         } else {
             error_log("csvreader: Could not read CSV \"$csvfile\"");
@@ -97,7 +105,7 @@ if (! function_exists('csvToArray')) {
     }
 }
 
-if (! function_exists('unique_random')) {
+if (!function_exists('unique_random')) {
     /**
      *
      * Generate a unique random string of characters
@@ -110,7 +118,6 @@ if (! function_exists('unique_random')) {
      */
     function unique_random($table, $col, $chars = 16)
     {
-
         $unique = false;
 
         // Store tested results in array to not test them again
@@ -147,5 +154,4 @@ if (! function_exists('unique_random')) {
 
         return $random;
     }
-
 }

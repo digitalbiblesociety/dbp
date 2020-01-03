@@ -186,5 +186,4 @@ class Resource extends Model
     {
         return $this->belongsTo(Organization::class);
     }
-
 }

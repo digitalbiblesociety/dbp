@@ -6,7 +6,6 @@ use App\Http\Controllers\APIController;
 
 use App\Models\User\Account;
 use App\Models\User\ProjectMember;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -89,7 +88,10 @@ class AccountsController extends APIController
         }
 
         $user = $this->verifyProjectUserConnection();
-        $account = $user->accounts()->create($request->all());
+        $account = $user->accounts()->updateOrCreate([
+            'project_id' => $request->project_id,
+            'provider_id' => $request->provider_id
+        ], ['provider_user_id' => $request->provider_user_id]);
         return $this->reply($account);
     }
 
@@ -133,7 +135,7 @@ class AccountsController extends APIController
             return $invalidAccount;
         }
 
-        $user    = $this->verifyProjectUserConnection();
+        $this->verifyProjectUserConnection();
 
         $provider_id  = checkParam('provider_id');
         $project_id   = checkParam('project_id');
@@ -141,9 +143,9 @@ class AccountsController extends APIController
 
 
         $account = Account::where('provider_id', $provider_id)
-                    ->where('user_id', $user_id)
-                    ->where('project_id', $project_id)->first();
-        
+            ->where('user_id', $user_id)
+            ->where('project_id', $project_id)->first();
+
         if (!$account) {
             return $this->setStatusCode(404)->replyWithError('Account not found');
         }
@@ -192,8 +194,8 @@ class AccountsController extends APIController
         $user     = $this->verifyProjectUserConnection();
         $accounts = $user->accounts;
         $account  = $accounts->where('provider_id', $provider_id)
-                            ->where('user_id', $user_id)
-                            ->where('project_id', $project_id)->first();
+            ->where('user_id', $user_id)
+            ->where('project_id', $project_id)->first();
         if (!$account) {
             return $this->setStatusCode(404)->replyWithError('Account not found');
         }
@@ -225,9 +227,9 @@ class AccountsController extends APIController
     {
         $requiredCondition = request()->method() === 'POST' || request()->method() === 'PUT' ? 'required|' : '';
         $validator = Validator::make(request()->all(), [
-            'user_id'             => $requiredCondition. 'exists:dbp_users.users,id',
-            'provider_id'         => $requiredCondition. 'string|in:cookie,facebook,google,twitter,test',
-            'provider_user_id'    => $requiredCondition. 'string',
+            'user_id'             => $requiredCondition . 'exists:dbp_users.users,id',
+            'provider_id'         => $requiredCondition . 'string|in:cookie,facebook,google,twitter,test',
+            'provider_user_id'    => $requiredCondition . 'string',
         ]);
 
         if ($validator->fails()) {

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
-use App\Models\Bible\Book;
 use App\Models\User\User;
 use App\Models\User\Study\HighlightColor;
 use App\Traits\AnnotationTags;
@@ -12,6 +11,7 @@ use App\Models\User\Study\Highlight;
 use App\Traits\CheckProjectMembership;
 use App\Transformers\V2\Annotations\HighlightTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use Illuminate\Support\Facades\DB;
 use Validator;
 
 use Illuminate\Http\Request;
@@ -32,6 +32,7 @@ class HighlightsController extends APIController
      *     description="The bible_id, book_id, and chapter parameters are optional but
      *          will allow you to specify which specific highlights you wish returned.",
      *     operationId="v4_highlights.index",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(
      *          name="user_id",
      *          in="path",
@@ -72,10 +73,25 @@ class HighlightsController extends APIController
      *     @OA\Parameter(
      *          name="prefer_color",
      *          in="query",
-     *          @OA\Schema(type="string",default="hex",enum={"hex","rgba","rgb","full"}),
+     *          @OA\Schema(type="string",default="rgba",enum={"hex","rgba","rgb","full"}),
      *          description="Choose the format that highlighted colors will be returned in. If no color
      *          is not specified than the default is a six letter hexadecimal color."
      *     ),
+     *     @OA\Parameter(
+     *          name="color",
+     *          in="query",
+     *          @OA\Schema(type="string",
+     *          description="One or more six letter hexadecimal colors to filter highlights by.",
+     *          example="aabbcc,eedd11,112233")
+     *     ),
+     *     @OA\Parameter(
+     *          name="query",
+     *          in="query",
+     *          description="The word or phrase to filter highlights by.",
+     *          @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/sort_by"),
+     *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -90,8 +106,14 @@ class HighlightsController extends APIController
      *
      * @return mixed
      */
-    public function index($user_id)
+    public function index(Request $request, $user_id)
     {
+        $user = $request->user();
+        $user_id = $user ? $user->id : $request->user_id;
+        $sort_by    = checkParam('sort_by') ?? 'updated_at';
+        $sort_dir   = checkParam('sort_dir') ?? 'asc';
+        $query      = checkParam('query');
+
         // Validate Project / User Connection
         $user = User::where('id', $user_id)->select('id')->first();
 
@@ -108,25 +130,47 @@ class HighlightsController extends APIController
         $bible_id     = checkParam('bible_id');
         $book_id      = checkParam('book_id');
         $chapter_id   = checkParam('chapter|chapter_id');
+        $color        = checkParam('color');
         $limit        = (int) (checkParam('limit') ?? 25);
 
-        $highlights = Highlight::with('color')->with('tags')->where('user_id', $user_id)
+        $highlights = Highlight::join('user_highlight_colors', 'user_highlights.highlighted_color', '=', 'user_highlight_colors.id')
+            ->where('user_id', $user_id)
             ->when($bible_id, function ($q) use ($bible_id) {
                 $q->where('user_highlights.bible_id', $bible_id);
             })->when($book_id, function ($q) use ($book_id) {
                 $q->where('user_highlights.book_id', $book_id);
             })->when($chapter_id, function ($q) use ($chapter_id) {
                 $q->where('chapter', $chapter_id);
+            })->when($color, function ($q) use ($color) {
+                $color = str_replace('#', '', $color);
+                $color = explode(',', $color);
+                $q->whereIn('user_highlight_colors.hex', $color);
+            })->when($query, function ($q) use ($query) {
+                $dbp_database = config('database.connections.dbp.database');
+                $q->join($dbp_database . '.bible_fileset_connections as connection', 'connection.bible_id', 'user_highlights.bible_id');
+                $q->join($dbp_database . '.bible_filesets as filesets', function ($join) {
+                    $join->on('filesets.hash_id', '=', 'connection.hash_id');
+                });
+                $q->where('filesets.set_type_code', 'text_plain');
+                $q->join($dbp_database . '.bible_verses as bible_verses', function ($join) use ($query) {
+                    $join->on('connection.hash_id', '=', 'bible_verses.hash_id')
+                    ->where('bible_verses.book_id', DB::raw('user_highlights.book_id'))
+                    ->where('bible_verses.chapter', DB::raw('user_highlights.chapter'))
+                    ->where('bible_verses.verse_start', '>=', DB::raw('user_highlights.verse_start'))
+                    ->where('bible_verses.verse_end', '<=', DB::raw('user_highlights.verse_end'))
+                    ->where('bible_verses.verse_text', 'like', '%'.$query.'%');
+                });
             })->select([
                 'user_highlights.id',
                 'user_highlights.bible_id',
                 'user_highlights.book_id',
                 'user_highlights.chapter',
                 'user_highlights.verse_start',
+                'user_highlights.verse_end',
                 'user_highlights.highlight_start',
                 'user_highlights.highlighted_words',
-                'user_highlights.highlighted_color'
-            ])->orderBy('user_highlights.updated_at')->paginate($limit);
+                'user_highlights.highlighted_color',
+            ])->orderBy('user_highlights.' . $sort_by, $sort_dir)->paginate($limit);
 
         $highlight_collection = $highlights->getCollection();
 
@@ -144,6 +188,7 @@ class HighlightsController extends APIController
      *     summary="Create a highlight",
      *     description="",
      *     operationId="v4_highlights.store",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(name="user_id",  in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\RequestBody(required=true, description="Fields for User Highlight Creation", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
@@ -152,6 +197,7 @@ class HighlightsController extends APIController
      *              @OA\Property(property="book_id",                   ref="#/components/schemas/Book/properties/id"),
      *              @OA\Property(property="chapter",                   ref="#/components/schemas/Highlight/properties/chapter"),
      *              @OA\Property(property="verse_start",               ref="#/components/schemas/Highlight/properties/verse_start"),
+     *              @OA\Property(property="verse_end",               ref="#/components/schemas/Highlight/properties/verse_end"),
      *              @OA\Property(property="highlight_start",           ref="#/components/schemas/Highlight/properties/highlight_start"),
      *              @OA\Property(property="highlighted_words",         ref="#/components/schemas/Highlight/properties/highlighted_words"),
      *              @OA\Property(property="highlighted_color",         ref="#/components/schemas/Highlight/properties/highlighted_color"),
@@ -169,10 +215,13 @@ class HighlightsController extends APIController
      *
      * @return \Illuminate\Http\Response|array
      */
-    public function store()
+    public function store(Request $request)
     {
+        $user = $request->user();
+        $request['user_id'] = $user ? $user->id : $request->user_id;
+
         // Validate Project / User Connection
-        $user_is_member = $this->compareProjects(request()->user_id, $this->key);
+        $user_is_member = $this->compareProjects($request->user_id, $this->key);
         if (!$user_is_member) {
             return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
         }
@@ -183,16 +232,17 @@ class HighlightsController extends APIController
             return $highlight_validation;
         }
 
-        request()->highlighted_color = $this->selectColor(request()->highlighted_color);
+        $request->highlighted_color = $this->selectColor($request->highlighted_color);
         $highlight = Highlight::create([
-            'user_id'           => request()->user_id,
-            'bible_id'          => request()->bible_id,
-            'book_id'           => request()->book_id,
-            'chapter'           => request()->chapter,
-            'verse_start'       => request()->verse_start,
-            'highlight_start'   => request()->highlight_start,
-            'highlighted_words' => request()->highlighted_words,
-            'highlighted_color' => request()->highlighted_color,
+            'user_id'           => $request->user_id,
+            'bible_id'          => $request->bible_id,
+            'book_id'           => $request->book_id,
+            'chapter'           => $request->chapter,
+            'verse_start'       => $request->verse_start,
+            'verse_end'         => $request->verse_end,
+            'highlight_start'   => $request->highlight_start,
+            'highlighted_words' => $request->highlighted_words,
+            'highlighted_color' => $request->highlighted_color,
         ]);
 
         $this->handleTags($highlight);
@@ -208,6 +258,7 @@ class HighlightsController extends APIController
      *     summary="Alter a highlight",
      *     description="",
      *     operationId="v4_highlights.update",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(name="highlight_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Highlight/properties/id")),
      *     @OA\RequestBody(required=true, description="Fields for User Highlight Update", @OA\MediaType(mediaType="application/json",
@@ -239,6 +290,8 @@ class HighlightsController extends APIController
      */
     public function update(Request $request, $user_id, $id)
     {
+        $user = $request->user();
+        $user_id = $user ? $user->id : $user_id;
         // Validate Project / User Connection
         $user_is_member = $this->compareProjects($user_id, $this->key);
         if (!$user_is_member) {
@@ -258,7 +311,7 @@ class HighlightsController extends APIController
 
         if ($request->highlighted_color) {
             $color = $this->selectColor($request->highlighted_color);
-            $highlight->fill(Arr::add($request->except('highlighted_color','project_id'), 'highlighted_color', $color))->save();
+            $highlight->fill(Arr::add($request->except('highlighted_color', 'project_id'), 'highlighted_color', $color))->save();
         } else {
             $highlight->fill($request->except(['project_id']))->save();
         }
@@ -277,6 +330,7 @@ class HighlightsController extends APIController
      *     summary="Delete a highlight",
      *     description="",
      *     operationId="v4_highlights.delete",
+     *     security={{"api_token":{}}},
      *     @OA\Parameter(name="user_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/User/properties/id")),
      *     @OA\Parameter(name="highlight_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Highlight/properties/id")),
      *     @OA\Response(
@@ -294,8 +348,10 @@ class HighlightsController extends APIController
      *
      * @return array|\Illuminate\Http\Response
      */
-    public function destroy($user_id, $id)
+    public function destroy(Request $request, $user_id, $id)
     {
+        $user = $request->user();
+        $user_id = $user ? $user->id : $user_id;
         // Validate Project / User Connection
         $user_is_member = $this->compareProjects($user_id, $this->key);
         if (!$user_is_member) {
@@ -311,6 +367,56 @@ class HighlightsController extends APIController
         return $this->reply(['success' => trans('api.users_highlights_delete_200')]);
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @OA\Get(
+     *     path="/users/highlights/colors",
+     *     tags={"Annotations"},
+     *     summary="List a user's highlights colors",
+     *     description="List a user's highlights colors",
+     *     operationId="v4_highlights.colors",
+     *     security={{"api_token":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_highlights_colors")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_highlights_colors")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_highlights_colors")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_highlights_colors"))
+     *     )
+     * )
+     *
+     * @OA\Schema (
+     *    type="array",
+     *    schema="v4_highlights_colors",
+     *    description="The v4 highlights colors index response.",
+     *    title="v4_highlights_colors",
+     *   @OA\Xml(name="v4_highlights_colors"),
+     *    @OA\Items(ref="#/components/schemas/Highlight/properties/highlighted_color"),
+     *     )
+     *   )
+     * )
+     *
+     */
+    public function colors(Request $request)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+        $colors = Highlight::join('user_highlight_colors', 'user_highlights.highlighted_color', '=', 'user_highlight_colors.id')
+            ->where('user_id', $user->id)
+            ->select(['user_highlight_colors.*'])
+            ->groupBy('user_highlight_colors.id')->get();
+
+
+        return $this->reply($colors);
+    }
+
     private function validateHighlight()
     {
         $validator = Validator::make(request()->all(), [
@@ -319,6 +425,7 @@ class HighlightsController extends APIController
             'book_id'           => ((request()->method() === 'POST') ? 'required|' : '') . 'exists:dbp.books,id',
             'chapter'           => ((request()->method() === 'POST') ? 'required|' : '') . 'max:150|min:1|integer',
             'verse_start'       => ((request()->method() === 'POST') ? 'required|' : '') . 'max:177|min:1|integer',
+            'verse_end'         => ((request()->method() === 'POST') ? 'required|' : '') . 'max:177|min:1|integer',
             'reference'         => 'string',
             'highlight_start'   => ((request()->method() === 'POST') ? 'required|' : '') . 'min:0|integer',
             'highlighted_words' => ((request()->method() === 'POST') ? 'required|' : '') . 'min:1|integer',
@@ -345,6 +452,7 @@ class HighlightsController extends APIController
         preg_match_all('/#[a-zA-Z0-9]{6}/i', $highlightedColor, $matches, PREG_SET_ORDER);
         if (isset($matches[0][0])) {
             $selectedColor = $this->hexToRgb($color);
+            $selectedColor['hex'] = str_replace('#', '', $color);
         }
 
         // Try RGB
@@ -367,8 +475,8 @@ class HighlightsController extends APIController
 
         $highlightColor = HighlightColor::where($selectedColor)->first();
         if (!$highlightColor) {
-            $selectedColor['color'] = 'generated_'.unique_random('dbp_users.user_highlight_colors', 'color', '8');
-            $selectedColor['hex'] = dechex($selectedColor['red']).dechex($selectedColor['green']).dechex($selectedColor['blue']);
+            $selectedColor['color'] = 'generated_' . unique_random('dbp_users.user_highlight_colors', 'color', '8');
+            $selectedColor['hex'] = sprintf('%02x%02x%02x', $selectedColor['red'], $selectedColor['green'], $selectedColor['blue']);
             $highlightColor = HighlightColor::create($selectedColor);
         }
         return $highlightColor->id;
@@ -381,10 +489,10 @@ class HighlightsController extends APIController
      */
     private function rgbParse($rgb)
     {
-        $removals = ['rgba','rgb','(',')'];
+        $removals = ['rgba', 'rgb', '(', ')'];
         $rgb = str_replace($removals, '', $rgb);
         $rgb = explode(',', $rgb);
-        $rgb = ['red'=>$rgb[0],'green'=>$rgb[1],'blue'=>$rgb[2],'opacity'=>$rgb[3] ?? 1];
+        $rgb = ['red' => $rgb[0], 'green' => $rgb[1], 'blue' => $rgb[2], 'opacity' => $rgb[3] ?? 1];
         return $rgb;
     }
 

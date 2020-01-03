@@ -4,15 +4,12 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\APIController;
 use App\Models\User\AccessGroup;
-use App\Models\User\Key;
 use App\Traits\AccessControlAPI;
 use App\Transformers\AccessGroupTransformer;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AccessGroupController extends APIController
 {
-
     use AccessControlAPI;
 
 
@@ -63,7 +60,6 @@ class AccessGroupController extends APIController
     {
         $cache_string = 'access_group:'.strtolower($id);
         $access_group = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
-
             $access_group = AccessGroup::with('filesets', 'types', 'keys')->findByIdOrName($id)->first();
             if (!$access_group) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.access_group_404'));
@@ -78,7 +74,7 @@ class AccessGroupController extends APIController
     public function current()
     {
         $cache_string = 'access_current:'.$this->key;
-        $current_access = \Cache::remember($cache_string, now()->addDay(), function() {
+        $current_access = \Cache::remember($cache_string, now()->addDay(), function () {
             $current_access = $this->accessControl($this->key);
             $current_access->hash_count = \count($current_access->hashes);
             return $current_access;

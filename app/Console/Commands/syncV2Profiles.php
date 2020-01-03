@@ -3,13 +3,13 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-
 use App\Models\User\User;
 use App\Models\Language\Language;
 use App\Models\Country\Country;
 use App\Models\User\Profile;
-
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Facades\DB;
 
 class syncV2Profiles extends Command
 {
@@ -38,7 +38,7 @@ class syncV2Profiles extends Command
         $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
 
         $countries = Country::all();
-        \DB::connection('dbp_users_v2')->table('user_profile')->where('field_value', '!=', '')
+        DB::connection('dbp_users_v2')->table('user_profile')->where('field_value', '!=', '')
             ->where('created', '>', $from_date)
             ->orderBy('id')
             ->chunk(5000, function ($profiles) use ($countries) {

@@ -15,8 +15,7 @@ class seedFilesetTags extends Seeder
 
         $dam_volumes = \DB::connection('dbp_v2')->table('dam_library')->get();
         foreach ($dam_volumes as $dam_volume) {
-
-            switch(substr($dam_volume->dam_id, -2, 2)) {
+            switch (substr($dam_volume->dam_id, -2, 2)) {
                 case 'ET':
                     $type = 'text_plain';
                     break;
@@ -25,29 +24,26 @@ class seedFilesetTags extends Seeder
                     break;
             }
 
-            if(!isset($type)) {
+            if (!isset($type)) {
                 continue;
             }
 
             $type .= (substr($dam_volume->dam_id, -3, 1) === 2) ? '_drama' : '';
 
-            $fileset =  \App\Models\Bible\BibleFileset::uniqueFileset($dam_volume->dam_id,'dbp-prod',$type)->first();
-            if(!$fileset) {
+            $fileset =  \App\Models\Bible\BibleFileset::uniqueFileset($dam_volume->dam_id, 'dbp-prod', $type)->first();
+            if (!$fileset) {
                 continue;
             }
             foreach ($permission_types as $permission_type) {
-                if($dam_volume->{$permission_type}) {
-
+                if ($dam_volume->{$permission_type}) {
                     \App\Models\Bible\BibleFilesetTag::firstOrCreate([
                         'hash_id'     => $fileset->hash_id,
                         'name'        => 'v2_access_'.$permission_type,
                         'description' => $permission_type,
                         'language_id' => 6414
                     ]);
-
                 }
             }
-
         }
     }
 }

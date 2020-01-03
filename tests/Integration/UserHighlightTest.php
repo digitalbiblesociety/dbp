@@ -7,6 +7,7 @@ use App\Models\User\User;
 use App\Models\User\Key;
 
 use Illuminate\Support\Arr;
+
 class UserHighlightTest extends ApiV4Test
 {
 
@@ -39,7 +40,7 @@ class UserHighlightTest extends ApiV4Test
      */
     public function highlights()
     {
-        $key = Key::where('key',$this->key)->first();
+        $key = Key::where('key', $this->key)->first();
         $path = route('v4_highlights.index', Arr::add($this->params, 'user_id', $key->user_id));
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->get($path);
@@ -65,7 +66,7 @@ class UserHighlightTest extends ApiV4Test
 
 
         // Highlight Index Selects
-        $highlight = Highlight::where('user_id',$key->user_id)->inRandomOrder()->first();
+        $highlight = Highlight::where('user_id', $key->user_id)->inRandomOrder()->first();
         $new_params = [
             'user_id'    => $highlight->user_id,
             'bible_id'   => $highlight->bible_id,

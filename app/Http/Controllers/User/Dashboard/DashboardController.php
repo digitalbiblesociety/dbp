@@ -23,5 +23,4 @@ class DashboardController extends APIController
         $user = Auth::user() ?? $this->user;
         return view('dashboard.home', compact('user'));
     }
-
 }

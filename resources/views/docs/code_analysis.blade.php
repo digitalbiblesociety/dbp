@@ -42,7 +42,7 @@
 
 @section('content')
 
-    <h1>Code Analysis <small>(<?php echo date ("F d Y H:i:s.", filemtime(storage_path('app/code_analysis.csv'))) ?>)</small></h1>
+    <h1>Code Analysis <small>(<?php echo date('F d Y H:i:s.', filemtime(storage_path('app/code_analysis.csv'))) ?>)</small></h1>
     <section class="row">
         <div class="medium-4 columns">
             <canvas id="myChart" width="400" height="300"></canvas>

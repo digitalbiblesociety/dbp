@@ -24,6 +24,7 @@ class Profile extends Model
      *
      * @var string
      */
+    protected $connection = 'dbp_users';
     protected $table = 'profiles';
     protected $primaryKey = 'user_id';
 
@@ -51,6 +52,7 @@ class Profile extends Model
         'avatar',
         'phone',
         'birthday',
+        'sex',
         'created_at',
         'updated_at',
     ];

@@ -10,6 +10,7 @@ use App\Models\Bible\BibleFileset;
 use App\Models\User\Study\Bookmark;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class syncV2Bookmarks extends Command
 {
@@ -40,16 +41,14 @@ class syncV2Bookmarks extends Command
         $filesets = BibleFileset::with('bible')->get();
         $books = Book::select('id_osis', 'id')->get()->pluck('id', 'id_osis')->toArray();
 
-        \DB::connection('dbp_users_v2')->table('bookmark')
+        DB::connection('dbp_users_v2')->table('bookmark')
             ->where('status', 'current')
             ->where('created', '>', $from_date)
             ->orderBy('id')->chunk(500, function ($bookmarks) use ($filesets, $books) {
                 foreach ($bookmarks as $bookmark) {
-
                     $user_exists = User::where('v2_id', $bookmark->user_id)->first();
                     while (!$user_exists) {
-
-                        $v2_user = \DB::connection('dbp_users_v2')->table('user')->where('id', $bookmark->user_id)->first();
+                        $v2_user = DB::connection('dbp_users_v2')->table('user')->where('id', $bookmark->user_id)->first();
                         $user_exists = User::where('email', $v2_user->email)->first();
                         if (isset($user_exists)) {
                             $user_exists->v2_id = $v2_user->id;
@@ -63,8 +62,12 @@ class syncV2Bookmarks extends Command
                     }
 
                     $fileset = $filesets->where('id', $bookmark->dam_id)->first();
-                    if (!$fileset) $fileset = $filesets->where('id', substr($bookmark->dam_id, 0, -4))->first();
-                    if (!$fileset) $fileset = $filesets->where('id', substr($bookmark->dam_id, 0, -2))->first();
+                    if (!$fileset) {
+                        $fileset = $filesets->where('id', substr($bookmark->dam_id, 0, -4))->first();
+                    }
+                    if (!$fileset) {
+                        $fileset = $filesets->where('id', substr($bookmark->dam_id, 0, -2))->first();
+                    }
 
                     if (!$fileset) {
                         echo "\nSkipping $bookmark->dam_id";

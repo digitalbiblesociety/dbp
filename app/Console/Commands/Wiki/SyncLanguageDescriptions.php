@@ -3,7 +3,6 @@
 namespace App\Console\Commands\Wiki;
 
 use App\Models\Language\Language;
-use database\seeds\SeederHelper;
 use Illuminate\Console\Command;
 
 class SyncLanguageDescriptions extends Command

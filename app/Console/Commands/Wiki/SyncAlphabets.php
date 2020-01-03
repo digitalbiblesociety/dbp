@@ -28,7 +28,6 @@ class SyncAlphabets extends Command
      */
     public function handle()
     {
-
         $string_html = file_get_contents('http://scriptsource.org/cms/scripts/page.php?item_id=script_overview');
         $dom = HtmlDomParser::str_get_html($string_html);
         $contents = $dom->find('.dDataViewTable a');
@@ -50,7 +49,7 @@ class SyncAlphabets extends Command
             }
 
             $dom = new Dom;
-            $alphabetUrl = "http://scriptsource.org/cms/scripts/".$alphabetUrl;
+            $alphabetUrl = 'http://scriptsource.org/cms/scripts/'.$alphabetUrl;
             $alphabet = @file_get_contents($alphabetUrl);
             $alphabetUrl = parse_url($alphabetUrl);
             parse_str($alphabetUrl['query'], $query);

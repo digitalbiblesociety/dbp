@@ -144,7 +144,7 @@ class ApiV2Test extends TestCase
     {
         $this->markTestIncomplete('Inconsistent success, seeds need review');
         $hash_id = BibleVerse::where('id', random_int(1, BibleVerse::count()))->select('hash_id')->first()->hash_id;
-        $bible_fileset = BibleFileset::where('hash_id',$hash_id)->first();
+        $bible_fileset = BibleFileset::where('hash_id', $hash_id)->first();
 
         $this->params['asset_id'] = $bible_fileset->asset_id;
         $this->params['dam_id']   = $bible_fileset->id;
@@ -224,8 +224,8 @@ class ApiV2Test extends TestCase
     public function libraryChapter()
     {
         $verse = BibleVerse::where('id', random_int(1, BibleVerse::count()))->first();
-        $bible_fileset = BibleFileset::where('hash_id',$verse->hash_id)->first();
-        $book = Book::where('id',$verse->book_id)->first();
+        $bible_fileset = BibleFileset::where('hash_id', $verse->hash_id)->first();
+        $book = Book::where('id', $verse->book_id)->first();
 
         $this->params['dam_id'] = $bible_fileset->id;
         $this->params['asset_id'] = $bible_fileset->asset_id;
@@ -489,7 +489,7 @@ class ApiV2Test extends TestCase
      */
     public function audioPath()
     {
-        $fileset = BibleFileset::where('set_type_code','audio')->orWhere('set_type_code','audio_drama')->inRandomOrder()->first();
+        $fileset = BibleFileset::where('set_type_code', 'audio')->orWhere('set_type_code', 'audio_drama')->inRandomOrder()->first();
         $this->params['dam_id'] = $fileset->id;
 
         echo "\nTesting: " . route('v2_audio_path', $this->params);

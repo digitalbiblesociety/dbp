@@ -32,8 +32,8 @@ use App\Models\Bible\BibleFilesetConnection;
 use App\Models\Bible\BibleFilesetCopyright;
 use App\Models\Bible\BibleFilesetCopyrightRole;
 use App\Models\Bible\BibleFilesetCopyrightOrganization;
-use App\Models\Bible\VideoResolution;
-use App\Models\Bible\VideoTransportStream;
+use App\Models\Bible\StreamBandwidth;
+use App\Models\Bible\StreamTS;
 
 use App\Models\Organization\Asset;
 use App\Models\Organization\Organization;
@@ -45,7 +45,6 @@ use App\Models\User\AccessGroupFileset;
 use App\Models\User\AccessGroupType;
 use App\Models\User\AccessGroup;
 use App\Models\User\AccessType;
-
 
 class RealDataSeeder extends Seeder
 {
@@ -86,8 +85,8 @@ class RealDataSeeder extends Seeder
         $this->seedData('/bibles/bible_fileset_copyrights',              BibleFilesetCopyright::class);
         $this->seedData('/bibles/bible_fileset_copyright_organizations', BibleFilesetCopyrightOrganization::class);
         $this->seedData('/bibles/bible_files',                           BibleFile::class);
-        $this->seedData('/bibles/bible_file_video_resolutions',          VideoResolution::class);
-        $this->seedData('/bibles/bible_file_video_transport_stream',     VideoTransportStream::class);
+        $this->seedData('/bibles/bible_file_video_resolutions',          StreamBandwidth::class);
+        $this->seedData('/bibles/bible_file_video_transport_stream',     StreamTS::class);
         $this->seedData('/bibles/bible_organization',                    BibleOrganization::class);
         $this->seedData('/bibles/equivalents/bible-gateway',             BibleEquivalent::class);
         $this->seedData('/access/access_groups',                         AccessGroup::class);
@@ -111,7 +110,6 @@ class RealDataSeeder extends Seeder
             if ($current_count % 1000 === 0) {
                 echo "\n Seeded ".$current_count .' of '. $entries_count;
             }
-
         }
     }
 }

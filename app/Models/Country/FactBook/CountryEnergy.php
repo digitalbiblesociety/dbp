@@ -23,348 +23,348 @@ class CountryEnergy extends Model
     public $table = 'country_energy';
 
 
-/**
- *
- * @OA\Property(ref="#/components/schemas/Country/properties/id")
- * @method static CountryEnergy whereCountryId($value)
- * @property string $country_id
- */
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/Country/properties/id")
+     * @method static CountryEnergy whereCountryId($value)
+     * @property string $country_id
+     */
     protected $country_id;
-/**
- *
- * @OA\Property(
- *     title="Electric Production",
- *     description="The total kilowatt production for the country.",
- *     type="string",
- *     example="103 billion kWh (2014 est.)"
- * )
- *
- * @method static CountryEnergy whereElectricityProduction($value)
- * @property string $electricity_production
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="Electric Production",
+     *     description="The total kilowatt production for the country.",
+     *     type="string",
+     *     example="103 billion kWh (2014 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereElectricityProduction($value)
+     * @property string $electricity_production
+     */
     protected $electricity_production;
-/**
- *
- * @OA\Property(
- *     title="electricity_consumption",
- *     description="The total kilowatt consumption for the country.",
- *     type="string",
- *     example="96 billion kWh (2014 est.)"
- * )
- *
- * @method static CountryEnergy whereElectricityConsumption($value)
- * @property string $electricity_consumption
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="electricity_consumption",
+     *     description="The total kilowatt consumption for the country.",
+     *     type="string",
+     *     example="96 billion kWh (2014 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereElectricityConsumption($value)
+     * @property string $electricity_consumption
+     */
     protected $electricity_consumption;
-/**
- *
- * @OA\Property(
- *     title="electricity_exports",
- *     description="The amount of kilowatts of electricity exported out of the country being described.",
- *     type="string",
- *     example="0 kWh (2013 est.)"
- * )
- *
- * @method static CountryEnergy whereElectricityExports($value)
- * @property string $electricity_exports
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="electricity_exports",
+     *     description="The amount of kilowatts of electricity exported out of the country being described.",
+     *     type="string",
+     *     example="0 kWh (2013 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereElectricityExports($value)
+     * @property string $electricity_exports
+     */
     protected $electricity_exports;
-/**
- *
- * @OA\Property(
- *     title="electricity_imports",
- *     description="The amount of kilowatts of electricity imported into the country being described.",
- *     type="string",
- *     example="700 million kWh (2014 est.)"
- * )
- *
- * @method static CountryEnergy whereElectricityImports($value)
- * @property string $electricity_imports
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="electricity_imports",
+     *     description="The amount of kilowatts of electricity imported into the country being described.",
+     *     type="string",
+     *     example="700 million kWh (2014 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereElectricityImports($value)
+     * @property string $electricity_imports
+     */
     protected $electricity_imports;
-/**
- *
- * @OA\Property(
- *     title="electricity_generating_capacity",
- *     description="The total generating capacity in KiloWatts of the current electric systems.",
- *     type="string",
- *     example="600,000 kW (2014 est.)"
- * )
- *
- * @method static CountryEnergy whereElectricityGeneratingCapacity($value)
- * @property string $electricity_generating_capacity
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="electricity_generating_capacity",
+     *     description="The total generating capacity in KiloWatts of the current electric systems.",
+     *     type="string",
+     *     example="600,000 kW (2014 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereElectricityGeneratingCapacity($value)
+     * @property string $electricity_generating_capacity
+     */
     protected $electricity_generating_capacity;
-/**
- *
- * @OA\Property(
- *     title="electricity_fossil_fuels",
- *     description="The total generating percentage of the current electric systems that are fossil fuel based.",
- *     type="string",
- *     example="35.4% of total installed capacity (2012 est.)"
- * )
- *
- * @method static CountryEnergy whereElectricityFossilFuels($value)
- * @property string $electricity_fossil_fuels
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="electricity_fossil_fuels",
+     *     description="The total generating percentage of the current electric systems that are fossil fuel based.",
+     *     type="string",
+     *     example="35.4% of total installed capacity (2012 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereElectricityFossilFuels($value)
+     * @property string $electricity_fossil_fuels
+     */
     protected $electricity_fossil_fuels;
-/**
- *
- * @OA\Property(
- *     title="electricity_nuclear",
- *     description="The total generating percentage of the current electric systems that is nuclear.",
- *     type="string",
- *     example="34.3% of total installed capacity (2011 est.)"
- * )
- *
- * @method static CountryEnergy whereElectricityNuclear($value)
- * @property string $electricity_nuclear
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="electricity_nuclear",
+     *     description="The total generating percentage of the current electric systems that is nuclear.",
+     *     type="string",
+     *     example="34.3% of total installed capacity (2011 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereElectricityNuclear($value)
+     * @property string $electricity_nuclear
+     */
     protected $electricity_nuclear;
-/**
- *
- * @OA\Property(
- *     title="electricity_hydroelectric",
- *     description="The total generating percentage of the current electric systems that are based on hydroelectric systems.",
- *     type="string",
- *     example="33.5% of total installed capacity (2011 est.)"
- * )
- *
- * @method static CountryEnergy whereElectricityHydroelectric($value)
- * @property string $electricity_hydroelectric
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="electricity_hydroelectric",
+     *     description="The total generating percentage of the current electric systems that are based on hydroelectric systems.",
+     *     type="string",
+     *     example="33.5% of total installed capacity (2011 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereElectricityHydroelectric($value)
+     * @property string $electricity_hydroelectric
+     */
     protected $electricity_hydroelectric;
-/**
- *
- * @OA\Property(
- *     title="electricity_renewable",
- *     description="The total generating percentage of the current electric systems that is renewable.",
- *     type="string",
- *     example="0.2% of total installed capacity (2012 est.)"
- * )
- *
- * @method static CountryEnergy whereElectricityRenewable($value)
- * @property string $electricity_renewable
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="electricity_renewable",
+     *     description="The total generating percentage of the current electric systems that is renewable.",
+     *     type="string",
+     *     example="0.2% of total installed capacity (2012 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereElectricityRenewable($value)
+     * @property string $electricity_renewable
+     */
     protected $electricity_renewable;
 
-/**
- *
- * @OA\Property(
- *     title="crude_oil_production",
- *     description="The total amount of crude oil generated by a country",
- *     type="string",
- *     example="2.82 million bbl/day (2015 est.)"
- * )
- *
- * @method static CountryEnergy whereCrudeOilProduction($value)
- * @property string $crude_oil_production
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="crude_oil_production",
+     *     description="The total amount of crude oil generated by a country",
+     *     type="string",
+     *     example="2.82 million bbl/day (2015 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereCrudeOilProduction($value)
+     * @property string $crude_oil_production
+     */
     protected $crude_oil_production;
 
-/**
- *
- * @OA\Property(
- *     title="crude_oil_exports",
- *     description="The total amount of crude oil exported by a country",
- *     type="string",
- *     example="2.637 million bbl/day (2013 est.)"
- * )
- *
- * @method static CountryEnergy whereCrudeOilExports($value)
- * @property string $crude_oil_exports
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="crude_oil_exports",
+     *     description="The total amount of crude oil exported by a country",
+     *     type="string",
+     *     example="2.637 million bbl/day (2013 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereCrudeOilExports($value)
+     * @property string $crude_oil_exports
+     */
     protected $crude_oil_exports;
 
-/**
- *
- * @OA\Property(
- *     title="crude_oil_imports",
- *     description="The total amount of crude oil imported by a country",
- *     type="string",
- *     example="0 bbl/day (2013 est.)"
- * )
- *
- * @method static CountryEnergy whereCrudeOilImports($value)
- * @property string $crude_oil_imports
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="crude_oil_imports",
+     *     description="The total amount of crude oil imported by a country",
+     *     type="string",
+     *     example="0 bbl/day (2013 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereCrudeOilImports($value)
+     * @property string $crude_oil_imports
+     */
     protected $crude_oil_imports;
-/**
- *
- * @OA\Property(
- *     title="crude_oil_reserves",
- *     description="The total amount of crude oil stored by a country",
- *     type="string",
- *     example="98 billion bbl (1 January 2016 es)"
- * )
- *
- * @method static CountryEnergy whereCrudeOilReserves($value)
- * @property string $crude_oil_reserves
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="crude_oil_reserves",
+     *     description="The total amount of crude oil stored by a country",
+     *     type="string",
+     *     example="98 billion bbl (1 January 2016 es)"
+     * )
+     *
+     * @method static CountryEnergy whereCrudeOilReserves($value)
+     * @property string $crude_oil_reserves
+     */
     protected $crude_oil_reserves;
-/**
- *
- * @OA\Property(
- *     title="petrol_production",
- *     description="The total amount of petrol produced by a country",
- *     type="string",
- *     example="503,200 bbl/day (2013 est.)"
- * )
- *
- * @method static CountryEnergy wherePetrolProduction($value)
- * @property string $petrol_production
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="petrol_production",
+     *     description="The total amount of petrol produced by a country",
+     *     type="string",
+     *     example="503,200 bbl/day (2013 est.)"
+     * )
+     *
+     * @method static CountryEnergy wherePetrolProduction($value)
+     * @property string $petrol_production
+     */
     protected $petrol_production;
-/**
- *
- * @OA\Property(
- *     title="petrol_consumption",
- *     description="The total amount of petrol consumed by a country",
- *     type="string",
- *     example="744,000 bbl/day (2014 est.)"
- * )
- *
- * @method static CountryEnergy wherePetrolConsumption($value)
- * @property string $petrol_consumption
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="petrol_consumption",
+     *     description="The total amount of petrol consumed by a country",
+     *     type="string",
+     *     example="744,000 bbl/day (2014 est.)"
+     * )
+     *
+     * @method static CountryEnergy wherePetrolConsumption($value)
+     * @property string $petrol_consumption
+     */
     protected $petrol_consumption;
-/**
- *
- * @OA\Property(
- *     title="petrol_exports",
- *     description="The total amount of petrol exported by a country",
- *     type="string",
- *     example="744,000 bbl/day (2014 est.)"
- * )
- *
- * @method static CountryEnergy wherePetrolExports($value)
- * @property string $petrol_exports
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="petrol_exports",
+     *     description="The total amount of petrol exported by a country",
+     *     type="string",
+     *     example="744,000 bbl/day (2014 est.)"
+     * )
+     *
+     * @method static CountryEnergy wherePetrolExports($value)
+     * @property string $petrol_exports
+     */
     protected $petrol_exports;
-/**
- *
- * @OA\Property(
- *     title="petrol_imports",
- *     description="The total amount of petrol imported by a country",
- *     type="string",
- *     example="74,000 bbl/day (2014 est.)"
- * )
- *
- * @method static CountryEnergy wherePetrolImports($value)
- * @property string $petrol_imports
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="petrol_imports",
+     *     description="The total amount of petrol imported by a country",
+     *     type="string",
+     *     example="74,000 bbl/day (2014 est.)"
+     * )
+     *
+     * @method static CountryEnergy wherePetrolImports($value)
+     * @property string $petrol_imports
+     */
     protected $petrol_imports;
 
-/**
- *
- * @OA\Property(
- *     title="natural_gas_production",
- *     description="The total amount of natural gas produced by a country",
- *     type="string",
- *     example="54.24 billion cu m (2014 est.)"
- * )
- *
- * @method static CountryEnergy whereNaturalGasProduction($value)
- * @property string $natural_gas_production
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="natural_gas_production",
+     *     description="The total amount of natural gas produced by a country",
+     *     type="string",
+     *     example="54.24 billion cu m (2014 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereNaturalGasProduction($value)
+     * @property string $natural_gas_production
+     */
     protected $natural_gas_production;
 
-/**
- *
- * @OA\Property(
- *     title="natural_gas_consumption",
- *     description="The total amount of natural gas consumed by a country",
- *     type="string",
- *     example="66.32 billion cu m (2014 est.)"
- * )
- *
- * @method static CountryEnergy whereNaturalGasConsumption($value)
- * @property string $natural_gas_consumption
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="natural_gas_consumption",
+     *     description="The total amount of natural gas consumed by a country",
+     *     type="string",
+     *     example="66.32 billion cu m (2014 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereNaturalGasConsumption($value)
+     * @property string $natural_gas_consumption
+     */
     protected $natural_gas_consumption;
 
-/**
- *
- * @OA\Property(
- *     title="natural_gas_exports",
- *     description="The total amount of natural gas exported by a country",
- *     type="string",
- *     example="8.066 billion cu m (2014 est.)"
- * )
- *
- * @method static CountryEnergy whereNaturalGasExports($value)
- * @property string $natural_gas_exports
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="natural_gas_exports",
+     *     description="The total amount of natural gas exported by a country",
+     *     type="string",
+     *     example="8.066 billion cu m (2014 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereNaturalGasExports($value)
+     * @property string $natural_gas_exports
+     */
     protected $natural_gas_exports;
-/**
- *
- * @OA\Property(
- *     title="natural_gas_imports",
- *     description="The total amount of natural gas imported by a country",
- *     type="string",
- *     example="3.064 billion cu m (2014 est.)"
- * )
- *
- * @method static CountryEnergy whereNaturalGasImports($value)
- * @property string $natural_gas_imports
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="natural_gas_imports",
+     *     description="The total amount of natural gas imported by a country",
+     *     type="string",
+     *     example="3.064 billion cu m (2014 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereNaturalGasImports($value)
+     * @property string $natural_gas_imports
+     */
     protected $natural_gas_imports;
 
-/**
- *
- * @OA\Property(
- *     title="natural_gas_reserves",
- *     description="The total amount of natural gas stored by a country",
- *     type="string",
- *     example="6.091 trillion cu m (1 January 2016 es)"
- * )
- *
- * @method static CountryEnergy whereNaturalGasReserves($value)
- * @property string $natural_gas_reserves
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="natural_gas_reserves",
+     *     description="The total amount of natural gas stored by a country",
+     *     type="string",
+     *     example="6.091 trillion cu m (1 January 2016 es)"
+     * )
+     *
+     * @method static CountryEnergy whereNaturalGasReserves($value)
+     * @property string $natural_gas_reserves
+     */
     protected $natural_gas_reserves;
 
-/**
- *
- * @OA\Property(
- *     title="co2_output",
- *     description="The total size of the carbon footprint of a country.",
- *     type="string",
- *     example="245 million Mt (2013 est.)"
- * )
- *
- * @method static CountryEnergy whereCo2Output($value)
- * @property string $co2_output
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="co2_output",
+     *     description="The total size of the carbon footprint of a country.",
+     *     type="string",
+     *     example="245 million Mt (2013 est.)"
+     * )
+     *
+     * @method static CountryEnergy whereCo2Output($value)
+     * @property string $co2_output
+     */
     protected $co2_output;
 
-/**
- *
- * @OA\Property(
- *     title="created_at",
- *     description="The created_at timestamp for the Communications Energy Model",
- *     type="string",
- *     format="date-time",
- *     example="2018-02-12 19:35:57"
- * )
- *
- * @method static CountryEnergy whereCreatedAt($value)
- * @property \Carbon\Carbon|null $created_at
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="created_at",
+     *     description="The created_at timestamp for the Communications Energy Model",
+     *     type="string",
+     *     format="date-time",
+     *     example="2018-02-12 19:35:57"
+     * )
+     *
+     * @method static CountryEnergy whereCreatedAt($value)
+     * @property \Carbon\Carbon|null $created_at
+     */
     protected $created_at;
 
-/**
- *
- * @OA\Property(
- *     title="updated_at",
- *     description="The updated_at timestamp for the Communications Energy Model",
- *     type="string",
- *     format="date-time",
- *     example="2018-02-12 19:35:57"
- * )
- *
- * @method static CountryEnergy whereUpdatedAt($value)
- * @property \Carbon\Carbon|null $updated_at
- */
+    /**
+     *
+     * @OA\Property(
+     *     title="updated_at",
+     *     description="The updated_at timestamp for the Communications Energy Model",
+     *     type="string",
+     *     format="date-time",
+     *     example="2018-02-12 19:35:57"
+     * )
+     *
+     * @method static CountryEnergy whereUpdatedAt($value)
+     * @property \Carbon\Carbon|null $updated_at
+     */
     protected $updated_at;
 }

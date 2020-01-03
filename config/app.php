@@ -56,6 +56,7 @@ return [
     'url' => env('APP_URL', 'http://localhost'),
     'url_podcast' => env('APP_URL_PODCAST', 'https://dbp4.org'),
     'api_url' => env('API_URL', 'https://api.dbp4.org'),
+    'get_started_url' => env('GET_STARTED_URL', 'https://github.com/faithcomesbyhearing/dbp/blob/master/doc/STARTING.md'),
 
     /*
     |--------------------------------------------------------------------------
@@ -169,7 +170,8 @@ return [
         App\Providers\ComposerServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         App\Providers\LocalEnvironmentServiceProvider::class,
-        Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class
+        Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
+        Sentry\Laravel\ServiceProvider::class,
     ],
 
     /*
@@ -223,6 +225,7 @@ return [
         'Localization' => Lunaweb\Localization\Facades\Localization::class,
         'i18n'         => Lunaweb\Localization\Facades\Localization::class,
         'Bugsnag'      => Bugsnag\BugsnagLaravel\Facades\Bugsnag::class,
+        'Sentry' => Sentry\Laravel\Facade::class,
     ],
 
 ];

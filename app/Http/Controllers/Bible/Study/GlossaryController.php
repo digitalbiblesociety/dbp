@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Bible\Study;
 
 use App\Models\Bible\Study\GlossaryPerson;
-use Illuminate\Http\Request;
 
 class GlossaryController extends APIController
 {
-
     public function people()
     {
         $glossary_person = checkParam('glossary_person');
@@ -16,7 +14,4 @@ class GlossaryController extends APIController
     }
 
     // public function
-
-
-
 }

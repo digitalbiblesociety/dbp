@@ -18,7 +18,6 @@ use App\Transformers\Factbook\TransportationTransformer;
 
 class CountryTransformer extends BaseTransformer
 {
-
     protected $availableIncludes = [
         'communications',
         'economy',

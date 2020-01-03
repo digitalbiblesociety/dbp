@@ -2,7 +2,6 @@
 
 namespace App\Transformers\Factbook;
 
-use App\Models\Country\FactBook\CountryEthnicity;
 use League\Fractal\TransformerAbstract;
 
 class EthnicitiesTransformer extends TransformerAbstract

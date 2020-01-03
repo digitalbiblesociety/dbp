@@ -26,5 +26,4 @@ class GlossaryPerson extends Model
     {
         return $this->hasMany(GlossaryPersonName::class);
     }
-
 }

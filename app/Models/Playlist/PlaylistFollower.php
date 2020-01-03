@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PlaylistFollower extends Model
 {
-
     protected $connection = 'dbp_users';
     protected $primaryKey = ['user_id', 'playlist_id'];
     public $incrementing  = false;

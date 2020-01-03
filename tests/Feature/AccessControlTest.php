@@ -133,5 +133,4 @@ class AccessControlTest extends ApiV4Test
         $geoipMock->shouldReceive('getLocation')->andReturn((object) ['continent' => 'NA', 'iso_code' => 'US']);
         $this->app->instance('geoip', $geoipMock);
     }
-
 }

@@ -3,12 +3,11 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Book;
-
 use App\Models\User\Study\Note;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class syncV2Notes extends Command
 {
@@ -39,12 +38,16 @@ class syncV2Notes extends Command
         $filesets = BibleFileset::with('bible')->get();
         $books = Book::select('id_osis', 'id')->get()->pluck('id', 'id_osis')->toArray();
 
-        \DB::connection('dbp_users_v2')->table('note')->where('created', '>', $from_date)
+        DB::connection('dbp_users_v2')->table('note')->where('created', '>', $from_date)
             ->orderBy('id')->chunk(5000, function ($notes) use ($filesets, $books) {
                 foreach ($notes as $note) {
                     $fileset = $filesets->where('id', $note->dam_id)->first();
-                    if (!$fileset) $fileset = $filesets->where('id', substr($note->dam_id, 0, -4))->first();
-                    if (!$fileset) $fileset = $filesets->where('id', substr($note->dam_id, 0, -2))->first();
+                    if (!$fileset) {
+                        $fileset = $filesets->where('id', substr($note->dam_id, 0, -4))->first();
+                    }
+                    if (!$fileset) {
+                        $fileset = $filesets->where('id', substr($note->dam_id, 0, -2))->first();
+                    }
                     if (!$fileset) {
                         continue;
                     }

@@ -9,7 +9,6 @@ use OpenApi\Annotations\Parameter;
 
 class SwaggerDocsController extends Controller
 {
-
     public function swaggerDatabase()
     {
         $docs = json_decode(file_get_contents(public_path('/swagger_database.json')), true);
@@ -28,8 +27,7 @@ class SwaggerDocsController extends Controller
 
     public function swaggerDocsGen($version)
     {
-
-        define("API_URL_DOCS", config('app.api_url'));
+        define('API_URL_DOCS', config('app.api_url'));
         $swagger = \Cache::remember('OAS_' . $version, now()->addDay(), function () use ($version) {
             $swagger = \OpenApi\scan(app_path());
             $swagger->tags  = $this->swaggerVersionTags($swagger->tags, $version);

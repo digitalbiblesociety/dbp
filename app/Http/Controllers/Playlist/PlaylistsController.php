@@ -4,18 +4,24 @@ namespace App\Http\Controllers\Playlist;
 
 use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
+use App\Models\Bible\BibleFile;
 use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
 use App\Models\Playlist\PlaylistFollower;
 use App\Models\Playlist\PlaylistItems;
+use App\Traits\CallsBucketsTrait;
 use App\Traits\CheckProjectMembership;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PlaylistsController extends APIController
 {
     use AccessControlAPI;
     use CheckProjectMembership;
+    use CallsBucketsTrait;
 
     /**
      * Display a listing of the resource.
@@ -30,6 +36,12 @@ class PlaylistsController extends APIController
      *          in="query",
      *          @OA\Schema(ref="#/components/schemas/Playlist/properties/featured"),
      *          description="Return featured playlists"
+     *     ),
+     *     @OA\Parameter(
+     *          name="show_details",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Give full details of the playlist"
      *     ),
      *     security={{"api_token":{}}},
      *     @OA\Parameter(ref="#/components/parameters/limit"),
@@ -49,8 +61,8 @@ class PlaylistsController extends APIController
      * @param $user_id
      *
      * @return mixed
-     * 
-     * 
+     *
+     *
      * @OA\Schema (
      *   type="object",
      *   schema="v4_playlist_index",
@@ -78,13 +90,16 @@ class PlaylistsController extends APIController
         $sort_by    = checkParam('sort_by') ?? 'name';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
 
-        $featured = checkParam('featured');
-        $featured = $featured && $featured != 'false' || empty($user);
+        $featured = checkBoolean('featured') || empty($user);
         $limit    = (int) (checkParam('limit') ?? 25);
 
         $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
 
+        $show_details = checkBoolean('show_details');
         $playlists = Playlist::with('user')
+            ->when($show_details, function ($query) {
+                $query->with('items');
+            })
             ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
                 $user_id = empty($user) ? 0 : $user->id;
                 $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user_id);
@@ -100,6 +115,12 @@ class PlaylistsController extends APIController
             })
             ->select($select)
             ->orderBy($sort_by, $sort_dir)->paginate($limit);
+
+        if ($show_details) {
+            foreach ($playlists->getCollection() as $playlist) {
+                $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist->id, 'v' => $this->v, 'key' => $this->key]);
+            }
+        }
 
         return $this->reply($playlists);
     }
@@ -148,6 +169,7 @@ class PlaylistsController extends APIController
         }
 
         $playlist = Playlist::create($playlist_data);
+        $playlist->user;
 
         return $this->reply($playlist);
     }
@@ -173,8 +195,8 @@ class PlaylistsController extends APIController
      * @param $playlist_id
      *
      * @return mixed
-     * 
-     * 
+     *
+     *
      */
     public function show(Request $request, $playlist_id)
     {
@@ -186,6 +208,7 @@ class PlaylistsController extends APIController
         }
 
         $playlist = $this->getPlaylist($user, $playlist_id);
+        $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist_id, 'v' => $this->v, 'key' => $this->key]);
 
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
@@ -241,12 +264,12 @@ class PlaylistsController extends APIController
 
         $name = checkParam('name');
         if ($name) {
-            $update_values["name"] = $name;
+            $update_values['name'] = $name;
         }
 
         $external_content = checkParam('external_content');
         if ($external_content) {
-            $update_values["external_content"] = $external_content;
+            $update_values['external_content'] = $external_content;
         }
 
         $playlist->update($update_values);
@@ -344,8 +367,7 @@ class PlaylistsController extends APIController
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
         }
 
-        $follow = checkParam('follow');
-        $follow = $follow && $follow != 'false';
+        $follow = checkBoolean('follow');
 
 
         if ($follow) {
@@ -384,7 +406,7 @@ class PlaylistsController extends APIController
      *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_playlist_items"))
      *     )
      * )
-     * 
+     *
      * @OA\RequestBody(
      *     request="PlaylistItems",
      *     required=true,
@@ -439,16 +461,22 @@ class PlaylistsController extends APIController
         $created_playlist_items = [];
 
         foreach ($playlist_items as $playlist_item) {
+            $verses = $playlist_items->verses ?? 0;
+
             $created_playlist_item = PlaylistItems::create([
                 'playlist_id'       => $playlist->id,
                 'fileset_id'        => $playlist_item->fileset_id,
                 'book_id'           => $playlist_item->book_id,
                 'chapter_start'     => $playlist_item->chapter_start,
                 'chapter_end'       => $playlist_item->chapter_end,
-                'verse_start'       => $playlist_item->verse_start,
-                'verse_end'         => $playlist_item->verse_end
+                'verse_start'       => $playlist_item->verse_start ?? null,
+                'verse_end'         => $playlist_item->verse_end ?? null,
+                'verses'            => $verses
             ]);
             $created_playlist_item->calculateDuration()->save();
+            if (!$verses) {
+                $created_playlist_item->calculateVerses()->save();
+            }
             $created_playlist_items[] = $created_playlist_item;
         }
 
@@ -475,7 +503,7 @@ class PlaylistsController extends APIController
      *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_complete_playlist_item"))
      *     )
      * )
-     * 
+     *
      * @OA\Schema (
      *   schema="v4_complete_playlist_item",
      *   description="The v4 plan day complete response",
@@ -531,11 +559,147 @@ class PlaylistsController extends APIController
         ]);
     }
 
+    public function hls(Response $response, $playlist_id)
+    {
+        $download = checkBoolean('download');
+        $playlist = Playlist::with('items')->find($playlist_id);
+        if (!$playlist) {
+            return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
+        }
+
+        $signed_files = [];
+        $transaction_id = random_int(0, 10000000);
+        try {
+            apiLogs(request(), $response->getStatusCode(), $transaction_id);
+        } catch (\Exception $e) {
+            Log::error($e);
+        }
+        $durations = [];
+        $hls_items = '';
+        foreach ($playlist->items as $item) {
+            $fileset = $item->fileset;
+            if (!Str::contains($fileset->set_type_code, 'audio')) {
+                continue;
+            }
+            $bible_files = BibleFile::with('streamBandwidth.transportStreamTS')->with('streamBandwidth.transportStreamBytes')->where([
+                'hash_id' => $fileset->hash_id,
+                'book_id' => $item->book_id,
+            ])
+                ->where('chapter_start', '>=', $item->chapter_start)
+                ->where('chapter_start', '<=', $item->chapter_end)
+                ->get();
+            if ($fileset->set_type_code === 'audio_stream' || $fileset->set_type_code === 'audio_drama_stream') {
+                $result = $this->processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download);
+                $hls_items = $result->hls_items;
+                $signed_files = $result->signed_files;
+                $durations[] = collect($result->durations)->max();
+            } else {
+                $result = $this->processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download, $item);
+                $hls_items = $result->hls_items;
+                $signed_files = $result->signed_files;
+                $durations[] = collect($result->durations)->max();
+            }
+        }
+
+        $current_file = "#EXTM3U\n";
+        $current_file .= '#EXT-X-TARGETDURATION:' . ceil(collect($durations)->max()) . "\n";
+        $current_file .= "#EXT-X-VERSION:4\n";
+        $current_file .= "#EXT-X-MEDIA-SEQUENCE:0\n";
+        $current_file .= '#EXT-X-ALLOW-CACHE:YES';
+        $current_file .= $hls_items;
+        $current_file .= "\n#EXT-X-ENDLIST";
+
+        if ($download) {
+            return $this->reply(['hls' => $current_file, 'signed_files' => $signed_files]);
+        }
+
+        return response($current_file, 200, [
+            'Content-Disposition' => 'attachment; filename="' . $playlist_id . '.m3u8"',
+            'Content-Type'        => 'application/x-mpegURL'
+        ]);
+    }
+
+    private function processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download)
+    {
+        $durations = [];
+        foreach ($bible_files as $bible_file) {
+            $currentBandwidth = $bible_file->streamBandwidth->first();
+
+            $transportStream = sizeof($currentBandwidth->transportStreamBytes) ? $currentBandwidth->transportStreamBytes : $currentBandwidth->transportStreamTS;
+            if ($item->verse_end && $item->verse_start) {
+                $transportStream = $this->processVersesOnTransportStream($item, $transportStream, $bible_file);
+            }
+
+            $fileset = $bible_file->fileset;
+
+            foreach ($transportStream as $stream) {
+                $durations[] = $stream->runtime;
+                $hls_items .= "\n#EXTINF:$stream->runtime," . $item->id;
+                if (isset($stream->timestamp)) {
+                    $hls_items .= "\n#EXT-X-BYTERANGE:$stream->bytes@$stream->offset";
+                    $fileset = $stream->timestamp->bibleFile->fileset;
+                    $stream->file_name = $stream->timestamp->bibleFile->file_name;
+                }
+                $bible_path = $bible_file->fileset->bible->first()->id;
+                $file_path = 'audio/' . $bible_path . '/' . $fileset->id . '/' . $stream->file_name;
+                if (!isset($signed_files[$file_path])) {
+                    $signed_files[$file_path] = $this->signedUrl($file_path, $fileset->asset_id, $transaction_id);
+                }
+                $hls_file_path = $download ? $file_path : $signed_files[$file_path];
+                $hls_items .= "\n" . $hls_file_path;
+            }
+            $hls_items .= "\n" . '#EXT-X-DISCONTINUITY';
+        }
+
+        return (object) ['hls_items' => $hls_items, 'signed_files' => $signed_files, 'durations' => $durations];
+    }
+
+    private function processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download, $item)
+    {
+        $durations = [];
+        foreach ($bible_files as $bible_file) {
+            $default_duration = $bible_file->duration ?? 180;
+            $durations[] = $default_duration;
+            $hls_items .= "\n#EXTINF:$default_duration," . $item->id;
+
+            $bible_path = $bible_file->fileset->bible->first()->id;
+            $file_path = 'audio/' . $bible_path . '/' . $bible_file->fileset->id . '/' . $bible_file->file_name;
+            $hls_items .= "\n";
+            if (!isset($signed_files[$file_path])) {
+                $signed_files[$file_path] = $this->signedUrl($file_path, $bible_file->fileset->asset_id, $transaction_id);
+            }
+            $hls_file_path = $download ? $file_path : $signed_files[$file_path];
+            $hls_items .= "\n" . $hls_file_path;
+            $hls_items .= "\n" . '#EXT-X-DISCONTINUITY';
+        }
+
+        return (object) ['hls_items' => $hls_items, 'signed_files' => $signed_files, 'durations' => $durations];
+    }
+
+    private function processVersesOnTransportStream($item, $transportStream, $bible_file)
+    {
+        if ($item->chapter_end  === $item->chapter_start) {
+            $transportStream = $transportStream->splice(1, $item->verse_end)->all();
+            return collect($transportStream)->slice($item->verse_start - 1)->all();
+        }
+
+        $transportStream = $transportStream->splice(1)->all();
+        if ($bible_file->chapter_start === $item->chapter_start) {
+            return collect($transportStream)->slice($item->verse_start - 1)->all();
+        }
+        if ($bible_file->chapter_start === $item->chapter_end) {
+            return collect($transportStream)->splice(0, $item->verse_end)->all();
+        }
+
+        return $transportStream;
+    }
+
     /**
      * @OA\Schema (
      *   type="object",
      *   schema="PlaylistItemDetail",
      *   @OA\Property(property="id", ref="#/components/schemas/PlaylistItems/properties/id"),
+     *   @OA\Property(property="bible_id", ref="#/components/schemas/Bible/properties/id"),
      *   @OA\Property(property="fileset_id", ref="#/components/schemas/PlaylistItems/properties/fileset_id"),
      *   @OA\Property(property="book_id", ref="#/components/schemas/PlaylistItems/properties/book_id"),
      *   @OA\Property(property="chapter_start", ref="#/components/schemas/PlaylistItems/properties/chapter_start"),
@@ -557,7 +721,7 @@ class PlaylistsController extends APIController
      *   @OA\Property(property="following", ref="#/components/schemas/Playlist/properties/following"),
      *   @OA\Property(property="user", ref="#/components/schemas/v4_playlist_index_user"),
      * )
-     * 
+     *
      * @OA\Schema (
      *   type="object",
      *   schema="v4_playlist_index_user",
@@ -565,7 +729,7 @@ class PlaylistsController extends APIController
      *   @OA\Property(property="id", type="integer"),
      *   @OA\Property(property="name", type="string")
      * )
-     * 
+     *
      * @OA\Schema (
      *   type="object",
      *   schema="v4_playlist_detail",
@@ -574,7 +738,7 @@ class PlaylistsController extends APIController
      *   },
      *   @OA\Property(property="items",type="array",@OA\Items(ref="#/components/schemas/PlaylistItemDetail"))
      * )
-     * 
+     *
      * @OA\Response(
      *   response="playlist",
      *   description="Playlist Object",
@@ -585,7 +749,7 @@ class PlaylistsController extends APIController
      * )
      */
 
-    private function getPlaylist($user, $playlist_id)
+    public function getPlaylist($user, $playlist_id)
     {
         $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
         $playlist = Playlist::with('items')
@@ -597,6 +761,16 @@ class PlaylistsController extends APIController
             ->where('user_playlists.id', $playlist_id)
             ->select($select)
             ->first();
+
+        $playlist->items = $playlist->items->map(function ($item) {
+            $bible = $item->fileset->bible->first();
+            if ($bible) {
+                $item->bible_id = $bible->id;
+            }
+            unset($item->fileset);
+            return $item;
+        });
+
         return $playlist;
     }
 }

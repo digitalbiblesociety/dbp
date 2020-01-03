@@ -43,5 +43,4 @@ class BibleConcordance extends Model
     {
         return $this->belongsTo(BibleVerse::class);
     }
-
 }

@@ -42,7 +42,7 @@ class ProjectsController extends Controller
      */
     public function store(Request $request)
     {
-        $project = Project::where('id',$request->id)->first();
+        $project = Project::where('id', $request->id)->first();
         return view('dashboard.projects.edit', compact('project'));
     }
 
@@ -54,7 +54,7 @@ class ProjectsController extends Controller
      */
     public function edit($id)
     {
-        $project = Project::where('id',$id)->first();
+        $project = Project::where('id', $id)->first();
         return view('dashboard.projects.edit', compact('project'));
     }
 
@@ -66,8 +66,8 @@ class ProjectsController extends Controller
      */
     public function members($id)
     {
-        $project = Project::where('id',$id)->first();
-        $members = ProjectMember::where('project_id',$project->id)->paginate();
+        $project = Project::where('id', $id)->first();
+        $members = ProjectMember::where('project_id', $project->id)->paginate();
         return view('dashboard.projects.members', compact('project', 'members'));
     }
 
@@ -80,7 +80,7 @@ class ProjectsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $project = Project::where('id',$id)->first();
+        $project = Project::where('id', $id)->first();
         return view('dashboard.projects.edit', compact('project'));
     }
 
@@ -92,7 +92,7 @@ class ProjectsController extends Controller
      */
     public function destroy($id)
     {
-        $project = Project::where('id',$id)->first();
+        $project = Project::where('id', $id)->first();
         return view('dashboard.projects.edit', compact('project'));
     }
 }

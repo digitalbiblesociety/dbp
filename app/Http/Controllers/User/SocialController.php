@@ -4,8 +4,6 @@ namespace App\Http\Controllers\User;
 
 use App\Models\User\ProjectMember;
 use App\Models\User\Role;
-use Illuminate\Encryption\Encrypter;
-use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\APIController;
 
 use App\Models\User\ProjectOauthProvider;
@@ -22,7 +20,6 @@ use Illuminate\Support\Str;
 
 class SocialController extends APIController
 {
-
     public function redirect($provider = null)
     {
         $project_id = checkParam('project_id');
@@ -117,7 +114,7 @@ class SocialController extends APIController
             ProjectMember::create([
                'user_id'    => $user->id,
                'project_id' => $project_id,
-               'role_id'    => Role::where('slug','user')->first()->id
+               'role_id'    => Role::where('slug', 'user')->first()->id
             ]);
 
             return $user;

@@ -6,7 +6,6 @@ use App\Models\User\Key;
 use App\Models\User\Project;
 use App\Models\User\ProjectMember;
 use App\Models\User\Role;
-use App\Models\User\User;
 
 use Illuminate\Support\Arr;
 
@@ -73,8 +72,8 @@ class ProjectRoutesTest extends ApiV4Test
         $this->markTestIncomplete('Returns inconsistent success/failures');
         
         $project = factory(Project::class)->create();
-        $user = Key::where('key',$this->key)->first()->user;
-        $admin_role = Role::where('slug','admin')->first();
+        $user = Key::where('key', $this->key)->first()->user;
+        $admin_role = Role::where('slug', 'admin')->first();
         ProjectMember::create([
            'project_id' => $project->id,
            'user_id' => $user->id,
@@ -91,7 +90,7 @@ class ProjectRoutesTest extends ApiV4Test
             'project_id'       => $project->id,
             'name'             => 'test_provider',
             'id'               => $project_oAuth_id,
-            'secret'           => rand(14,24),
+            'secret'           => rand(14, 24),
             'client_id'        => (string) random_int(0, 1000),
             'client_secret'    => (string) random_int(0, 1000),
             'callback_url'     => 'https://listen.dbp4.org/',
@@ -111,6 +110,5 @@ class ProjectRoutesTest extends ApiV4Test
         echo "\nTesting: $path";
         $response = $this->withHeaders($this->params)->delete($path);
         $response->assertSuccessful();
-
     }
 }

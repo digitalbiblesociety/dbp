@@ -2,7 +2,6 @@
 
 namespace App\Transformers\Factbook;
 
-use App\Models\Country\FactBook\CountryEnergy;
 use League\Fractal\TransformerAbstract;
 
 class EnergyTransformer extends TransformerAbstract

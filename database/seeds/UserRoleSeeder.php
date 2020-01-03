@@ -2,8 +2,6 @@
 
 use Illuminate\Database\Seeder;
 
-use App\Models\User\Role;
-
 class UserRoleSeeder extends Seeder
 {
     /**
@@ -29,6 +27,5 @@ class UserRoleSeeder extends Seeder
             'name' => 'Admin',
             'slug' => 'admin',
         ]);
-
     }
 }

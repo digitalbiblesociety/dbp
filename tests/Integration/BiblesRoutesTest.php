@@ -11,7 +11,6 @@ use Illuminate\Support\Arr;
 
 class BiblesRoutesTest extends ApiV4Test
 {
-
     use AccessControlAPI;
 
 

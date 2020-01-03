@@ -11,7 +11,7 @@ class CommentaryController extends APIController
 
     /**
      *
-     * @OA\GET(
+     * @OA\Get(
      *     path="/commentaries",
      *     tags={"StudyBible"},
      *     summary="Commentaries",
@@ -36,7 +36,7 @@ class CommentaryController extends APIController
 
     /**
      *
-     * @OA\GET(
+     * @OA\Get(
      *     path="/commentaries/{commentary_id}/chapters",
      *     tags={"StudyBible"},
      *     summary="Commentary Chapters",
@@ -90,15 +90,15 @@ class CommentaryController extends APIController
 
         $commentary = Commentary::with('translations')->get();
         $commentary_sections = CommentarySection::where('commentary_id', $commentary_id)->distinct()
-            ->when($book_id, function ($query) use($book_id) {
+            ->when($book_id, function ($query) use ($book_id) {
                 $query->where('book_id', $book_id);
             })
-            ->when($chapter, function ($query) use($chapter) {
+            ->when($chapter, function ($query) use ($chapter) {
                 $query->where('chapter_start', $chapter);
             })
-            ->leftJoin('books', function($query) {
-                $query->on('books.id','commentary_sections.book_id');
-            })->select('book_id','chapter_start')
+            ->leftJoin('books', function ($query) {
+                $query->on('books.id', 'commentary_sections.book_id');
+            })->select('book_id', 'chapter_start')
               ->orderBy('books.protestant_order')
               ->orderBy('commentary_sections.chapter_start')->get();
 
@@ -111,7 +111,7 @@ class CommentaryController extends APIController
 
     /**
      *
-     * @OA\GET(
+     * @OA\Get(
      *     path="/commentaries/{commentary_id}/{book_id}/{chapter}",
      *     tags={"StudyBible"},
      *     summary="Commentary Sections",
@@ -163,8 +163,8 @@ class CommentaryController extends APIController
      *
      * @return mixed
      */
-    public function sections($commentary_id, $book_id, $chapter) {
-
+    public function sections($commentary_id, $book_id, $chapter)
+    {
         $commentary = Commentary::with('translations')->get();
         $commentary_section = CommentarySection::where([
             ['commentary_id', $commentary_id],
@@ -174,5 +174,4 @@ class CommentaryController extends APIController
 
         return $this->reply(['data' => $commentary_section, 'meta' => $commentary->toArray()]);
     }
-
 }

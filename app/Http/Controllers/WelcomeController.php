@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 class WelcomeController extends APIController
 {
-
     public function welcome()
     {
         return view('welcome');

@@ -103,6 +103,4 @@ class Commentary extends Model
     {
         return $this->hasOne(CommentaryTranslation::class)->where('vernacular', 1);
     }
-
-
 }

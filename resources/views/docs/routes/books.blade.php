@@ -23,8 +23,8 @@
         </div>
         <div class="results">
 <pre><?php
-	echo file_get_contents(route('v4_books.index',['key' => 1234,'pretty']));
-	?></pre>
+    echo file_get_contents(route('v4_books.index', ['key' => 1234,'pretty']));
+    ?></pre>
         </div>
     </div>
 

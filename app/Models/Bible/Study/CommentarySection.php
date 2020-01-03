@@ -4,6 +4,7 @@ namespace App\Models\Bible\Study;
 
 use App\Models\Bible\Book;
 use Illuminate\Database\Eloquent\Model;
+
 /**
  * App\Models\Bible\Study\CommentarySection
  * @mixin \Eloquent
@@ -86,5 +87,4 @@ class CommentarySection extends Model
     {
         return $this->belongsTo(Book::class);
     }
-
 }

@@ -180,5 +180,4 @@ class BibleFilesetsManagementController extends APIController
         }
         return view('bibles.filesets.thanks', compact('fileset'));
     }
-
 }

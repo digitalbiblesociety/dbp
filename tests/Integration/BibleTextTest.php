@@ -5,13 +5,11 @@ namespace Tests\Integration;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleVerse;
 use App\Models\Bible\Book;
-use App\Models\User\AccessGroup;
 use App\Models\User\Key;
 use App\Traits\AccessControlAPI;
 
 class BibleTextTest extends ApiV4Test
 {
-
     use AccessControlAPI;
 
     public function bookAndChapterParamsReturnFilteredResult()
@@ -39,7 +37,7 @@ class BibleTextTest extends ApiV4Test
         $access_control = $this->accessControl($this->key);
 
         $fileset = BibleFileset::with('files')->whereIn('hash_id', $access_control->hashes)->where('set_type_code', 'text_plain')->inRandomOrder()->first();
-        $bible_verse = BibleVerse::where('hash_id',$fileset->hash_id)->inRandomOrder()->first();
+        $bible_verse = BibleVerse::where('hash_id', $fileset->hash_id)->inRandomOrder()->first();
 
         $this->params = array_merge([
             'fileset_id' => $fileset->id,
@@ -72,7 +70,7 @@ class BibleTextTest extends ApiV4Test
     {
         $access_control = $this->accessControl($this->params['key']);
         $fileset = BibleFileset::with('files')->whereIn('hash_id', $access_control->hashes)->where('set_type_code', 'text_plain')->inRandomOrder()->first();
-        $bible_verse = BibleVerse::where('hash_id',$fileset->hash_id)->inRandomOrder()->first();
+        $bible_verse = BibleVerse::where('hash_id', $fileset->hash_id)->inRandomOrder()->first();
 
         $this->params['dam_id']      = $fileset->id;
         $this->params['asset_id']    = $fileset->asset_id;

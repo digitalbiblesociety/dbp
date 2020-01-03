@@ -5,6 +5,7 @@ namespace App\Console\Commands\BibleFormats;
 use App\Models\Bible\Book;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+
 class FormatRunberg extends Command
 {
     /**
@@ -30,14 +31,14 @@ class FormatRunberg extends Command
     {
         $chapters = glob(storage_path('data/bibles/runeberg/*.html'));
         foreach ($chapters as $chapter_path) {
-            $book_number = substr($chapter_path,40,2);
+            $book_number = substr($chapter_path, 40, 2);
             $chaptersByBook[$book_number][] = $chapter_path;
         }
 
         foreach ($chaptersByBook as $book_number => $chapters) {
             $chapters_in_order = Arr::sort($chapters);
             $book =  Book::where('protestant_order', (int) $book_number)->first();
-            if(!$book) {
+            if (!$book) {
                 echo "skipping: $book_number";
                 continue;
             }
@@ -45,7 +46,6 @@ class FormatRunberg extends Command
             $book_path = $output_path . '/' . str_pad($book->protestant_order, 2, '0', STR_PAD_LEFT) . '_' . $book->id . '.SFM';
             $first_chapter = true;
             foreach ($chapters_in_order as $key => $chapter_path) {
-
                 $chapter_text = file_get_contents($chapter_path);
                 preg_match_all('/<pre>\s+(.*) \(.*\), (\d+) Kapitlet\s+(.*)\s+/', $chapter_text, $chapter_title);
 
@@ -57,14 +57,8 @@ class FormatRunberg extends Command
                 $chapter  = "\c ".$chapter_title[2][0] . "\n";
                 $chapter .= "\s1 ".$chapter_title[3][0] . "\n";
                 $chapter .= "\p" . "\n";
-
-
-
             }
-
         }
-
-
     }
 
     private function populateFrontMatter($book, $chapter_title, $book_path)
@@ -81,6 +75,4 @@ class FormatRunberg extends Command
 
     // Step 1)
         // Replace __ \n ? ?(\d+)\. __ with \n\v \1.
-
 }
-

@@ -2,9 +2,7 @@
 
 namespace App\Transformers\Factbook;
 
-use App\Models\Country\FactBook\CountryGovernment;
 use App\Transformers\BaseTransformer;
-use League\Fractal\TransformerAbstract;
 
 class GovernmentTransformer extends BaseTransformer
 {

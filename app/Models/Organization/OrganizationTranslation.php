@@ -58,58 +58,58 @@ class OrganizationTranslation extends Model
      */
     protected $language_iso;
 
-     /**
-      *
-      * @OA\Property(
-      *     title="id",
-      *     description="The Organization's incrementing id",
-      *     type="integer",
-      *     minimum=0
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *     title="id",
+     *     description="The Organization's incrementing id",
+     *     type="integer",
+     *     minimum=0
+     * )
+     *
+     */
     protected $organization_id;
 
-     /**
-      *
-      * @OA\Property(
-      *     title="id",
-      *     description="If the current translation is the primary/vernacular translation",
-      *     type="boolean"
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *     title="id",
+     *     description="If the current translation is the primary/vernacular translation",
+     *     type="boolean"
+     * )
+     *
+     */
     protected $vernacular;
-     /**
-      *
-      * @OA\Property(
-      *     title="alt",
-      *     description="If the current name is a secondary title for the organization",
-      *     type="boolean"
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *     title="alt",
+     *     description="If the current name is a secondary title for the organization",
+     *     type="boolean"
+     * )
+     *
+     */
     protected $alt;
-     /**
-      *
-      * @OA\Property(
-      *     title="name",
-      *     description="The current translated name for the organization",
-      *     type="string",
-      *     maxLength=191
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *     title="name",
+     *     description="The current translated name for the organization",
+     *     type="string",
+     *     maxLength=191
+     * )
+     *
+     */
     protected $name;
-     /**
-      *
-      * @OA\Property(
-      *     title="description",
-      *     description="The current translated description for the organization",
-      *     type="string"
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *     title="description",
+     *     description="The current translated description for the organization",
+     *     type="string"
+     * )
+     *
+     */
     protected $description;
     /**
      *

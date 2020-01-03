@@ -43,6 +43,8 @@ class Kernel extends ConsoleKernel
 
         Commands\S3LogBackup::class,
         Commands\CleanAndImportKD::class,
+
+        Commands\showEnvironment::class,
     ];
 
     /**

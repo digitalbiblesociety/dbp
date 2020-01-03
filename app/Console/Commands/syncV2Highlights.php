@@ -3,15 +3,13 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-
 use App\Models\User\Study\HighlightColor;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\Book;
-
 use App\Models\User\User;
 use App\Models\User\Study\Highlight;
-
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class syncV2Highlights extends Command
@@ -44,7 +42,7 @@ class syncV2Highlights extends Command
         $filesets = BibleFileset::where('set_type_code', 'text_plain')->where('asset_id', 'dbp-prod')->get();
         $books = Book::select(['id_osis', 'id_usfx', 'id', 'protestant_order'])->get();
 
-        \DB::connection('dbp_users_v2')
+        DB::connection('dbp_users_v2')
             ->table('highlight')
             ->where('created', '>', $from_date)
             ->orderBy('created')
@@ -90,7 +88,7 @@ class syncV2Highlights extends Command
             'chapter'           => $highlight->chapter_id,
             'verse_start'       => $highlight->verse_id,
             'highlight_start'   => 1,
-            'highlighted_chars' => NULL,
+            'highlighted_chars' => null,
             'highlighted_color' => $this->getRelatedColorIdForHighlightColorString($highlight->color),
             'created_at'        => Carbon::createFromTimeString($highlight->created),
             'updated_at'        => Carbon::createFromTimeString($highlight->updated),

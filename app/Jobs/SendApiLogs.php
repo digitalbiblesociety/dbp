@@ -33,7 +33,7 @@ class SendApiLogs implements ShouldQueue
      */
     public function handle()
     {
-        $this->log_string = str_replace(array("\n", "\r"), '', $this->log_string);
+        $this->log_string = str_replace(["\n", "\r"], '', $this->log_string);
         $this->addGeoData();
         $current_time = Carbon::now();
         $files = Storage::disk('logs')->files('api');

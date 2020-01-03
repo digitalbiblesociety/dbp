@@ -47,5 +47,4 @@ class BibleFilesetsPodcastController extends APIController
             ]
         ]);
     }
-
 }

@@ -20,7 +20,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class VideoTag extends Model
 {
-
     protected $connection = 'dbp';
 
     /**

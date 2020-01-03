@@ -17,7 +17,6 @@ use Symfony\Component\Yaml\Yaml;
 use Yosymfony\Toml\TomlBuilder;
 use Illuminate\Support\Str;
 
-
 class APIController extends Controller
 {
     // Top Level Swagger Docs
@@ -39,11 +38,11 @@ class APIController extends Controller
      * )
      *
      * @OA\Server(
-     *     url="https://api.dbp.test",
+     *     url="https://dbp.test/api",
      *     description="Development server",
      *     @OA\ServerVariable( serverVariable="schema", enum={"https"}, default="https")
      * )
-     * 
+     *
      * @OA\SecurityScheme(
      *   securityScheme="api_token",
      *   name="api_token",
@@ -137,9 +136,8 @@ class APIController extends Controller
 
     public function __construct()
     {
-        $url           = explode('.', url()->current());
-        $subdomain     = array_shift($url);
-        if (Str::contains($subdomain, 'api')) {
+        $url = url()->current();
+        if (Str::contains($url, '/api')) {
             $this->api = true;
             $this->v   = (int) checkParam('v', true, $this->preset_v);
             $this->key = checkParam('key', true);
@@ -243,7 +241,7 @@ class APIController extends Controller
 
         return response()->json(['error' => [
             'message'     => $message,
-            'status code' => $this->statusCode,
+            'status_code' => $this->statusCode,
             'action'      => $action ?? ''
         ]], $this->statusCode);
     }

@@ -37,13 +37,15 @@ class APIToken
      *
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    public function handle($request, Closure $next, $type = "")
+    public function handle($request, Closure $next, $type = '')
     {
-        $guard = "api";
+        $guard = 'tokens';
 
-        if ($type === "check") {
+        if ($type === 'check') {
             if (!$this->auth->guard($guard)->check()) {
-                throw new AuthenticationException(trans('auth.failed'));
+                $exception = new AuthenticationException(trans('auth.failed'));
+                $exception->api_response = true;
+                throw $exception;
             }
         }
 

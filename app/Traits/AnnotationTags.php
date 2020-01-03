@@ -8,7 +8,6 @@ trait AnnotationTags
     {
         if (\is_string(request()->tags)) {
             $tags = collect(explode(',', request()->tags))->map(function ($tag) {
-
                 if (strpos($tag, ':::') !== false) {
                     $tag = explode(':::', $tag);
                     return ['value' => ltrim($tag[1]), 'type' => ltrim($tag[0])];

@@ -28,7 +28,7 @@ class SyncBebliaBible extends Command
      */
     public function handle()
     {
-        $root_path = "http://www.beblia.com/pages/";
+        $root_path = 'http://www.beblia.com/pages/';
         // MainContent_chapterForwardButton
 
         $chapter_number = 1;
@@ -37,7 +37,7 @@ class SyncBebliaBible extends Command
 
         $html_string = file_get_contents($root_path."main.aspx?Language=$name&Book=$book_number&Chapter=$chapter_number");
         $html = HtmlDomParser::str_get_html($html_string);
-        $books = $html->find(".dropDownListBooks option");
+        $books = $html->find('.dropDownListBooks option');
         $totalBooks = count($books);
         $this->info('Books to process: '. $totalBooks);
 
@@ -50,7 +50,7 @@ class SyncBebliaBible extends Command
 
             $html_string = file_get_contents($root_path."main.aspx?Language=$name&Book=$book_number&Chapter=1");
             $html = HtmlDomParser::str_get_html($html_string);
-            $totalChapters = $html->find(".dropDownListBookChapters option");
+            $totalChapters = $html->find('.dropDownListBookChapters option');
             $totalChaptersCount = count($totalChapters);
             $this->info('Total Chapters to process'. $totalChaptersCount);
             $chapter_number = 1;
@@ -67,7 +67,7 @@ class SyncBebliaBible extends Command
                 $this->info('Fetching Chapter'. $chapter_number);
                 $html_string = file_get_contents($root_path."main.aspx?Language=$name&Book=$book_number&Chapter=$chapter_number");
                 $html = HtmlDomParser::str_get_html($html_string);
-                $rows = $html->find("#MainContent_verseText tbody tr td");
+                $rows = $html->find('#MainContent_verseText tbody tr td');
 
                 // Generate Chapter Code
                 $chapter = '\c '.$totalChapters[$chapter_number - 1]->innertext()."\n\p\n\n";

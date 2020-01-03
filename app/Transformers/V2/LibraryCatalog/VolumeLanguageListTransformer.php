@@ -3,11 +3,9 @@
 namespace App\Transformers;
 
 use App\Models\Language\Language;
-use App\Transformers\BaseTransformer;
 
 class VolumeLanguageListTransformer extends BaseTransformer
 {
-
     public function transform(Language $language)
     {
         return [

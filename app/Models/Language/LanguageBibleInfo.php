@@ -38,20 +38,20 @@ class LanguageBibleInfo extends Model
     */
     protected $language_id;
 
-     /**
-      *
-      * @OA\Property(
-      *     title="bible_status",
-      *     type="integer",
-      *     description="The numeral written out the vernacular translations",
-      *     nullable=true,
-      *     minimum=0
-      * )
-      *
-      * @property int|null $bible_status
-      * @method static LanguageBibleInfo whereBibleStatus($value)
-      *
-     */
+    /**
+     *
+     * @OA\Property(
+     *     title="bible_status",
+     *     type="integer",
+     *     description="The numeral written out the vernacular translations",
+     *     nullable=true,
+     *     minimum=0
+     * )
+     *
+     * @property int|null $bible_status
+     * @method static LanguageBibleInfo whereBibleStatus($value)
+     *
+    */
     protected $bible_status;
 
     /**
@@ -87,34 +87,34 @@ class LanguageBibleInfo extends Model
      *
     */
     protected $bible_year;
-     /**
-      *
-      * @OA\Property(
-      *     title="bible_year_newTestament",
-      *     type="integer",
-      *     description="The year a new testament Bible was published",
-      *     minimum=0,
-      *     nullable=true
-      * )
-      *
-      * @property int|null $bible_year_newTestament
-      * @method static LanguageBibleInfo whereBibleYearNewTestament($value)
-      *
+    /**
+     *
+     * @OA\Property(
+     *     title="bible_year_newTestament",
+     *     type="integer",
+     *     description="The year a new testament Bible was published",
+     *     minimum=0,
+     *     nullable=true
+     * )
+     *
+     * @property int|null $bible_year_newTestament
+     * @method static LanguageBibleInfo whereBibleYearNewTestament($value)
+     *
     */
     protected $bible_year_newTestament;
-     /**
-      *
-      * @OA\Property(
-      *     title="bible_year_portions",
-      *     type="integer",
-      *     description="The year portions of a Bible were published",
-      *     minimum=0,
-      *     nullable=true
-      * )
-      *
-      * @property int|null $bible_year_portions
-      * @method static LanguageBibleInfo whereBibleYearPortions($value)
-      *
+    /**
+     *
+     * @OA\Property(
+     *     title="bible_year_portions",
+     *     type="integer",
+     *     description="The year portions of a Bible were published",
+     *     minimum=0,
+     *     nullable=true
+     * )
+     *
+     * @property int|null $bible_year_portions
+     * @method static LanguageBibleInfo whereBibleYearPortions($value)
+     *
     */
     protected $bible_year_portions;
 
@@ -135,20 +135,20 @@ class LanguageBibleInfo extends Model
     */
     protected $bible_sample_text;
 
-     /**
-      *
-      *
-      * @OA\Property(
-      *     title="bible_sample_img",
-      *     type="string",
-      *     description="A sample image of the bible text for comparison",
-      *     maxLength=191,
-      *     nullable=true
-      * )
-      *
-      * @property string|null $bible_sample_img
-      * @method static LanguageBibleInfo whereBibleSampleImg($value)
-      *
+    /**
+     *
+     *
+     * @OA\Property(
+     *     title="bible_sample_img",
+     *     type="string",
+     *     description="A sample image of the bible text for comparison",
+     *     maxLength=191,
+     *     nullable=true
+     * )
+     *
+     * @property string|null $bible_sample_img
+     * @method static LanguageBibleInfo whereBibleSampleImg($value)
+     *
     */
     protected $bible_sample_img;
     /**
@@ -167,19 +167,19 @@ class LanguageBibleInfo extends Model
     */
     protected $created_at;
 
-     /**
-      *
-      * @OA\Property(
-      *     title="updated_at",
-      *     type="string",
-      *     description="The timestamp of the last update for the language bible information model",
-      *     maxLength=191,
-      *     nullable=true
-      * )
-      *
-      * @property \Carbon\Carbon|null $updated_at
-      * @method static LanguageBibleInfo whereUpdatedAt($value)
-      *
+    /**
+     *
+     * @OA\Property(
+     *     title="updated_at",
+     *     type="string",
+     *     description="The timestamp of the last update for the language bible information model",
+     *     maxLength=191,
+     *     nullable=true
+     * )
+     *
+     * @property \Carbon\Carbon|null $updated_at
+     * @method static LanguageBibleInfo whereUpdatedAt($value)
+     *
     */
     protected $updated_at;
 }

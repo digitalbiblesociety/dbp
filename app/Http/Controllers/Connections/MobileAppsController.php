@@ -6,7 +6,6 @@ use App\Http\Controllers\APIController;
 
 class MobileAppsController extends APIController
 {
-
     public function redirectDeepLink()
     {
         try {

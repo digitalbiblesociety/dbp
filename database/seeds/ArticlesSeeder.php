@@ -13,9 +13,8 @@ class ArticlesSeeder extends Seeder
      */
     public function run()
     {
-
-        $article_count = random_int(100,250);
-        while($article_count > 0) {
+        $article_count = random_int(100, 250);
+        while ($article_count > 0) {
             $article = Article::create([
                 'id'              => '',
                 'organization_id' => '',

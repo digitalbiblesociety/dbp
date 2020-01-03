@@ -65,7 +65,6 @@ class AccessGroupKey extends Model
 
     public function filesets()
     {
-        return $this->hasMany(AccessGroupFileset::class,'access_group_id','access_group_id')->unique();
+        return $this->hasMany(AccessGroupFileset::class, 'access_group_id', 'access_group_id')->unique();
     }
-
 }

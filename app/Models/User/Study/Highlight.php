@@ -4,8 +4,9 @@ namespace App\Models\User\Study;
 
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
-use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleVerse;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
  * App\Models\User\Highlight
@@ -18,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $chapter
  * @property string|null $highlighted_color
  * @property int $verse_start
+ * @property int $verse_end
  * @property string|null $project_id
  * @property int $highlight_start
  * @property int $highlighted_words
@@ -48,57 +50,64 @@ class Highlight extends Model
     protected $fillable = ['user_id','v2_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','highlight_start','highlighted_words','highlighted_color'];
     protected $hidden = ['user_id','project_id'];
 
-     /**
-      *
-      * @OA\Property(
-      *   title="id",
-      *   type="integer",
-      *   description="The highlight id",
-      *   minimum=0
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *   title="id",
+     *   type="integer",
+     *   description="The highlight id",
+     *   minimum=0
+     * )
+     *
+     */
     protected $id;
-     /**
-      *
-      * @OA\Property(
-      *   title="user_id",
-      *   type="string",
-      *   description="The user that created the highlight"
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *   title="user_id",
+     *   type="string",
+     *   description="The user that created the highlight"
+     * )
+     *
+     */
     protected $user_id;
 
     /**
      * @OA\Property(ref="#/components/schemas/Bible/properties/id")
      */
     protected $bible_id;
-     /**
-      * @OA\Property(ref="#/components/schemas/Book/properties/id")
-      */
+    /**
+     * @OA\Property(ref="#/components/schemas/Book/properties/id")
+     */
     protected $book_id;
-     /**
-      *
-      * @OA\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
-      */
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/BibleFile/properties/chapter_start")
+     */
     protected $chapter;
-     /**
-      *
-      * @OA\Property(
-      *   title="highlighted_color",
-      *   type="string",
-      *   description="The highlight's highlighted color in either hex, rgb, or rgba notation.",
-      *   example="#4488bb"
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *   title="highlighted_color",
+     *   type="string",
+     *   description="The highlight's highlighted color in either hex, rgb, or rgba notation.",
+     *   example="#4488bb"
+     * )
+     *
+     */
     protected $highlighted_color;
-     /**
-      *
-      * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
-      */
+
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_start")
+     */
     protected $verse_start;
+
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/BibleFile/properties/verse_end")
+     */
+    protected $verse_end;
 
     /**
      *
@@ -107,31 +116,31 @@ class Highlight extends Model
      */
     protected $reference;
 
-     /**
-      *
-      * @OA\Property(ref="#/components/schemas/Project/properties/id")
-      */
+    /**
+     *
+     * @OA\Property(ref="#/components/schemas/Project/properties/id")
+     */
     protected $project_id;
-     /**
-      *
-      * @OA\Property(
-      *   title="highlight_start",
-      *   type="integer",
-      *   description="The number of words from the beginning of the verse to start the highlight at. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
-      *   minimum=0
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *   title="highlight_start",
+     *   type="integer",
+     *   description="The number of words from the beginning of the verse to start the highlight at. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
+     *   minimum=0
+     * )
+     *
+     */
     protected $highlight_start;
-     /**
-      *
-      * @OA\Property(
-      *   title="highlighted_words",
-      *   type="integer",
-      *   description="The number of words being highlighted. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
-      * )
-      *
-      */
+    /**
+     *
+     * @OA\Property(
+     *   title="highlighted_words",
+     *   type="integer",
+     *   description="The number of words being highlighted. For example, if the verse Genesis 1:1 had a `highlight_start` of 4 and a highlighted_words equal to 2. The result would be: In the beginning `[God created]` the heavens and the earth.",
+     * )
+     *
+     */
     protected $highlighted_words;
 
 
@@ -148,11 +157,43 @@ class Highlight extends Model
 
     public function book()
     {
-        return $this->hasOne(BibleBook::class, 'book_id', 'book_id');
+        return $this->hasOne(BibleBook::class, 'book_id', 'book_id')->where('bible_id', $this['bible_id']);
     }
 
     public function tags()
     {
         return $this->hasMany(AnnotationTag::class, 'highlight_id', 'id');
+    }
+
+    public function getFilesetInfoAttribute()
+    {
+        $highlight = $this->toArray();
+        $chapter = $highlight['chapter'];
+        $verse_start = $highlight['verse_start'];
+        $verse_end = $highlight['verse_end'] ?? $verse_start;
+        $bible = Bible::where('id', $highlight['bible_id'])->first();
+        $filesets = $bible->filesets;
+        $text_fileset = $filesets->firstWhere('set_type_code', 'text_plain');
+        $audio_filesets = $filesets->filter(function ($fs) {
+            return Str::contains($fs->set_type_code, 'audio');
+        })->flatten()->toArray();
+        
+        $verses = '';
+        if ($text_fileset) {
+            $verses = BibleVerse::withVernacularMetaData($bible)
+            ->where('hash_id', $text_fileset->hash_id)
+            ->where('bible_verses.book_id', $highlight['book_id'])
+            ->where('verse_start', '>=', $verse_start)
+            ->where('verse_end', '<=', $verse_end)
+            ->where('chapter', $chapter)
+            ->orderBy('verse_start')
+            ->select([
+              'bible_verses.verse_text',
+            ])->get()->pluck('verse_text');
+        }
+        
+        $verse_text = implode(' ', $verses->toArray());
+
+        return collect(['verse_text' => $verse_text, 'audio_filesets' => $audio_filesets]);
     }
 }

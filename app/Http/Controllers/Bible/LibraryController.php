@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Bible;
 
 use App\Http\Controllers\Connections\ArclightController;
-use Illuminate\Http\Request;
 use App\Traits\AccessControlAPI;
 use Illuminate\Http\JsonResponse;
 
@@ -11,7 +10,6 @@ use App\Models\Language\Language;
 use App\Models\Bible\BibleFileset;
 
 use App\Transformers\V2\LibraryVolumeTransformer;
-use App\Transformers\V2\LibraryCatalog\LibraryCatalogTransformer;
 use App\Transformers\V2\LibraryCatalog\LibraryMetadataTransformer;
 
 use App\Http\Controllers\APIController;
@@ -318,7 +316,7 @@ class LibraryController extends APIController
         $version_code       = checkParam('version_code');
 
         $arclight = new ArclightController();
-        if($version_code === 'JFV') {
+        if ($version_code === 'JFV') {
             return $arclight->volumes();
         }
 
@@ -362,10 +360,10 @@ class LibraryController extends APIController
                     $query->where('bible_filesets.updated_at', '>', $updated);
                 })
                 ->when($version_code, function ($query) use ($version_code) {
-                    $query->whereRaw("SUBSTRING(bibles.id,4) = ?", [$version_code]);
+                    $query->whereRaw('SUBSTRING(bibles.id,4) = ?', [$version_code]);
                 })
                 ->when($organization, function ($query) use ($organization) {
-                    $query->where("bible_organizations.organization_id", $organization);
+                    $query->where('bible_organizations.organization_id', $organization);
                 })->get()->filter(function ($item) {
                     return $item->english_name;
                 });
@@ -373,12 +371,12 @@ class LibraryController extends APIController
             return $this->generateV2StyleId($filesets);
         });
 
-        if($dam_id) {
+        if ($dam_id) {
             $filesets = $this->filterById($filesets, $dam_id);
         }
 
         $filesets = fractal($filesets, new LibraryVolumeTransformer(), $this->serializer)->toArray();
-        if(!empty($filesets) && !isset($version_code)) {
+        if (!empty($filesets) && !isset($version_code)) {
             $filesets = array_merge($filesets, $arclight->volumes($iso));
         }
 
@@ -387,7 +385,7 @@ class LibraryController extends APIController
 
     private function filterById($filesets, $dam_id)
     {
-        return array_filter($filesets, function($fileset) use ($dam_id) { 
+        return array_filter($filesets, function ($fileset) use ($dam_id) {
             return $fileset->generated_id == $dam_id;
         });
     }
@@ -405,9 +403,9 @@ class LibraryController extends APIController
         foreach ($filesets as $fileset) {
             $has_nondrama = $fileset->where('id', 'LIKE', substr($fileset->id, 0, 6).'%')
                                     ->where('set_type_code', 'audio')
-                                    ->whereHas('permissions', function($query){
-                                        $query->whereHas('access', function($query){
-                                            $query->where('name','!=','RESTRICTED');
+                                    ->whereHas('permissions', function ($query) {
+                                        $query->whereHas('access', function ($query) {
+                                            $query->where('name', '!=', 'RESTRICTED');
                                         });
                                     })
                                     ->get();
@@ -415,7 +413,6 @@ class LibraryController extends APIController
             $type_codes = $this->getV2TypeCode($fileset, !$has_nondrama->isEmpty());
 
             foreach ($type_codes as $type_code) {
-
                 $ot_fileset_id = substr($fileset->id, 0, 6).'O'.$type_code;
                 $nt_fileset_id = substr($fileset->id, 0, 6).'N'.$type_code;
                 $pt_fileset_id = substr($fileset->id, 0, 6).'P'.$type_code;

@@ -37,7 +37,6 @@ class SyncOneHope extends Command
      */
     public function handle()
     {
-
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -65,6 +64,5 @@ class SyncOneHope extends Command
         } else {
             dd($response);
         }
-
     }
 }

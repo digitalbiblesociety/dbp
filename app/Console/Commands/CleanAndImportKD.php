@@ -57,7 +57,7 @@ class CleanAndImportKD extends Command
             // <p style='margin-left:18.0pt;;'>
 
             // Replace Fonts with language references
-            $input_lines = str_replace('lang="el"','lang="he', $input_lines); // TEMP
+            $input_lines = str_replace('lang="el"', 'lang="he', $input_lines); // TEMP
             $input_lines = preg_replace("/\s+style='font-family:\s?\"TITUS Cyberbit Basic\";?'/", ', lang="he"', $input_lines);
 
             // Misc
@@ -80,6 +80,5 @@ class CleanAndImportKD extends Command
 
             file_put_contents($file, $input_lines);
         }
-
     }
 }

@@ -6,25 +6,22 @@ use App\Http\Controllers\APIController;
 use App\Mail\ProjectVerificationEmail;
 
 use App\Models\User\Project;
-use App\Models\User\ProjectOauthProvider;
 use App\Models\User\ProjectMember;
 use App\Models\User\Account;
+use App\Models\User\APIToken;
 use App\Models\User\Role;
 use App\Models\User\User;
+use App\Models\User\Profile;
 use App\Models\User\Key;
 use App\Models\User\Study\Note;
 use App\Traits\CheckProjectMembership;
-use App\Transformers\Serializers\DataArraySerializer;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-use Socialite;
-use Image;
 use Mail;
 use Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
@@ -104,7 +101,9 @@ class UsersController extends APIController
 
         $user = User::with('accounts', 'organizations', 'profile')
             ->whereHas('projectMembers', function ($query) use ($available_projects) {
-                if (!empty($available_projects)) $query->whereIn('project_id', $available_projects);
+                if (!empty($available_projects)) {
+                    $query->whereIn('project_id', $available_projects);
+                }
             })->where('id', $id)->first();
         if (!$user) {
             return $this->replyWithError(trans('api.users_errors_404', ['param' => $id]));
@@ -200,9 +199,10 @@ class UsersController extends APIController
         }
 
         $token = Str::random(60);
-        $user->forceFill([
+        APIToken::create([
+            'user_id'   => $user->id,
             'api_token' => hash('sha256', $token),
-        ])->save();
+        ]);
 
         $user->api_token = $token;
 
@@ -248,6 +248,9 @@ class UsersController extends APIController
         $user->forceFill([
             'api_token' => null,
         ])->save();
+
+        $api_token = APIToken::where('api_token', hash('sha256', $request->api_token))->first();
+        $api_token->delete();
 
         return $this->reply('User logged out');
     }
@@ -327,6 +330,24 @@ class UsersController extends APIController
             'notes'         => $request->notes,
             'password'      => \Hash::make($request->password),
         ]);
+
+        $sex = checkParam('sex') ?? 0;
+        Profile::create([
+            'user_id' => $user->id,
+            'bio' => $request->bio,
+            'address_1' => $request->address_1,
+            'address_2' => $request->address_2,
+            'address_3' => $request->address_3,
+            'city' => $request->city,
+            'state' => $request->state,
+            'zip' => $request->zip,
+            'country_id' => $request->country_id,
+            'avatar' => $request->avatar,
+            'phone' => $request->phone,
+            'birthday' => $request->birthday,
+            'sex' => $sex,
+        ]);
+
         if ($request->project_id) {
             $user_role = Role::where('slug', 'user')->first();
             if (!$user_role) {
@@ -340,15 +361,18 @@ class UsersController extends APIController
         }
         if ($request->social_provider_id) {
             $user->accounts()->create([
+                'project_id' => $request->project_id,
                 'provider_id'      => $request->social_provider_id,
                 'provider_user_id' => $request->social_provider_user_id,
             ]);
         }
 
         $token = Str::random(60);
-        $user->forceFill([
+
+        APIToken::create([
+            'user_id'   => $user->id,
             'api_token' => hash('sha256', $token),
-        ])->save();
+        ]);
 
         $user->api_token = $token;
 
@@ -375,7 +399,6 @@ class UsersController extends APIController
      *              @OA\Property(property="avatar",                  ref="#/components/schemas/User/properties/avatar"),
      *              @OA\Property(property="email",                   ref="#/components/schemas/User/properties/email"),
      *              @OA\Property(property="name",                    ref="#/components/schemas/User/properties/name"),
-     *              @OA\Property(property="password",                ref="#/components/schemas/User/properties/password"),
      *              @OA\Property(property="project_id",              ref="#/components/schemas/ProjectMember/properties/project_id"),
      *              @OA\Property(property="subscribed",              ref="#/components/schemas/ProjectMember/properties/subscribed"),
      *              @OA\Property(property="social_provider_id",      ref="#/components/schemas/Account/properties/provider_id"),
@@ -402,8 +425,15 @@ class UsersController extends APIController
         if ((int) $request->v === 1) {
             return redirect('http://api.dbp.test/login?reply=json');
         }
+
+        // Retrieve User
+        $user = User::with('projects')->whereId($id)->first();
+        if (!$user) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => request()->email], $GLOBALS['i18n_iso']));
+        }
+
         // Validate Request
-        $invalidRequest = $this->validateUser();
+        $invalidRequest = $this->validateUser($user->email !== $request->email);
         if ($invalidRequest) {
             return $invalidRequest;
         }
@@ -412,12 +442,6 @@ class UsersController extends APIController
         $unauthorized_user = $this->unauthorizedToAlterUsers();
         if ($unauthorized_user) {
             return $unauthorized_user;
-        }
-
-        // Retrieve User
-        $user = User::with('projects')->where('email', request()->email)->first();
-        if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => request()->email], $GLOBALS['i18n_iso']));
         }
 
         // If the request does not originate from an admin
@@ -495,7 +519,7 @@ class UsersController extends APIController
             $oldPassword = \Hash::check(md5($password), $user->password);
             $newPassword = \Hash::check($password, $user->password);
             $access_granted = $oldPassword || $newPassword;
-        } else if ($social_provider_id) {
+        } elseif ($social_provider_id) {
             $account  = $user->accounts->where('provider_id', $social_provider_id)
                 ->where('provider_user_id', $social_provider_user_id)->first();
             $access_granted = $account;
@@ -518,11 +542,86 @@ class UsersController extends APIController
             'last_name'  => 'user',
             'email'  => $user->id . '@deleted.com',
             'password'  => Str::random(40),
-        ])->save();;
+        ])->save();
 
         $user->delete();
 
         return $this->reply('User successfully deleted');
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/token/validate",
+     *     tags={"Users"},
+     *     summary="Validate user api_token ",
+     *     operationId="v4_api_token.validate",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="renew_token",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Renew the user token"
+     *     ),
+     *     @OA\Parameter(
+     *          name="user_details",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Retrieve user details"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean"))),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean"))),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean"))),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean"))),
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="unsuccessful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean", example=false))),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean", example=false))),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean", example=false))),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(type="object",@OA\Property(property="valid", type="boolean", example=false))),
+     *     )
+     * )
+     * @param Request $request
+     *
+     * @return mixed
+     */
+    public function validateApiToken(Request $request)
+    {
+        $user = $request->user();
+        if (empty($user)) {
+            return $this->setStatusCode(401)->reply(['valid' => false]);
+        }
+
+        $user_details = checkBoolean('user_details');
+
+        $renew_token = checkBoolean('renew_token');
+
+        $response = ['valid' => true];
+        $api_token = checkParam('api_token');
+
+        if ($renew_token) {
+            $api_token = APIToken::where('api_token', hash('sha256', $api_token))->first();
+            $api_token->delete();
+            $token = Str::random(60);
+            APIToken::create([
+                'user_id'   => $user->id,
+                'api_token' => hash('sha256', $token),
+            ]);
+            $user->api_token = $token;
+            $response['api_token'] = $token;
+        } else {
+            $user->api_token = $api_token;
+        }
+
+        if ($user_details) {
+            $response['user'] = $user;
+        }
+
+        return $this->reply($response);
     }
 
     public function verify($token)
@@ -577,22 +676,28 @@ class UsersController extends APIController
      *
      * @return Validator|bool
      */
-    private function validateUser()
+    private function validateUser($validate_email = true)
     {
-        $validator = Validator::make(request()->all(), [
-            'email'                   => (request()->method() === 'POST') ? 'required|unique:dbp_users.users,email' : 'required|exists:dbp_users.users,email',
+        $rules = [
             'project_id'              => 'required|exists:dbp_users.projects,id',
             'social_provider_id'      => 'required_with:social_provider_user_id',
             'social_provider_user_id' => 'required_with:social_provider_id',
-            'name'                    => 'string|max:191',
-            'first_name'              => 'string|max:64',
-            'last_name'               => 'string|max:64',
+            'name'                    => 'string|max:191|nullable',
+            'first_name'              => 'string|max:64|nullable',
+            'last_name'               => 'string|max:64|nullable',
             'remember_token'          => 'max:100',
-            'verified'                => 'boolean'
-        ]);
+            'verified'                => 'boolean',
+            'password'                => (request()->method() === 'POST') ? 'required_without:social_provider_id|min:8' : '',
+        ];
+
+        if ($validate_email) {
+            $rules['email'] = 'required|unique:dbp_users.users,email';
+        }
+
+        $validator = Validator::make(request()->all(), $rules);
 
         if ($validator->fails()) {
-            return $this->replyWithError($validator->errors());
+            return $this->setStatusCode(422)->replyWithError($validator->errors());
         }
         return false;
     }

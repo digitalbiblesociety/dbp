@@ -7,6 +7,7 @@ use App\Http\Controllers\APIController;
 use App\Models\Language\Language;
 use App\Transformers\LanguageTransformer;
 use App\Traits\AccessControlAPI;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class LanguagesController extends APIController
 {
@@ -53,9 +54,23 @@ class LanguagesController extends APIController
      *          @OA\Schema(ref="#/components/schemas/Language/properties/name"),
      *          description="The include_alt_names"
      *     ),
+     *     @OA\Parameter(
+     *          name="show_all",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Will show all entries"
+     *     ),
+     *     @OA\Parameter(
+     *          name="show_bibles",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Will show all bibles details"
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/l10n"),
      *     @OA\Parameter(ref="#/components/parameters/sort_by"),
      *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
+     *     @OA\Parameter(ref="#/components/parameters/page"),
+     *     @OA\Parameter(ref="#/components/parameters/limit"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -80,32 +95,66 @@ class LanguagesController extends APIController
         $code                  = checkParam('code|iso');
         $sort_by               = checkParam('sort_by') ?? 'name';
         $include_alt_names     = checkParam('include_alt_names');
-        $show_restricted       = checkParam('show_restricted');
         $asset_id              = checkParam('bucket_id|asset_id');
         $name                  = checkParam('name|language_name');
+        $show_restricted       = checkBoolean('show_all|show_restricted');
+        $show_bibles           = checkBoolean('show_bibles');
+        $limit      = checkParam('limit');
+        $page       = checkParam('page');
 
         $access_control = $this->accessControl($this->key);
 
-        $cache_string = 'v'.$this->v.'_l_'.$country.$code.$GLOBALS['i18n_id'].$sort_by.$name.
-                        $show_restricted.$include_alt_names.$asset_id.$access_control->string;
+        $cache_string = 'v' . $this->v . '_l_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $name .
+            $show_restricted . $include_alt_names . $asset_id . $access_control->string . $limit . $page . $show_bibles;
 
-        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control) {
+        $order = $country ? 'country_population.population' : 'languages.name';
+        $order_dir = $country ? 'desc' : 'asc';
+        $select_country_population = $country ? 'country_population.population' : 'null';
+
+        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control, $order, $order_dir, $select_country_population, $limit, $page) {
             $languages = Language::includeCurrentTranslation()
                 ->includeAutonymTranslation()
                 ->includeExtraLanguages($show_restricted, $access_control, $asset_id)
                 ->includeExtraLanguageTranslations($include_alt_names)
+                ->includeCountryPopulation($country)
                 ->filterableByCountry($country)
                 ->filterableByIsoCode($code)
                 ->filterableByName($name)
-                ->orderBy('languages.id')
+                ->orderBy($order, $order_dir)
                 ->select([
                     'languages.id',
                     'languages.glotto_id',
                     'languages.iso',
                     'languages.name as backup_name',
                     'current_translation.name as name',
-                    'autonym.name as autonym'
-                ])->withCount('bibles')->withCount('filesets')->get();
+                    'autonym.name as autonym',
+                    \DB::raw($select_country_population . ' as country_population')
+                ])
+                ->with(['bibles' => function ($query) use ($asset_id) {
+                    $query->whereHas('filesets', function ($query) use ($asset_id) {
+                        if ($asset_id) {
+                            $asset_id = explode(',', $asset_id);
+                            $query->whereIn('asset_id', $asset_id);
+                        }
+                    });
+                }])
+                ->withCount([
+                    'filesets' => function ($query) use ($asset_id) {
+                        if ($asset_id) {
+                            $dbp = config('database.connections.dbp.database');
+                            $query->leftJoin($dbp . '.bible_filesets', 'bible_filesets.hash_id', '=', 'bible_fileset_connections.hash_id');
+                            $asset_id = explode(',', $asset_id);
+                            $query->whereIn('asset_id', $asset_id);
+                        }
+                    }
+                ]);
+
+            if ($page) {
+                $languages  = $languages->paginate($limit);
+                return $this->reply(fractal($languages->getCollection(), LanguageTransformer::class)->paginateWith(new IlluminatePaginatorAdapter($languages)));
+            }
+
+            $languages = $languages->limit($limit)->get();
             return fractal($languages, new LanguageTransformer(), $this->serializer);
         });
 
@@ -142,9 +191,12 @@ class LanguagesController extends APIController
      */
     public function show($id)
     {
-        $cache_string = 'language:'. strtolower($id);
-        $language = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
-            $language = Language::where('id', $id)->orWhere('iso', $id)->first();
+        $access_control = $this->accessControl($this->key);
+        $cache_string = 'language:' . strtolower($id) . $access_control->string;
+        $language = \Cache::remember($cache_string, now()->addDay(), function () use ($id, $access_control) {
+            $language = Language::where('id', $id)->orWhere('iso', $id)
+                ->includeExtraLanguages(false, $access_control, false)
+                ->first();
             if (!$language) {
                 return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");
             }
@@ -168,12 +220,11 @@ class LanguagesController extends APIController
 
     public function valid($id)
     {
-        $cache_string = 'language_single_valid:'. strtolower($id);
+        $cache_string = 'language_single_valid:' . strtolower($id);
         $language = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
             return Language::where('iso', $id)->exists();
         });
 
         return $this->reply($language);
     }
-
 }

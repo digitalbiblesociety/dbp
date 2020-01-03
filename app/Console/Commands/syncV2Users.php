@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\User\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class syncV2Users extends Command
@@ -33,7 +34,7 @@ class syncV2Users extends Command
         $from_date = $this->argument('date') ?? '00-00-00';
         $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
 
-        \DB::connection('dbp_users_v2')->table('user')->where('created', '>', $from_date)->orderBy('id')
+        DB::connection('dbp_users_v2')->table('user')->where('created', '>', $from_date)->orderBy('id')
             ->chunk(50000, function ($users) {
                 foreach ($users as $user) {
                     User::firstOrCreate([

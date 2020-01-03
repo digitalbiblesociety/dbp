@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User\Key;
 use Illuminate\Console\Command;
 
 class loaderPush extends Command
@@ -40,13 +39,13 @@ class loaderPush extends Command
     {
         $routes = file_get_contents(base_path('/routes/api.php'));
 
-        preg_match_all("/Route::name\('(.*?)'\)->\w+\(\[.*?\],\s?'(.*?)',\s+'.*?'\);/", $routes,$matches);
-        $routeList = array_combine($matches[1],$matches[2]);
+        preg_match_all("/Route::name\('(.*?)'\)->\w+\(\[.*?\],\s?'(.*?)',\s+'.*?'\);/", $routes, $matches);
+        $routeList = array_combine($matches[1], $matches[2]);
 
         $existingTests = json_decode($this->fetchExistingTests());
 
         foreach ($routeList as $route_name => $route_path) {
-            if(!collect($existingTests)->pluck('name')->contains($route_name)) {
+            if (!collect($existingTests)->pluck('name')->contains($route_name)) {
                 $this->makeRequests($route_name, $route_path);
             }
         }
@@ -63,7 +62,7 @@ class loaderPush extends Command
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
 
-        $headers = array();
+        $headers = [];
         $headers[] = 'Loaderio-Auth: '.$this->loaderIoKey;
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
@@ -71,7 +70,7 @@ class loaderPush extends Command
         if (curl_errno($ch)) {
             echo 'Error:' . curl_error($ch);
         }
-        curl_close ($ch);
+        curl_close($ch);
         return $result;
     }
 
@@ -113,7 +112,6 @@ class loaderPush extends Command
         if (curl_errno($ch)) {
             echo 'Error:' . curl_error($ch);
         }
-        curl_close ($ch);
+        curl_close($ch);
     }
-
 }

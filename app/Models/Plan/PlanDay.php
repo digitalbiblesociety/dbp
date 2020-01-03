@@ -12,7 +12,7 @@ use Spatie\EloquentSortable\SortableTrait;
 /**
  * App\Models\Plan
  * @mixin \Eloquent
- * 
+ *
  * @property int $plan_id
  * @property int $playlist_id
  *
@@ -46,7 +46,7 @@ class PlanDay extends Model implements Sortable
      */
     protected $playlist_id;
 
-    protected $appends = array('completed');
+    protected $appends = ['completed'];
 
     /**
      * @OA\Property(

@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Bible\Study;
 
 use App\Http\Controllers\APIController;
 use App\Models\Bible\Study\Lexicon;
-use App\Models\Bible\Study\LexicalDefinition;
-
 
 class LexiconController extends APIController
 {
@@ -78,5 +76,4 @@ class LexiconController extends APIController
 
         return $this->reply(Lexicon::filterByLanguage($language)->filterByWord($word, $exact_match)->take($limit));
     }
-
 }
