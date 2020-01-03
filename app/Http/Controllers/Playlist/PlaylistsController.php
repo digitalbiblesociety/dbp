@@ -228,6 +228,7 @@ class PlaylistsController extends APIController
      *     security={{"api_token":{}}},
      *     @OA\Parameter(name="playlist_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Playlist/properties/id")),
      *     @OA\Parameter(name="items", in="query", @OA\Schema(type="string"), description="Comma-separated ids of the playlist items to be sorted or deleted"),
+     *     @OA\Parameter(name="delete_items", in="query",@OA\Schema(type="boolean"), description="Will delete all items"),
      *     @OA\RequestBody(required=true, @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name", ref="#/components/schemas/Playlist/properties/name"),
@@ -275,10 +276,14 @@ class PlaylistsController extends APIController
         $playlist->update($update_values);
 
         $items = checkParam('items');
+        $delete_items = checkBoolean('delete_items');
 
-        if ($items) {
-            $items_ids = explode(',', $items);
-            PlaylistItems::setNewOrder($items_ids);
+        if ($items || $delete_items) {
+            $items_ids = [];
+            if (!$delete_items) {
+                $items_ids = explode(',', $items);
+                PlaylistItems::setNewOrder($items_ids);
+            }
             $deleted_items = PlaylistItems::whereNotIn('id', $items_ids)->where('playlist_id', $playlist->id);
             $deleted_items->delete();
         }

@@ -425,8 +425,15 @@ class UsersController extends APIController
         if ((int) $request->v === 1) {
             return redirect('http://api.dbp.test/login?reply=json');
         }
+
+        // Retrieve User
+        $user = User::with('projects')->whereId($id)->first();
+        if (!$user) {
+            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => request()->email], $GLOBALS['i18n_iso']));
+        }
+
         // Validate Request
-        $invalidRequest = $this->validateUser();
+        $invalidRequest = $this->validateUser($user->email !== $request->email);
         if ($invalidRequest) {
             return $invalidRequest;
         }
@@ -435,12 +442,6 @@ class UsersController extends APIController
         $unauthorized_user = $this->unauthorizedToAlterUsers();
         if ($unauthorized_user) {
             return $unauthorized_user;
-        }
-
-        // Retrieve User
-        $user = User::with('projects')->where('email', request()->email)->first();
-        if (!$user) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404_email', ['email' => request()->email], $GLOBALS['i18n_iso']));
         }
 
         // If the request does not originate from an admin
@@ -675,10 +676,9 @@ class UsersController extends APIController
      *
      * @return Validator|bool
      */
-    private function validateUser()
+    private function validateUser($validate_email = true)
     {
-        $validator = Validator::make(request()->all(), [
-            'email'                   => (request()->method() === 'POST') ? 'required|unique:dbp_users.users,email' : 'required|exists:dbp_users.users,email',
+        $rules = [
             'project_id'              => 'required|exists:dbp_users.projects,id',
             'social_provider_id'      => 'required_with:social_provider_user_id',
             'social_provider_user_id' => 'required_with:social_provider_id',
@@ -688,7 +688,13 @@ class UsersController extends APIController
             'remember_token'          => 'max:100',
             'verified'                => 'boolean',
             'password'                => (request()->method() === 'POST') ? 'required_without:social_provider_id|min:8' : '',
-        ]);
+        ];
+
+        if ($validate_email) {
+            $rules['email'] = 'required|unique:dbp_users.users,email';
+        }
+
+        $validator = Validator::make(request()->all(), $rules);
 
         if ($validator->fails()) {
             return $this->setStatusCode(422)->replyWithError($validator->errors());
