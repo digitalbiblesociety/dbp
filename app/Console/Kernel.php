@@ -57,7 +57,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('syncV2Users')->hourly();
         $schedule->command('syncV2Profiles')->hourly();
         $schedule->command('syncV2Highlights')->hourly();
-        $schedule->command('syncV2Notes')->daily();
+        $schedule->command('syncV2Notes')->hourly();
         $schedule->command('syncV2Bookmarks')->daily();
 
         $schedule->command('BackUpLogs')->cron('5 * * * *');
