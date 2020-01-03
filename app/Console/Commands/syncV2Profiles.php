@@ -34,8 +34,12 @@ class syncV2Profiles extends Command
      */
     public function handle()
     {
-        $from_date = $this->argument('date') ?? '00-00-00';
-        $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
+        $from_date = $this->argument('date');
+        if ($from_date) {
+            $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
+        } else {
+            $from_date = Carbon::now()->startOfDay();
+        }
 
         $countries = Country::all();
         DB::connection('dbp_users_v2')->table('user_profile')->where('field_value', '!=', '')
@@ -49,10 +53,17 @@ class syncV2Profiles extends Command
                         $user_exists = User::where('v2_id', $profile->user_id)->first();
                     }
 
-                    echo "\n" . $profile->id;
+                    echo "\nProfile: " . $profile->id;
                     $current_profile = Profile::where('user_id', $user_exists->id)->first();
+                    $is_new = false;
                     if (!$current_profile) {
                         $current_profile = Profile::create(['user_id' => $user_exists->id]);
+                        $is_new = true;
+                    }
+
+                    if (!$is_new && Carbon::parse($current_profile->updated_at) > Carbon::parse($profile->updated)) {
+                        echo "\nProfile already updated";
+                        continue;
                     }
 
                     if (\strlen($profile->field_value) > 191) {
@@ -121,6 +132,7 @@ class syncV2Profiles extends Command
                                 $current_profile->{$profile->field_name} = $profile->field_value;
                             }
                     }
+                    echo "\nProfile updated";
                     $current_profile->save();
                 }
             });
