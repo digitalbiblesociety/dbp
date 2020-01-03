@@ -35,7 +35,8 @@ class syncV2Users extends Command
         if ($from_date) {
             $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
         } else {
-            $from_date = Carbon::now()->startOfDay();
+            $last_user_synced = User::whereNotNull('v2_id')->where('v2_id', '!=', 0)->orderBy('id', 'desc')->first();
+            $from_date = $last_user_synced->created_at ?? Carbon::now()->startOfDay();
         }
         DB::connection('dbp_users_v2')->table('user')->where('created', '>', $from_date)->orderBy('id')
             ->chunk(50000, function ($users) {
@@ -43,7 +44,7 @@ class syncV2Users extends Command
                     $user_exists = User::where('v2_id', $user->id)->orWhere('email', $user->email)->first();
                     if (!$user_exists) {
                         echo "\nCreating user v2 id: " . $user->id;
-                        User::firstOrCreate([
+                        User::create([
                             'v2_id'            => $user->id,
                             'name'             => $user->username ?? $user->email,
                             'password'         => bcrypt($user->password),

@@ -37,7 +37,8 @@ class syncV2Notes extends Command
         if ($from_date) {
             $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
         } else {
-            $from_date = Carbon::now()->startOfDay();
+            $last_note_synced = Note::whereNotNull('v2_id')->where('v2_id', '!=', 0)->orderBy('id', 'desc')->first();
+            $from_date = $last_note_synced->created_at ?? Carbon::now()->startOfDay();
         }
 
         $filesets = BibleFileset::with('bible')->get();
@@ -102,6 +103,5 @@ class syncV2Notes extends Command
             $v4Note->save();
         }
         echo "\n Note Processed: " . $note->id;
-        die();
     }
 }

@@ -38,7 +38,11 @@ class syncV2Profiles extends Command
         if ($from_date) {
             $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
         } else {
-            $from_date = Carbon::now()->startOfDay();
+            $last_profile_synced = User::whereNotNull('v2_id')->where('v2_id', '!=', 0)
+                ->join(config('database.connections.dbp_users.database') . '.profiles', 'users.id', '=', 'profiles.user_id')
+                ->select(['users.created_at'])
+                ->orderBy('users.id', 'desc')->first();
+            $from_date = $last_profile_synced->created_at ?? Carbon::now()->startOfDay();
         }
 
         $countries = Country::all();
@@ -48,16 +52,20 @@ class syncV2Profiles extends Command
             ->chunk(5000, function ($profiles) use ($countries) {
                 foreach ($profiles as $profile) {
                     $user_exists = User::where('v2_id', $profile->user_id)->first();
-                    while (!$user_exists) {
-                        sleep(15);
-                        $user_exists = User::where('v2_id', $profile->user_id)->first();
+                    if (!$user_exists) {
+                        echo "\n Error!! Could not find USER_ID: " . $profile->user_id;
+                        continue;
                     }
 
-                    echo "\nProfile: " . $profile->id;
+                    echo "\nProcessing profile: " . $profile->id;
                     $current_profile = Profile::where('user_id', $user_exists->id)->first();
                     $is_new = false;
                     if (!$current_profile) {
-                        $current_profile = Profile::create(['user_id' => $user_exists->id]);
+                        $current_profile = Profile::create([
+                            'user_id' => $user_exists->id,
+                            'created_at' => Carbon::createFromTimeString($profile->created),
+                            'updated_at' => Carbon::createFromTimeString($profile->updated),
+                        ]);
                         $is_new = true;
                     }
 
@@ -72,15 +80,13 @@ class syncV2Profiles extends Command
                     }
                     switch ($profile->field_name) {
                         case 'country': {
-                                if ($profile->field_value == 'USA' || 'United States of America' || 'US') {
+                                if ($profile->field_value == 'USA' || $profile->field_value == 'United States of America' || $profile->field_value == 'US') {
                                     $current_profile->country_id = 'US';
                                 } else {
                                     $current_country = $countries->where('name', $profile->field_value)->first();
-                                    if ($profile->field_value === '') {
-                                        break;
-                                    }
                                     if (!$current_country) {
-                                        dd('Country: ' . $profile->field_value);
+                                        echo "\nCountry not found";
+                                        continue;
                                     }
                                     $current_profile->country_id = $current_country->id;
                                 }
@@ -115,14 +121,14 @@ class syncV2Profiles extends Command
                         case 'phone_number':
                         case 'phone': {
                                 if (\strlen($profile->field_value) > 22) {
-                                    //echo "\nToo long for phone:".$profile->field_value;
+                                    echo "\nToo long for phone:".$profile->field_value;
                                     break;
                                 }
                                 $current_profile->phone = $profile->field_value;
                                 break;
                             }
                         case 'locale': {
-                                $lang = Language::where('iso_2B', substr($profile->field_value, 0, 2))->select('id')->first();
+                                $lang = Language::where('iso2B', substr($profile->field_value, 0, 2))->select('id')->first();
                                 if ($lang) {
                                     $current_profile->language_id = $lang->id;
                                 }
@@ -132,8 +138,8 @@ class syncV2Profiles extends Command
                                 $current_profile->{$profile->field_name} = $profile->field_value;
                             }
                     }
-                    echo "\nProfile updated";
                     $current_profile->save();
+                    echo "\nProfile updated";
                 }
             });
     }

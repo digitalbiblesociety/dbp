@@ -39,7 +39,8 @@ class syncV2Bookmarks extends Command
         if ($from_date) {
             $from_date = Carbon::createFromFormat('Y-m-d', $from_date)->startOfDay();
         } else {
-            $from_date = Carbon::now()->startOfDay();
+            $last_bookmark_synced = Bookmark::whereNotNull('v2_id')->where('v2_id', '!=', 0)->orderBy('id', 'desc')->first();
+            $from_date = $last_bookmark_synced->created_at ?? Carbon::now()->startOfDay();
         }
 
         $filesets = BibleFileset::with('bible')->get();
