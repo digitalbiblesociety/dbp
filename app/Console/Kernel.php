@@ -2,7 +2,6 @@
 
 namespace App\Console;
 
-use Aws\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -55,9 +54,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // Sync Bible Equivalents
-        $schedule->command('SyncEbible')->daily();
-        $schedule->command('SyncTalkingBibles')->daily();
+        $schedule->command('syncV2Users')->hourly();
+        $schedule->command('syncV2Profiles')->hourly();
+        $schedule->command('syncV2Highlights')->hourly();
+        $schedule->command('syncV2Notes')->hourly();
+        $schedule->command('syncV2Bookmarks')->hourly();
 
         $schedule->command('BackUpLogs')->cron('5 * * * *');
     }
