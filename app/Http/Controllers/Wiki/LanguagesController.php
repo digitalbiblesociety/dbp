@@ -107,7 +107,7 @@ class LanguagesController extends APIController
         $cache_string = 'v' . $this->v . '_l_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $name .
             $show_restricted . $include_alt_names . $asset_id . $access_control->string . $limit . $page . $show_bibles;
 
-        $order = $country ? 'country_population.population' : 'languages.name';
+        $order = $country ? 'country_population.population' : 'ifnull(current_translation.name, languages.name)';
         $order_dir = $country ? 'desc' : 'asc';
         $select_country_population = $country ? 'country_population.population' : 'null';
 
@@ -120,7 +120,7 @@ class LanguagesController extends APIController
                 ->filterableByCountry($country)
                 ->filterableByIsoCode($code)
                 ->filterableByName($name)
-                ->orderBy($order, $order_dir)
+                ->orderByRaw($order . ' ' . $order_dir)
                 ->select([
                     'languages.id',
                     'languages.glotto_id',
