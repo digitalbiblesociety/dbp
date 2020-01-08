@@ -70,9 +70,14 @@ class syncV2Users extends Command
                         'created_at'       =>  Carbon::createFromTimeString($user->created),
                         'updated_at'       =>  Carbon::createFromTimeString($user->updated),
                     ];
-                })->toArray();
+                });
 
-                User::insert($users);
+                $chunks = $users->chunk(5000);
+
+                foreach ($chunks as $chunk) {
+                    User::insert($chunk->toArray());
+                }
+
                 echo "\n" . Carbon::now() . ': Inserted ' . sizeof($users) . ' new v2 users.';
             });
         echo "\n" . Carbon::now() . ": v2 to v4 users sync finalized.\n";
