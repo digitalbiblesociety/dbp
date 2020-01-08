@@ -62,16 +62,21 @@ class syncV2Highlights extends Command
 
                 $dam_ids = $highlights->pluck('dam_id')->reduce(function ($carry, $item) use ($filesets) {
                     if (!isset($carry[$item])) {
-                        $fileset = $this->getFilesetFromDamId($item, $filesets);
+                        if (isset($this->dam_ids[$item])) {
+                            $carry[$item] = $this->dam_ids[$item];
+                            return $carry;
+                        }
+                        $fileset = getFilesetFromDamId($item, $filesets);
                         if ($fileset) {
                             $carry[$item] = $fileset;
+                            $this->dam_ids[$item] = $fileset;
                         }
                     }
                     return $carry;
                 }, []);
 
                 $highlights = $highlights->filter(function ($highlight) use ($dam_ids, $books, $v4_users, $v4_highlights) {
-                    return $this->validateHighlight($highlight, $dam_ids, $books, $v4_users, $v4_highlights);
+                    return validateV2Annotation($highlight, $dam_ids, $books, $v4_users, $v4_highlights);
                 });
 
                 $highlights = $highlights->map(function ($highlight) use ($v4_users, $books, $dam_ids) {
@@ -101,44 +106,6 @@ class syncV2Highlights extends Command
             });
     }
 
-    private function validateHighlight($highlight, $filesets, $books, $v4_users, $v4_highlights)
-    {
-        if (isset($v4_highlights[$highlight->id])) {
-            // echo "\n Error!! Highlight already inserted: " . $highlight->id;
-            return false;
-        }
-
-        if (!isset($v4_users[$highlight->user_id])) {
-            // echo "\n Error!! Could not find USER_ID: " . $highlight->user_id;
-            return false;
-        }
-
-        if (!isset($books[$highlight->book_id])) {
-            // echo "\n Error!! Could not find BOOK_ID: " . $highlight->book_id;
-            return false;
-        }
-
-        if (!isset($filesets[$highlight->dam_id])) {
-            // echo "\n Error!! Could not find FILESET_ID: " . substr($highlight->dam_id, 0, 6);
-            return false;
-        }
-
-        $fileset = $filesets[$highlight->dam_id];
-
-        if ($fileset->bible->first()) {
-            if (!isset($fileset->bible->first()->id)) {
-                // echo "\n Error!! Could not find BIBLE_ID";
-                return false;
-            }
-        } else {
-            // echo "\n Error!! Could not find BIBLE_ID";
-            return false;
-        }
-
-        return true;
-    }
-
-
     private function initColors()
     {
         $this->highlightColors = HighlightColor::select('color', 'id')->get()->pluck('id', 'color')->toArray();
@@ -163,28 +130,5 @@ class syncV2Highlights extends Command
         $this->initColors();
 
         return $highlightColor->id;
-    }
-
-    private function getFilesetFromDamId($dam_id, $filesets)
-    {
-        if (isset($this->dam_ids[$dam_id])) {
-            return $this->dam_ids[$dam_id];
-        }
-
-        $fileset = $filesets->where('id', $dam_id)->first();
-        if (!$fileset) {
-            $fileset = $filesets->where('id', substr($dam_id, 0, -4))->first();
-        }
-        if (!$fileset) {
-            $fileset = $filesets->where('id', substr($dam_id, 0, -2))->first();
-        }
-        if (!$fileset) {
-            // echo "\n Error!! Could not find FILESET_ID: " . substr($dam_id, 0, 6);
-            return false;
-        }
-
-        $this->dam_ids[$dam_id] = $fileset;
-
-        return $fileset;
     }
 }

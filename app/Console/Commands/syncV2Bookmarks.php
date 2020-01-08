@@ -61,16 +61,21 @@ class syncV2Bookmarks extends Command
 
                 $dam_ids = $bookmarks->pluck('dam_id')->reduce(function ($carry, $item) use ($filesets) {
                     if (!isset($carry[$item])) {
-                        $fileset = $this->getFilesetFromDamId($item, $filesets);
+                        if (isset($this->dam_ids[$item])) {
+                            $carry[$item] = $this->dam_ids[$item];
+                            return $carry;
+                        }
+                        $fileset = getFilesetFromDamId($item, $filesets);
                         if ($fileset) {
                             $carry[$item] = $fileset;
+                            $this->dam_ids[$item] = $fileset;
                         }
                     }
                     return $carry;
                 }, []);
 
                 $bookmarks = $bookmarks->filter(function ($bookmark) use ($dam_ids, $books, $v4_users, $v4_bookmarks) {
-                    return $this->validateBookmark($bookmark, $dam_ids, $books, $v4_users, $v4_bookmarks);
+                    return validateV2Annotation($bookmark, $dam_ids, $books, $v4_users, $v4_bookmarks);
                 });
 
                 $bookmarks = $bookmarks->map(function ($bookmark) use ($v4_users, $books, $dam_ids) {
@@ -95,66 +100,5 @@ class syncV2Bookmarks extends Command
                 echo "\n" . Carbon::now() . ': Inserted ' . sizeof($bookmarks) . ' new v2 bookmarks.';
             });
         echo "\n" . Carbon::now() . ": v2 to v4 bookmarks sync finalized.\n";
-    }
-
-    private function getFilesetFromDamId($dam_id, $filesets)
-    {
-        if (isset($this->dam_ids[$dam_id])) {
-            return $this->dam_ids[$dam_id];
-        }
-
-        $fileset = $filesets->where('id', $dam_id)->first();
-
-        if (!$fileset) {
-            $fileset = $filesets->where('id', substr($dam_id, 0, -4))->first();
-        }
-        if (!$fileset) {
-            $fileset = $filesets->where('id', substr($dam_id, 0, -2))->first();
-        }
-        if (!$fileset) {
-            // echo "\n Error!! Could not find FILESET_ID: " . substr($dam_id, 0, 6);
-            return false;
-        }
-
-        $this->dam_ids[$dam_id] = $fileset;
-
-        return $fileset;
-    }
-
-    private function validateBookmark($bookmark, $filesets, $books, $v4_users, $v4_bookmarks)
-    {
-        if (isset($v4_bookmarks[$bookmark->id])) {
-            // echo "\n Error!! Bookmark already inserted: " . $bookmark->id;
-            return false;
-        }
-
-        if (!isset($v4_users[$bookmark->user_id])) {
-            // echo "\n Error!! Could not find USER_ID: " . $bookmark->user_id;
-            return false;
-        }
-
-        if (!isset($books[$bookmark->book_id])) {
-            // echo "\n Error!! Could not find BOOK_ID: " . $bookmark->book_id;
-            return false;
-        }
-
-        if (!isset($filesets[$bookmark->dam_id])) {
-            // echo "\n Error!! Could not find FILESET_ID: " . substr($bookmark->dam_id, 0, 6);
-            return false;
-        }
-
-        $fileset = $filesets[$bookmark->dam_id];
-
-        if ($fileset->bible->first()) {
-            if (!isset($fileset->bible->first()->id)) {
-                // echo "\n Error!! Could not find BIBLE_ID";
-                return false;
-            }
-        } else {
-            // echo "\n Error!! Could not find BIBLE_ID";
-            return false;
-        }
-
-        return true;
     }
 }

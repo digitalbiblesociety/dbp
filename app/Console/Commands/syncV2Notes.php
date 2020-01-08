@@ -60,16 +60,21 @@ class syncV2Notes extends Command
 
                 $dam_ids = $notes->pluck('dam_id')->reduce(function ($carry, $item) use ($filesets) {
                     if (!isset($carry[$item])) {
-                        $fileset = $this->getFilesetFromDamId($item, $filesets);
+                        if (isset($this->dam_ids[$item])) {
+                            $carry[$item] = $this->dam_ids[$item];
+                            return $carry;
+                        }
+                        $fileset = getFilesetFromDamId($item, $filesets);
                         if ($fileset) {
                             $carry[$item] = $fileset;
+                            $this->dam_ids[$item] = $fileset;
                         }
                     }
                     return $carry;
                 }, []);
 
                 $notes = $notes->filter(function ($note) use ($dam_ids, $books, $v4_users, $v4_notes) {
-                    return $this->validateNote($note, $dam_ids, $books, $v4_users, $v4_notes);
+                    return validateV2Annotation($note, $dam_ids, $books, $v4_users, $v4_notes);
                 });
 
                 $notes = $notes->map(function ($note) use ($v4_users, $books, $dam_ids) {
@@ -96,66 +101,5 @@ class syncV2Notes extends Command
                 echo "\n" . Carbon::now() . ': Inserted ' . sizeof($notes) . ' new v2 notes.';
             });
         echo "\n" . Carbon::now() . ": v2 to v4 notes sync finalized.\n";
-    }
-
-    private function getFilesetFromDamId($dam_id, $filesets)
-    {
-        if (isset($this->dam_ids[$dam_id])) {
-            return $this->dam_ids[$dam_id];
-        }
-
-        $fileset = $filesets->where('id', $dam_id)->first();
-
-        if (!$fileset) {
-            $fileset = $filesets->where('id', substr($dam_id, 0, -4))->first();
-        }
-        if (!$fileset) {
-            $fileset = $filesets->where('id', substr($dam_id, 0, -2))->first();
-        }
-        if (!$fileset) {
-            // echo "\n Error!! Could not find FILESET_ID: " . substr($dam_id, 0, 6);
-            return false;
-        }
-
-        $this->dam_ids[$dam_id] = $fileset;
-
-        return $fileset;
-    }
-
-    private function validateNote($note, $filesets, $books, $v4_users, $v4_notes)
-    {
-        if (isset($v4_notes[$note->id])) {
-            // echo "\n Error!! Note already inserted: " . $note->id;
-            return false;
-        }
-
-        if (!isset($v4_users[$note->user_id])) {
-            // echo "\n Error!! Could not find USER_ID: " . $note->user_id;
-            return false;
-        }
-
-        if (!isset($books[$note->book_id])) {
-            // echo "\n Error!! Could not find BOOK_ID: " . $note->book_id;
-            return false;
-        }
-
-        if (!isset($filesets[$note->dam_id])) {
-            // echo "\n Error!! Could not find FILESET_ID: " . substr($note->dam_id, 0, 6);
-            return false;
-        }
-
-        $fileset = $filesets[$note->dam_id];
-
-        if ($fileset->bible->first()) {
-            if (!isset($fileset->bible->first()->id)) {
-                // echo "\n Error!! Could not find BIBLE_ID";
-                return false;
-            }
-        } else {
-            // echo "\n Error!! Could not find BIBLE_ID";
-            return false;
-        }
-
-        return true;
     }
 }

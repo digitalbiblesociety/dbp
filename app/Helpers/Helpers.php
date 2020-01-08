@@ -155,3 +155,62 @@ if (!function_exists('unique_random')) {
         return $random;
     }
 }
+
+if (!function_exists('getFilesetFromDamId')) {
+    function getFilesetFromDamId($dam_id, $filesets)
+    {
+        $fileset = $filesets->where('id', $dam_id)->first();
+
+        if (!$fileset) {
+            $fileset = $filesets->where('id', substr($dam_id, 0, -4))->first();
+        }
+        if (!$fileset) {
+            $fileset = $filesets->where('id', substr($dam_id, 0, -2))->first();
+        }
+        if (!$fileset) {
+            // echo "\n Error!! Could not find FILESET_ID: " . substr($dam_id, 0, 6);
+            return false;
+        }
+
+        return $fileset;
+    }
+}
+
+if (!function_exists('validateV2Annotation')) {
+    function validateV2Annotation($annotation, $filesets, $books, $v4_users, $v4_annotations)
+    {
+        if (isset($v4_annotations[$annotation->id])) {
+            // echo "\n Error!! Note already inserted: " . $note->id;
+            return false;
+        }
+
+        if (!isset($v4_users[$annotation->user_id])) {
+            // echo "\n Error!! Could not find USER_ID: " . $note->user_id;
+            return false;
+        }
+
+        if (!isset($books[$annotation->book_id])) {
+            // echo "\n Error!! Could not find BOOK_ID: " . $note->book_id;
+            return false;
+        }
+
+        if (!isset($filesets[$annotation->dam_id])) {
+            // echo "\n Error!! Could not find FILESET_ID: " . $note->dam_id;
+            return false;
+        }
+
+        $fileset = $filesets[$annotation->dam_id];
+
+        if ($fileset->bible->first()) {
+            if (!isset($fileset->bible->first()->id)) {
+                // echo "\n Error!! Could not find BIBLE_ID";
+                return false;
+            }
+        } else {
+            // echo "\n Error!! Could not find BIBLE_ID";
+            return false;
+        }
+
+        return true;
+    }
+}
