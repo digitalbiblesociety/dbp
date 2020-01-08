@@ -44,6 +44,7 @@ class syncV2Bookmarks extends Command
         }
 
         $filesets = BibleFileset::with('bible')->get();
+        $this->dam_ids = [];
         $books = Book::select('id_osis', 'id')->get()->pluck('id', 'id_osis')->toArray();
 
         echo "\n" . Carbon::now() . ': v2 to v4 bookmarks sync started.';
@@ -98,18 +99,24 @@ class syncV2Bookmarks extends Command
 
     private function getFilesetFromDamId($dam_id, $filesets)
     {
+        if (isset($this->dam_ids[$dam_id])) {
+            return $this->dam_ids[$dam_id];
+        }
+
         $fileset = $filesets->where('id', $dam_id)->first();
+
         if (!$fileset) {
             $fileset = $filesets->where('id', substr($dam_id, 0, -4))->first();
         }
         if (!$fileset) {
             $fileset = $filesets->where('id', substr($dam_id, 0, -2))->first();
         }
-
         if (!$fileset) {
             // echo "\n Error!! Could not find FILESET_ID: " . substr($dam_id, 0, 6);
             return false;
         }
+
+        $this->dam_ids[$dam_id] = $fileset;
 
         return $fileset;
     }

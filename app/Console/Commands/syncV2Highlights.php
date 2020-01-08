@@ -10,7 +10,6 @@ use App\Models\User\User;
 use App\Models\User\Study\Highlight;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class syncV2Highlights extends Command
 {
@@ -44,93 +43,148 @@ class syncV2Highlights extends Command
         }
 
         $this->initColors();
-        $filesets = BibleFileset::where('set_type_code', 'text_plain')->where('asset_id', 'dbp-prod')->get();
-        $books = Book::select(['id_osis', 'id_usfx', 'id', 'protestant_order'])->get();
+        $filesets = BibleFileset::with('bible')->get();
+        $this->dam_ids = [];
+        $books = Book::select('id_osis', 'id')->get()->pluck('id', 'id_osis')->toArray();
 
+        echo "\n" . Carbon::now() . ': v2 to v4 highlights sync started.';
+        $chunk_size = config('settings.v2V4SyncChunkSize');
         DB::connection('dbp_users_v2')
             ->table('highlight')
             ->where('created', '>', $from_date)
-            ->orderBy('created')
-            ->chunk(10000, function ($highlights) use ($filesets, $books) {
-                foreach ($highlights as $highlight) {
-                    $this->syncHighlight($highlight, $filesets, $books);
+            ->orderBy('id')
+            ->chunk($chunk_size, function ($highlights) use ($filesets, $books) {
+                $user_v2_ids = $highlights->pluck('user_id')->toArray();
+                $highlight_v2_ids = $highlights->pluck('id')->toArray();
+
+                $v4_users = User::whereIn('v2_id', $user_v2_ids)->pluck('id', 'v2_id');
+                $v4_highlights = Highlight::whereIn('v2_id', $highlight_v2_ids)->pluck('v2_id', 'v2_id');
+
+                $dam_ids = $highlights->pluck('dam_id')->reduce(function ($carry, $item) use ($filesets) {
+                    if (!isset($carry[$item])) {
+                        $fileset = $this->getFilesetFromDamId($item, $filesets);
+                        if ($fileset) {
+                            $carry[$item] = $fileset;
+                        }
+                    }
+                    return $carry;
+                }, []);
+
+                $highlights = $highlights->filter(function ($highlight) use ($dam_ids, $books, $v4_users, $v4_highlights) {
+                    return $this->validateHighlight($highlight, $dam_ids, $books, $v4_users, $v4_highlights);
+                });
+
+                $highlights = $highlights->map(function ($highlight) use ($v4_users, $books, $dam_ids) {
+                    return [
+                        'v2_id'       => $highlight->id,
+                        'user_id'     => $v4_users[$highlight->user_id],
+                        'bible_id'    => $dam_ids[$highlight->dam_id]->bible->first()->id,
+                        'book_id'     => $books[$highlight->book_id],
+                        'chapter'     => $highlight->chapter_id,
+                        'verse_start' => $highlight->verse_id,
+                        'verse_end'   => $highlight->verse_id,
+                        'highlight_start'   => 1,
+                        'highlighted_words' => null,
+                        'highlighted_color' => $this->getRelatedColorIdForHighlightColorString($highlight->color),
+                        'created_at' => Carbon::createFromTimeString($highlight->created),
+                        'updated_at' => Carbon::createFromTimeString($highlight->updated),
+                    ];
+                });
+
+                $chunks = $highlights->chunk(5000);
+
+                foreach ($chunks as $chunk) {
+                    Highlight::insert($chunk->toArray());
                 }
+
+                echo "\n" . Carbon::now() . ': Inserted ' . sizeof($highlights) . ' new v2 highlights.';
             });
     }
 
-    private function syncHighlight($highlight, $filesets, $books)
+    private function validateHighlight($highlight, $filesets, $books, $v4_users, $v4_highlights)
     {
-        $fileset = $filesets->where('id', substr($highlight->dam_id, 0, 6))->first();
-        if (!$fileset) {
-            Log::driver('seed_errors')->info('bb_nfd_' . $highlight->dam_id);
-            echo "\n Error!! Could not find FILESET_ID: " . substr($highlight->dam_id, 0, 6);
-            return;
-        }
-        $book = $books->where('id_osis', $highlight->book_id)->first();
-        if (!$book) {
-            $book = $books->where('protestant_order', $highlight->book_id);
-            echo "\n Error!! Could not find BOOK_ID: " . $highlight->book_id;
-            return;
+        if (isset($v4_highlights[$highlight->id])) {
+            // echo "\n Error!! Bookmark already inserted: " . $highlight->id;
+            return false;
         }
 
-        if ($book === null) {
-            Log::driver('seed_errors')->info('bb_nfb_' . $highlight->book_id);
-            echo "\n Error!! Could not find BOOK_ID: " . $highlight->book_id;
-            return;
+        if (!isset($v4_users[$highlight->user_id])) {
+            // echo "\n Error!! Could not find USER_ID: " . $highlight->user_id;
+            return false;
         }
 
-        $user_exists = User::where('v2_id', $highlight->user_id)->first();
-        if (!$user_exists) {
-            Log::driver('seed_errors')->info('bb_nfu_' . $highlight->user_id);
-            echo "\n Error!! Could not find USER_ID: " . $highlight->user_id;
-            return;
+        if (!isset($books[$highlight->book_id])) {
+            // echo "\n Error!! Could not find BOOK_ID: " . $highlight->book_id;
+            return false;
         }
 
-        $v4Highlight = Highlight::firstOrNew([
-            'v2_id'             => $highlight->id,
-            'user_id'           => $user_exists->id,
-            'bible_id'          => $fileset->bible->first()->id,
-            'book_id'           => $book->id,
-            'chapter'           => $highlight->chapter_id,
-            'verse_start'       => $highlight->verse_id,
-            'verse_end'         => $highlight->verse_id,
-            'highlight_start'   => 1,
-            'highlighted_words' => null,
-            'highlighted_color' => $this->getRelatedColorIdForHighlightColorString($highlight->color),
-        ]);
-
-        if (!$v4Highlight->id) {
-            $v4Highlight->created_at = Carbon::createFromTimeString($highlight->created);
-            $v4Highlight->updated_at = Carbon::createFromTimeString($highlight->updated);
-            $v4Highlight->save();
+        if (!isset($filesets[$highlight->dam_id])) {
+            // echo "\n Error!! Could not find FILESET_ID: " . substr($highlight->dam_id, 0, 6);
+            return false;
         }
-        echo "\n Highlight Processed: " . $highlight->id;
+
+        $fileset = $filesets[$highlight->dam_id];
+
+        if ($fileset->bible->first()) {
+            if (!isset($fileset->bible->first()->id)) {
+                // echo "\n Error!! Could not find BIBLE_ID";
+                return false;
+            }
+        } else {
+            // echo "\n Error!! Could not find BIBLE_ID";
+            return false;
+        }
+
+        return true;
     }
+
 
     private function initColors()
     {
         $this->highlightColors = HighlightColor::select('color', 'id')->get()->pluck('id', 'color')->toArray();
     }
 
-    private function getRelatedColorIdForHighlightColorString($color)
+    private function getRelatedColorIdForHighlightColorString($v2_color)
     {
+        $v4_colors_map = ['orange' => 'purple', 'green' => 'green', 'blue' => 'blue', 'pink' => 'pink', 'yellow' => 'yellow'];
+        $v4_color = $v4_colors_map[$v2_color];
+
+        if (isset($this->highlightColors[$v4_color])) {
+            return $this->highlightColors[$v4_color];
+        }
+
         $green = ['color' => 'green', 'hex' => 'addd79', 'red' => 173, 'green' => 221, 'blue' => 121, 'opacity' => 0.7];
         $blue = ['color' => 'blue', 'hex' => '87adcc', 'red' => 135, 'green' => 173, 'blue' => 204, 'opacity' => 0.7];
         $pink = ['color' => 'pink', 'hex' => 'ea9dcf', 'red' => 234, 'green' => 157, 'blue' => 207, 'opacity' => 0.7];
         $yellow = ['color' => 'yellow', 'hex' => 'e9de7f', 'red' => 223, 'green' => 222, 'blue' => 127, 'opacity' => 0.7];
         $purple = ['color' => 'purple', 'hex' => '8967ac', 'red' => 137, 'green' => 103, 'blue' => 172, 'opacity' => 0.7];
-        $v2_colors = [
-            'orange' => $purple,
-            'green' => $green,
-            'blue' => $blue,
-            'pink' => $pink,
-            'yellow' => $yellow,
-        ];
-        if (isset($this->highlightColors[$color])) {
-            return $this->highlightColors[$color];
-        }
-        $highlightColor = HighlightColor::create($v2_colors[$color]);
+        $v4_colors = ['purple' => $purple, 'green' => $green, 'blue' => $blue, 'pink' => $pink, 'yellow' => $yellow];
+        $highlightColor = HighlightColor::create($v4_colors[$v4_color]);
         $this->initColors();
+
         return $highlightColor->id;
+    }
+
+    private function getFilesetFromDamId($dam_id, $filesets)
+    {
+        if (isset($this->dam_ids[$dam_id])) {
+            return $this->dam_ids[$dam_id];
+        }
+
+        $fileset = $filesets->where('id', $dam_id)->first();
+        if (!$fileset) {
+            $fileset = $filesets->where('id', substr($dam_id, 0, -4))->first();
+        }
+        if (!$fileset) {
+            $fileset = $filesets->where('id', substr($dam_id, 0, -2))->first();
+        }
+        if (!$fileset) {
+            // echo "\n Error!! Could not find FILESET_ID: " . substr($dam_id, 0, 6);
+            return false;
+        }
+
+        $this->dam_ids[$dam_id] = $fileset;
+
+        return $fileset;
     }
 }
