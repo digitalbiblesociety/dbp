@@ -43,6 +43,11 @@ return [
     'userListPaginationSize' => env('USER_LIST_PAGINATION_SIZE', 50),
 
     /*
+     * v2 v4 sync chunk size
+     */
+    'v2V4SyncChunkSize' => env('V2_V4_SYNC_CHUNK_SIZE', 5000),
+
+    /*
      * User restore encryption key
      */
     'restoreKey' => env('USER_RESTORE_ENCRYPTION_KEY', 'sup3rS3cr3tR35t0r3K3y21!'),
