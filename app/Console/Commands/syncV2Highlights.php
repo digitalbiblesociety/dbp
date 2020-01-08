@@ -104,7 +104,7 @@ class syncV2Highlights extends Command
     private function validateHighlight($highlight, $filesets, $books, $v4_users, $v4_highlights)
     {
         if (isset($v4_highlights[$highlight->id])) {
-            // echo "\n Error!! Bookmark already inserted: " . $highlight->id;
+            // echo "\n Error!! Highlight already inserted: " . $highlight->id;
             return false;
         }
 
