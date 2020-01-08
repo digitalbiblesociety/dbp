@@ -104,6 +104,7 @@ class syncV2Highlights extends Command
 
                 echo "\n" . Carbon::now() . ': Inserted ' . sizeof($highlights) . ' new v2 highlights.';
             });
+        echo "\n" . Carbon::now() . ": v2 to v4 highlights sync finalized.\n";
     }
 
     private function initColors()
