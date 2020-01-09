@@ -51,7 +51,7 @@ trait CallsBucketsTrait
                 'url'         => 'https://content.cdn.'.$asset_id.'.dbp4.org/'.$file_path.'?x-amz-transaction='.$transaction,
                 'key_pair_id' => config('filesystems.disks.cloudfront.key'),
                 'private_key' => storage_path('app/'.config('filesystems.disks.cloudfront.secret')),
-                'expires'     => Carbon::now()->addHour()->timestamp,
+                'expires'     => Carbon::now()->addDay()->timestamp,
             ];
             return $client->getSignedUrl($request_array);
         }
