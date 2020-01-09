@@ -172,12 +172,12 @@ class UsersController extends APIController
         $email = checkParam('email');
         $social_provider_id = checkParam('social_provider_id');
 
-        if ($email) {
-            $password = checkParam('password');
-            $user = $this->loginWithEmail($email, $password);
-        } elseif ($social_provider_id) {
+        if ($social_provider_id) {
             $social_provider_user_id = checkParam('social_provider_user_id');
             $user = $this->loginWithSocialProvider($social_provider_id, $social_provider_user_id);
+        } elseif ($email) {
+            $password = checkParam('password');
+            $user = $this->loginWithEmail($email, $password);
         }
 
         if (!$user) {
