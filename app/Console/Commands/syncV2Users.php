@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User\Role;
 use Illuminate\Console\Command;
 use App\Models\User\User;
 use Carbon\Carbon;
@@ -81,5 +82,25 @@ class syncV2Users extends Command
                 echo "\n" . Carbon::now() . ': Inserted ' . sizeof($users) . ' new v2 users.';
             });
         echo "\n" . Carbon::now() . ": v2 to v4 users sync finalized.\n";
+
+        $default_project_id = config('settings.defaultProjectId');
+        echo "\n" . Carbon::now() . ": Assign v2 users to default project started.\n";
+        $user_role = Role::where('slug', 'user')->first();
+        if (!$user_role) {
+            echo "\n" . Carbon::now() . ": The Roles table has not been populated.\n";
+        } else {
+            DB::connection('dbp_users')
+                ->statement(
+                    'INSERT INTO project_members (project_id, user_id, role_id, created_at)
+                    SELECT 
+                    ' . $default_project_id . ' AS project_id,
+                    id AS user_id,
+                    ' . $user_role->id . ' AS role_id,
+                    u.created_at
+                    FROM users AS u LEFT JOIN project_members AS pm ON pm.user_id = u.id where u.v2_id > 0 AND pm.project_id IS NULL'
+                );
+
+            echo "\n" . Carbon::now() . ": Assign v2 users to default project finalized.\n";
+        }
     }
 }

@@ -63,6 +63,7 @@ return [
     'projects_developer_not_a_member'        => 'The project ID provided is not associated with your developer key',
     'projects_users_not_connected'           => 'This user needs to be connected with one of your projects.',
     'projects_users_error_404'               => 'This user either does not exist',
+    'project_users_404'                      => 'The specified user is not a member of the project_id provided.',
     'projects_users_needs_to_connect'        => 'This user needs to be connected with this project. A verification email has been sent to them',
 
     'organizations_relationship_members_404' => 'No membership connection found.',
