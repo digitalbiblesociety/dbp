@@ -39,9 +39,9 @@ class AccountsController extends APIController
      */
     public function index()
     {
-        $user = $this->verifyProjectUserConnection();
+        $result = $this->verifyProjectUserConnection();
 
-        return $this->reply($user->accounts);
+        return $this->reply($result->accounts ?? $result);
     }
 
 
