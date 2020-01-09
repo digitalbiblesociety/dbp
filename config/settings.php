@@ -48,6 +48,11 @@ return [
     'v2V4SyncChunkSize' => env('V2_V4_SYNC_CHUNK_SIZE', 5000),
 
     /*
+     * Default project id to assign to v2 to v4 users
+     */
+    'defaultProjectId' => env('USER_DEFAULT_PROJECT_ID', 52341),
+
+    /*
      * User restore encryption key
      */
     'restoreKey' => env('USER_RESTORE_ENCRYPTION_KEY', 'sup3rS3cr3tR35t0r3K3y21!'),
