@@ -9,13 +9,17 @@ class UserHighlightsTransformer extends TransformerAbstract
 {
     /**
      * @OA\Schema (
-     *    type="array",
+     *    type="object",
      *    schema="v4_highlights_index",
      *    description="The v4 highlights index response. Note the fileset_id is being used to identify the item instead of the bible_id.
      *    This is important as different filesets may have different numbers for the highlighted words field depending on their revision.",
      *    title="v4_highlights_index",
-     *  @OA\Xml(name="v4_highlights_index"),
-     *  @OA\Items(
+     *    @OA\Xml(name="v4_highlights_index"),
+     *      allOf={
+     *        @OA\Schema(ref="#/components/schemas/pagination.alternate"),
+     *      },
+     *    @OA\Property(property="data", type="array",
+     *      @OA\Items(
      *              @OA\Property(property="id",                     ref="#/components/schemas/Highlight/properties/id"),
      *              @OA\Property(property="fileset_id",             ref="#/components/schemas/BibleFileset/properties/id"),
      *              @OA\Property(property="book_id",                ref="#/components/schemas/Book/properties/id"),
@@ -29,6 +33,7 @@ class UserHighlightsTransformer extends TransformerAbstract
      *              @OA\Property(property="highlighted_color",      ref="#/components/schemas/Highlight/properties/highlighted_color")
      *           ),
      *     )
+     *    )
      *   )
      * )
      * @param Highlight $highlight
@@ -63,13 +68,13 @@ class UserHighlightsTransformer extends TransformerAbstract
     {
         $color_preference = checkParam('prefer_color') ?? 'rgba';
         if ($color_preference === 'hex') {
-            $highlight->color = '#'.$highlight->color->hex;
+            $highlight->color = '#' . $highlight->color->hex;
         }
         if ($color_preference === 'rgb') {
-            $highlight->color = 'rgb('.$highlight->color->red.','.$highlight->color->green.','.$highlight->color->blue.')';
+            $highlight->color = 'rgb(' . $highlight->color->red . ',' . $highlight->color->green . ',' . $highlight->color->blue . ')';
         }
         if ($color_preference === 'rgba') {
-            $highlight->color = 'rgba('.$highlight->color->red.','.$highlight->color->green.','.$highlight->color->blue.','.$highlight->color->opacity.')';
+            $highlight->color = 'rgba(' . $highlight->color->red . ',' . $highlight->color->green . ',' . $highlight->color->blue . ',' . $highlight->color->opacity . ')';
         }
     }
 }

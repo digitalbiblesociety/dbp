@@ -16,7 +16,7 @@ class LibraryMetadataTransformer extends TransformerAbstract
      * A Fractal transformer.
      *
      * @OA\Schema (
-     *     type="object",
+     *     type="array",
      *     schema="v2_library_metadata",
      *     description="The various version ids in the old version 2 style",
      *     title="v2_library_metadata",
@@ -28,12 +28,12 @@ class LibraryMetadataTransformer extends TransformerAbstract
      *          @OA\Property(property="font_copyright",    ref="#/components/schemas/AlphabetFont/properties/copyright"),
      *          @OA\Property(property="font_url",          ref="#/components/schemas/AlphabetFont/properties/url"),
      *          @OA\Property(property="organization",
-     *              @OA\Schema(type="object",
+     *              type="array",
      *                  @OA\Items(
      *                      @OA\Property(property="organization_id",      ref="#/components/schemas/Organization/properties/id"),
      *                      @OA\Property(property="organization",         ref="#/components/schemas/OrganizationTranslation/properties/name"),
      *                      @OA\Property(property="organization_english", ref="#/components/schemas/OrganizationTranslation/properties/name"),
-     *                      @OA\Property(property="organization_role",    ref="#/components/schemas/BibleOrganizations/properties/relationship_type"),
+     *                      @OA\Property(property="organization_role",    ref="#/components/schemas/BibleOrganization/properties/relationship_type"),
      *                      @OA\Property(property="organization_url",     ref="#/components/schemas/Organization/properties/url_website"),
      *                      @OA\Property(property="organization_donation",ref="#/components/schemas/Organization/properties/url_donate"),
      *                      @OA\Property(property="organization_address", ref="#/components/schemas/Organization/properties/address"),
@@ -44,7 +44,7 @@ class LibraryMetadataTransformer extends TransformerAbstract
      *                      @OA\Property(property="organization_zip",     ref="#/components/schemas/Organization/properties/zip"),
      *                      @OA\Property(property="organization_phone",   ref="#/components/schemas/Organization/properties/phone"),
      *                   )
-     *                  )
+     *
      *              )
      *          )
      *     )

@@ -20,11 +20,19 @@ class CommentaryController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="The fileset types",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Commentary")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/Commentary")),
-     *         @OA\MediaType(mediaType="text/x-yaml",  @OA\Schema(ref="#/components/schemas/Commentary")),
-     *         @OA\MediaType(mediaType="text/csv",  @OA\Schema(ref="#/components/schemas/Commentary"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_commentary_index")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_commentary_index")),
+     *         @OA\MediaType(mediaType="text/x-yaml",  @OA\Schema(ref="#/components/schemas/v4_commentary_index")),
+     *         @OA\MediaType(mediaType="text/csv",  @OA\Schema(ref="#/components/schemas/v4_commentary_index"))
      *     )
+     * )
+     *
+     * @OA\Schema(
+     *   schema="v4_commentary_index",
+     *   type="object",
+     *   @OA\Property(property="data", type="array",
+     *      @OA\Items(ref="#/components/schemas/Commentary")
+     *   )
      * )
      *
      */
@@ -71,12 +79,12 @@ class CommentaryController extends APIController
      *     description="",
      *     schema="v4_commentaries_chapter_response",
      *     @OA\Xml(name="v4_commentaries_chapter_response"),
-     *     example={
+     *     example={"data":{
      *       "MAT": {1,2,3,4,5},
      *       "MRK": {1,2,3},
      *       "LUK": {1,2,3,4,5,6,7,8,9},
      *       "JHN": {1,2,3,4,10}
-     *     }
+     *     }}
      * )
      *
      * @param $commentary_id
@@ -99,8 +107,8 @@ class CommentaryController extends APIController
             ->leftJoin('books', function ($query) {
                 $query->on('books.id', 'commentary_sections.book_id');
             })->select('book_id', 'chapter_start')
-              ->orderBy('books.protestant_order')
-              ->orderBy('commentary_sections.chapter_start')->get();
+            ->orderBy('books.protestant_order')
+            ->orderBy('commentary_sections.chapter_start')->get();
 
         foreach ($commentary_sections as $section) {
             $books[$section->book_id][] = $section->chapter_start;
@@ -141,12 +149,13 @@ class CommentaryController extends APIController
      * )
      *
      * @OA\Schema(
-     *     type="array",
+     *     type="object",
      *     title="The commentary section response",
      *     description="",
      *     schema="v4_commentaries_section_response",
      *     @OA\Xml(name="v4_commentaries_section_response"),
-     *     @OA\Items(
+     *     @OA\Property(property="data", type="array",
+     *      @OA\Items(
      *          @OA\Property(property="title",         ref="#/components/schemas/CommentarySection/properties/title"),
      *          @OA\Property(property="content",       ref="#/components/schemas/CommentarySection/properties/content"),
      *          @OA\Property(property="book_id",       ref="#/components/schemas/CommentarySection/properties/book_id"),
@@ -154,6 +163,7 @@ class CommentaryController extends APIController
      *          @OA\Property(property="chapter_end",   ref="#/components/schemas/CommentarySection/properties/chapter_end"),
      *          @OA\Property(property="verse_start",   ref="#/components/schemas/CommentarySection/properties/verse_start"),
      *          @OA\Property(property="verse_end",     ref="#/components/schemas/CommentarySection/properties/verse_end"),
+     *      )
      *     )
      * )
      *

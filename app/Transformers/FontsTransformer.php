@@ -18,8 +18,17 @@ class FontsTransformer extends BaseTransformer
      *     @OA\Xml(name="v4_alphabets_one_response"),
      *     @OA\Property(property="id",                     ref="#/components/schemas/AlphabetFont/properties/id"),
      *     @OA\Property(property="name",                   ref="#/components/schemas/AlphabetFont/properties/fontFileName"),
-     *     @OA\Property(property="base_url",               @OA\Items(type="string")),
-     *     @OA\Property(property="files",                  @OA\Items(type="object"))
+     *     @OA\Property(property="base_url",               type="string"),
+     *     @OA\Property(property="files",                  type="object",
+     *          @OA\Property(property="zip",               type="string"),
+     *          @OA\Property(property="svg",               type="string"),
+     *          @OA\Property(property="ttf",               type="string"),
+     *          @OA\Property(property="platforms",         type="object",
+     *             @OA\Property(property="android",           type="boolean"),
+     *             @OA\Property(property="ios",               type="boolean"),
+     *             @OA\Property(property="web",               type="boolean"),
+     *       )
+     *     )
      * )
      */
     public function transform($font)

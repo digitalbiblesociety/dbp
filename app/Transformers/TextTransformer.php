@@ -65,7 +65,7 @@ class TextTransformer extends BaseTransformer
              *              @OA\Property(property="chapter_id", ref="#/components/schemas/BibleFile/properties/chapter_start"),
              *              @OA\Property(property="verse_id",   ref="#/components/schemas/BibleFile/properties/verse_start"),
              *              @OA\Property(property="verse_text", ref="#/components/schemas/BibleFile/properties/verse_text"),
-             *              @OA\Property(property="results",    @OA\Schema(type="integer",minimum=0,example=45)),
+             *              @OA\Property(property="results",    type="integer",minimum=0,example=45),
              *              @OA\Property(property="book_order", ref="#/components/schemas/Book/properties/protestant_order")
              *     )
              *   )
@@ -93,11 +93,12 @@ class TextTransformer extends BaseTransformer
              *   @OA\Items(
              *              @OA\Property(property="book_name",         ref="#/components/schemas/Book/properties/name"),
              *              @OA\Property(property="book_id",           ref="#/components/schemas/Book/properties/id_osis"),
+             *              @OA\Property(property="book_order",           ref="#/components/schemas/Book/properties/protestant_order"),
              *              @OA\Property(property="chapter_id",        ref="#/components/schemas/BibleFile/properties/chapter_start"),
-             *              @OA\Property(property="chapter_title",     @OA\Schema(type="string",example="Chapter 1")),
+             *              @OA\Property(property="chapter_title",     type="string",example="Chapter 1"),
              *              @OA\Property(property="verse_id",          ref="#/components/schemas/BibleFile/properties/verse_start"),
              *              @OA\Property(property="verse_text",        ref="#/components/schemas/BibleFile/properties/verse_text"),
-             *              @OA\Property(property="paragraph_number",  @OA\Schema(type="string",example="2"))
+             *              @OA\Property(property="paragraph_number",  type="string",example="2")
              *     )
              *   )
              * )
@@ -119,12 +120,13 @@ class TextTransformer extends BaseTransformer
 
     /**
      * @OA\Schema (
-     *    type="array",
+     *    type="object",
      *    schema="v4_bible_filesets_chapter",
      *    description="The bible chapter response",
      *    title="v4_bible_filesets_chapter",
-     *  @OA\Xml(name="v4_bible_filesets_chapter"),
-     *  @OA\Items(              required={"name","script","family","type","direction"},
+     *    @OA\Xml(name="v4_bible_filesets_chapter"),
+     *    @OA\Property(property="data", type="array",
+     *      @OA\Items(
      *              @OA\Property(property="book_id",           ref="#/components/schemas/Book/properties/id"),
      *              @OA\Property(property="book_name",         ref="#/components/schemas/Book/properties/name"),
      *              @OA\Property(property="book_name_alt",     ref="#/components/schemas/BookTranslation/properties/name"),
@@ -134,7 +136,8 @@ class TextTransformer extends BaseTransformer
      *              @OA\Property(property="verse_start_alt",   ref="#/components/schemas/BibleFile/properties/verse_start"),
      *              @OA\Property(property="verse_end",         ref="#/components/schemas/BibleFile/properties/verse_end"),
      *              @OA\Property(property="verse_end_alt",     ref="#/components/schemas/BibleFile/properties/verse_end"),
-     *              @OA\Property(property="verse_text",type="string")
+     *              @OA\Property(property="verse_text",        type="string")
+     *      )
      *     )
      *   )
      * )

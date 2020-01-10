@@ -309,9 +309,10 @@ class Book extends Model
      *
      * @OA\Property(
      *   title="chapters",
-     *   type="integer",
+     *   type="array",
      *   nullable=true,
-     *   description="The book's number of chapters"
+     *   description="The book's number of chapters",
+     *   @OA\Items(type="integer")
      * )
      *
      *

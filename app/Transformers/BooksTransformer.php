@@ -70,45 +70,47 @@ class BooksTransformer extends BaseTransformer
 
     /**
      * @OA\Schema (
-     *    type="array",
+     *    type="object",
      *    schema="v4_bible_books_all",
      *    description="The books of the bible with codes",
      *    title="v4_bible_books_all",
      *  @OA\Xml(name="v4_bible_books_all"),
-     *  @OA\Items(
-     *          @OA\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
-     *          @OA\Property(property="id_usfx",           ref="#/components/schemas/Book/properties/id_usfx"),
-     *          @OA\Property(property="id_osis",           ref="#/components/schemas/Book/properties/id_osis"),
-     *          @OA\Property(property="book_order",        ref="#/components/schemas/Book/properties/protestant_order"),
-     *          @OA\Property(property="testament_order",   ref="#/components/schemas/Book/properties/testament_order"),
-     *          @OA\Property(property="book_testament",    ref="#/components/schemas/Book/properties/book_testament"),
-     *          @OA\Property(property="book_group",        ref="#/components/schemas/Book/properties/book_group"),
-     *          @OA\Property(property="chapters",          ref="#/components/schemas/Book/properties/chapters"),
-     *          @OA\Property(property="verses",            ref="#/components/schemas/Book/properties/verses"),
+     *  @OA\Property(property="data",type="array",
+     *   @OA\Items(
+     *          @OA\Property(property="book_id",           ref="#/components/schemas/Book/properties/id"),
+     *          @OA\Property(property="book_id_usfx",      ref="#/components/schemas/Book/properties/id_usfx"),
+     *          @OA\Property(property="book_id_osis",      ref="#/components/schemas/Book/properties/id_osis"),
      *          @OA\Property(property="name",              ref="#/components/schemas/Book/properties/name"),
+     *          @OA\Property(property="testament",         ref="#/components/schemas/Book/properties/book_testament"),
+     *          @OA\Property(property="testament_order",   ref="#/components/schemas/Book/properties/testament_order"),
+     *          @OA\Property(property="book_order",        ref="#/components/schemas/Book/properties/protestant_order"),
+     *          @OA\Property(property="book_group",        ref="#/components/schemas/Book/properties/book_group"),
+     *          @OA\Property(property="chapters",          type="integer")
      *     )
      *   )
+     *  )
      * )
      *
      * @OA\Schema (
-     *    type="array",
+     *    type="object",
      *    schema="v4_bible.books",
      *    description="The books of the bible with codes",
      *    title="v4_bible.books",
      *  @OA\Xml(name="v4_bible.books"),
-     *  @OA\Items(
-     *          @OA\Property(property="id",                ref="#/components/schemas/Book/properties/id"),
-     *          @OA\Property(property="id_usfx",           ref="#/components/schemas/Book/properties/id_usfx"),
-     *          @OA\Property(property="id_osis",           ref="#/components/schemas/Book/properties/id_osis"),
-     *          @OA\Property(property="book_order",        ref="#/components/schemas/Book/properties/protestant_order"),
-     *          @OA\Property(property="testament_order",   ref="#/components/schemas/Book/properties/testament_order"),
-     *          @OA\Property(property="book_testament",    ref="#/components/schemas/Book/properties/book_testament"),
-     *          @OA\Property(property="book_group",        ref="#/components/schemas/Book/properties/book_group"),
-     *          @OA\Property(property="chapters",          ref="#/components/schemas/Book/properties/chapters"),
-     *          @OA\Property(property="verses",            ref="#/components/schemas/Book/properties/verses"),
+     *  @OA\Property(property="data", type="array",
+     *   @OA\Items(
+     *          @OA\Property(property="book_id",           ref="#/components/schemas/Book/properties/id"),
+     *          @OA\Property(property="book_id_usfx",      ref="#/components/schemas/Book/properties/id_usfx"),
+     *          @OA\Property(property="book_id_osis",      ref="#/components/schemas/Book/properties/id_osis"),
      *          @OA\Property(property="name",              ref="#/components/schemas/Book/properties/name"),
+     *          @OA\Property(property="testament",         ref="#/components/schemas/Book/properties/book_testament"),
+     *          @OA\Property(property="testament_order",   ref="#/components/schemas/Book/properties/testament_order"),
+     *          @OA\Property(property="book_order",        ref="#/components/schemas/Book/properties/protestant_order"),
+     *          @OA\Property(property="book_group",        ref="#/components/schemas/Book/properties/book_group"),
+     *          @OA\Property(property="chapters",          ref="#/components/schemas/Book/properties/chapters")
      *     )
-     *   )
+     *    )
+     *  )
      * )
      *
      * @param $book

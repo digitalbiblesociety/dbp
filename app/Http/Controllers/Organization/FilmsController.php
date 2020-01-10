@@ -33,16 +33,18 @@ class FilmsController extends APIController
      * )
      *
      * @OA\Schema (
-     *     type="object",
+     *     type="array",
      *     schema="v2_video_location",
      *     description="",
      *     title="The single alphabet response",
      *     @OA\Xml(name="v2_video_location"),
-     *     @OA\Property(property="server",      @OA\Schema(type="string",example="dbp-video.s3.amazonaws.com")),
-     *     @OA\Property(property="root_path",   @OA\Schema(type="string")),
-     *     @OA\Property(property="protocol",    @OA\Schema(type="string",example="http",enum={"http","https"})),
-     *     @OA\Property(property="CDN",         @OA\Schema(type="integer",example=0,enum={0,1})),
-     *     @OA\Property(property="priority",    @OA\Schema(type="integer",example=5))
+     *     @OA\Items(
+     *         @OA\Property(property="server",      type="string",example="dbp-video.s3.amazonaws.com"),
+     *         @OA\Property(property="root_path",   type="string"),
+     *         @OA\Property(property="protocol",    type="string",example="http",enum={"http","https"}),
+     *         @OA\Property(property="CDN",         type="integer",example=0,enum={0,1}),
+     *         @OA\Property(property="priority",    type="integer",example=5)
+     *     )
      * )
      *
      * @return mixed

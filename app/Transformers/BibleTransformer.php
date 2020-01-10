@@ -97,14 +97,20 @@ class BibleTransformer extends BaseTransformer
     {
         switch ($this->route) {
 
-                /**
+            /**
              * @OA\Schema (
              *   type="object",
              *   schema="v4_bible.all",
              *   description="The bibles being returned",
              *   title="v4_bible.all",
              *   @OA\Xml(name="v4_bible.all"),
-             *   @OA\Items(
+             *   allOf={
+             *      @OA\Schema(ref="#/components/schemas/pagination.alternate"),
+             *   },
+             *   @OA\Property(
+             *    property="data",
+             *    type="array",
+             *    @OA\Items(
              *              @OA\Property(property="abbr",              ref="#/components/schemas/Bible/properties/id"),
              *              @OA\Property(property="name",              ref="#/components/schemas/BibleTranslation/properties/name"),
              *              @OA\Property(property="vname",             ref="#/components/schemas/BibleTranslation/properties/name"),
@@ -113,8 +119,11 @@ class BibleTransformer extends BaseTransformer
              *              @OA\Property(property="language_altNames", ref="#/components/schemas/LanguageTranslation/properties/name"),
              *              @OA\Property(property="iso",               ref="#/components/schemas/Language/properties/iso"),
              *              @OA\Property(property="date",              ref="#/components/schemas/Bible/properties/date"),
-             *              @OA\Property(property="filesets",          ref="#/components/schemas/BibleFileset")
+             *              @OA\Property(property="filesets", type="object",
+             *                         @OA\Property(property="dbp-prod",type="array", @OA\Items(ref="#/components/schemas/BibleFileset"))
+             *              )
              *     )
+             *    )
              *   )
              * )
              */

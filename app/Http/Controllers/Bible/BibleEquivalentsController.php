@@ -17,9 +17,9 @@ class BibleEquivalentsController extends APIController
      *     tags={"Bibles"},
      *     summary="Get a list of bible equivalents",
      *     description="Fetch a list of bible equivalents filtered by Type, Organization or Bible.
-               This route will allow your apps to connect to other Bible APIs and services without
-               introducing duplicate Bible content into your apps and ease migration between APIs.",
-     *     operationId="v4_bible.equivalents",
+     *         This route will allow your apps to connect to other Bible APIs and services without
+     *         introducing duplicate Bible content into your apps and ease migration between APIs.",
+     *     operationId="v4_bible_equivalents.all",
      *     @OA\Parameter(
      *       name="organization_id",
      *       in="query",
@@ -35,11 +35,22 @@ class BibleEquivalentsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/BibleEquivalent")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/BibleEquivalent")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/BibleEquivalent")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/BibleEquivalent"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible_equivalents.all")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible_equivalents.all")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible_equivalents.all")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_bible_equivalents.all"))
      *     )
+     * )
+     *
+     * @OA\Schema (
+     *     type="array",
+     *     schema="v4_bible_equivalents.all",
+     *     description="v4_bible_equivalents.all",
+     *     title="v4_bible_equivalents.all",
+     *     @OA\Xml(name="v4_bible_equivalents.all"),
+     *     @OA\Items(
+     *      ref="#/components/schemas/BibleEquivalent"
+     *    )
      * )
      *
      * @return Response

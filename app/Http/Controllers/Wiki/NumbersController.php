@@ -53,14 +53,16 @@ class NumbersController extends APIController
      * @return mixed
      *
      * @OA\Schema (
-     *     type="array",
+     *     type="object",
      *     schema="v4_numbers_range",
      *     description="The numbers range return",
      *     title="The numbers range return",
      *     @OA\Xml(name="v4_numbers_range"),
-     *     @OA\Items(
+     *     @OA\Property(property="data", type="array",
+     *      @OA\Items(
      *        @OA\Property(property="numeral", type="string"),
      *        @OA\Property(property="numeral_vernacular", type="string")
+     *      )
      *     )
      * )
      *
@@ -94,16 +96,27 @@ class NumbersController extends APIController
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json",
-     *         @OA\Schema(ref="#/components/schemas/v4_alphabets_all_response")),
+     *         @OA\Schema(ref="#/components/schemas/v4_numbers.index")),
      *         @OA\MediaType(mediaType="application/xml",
-     *         @OA\Schema(ref="#/components/schemas/v4_alphabets_all_response")),
+     *         @OA\Schema(ref="#/components/schemas/v4_numbers.index")),
      *         @OA\MediaType(mediaType="text/x-yaml",
-     *         @OA\Schema(ref="#/components/schemas/v4_alphabets_all_response")),
+     *         @OA\Schema(ref="#/components/schemas/v4_numbers.index")),
      *         @OA\MediaType(mediaType="text/csv",
-     *         @OA\Schema(ref="#/components/schemas/v4_alphabets_all_response"))
+     *         @OA\Schema(ref="#/components/schemas/v4_numbers.index"))
      *     )
      * )
      *
+     * @OA\Schema (
+     *     type="object",
+     *     schema="v4_numbers.index",
+     *     @OA\Property(property="data", type="array",
+     *      @OA\Items(
+     *        @OA\Property(property="id", type="string"),
+     *        @OA\Property(property="description", type="string"),
+     *        @OA\Property(property="notes", type="string")
+     *      )
+     *     )
+     * )
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
      */
     public function index()
@@ -134,13 +147,21 @@ class NumbersController extends APIController
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json",
-     *              @OA\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+     *              @OA\Schema(ref="#/components/schemas/v4_numbers.show")),
      *         @OA\MediaType(mediaType="application/xml",
-     *              @OA\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+     *              @OA\Schema(ref="#/components/schemas/v4_numbers.show")),
      *         @OA\MediaType(mediaType="text/x-yaml",
-     *              @OA\Schema(ref="#/components/schemas/v4_alphabets_one_response")),
+     *              @OA\Schema(ref="#/components/schemas/v4_numbers.show")),
      *         @OA\MediaType(mediaType="text/csv",
-     *              @OA\Schema(ref="#/components/schemas/v4_alphabets_one_response"))
+     *              @OA\Schema(ref="#/components/schemas/v4_numbers.show"))
+     *     )
+     * )
+     *
+     * @OA\Schema (
+     *     type="object",
+     *     schema="v4_numbers.show",
+     *     @OA\Property(property="data", type="object",
+     *      ref="#/components/schemas/NumeralSystem"
      *     )
      * )
      *

@@ -135,17 +135,19 @@ class ApiMetadataController extends APIController
      * )
      *
      * @OA\Schema (
-     *     type="object",
+     *     type="array",
      *     schema="v2_library_asset",
      *     description="v2_library_asset",
      *     title="v2_library_asset",
      *     @OA\Xml(name="v2_library_asset"),
-     *     @OA\Property(property="server",type="string",example="cloud.faithcomesbyhearing.com"),
-     *     @OA\Property(property="root_path",type="string",example="/mp3audiobibles2"),
-     *     @OA\Property(property="protocol",type="string",example="http"),
-     *     @OA\Property(property="CDN",type="string",example="1"),
-     *     @OA\Property(property="priority",type="string",example="5"),
-     *     @OA\Property(property="volume_id",type="string",example="")
+     *     @OA\Items(
+     *      @OA\Property(property="server",type="string",example="cloud.faithcomesbyhearing.com"),
+     *      @OA\Property(property="root_path",type="string",example="/mp3audiobibles2"),
+     *      @OA\Property(property="protocol",type="string",example="http"),
+     *      @OA\Property(property="CDN",type="string",example="1"),
+     *      @OA\Property(property="priority",type="string",example="5"),
+     *      @OA\Property(property="volume_id",type="string",example="")
+     *    )
      * )
      *
      * @return mixed

@@ -43,17 +43,19 @@ class AlphabetTransformer extends BaseTransformer
             /**
              *
              * @OA\Schema (
-             *     type="array",
+             *     type="object",
              *     schema="v4_alphabets_all_response",
              *     description="The minimized alphabet return for the all alphabets route",
              *     title="The all alphabets response",
              *     @OA\Xml(name="v4_alphabets_all_response"),
-             *     @OA\Items(
+             *     @OA\Property(property="data", type="array",
+             *      @OA\Items(
              *          @OA\Property(property="name",      ref="#/components/schemas/Alphabet/properties/name"),
              *          @OA\Property(property="script",    ref="#/components/schemas/Alphabet/properties/script"),
              *          @OA\Property(property="family",    ref="#/components/schemas/Alphabet/properties/family"),
              *          @OA\Property(property="type",      ref="#/components/schemas/Alphabet/properties/type"),
              *          @OA\Property(property="direction", ref="#/components/schemas/Alphabet/properties/direction")
+             *      )
              *     )
              * )
              *
@@ -75,14 +77,16 @@ class AlphabetTransformer extends BaseTransformer
              *     description="The full alphabet return for the single alphabet route",
              *     title="The single alphabet response",
              *     @OA\Xml(name="v4_alphabets_one_response"),
-             *     @OA\Property(property="name",                   ref="#/components/schemas/Alphabet/properties/name"),
-             *     @OA\Property(property="script",                 ref="#/components/schemas/Alphabet/properties/script"),
-             *     @OA\Property(property="family",                 ref="#/components/schemas/Alphabet/properties/family"),
-             *     @OA\Property(property="type",                   ref="#/components/schemas/Alphabet/properties/type"),
-             *     @OA\Property(property="direction",              ref="#/components/schemas/Alphabet/properties/direction"),
-             *     @OA\Property(property="fonts",type="array",     @OA\Items(ref="#/components/schemas/AlphabetFont")),
-             *     @OA\Property(property="languages",type="array", @OA\Items(ref="#/components/schemas/Language")),
-             *     @OA\Property(property="bibles",type="array",    @OA\Items(ref="#/components/schemas/Bible"))
+             *     @OA\Property(property="data", type="object",
+             *        @OA\Property(property="name",                   ref="#/components/schemas/Alphabet/properties/name"),
+             *        @OA\Property(property="script",                 ref="#/components/schemas/Alphabet/properties/script"),
+             *        @OA\Property(property="family",                 ref="#/components/schemas/Alphabet/properties/family"),
+             *        @OA\Property(property="type",                   ref="#/components/schemas/Alphabet/properties/type"),
+             *        @OA\Property(property="direction",              ref="#/components/schemas/Alphabet/properties/direction"),
+             *        @OA\Property(property="fonts",type="array",     @OA\Items(ref="#/components/schemas/AlphabetFont")),
+             *        @OA\Property(property="languages",type="array", @OA\Items(ref="#/components/schemas/Language")),
+             *        @OA\Property(property="bibles",type="array",    @OA\Items(ref="#/components/schemas/Bible"))
+             *     )
              * )
              *
              */

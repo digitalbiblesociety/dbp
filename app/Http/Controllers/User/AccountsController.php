@@ -26,10 +26,25 @@ class AccountsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Account")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/Account")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/Account")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/Account"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_user_accounts.index")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_user_accounts.index")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_user_accounts.index")),
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_user_accounts.index"))
+     *     )
+     * )
+     *
+     * @OA\Schema(
+     *     title="v4_user_accounts.index",
+     *     type="array",
+     *     description="v4_user_accounts.index",
+     *     schema="v4_user_accounts.index",
+     *     @OA\Xml(name="v4_user_accounts.index"),
+     *     @OA\Items(
+     *          @OA\Property(property="project_id",       ref="#/components/schemas/Project/properties/id"),
+     *          @OA\Property(property="provider_id",      ref="#/components/schemas/Account/properties/provider_id"),
+     *          @OA\Property(property="provider_user_id", ref="#/components/schemas/Account/properties/provider_user_id"),
+     *          @OA\Property(property="created_at",       ref="#/components/schemas/Account/properties/created_at"),
+     *          @OA\Property(property="updated_at",       ref="#/components/schemas/Account/properties/updated_at")
      *     )
      * )
      *
