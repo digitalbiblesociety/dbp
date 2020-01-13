@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\syncV2Database;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -34,6 +35,7 @@ class Kernel extends ConsoleKernel
 
         Commands\loaderPush::class,
 
+        Commands\syncV2Database::class,
         Commands\syncV2Users::class,
         Commands\syncV2Profiles::class,
         Commands\syncV2Bookmarks::class,
@@ -54,13 +56,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('syncV2Users')->hourly();
-        $schedule->command('syncV2Profiles')->hourly();
-        $schedule->command('syncV2Highlights')->hourly();
-        $schedule->command('syncV2Notes')->hourly();
-        $schedule->command('syncV2Bookmarks')->hourly();
-
-        $schedule->command('BackUpLogs')->cron('5 * * * *');
+        $schedule->command(syncV2Database::class)
+            ->everyFifteenMinutes()
+            ->onOneServer()
+            ->withoutOverlapping();
     }
 
     /**
