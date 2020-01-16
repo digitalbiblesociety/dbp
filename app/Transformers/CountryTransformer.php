@@ -77,17 +77,18 @@ class CountryTransformer extends BaseTransformer
 
             /**
              * @OA\Schema (
-            *   type="array",
+            *   type="object",
             *   schema="v4_countries.one",
             *   description="The minimized country return for the all countries route",
             *   title="v4_countries.one",
             *   @OA\Xml(name="v4_countries.one"),
-            *   @OA\Items(
+            *   @OA\Property(property="data", type="object",
+            *
              *          @OA\Property(property="name",              ref="#/components/schemas/Country/properties/name"),
              *          @OA\Property(property="continent_code",    ref="#/components/schemas/Country/properties/continent"),
              *          @OA\Property(property="languages",         @OA\Schema(type="array",
              *          @OA\Items(@OA\Schema(description="A key value pair consisting of an iso code and language name", example={"eng"="English"}))))
-             *     )
+             *
              *   )
              * )
              */
@@ -123,17 +124,19 @@ class CountryTransformer extends BaseTransformer
 
             /**
              * @OA\Schema (
-             *  type="array",
+             *  type="object",
              *  schema="v4_countries.all",
              *  description="The minimized country return for the all countries route",
              *  title="v4_countries.all",
              *  @OA\Xml(name="v4_countries.all"),
-             *  @OA\Items(
+             *   @OA\Property(property="data", type="array",
+             *    @OA\Items(
              *          @OA\Property(property="name",              ref="#/components/schemas/Country/properties/name"),
              *          @OA\Property(property="continent_code",    ref="#/components/schemas/Country/properties/continent"),
              *          @OA\Property(property="languages",         @OA\Schema(type="array",
-             *              @OA\Items(@OA\Schema(description="A key value pair consisting of an iso code and language name", example={"eng"="English"}))))
+             *              @OA\Items(@OA\Schema(type="string", description="A key value pair consisting of an iso code and language name", example={"eng"="English"}))))
              *      )
+             *    )
              *   )
              * )
              */

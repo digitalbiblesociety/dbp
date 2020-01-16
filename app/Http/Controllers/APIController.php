@@ -86,6 +86,30 @@ class APIController extends Controller
      */
 
     /**
+     * Pagination alternate
+     * @OA\Schema (
+     *   type="object",
+     *   schema="pagination.alternate",
+     *   title="Pagination",
+     *   description="The alternate pagination meta response.",
+     *   @OA\Xml(name="pagination.alternate"),
+     *   @OA\Property(property="meta", type="object",
+     *     @OA\Property(property="pagination", type="object",
+     *       @OA\Property(property="total", type="integer"),
+     *       @OA\Property(property="count", type="integer"),
+     *       @OA\Property(property="per_page", type="integer"),
+     *       @OA\Property(property="current_page", type="integer"),
+     *       @OA\Property(property="total_pages", type="integer"),
+     *       @OA\Property(property="links", type="object",
+     *        @OA\Property(property="prev", type="string"),
+     *        @OA\Property(property="next", type="string")
+     *       )
+     *    )
+     *   )
+     * )
+     */
+
+    /**
      * Version 2 Tags
      *
      * @OA\Tag(name="Library Audio",    description="v2 These methods retrieve all the information needed to build and retrieve audio information for each chapter/book/or volume.")

@@ -35,13 +35,13 @@ Route::name('v2_text_search')->get('text/search',                               
 Route::name('v2_text_search_group')->get('text/searchgroup',                       'Bible\TextController@searchGroup');
 
 // VERSION 2 | Audio
-Route::name('v2_audio_location')->get('audio/location',                            'ApiMetadataController@assets');
+Route::name('v2_audio_location')->get('audio/location',                            'Bible\AudioController@location');
 Route::name('v2_audio_path')->get('audio/path',                                    'Bible\AudioController@index');
 Route::name('v2_audio_timestamps')->get('audio/versestart',                        'Bible\AudioController@timestampsByReference');
 
 // VERSION 2 | Video
 Route::name('v2_video_location')->get('video/location',                            'Organization\FilmsController@location');
-Route::name('v2_video_path')->get('video/videopath',                               'Organization\FilmsController@videoPath');
+Route::name('v2_video_path')->get('video/path',                                    'Organization\FilmsController@videoPath');
 Route::name('v2_api_jesusFilms')->get('library/jesusfilm',                         'Organization\ResourcesController@jesusFilmListing');
 
 Route::name('v2_api_jesusFilm_index')->get('video/jesusfilm',                     'Connections\ArclightController@index');

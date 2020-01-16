@@ -116,7 +116,7 @@ class PlansController extends APIController
     /**
      * Store a newly created plan in storage.
      *
-     * @OA\Post(
+     *  @OA\Post(
      *     path="/plans",
      *     tags={"Plans"},
      *     summary="Crete a plan",
@@ -240,7 +240,7 @@ class PlansController extends APIController
     /**
      * Update the specified plan.
      *
-     * @OA\Put(
+     *  @OA\Put(
      *     path="/plans/{plan_id}",
      *     tags={"Plans"},
      *     summary="Update a plan",
@@ -317,7 +317,7 @@ class PlansController extends APIController
     /**
      * Remove the specified plan.
      *
-     * @OA\Delete(
+     *  @OA\Delete(
      *     path="/plans/{plan_id}",
      *     tags={"Plans"},
      *     summary="Delete a plan",
@@ -379,7 +379,7 @@ class PlansController extends APIController
     /**
      * Start the specified plan.
      *
-     * @OA\Post(
+     *  @OA\Post(
      *     path="/plans/{plan_id}/start",
      *     tags={"Plans"},
      *     summary="Start a plan",
@@ -437,7 +437,7 @@ class PlansController extends APIController
     /**
      * Store the newly created plan days.
      *
-     * @OA\Post(
+     *  @OA\Post(
      *     path="/plans/{plan_id}/day",
      *     tags={"Plans"},
      *     summary="Create plan days",
@@ -499,7 +499,7 @@ class PlansController extends APIController
     /**
      * Complete a plan day.
      *
-     * @OA\Post(
+     *  @OA\Post(
      *     path="/plans/day/{day_id}/complete",
      *     tags={"Plans"},
      *     summary="Complete a plan day",
@@ -571,7 +571,7 @@ class PlansController extends APIController
     /**
      * Reset the specified plan.
      *
-     * @OA\Post(
+     *  @OA\Post(
      *     path="/plans/{plan_id}/reset",
      *     tags={"Plans"},
      *     summary="Reset a plan",
@@ -624,7 +624,7 @@ class PlansController extends APIController
     /**
      * Stop the specified plan.
      *
-     * @OA\Delete(
+     *  @OA\Delete(
      *     path="/plans/{plan_id}/stop",
      *     tags={"Plans"},
      *     summary="Stop a plan",

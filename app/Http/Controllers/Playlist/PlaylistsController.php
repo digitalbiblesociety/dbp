@@ -128,7 +128,7 @@ class PlaylistsController extends APIController
     /**
      * Store a newly created playlist in storage.
      *
-     * @OA\Post(
+     *  @OA\Post(
      *     path="/playlists",
      *     tags={"Playlists"},
      *     summary="Crete a playlist",
@@ -220,7 +220,7 @@ class PlaylistsController extends APIController
     /**
      * Update the specified playlist.
      *
-     * @OA\Put(
+     *  @OA\Put(
      *     path="/playlists/{playlist_id}",
      *     tags={"Playlists"},
      *     summary="Update a playlist",
@@ -296,7 +296,7 @@ class PlaylistsController extends APIController
     /**
      * Remove the specified playlist.
      *
-     * @OA\Delete(
+     *  @OA\Delete(
      *     path="/playlists/{playlist_id}",
      *     tags={"Playlists"},
      *     summary="Delete a playlist",
@@ -341,7 +341,7 @@ class PlaylistsController extends APIController
     /**
      * Follow the specified playlist.
      *
-     * @OA\Post(
+     *  @OA\Post(
      *     path="/playlists/{playlist_id}/follow",
      *     tags={"Playlists"},
      *     summary="Follow a playlist",
@@ -394,7 +394,7 @@ class PlaylistsController extends APIController
     /**
      * Store a newly created playlist item.
      *
-     * @OA\Post(
+     *  @OA\Post(
      *     path="/playlists/{playlist_id}/item",
      *     tags={"Playlists"},
      *     summary="Crete a playlist item",
@@ -491,7 +491,7 @@ class PlaylistsController extends APIController
     /**
      * Complete a playlist item.
      *
-     * @OA\Post(
+     *  @OA\Post(
      *     path="/playlists/item/{item_id}/complete",
      *     tags={"Playlists"},
      *     summary="Complete a playlist item",

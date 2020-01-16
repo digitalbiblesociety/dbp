@@ -74,16 +74,31 @@ class LanguagesController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Language")),
-     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/Language")),
-     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/Language")),
-     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/Language"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_languages.all")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v4_languages.all")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v4_languages.all")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v4_languages.all"))
      *     )
      * )
      * @link https://api.dbp.test/languages?key=1234&v=4&pretty
      * @return \Illuminate\Http\Response
      *
-     *
+     * @OA\Schema(
+     *   schema="v4_languages.all",
+     *   type="object",
+     *   @OA\Property(property="data", type="array",
+     *      @OA\Items(
+     *          @OA\Property(property="id",         ref="#/components/schemas/Language/properties/id"),
+     *          @OA\Property(property="glotto_id",  ref="#/components/schemas/Language/properties/glotto_id"),
+     *          @OA\Property(property="iso",        ref="#/components/schemas/Language/properties/iso"),
+     *          @OA\Property(property="name",       ref="#/components/schemas/Language/properties/name"),
+     *          @OA\Property(property="autonym",    ref="#/components/schemas/LanguageTranslation/properties/name"),
+     *          @OA\Property(property="bibles",     type="integer"),
+     *          @OA\Property(property="filesets",   type="integer"),
+     *          @OA\Property(property="country_population", ref="#/components/schemas/Language/properties/population"),
+     *      )
+     *   )
+     * )
      */
     public function index()
     {
@@ -180,13 +195,21 @@ class LanguagesController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/Language")),
-     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/Language")),
-     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/Language")),
-     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/Language"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_languages.one")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v4_languages.one")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v4_languages.one")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v4_languages.one"))
      *     )
      * )
      *
+     *
+     * @OA\Schema(
+     *   schema="v4_languages.one",
+     *   type="object",
+     *   @OA\Property(property="data", type="object",
+     *      ref="#/components/schemas/Language"
+     *   )
+     * )
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
      */
     public function show($id)

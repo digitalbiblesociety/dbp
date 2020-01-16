@@ -47,7 +47,7 @@ class OrganizationTransformer extends BaseTransformer
              *  @OA\Items(
              *          @OA\Property(property="organization_id",   ref="#/components/schemas/Organization/properties/id"),
              *          @OA\Property(property="organization_name", ref="#/components/schemas/OrganizationTranslation/properties/name"),
-             *          @OA\Property(property="number_volumes",    @OA\Schema(type="string", description="Number of Bible Volumes"))
+             *          @OA\Property(property="number_volumes",    type="string", description="Number of Bible Volumes")
              *     )
              *   )
              * )

@@ -38,7 +38,7 @@ class LibraryVolumeTransformer extends BaseTransformer
              *  @OA\Items(
              *      @OA\Property(property="dam_id", ref="#/components/schemas/BibleFileset/properties/id"),
              *      @OA\Property(property="time", ref="#/components/schemas/BibleFileset/properties/updated_at"),
-             *      @OA\Property(property="event", @OA\Schema(type="string", example="Updated")),
+             *      @OA\Property(property="event", type="string", example="Updated"),
              *     )
              *   )
              * )

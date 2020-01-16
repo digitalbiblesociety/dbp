@@ -26,14 +26,16 @@ class UserTransformer extends BaseTransformer
        *
        * @OA\Schema (
        *    title="v4_user_index",
-       *    type="array",
+       *    type="object",
        *    schema="v4_user_index",
        *    description="The v4 user index response",
        *    @OA\Xml(name="v4_user_index"),
-       *    @OA\Items(
+       *    @OA\Property(property="data", type="array",
+       *     @OA\Items(
        *        @OA\Property(property="id",       ref="#/components/schemas/User/properties/id"),
        *        @OA\Property(property="name",     ref="#/components/schemas/User/properties/name"),
        *        @OA\Property(property="email",    ref="#/components/schemas/User/properties/email")
+       *     )
        *    )
        *  )
        *
@@ -68,15 +70,17 @@ class UserTransformer extends BaseTransformer
              *    schema="v4_user_show",
              *    description="The v4 user show response",
              *    title="v4_user_show",
-             *    @OA\Xml(name="v4_user_index"),
-             *    @OA\Property(property="id",       ref="#/components/schemas/User/properties/id"),
-             *    @OA\Property(property="name",     ref="#/components/schemas/User/properties/name"),
-             *    @OA\Property(property="nickname", ref="#/components/schemas/User/properties/nickname"),
-             *    @OA\Property(property="avatar",   ref="#/components/schemas/User/properties/avatar"),
-             *    @OA\Property(property="email",    ref="#/components/schemas/User/properties/email"),
-             *    @OA\Property(property="profile",  ref="#/components/schemas/Profile"),
-             *    @OA\Property(property="organizations",  ref="#/components/schemas/Organization"),
-             *    @OA\Property(property="accounts", type="object",description="The unique identifier for a user's connection to the api and the means of that connection",example={"facebook":"1903random6321","cookie": "43190crumbles1023"}),
+             *    @OA\Xml(name="v4_user_show"),
+             *    @OA\Property(property="data", type="object",
+             *       @OA\Property(property="id",       ref="#/components/schemas/User/properties/id"),
+             *       @OA\Property(property="name",     ref="#/components/schemas/User/properties/name"),
+             *       @OA\Property(property="nickname", ref="#/components/schemas/User/properties/nickname"),
+             *       @OA\Property(property="avatar",   ref="#/components/schemas/User/properties/avatar"),
+             *       @OA\Property(property="email",    ref="#/components/schemas/User/properties/email"),
+             *       @OA\Property(property="profile",  ref="#/components/schemas/Profile"),
+             *       @OA\Property(property="organizations",  ref="#/components/schemas/Organization"),
+             *       @OA\Property(property="accounts", type="object",description="The unique identifier for a user's connection to the api and the means of that connection",example={"facebook":"1903random6321","cookie": "43190crumbles1023"}),
+             *    )
              * )
              */
             case 'v4_user.show':

@@ -40,12 +40,12 @@ class AlphabetsController extends APIController
      *         ),
      *         @OA\MediaType(
      *             mediaType="text/x-yaml",
-     *             @OA\Schema(ref="#/components/schemas/v4_alphabets_all_response"
-     *         )),
+     *             @OA\Schema(ref="#/components/schemas/v4_alphabets_all_response")
+     *         ),
      *         @OA\MediaType(
      *             mediaType="text/csv",
-     *             @OA\Schema(ref="#/components/schemas/v4_alphabets_all_response"
-     *         ))
+     *             @OA\Schema(ref="#/components/schemas/v4_alphabets_all_response")
+     *         )
      *     )
      * )
      *

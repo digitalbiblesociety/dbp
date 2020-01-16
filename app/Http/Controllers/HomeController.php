@@ -55,15 +55,22 @@ class HomeController extends APIController
      * )
      *
      * @OA\Schema (
-     *     type="object",
+     *     type="array",
      *     schema="v4_api_assets",
      *     description="The aws assets currently being used by the api",
      *     title="The assets response",
      *     required={"id","organization_id"},
      *     @OA\Xml(name="v4_api_assets"),
-     *     @OA\Property(property="id",               ref="#/components/schemas/Asset/properties/id"),
-     *     @OA\Property(property="asset_type",       ref="#/components/schemas/Asset/properties/asset_type"),
-     *     @OA\Property(property="organization_id",  ref="#/components/schemas/Asset/properties/organization_id")
+     *     @OA\Items(
+     *          @OA\Property(property="id",               ref="#/components/schemas/Asset/properties/id"),
+     *          @OA\Property(property="asset_type",       ref="#/components/schemas/Asset/properties/asset_type"),
+     *          @OA\Property(property="organization_id",  ref="#/components/schemas/Asset/properties/organization_id"),
+     *          @OA\Property(property="organization", type="object",
+     *             @OA\Property(property="id", ref="#/components/schemas/Organization/properties/id"),
+     *             @OA\Property(property="slug", ref="#/components/schemas/Organization/properties/slug"),
+     *             @OA\Property(property="email", ref="#/components/schemas/Organization/properties/email")
+     *          )
+     *   )
      * )
      *
      * @return mixed

@@ -22,18 +22,26 @@ class OAuthProvidersController extends APIController
      *     tags={"Users"},
      *     summary="A Project's oAuth Providers",
      *     description="Returns the oAuth providers being used by a project. This route can inform
-                developers about the potential login options provided to users by each project.",
+     *          developers about the potential login options provided to users by each project.",
      *     operationId="v4_projects_oAuthProvider.index",
      *     @OA\Parameter(name="project_id", in="path", required=true, description="The Project id", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
      *     @OA\Parameter(name="provider_id", in="query", description="The Provider id", @OA\Schema(ref="#/components/schemas/Account/properties/provider_id")),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/ProjectOauthProvider")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/ProjectOauthProvider"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_projects_oAuthProvider.index")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_projects_oAuthProvider.index")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_projects_oAuthProvider.index")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_projects_oAuthProvider.index"))
      *     )
+     * )
+     *
+     * @OA\Schema(
+     *   schema="v4_projects_oAuthProvider.index",
+     *   type="object",
+     *   @OA\Property(property="data", type="array",
+     *      @OA\Items(ref="#/components/schemas/ProjectOauthProvider")
+     *   )
      * )
      * @param string $project_id
      *
