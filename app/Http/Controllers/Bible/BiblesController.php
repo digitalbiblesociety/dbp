@@ -279,9 +279,9 @@ class BiblesController extends APIController
      *         response=200,
      *         description="successful operation",
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible.books")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible.books")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible.books")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_bible.books"))
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v4_bible.books")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v4_bible.books")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v4_bible.books"))
      *     )
      * )
      *
@@ -389,20 +389,19 @@ class BiblesController extends APIController
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bibles_defaults")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bibles_defaults")),
      *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bibles_defaults")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_bibles_defaults"))
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_bibles_defaults"))
      *     )
      * )
      *
      * @OA\Schema (
-     *    type="array",
+     *    type="object",
      *    schema="v4_bibles_defaults",
      *    description="The bible defaults",
      *    title="v4_bibles_defaults",
      *    @OA\Xml(name="v4_bibles_defaults"),
-     *    @OA\Items(
-     *          @OA\Property(property="video",             ref="#/components/schemas/BibleFileset/properties/id"),
-     *          @OA\Property(property="audio",             ref="#/components/schemas/BibleFileset/properties/id"),
-     *          @OA\Property(property="language_code",     type="string"),
+     *    @OA\Property(property="en", type="object",
+     *          @OA\Property(property="video", ref="#/components/schemas/Bible/properties/id"),
+     *          @OA\Property(property="audio", ref="#/components/schemas/Bible/properties/id")
      *     )
      *   )
      * )

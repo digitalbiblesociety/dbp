@@ -19,12 +19,13 @@ class ProjectTransformer extends BaseTransformer
 
     /**
      * @OA\Schema (
-     *    type="array",
+     *    type="object",
      *    schema="v4_projects_index",
      *    description="The minimized alphabet return for the all alphabets route",
      *    title="v4_projects_index",
-     *  @OA\Xml(name="v4_projects_index"),
-     *  @OA\Items(
+     *    @OA\Xml(name="v4_projects_index"),
+     *    @OA\Property(property="data", type="array",
+     *      @OA\Items(
      *        @OA\Property(property="id",                ref="#/components/schemas/Project/properties/id"),
      *        @OA\Property(property="name",              ref="#/components/schemas/Project/properties/name"),
      *        @OA\Property(property="url_avatar",        ref="#/components/schemas/Project/properties/url_avatar"),
@@ -34,6 +35,7 @@ class ProjectTransformer extends BaseTransformer
      *        @OA\Property(property="created_at",        ref="#/components/schemas/Project/properties/created_at"),
      *        @OA\Property(property="updated_at",        ref="#/components/schemas/Project/properties/updated_at"),
      *        @OA\Property(property="members",           @OA\Schema(type="object"))
+     *       )
      *     )
      *   )
      * )

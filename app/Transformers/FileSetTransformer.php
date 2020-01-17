@@ -121,21 +121,27 @@ class FileSetTransformer extends BaseTransformer
             default:
                 /**
                  * @OA\Schema (
-                 *  type="array",
+                 *  type="object",
                  *  schema="v4_bible_filesets.show",
                  *  description="The minimized alphabet return for the all alphabets route",
                  *  title="v4_bible_filesets.show",
                  *  @OA\Xml(name="v4_bible_filesets.show"),
-                 *  @OA\Items(
+                 *  @OA\Property(
+                 *   property="data",
+                 *   type="array",
+                 *    @OA\Items(
                  *          @OA\Property(property="book_id",        ref="#/components/schemas/BibleFile/properties/book_id"),
                  *          @OA\Property(property="book_name",      ref="#/components/schemas/BookTranslation/properties/name"),
                  *          @OA\Property(property="chapter_start",  ref="#/components/schemas/BibleFile/properties/chapter_start"),
                  *          @OA\Property(property="chapter_end",    ref="#/components/schemas/BibleFile/properties/chapter_end"),
                  *          @OA\Property(property="verse_start",    ref="#/components/schemas/BibleFile/properties/verse_start"),
                  *          @OA\Property(property="verse_end",      ref="#/components/schemas/BibleFile/properties/verse_end"),
+                 *          @OA\Property(property="thumbnail",         type="string", description="The image url", maxLength=191),
                  *          @OA\Property(property="timestamp",      ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
                  *          @OA\Property(property="path",           ref="#/components/schemas/BibleFile/properties/file_name"),
+                 *          @OA\Property(property="duration",       ref="#/components/schemas/BibleFile/properties/duration"),
                  *     )
+                 *    )
                  *   )
                  * )
                  */

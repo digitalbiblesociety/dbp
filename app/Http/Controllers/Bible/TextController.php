@@ -231,14 +231,23 @@ class TextController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter")),
-     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible_filesets_chapter"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_text_search")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_text_search")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_text_search")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_text_search"))
      *     )
      * )
      *
      * @return Response
+     *
+     * @OA\Schema(
+     *   schema="v4_text_search",
+     *   type="object",
+     *   allOf={
+     *      @OA\Schema(ref="#/components/schemas/pagination.alternate"),
+     *   },
+     *   @OA\Property(property="verses", ref="#/components/schemas/v4_bible_filesets_chapter")
+     * )
      */
     public function search()
     {
@@ -518,7 +527,7 @@ class TextController extends APIController
      *          in="path",
      *          required=true,
      *          description="If specified returns verse text ONLY for the specified book",
-     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
+     *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
      *     ),
      *     @OA\Parameter(
      *          name="asset_id",
@@ -550,10 +559,10 @@ class TextController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_asset")),
-     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_asset")),
-     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_asset")),
-     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_asset"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_verseInfo")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_verseInfo")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_verseInfo")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_verseInfo"))
      *     )
      * )
      *
@@ -597,7 +606,7 @@ class TextController extends APIController
          *     @OA\Property(property="book_id",        ref="#/components/schemas/BibleVerse/properties/book_id"),
          *     @OA\Property(property="chapter_number", ref="#/components/schemas/BibleVerse/properties/chapter"),
          *     @OA\Property(property="verse_start",    ref="#/components/schemas/BibleVerse/properties/verse_number"),
-         *     @OA\Property(property="verse_end",      @OA\Schema(type="integer")),
+         *     @OA\Property(property="verse_end",      type="integer"),
          *     @OA\Property(property="verse_text",     ref="#/components/schemas/BibleVerse/properties/verse_text"),
          *     )
          *   )

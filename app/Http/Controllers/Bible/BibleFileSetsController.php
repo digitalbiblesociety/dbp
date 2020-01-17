@@ -48,10 +48,10 @@ class BibleFileSetsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(
-     *            mediaType="application/json",
-     *            @OA\Schema(ref="#/components/schemas/BibleFileset")
-     *         )
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible_filesets.show")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v4_bible_filesets.show")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v4_bible_filesets.show")),
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v4_bible_filesets.show"))
      *     )
      * )
      *
@@ -253,11 +253,24 @@ class BibleFileSetsController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="The requested fileset copyright",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/BibleFileset")),
-     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/BibleFileset")),
-     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/BibleFileset")),
-     *         @OA\MediaType(mediaType="text/-yaml", @OA\Schema(ref="#/components/schemas/BibleFileset"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible_filesets.copyright")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v4_bible_filesets.copyright")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v4_bible_filesets.copyright")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v4_bible_filesets.copyright"))
      *     )
+     * )
+     *
+     * @OA\Schema (
+     *     type="object",
+     *     schema="v4_bible_filesets.copyright",
+     *     description="v4_bible_filesets.copyright",
+     *     title="v4_bible_filesets.copyright",
+     *     @OA\Xml(name="v4_bible_filesets.copyright"),
+     *     @OA\Property(property="id", ref="#/components/schemas/BibleFileset/properties/id"),
+     *     @OA\Property(property="asset_id", ref="#/components/schemas/BibleFileset/properties/asset_id"),
+     *     @OA\Property(property="type", ref="#/components/schemas/BibleFileset/properties/set_type_code"),
+     *     @OA\Property(property="size", ref="#/components/schemas/BibleFileset/properties/set_size_code"),
+     *     @OA\Property(property="copyright", ref="#/components/schemas/BibleFilesetCopyright")
      * )
      *
      * @see https://api.dbp.test/bibles/filesets/ENGESV/copyright?key=API_KEY&v=4&type=text_plain&pretty

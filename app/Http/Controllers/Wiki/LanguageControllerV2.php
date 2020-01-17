@@ -77,8 +77,8 @@ class LanguageControllerV2 extends APIController
      *     tags={"Country Language"},
      *     summary="Returns Languages and the countries associated with them",
      *     description="Filter languages by a specified country code or filter countries by specified language code.
-               Country flags can also be retrieved by requesting one of the permitted image sizes. Languages can also be
-               sorted by the country code (default) and the language code.",
+     *        Country flags can also be retrieved by requesting one of the permitted image sizes. Languages can also be
+     *        sorted by the country code (default) and the language code.",
      *     operationId="v2_country_lang",
      *     @OA\Parameter(
      *         name="lang_code",
@@ -101,8 +101,8 @@ class LanguageControllerV2 extends APIController
      *     @OA\Parameter(
      *         name="sort_by",
      *         in="query",
-     *         @OA\Schema(type="string",enum={"country_code","lang_code"},default="country_code"),
-     *         description="Sort by lang_code or country_code"
+     *         @OA\Schema(type="string",enum={"country_id","iso"},default="country_id"),
+     *         description="Sort by iso or country_id"
      *     ),
      *     @OA\Parameter(
      *         name="img_type",
@@ -115,7 +115,7 @@ class LanguageControllerV2 extends APIController
      *         in="query",
      *         @OA\Schema(type="string",example="160X120",enum={"40x30","80x60","160x120","320x240","640x480","1280x960"}),
      *         description="Include country flags in entries in requested size. This no longer generates images but
-                   rather selects them from a recommended list: 40x30, 80x60, 160X120, 320X240, 640X480, or 1280X960"
+     *             rather selects them from a recommended list: 40x30, 80x60, 160X120, 320X240, 640X480, or 1280X960"
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -185,7 +185,7 @@ class LanguageControllerV2 extends APIController
      *     tags={"Library Catalog"},
      *     summary="Returns the list of languages",
      *     description="This method retrieves the list of languages for available volumes and the related volume data in
-               the system according to the filter specified.",
+     *         the system according to the filter specified.",
      *     operationId="v2_library_volumeLanguage",
      *     @OA\Parameter(
      *         name="language_code",
@@ -303,7 +303,7 @@ class LanguageControllerV2 extends APIController
      *     tags={"Library Catalog"},
      *     summary="Returns the list of languages",
      *     description="This method retrieves the list of language families for available volumes and the related volume
-               data in the system according to the filter specified.",
+     *         data in the system according to the filter specified.",
      *     operationId="v2_library_volumeLanguageFamily",
      *     @OA\Parameter(
      *         name="language_code",

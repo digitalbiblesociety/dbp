@@ -33,8 +33,8 @@ class AudioTransformer extends BaseTransformer
              *   title="v2_audio_timestamps",
              *   @OA\Xml(name="v2_audio_timestamps"),
              *   @OA\Items(
-             *               @OA\Property(property="verse_start",             ref="#/components/schemas/BibleFile/properties/verse_start"),
-             *              @OA\Property(property="timestamp",          @OA\Schema(type="string",example="1",description="The duration of the timestamp in seconds"))
+             *              @OA\Property(property="verse_start", ref="#/components/schemas/BibleFile/properties/verse_start"),
+             *              @OA\Property(property="timestamp", type="number",example="1",description="The duration of the timestamp in seconds")
              *     )
              *   )
              * )
@@ -55,7 +55,7 @@ class AudioTransformer extends BaseTransformer
                  *   @OA\Items(
                  *              @OA\Property(property="book_id",       ref="#/components/schemas/Book/properties/id_osis"),
                  *              @OA\Property(property="chapter_id",    ref="#/components/schemas/BibleFile/properties/chapter_start"),
-                 *              @OA\Property(property="path",          @OA\Schema(type="string"))
+                 *              @OA\Property(property="path",          type="string")
                  *     )
                  *   )
                  * )
@@ -72,19 +72,22 @@ class AudioTransformer extends BaseTransformer
     public function transformForV4($audio)
     {
         switch ($this->route) {
-                /**
+             /**
              * @OA\Schema (
-             *   type="array",
+             *   type="object",
              *   schema="v4_audio_timestamps",
              *   description="The v4_audio_timestamps response",
              *   title="v4_audio_timestamps",
              *   @OA\Xml(name="v4_audio_timestamps"),
-             *   @OA\Items(
-             *              @OA\Property(property="book",             ref="#/components/schemas/BibleFile/properties/book_id"),
-             *              @OA\Property(property="chapter",             ref="#/components/schemas/BibleFile/properties/chapter_start"),
-             *              @OA\Property(property="verse_start",             ref="#/components/schemas/BibleFile/properties/verse_start"),
-             *              @OA\Property(property="timestamp",          @OA\Schema(type="string",example="1",description="The duration of the timestamp in seconds"))
-             *     )
+             *   @OA\Property(
+             *      property="data",
+             *      type="array",
+             *      @OA\Items(
+             *              @OA\Property(property="book", ref="#/components/schemas/BibleFile/properties/book_id"),
+             *              @OA\Property(property="chapter", ref="#/components/schemas/BibleFile/properties/chapter_start"),
+             *              @OA\Property(property="verse_start", ref="#/components/schemas/BibleFile/properties/verse_start"),
+             *              @OA\Property(property="timestamp", type="string",example="1",description="The duration of the timestamp in seconds")
+             *    )
              *   )
              * )
              */
@@ -98,12 +101,15 @@ class AudioTransformer extends BaseTransformer
             default:
                 /**
                  * @OA\Schema (
-                 *   type="array",
+                 *   type="object",
                  *   schema="v4_timestamps_tag",
                  *   description="The v4 timestamps tag",
                  *   title="v4_timestamps_tag",
                  *   @OA\Xml(name="v4_timestamps_tag"),
-                 *   @OA\Items(
+                 *   @OA\Property(
+                 *      property="data",
+                 *      type="array",
+                 *      @OA\Items(
                  *       @OA\Property(property="book_id",       ref="#/components/schemas/Book/properties/id"),
                  *       @OA\Property(property="book_name",     ref="#/components/schemas/Book/properties/name"),
                  *       @OA\Property(property="chapter_start", ref="#/components/schemas/BibleFile/properties/chapter_start"),
@@ -112,6 +118,7 @@ class AudioTransformer extends BaseTransformer
                  *       @OA\Property(property="verse_end",     ref="#/components/schemas/BibleFile/properties/verse_end"),
                  *       @OA\Property(property="timestamp",     ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
                  *       @OA\Property(property="path",          ref="#/components/schemas/BibleFile/properties/file_name")
+                 *      )
                  *     )
                  *   )
                  * )

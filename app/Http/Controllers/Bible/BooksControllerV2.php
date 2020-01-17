@@ -59,76 +59,79 @@ class BooksControllerV2 extends APIController
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
 
-        $cache_string = strtolower('v2_library_book:' . $asset_id .':'. $id .':' . $fileset . '_' . implode('-', $testament));
-        $libraryBook = \Cache::remember($cache_string, now()->addDay(), function () use ($id, $fileset, $testament) {
-            if ($fileset->set_type_code === 'text_plain') {
-                // If plain text check BibleVerse
-                $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select(['book_id', 'chapter'])->distinct()->get();
-                $chapter_field = 'chapter';
-            } else {
-                // Otherwise refer to Bible Files
-                $booksChapters = BibleFile::where('hash_id', $fileset->hash_id)->select(['book_id','chapter_start'])->distinct()->get();
-                $chapter_field = 'chapter_start';
+        $cache_string = strtolower('v2_library_book:' . $asset_id . ':' . $id . ':' . $fileset . '_' . implode('-', $testament));
+        $libraryBook = \Cache::remember(
+            $cache_string,
+            now()->addDay(),
+            function () use ($id, $fileset, $testament) {
+                if ($fileset->set_type_code === 'text_plain') {
+                    // If plain text check BibleVerse
+                    $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select(['book_id', 'chapter'])->distinct()->get();
+                    $chapter_field = 'chapter';
+                } else {
+                    // Otherwise refer to Bible Files
+                    $booksChapters = BibleFile::where('hash_id', $fileset->hash_id)->select(['book_id', 'chapter_start'])->distinct()->get();
+                    $chapter_field = 'chapter_start';
+                }
+
+                $book_ids = $booksChapters->pluck('book_id')->unique();
+                $books = Book::whereIn('id', $book_ids)
+                    ->filterByTestament($testament)
+                    ->orderBy('protestant_order')
+                    ->get();
+
+                foreach ($books as $key => $book) {
+                    $current_chapters[$key] = $booksChapters->where('book_id', $book->id)->pluck($chapter_field);
+                }
+
+                $bible_id = $fileset->bible->first()->id;
+                $book_translation = BibleBook::whereIn('book_id', $book_ids)->where('bible_id', $bible_id)->pluck('name', 'book_id');
+                foreach ($books as $key => $book) {
+                    $books[$key]->source_id       = $id;
+                    $books[$key]->bible_id        = $bible_id;
+                    $books[$key]->number_chapters = $current_chapters[$key]->count();
+                    $books[$key]->chapters        = $current_chapters[$key]->implode(',');
+                    $books[$key]->name            = $book_translation[$book->id];
+                }
+
+                return fractal($books, new BookTransformer(), $this->serializer);
             }
-
-            $book_ids = $booksChapters->pluck('book_id')->unique();
-            $books = Book::whereIn('id', $book_ids)
-                            ->filterByTestament($testament)
-                            ->orderBy('protestant_order')
-                            ->get();
-
-            foreach ($books as $key => $book) {
-                $current_chapters[$key] = $booksChapters->where('book_id', $book->id)->pluck($chapter_field);
-            }
-
-            $bible_id = $fileset->bible->first()->id;
-            $book_translation = BibleBook::whereIn('book_id', $book_ids)->where('bible_id', $bible_id)->pluck('name', 'book_id');
-            foreach ($books as $key => $book) {
-                $books[$key]->source_id       = $id;
-                $books[$key]->bible_id        = $bible_id;
-                $books[$key]->number_chapters = $current_chapters[$key]->count();
-                $books[$key]->chapters        = $current_chapters[$key]->implode(',');
-                $books[$key]->name            = $book_translation[$book->id];
-            }
-
-            return fractal($books, new BookTransformer(), $this->serializer);
-        }
         );
 
         return $this->reply($libraryBook);
     }
 
     /**
-    * Gets the book order and code listing for a volume.
-    *
-    * @version 2
-    * @category v2_library_bookOrder
-    * @link http://dbt.io/library/bookorder - V2 Access
-    * @link http://api.dbp.test/library/bookorder?key=1234&v=2&dam_id=AMKWBT&pretty - V2 Test
-    * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_book - V2 Test Docs
-    *
-    * @OA\Get(
-    *     path="/library/bookorder/",
-    *     tags={"Library Catalog"},
-    *     summary="Returns books order",
-    *     description="Gets the book order and code listing for a volume.",
-    *     operationId="v2_library_bookOrder",
-    *     @OA\Parameter(name="dam_id",in="query",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
-    *     @OA\Parameter(name="asset_id",in="query", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
-    *     @OA\Response(
-    *         response=200,
-    *         description="successful operation",
-    *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder")),
-    *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder")),
-    *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder")),
-    *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder"))
-    *     )
-    * )
-    *
-    * @param dam_id - the volume internal bible_id.
-    *
-    * @return Book string - A JSON string that contains the status code and error messages if applicable.
-    */
+     * Gets the book order and code listing for a volume.
+     *
+     * @version 2
+     * @category v2_library_bookOrder
+     * @link http://dbt.io/library/bookorder - V2 Access
+     * @link http://api.dbp.test/library/bookorder?key=1234&v=2&dam_id=AMKWBT&pretty - V2 Test
+     * @link https://dbp.test/eng/docs/swagger/v2#/Library/v2_library_book - V2 Test Docs
+     *
+     * @OA\Get(
+     *     path="/library/bookorder/",
+     *     tags={"Library Catalog"},
+     *     summary="Returns books order",
+     *     description="Gets the book order and code listing for a volume.",
+     *     operationId="v2_library_bookOrder",
+     *     @OA\Parameter(name="dam_id",in="query",required=true, @OA\Schema(ref="#/components/schemas/Bible/properties/id")),
+     *     @OA\Parameter(name="asset_id",in="query", @OA\Schema(ref="#/components/schemas/Asset/properties/id")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_bookOrder"))
+     *     )
+     * )
+     *
+     * @param dam_id - the volume internal bible_id.
+     *
+     * @return Book string - A JSON string that contains the status code and error messages if applicable.
+     */
     public function bookOrder()
     {
         $id        = checkParam('dam_id', true);
@@ -141,14 +144,16 @@ class BooksControllerV2 extends APIController
 
         $testament = $this->getTestamentString($id);
 
-        $cache_string = strtolower('v2_library_bookOrder_' . $id . $asset_id . $fileset . $testament);
-        $libraryBook = \Cache::remember($cache_string, now()->addDay(),
+        $cache_string = strtolower('v2_library_bookOrder_' . $id . $asset_id . $fileset->id . json_encode($testament));
+        $libraryBook = \Cache::remember(
+            $cache_string,
+            now()->addDay(),
             function () use ($id, $fileset, $testament) {
                 $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select('book_id', 'chapter')->distinct()->get();
                 $books = Book::whereIn('id', $booksChapters->pluck('book_id')->unique()->toArray())
-                             ->when(!empty($testament), function ($q) use ($testament) {
-                                 $q->where('book_testament', $testament);
-                             })->orderBy('protestant_order')->get();
+                    ->when(!empty($testament), function ($q) use ($testament) {
+                        $q->where('book_testament', $testament);
+                    })->orderBy('protestant_order')->get();
 
                 $bible_id = $fileset->bible()->first()->id;
 
@@ -228,11 +233,12 @@ class BooksControllerV2 extends APIController
 
         /**
          * @OA\Schema (
-         *  type="object",
+         *  type="array",
          *  schema="v2_library_bookName",
          *  description="The Books Response",
          *  title="v2_library_bookName",
          *  @OA\Xml(name="v2_library_bookName"),
+         *  @OA\Items(
          *     @OA\Property(type="string", title="Alternative", description="", property="AL", example=""),
          *     @OA\Property(type="string", title="Old and New Testament", description="The translated string for the combined testaments of the bible", property="ON", example=""),
          *     @OA\Property(type="string", title="Old Testament", description="The translated string for the old testament of the bible", property="OT", example="Vieux Testament"),
@@ -325,6 +331,7 @@ class BooksControllerV2 extends APIController
          *     @OA\Property(type="string", title="1 Esdras", property="1Esd", example=""),
          *     @OA\Property(type="string", title="2 Esdras", property="2Esd", example=""),
          *     @OA\Property(type="string", title="Greek Daniel", property="DanGr", example="")
+         *    )
          *   )
          * )
          */
@@ -352,12 +359,13 @@ class BooksControllerV2 extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"})),
-     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"})),
-     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"})),
-     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(type="object",example={"GEN"="Genesis","EXO"="Exodus"}))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_chapter")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v2_library_chapter")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v2_library_chapter")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v2_library_chapter"))
      *     )
      * )
+     *
      *
      * @param dam_id - The Fileset ID to filter by
      * @param book_id - The USFM 2.4 or OSIS Book ID code
@@ -409,14 +417,14 @@ class BooksControllerV2 extends APIController
     private function getTestamentString($id)
     {
         $testament = [];
-        
+
         switch ($id[\strlen($id) - 2]) {
             case 'O':
-                $testament = ['OT','C'];
+                $testament = ['OT', 'C'];
                 break;
 
             case 'N':
-                $testament = ['NT','C'];
+                $testament = ['NT', 'C'];
                 break;
 
             case 'P':

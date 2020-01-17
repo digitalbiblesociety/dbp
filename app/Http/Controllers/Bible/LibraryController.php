@@ -34,8 +34,8 @@ class LibraryController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_library_metadata")),
      *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_metadata")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_library_metadata")),
      *         @OA\MediaType(mediaType="text/yaml",        @OA\Schema(ref="#/components/schemas/v2_library_metadata")),
      *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v2_library_metadata"))
      *     )
@@ -75,7 +75,7 @@ class LibraryController extends APIController
      *     tags={"Library Catalog"},
      *     summary="Returns Audio File path information",
      *     description="This call returns the file path information for audio files for a volume. This information can
-    be used with the response of the /audio/location call to create a URI to retrieve the audio files.",
+     *     be used with the response of the /audio/location call to create a URI to retrieve the audio files.",
      *     operationId="v2_library_version",
      *     @OA\Parameter(
      *         name="code",
@@ -113,15 +113,15 @@ class LibraryController extends APIController
      *     title="v2_library_version",
      *     @OA\Xml(name="v2_library_version"),
      *     @OA\Property(
-     *         property="version_code",
+     *         property="id",
      *         type="string",
      *         description="The abbreviated `BibleFileset` id created from letters after the iso code"),
      *     @OA\Property(
-     *         property="version_name",
+     *         property="eng_title",
      *         type="string",
      *         description="The name of the version in the language that it's written in"),
      *     @OA\Property(
-     *         property="english_name",
+     *         property="ver_title",
      *         type="string",
      *         description="The name of the version in english")
      * )
@@ -147,7 +147,7 @@ class LibraryController extends APIController
                     $join->on('eng_title.bible_id', 'bibles.bible_id')->where('eng_title.language_id', $english_id);
                 })
                 ->when($code, function ($q) use ($code) {
-                    $q->where('id', $code);
+                    $q->where('bible_filesets.id', $code);
                 })->when($sort, function ($q) use ($sort) {
                     $q->orderBy($sort, 'asc');
                 })->select([
@@ -227,7 +227,7 @@ class LibraryController extends APIController
      *          name="dam_id",
      *          in="query",
      *          description="The Bible Id",
-     *          ref="#/components/schemas/Bible/properties/id"
+     *          @OA\Schema(ref="#/components/schemas/Bible/properties/id")
      *     ),
      *     @OA\Parameter(
      *          name="fcbh_id",
@@ -295,10 +295,9 @@ class LibraryController extends APIController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\Schema(ref="#/components/schemas/v2_library_volume")),
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_volume")),
      *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_library_volume")),
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_library_asset")),
-     *         @OA\MediaType(mediaType="text/csv",  @OA\Schema(ref="#/components/schemas/v2_library_volume")),
+     *         @OA\MediaType(mediaType="text/csv",         @OA\Schema(ref="#/components/schemas/v2_library_volume")),
      *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v2_library_volume"))
      *     )
      * )

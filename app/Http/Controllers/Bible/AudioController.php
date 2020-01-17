@@ -32,11 +32,11 @@ class AudioController extends APIController
      *     tags={"Library Audio"},
      *     summary="Returns Audio File path information",
      *     description="This call returns the file path information for audio files within a volume
-               This information can be used with the response of the /audio/location call to create
-               a URI to retrieve the audio files.",
+     *         This information can be used with the response of the /audio/location call to create
+     *         a URI to retrieve the audio files.",
      *     operationId="v2_audio_path",
      *     @OA\Parameter(name="dam_id",
-     *         in="path",
+     *         in="query",
      *         description="The DAM ID for which to retrieve file path info.",
      *         required=true,
      *         @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")
@@ -148,7 +148,7 @@ class AudioController extends APIController
      *   title="Bible Timestamps",
      *   @OA\Xml(name="v4_bible.timestamps"),
      *   @OA\Items(
-     *       @OA\Property(property="hash_id", ref="#/components/schemas/BibleFileset/properties/hash_id"),
+     *       @OA\Property(property="fileset_id", ref="#/components/schemas/BibleFileset/properties/id"),
      *     )
      *   )
      * )
@@ -197,16 +197,16 @@ class AudioController extends APIController
      * )
      *
      * @OA\Get(
-     *     path="/timestamps/{id}/{book}/{chapter}",
+     *     path="/timestamps/{fileset_id}/{book}/{chapter}",
      *     tags={"Bible"},
      *     summary="Returns Audio timestamps for a specific reference",
      *     description="This route will return timestamps restricted to specific book and chapter
      *         combination for a fileset. Note that the fileset id must be available via the path
      *        `/timestamps`. At first, only a few filesets may have timestamps metadata applied.",
      *     operationId="v4_timestamps.verse",
-     *     @OA\Parameter(name="id", in="path", description="The specific fileset to return references for", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Parameter(name="book", in="path", description="The Book ID for which to return timestamps. For a complete list see the `book_id` field in the `/bibles/books` route.", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
-     *     @OA\Parameter(name="chapter", in="path", description="The chapter for which to return timestamps", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
+     *     @OA\Parameter(name="fileset_id", in="path", description="The specific fileset to return references for", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
+     *     @OA\Parameter(name="book", in="path", required=true, description="The Book ID for which to return timestamps. For a complete list see the `book_id` field in the `/bibles/books` route.", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
+     *     @OA\Parameter(name="chapter", in="path", required=true, description="The chapter for which to return timestamps", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -342,16 +342,29 @@ class AudioController extends APIController
      *         protocols they support. It is currently depreciated and only remains to account for
      *         the possibility that someone might still be using this old method of uri generation",
      *     operationId="v2_audio_location",
-     *     @OA\Parameter(name="fileset_id", in="query", description="The specific fileset to return references for", required=true, @OA\Schema(ref="#/components/schemas/BibleFileset/properties/id")),
-     *     @OA\Parameter(name="book", in="query", description="The Book ID for which to return timestamps.  For a complete list see the `book_id` field in the `/bibles/books` route.", @OA\Schema(ref="#/components/schemas/Book/properties/id")),
-     *     @OA\Parameter(name="chapter", in="query", description="The chapter for which to return timestamps", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_audio_timestamps")),
-     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_audio_timestamps")),
-     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v2_audio_timestamps"))
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v2_audio_location")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(ref="#/components/schemas/v2_audio_location")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(ref="#/components/schemas/v2_audio_location")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v2_audio_location"))
      *     )
+     * )
+     *
+     * @OA\Schema (
+     *     type="array",
+     *     schema="v2_audio_location",
+     *     description="v2_audio_location",
+     *     title="v2_audio_location",
+     *     @OA\Xml(name="v2_audio_location"),
+     *     @OA\Items(
+     *      @OA\Property(property="server",type="string",example="cloud.faithcomesbyhearing.com"),
+     *      @OA\Property(property="root_path",type="string",example="/mp3audiobibles2"),
+     *      @OA\Property(property="protocol",type="string",example="http"),
+     *      @OA\Property(property="CDN",type="string",example="1"),
+     *      @OA\Property(property="priority",type="string",example="5")
+     *    )
      * )
      *
      * @return array

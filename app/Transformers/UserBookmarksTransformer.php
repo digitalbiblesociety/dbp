@@ -9,11 +9,15 @@ class UserBookmarksTransformer extends TransformerAbstract
 {
     /**
      * @OA\Schema (
-     *        type="array",
+     *        type="object",
      *        schema="v4_user_bookmarks",
      *        description="The transformed user bookmarks",
      *        title="v4_user_bookmarks",
      *      @OA\Xml(name="v4_user_bookmarks"),
+     *      allOf={
+     *        @OA\Schema(ref="#/components/schemas/pagination.alternate"),
+     *      },
+     *   @OA\Property(property="data", type="array",
      *      @OA\Items(
      *          @OA\Property(property="id",             type="integer"),
      *          @OA\Property(property="bible_id",       ref="#/components/schemas/Bible/properties/id"),
@@ -26,6 +30,7 @@ class UserBookmarksTransformer extends TransformerAbstract
      *          @OA\Property(property="updated_at",     ref="#/components/schemas/Bookmark/properties/updated_at")
      *        )
      *    )
+     *   )
      *)
      *
      * @param Bookmark $bookmark

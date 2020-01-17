@@ -9,16 +9,26 @@ class UserNotesTransformer extends TransformerAbstract
 {
     /**
      * @OA\Schema (
-     *        type="array",
+     *        type="object",
      *        schema="v4_notes_index",
      *        description="The transformed user notes",
      *        title="v4_user_notes",
      *      @OA\Xml(name="v4_notes_index"),
-     *      @OA\Items(
+     *      allOf={
+     *        @OA\Schema(ref="#/components/schemas/pagination.alternate"),
+     *      },
+     *   @OA\Property(property="data", type="array",
+     *      @OA\Items(ref="#/components/schemas/v4_note")
+     *    )
+     *  )
+     *)
+     * @OA\Schema(
+     *  schema="v4_note",
+     *  type="object",
      *          @OA\Property(property="id",             ref="#/components/schemas/Note/properties/id"),
      *          @OA\Property(property="bible_id",       ref="#/components/schemas/Note/properties/bible_id"),
      *          @OA\Property(property="book_id",        ref="#/components/schemas/Note/properties/book_id"),
-     *          @OA\Property(property="book_name",              ref="#/components/schemas/BibleBook/properties/name"),
+     *          @OA\Property(property="book_name",      ref="#/components/schemas/BibleBook/properties/name"),
      *          @OA\Property(property="chapter",        ref="#/components/schemas/Note/properties/chapter"),
      *          @OA\Property(property="verse_start",    ref="#/components/schemas/Note/properties/verse_start"),
      *          @OA\Property(property="verse_end",      ref="#/components/schemas/Note/properties/verse_end"),
@@ -27,9 +37,8 @@ class UserNotesTransformer extends TransformerAbstract
      *          @OA\Property(property="created_at",     ref="#/components/schemas/Note/properties/created_at"),
      *          @OA\Property(property="updated_at",     ref="#/components/schemas/Note/properties/updated_at"),
      *          @OA\Property(property="tags",           ref="#/components/schemas/AnnotationTag"),
-     *        )
-     *    )
-     *)
+     * )
+     *
      *
      * @param Note $note
      * @return array
