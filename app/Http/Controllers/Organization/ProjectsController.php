@@ -65,15 +65,7 @@ class ProjectsController extends APIController
      *     summary="Apply for a project_id",
      *     description="It is recommended that you create a distinct project_id for each app using the API",
      *     operationId="v4_projects.store",
-     *     @OA\RequestBody(required=true, description="Information supplied for project creation", @OA\MediaType(mediaType="application/json",
-     *          @OA\Schema(
-     *              @OA\Property(property="name",                    ref="#/components/schemas/Project/properties/name"),
-     *              @OA\Property(property="url_avatar",              ref="#/components/schemas/Project/properties/url_avatar"),
-     *              @OA\Property(property="url_avatar_icon",         ref="#/components/schemas/Project/properties/url_avatar_icon"),
-     *              @OA\Property(property="url_site",                ref="#/components/schemas/Project/properties/url_site"),
-     *              @OA\Property(property="description",             ref="#/components/schemas/Project/properties/description")
-     *          )
-     *     )),
+     *     @OA\RequestBody(ref="#/components/requestBodies/ProjectStore"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -83,6 +75,17 @@ class ProjectsController extends APIController
      *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(ref="#/components/schemas/v4_projects_index"))
      *     )
      * )
+     *
+     *     @OA\RequestBody(request="ProjectStore",
+     *       required=true, description="Information supplied for project creation/update",
+     *       @OA\JsonContent(
+     *          @OA\Property(property="name",                    ref="#/components/schemas/Project/properties/name"),
+     *          @OA\Property(property="url_avatar",              ref="#/components/schemas/Project/properties/url_avatar"),
+     *          @OA\Property(property="url_avatar_icon",         ref="#/components/schemas/Project/properties/url_avatar_icon"),
+     *          @OA\Property(property="url_site",                ref="#/components/schemas/Project/properties/url_site"),
+     *          @OA\Property(property="description",             ref="#/components/schemas/Project/properties/description")
+     *       )
+     *    )
      *
      * @param Request $request
      *
@@ -200,15 +203,7 @@ class ProjectsController extends APIController
      *     description="",
      *     operationId="v4_projects.update",
      *     @OA\Parameter(name="project_id", in="path", required=true, description="The project id", @OA\Schema(ref="#/components/schemas/Project/properties/id")),
-     *     @OA\RequestBody(required=true, description="Information supplied for project update", @OA\MediaType(mediaType="application/json",
-     *          @OA\Schema(
-     *              @OA\Property(property="name",                    ref="#/components/schemas/Project/properties/name"),
-     *              @OA\Property(property="url_avatar",              ref="#/components/schemas/Project/properties/url_avatar"),
-     *              @OA\Property(property="url_avatar_icon",         ref="#/components/schemas/Project/properties/url_avatar_icon"),
-     *              @OA\Property(property="url_site",                ref="#/components/schemas/Project/properties/url_site"),
-     *              @OA\Property(property="description",             ref="#/components/schemas/Project/properties/description")
-     *          )
-     *     )),
+     *     @OA\RequestBody(ref="#/components/requestBodies/ProjectStore"),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
