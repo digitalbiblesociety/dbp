@@ -80,7 +80,7 @@ class PasswordsController extends APIController
         }
         $project_id = checkParam('project_id', true);
 
-        $connection = ProjectMember::where(['user_id' => $user->id, 'project_id' => $project_id])->first();
+        $connection = ProjectMember::with('project')->where(['user_id' => $user->id, 'project_id' => $project_id])->first();
         if (!$connection) {
             $role = Role::where('slug', 'user')->first();
             $connection = ProjectMember::create([
