@@ -44,7 +44,7 @@
 
             <div>
                 <p>You can generate your own SDK using our swagger specifications located here: <span></span>. In order to do so you'll need to swagger-codegen.</p>
-                <code><pre>swagger-codegen generate -i {{ route('swagger_docs_gen', ['version' => 4]) }} -l php -o /Sites/dbp/public/sdk/</pre></code>
+                <code><pre>swagger-codegen generate -i {{ route('swagger_docs_gen', ['version' => 'v4']) }} -l php -o /Sites/dbp/public/sdk/</pre></code>
                 <p>Or use one of pre generated SDKs for commonly used programming languages.</p>
             </div>
 
