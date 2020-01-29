@@ -69,7 +69,7 @@ class BibleFileSetsController extends APIController
         $type          = checkParam('type', true);
 
         $cache_string = 'bible_filesets_show:' . $this->v . ':' . $fileset_id . $book_id . $type . $chapter_id . $asset_id;
-        $fileset_chapters = \Cache::remember($cache_string, now()->addMinutes(20), function () use ($fileset_id, $book_id, $type, $chapter_id, $asset_id) {
+        $fileset_chapters = \Cache::remember($cache_string, now()->addHours(12), function () use ($fileset_id, $book_id, $type, $chapter_id, $asset_id) {
             $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
             $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, $type)->first();
             if (!$fileset) {

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\User\User;
 use App\Models\User\PasswordReset;
 use App\Mail\EmailPasswordReset;
+use App\Models\User\Role;
 use App\Traits\CheckProjectMembership;
 use Validator;
 use Illuminate\Validation\Rule;
@@ -77,11 +78,18 @@ class PasswordsController extends APIController
         if (!$user) {
             return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_404'));
         }
+        $project_id = checkParam('project_id', true);
 
-        $connection = ProjectMember::with('project')->where('project_id', $request->project_id)->where('user_id', $user->id)->first();
+        $connection = ProjectMember::with('project')->where(['user_id' => $user->id, 'project_id' => $project_id])->first();
         if (!$connection) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.users_errors_401_project'));
+            $role = Role::where('slug', 'user')->first();
+            $connection = ProjectMember::create([
+                'user_id'    => $user->id,
+                'project_id' => $project_id,
+                'role_id'    => $role->id ?? 'user'
+            ]);
         }
+
 
         $generatedToken = PasswordReset::create([
             'email' => $request->email,
