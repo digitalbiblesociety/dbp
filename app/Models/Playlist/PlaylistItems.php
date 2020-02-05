@@ -2,8 +2,10 @@
 
 namespace App\Models\Playlist;
 
+use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleVerse;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -273,6 +275,18 @@ class PlaylistItems extends Model implements Sortable
             $verses = $verses_middle;
         } else {
             $verses = $verses_middle - ($this['verse_start'] - 1) + $this['verse_end'];
+        }
+
+        // Try to get the verse count from the bible_verses table
+        if (!$verses) {
+            $text_fileset = $fileset->bible->first()->filesets->where('set_type_code', 'text_plain')->first();
+            $verses = BibleVerse::where('hash_id', $text_fileset->hash_id)
+                ->where([
+                    ['book_id', $this['book_id']],
+                    ['chapter', '>=', $this['chapter_start']],
+                    ['chapter', '<=', $this['chapter_end']],
+                ])
+                ->count();
         }
 
         $this->attributes['verses'] =  $verses;
