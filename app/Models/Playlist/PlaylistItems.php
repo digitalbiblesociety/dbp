@@ -2,7 +2,6 @@
 
 namespace App\Models\Playlist;
 
-use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleVerse;
@@ -196,8 +195,27 @@ class PlaylistItems extends Model implements Sortable
         $playlist_item = (object) $this->attributes;
         $timestamps = $this->getTimeStamps($playlist_item);
         $duration = $this->getDuration($timestamps, $playlist_item);
-        $this->attributes['duration'] =  $duration;
+        if (!$duration) {
+            $file_duration = $this->getDurationFromBibleFiles($playlist_item);
+            if ($file_duration) {
+                $duration = $file_duration->duration;
+            }
+        }
+        $this->attributes['duration'] = $duration;
+
         return $this;
+    }
+
+    private function getDurationFromBibleFiles($playlist_item)
+    {
+        return DB::connection('dbp')->table('bible_files')
+            ->join('bible_filesets', 'bible_filesets.hash_id', 'bible_files.hash_id')
+            ->where('bible_filesets.id', $playlist_item->fileset_id)
+            ->where('bible_files.book_id', $playlist_item->book_id)
+            ->where('bible_files.chapter_start', '>=', $playlist_item->chapter_start)
+            ->where('bible_files.chapter_start', '<=', $playlist_item->chapter_end)
+            ->select(DB::raw('SUM(bible_files.duration) as duration'))
+            ->first();
     }
 
     private function getTimeStamps($playlist_item)
