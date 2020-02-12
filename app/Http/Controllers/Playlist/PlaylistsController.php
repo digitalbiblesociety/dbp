@@ -564,6 +564,26 @@ class PlaylistsController extends APIController
         ]);
     }
 
+    public function itemHls(Response $response, $playlist_item_id)
+    {
+        $download = checkBoolean('download');
+        $playlist_item = PlaylistItems::whereId($playlist_item_id)->first();
+        if (!$playlist_item) {
+            return $this->setStatusCode(404)->replyWithError('Playlist Item Not Found');
+        }
+
+        $hls_playlist = $this->getHlsPlaylist($response, [$playlist_item], $download);
+
+        if ($download) {
+            return $this->reply(['hls' => $hls_playlist['file_content'], 'signed_files' => $hls_playlist['signed_files']]);
+        }
+
+        return response($hls_playlist['file_content'], 200, [
+            'Content-Disposition' => 'attachment; filename="item_' . $playlist_item_id . '.m3u8"',
+            'Content-Type'        => 'application/x-mpegURL'
+        ]);
+    }
+
     public function hls(Response $response, $playlist_id)
     {
         $download = checkBoolean('download');
@@ -572,53 +592,13 @@ class PlaylistsController extends APIController
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
         }
 
-        $signed_files = [];
-        $transaction_id = random_int(0, 10000000);
-        try {
-            apiLogs(request(), $response->getStatusCode(), $transaction_id);
-        } catch (\Exception $e) {
-            Log::error($e);
-        }
-        $durations = [];
-        $hls_items = '';
-        foreach ($playlist->items as $item) {
-            $fileset = $item->fileset;
-            if (!Str::contains($fileset->set_type_code, 'audio')) {
-                continue;
-            }
-            $bible_files = BibleFile::with('streamBandwidth.transportStreamTS')->with('streamBandwidth.transportStreamBytes')->where([
-                'hash_id' => $fileset->hash_id,
-                'book_id' => $item->book_id,
-            ])
-                ->where('chapter_start', '>=', $item->chapter_start)
-                ->where('chapter_start', '<=', $item->chapter_end)
-                ->get();
-            if ($fileset->set_type_code === 'audio_stream' || $fileset->set_type_code === 'audio_drama_stream') {
-                $result = $this->processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download);
-                $hls_items = $result->hls_items;
-                $signed_files = $result->signed_files;
-                $durations[] = collect($result->durations)->max();
-            } else {
-                $result = $this->processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download, $item);
-                $hls_items = $result->hls_items;
-                $signed_files = $result->signed_files;
-                $durations[] = collect($result->durations)->max();
-            }
-        }
-
-        $current_file = "#EXTM3U\n";
-        $current_file .= '#EXT-X-TARGETDURATION:' . ceil(collect($durations)->max()) . "\n";
-        $current_file .= "#EXT-X-VERSION:4\n";
-        $current_file .= "#EXT-X-MEDIA-SEQUENCE:0\n";
-        $current_file .= '#EXT-X-ALLOW-CACHE:YES';
-        $current_file .= $hls_items;
-        $current_file .= "\n#EXT-X-ENDLIST";
+        $hls_playlist = $this->getHlsPlaylist($response, $playlist->items, $download);
 
         if ($download) {
-            return $this->reply(['hls' => $current_file, 'signed_files' => $signed_files]);
+            return $this->reply(['hls' => $hls_playlist['file_content'], 'signed_files' => $hls_playlist['signed_files']]);
         }
 
-        return response($current_file, 200, [
+        return response($hls_playlist['file_content'], 200, [
             'Content-Disposition' => 'attachment; filename="' . $playlist_id . '.m3u8"',
             'Content-Type'        => 'application/x-mpegURL'
         ]);
@@ -699,6 +679,53 @@ class PlaylistsController extends APIController
         return $transportStream;
     }
 
+    private function getHlsPlaylist($response, $items, $download)
+    {
+        $signed_files = [];
+        $transaction_id = random_int(0, 10000000);
+        try {
+            apiLogs(request(), $response->getStatusCode(), $transaction_id);
+        } catch (\Exception $e) {
+            Log::error($e);
+        }
+        $durations = [];
+        $hls_items = '';
+        foreach ($items as $item) {
+            $fileset = $item->fileset;
+            if (!Str::contains($fileset->set_type_code, 'audio')) {
+                continue;
+            }
+            $bible_files = BibleFile::with('streamBandwidth.transportStreamTS')->with('streamBandwidth.transportStreamBytes')->where([
+                'hash_id' => $fileset->hash_id,
+                'book_id' => $item->book_id,
+            ])
+                ->where('chapter_start', '>=', $item->chapter_start)
+                ->where('chapter_start', '<=', $item->chapter_end)
+                ->get();
+            if ($fileset->set_type_code === 'audio_stream' || $fileset->set_type_code === 'audio_drama_stream') {
+                $result = $this->processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download);
+                $hls_items = $result->hls_items;
+                $signed_files = $result->signed_files;
+                $durations[] = collect($result->durations)->max();
+            } else {
+                $result = $this->processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download, $item);
+                $hls_items = $result->hls_items;
+                $signed_files = $result->signed_files;
+                $durations[] = collect($result->durations)->max();
+            }
+        }
+
+        $current_file = "#EXTM3U\n";
+        $current_file .= '#EXT-X-TARGETDURATION:' . ceil(collect($durations)->max()) . "\n";
+        $current_file .= "#EXT-X-VERSION:4\n";
+        $current_file .= "#EXT-X-MEDIA-SEQUENCE:0\n";
+        $current_file .= '#EXT-X-ALLOW-CACHE:YES';
+        $current_file .= $hls_items;
+        $current_file .= "\n#EXT-X-ENDLIST";
+
+        return ['signed_files' => $signed_files, 'file_content' => $current_file];
+    }
+
     /**
      * @OA\Schema (
      *   type="object",
@@ -766,6 +793,10 @@ class PlaylistsController extends APIController
             ->where('user_playlists.id', $playlist_id)
             ->select($select)
             ->first();
+
+        if (!$playlist) {
+            return $this->setStatusCode(404)->replyWithError('No playlist could be found for: ' . $playlist_id);
+        }
 
         $playlist->items = $playlist->items->map(function ($item) {
             $bible = $item->fileset->bible->first();

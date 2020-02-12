@@ -270,7 +270,7 @@ class PlaylistItems extends Model implements Sortable
 
         return $timestamps->sum('duration');
     }
-    protected $appends = ['completed', 'full_chapter'];
+    protected $appends = ['completed', 'full_chapter', 'path'];
 
 
     public function calculateVerses()
@@ -345,6 +345,19 @@ class PlaylistItems extends Model implements Sortable
     public function getFullChapterAttribute()
     {
         return (bool) !$this->attributes['verse_start'] && !$this->attributes['verse_end'];
+    }
+
+    /**
+     * @OA\Property(
+     *   property="path",
+     *   title="path",
+     *   type="string",
+     *   description="Hls path of the playlist item"
+     * )
+     */
+    public function getPathAttribute()
+    {
+        return route('v4_playlists_item.hls', ['playlist_item_id'  => $this->attributes['id'], 'v' => checkParam('v'), 'key' => checkParam('key')]);
     }
 
     public function fileset()

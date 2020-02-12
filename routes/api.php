@@ -241,6 +241,7 @@ Route::name('v4_playlists_items.store')
 Route::name('v4_playlists_items.complete')
     ->middleware('APIToken:check')->post('playlists/item/{item_id}/complete',       'Playlist\PlaylistsController@completeItem');
 Route::name('v4_playlists.hls')->get('playlists/{playlist_id}/hls',                 'Playlist\PlaylistsController@hls');
+Route::name('v4_playlists_item.hls')->get('playlists/{playlist_item_id}/item-hls',  'Playlist\PlaylistsController@itemHls');
 
 
 // VERSION 4 | Plans
