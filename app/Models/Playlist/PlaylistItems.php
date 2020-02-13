@@ -6,7 +6,6 @@ use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleVerse;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -193,83 +192,67 @@ class PlaylistItems extends Model implements Sortable
     public function calculateDuration()
     {
         $playlist_item = (object) $this->attributes;
-        $timestamps = $this->getTimeStamps($playlist_item);
-        $duration = $this->getDuration($timestamps, $playlist_item);
-        if (!$duration) {
-            $file_duration = $this->getDurationFromBibleFiles($playlist_item);
-            if ($file_duration) {
-                $duration = $file_duration->duration;
-            }
-        }
-        $this->attributes['duration'] = $duration;
-
+        $this->attributes['duration'] = $this->getDuration($playlist_item) ?? 0;
         return $this;
     }
 
-    private function getDurationFromBibleFiles($playlist_item)
-    {
-        return DB::connection('dbp')->table('bible_files')
-            ->join('bible_filesets', 'bible_filesets.hash_id', 'bible_files.hash_id')
-            ->where('bible_filesets.id', $playlist_item->fileset_id)
-            ->where('bible_files.book_id', $playlist_item->book_id)
-            ->where('bible_files.chapter_start', '>=', $playlist_item->chapter_start)
-            ->where('bible_files.chapter_start', '<=', $playlist_item->chapter_end)
-            ->select(DB::raw('SUM(bible_files.duration) as duration'))
-            ->first();
-    }
 
-    private function getTimeStamps($playlist_item)
+
+    private function getDuration($playlist_item)
     {
-        return DB::connection('dbp')->table('bible_file_timestamps')
-            ->join('bible_files', 'bible_files.id', 'bible_file_timestamps.bible_file_id')
-            ->join('bible_filesets', 'bible_filesets.hash_id', 'bible_files.hash_id')
-            ->where('bible_filesets.id', $playlist_item->fileset_id)
-            ->where('bible_files.book_id', $playlist_item->book_id)
-            ->where('bible_files.chapter_start', '>=', $playlist_item->chapter_start)
-            ->where('bible_files.chapter_start', '<=', $playlist_item->chapter_end)
-            ->select([
-                'bible_files.chapter_start as chapter',
-                'bible_files.duration as total_duration',
-                'bible_file_timestamps.verse_start as verse',
-                'bible_file_timestamps.timestamp'
-            ])
+        $fileset = BibleFileset::whereId($playlist_item->fileset_id)->first();
+        if (!$fileset) {
+            return 0;
+        }
+
+        $bible_files = BibleFile::with('streamBandwidth.transportStreamTS')->with('streamBandwidth.transportStreamBytes')->where([
+            'hash_id' => $fileset->hash_id,
+            'book_id' => $playlist_item->book_id,
+        ])
+            ->where('chapter_start', '>=', $playlist_item->chapter_start)
+            ->where('chapter_start', '<=', $playlist_item->chapter_end)
             ->get();
+        $duration = 0;
+        if ($fileset->set_type_code === 'audio_stream' || $fileset->set_type_code === 'audio_drama_stream') {
+            foreach ($bible_files as $bible_file) {
+                $currentBandwidth = $bible_file->streamBandwidth->first();
+                $transportStream = sizeof($currentBandwidth->transportStreamBytes) ? $currentBandwidth->transportStreamBytes : $currentBandwidth->transportStreamTS;
+                if ($playlist_item->verse_end && $playlist_item->verse_start) {
+                    $transportStream = $this->processVersesOnTransportStream($playlist_item, $transportStream, $bible_file);
+                }
+
+                foreach ($transportStream as $stream) {
+                    $duration += $stream->runtime;
+                }
+            }
+        } else {
+            foreach ($bible_files as $bible_file) {
+                $duration += $bible_file->duration ?? 180;
+            }
+        }
+
+        return $duration;
     }
 
-    private function getDuration($timestamps, $playlist_item)
+    private function processVersesOnTransportStream($item, $transportStream, $bible_file)
     {
-        $chapters_size = $timestamps->groupBy('chapter')->map(function ($chapter) {
-            return sizeof($chapter);
-        });
+        if ($item->chapter_end  === $item->chapter_start) {
+            $transportStream = $transportStream->splice(1, $item->verse_end)->all();
+            return collect($transportStream)->slice($item->verse_start - 1)->all();
+        }
 
-        $timestamps = $timestamps->map(function ($timestamp, $key) use ($chapters_size, $timestamps, $playlist_item) {
-            if ($timestamp->chapter === $playlist_item->chapter_start && $timestamp->verse < $playlist_item->verse_start) {
-                $timestamp->duration = 0;
-                return $timestamp;
-            }
+        $transportStream = $transportStream->splice(1)->all();
+        if ($bible_file->chapter_start === $item->chapter_start) {
+            return collect($transportStream)->slice($item->verse_start - 1)->all();
+        }
+        if ($bible_file->chapter_start === $item->chapter_end) {
+            return collect($transportStream)->splice(0, $item->verse_end)->all();
+        }
 
-            if ($timestamp->chapter === $playlist_item->chapter_end && $timestamp->verse > $playlist_item->verse_end) {
-                $timestamp->duration = 0;
-                return $timestamp;
-            }
-
-            $next_timestamp = 0;
-            if (
-                $chapters_size[$timestamp->chapter] === $timestamp->verse
-                || sizeof($timestamps) <= ($key + 1)
-            ) {
-                $next_timestamp = $timestamp->total_duration;
-            } else {
-                $next_timestamp = $timestamps[$key + 1]->timestamp;
-            }
-
-            $timestamp->duration = $next_timestamp - $timestamp->timestamp;
-
-            return $timestamp;
-        });
-
-        return $timestamps->sum('duration');
+        return $transportStream;
     }
+
+
     protected $appends = ['completed', 'full_chapter', 'path'];
 
 
