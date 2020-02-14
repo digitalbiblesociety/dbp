@@ -42,6 +42,8 @@ class Kernel extends ConsoleKernel
         Commands\syncV2Highlights::class,
         Commands\syncV2Notes::class,
 
+        Commands\syncPlaylistDuration::class,
+
         Commands\S3LogBackup::class,
         Commands\CleanAndImportKD::class,
 
