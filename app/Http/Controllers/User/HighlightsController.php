@@ -154,11 +154,20 @@ class HighlightsController extends APIController
                 $q->where('filesets.set_type_code', 'text_plain');
                 $q->join($dbp_database . '.bible_verses as bible_verses', function ($join) use ($query) {
                     $join->on('connection.hash_id', '=', 'bible_verses.hash_id')
-                    ->where('bible_verses.book_id', DB::raw('user_highlights.book_id'))
-                    ->where('bible_verses.chapter', DB::raw('user_highlights.chapter'))
-                    ->where('bible_verses.verse_start', '>=', DB::raw('user_highlights.verse_start'))
-                    ->where('bible_verses.verse_end', '<=', DB::raw('user_highlights.verse_end'))
-                    ->where('bible_verses.verse_text', 'like', '%'.$query.'%');
+                        ->where('bible_verses.book_id', DB::raw('user_highlights.book_id'))
+                        ->where('bible_verses.chapter', DB::raw('user_highlights.chapter'))
+                        ->where('bible_verses.verse_start', '>=', DB::raw('user_highlights.verse_start'))
+                        ->where('bible_verses.verse_end', '<=', DB::raw('user_highlights.verse_end'));
+                });
+
+                $q->join($dbp_database . '.bible_books as bible_books', function ($join) use ($query) {
+                    $join->on('user_highlights.bible_id', '=', 'bible_books.bible_id')
+                        ->on('user_highlights.book_id', '=', 'bible_books.book_id');
+                });
+
+                $q->where(function ($q) use ($query) {
+                    $q->where('bible_verses.verse_text', 'like', '%' . $query . '%')
+                        ->orWhere('bible_books.name', 'like', '%' . $query . '%');
                 });
             })->select([
                 'user_highlights.id',
