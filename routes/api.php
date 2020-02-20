@@ -240,6 +240,8 @@ Route::name('v4_playlists_items.store')
     ->middleware('APIToken:check')->post('playlists/{playlist_id}/item',            'Playlist\PlaylistsController@storeItem');
 Route::name('v4_playlists_items.complete')
     ->middleware('APIToken:check')->post('playlists/item/{item_id}/complete',       'Playlist\PlaylistsController@completeItem');
+Route::name('v4_playlists.translate')
+    ->middleware('APIToken:check')->get('playlists/{playlist_id}/translate',       'Playlist\PlaylistsController@translate');
 Route::name('v4_playlists.hls')->get('playlists/{playlist_id}/hls',                 'Playlist\PlaylistsController@hls');
 Route::name('v4_playlists_item.hls')->get('playlists/{playlist_item_id}/item-hls',  'Playlist\PlaylistsController@itemHls');
 
@@ -261,6 +263,8 @@ Route::name('v4_plans.reset')
     ->middleware('APIToken:check')->post('plans/{plan_id}/reset',                   'Plan\PlansController@reset');
 Route::name('v4_plans.stop')
     ->middleware('APIToken:check')->delete('plans/{plan_id}/stop',                    'Plan\PlansController@stop');
+Route::name('v4_plans.translate')
+    ->middleware('APIToken:check')->get('plans/{plan_id}/translate',               'Plan\PlansController@translate');
 Route::name('v4_plans_days.store')
     ->middleware('APIToken:check')->post('plans/{plan_id}/day',                     'Plan\PlansController@storeDay');
 Route::name('v4_plans_days.complete')
