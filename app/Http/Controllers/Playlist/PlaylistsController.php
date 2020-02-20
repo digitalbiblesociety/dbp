@@ -585,7 +585,7 @@ class PlaylistsController extends APIController
      *          in="query",
      *          required=true,
      *          @OA\Schema(ref="#/components/schemas/Bible/properties/id"),
-     *          description="The bible id"
+     *          description="The id of the bible that will be used to translate the playlist"
      *     ),
      *     @OA\Response(response=200, ref="#/components/responses/playlist")
      * )

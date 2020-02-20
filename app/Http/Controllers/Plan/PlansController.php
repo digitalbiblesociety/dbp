@@ -771,7 +771,7 @@ class PlansController extends APIController
      *          in="query",
      *          required=true,
      *          @OA\Schema(ref="#/components/schemas/Bible/properties/id"),
-     *          description="The bible id"
+     *          description="The id of the bible that will be used to translate the plan"
      *     ),
      *     @OA\Response(response=200, ref="#/components/responses/plan")
      * )
@@ -800,7 +800,7 @@ class PlansController extends APIController
 
         $plan = $this->getPlan($plan_id, $user);
         if (!$plan) {
-            return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
+            return $this->setStatusCode(404)->replyWithError('Plan Not Found');
         }
 
         $playlist_controller = new PlaylistsController();
