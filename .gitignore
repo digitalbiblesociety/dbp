@@ -40,7 +40,7 @@ _ide_helper_models.php
 .phpunit.result.cache
 .php_cs.cache
 fixers/tmp
-
+.elasticbeanstalk/*
 
 # The Mac
 .DS_STORE
