@@ -8,11 +8,8 @@ use App\Http\Controllers\Playlist\PlaylistsController;
 use App\Models\Plan\Plan;
 use App\Traits\CheckProjectMembership;
 use App\Models\Plan\PlanDay;
-use App\Models\Plan\PlanDayComplete;
 use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
-use App\Models\Playlist\PlaylistItems;
-use App\Models\Playlist\PlaylistItemsComplete;
 use Illuminate\Http\Request;
 
 class PlansController extends APIController
@@ -668,15 +665,12 @@ class PlansController extends APIController
             return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
         }
 
-        $plan_days_ids = $plan->days()->pluck('id')->unique();
-        $days_completed = PlanDayComplete::where('user_id', $user->id)->whereIn('plan_day_id', $plan_days_ids);
-        $playlists_ids = $plan->days()->pluck('playlist_id')->unique();
-        $playlist_items_ids = PlaylistItems::whereIn('playlist_id', $playlists_ids)->get()->pluck('id');
-        $playlist_items_completed = PlaylistItemsComplete::whereIn('playlist_item_id', $playlist_items_ids)->where('user_id', $user->id);
+        $user_plan->reset();
+        $user_plan->save();
+        if ($user->id !== $plan->user_id) {
+            $user_plan->delete();
+        }
 
-        $days_completed->delete();
-        $playlist_items_completed->delete();
-        $user_plan->delete();
         $plan = $this->getPlan($plan->id, $user);
         $playlist_controller = new PlaylistsController();
         foreach ($plan->days as $day) {
