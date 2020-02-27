@@ -110,7 +110,7 @@ class HighlightsController extends APIController
     {
         $user = $request->user();
         $user_id = $user ? $user->id : $request->user_id;
-        $sort_by    = checkParam('sort_by') ?? 'updated_at';
+        $sort_by    = checkParam('sort_by') ?? 'book';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
         $query      = checkParam('query');
 
@@ -132,6 +132,9 @@ class HighlightsController extends APIController
         $chapter_id   = checkParam('chapter|chapter_id');
         $color        = checkParam('color');
         $limit        = (int) (checkParam('limit') ?? 25);
+
+        $sort_by_book = $sort_by === 'book';
+        $order_by = $sort_by_book ? DB::raw('books.protestant_order, user_highlights.chapter, user_highlights.verse_start') : 'user_highlights.' . $sort_by;
 
         $highlights = Highlight::join('user_highlight_colors', 'user_highlights.highlighted_color', '=', 'user_highlight_colors.id')
             ->where('user_id', $user_id)
@@ -169,6 +172,11 @@ class HighlightsController extends APIController
                     $q->where('bible_verses.verse_text', 'like', '%' . $query . '%')
                         ->orWhere('bible_books.name', 'like', '%' . $query . '%');
                 });
+            })->when($sort_by_book, function ($q) {
+                $dbp_database = config('database.connections.dbp.database');
+                $q->join($dbp_database . '.books as books', function ($join) {
+                    $join->on('user_highlights.book_id', '=', 'books.id');
+                });
             })->select([
                 'user_highlights.id',
                 'user_highlights.bible_id',
@@ -179,7 +187,9 @@ class HighlightsController extends APIController
                 'user_highlights.highlight_start',
                 'user_highlights.highlighted_words',
                 'user_highlights.highlighted_color',
-            ])->orderBy('user_highlights.' . $sort_by, $sort_dir)->paginate($limit);
+            ])
+            ->orderBy($order_by, $sort_dir)
+            ->paginate($limit);
 
         $highlight_collection = $highlights->getCollection();
 
