@@ -627,7 +627,7 @@ class PlaylistsController extends APIController
             $ordered_types = $audio_fileset_types->filter(function ($type) use ($item) {
                 return $type !== $item->fileset->set_type_code;
             })->prepend($item->fileset->set_type_code);
-            $preferred_fileset = $audio_fileset_types->map(function ($type) use ($bible_audio_filesets, $item) {
+            $preferred_fileset = $ordered_types->map(function ($type) use ($bible_audio_filesets, $item) {
                 return $this->getFileset($bible_audio_filesets, $type, $item->fileset->set_size_code);
             })->firstWhere('id');
             $has_translation = isset($preferred_fileset);
