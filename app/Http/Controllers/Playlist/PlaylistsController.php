@@ -618,12 +618,15 @@ class PlaylistsController extends APIController
         }
 
 
-        $audio_fileset_types = collect(['audio_drama_stream', 'audio_stream', 'audio_drama', 'audio']);
+        $audio_fileset_types = collect(['audio_stream', 'audio_drama_stream', 'audio', 'audio_drama']);
         $bible_audio_filesets = $bible->filesets->whereIn('set_type_code', $audio_fileset_types);
 
         $translated_items = [];
 
         foreach ($playlist->items as $item) {
+            $ordered_types = $audio_fileset_types->filter(function ($type) use ($item) {
+                return $type !== $item->fileset->set_type_code;
+            })->prepend($item->fileset->set_type_code);
             $preferred_fileset = $audio_fileset_types->map(function ($type) use ($bible_audio_filesets, $item) {
                 return $this->getFileset($bible_audio_filesets, $type, $item->fileset->set_size_code);
             })->firstWhere('id');
