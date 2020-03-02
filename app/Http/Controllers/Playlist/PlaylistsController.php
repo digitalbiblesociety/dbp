@@ -117,10 +117,12 @@ class PlaylistsController extends APIController
             ->select($select)
             ->orderBy($sort_by, $sort_dir)->paginate($limit);
 
-        if ($show_details) {
-            foreach ($playlists->getCollection() as $playlist) {
+        foreach ($playlists->getCollection() as $playlist) {
+            if ($show_details) {
                 $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist->id, 'v' => $this->v, 'key' => $this->key]);
             }
+
+            $playlist->total_duration = PlaylistItems::where('playlist_id', $playlist->id)->sum('duration');
         }
 
         return $this->reply($playlists);
@@ -213,7 +215,9 @@ class PlaylistsController extends APIController
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
         }
+
         $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist_id, 'v' => $this->v, 'key' => $this->key]);
+        $playlist->total_duration = PlaylistItems::where('playlist_id', $playlist_id)->sum('duration');
 
         return $this->reply($playlist);
     }
