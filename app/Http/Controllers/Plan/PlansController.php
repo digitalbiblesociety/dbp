@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Plan;
 use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\Playlist\PlaylistsController;
+use App\Models\Bible\Bible;
 use App\Models\Plan\Plan;
 use App\Traits\CheckProjectMembership;
 use App\Models\Plan\PlanDay;
@@ -742,5 +743,71 @@ class PlansController extends APIController
             })->select($select)->first();
 
         return $plan;
+    }
+
+    /**
+     *
+     * @OA\Get(
+     *     path="/plans/{plan_id}/translate",
+     *     tags={"Plans"},
+     *     summary="Translate a user's plan",
+     *     operationId="v4_plans.translate",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="plan_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Plan/properties/id"),
+     *          description="The plan id"
+     *     ),
+     *     @OA\Parameter(
+     *          name="bible_id",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Bible/properties/id"),
+     *          description="The id of the bible that will be used to translate the plan"
+     *     ),
+     *     @OA\Response(response=200, ref="#/components/responses/plan")
+     * )
+     *
+     * @param $plan_id
+     *
+     * @return mixed
+     *
+     *
+     */
+    public function translate(Request $request, $plan_id)
+    {
+        $user = $request->user();
+
+        // Validate Project / User Connection
+        if (!empty($user) && !$this->compareProjects($user->id, $this->key)) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $bible_id = checkParam('bible_id', true);
+        $bible = Bible::whereId($bible_id)->first();
+
+        if (!$bible) {
+            return $this->setStatusCode(404)->replyWithError('Bible Not Found');
+        }
+
+        $plan = $this->getPlan($plan_id, $user);
+        if (!$plan) {
+            return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+        }
+
+        $playlist_controller = new PlaylistsController();
+
+        $translated_days = [];
+        foreach ($plan->days as $day) {
+            $playlist_items = $playlist_controller->translate($request, $day->playlist_id);
+            $translated_days[] = [
+                'id' => $day->id,
+                'playlist_items' => $playlist_items->original,
+            ];
+        }
+
+        return $this->reply($translated_days);
     }
 }
