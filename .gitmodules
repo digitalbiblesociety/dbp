@@ -1,3 +1,0 @@
-[submodule ".elasticbeanstalk"]
-	path = .elasticbeanstalk
-	url = https://git-codecommit.us-west-2.amazonaws.com/v1/repos/dbp-eb
