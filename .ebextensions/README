@@ -1,0 +1,3 @@
+eb functions docs, eg Ref, Fn::GetATT, Fn::Join, Fn::GetOptionSetting
+  https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/ebextensions-functions.html
+

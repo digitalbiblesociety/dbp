@@ -1,0 +1,9 @@
+version: 0.2
+
+phases:
+  post_build:
+    commands:
+      - echo no need to do anything, as zip is handled by external tooling
+artifacts:
+  files:
+    - "**/*"
