@@ -17,7 +17,10 @@ use App\Http\Controllers\User\BookmarksController;
 use App\Http\Controllers\User\HighlightsController;
 use App\Http\Controllers\User\NotesController;
 use App\Models\Bible\BibleDefault;
+use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
+use App\Models\Bible\BibleFileTimestamp;
+use App\Models\Bible\Book;
 use App\Models\Language\Language;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
@@ -595,69 +598,161 @@ class BiblesController extends APIController
             $drama = checkBoolean('drama') ? 'drama' : 'non-drama';
         }
 
-        $cache_string = generateCacheString('bible_chapter', [$bible_id, $book_id, $chapter, $zip, $copyrights, $drama]);
-        $chapter = \Cache::remember($cache_string, now()->addDay(), function () use ($bible, $book_id, $chapter, $zip, $copyrights, $drama) {
-            $result = (object) [
-                'bible_id' => $bible->id,
-                'book_id' => $book_id,
-                'chapter' => $chapter,
-            ];
-            if ($copyrights) {
-                $result->copyrights = $this->copyright($bible->id)->original;
+        $result = (object) [
+            'bible_id' => $bible->id,
+            'book_id' => $book_id,
+            'chapter' => $chapter,
+        ];
+        if ($copyrights) {
+            $result->copyrights = $this->copyright($bible->id)->original;
+        }
+
+        $chapter_filesets = (object) [
+            'video' => (object) ['gospel_films' => []],
+            'audio' => (object) [],
+            'text' => (object) [],
+            'timestamps' => (object) [],
+        ];
+        $timestamps = (object) [];
+
+        $book = Book::whereId($book_id)->first();
+
+        $text_plain = $this->getFileset($bible->filesets, 'text_plain', $book->book_testament);
+        if ($text_plain) {
+            $text_controller = new TextController();
+            $verses = $text_controller->index($text_plain->id, $book_id, $chapter)->original['data'];
+            if (!empty($verses)) {
+                $chapter_filesets->text->verses = $verses;
             }
+        }
 
-            $text_plain = $bible->filesets->filter(function ($fileset) {
-                return $fileset->set_type_code === 'text_plain';
-            })->first();
-            $text_format = $bible->filesets->filter(function ($fileset) {
-                return $fileset->set_type_code === 'text_format';
-            })->first();
-
-            $chapter_filesets = (object) [
-                'video' => (object) [], //['gospel_films' => []],
-                'audio' => (object) [], //['drama' => [], 'non_drama' => []],
-                'text' => (object) [],
-            ];
-
-            if ($text_plain) {
-                $text_controller = new TextController();
-                $verses = $text_controller->index($text_plain->id, $book_id, $chapter)->original['data'];
-                if (sizeof($verses)) {
-                    $chapter_filesets->text->verses = $verses;
-                }
-            }
-
+        $text_format = $this->getFileset($bible->filesets, 'text_format', $book->book_testament);
+        if ($text_format) {
             $fileset_controller = new BibleFileSetsController();
-            if ($text_format) {
-                $formatted_verses = $fileset_controller->show($text_format->id, $text_format->asset_id, $text_format->set_type_code)->original['data'];
-                if (sizeof($formatted_verses)) {
-                    $path = $formatted_verses[0]['path'];
+            $formatted_verses = $fileset_controller->show($text_format->id, $text_format->asset_id, $text_format->set_type_code)->original['data'];
+            if (!empty($formatted_verses)) {
+                $path = $formatted_verses[0]['path'];
+                $cache_string = generateCacheString('bible_chapter_formatted_verses', [$bible_id, $book_id, $chapter, $text_format->id]);
+                $chapter_filesets->text->formatted_verses = \Cache::remember($cache_string, now()->addDay(), function () use ($path) {
                     $client = new Client();
                     $html = $client->get($path);
                     $body = $html->getBody() . '';
-                    $chapter_filesets->text->formatted_verses = $body;
-                }
+                    return $body;
+                });
             }
+        }
 
-            $result->filesets = $chapter_filesets;
 
-            return $result;
-        });
+        if ($drama === 'drama' || $drama === 'all') {
+            $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio_drama', 'drama');
+        }
+
+        if ($drama === 'non-drama' || $drama === 'all') {
+            $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio', 'non_drama');
+        }
+
+        $video_stream = $this->getFileset($bible->filesets, 'video_stream', $book->book_testament);
+        if ($video_stream) {
+            $fileset_controller = new BibleFileSetsController();
+            $gospel_films = $fileset_controller->show($video_stream['id'], $video_stream['asset_id'], $video_stream['set_type_code'])->original['data'];
+            $chapter_filesets->video->gospel_films = $gospel_films;
+        }
+
+        $result->filesets = $chapter_filesets;
+        $result->timestamps = $timestamps;
 
         if (!$show_annotations) {
-            return $this->reply($chapter);
+            return $this->reply($result);
         }
 
         $highlights_controller = new HighlightsController();
         $bookmarks_controller = new BookmarksController();
         $notes_controller = new NotesController();
-        $chapter->annotations = (object) [
+        $result->annotations = (object) [
             'highlights' => $highlights_controller->index($request, $user->id)->original['data'],
             'bookmarks' => $bookmarks_controller->index($request, $user->id)->original['data'],
             'notes' => $notes_controller->index($request, $user->id)->original['data'],
         ];
 
 
-        return $this->reply($chapter);
+        return $this->reply($result);
+    }
+
+    private function getFileset($filesets, $type, $testament)
+    {
+        $available_filesets = [];
+
+        $completeFileset = $filesets->filter(function ($fileset) use ($type) {
+            return $fileset->set_type_code === $type && $fileset->set_size_code === 'C';
+        })->first();
+
+        if ($completeFileset) {
+            $available_filesets[] = $completeFileset;
+        }
+
+        $size_filesets = $filesets->filter(function ($fileset) use ($type, $testament) {
+            return $fileset->set_type_code === $type && $fileset->set_size_code === $testament;
+        })->toArray();
+
+        if (!empty($size_filesets)) {
+            $available_filesets = array_merge($available_filesets, $size_filesets);
+        }
+
+        $size_partial_filesets = $filesets->filter(function ($fileset) use ($type, $testament) {
+            return $fileset->set_type_code === $type && strpos($fileset->set_size_code, $testament . 'P') !== false;
+        })->toArray();
+
+        if (!empty($size_partial_filesets)) {
+            $available_filesets = array_merge($available_filesets, $size_partial_filesets);
+        }
+
+        $partial_fileset = $filesets->filter(function ($fileset) use ($type) {
+            return $fileset->set_type_code === $type && $fileset->set_size_code === 'P';
+        })->first();
+
+        if ($partial_fileset) {
+            $available_filesets[] = $partial_fileset;
+        }
+
+        if (!empty($available_filesets)) {
+            return collect($available_filesets)->sortBy(function ($fileset) {
+                return strpos($fileset['id'], '16') !== false;
+            })->first();
+        }
+
+        return false;
+    }
+
+    private function getAudioFilesetData($results, $bible, $book, $chapter, $type, $name)
+    {
+        $fileset_controller = new BibleFileSetsController();
+        $stream = $this->getFileset($bible->filesets, $type . '_stream', $book->book_testament);
+        $non_stream = $this->getFileset($bible->filesets,  $type, $book->book_testament);
+        $fileset = $stream ? $stream :  $non_stream;
+
+
+        if ($fileset) {
+            $fileset = BibleFileset::whereId($fileset['id'])->first();
+
+            // Get fileset
+            $fileset_result = $fileset_controller->show($fileset->id, $fileset->asset_id, $fileset->set_type_code)->original['data'];
+            if (!empty($fileset_result)) {
+                $results->audio->$name = $fileset_result[0];
+                $results->audio->$name['fileset'] = $fileset;
+            }
+
+            // Get timestamps
+            $bible_files = BibleFile::where('hash_id', $fileset->hash_id)->where('book_id', $book->id)->where('chapter_start', $chapter)->get();
+            $audioTimestamps = BibleFileTimestamp::whereIn('bible_file_id', $bible_files->pluck('id'))->orderBy('verse_start')
+                ->get()->map(function ($timestamp) {
+                    return [
+                        'timestamp' => $timestamp->timestamp,
+                        'verse_start' => $timestamp->verse_start
+                    ];
+                });
+            $results->timestamps->$name = $audioTimestamps;
+        }
+
+        return $results;
     }
 }
