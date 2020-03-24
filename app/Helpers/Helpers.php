@@ -22,7 +22,6 @@ function checkParam(string $paramName, $required = false, $inPathValue = null)
     // Authorization params (with key => Authorization translation)
     if ($paramName === 'key' && request()->header('Authorization')) {
         return str_replace('Bearer ', '', request()->header('Authorization'));
-        ;
     }
 
     foreach (explode('|', $paramName) as $current_param) {
@@ -73,6 +72,13 @@ function apiLogs($request, $status_code, $s3_string = false, $ip_address = null)
     if (config('app.env') !== 'local') {
         App\Jobs\SendApiLogs::dispatch($log_string);
     }
+}
+
+function generateCacheString($key, $args = [])
+{
+    return strtolower(array_reduce($args, function ($carry, $item) {
+        return $carry .= ':' . $item;
+    }, $key));
 }
 
 if (!function_exists('csvToArray')) {

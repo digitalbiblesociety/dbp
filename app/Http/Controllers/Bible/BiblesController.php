@@ -9,14 +9,23 @@ use App\Models\Organization\Organization;
 use App\Transformers\BibleTransformer;
 use App\Transformers\BooksTransformer;
 use App\Traits\AccessControlAPI;
+use App\Traits\CheckProjectMembership;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformers\Serializers\DataArraySerializer;
 use App\Http\Controllers\APIController;
+use App\Http\Controllers\User\BookmarksController;
+use App\Http\Controllers\User\HighlightsController;
+use App\Http\Controllers\User\NotesController;
 use App\Models\Bible\BibleDefault;
+use App\Models\Bible\BibleFileset;
+use App\Models\Language\Language;
+use GuzzleHttp\Client;
+use Illuminate\Http\Request;
 
 class BiblesController extends APIController
 {
     use AccessControlAPI;
+    use CheckProjectMembership;
 
     /**
      * Display a listing of the bibles.
@@ -422,5 +431,233 @@ class BiblesController extends APIController
             $result[$default->language_code][$default->type] = $default->bible_id;
         }
         return $this->reply($result);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/bibles/{bible_id}/copyright",
+     *     tags={"Bibles"},
+     *     summary="Bible Copyright information",
+     *     description="All bible fileset's copyright information and organizational connections",
+     *     operationId="v4_bible.copyright",
+     *     @OA\Parameter(
+     *          name="bible_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Bible/properties/id"),
+     *          description="The Bible ID to retrieve the copyright information for"
+     *     ),
+     *     @OA\Parameter(
+     *          name="iso",
+     *          in="query",
+     *          @OA\Schema(ref="#/components/schemas/Language/properties/iso", default="eng"),
+     *          description="The iso code to filter organization translations by. For a complete list see the `iso` field in the `/languages` route."
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="The requested bible copyrights",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible.copyright")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v4_bible.copyright")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v4_bible.copyright")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v4_bible.copyright"))
+     *     )
+     * )
+     *
+     * @OA\Schema (
+     *   type="array",
+     *   schema="v4_bible.copyright",
+     *   title="Bible copyrights response",
+     *   description="The v4 bible copyrights response.",
+     *   @OA\Items(ref="#/components/schemas/v4_bible_filesets.copyright")
+     * )
+     *
+     */
+    public function copyright($bible_id)
+    {
+        $bible = Bible::whereId($bible_id)->first();
+        if (!$bible) {
+            return $this->setStatusCode(404)->replyWithError('Bible not found');
+        }
+
+        $iso = checkParam('iso') ?? 'eng';
+
+        $cache_string = generateCacheString('bible_copyrights', [$bible_id, $iso]);
+        $copyrights = \Cache::remember($cache_string, now()->addDay(), function () use ($bible, $iso) {
+            $language_id = optional(Language::where('iso', $iso)->select('id')->first())->id;
+            return $bible->filesets->map(function ($fileset) use ($language_id) {
+                return BibleFileset::where('hash_id', $fileset->hash_id)->with([
+                    'copyright.organizations.logos',
+                    'copyright.organizations.translations' => function ($q) use ($language_id) {
+                        $q->where('language_id', $language_id);
+                    }
+                ])->select(['hash_id', 'id', 'asset_id', 'set_type_code as type', 'set_size_code as size'])->first();
+            });
+        });
+
+        return $this->reply($copyrights);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/bibles/{bible_id}/chapter",
+     *     tags={"Bibles"},
+     *     summary="Bible chapter information",
+     *     description="All bible chapter information",
+     *     operationId="v4_bible.chapter",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="bible_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Bible/properties/id"),
+     *          description="The Bible ID to retrieve the chapter information for"
+     *     ),
+     *     @OA\Parameter(
+     *          name="book_id",
+     *          in="query",
+     *          required=true,
+     *          description="Will filter the results by the given book. For a complete list see the `book_id` field in the `/bibles/books` route.",
+     *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
+     *     ),
+     *     @OA\Parameter(
+     *          name="chapter",
+     *          in="query",
+     *          required=true,
+     *          description="Will filter the results by the given chapter",
+     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
+     *     ),
+     *     @OA\Parameter(
+     *          name="zip",
+     *          in="query",
+     *          @OA\Schema(type="boolean", default=false),
+     *          description="Download the given data and package as a compressed file"
+     *     ),
+     *     @OA\Parameter(
+     *          name="copyrights",
+     *          in="query",
+     *          @OA\Schema(type="boolean", default=false),
+     *          description="Will include copyright data"
+     *     ),
+     *     @OA\Parameter(
+     *          name="drama",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="If sent, will determine whether drama or non-drama audio is sent. If  this parameter is not present drama and non-drama will be retrieved"
+     *     ),
+     *     @OA\Parameter(
+     *          name="iso",
+     *          in="query",
+     *          @OA\Schema(ref="#/components/schemas/Language/properties/iso", default="eng"),
+     *          description="The iso code to filter copyrights organization translations by. For a complete list see the `iso` field in the `/languages` route."
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="The requested bible chapter",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible.chapter")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v4_bible.chapter")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v4_bible.chapter")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v4_bible.chapter"))
+     *     )
+     * )
+     *
+     * @OA\Schema (
+     *   type="array",
+     *   schema="v4_bible.chapter",
+     *   title="Bible chapter response",
+     *   description="The v4 bible chapter response.",
+     *   @OA\Items(ref="#/components/schemas/v4_bible_filesets.copyright")
+     * )
+     *
+     */
+    public function chapter(Request $request, $bible_id)
+    {
+        $bible = Bible::whereId($bible_id)->first();
+        if (!$bible) {
+            return $this->setStatusCode(404)->replyWithError('Bible not found');
+        }
+
+        $user = $request->user();
+        $show_annotations = !empty($user);
+
+        // Validate Project / User Connection
+        if ($show_annotations && !$this->compareProjects($user->id, $this->key)) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+
+        $book_id = checkParam('book_id', true);
+        $chapter = checkParam('chapter', true);
+
+        $zip = checkBoolean('zip');
+        $copyrights = checkBoolean('copyrights');
+        $drama = checkParam('drama') ?? 'all';
+        if ($drama !== 'all') {
+            $drama = checkBoolean('drama') ? 'drama' : 'non-drama';
+        }
+
+        $cache_string = generateCacheString('bible_chapter', [$bible_id, $book_id, $chapter, $zip, $copyrights, $drama]);
+        $chapter = \Cache::remember($cache_string, now()->addDay(), function () use ($bible, $book_id, $chapter, $zip, $copyrights, $drama) {
+            $result = (object) [
+                'bible_id' => $bible->id,
+                'book_id' => $book_id,
+                'chapter' => $chapter,
+            ];
+            if ($copyrights) {
+                $result->copyrights = $this->copyright($bible->id)->original;
+            }
+
+            $text_plain = $bible->filesets->filter(function ($fileset) {
+                return $fileset->set_type_code === 'text_plain';
+            })->first();
+            $text_format = $bible->filesets->filter(function ($fileset) {
+                return $fileset->set_type_code === 'text_format';
+            })->first();
+
+            $chapter_filesets = (object) [
+                'video' => (object) [], //['gospel_films' => []],
+                'audio' => (object) [], //['drama' => [], 'non_drama' => []],
+                'text' => (object) [],
+            ];
+
+            if ($text_plain) {
+                $text_controller = new TextController();
+                $verses = $text_controller->index($text_plain->id, $book_id, $chapter)->original['data'];
+                if (sizeof($verses)) {
+                    $chapter_filesets->text->verses = $verses;
+                }
+            }
+
+            $fileset_controller = new BibleFileSetsController();
+            if ($text_format) {
+                $formatted_verses = $fileset_controller->show($text_format->id, $text_format->asset_id, $text_format->set_type_code)->original['data'];
+                if (sizeof($formatted_verses)) {
+                    $path = $formatted_verses[0]['path'];
+                    $client = new Client();
+                    $html = $client->get($path);
+                    $body = $html->getBody() . '';
+                    $chapter_filesets->text->formatted_verses = $body;
+                }
+            }
+
+            $result->filesets = $chapter_filesets;
+
+            return $result;
+        });
+
+        if (!$show_annotations) {
+            return $this->reply($chapter);
+        }
+
+        $highlights_controller = new HighlightsController();
+        $bookmarks_controller = new BookmarksController();
+        $notes_controller = new NotesController();
+        $chapter->annotations = (object) [
+            'highlights' => $highlights_controller->index($request, $user->id)->original['data'],
+            'bookmarks' => $bookmarks_controller->index($request, $user->id)->original['data'],
+            'notes' => $notes_controller->index($request, $user->id)->original['data'],
+        ];
+
+
+        return $this->reply($chapter);
     }
 }
