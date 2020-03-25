@@ -22,6 +22,7 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFileTimestamp;
 use App\Models\Bible\Book;
 use App\Models\Language\Language;
+use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use ZipArchive;
@@ -725,12 +726,19 @@ class BiblesController extends APIController
             if (!empty($formatted_verses)) {
                 $path = $formatted_verses[0]['path'];
                 $cache_string = generateCacheString('bible_chapter_formatted_verses', [$bible_id, $book_id, $chapter, $text_format->id]);
-                $chapter_filesets->text->formatted_verses = \Cache::remember($cache_string, now()->addDay(), function () use ($path) {
-                    $client = new Client();
-                    $html = $client->get($path);
-                    $body = $html->getBody() . '';
-                    return $body;
+                $formatted_verses = \Cache::remember($cache_string, now()->addDay(), function () use ($path) {
+                    try {
+                        $client = new Client();
+                        $html = $client->get($path);
+                        $body = $html->getBody() . '';
+                        return $body;
+                    } catch (Exception $e) {
+                        return false;
+                    }
                 });
+                if ($formatted_verses) {
+                    $chapter_filesets->text->formatted_verses = $formatted_verses;
+                }
             }
         }
 
@@ -751,7 +759,11 @@ class BiblesController extends APIController
         }
 
         $video_stream_controller = new VideoStreamController();
-        $jesus_films = $video_stream_controller->jesusFilmChapters($bible->language->iso)->original;
+        try {
+            $jesus_films = $video_stream_controller->jesusFilmChapters($bible->language->iso)->original;
+        } catch (Exception $e) {
+            $jesus_films = [];
+        }
 
         if (isset($jesus_films['verses'])) {
             $verses = $jesus_films['verses'];
