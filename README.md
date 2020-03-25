@@ -17,3 +17,11 @@ We use [SemVer 2.0.0](http://semver.org/) for versioning. For the versions avail
 
 #### License
 This project is licensed under the MIT License please refer to the [LICENSE](LICENSE.md).
+
+
+### AWS Elastic Beanstalk
+This code can easily be deployed on AWS Elastic Beanstalk, an example command to setup is below (you have to setup the supporting AWS infrastructure of course)
+
+```
+eb init --profile dbp-dev-admin 
+```
