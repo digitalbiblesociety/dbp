@@ -197,6 +197,12 @@ class PlansController extends APIController
      *          @OA\Schema(type="boolean"),
      *          description="Give full details of the plan"
      *     ),
+     *     @OA\Parameter(
+     *          name="show_text",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Enable the full details of the plan and retrieve the text of the playlists items"
+     *     ),
      *     @OA\Response(response=200, ref="#/components/responses/plan")
      * )
      *
@@ -222,6 +228,10 @@ class PlansController extends APIController
         }
 
         $show_details = checkBoolean('show_details');
+        $show_text = checkBoolean('show_text');
+        if ($show_text) {
+            $show_details = $show_text;
+        }
 
         $playlist_controller = new PlaylistsController();
         if ($show_details) {
