@@ -24,6 +24,7 @@ use App\Models\Bible\Book;
 use App\Models\Language\Language;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use ZipArchive;
 
 class BiblesController extends APIController
 {
@@ -564,13 +565,73 @@ class BiblesController extends APIController
      * )
      *
      * @OA\Schema (
-     *   type="array",
+     *   type="object",
      *   schema="v4_bible.chapter",
      *   title="Bible chapter response",
      *   description="The v4 bible chapter response.",
-     *   @OA\Items(ref="#/components/schemas/v4_bible_filesets.copyright")
+     *   @OA\Property(property="annotations", type="object",
+     *      @OA\Property(property="bookmarks", ref="#/components/schemas/v4_user_bookmarks/properties/data"),
+     *      @OA\Property(property="highlights", ref="#/components/schemas/v4_highlights_index/properties/data"),
+     *      @OA\Property(property="notes", ref="#/components/schemas/v4_notes_index/properties/data")
+     *   ),
+     *   @OA\Property(property="bible_id", ref="#/components/schemas/Bible/properties/id"),
+     *   @OA\Property(property="book_id", ref="#/components/schemas/Book/properties/id"),
+     *   @OA\Property(property="chapter", ref="#/components/schemas/BibleFile/properties/chapter_start"),
+     *   @OA\Property(property="copyrights",  type="array",
+     *      @OA\Items(
+     *          @OA\Property(property="id", ref="#/components/schemas/BibleFileset/properties/id"),
+     *          @OA\Property(property="asset_id", ref="#/components/schemas/BibleFileset/properties/asset_id"),
+     *          @OA\Property(property="type", ref="#/components/schemas/BibleFileset/properties/set_type_code"),
+     *          @OA\Property(property="size", ref="#/components/schemas/BibleFileset/properties/set_size_code"),
+     *          @OA\Property(property="copyright", ref="#/components/schemas/v4_bible_filesets.copyright")
+     *      )
+     *   ),
+     *   @OA\Property(property="filesets", type="object",
+     *      @OA\Property(property="video", type="object",
+     *          @OA\Property(property="gospel_films", ref="#/components/schemas/v4_bible_filesets.show/properties/data")
+     *      ),
+     *      @OA\Property(property="audio", type="object",
+     *         @OA\Property(property="drama", ref="#/components/schemas/v4_bible.fileset_chapter"),
+     *         @OA\Property(property="non_drama", ref="#/components/schemas/v4_bible.fileset_chapter"),
+     *      ),
+     *      @OA\Property(property="text", type="object",
+     *         @OA\Property(property="verses", ref="#/components/schemas/v4_bible_filesets_chapter/properties/data"),
+     *         @OA\Property(property="formatted_verses", type="string"),
+     *      ),
+     *   ),
+     *   @OA\Property(property="timestamps", type="object",
+     *       @OA\Property(property="drama", ref="#/components/schemas/v4_bible.fileset_chapter_timestamp"),
+     *       @OA\Property(property="non_drama", ref="#/components/schemas/v4_bible.fileset_chapter_timestamp"),
+     *   )
      * )
-     *
+     * @OA\Schema(
+     *      type="object",
+     *      schema="v4_bible.fileset_chapter",
+     *      @OA\Property(property="book_id",        ref="#/components/schemas/BibleFile/properties/book_id"),
+     *      @OA\Property(property="book_name",      ref="#/components/schemas/BookTranslation/properties/name"),
+     *      @OA\Property(property="chapter_start",  ref="#/components/schemas/BibleFile/properties/chapter_start"),
+     *      @OA\Property(property="chapter_end",    ref="#/components/schemas/BibleFile/properties/chapter_end"),
+     *      @OA\Property(property="verse_start",    ref="#/components/schemas/BibleFile/properties/verse_start"),
+     *      @OA\Property(property="verse_end",      ref="#/components/schemas/BibleFile/properties/verse_end"),
+     *      @OA\Property(property="thumbnail",      type="string", description="The image url", maxLength=191),
+     *      @OA\Property(property="timestamp",      ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
+     *      @OA\Property(property="path",           ref="#/components/schemas/BibleFile/properties/file_name"),
+     *      @OA\Property(property="duration",       ref="#/components/schemas/BibleFile/properties/duration"),
+     *      @OA\Property(property="fileset", type="object",
+     *          @OA\Property(property="id", ref="#/components/schemas/BibleFileset/properties/id"),
+     *          @OA\Property(property="asset_id", ref="#/components/schemas/BibleFileset/properties/asset_id"),
+     *          @OA\Property(property="type", ref="#/components/schemas/BibleFileset/properties/set_type_code"),
+     *          @OA\Property(property="size", ref="#/components/schemas/BibleFileset/properties/set_size_code"),
+     *      )
+     * )
+     * @OA\Schema(
+     *      type="array",
+     *      schema="v4_bible.fileset_chapter_timestamp",
+     *      @OA\Items(
+     *          @OA\Property(property="timestamp",        ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
+     *          @OA\Property(property="verse_start",      ref="#/components/schemas/BibleFile/properties/verse_start")
+     *      )
+     * )
      */
     public function chapter(Request $request, $bible_id)
     {
@@ -598,11 +659,22 @@ class BiblesController extends APIController
             $drama = checkBoolean('drama') ? 'drama' : 'non-drama';
         }
 
-        $result = (object) [
-            'bible_id' => $bible->id,
-            'book_id' => $book_id,
-            'chapter' => $chapter,
-        ];
+        $result = (object) [];
+
+        if ($show_annotations) {
+            $highlights_controller = new HighlightsController();
+            $bookmarks_controller = new BookmarksController();
+            $notes_controller = new NotesController();
+            $result->annotations = (object) [
+                'highlights' => $highlights_controller->index($request, $user->id)->original['data'],
+                'bookmarks' => $bookmarks_controller->index($request, $user->id)->original['data'],
+                'notes' => $notes_controller->index($request, $user->id)->original['data'],
+            ];
+        }
+        $result->bible_id = $bible->id;
+        $result->book_id = $book_id;
+        $result->chapter = $chapter;
+
         if ($copyrights) {
             $result->copyrights = $this->copyright($bible->id)->original;
         }
@@ -613,7 +685,10 @@ class BiblesController extends APIController
             'text' => (object) [],
             'timestamps' => (object) [],
         ];
-        $timestamps = (object) [];
+
+        if ($zip) {
+            $chapter_filesets->downloads = [];
+        }
 
         $book = Book::whereId($book_id)->first();
 
@@ -644,11 +719,11 @@ class BiblesController extends APIController
 
 
         if ($drama === 'drama' || $drama === 'all') {
-            $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio_drama', 'drama');
+            $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio_drama', 'drama', $zip);
         }
 
         if ($drama === 'non-drama' || $drama === 'all') {
-            $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio', 'non_drama');
+            $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio', 'non_drama', $zip);
         }
 
         $video_stream = $this->getFileset($bible->filesets, 'video_stream', $book->book_testament);
@@ -659,23 +734,9 @@ class BiblesController extends APIController
         }
 
         $result->filesets = $chapter_filesets;
-        $result->timestamps = $timestamps;
-
-        if (!$show_annotations) {
-            return $this->reply($result);
-        }
-
-        $highlights_controller = new HighlightsController();
-        $bookmarks_controller = new BookmarksController();
-        $notes_controller = new NotesController();
-        $result->annotations = (object) [
-            'highlights' => $highlights_controller->index($request, $user->id)->original['data'],
-            'bookmarks' => $bookmarks_controller->index($request, $user->id)->original['data'],
-            'notes' => $notes_controller->index($request, $user->id)->original['data'],
-        ];
-
-
-        return $this->reply($result);
+        $result->timestamps = $result->filesets->timestamps;
+        unset($result->filesets->timestamps);
+        return $this->replyWithDownload($result, $zip, $bible, $book, $chapter);
     }
 
     private function getFileset($filesets, $type, $testament)
@@ -723,10 +784,10 @@ class BiblesController extends APIController
         return false;
     }
 
-    private function getAudioFilesetData($results, $bible, $book, $chapter, $type, $name)
+    private function getAudioFilesetData($results, $bible, $book, $chapter, $type, $name, $download = false)
     {
         $fileset_controller = new BibleFileSetsController();
-        $stream = $this->getFileset($bible->filesets, $type . '_stream', $book->book_testament);
+        $stream = $download ? false : $this->getFileset($bible->filesets, $type . '_stream', $book->book_testament);
         $non_stream = $this->getFileset($bible->filesets,  $type, $book->book_testament);
         $fileset = $stream ? $stream :  $non_stream;
 
@@ -739,6 +800,11 @@ class BiblesController extends APIController
             if (!empty($fileset_result)) {
                 $results->audio->$name = $fileset_result[0];
                 $results->audio->$name['fileset'] = $fileset;
+                if ($download) {
+                    $file_name = $fileset->id . '-' . $book->id . '-' . $chapter . '.mp3';
+                    $results->downloads[] = (object) ['path' => $results->audio->$name['path'], 'file_name' => $file_name];
+                    $results->audio->$name['path'] = $file_name;
+                }
             }
 
             // Get timestamps
@@ -754,5 +820,33 @@ class BiblesController extends APIController
         }
 
         return $results;
+    }
+
+    private function replyWithDownload($result, $zip, $bible, $book, $chapter)
+    {
+        if (!$zip) {
+            return $this->reply($result);
+        }
+
+        $public_dir = public_path();
+        $file_name = $bible->id . '-' . $book->id . '-' . $chapter . '.zip';
+        $zip_file = rand() . time() . '-' . $file_name;
+        $file_to_path = $public_dir . '/' . $zip_file;
+        $zip = new ZipArchive;
+        if ($zip->open($file_to_path, ZipArchive::CREATE) === true) {
+            $zip->addFromString('contents.json', json_encode($result));
+
+            foreach ($result->filesets->downloads as $download) {
+                $client = new Client();
+                $mp3 = $client->get($download->path);
+                $zip->addFromString($download->file_name, $mp3->getBody());
+            }
+            unset($result->filesets->downloads);
+            $zip->close();
+        }
+
+        $headers = ['Content-Type' => 'application/octet-stream'];
+        $response = response()->download($file_to_path, $file_name, $headers)->deleteFileAfterSend(true);
+        return $response;
     }
 }

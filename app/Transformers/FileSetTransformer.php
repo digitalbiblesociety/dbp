@@ -136,7 +136,7 @@ class FileSetTransformer extends BaseTransformer
                  *          @OA\Property(property="chapter_end",    ref="#/components/schemas/BibleFile/properties/chapter_end"),
                  *          @OA\Property(property="verse_start",    ref="#/components/schemas/BibleFile/properties/verse_start"),
                  *          @OA\Property(property="verse_end",      ref="#/components/schemas/BibleFile/properties/verse_end"),
-                 *          @OA\Property(property="thumbnail",         type="string", description="The image url", maxLength=191),
+                 *          @OA\Property(property="thumbnail",      type="string", description="The image url", maxLength=191),
                  *          @OA\Property(property="timestamp",      ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
                  *          @OA\Property(property="path",           ref="#/components/schemas/BibleFile/properties/file_name"),
                  *          @OA\Property(property="duration",       ref="#/components/schemas/BibleFile/properties/duration"),
