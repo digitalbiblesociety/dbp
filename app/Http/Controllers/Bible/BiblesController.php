@@ -588,7 +588,8 @@ class BiblesController extends APIController
      *   ),
      *   @OA\Property(property="filesets", type="object",
      *      @OA\Property(property="video", type="object",
-     *          @OA\Property(property="gospel_films", ref="#/components/schemas/v4_bible_filesets.show/properties/data")
+     *          @OA\Property(property="gospel_films", ref="#/components/schemas/v4_bible_filesets.show/properties/data"),
+     *          @OA\Property(property="jesus_films", ref="#/components/schemas/v4_bible_chapter_jesus_films")
      *      ),
      *      @OA\Property(property="audio", type="object",
      *         @OA\Property(property="drama", ref="#/components/schemas/v4_bible.fileset_chapter"),
@@ -630,6 +631,22 @@ class BiblesController extends APIController
      *      @OA\Items(
      *          @OA\Property(property="timestamp",        ref="#/components/schemas/BibleFileTimestamp/properties/timestamp"),
      *          @OA\Property(property="verse_start",      ref="#/components/schemas/BibleFile/properties/verse_start")
+     *      )
+     * )
+     * @OA\Schema(
+     *      type="array",
+     *      schema="v4_bible_chapter_jesus_films",
+     *      @OA\Items(
+     *          @OA\Property(property="component_id", type="string"),
+     *          @OA\Property(property="verses", type="array", @OA\Items(type="integer")),
+     *          @OA\Property(property="meta", type="object",
+     *                @OA\Property(property="thumbnail", type="string"),
+     *                @OA\Property(property="thumbnail_high", type="string"),
+     *                @OA\Property(property="title", type="string"),
+     *                @OA\Property(property="shortDescription", type="string"),
+     *                @OA\Property(property="longDescription", type="string"),
+     *                @OA\Property(property="file_name", type="string")
+     *          )
      *      )
      * )
      */
@@ -680,7 +697,7 @@ class BiblesController extends APIController
         }
 
         $chapter_filesets = (object) [
-            'video' => (object) ['gospel_films' => []],
+            'video' => (object) ['gospel_films' => [], 'jesus_films' => []],
             'audio' => (object) [],
             'text' => (object) [],
             'timestamps' => (object) [],
@@ -731,6 +748,32 @@ class BiblesController extends APIController
             $fileset_controller = new BibleFileSetsController();
             $gospel_films = $fileset_controller->show($video_stream['id'], $video_stream['asset_id'], $video_stream['set_type_code'])->original['data'];
             $chapter_filesets->video->gospel_films = $gospel_films;
+        }
+
+        $video_stream_controller = new VideoStreamController();
+        $jesus_films = $video_stream_controller->jesusFilmChapters($bible->language->iso)->original;
+
+        if (isset($jesus_films['verses'])) {
+            $verses = $jesus_films['verses'];
+            $metadata = $jesus_films['meta'];
+            $films = [];
+
+            foreach ($verses as $key => $verse) {
+                if (!$verse) {
+                    continue;
+                }
+                foreach ($verse as $book_key => $chapters) {
+                    foreach ($chapters as $chapter_key => $item) {
+                        if (substr(strtoupper($book_key), 0, 3) === $book->id && intval($chapter_key) === intval($chapter)) {
+                            $films[] = (object) ['component_id' => $key, 'verses' => $item];
+                        }
+                    }
+                }
+            }
+            $chapter_filesets->video->jesus_films = collect($films)->map(function ($film) use ($metadata) {
+                $film->meta = $metadata[$film->component_id];
+                return $film;
+            });
         }
 
         $result->filesets = $chapter_filesets;
