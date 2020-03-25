@@ -44,6 +44,12 @@ class PlaylistsController extends APIController
      *          @OA\Schema(type="boolean"),
      *          description="Give full details of the playlist"
      *     ),
+     *     @OA\Parameter(
+     *          name="show_text",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Enable the full details of the playlist and retrieve the text of the items"
+     *     ),
      *     security={{"api_token":{}}},
      *     @OA\Parameter(ref="#/components/parameters/limit"),
      *     @OA\Parameter(ref="#/components/parameters/page"),
@@ -97,6 +103,11 @@ class PlaylistsController extends APIController
         $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
 
         $show_details = checkBoolean('show_details');
+        $show_text = checkBoolean('show_text');
+        if ($show_text) {
+            $show_details = $show_text;
+        }
+
         $playlists = Playlist::with('user')
             ->when($show_details, function ($query) {
                 $query->with('items');
@@ -121,7 +132,11 @@ class PlaylistsController extends APIController
             if ($show_details) {
                 $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist->id, 'v' => $this->v, 'key' => $this->key]);
             }
-
+            if ($show_text) {
+                foreach ($playlist->items as $item) {
+                    $item->verse_text = $item->getVerseText();
+                }
+            }
             $playlist->total_duration = PlaylistItems::where('playlist_id', $playlist->id)->sum('duration');
         }
 
