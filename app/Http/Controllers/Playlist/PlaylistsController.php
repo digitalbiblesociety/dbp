@@ -752,7 +752,7 @@ class PlaylistsController extends APIController
 
             foreach ($transportStream as $stream) {
                 $durations[] = $stream->runtime;
-                $hls_items .= "\n#EXTINF:$stream->runtime";
+                $hls_items .= "\n#EXTINF:$stream->runtime," . $item->id;
                 if (isset($stream->timestamp)) {
                     $hls_items .= "\n#EXT-X-BYTERANGE:$stream->bytes@$stream->offset";
                     $fileset = $stream->timestamp->bibleFile->fileset;
@@ -778,7 +778,7 @@ class PlaylistsController extends APIController
         foreach ($bible_files as $bible_file) {
             $default_duration = $bible_file->duration ?? 180;
             $durations[] = $default_duration;
-            $hls_items .= "\n#EXTINF:$default_duration";
+            $hls_items .= "\n#EXTINF:$default_duration," . $item->id;
 
             $bible_path = $bible_file->fileset->bible->first()->id;
             $file_path = 'audio/' . $bible_path . '/' . $bible_file->fileset->id . '/' . $bible_file->file_name;
