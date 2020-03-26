@@ -86,8 +86,8 @@ class ApiMetadataController extends APIController
             \Cache::forget('cache_test');
             \Cache::add('cache_test', 'live', 5);
             $cache_test = \Cache::get('cache_test');
-	    if ($cache_test != 'live') {
-            	$status_code = 500;
+            if ($cache_test != 'live') {
+                $status_code = 500;
 	    }
         } catch (\Exception $e) {
             $cache_test = $e->getMessage();
