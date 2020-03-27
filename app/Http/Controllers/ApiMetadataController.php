@@ -71,7 +71,7 @@ class ApiMetadataController extends APIController
             $user_connection_message = 'live';
         } catch (\Exception $e) {
             $user_connection_message = $e->getMessage();
-            $status_code = 417;
+            $status_code = 500;
         }
 
         try {
@@ -79,16 +79,19 @@ class ApiMetadataController extends APIController
             $dbp_connection_message = 'live';
         } catch (\Exception $e) {
             $dbp_connection_message = $e->getMessage();
-            $status_code = 417;
+            $status_code = 500;
         }
 
         try {
             \Cache::forget('cache_test');
             \Cache::add('cache_test', 'live', 5);
-            $cache_test = \Cache::get('cache_test', 'failed by default');
+            $cache_test = \Cache::get('cache_test');
+            if ($cache_test != 'live') {
+                $status_code = 500;
+	    }
         } catch (\Exception $e) {
             $cache_test = $e->getMessage();
-            $status_code = 417;
+            $status_code = 500;
         }
 
         $connection = [
