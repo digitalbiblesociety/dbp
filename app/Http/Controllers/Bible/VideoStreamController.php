@@ -33,9 +33,9 @@ class VideoStreamController extends APIController
         return $languages;
     }
 
-    public function jesusFilmChapters()
+    public function jesusFilmChapters($iso)
     {
-        $iso = checkParam('iso');
+        $iso = checkParam('iso') ?? $iso;
         if ($iso) {
             $cache_string =  'arclight_languages' . $iso;
             $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($iso) {

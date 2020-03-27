@@ -7,7 +7,7 @@ use App\Models\Organization\Asset;
 use App\Traits\AccessControlAPI;
 use App\Traits\CallsBucketsTrait;
 use App\Http\Controllers\APIController;
-
+use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFilesetType;
@@ -60,13 +60,13 @@ class BibleFileSetsController extends APIController
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
      * @throws \Exception
      */
-    public function show($id = null)
+    public function show($id = null, $asset_id = null, $set_type_code = null)
     {
         $fileset_id    = checkParam('dam_id|fileset_id', true, $id);
         $book_id       = checkParam('book_id');
-        $chapter_id    = checkParam('chapter_id');
-        $asset_id      = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
-        $type          = checkParam('type', true);
+        $chapter_id    = checkParam('chapter_id|chapter');
+        $asset_id      = checkParam('bucket|bucket_id|asset_id', false, $asset_id) ?? config('filesystems.disks.s3_fcbh.bucket');
+        $type          = checkParam('type', $set_type_code !== null, $set_type_code);
 
         $cache_string = 'bible_filesets_show:' . $this->v . ':' . $fileset_id . $book_id . $type . $chapter_id . $asset_id;
         $fileset_chapters = \Cache::remember($cache_string, now()->addHours(12), function () use ($fileset_id, $book_id, $type, $chapter_id, $asset_id) {

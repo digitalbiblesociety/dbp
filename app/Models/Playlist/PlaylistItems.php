@@ -296,6 +296,29 @@ class PlaylistItems extends Model implements Sortable
         return $this;
     }
 
+    public function getVerseText()
+    {
+        $fileset = BibleFileset::where('id', $this['fileset_id'])->first();
+        $text_fileset = $fileset->bible->first()->filesets->where('set_type_code', 'text_plain')->first();
+        $verses = null;
+        if ($text_fileset) {
+            $where = [
+                ['book_id', $this['book_id']],
+                ['chapter', '>=', $this['chapter_start']],
+                ['chapter', '<=', $this['chapter_end']],
+            ];
+            if ($this['verse_start'] && $this['verse_end']) {
+                $where[] = ['verse_start', '>=', $this['verse_start']];
+                $where[] = ['verse_end', '<=', $this['verse_end']];
+            }
+            $verses = BibleVerse::where('hash_id', $text_fileset->hash_id)
+                ->where($where)
+                ->get()->pluck('verse_text');
+        }
+
+        return $verses;
+    }
+
     /**
      * @OA\Property(
      *   property="completed",
