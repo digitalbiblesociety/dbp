@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use Exception;
+
 trait ArclightConnection
 {
     private function fetchArclight($path, $language_id = null, $include_refs = false, $parameters = '')
@@ -22,7 +24,11 @@ trait ArclightConnection
 
         $path .= '&'.$parameters;
 
-        $results = json_decode(file_get_contents($path));
+        try {
+            $results = json_decode(file_get_contents($path));
+        } catch (Exception $e) {
+            return null;
+        }
 
         if (isset($results->_embedded)) {
             return $results->_embedded;
