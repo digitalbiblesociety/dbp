@@ -93,6 +93,19 @@ class PlansController extends APIController
         $sort_by    = checkParam('sort_by') ?? 'name';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
 
+        if ($featured) {
+            $cache_string = generateCacheString('v4_plan_index', [$featured, $limit, $sort_by, $sort_dir]);
+            $plans = \Cache::remember($cache_string, now()->addDay(), function () use ($featured, $limit, $sort_by, $sort_dir, $user) {
+                return $this->getPlans($featured, $limit, $sort_by, $sort_dir, $user);
+            });
+            return $this->reply($plans);
+        }
+
+        return $this->reply($this->getPlans($featured, $limit, $sort_by, $sort_dir, $user));
+    }
+
+    private function getPlans($featured, $limit, $sort_by, $sort_dir, $user)
+    {
         $plans = Plan::with('days')
             ->with('user')
             ->when($featured || empty($user), function ($q) {
@@ -109,8 +122,7 @@ class PlansController extends APIController
             $plan->total_days = sizeof($plan->days);
             unset($plan->days);
         }
-
-        return $this->reply($plans);
+        return $plans;
     }
 
     /**
