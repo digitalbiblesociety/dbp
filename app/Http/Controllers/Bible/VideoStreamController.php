@@ -33,7 +33,7 @@ class VideoStreamController extends APIController
         return $languages;
     }
 
-    public function jesusFilmChapters($iso)
+    public function jesusFilmChapters($iso = null)
     {
         $iso = checkParam('iso') ?? $iso;
         if ($iso) {
