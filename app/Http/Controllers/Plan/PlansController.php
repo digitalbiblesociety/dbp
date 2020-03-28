@@ -18,7 +18,7 @@ class PlansController extends APIController
     use AccessControlAPI;
     use CheckProjectMembership;
 
-    protected $days_limit = 365;
+    protected $days_limit = 1095;
 
     /**
      * Display a listing of the resource.

@@ -24,7 +24,7 @@ class PlaylistsController extends APIController
     use CheckProjectMembership;
     use CallsBucketsTrait;
 
-    protected $items_limit = 100;
+    protected $items_limit = 1000;
 
     /**
      * Display a listing of the resource.
