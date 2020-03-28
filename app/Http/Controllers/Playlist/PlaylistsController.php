@@ -24,6 +24,8 @@ class PlaylistsController extends APIController
     use CheckProjectMembership;
     use CallsBucketsTrait;
 
+    protected $items_limit = 1000;
+
     /**
      * Display a listing of the resource.
      *
@@ -484,6 +486,14 @@ class PlaylistsController extends APIController
         }
 
         $created_playlist_items = [];
+
+        $current_items_size = sizeof($playlist->items);
+        $new_items_size = sizeof($playlist_items);
+
+        if ($current_items_size + $new_items_size > $this->items_limit) {
+            $allowed_size = $this->items_limit - $current_items_size;
+            $playlist_items = array_slice($playlist_items, 0, $allowed_size);
+        }
 
         foreach ($playlist_items as $playlist_item) {
             $verses = $playlist_items->verses ?? 0;
