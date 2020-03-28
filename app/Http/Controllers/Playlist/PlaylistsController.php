@@ -100,7 +100,7 @@ class PlaylistsController extends APIController
         $featured = checkBoolean('featured') || empty($user);
         $limit    = (int) (checkParam('limit') ?? 25);
 
-        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
+
 
         $show_details = checkBoolean('show_details');
         $show_text = checkBoolean('show_text');
@@ -108,6 +108,21 @@ class PlaylistsController extends APIController
             $show_details = $show_text;
         }
 
+        if ($featured) {
+            $cache_string = generateCacheString('v4_playlist_index', [$show_details, $featured, $sort_by, $sort_dir, $limit, $show_text]);
+            $playlists = \Cache::remember($cache_string, now()->addDay(), function () use ($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text) {
+                return $this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text);
+            });
+            return $this->reply($playlists);
+        }
+
+
+        return $this->reply($this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text));
+    }
+
+    private function getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text)
+    {
+        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
         $playlists = Playlist::with('user')
             ->when($show_details, function ($query) {
                 $query->with('items');
@@ -140,7 +155,7 @@ class PlaylistsController extends APIController
             $playlist->total_duration = PlaylistItems::where('playlist_id', $playlist->id)->sum('duration');
         }
 
-        return $this->reply($playlists);
+        return $playlists;
     }
 
     /**
