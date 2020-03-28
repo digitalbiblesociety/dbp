@@ -312,7 +312,7 @@ class NotesController extends APIController
 
         $note = Note::where('user_id', $user_id)->where('id', $note_id)->first();
         if (!$note) {
-            $this->setStatusCode(404)->replyWithError('Note Not Found');
+            return $this->setStatusCode(404)->replyWithError('Note Not Found');
         }
         $note->delete();
 
