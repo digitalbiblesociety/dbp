@@ -18,6 +18,8 @@ class PlansController extends APIController
     use AccessControlAPI;
     use CheckProjectMembership;
 
+    protected $days_limit = 365;
+
     /**
      * Display a listing of the resource.
      *
@@ -146,7 +148,8 @@ class PlansController extends APIController
         }
 
         $name = checkParam('name', true);
-        $days = checkParam('days', true);
+        $days = intval(checkParam('days', true));
+        $days = $days > $this->days_limit ? $this->days_limit : $days;
         $suggested_start_date = checkParam('suggested_start_date');
 
         $plan = Plan::create([
@@ -486,7 +489,11 @@ class PlansController extends APIController
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
         }
 
-        $days = checkParam('days', true);
+        $days = intval(checkParam('days', true));
+        $current_days_size = sizeof($plan->days);
+        $total_days = $current_days_size + $days;
+        $days = $total_days > $this->days_limit ? $this->days_limit - $current_days_size : $days;
+
 
         $created_plan_days = [];
 
