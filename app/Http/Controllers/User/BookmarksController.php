@@ -270,6 +270,9 @@ class BookmarksController extends APIController
         }
 
         $bookmark = Bookmark::where('id', $bookmark_id)->where('user_id', $user_id)->first();
+        if (!$bookmark) {
+            return $this->setStatusCode(404)->replyWithError('Bookmark not found');
+        }
         $bookmark->delete();
 
         return $this->reply('bookmark successfully deleted');
