@@ -61,7 +61,8 @@ class Kernel extends ConsoleKernel
         $schedule->command(syncV2Database::class)
             ->everyFifteenMinutes()
             ->onOneServer()
-            ->withoutOverlapping();
+            ->withoutOverlapping()
+            ->appendOutputTo ('/tmp/laravel/scheduled_output.log');
     }
 
     /**
