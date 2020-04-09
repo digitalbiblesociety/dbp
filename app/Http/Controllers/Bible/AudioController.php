@@ -220,11 +220,11 @@ class AudioController extends APIController
      *
      * @return mixed
      */
-    public function timestampsByReference($fileset_id_param = null, $book_url_param = null, $chapter_url_param = null)
+    public function timestampsByReference($fileset_id_param = null, $book_url_param = null, $chapter_url_param = null, $asset_id = null)
     {
         // Check Params
         $id       = checkParam('fileset_id|dam_id|id', true, $fileset_id_param);
-        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $asset_id = checkParam('asset_id', false, $asset_id) ?? config('filesystems.disks.s3_fcbh.bucket');
         $book     = checkParam('book|osis_code', false, $book_url_param);
         $chapter  = checkParam('chapter_id|chapter_number', false, $chapter_url_param);
 

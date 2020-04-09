@@ -18,6 +18,8 @@ class PlansController extends APIController
     use AccessControlAPI;
     use CheckProjectMembership;
 
+    protected $days_limit = 1095;
+
     /**
      * Display a listing of the resource.
      *
@@ -91,6 +93,19 @@ class PlansController extends APIController
         $sort_by    = checkParam('sort_by') ?? 'name';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
 
+        if ($featured) {
+            $cache_string = generateCacheString('v4_plan_index', [$featured, $limit, $sort_by, $sort_dir]);
+            $plans = \Cache::remember($cache_string, now()->addDay(), function () use ($featured, $limit, $sort_by, $sort_dir, $user) {
+                return $this->getPlans($featured, $limit, $sort_by, $sort_dir, $user);
+            });
+            return $this->reply($plans);
+        }
+
+        return $this->reply($this->getPlans($featured, $limit, $sort_by, $sort_dir, $user));
+    }
+
+    private function getPlans($featured, $limit, $sort_by, $sort_dir, $user)
+    {
         $plans = Plan::with('days')
             ->with('user')
             ->where('draft', 0)
@@ -108,8 +123,7 @@ class PlansController extends APIController
             $plan->total_days = sizeof($plan->days);
             unset($plan->days);
         }
-
-        return $this->reply($plans);
+        return $plans;
     }
 
     /**
@@ -147,7 +161,8 @@ class PlansController extends APIController
         }
 
         $name = checkParam('name', true);
-        $days = checkParam('days', true);
+        $days = intval(checkParam('days', true));
+        $days = $days > $this->days_limit ? $this->days_limit : $days;
         $suggested_start_date = checkParam('suggested_start_date');
 
         $plan = Plan::create([
@@ -198,6 +213,12 @@ class PlansController extends APIController
      *          @OA\Schema(type="boolean"),
      *          description="Give full details of the plan"
      *     ),
+     *     @OA\Parameter(
+     *          name="show_text",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Enable the full details of the plan and retrieve the text of the playlists items"
+     *     ),
      *     @OA\Response(response=200, ref="#/components/responses/plan")
      * )
      *
@@ -223,6 +244,10 @@ class PlansController extends APIController
         }
 
         $show_details = checkBoolean('show_details');
+        $show_text = checkBoolean('show_text');
+        if ($show_text) {
+            $show_details = $show_text;
+        }
 
         $playlist_controller = new PlaylistsController();
         if ($show_details) {
@@ -477,7 +502,11 @@ class PlansController extends APIController
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
         }
 
-        $days = checkParam('days', true);
+        $days = intval(checkParam('days', true));
+        $current_days_size = sizeof($plan->days);
+        $total_days = $current_days_size + $days;
+        $days = $total_days > $this->days_limit ? $this->days_limit - $current_days_size : $days;
+
 
         $created_plan_days = [];
 
