@@ -141,7 +141,9 @@ class PlaylistsController extends APIController
      *     @OA\RequestBody(required=true, description="Fields for User Playlist Creation", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name",                  ref="#/components/schemas/Playlist/properties/name"),
+     *              @OA\Property(property="draft",                 ref="#/components/schemas/Playlist/properties/draft"),
      *              @OA\Property(property="external_content",      ref="#/components/schemas/Playlist/properties/external_content")
+     *              @OA\Property(property="items",                 ref="#/components/schemas/v4_playlist_items")
      *          )
      *     )),
      *     @OA\Response(response=200, ref="#/components/responses/playlist")
@@ -160,12 +162,15 @@ class PlaylistsController extends APIController
         }
 
         $name = checkParam('name', true);
+        $items = checkParam('items');
+        $draft = checkBoolean('draft');
         $external_content = checkParam('external_content');
 
         $playlist_data = [
             'user_id'           => $user->id,
             'name'              => $name,
-            'featured'          => false
+            'featured'          => false,
+            'draft'             => (bool) $draft
         ];
 
         if ($external_content) {
@@ -173,9 +178,12 @@ class PlaylistsController extends APIController
         }
 
         $playlist = Playlist::create($playlist_data);
-        $playlist->user;
 
-        return $this->reply($playlist);
+        if ($items) {
+            $this->createPlaylistItems($playlist, $items);
+        }
+
+        return $this->show($request, $playlist->id);
     }
 
     /**
@@ -468,12 +476,18 @@ class PlaylistsController extends APIController
         if ($single_item) {
             $playlist_items = [$playlist_items];
         }
+        $created_playlist_items = $this->createPlaylistItems($playlist, $playlist_items);
 
+        return $this->reply($single_item ? $created_playlist_items[0] : $created_playlist_items);
+    }
+
+    private function createPlaylistItems($playlist, $playlist_items)
+    {
         $created_playlist_items = [];
 
         foreach ($playlist_items as $playlist_item) {
             $verses = $playlist_items->verses ?? 0;
-
+            $playlist_item = (object) $playlist_item;
             $created_playlist_item = PlaylistItems::create([
                 'playlist_id'       => $playlist->id,
                 'fileset_id'        => $playlist_item->fileset_id,
@@ -491,7 +505,7 @@ class PlaylistsController extends APIController
             $created_playlist_items[] = $created_playlist_item;
         }
 
-        return $this->reply($single_item ? $created_playlist_items[0] : $created_playlist_items);
+        return $created_playlist_items;
     }
 
     /**

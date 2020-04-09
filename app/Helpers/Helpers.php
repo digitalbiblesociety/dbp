@@ -53,7 +53,7 @@ function checkParam(string $paramName, $required = false, $inPathValue = null)
 function checkBoolean(string $paramName, $required = false, $inPathValue = null)
 {
     $param = checkParam($paramName, $required, $inPathValue);
-    $param = $param && $param != 'false';
+    $param = (bool) $param && $param !== 'false';
     return $param;
 }
 
