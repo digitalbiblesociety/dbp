@@ -98,6 +98,7 @@ class PlaylistsController extends APIController
 
         $show_details = checkBoolean('show_details');
         $playlists = Playlist::with('user')
+            ->where('draft', 0)
             ->when($show_details, function ($query) {
                 $query->with('items');
             })
@@ -657,6 +658,49 @@ class PlaylistsController extends APIController
         }
 
         return $this->reply($translated_items);
+    }
+
+    /**
+     *  @OA\Post(
+     *     path="/playlists/{playlist_id}/draft",
+     *     tags={"Playlists"},
+     *     summary="Change draft status in a playlist.",
+     *     operationId="v4_playlists.draft",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="playlist_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Playlist/properties/id")),
+     *     @OA\Parameter(name="draft", in="query", @OA\Schema(type="boolean")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(type="string"))
+     *     )
+     * )
+     */
+    public function draft(Request $request, $playlist_id)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $playlist = Playlist::where('user_id', $user->id)->where('id', $playlist_id)->first();
+
+        if (!$playlist) {
+            return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
+        }
+
+        $draft = checkBoolean('draft');
+        $playlist->draft = $draft;
+
+        $playlist->save();
+
+        return $this->reply('Playlist draft status changed');
     }
 
     private function getFileset($filesets, $type, $size)

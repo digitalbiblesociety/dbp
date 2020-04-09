@@ -93,6 +93,7 @@ class PlansController extends APIController
 
         $plans = Plan::with('days')
             ->with('user')
+            ->where('draft', 0)
             ->when($featured || empty($user), function ($q) {
                 $q->where('plans.featured', '1');
             })->unless($featured, function ($q) use ($user) {
@@ -682,6 +683,48 @@ class PlansController extends APIController
         return $this->reply($plan);
     }
 
+    /**
+     *  @OA\Post(
+     *     path="/plans/{plan_id}/draft",
+     *     tags={"Plans"},
+     *     summary="Change draft status in a plan.",
+     *     operationId="v4_plans.draft",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
+     *     @OA\Parameter(name="draft", in="query", @OA\Schema(type="boolean")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(type="string"))
+     *     )
+     * )
+     */
+    public function draft(Request $request, $plan_id)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $plan = Plan::where('user_id', $user->id)->where('id', $plan_id)->first();
+
+        if (!$plan) {
+            return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+        }
+
+        $draft = checkBoolean('draft');
+        $plan->draft = $draft;
+
+        $plan->save();
+
+        return $this->reply('Plan draft status changed');
+    }
     /**
      *  @OA\Schema (
      *   type="object",

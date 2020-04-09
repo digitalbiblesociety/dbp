@@ -15,6 +15,7 @@ use App\Models\User\User;
  * @property string $name
  * @property string $user_id
  * @property bool $featured
+ * @property bool $draft
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon $deleted_at
@@ -100,6 +101,16 @@ class Plan extends Model
      *
      */
     protected $suggested_start_date;
+    /**
+     *
+     * @OA\Property(
+     *   title="draft",
+     *   type="boolean",
+     *   description="If the plan is draft"
+     * )
+     *
+     */
+    protected $draft;
     /** @OA\Property(
      *   title="updated_at",
      *   type="string",
@@ -128,6 +139,11 @@ class Plan extends Model
     public function getFeaturedAttribute($featured)
     {
         return (bool) $featured;
+    }
+
+    public function getDraftAttribute($draft)
+    {
+        return (bool) $draft;
     }
 
     public function user()
