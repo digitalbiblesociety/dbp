@@ -16,6 +16,7 @@ use Validator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Schema;
 
 class HighlightsController extends APIController
 {
@@ -134,7 +135,34 @@ class HighlightsController extends APIController
         $limit        = (int) (checkParam('limit') ?? 25);
 
         $sort_by_book = $sort_by === 'book';
-        $order_by = $sort_by_book ? DB::raw('books.protestant_order, user_highlights.chapter, user_highlights.verse_start') : 'user_highlights.' . $sort_by;
+        $order_by = $sort_by_book ? DB::raw('book_order, user_highlights.chapter, user_highlights.verse_start') : 'user_highlights.' . $sort_by;
+
+        $select_fields = [
+            'user_highlights.id',
+            'user_highlights.bible_id',
+            'user_highlights.book_id',
+            'user_highlights.chapter',
+            'user_highlights.verse_start',
+            'user_highlights.verse_end',
+            'user_highlights.highlight_start',
+            'user_highlights.highlighted_words',
+            'user_highlights.highlighted_color',
+        ];
+
+        if ($sort_by_book) {
+            $book_order_query = \Cache::remember('book_order_columns', now()->addDay(), function () {
+                $query = collect(Schema::connection('dbp')->getColumnListing('books'))->filter(function ($column) {
+                    return strpos($column, '_order') !== false;
+                })->map(function ($column) {
+                    $name = str_replace('_order', '', $column);
+                    return "IF(bibles.versification = '" . $name . "', books." . $name . '_order , 0)';
+                })->toArray();
+
+                return implode('+', $query);
+            });
+
+            $select_fields[] = DB::raw($book_order_query . ' as book_order');
+        }
 
         $highlights = Highlight::join('user_highlight_colors', 'user_highlights.highlighted_color', '=', 'user_highlight_colors.id')
             ->where('user_id', $user_id)
@@ -177,17 +205,10 @@ class HighlightsController extends APIController
                 $q->join($dbp_database . '.books as books', function ($join) {
                     $join->on('user_highlights.book_id', '=', 'books.id');
                 });
-            })->select([
-                'user_highlights.id',
-                'user_highlights.bible_id',
-                'user_highlights.book_id',
-                'user_highlights.chapter',
-                'user_highlights.verse_start',
-                'user_highlights.verse_end',
-                'user_highlights.highlight_start',
-                'user_highlights.highlighted_words',
-                'user_highlights.highlighted_color',
-            ])
+                $q->join($dbp_database . '.bibles as bibles', function ($join) {
+                    $join->on('user_highlights.bible_id', '=', 'bibles.id');
+                });
+            })->select($select_fields)
             ->orderBy($order_by, $sort_dir)
             ->paginate($limit);
 
