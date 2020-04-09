@@ -5,20 +5,20 @@ namespace App\Http\Controllers\Plan;
 use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\Playlist\PlaylistsController;
+use App\Models\Bible\Bible;
 use App\Models\Plan\Plan;
 use App\Traits\CheckProjectMembership;
 use App\Models\Plan\PlanDay;
-use App\Models\Plan\PlanDayComplete;
 use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
-use App\Models\Playlist\PlaylistItems;
-use App\Models\Playlist\PlaylistItemsComplete;
 use Illuminate\Http\Request;
 
 class PlansController extends APIController
 {
     use AccessControlAPI;
     use CheckProjectMembership;
+
+    protected $days_limit = 1095;
 
     /**
      * Display a listing of the resource.
@@ -93,6 +93,19 @@ class PlansController extends APIController
         $sort_by    = checkParam('sort_by') ?? 'name';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
 
+        if ($featured) {
+            $cache_string = generateCacheString('v4_plan_index', [$featured, $limit, $sort_by, $sort_dir]);
+            $plans = \Cache::remember($cache_string, now()->addDay(), function () use ($featured, $limit, $sort_by, $sort_dir, $user) {
+                return $this->getPlans($featured, $limit, $sort_by, $sort_dir, $user);
+            });
+            return $this->reply($plans);
+        }
+
+        return $this->reply($this->getPlans($featured, $limit, $sort_by, $sort_dir, $user));
+    }
+
+    private function getPlans($featured, $limit, $sort_by, $sort_dir, $user)
+    {
         $plans = Plan::with('days')
             ->with('user')
             ->when($featured || empty($user), function ($q) {
@@ -109,8 +122,7 @@ class PlansController extends APIController
             $plan->total_days = sizeof($plan->days);
             unset($plan->days);
         }
-
-        return $this->reply($plans);
+        return $plans;
     }
 
     /**
@@ -148,7 +160,8 @@ class PlansController extends APIController
         }
 
         $name = checkParam('name', true);
-        $days = checkParam('days', true);
+        $days = intval(checkParam('days', true));
+        $days = $days > $this->days_limit ? $this->days_limit : $days;
         $suggested_start_date = checkParam('suggested_start_date');
 
         $plan = Plan::create([
@@ -199,6 +212,12 @@ class PlansController extends APIController
      *          @OA\Schema(type="boolean"),
      *          description="Give full details of the plan"
      *     ),
+     *     @OA\Parameter(
+     *          name="show_text",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Enable the full details of the plan and retrieve the text of the playlists items"
+     *     ),
      *     @OA\Response(response=200, ref="#/components/responses/plan")
      * )
      *
@@ -224,6 +243,10 @@ class PlansController extends APIController
         }
 
         $show_details = checkBoolean('show_details');
+        $show_text = checkBoolean('show_text');
+        if ($show_text) {
+            $show_details = $show_text;
+        }
 
         $playlist_controller = new PlaylistsController();
         if ($show_details) {
@@ -478,7 +501,11 @@ class PlansController extends APIController
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
         }
 
-        $days = checkParam('days', true);
+        $days = intval(checkParam('days', true));
+        $current_days_size = sizeof($plan->days);
+        $total_days = $current_days_size + $days;
+        $days = $total_days > $this->days_limit ? $this->days_limit - $current_days_size : $days;
+
 
         $created_plan_days = [];
 
@@ -668,15 +695,12 @@ class PlansController extends APIController
             return $this->setStatusCode(404)->replyWithError('User Plan Not Found');
         }
 
-        $plan_days_ids = $plan->days()->pluck('id')->unique();
-        $days_completed = PlanDayComplete::where('user_id', $user->id)->whereIn('plan_day_id', $plan_days_ids);
-        $playlists_ids = $plan->days()->pluck('playlist_id')->unique();
-        $playlist_items_ids = PlaylistItems::whereIn('playlist_id', $playlists_ids)->get()->pluck('id');
-        $playlist_items_completed = PlaylistItemsComplete::whereIn('playlist_item_id', $playlist_items_ids)->where('user_id', $user->id);
+        $user_plan->reset();
+        $user_plan->save();
+        if ($user->id !== $plan->user_id) {
+            $user_plan->delete();
+        }
 
-        $days_completed->delete();
-        $playlist_items_completed->delete();
-        $user_plan->delete();
         $plan = $this->getPlan($plan->id, $user);
         $playlist_controller = new PlaylistsController();
         foreach ($plan->days as $day) {
@@ -748,5 +772,71 @@ class PlansController extends APIController
             })->select($select)->first();
 
         return $plan;
+    }
+
+    /**
+     *
+     * @OA\Get(
+     *     path="/plans/{plan_id}/translate",
+     *     tags={"Plans"},
+     *     summary="Translate a user's plan",
+     *     operationId="v4_plans.translate",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="plan_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Plan/properties/id"),
+     *          description="The plan id"
+     *     ),
+     *     @OA\Parameter(
+     *          name="bible_id",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Bible/properties/id"),
+     *          description="The id of the bible that will be used to translate the plan"
+     *     ),
+     *     @OA\Response(response=200, ref="#/components/responses/plan")
+     * )
+     *
+     * @param $plan_id
+     *
+     * @return mixed
+     *
+     *
+     */
+    public function translate(Request $request, $plan_id)
+    {
+        $user = $request->user();
+
+        // Validate Project / User Connection
+        if (!empty($user) && !$this->compareProjects($user->id, $this->key)) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $bible_id = checkParam('bible_id', true);
+        $bible = Bible::whereId($bible_id)->first();
+
+        if (!$bible) {
+            return $this->setStatusCode(404)->replyWithError('Bible Not Found');
+        }
+
+        $plan = $this->getPlan($plan_id, $user);
+        if (!$plan) {
+            return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+        }
+
+        $playlist_controller = new PlaylistsController();
+
+        $translated_days = [];
+        foreach ($plan->days as $day) {
+            $playlist_items = $playlist_controller->translate($request, $day->playlist_id);
+            $translated_days[] = [
+                'id' => $day->id,
+                'playlist_items' => $playlist_items->original,
+            ];
+        }
+
+        return $this->reply($translated_days);
     }
 }

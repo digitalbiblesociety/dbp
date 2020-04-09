@@ -28,9 +28,11 @@ class Cors
             ]);
         }
 
-        return $next($request)
-            ->header('Access-Control-Allow-Methods', 'HEAD, GET, POST, PUT, PATCH, DELETE')
-            ->header('Access-Control-Allow-Headers', '*')
-            ->header('Access-Control-Allow-Origin', '*');
+        $response = $next($request);
+        $response->headers->set('Access-Control-Allow-Methods', 'HEAD, GET, POST, PUT, PATCH, DELETE');
+        $response->headers->set('Access-Control-Allow-Headers', '*');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+
+        return $response;
     }
 }

@@ -4,8 +4,6 @@ namespace App\Models\Plan;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\Playlist\PlaylistItems;
-use App\Models\Playlist\PlaylistItemsComplete;
 
 /**
  * @OA\Schema (
@@ -92,7 +90,6 @@ class UserPlan extends Model
                 $completed = $plan_day->verifyDayCompleted();
                 return $completed;
             });
-        ;
         $this->attributes['percentage_completed'] = $completed_per_day->sum('total_items') ? $completed_per_day->sum('total_items_completed') / $completed_per_day->sum('total_items') * 100 : 0;
         return $this;
     }
@@ -100,20 +97,11 @@ class UserPlan extends Model
     public function reset($start_date = null)
     {
         PlanDay::where('plan_id', $this->plan_id)->get()
-            ->map(function ($plan_day) {
+            ->each(function ($plan_day) {
                 $plan_day->unComplete();
             });
-        ;
         $this->attributes['percentage_completed'] = 0;
         $this->attributes['start_date'] = $start_date;
-        
-        PlanDay::where('plan_id', $this->plan_id)->get()
-        ->each(function ($plan_day) {
-            $test = PlaylistItems::where('playlist_id', $plan_day->playlist_id)->get()
-            ->each(function ($playlist_item) {
-                PlaylistItemsComplete::where('playlist_item_id', $playlist_item->id)->delete();
-            });
-        });
 
         return $this;
     }

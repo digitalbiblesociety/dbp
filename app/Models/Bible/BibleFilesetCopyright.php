@@ -22,6 +22,7 @@ class BibleFilesetCopyright extends Model
     protected $connection = 'dbp';
     public $table = 'bible_fileset_copyrights';
     protected $primaryKey = 'hash_id';
+    protected $hidden = ['hash_id'];
     protected $keyType = 'string';
     public $incrementing = false;
     public $timestamps = false;

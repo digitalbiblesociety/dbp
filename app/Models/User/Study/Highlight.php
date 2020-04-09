@@ -190,9 +190,8 @@ class Highlight extends Model
             ->select([
               'bible_verses.verse_text',
             ])->get()->pluck('verse_text');
+            $verse_text = implode(' ', $verses->toArray());
         }
-        
-        $verse_text = implode(' ', $verses->toArray());
 
         return collect(['verse_text' => $verse_text, 'audio_filesets' => $audio_filesets]);
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Playlist;
 
 use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
+use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFile;
 use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
@@ -22,6 +23,8 @@ class PlaylistsController extends APIController
     use AccessControlAPI;
     use CheckProjectMembership;
     use CallsBucketsTrait;
+
+    protected $items_limit = 1000;
 
     /**
      * Display a listing of the resource.
@@ -42,6 +45,12 @@ class PlaylistsController extends APIController
      *          in="query",
      *          @OA\Schema(type="boolean"),
      *          description="Give full details of the playlist"
+     *     ),
+     *     @OA\Parameter(
+     *          name="show_text",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Enable the full details of the playlist and retrieve the text of the items"
      *     ),
      *     security={{"api_token":{}}},
      *     @OA\Parameter(ref="#/components/parameters/limit"),
@@ -93,9 +102,29 @@ class PlaylistsController extends APIController
         $featured = checkBoolean('featured') || empty($user);
         $limit    = (int) (checkParam('limit') ?? 25);
 
-        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
+
 
         $show_details = checkBoolean('show_details');
+        $show_text = checkBoolean('show_text');
+        if ($show_text) {
+            $show_details = $show_text;
+        }
+
+        if ($featured) {
+            $cache_string = generateCacheString('v4_playlist_index', [$show_details, $featured, $sort_by, $sort_dir, $limit, $show_text]);
+            $playlists = \Cache::remember($cache_string, now()->addDay(), function () use ($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text) {
+                return $this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text);
+            });
+            return $this->reply($playlists);
+        }
+
+
+        return $this->reply($this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text));
+    }
+
+    private function getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text)
+    {
+        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
         $playlists = Playlist::with('user')
             ->when($show_details, function ($query) {
                 $query->with('items');
@@ -116,13 +145,19 @@ class PlaylistsController extends APIController
             ->select($select)
             ->orderBy($sort_by, $sort_dir)->paginate($limit);
 
-        if ($show_details) {
-            foreach ($playlists->getCollection() as $playlist) {
+        foreach ($playlists->getCollection() as $playlist) {
+            if ($show_details) {
                 $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist->id, 'v' => $this->v, 'key' => $this->key]);
             }
+            if ($show_text) {
+                foreach ($playlist->items as $item) {
+                    $item->verse_text = $item->getVerseText();
+                }
+            }
+            $playlist->total_duration = PlaylistItems::where('playlist_id', $playlist->id)->sum('duration');
         }
 
-        return $this->reply($playlists);
+        return $playlists;
     }
 
     /**
@@ -208,11 +243,13 @@ class PlaylistsController extends APIController
         }
 
         $playlist = $this->getPlaylist($user, $playlist_id);
-        $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist_id, 'v' => $this->v, 'key' => $this->key]);
 
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
         }
+
+        $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist_id, 'v' => $this->v, 'key' => $this->key]);
+        $playlist->total_duration = PlaylistItems::where('playlist_id', $playlist_id)->sum('duration');
 
         return $this->reply($playlist);
     }
@@ -465,6 +502,14 @@ class PlaylistsController extends APIController
 
         $created_playlist_items = [];
 
+        $current_items_size = sizeof($playlist->items);
+        $new_items_size = sizeof($playlist_items);
+
+        if ($current_items_size + $new_items_size > $this->items_limit) {
+            $allowed_size = $this->items_limit - $current_items_size;
+            $playlist_items = array_slice($playlist_items, 0, $allowed_size);
+        }
+
         foreach ($playlist_items as $playlist_item) {
             $verses = $playlist_items->verses ?? 0;
 
@@ -562,6 +607,134 @@ class PlaylistsController extends APIController
             'percentage_completed' => $user_plan->percentage_completed,
             'message' => 'Playlist Item ' . $result
         ]);
+    }
+
+    /**
+     *
+     * @OA\Get(
+     *     path="/playlists/{playlist_id}/translate",
+     *     tags={"Playlists"},
+     *     summary="Translate a user's playlist",
+     *     operationId="v4_playlists.translate",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="playlist_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Playlist/properties/id"),
+     *          description="The playlist id"
+     *     ),
+     *     @OA\Parameter(
+     *          name="bible_id",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Bible/properties/id"),
+     *          description="The id of the bible that will be used to translate the playlist"
+     *     ),
+     *     @OA\Response(response=200, ref="#/components/responses/playlist")
+     * )
+     *
+     * @param $playlist_id
+     *
+     * @return mixed
+     *
+     *
+     */
+    public function translate(Request $request, $playlist_id)
+    {
+        $user = $request->user();
+
+        // Validate Project / User Connection
+        if (!empty($user) && !$this->compareProjects($user->id, $this->key)) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $bible_id = checkParam('bible_id', true);
+        $bible = Bible::whereId($bible_id)->first();
+
+        if (!$bible) {
+            return $this->setStatusCode(404)->replyWithError('Bible Not Found');
+        }
+
+        $playlist = $this->getPlaylist($user, $playlist_id);
+        if (!$playlist) {
+            return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
+        }
+
+
+        $audio_fileset_types = collect(['audio_stream', 'audio_drama_stream', 'audio', 'audio_drama']);
+        $bible_audio_filesets = $bible->filesets->whereIn('set_type_code', $audio_fileset_types);
+
+        $translated_items = [];
+
+        foreach ($playlist->items as $item) {
+            $ordered_types = $audio_fileset_types->filter(function ($type) use ($item) {
+                return $type !== $item->fileset->set_type_code;
+            })->prepend($item->fileset->set_type_code);
+            $preferred_fileset = $ordered_types->map(function ($type) use ($bible_audio_filesets, $item) {
+                return $this->getFileset($bible_audio_filesets, $type, $item->fileset->set_size_code);
+            })->firstWhere('id');
+            $has_translation = isset($preferred_fileset);
+            $is_streaming = true;
+
+            if ($has_translation) {
+                $item->fileset_id = $preferred_fileset->id;
+                $is_streaming = $preferred_fileset->set_type_code === 'audio_stream' || $preferred_fileset->set_type_code === 'audio_drama_stream';
+            }
+
+
+            $translated_items[] = [
+                'id' => $item->id,
+                'fileset_id' => $item->fileset_id,
+                'book_id' => $item->book_id,
+                'chapter_start' => $item->chapter_start,
+                'chapter_end' => $item->chapter_end,
+                'verse_start' => $is_streaming ? $item->verse_start : null,
+                'verse_end' => $is_streaming ? $item->verse_end : null,
+                'bible_id' => $has_translation ? $bible->id : $item->bible_id,
+                'has_translation' => $has_translation,
+            ];
+        }
+
+        return $this->reply($translated_items);
+    }
+
+    private function getFileset($filesets, $type, $size)
+    {
+        $available_filesets = [];
+
+        $complete_fileset = $filesets->where('set_type_code', $type)->where('set_size_code', 'C')->first();
+        if ($complete_fileset) {
+            $available_filesets[] = $complete_fileset;
+        }
+
+        $size_filesets = $filesets->where('set_type_code', $type)->where('set_size_code', $size)->first();
+        if ($size_filesets) {
+            $available_filesets[] = $size_filesets;
+        }
+
+        $size__partial_filesets = $filesets->filter(function ($item) use ($type, $size) {
+            return $item->set_type_code === $type && strpos($item->set_size_code, $size . 'P') !== false;
+        })->first();
+        if ($size__partial_filesets) {
+            $available_filesets[] = $size__partial_filesets;
+        }
+
+        $partial_fileset = $filesets->where('set_type_code', $type)->where('set_size_code', 'P')->first();
+        if ($partial_fileset) {
+            $available_filesets[] = $partial_fileset;
+        }
+
+        if (!empty($available_filesets)) {
+            $available_filesets =
+                collect($available_filesets)->sortBy(function ($item) {
+                    return  strpos($item->id, '16');
+                });
+
+            return $available_filesets->first();
+        }
+
+        return false;
     }
 
     public function itemHls(Response $response, $playlist_item_id)
