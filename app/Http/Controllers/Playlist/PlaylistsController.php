@@ -24,6 +24,8 @@ class PlaylistsController extends APIController
     use CheckProjectMembership;
     use CallsBucketsTrait;
 
+    protected $items_limit = 1000;
+
     /**
      * Display a listing of the resource.
      *
@@ -100,7 +102,7 @@ class PlaylistsController extends APIController
         $featured = checkBoolean('featured') || empty($user);
         $limit    = (int) (checkParam('limit') ?? 25);
 
-        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
+
 
         $show_details = checkBoolean('show_details');
         $show_text = checkBoolean('show_text');
@@ -108,6 +110,21 @@ class PlaylistsController extends APIController
             $show_details = $show_text;
         }
 
+        if ($featured) {
+            $cache_string = generateCacheString('v4_playlist_index', [$show_details, $featured, $sort_by, $sort_dir, $limit, $show_text]);
+            $playlists = \Cache::remember($cache_string, now()->addDay(), function () use ($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text) {
+                return $this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text);
+            });
+            return $this->reply($playlists);
+        }
+
+
+        return $this->reply($this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text));
+    }
+
+    private function getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text)
+    {
+        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
         $playlists = Playlist::with('user')
             ->when($show_details, function ($query) {
                 $query->with('items');
@@ -140,7 +157,7 @@ class PlaylistsController extends APIController
             $playlist->total_duration = PlaylistItems::where('playlist_id', $playlist->id)->sum('duration');
         }
 
-        return $this->reply($playlists);
+        return $playlists;
     }
 
     /**
@@ -484,6 +501,14 @@ class PlaylistsController extends APIController
         }
 
         $created_playlist_items = [];
+
+        $current_items_size = sizeof($playlist->items);
+        $new_items_size = sizeof($playlist_items);
+
+        if ($current_items_size + $new_items_size > $this->items_limit) {
+            $allowed_size = $this->items_limit - $current_items_size;
+            $playlist_items = array_slice($playlist_items, 0, $allowed_size);
+        }
 
         foreach ($playlist_items as $playlist_item) {
             $verses = $playlist_items->verses ?? 0;

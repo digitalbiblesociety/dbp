@@ -50,8 +50,9 @@ class Handler extends ExceptionHandler
         if ($enableEmailExceptions && $this->shouldReport($exception)) {
             $this->sendEmail($exception);
         }
+        $sentry_dsn = config('sentry.dsn');
 
-        if (app()->bound('sentry') && $this->shouldReport($exception) && config('app.env') == 'production') {
+        if ($sentry_dsn && config('app.env') == 'production' && $this->shouldReport($exception) && app()->bound('sentry')) {
             app('sentry')->captureException($exception);
         }
 
@@ -99,9 +100,13 @@ class Handler extends ExceptionHandler
 
     private function customApiResponse($exception)
     {
+        $responseCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+
         if (method_exists($exception, 'getStatusCode')) {
             $statusCode = $exception->getStatusCode();
+            $responseCode = $exception->getStatusCode();
         } else {
+            $responseCode = $exception->getCode();
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
 
@@ -109,13 +114,9 @@ class Handler extends ExceptionHandler
         $response['error'] = Response::$statusTexts[$statusCode];
 
         $class = new ReflectionClass(new Response());
-        $constants = (object) $class->getConstants();
+        $constants = array_flip($class->getConstants());
 
-        foreach ($constants as $key => $value) {
-            if ($value === $statusCode) {
-                $response['type'] = $key;
-            }
-        }
+        $response['type'] = $constants[$statusCode] ?? $constants[Response::HTTP_INTERNAL_SERVER_ERROR];
 
         if ($statusCode === Response::HTTP_UNPROCESSABLE_ENTITY) {
             $message = $exception->getMessage();
@@ -131,7 +132,7 @@ class Handler extends ExceptionHandler
         if (config('app.debug')) {
             $response['trace'] = $exception->getTrace();
         }
-        $response['status_code'] = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : $exception->getCode();
+        $response['status_code'] = $responseCode;
         $response['host_name'] = gethostname();
         return response()->json($response, $statusCode);
     }
