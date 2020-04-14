@@ -174,7 +174,7 @@ class PlaylistsController extends APIController
      *          @OA\Schema(
      *              @OA\Property(property="name",                  ref="#/components/schemas/Playlist/properties/name"),
      *              @OA\Property(property="draft",                 ref="#/components/schemas/Playlist/properties/draft"),
-     *              @OA\Property(property="external_content",      ref="#/components/schemas/Playlist/properties/external_content")
+     *              @OA\Property(property="external_content",      ref="#/components/schemas/Playlist/properties/external_content"),
      *              @OA\Property(property="items",                 ref="#/components/schemas/v4_playlist_items")
      *          )
      *     )),
