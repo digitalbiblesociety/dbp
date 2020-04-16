@@ -58,11 +58,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(syncV2Database::class)
-            // ->everyFifteenMinutes()
-            // ->onOneServer()
-            ->withoutOverlapping()
-            ->appendOutputTo ('/tmp/laravel/scheduled_output.log');
+    $schedule->command(syncV2Database::class)
+        ->everyFifteenMinutes()
+        ->onOneServer()
+        ->withoutOverlapping();
+
+    $schedule->command(DeleteDraftPlaylistsPlans::class)
+        ->hourly()
+        ->onOneServer()
+        ->withoutOverlapping();
     }
 
     /**
