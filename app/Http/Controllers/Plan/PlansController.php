@@ -18,6 +18,8 @@ class PlansController extends APIController
     use AccessControlAPI;
     use CheckProjectMembership;
 
+    protected $days_limit = 1095;
+
     /**
      * Display a listing of the resource.
      *
@@ -91,8 +93,22 @@ class PlansController extends APIController
         $sort_by    = checkParam('sort_by') ?? 'name';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
 
+        if ($featured) {
+            $cache_string = generateCacheString('v4_plan_index', [$featured, $limit, $sort_by, $sort_dir]);
+            $plans = \Cache::remember($cache_string, now()->addDay(), function () use ($featured, $limit, $sort_by, $sort_dir, $user) {
+                return $this->getPlans($featured, $limit, $sort_by, $sort_dir, $user);
+            });
+            return $this->reply($plans);
+        }
+
+        return $this->reply($this->getPlans($featured, $limit, $sort_by, $sort_dir, $user));
+    }
+
+    private function getPlans($featured, $limit, $sort_by, $sort_dir, $user)
+    {
         $plans = Plan::with('days')
             ->with('user')
+            ->where('draft', 0)
             ->when($featured || empty($user), function ($q) {
                 $q->where('plans.featured', '1');
             })->unless($featured, function ($q) use ($user) {
@@ -107,8 +123,7 @@ class PlansController extends APIController
             $plan->total_days = sizeof($plan->days);
             unset($plan->days);
         }
-
-        return $this->reply($plans);
+        return $plans;
     }
 
     /**
@@ -146,7 +161,8 @@ class PlansController extends APIController
         }
 
         $name = checkParam('name', true);
-        $days = checkParam('days', true);
+        $days = intval(checkParam('days', true));
+        $days = $days > $this->days_limit ? $this->days_limit : $days;
         $suggested_start_date = checkParam('suggested_start_date');
 
         $plan = Plan::create([
@@ -486,7 +502,11 @@ class PlansController extends APIController
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
         }
 
-        $days = checkParam('days', true);
+        $days = intval(checkParam('days', true));
+        $current_days_size = sizeof($plan->days);
+        $total_days = $current_days_size + $days;
+        $days = $total_days > $this->days_limit ? $this->days_limit - $current_days_size : $days;
+
 
         $created_plan_days = [];
 
@@ -692,6 +712,48 @@ class PlansController extends APIController
         return $this->reply($plan);
     }
 
+    /**
+     *  @OA\Post(
+     *     path="/plans/{plan_id}/draft",
+     *     tags={"Plans"},
+     *     summary="Change draft status in a plan.",
+     *     operationId="v4_plans.draft",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="plan_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Plan/properties/id")),
+     *     @OA\Parameter(name="draft", in="query", @OA\Schema(type="boolean")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(type="string"))
+     *     )
+     * )
+     */
+    public function draft(Request $request, $plan_id)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $plan = Plan::where('user_id', $user->id)->where('id', $plan_id)->first();
+
+        if (!$plan) {
+            return $this->setStatusCode(404)->replyWithError('Plan Not Found');
+        }
+
+        $draft = checkBoolean('draft');
+        $plan->draft = $draft;
+
+        $plan->save();
+
+        return $this->reply('Plan draft status changed');
+    }
     /**
      *  @OA\Schema (
      *   type="object",

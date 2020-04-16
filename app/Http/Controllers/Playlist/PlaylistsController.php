@@ -24,6 +24,8 @@ class PlaylistsController extends APIController
     use CheckProjectMembership;
     use CallsBucketsTrait;
 
+    protected $items_limit = 1000;
+
     /**
      * Display a listing of the resource.
      *
@@ -100,7 +102,7 @@ class PlaylistsController extends APIController
         $featured = checkBoolean('featured') || empty($user);
         $limit    = (int) (checkParam('limit') ?? 25);
 
-        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
+
 
         $show_details = checkBoolean('show_details');
         $show_text = checkBoolean('show_text');
@@ -108,7 +110,23 @@ class PlaylistsController extends APIController
             $show_details = $show_text;
         }
 
+        if ($featured) {
+            $cache_string = generateCacheString('v4_playlist_index', [$show_details, $featured, $sort_by, $sort_dir, $limit, $show_text]);
+            $playlists = \Cache::remember($cache_string, now()->addDay(), function () use ($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text) {
+                return $this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text);
+            });
+            return $this->reply($playlists);
+        }
+
+
+        return $this->reply($this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text));
+    }
+
+    private function getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text)
+    {
+        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
         $playlists = Playlist::with('user')
+            ->where('draft', 0)
             ->when($show_details, function ($query) {
                 $query->with('items');
             })
@@ -140,7 +158,7 @@ class PlaylistsController extends APIController
             $playlist->total_duration = PlaylistItems::where('playlist_id', $playlist->id)->sum('duration');
         }
 
-        return $this->reply($playlists);
+        return $playlists;
     }
 
     /**
@@ -155,7 +173,9 @@ class PlaylistsController extends APIController
      *     @OA\RequestBody(required=true, description="Fields for User Playlist Creation", @OA\MediaType(mediaType="application/json",
      *          @OA\Schema(
      *              @OA\Property(property="name",                  ref="#/components/schemas/Playlist/properties/name"),
-     *              @OA\Property(property="external_content",      ref="#/components/schemas/Playlist/properties/external_content")
+     *              @OA\Property(property="draft",                 ref="#/components/schemas/Playlist/properties/draft"),
+     *              @OA\Property(property="external_content",      ref="#/components/schemas/Playlist/properties/external_content"),
+     *              @OA\Property(property="items",                 ref="#/components/schemas/v4_playlist_items")
      *          )
      *     )),
      *     @OA\Response(response=200, ref="#/components/responses/playlist")
@@ -174,12 +194,15 @@ class PlaylistsController extends APIController
         }
 
         $name = checkParam('name', true);
+        $items = checkParam('items');
+        $draft = checkBoolean('draft');
         $external_content = checkParam('external_content');
 
         $playlist_data = [
             'user_id'           => $user->id,
             'name'              => $name,
-            'featured'          => false
+            'featured'          => false,
+            'draft'             => (bool) $draft
         ];
 
         if ($external_content) {
@@ -187,9 +210,12 @@ class PlaylistsController extends APIController
         }
 
         $playlist = Playlist::create($playlist_data);
-        $playlist->user;
 
-        return $this->reply($playlist);
+        if ($items) {
+            $this->createPlaylistItems($playlist, $items);
+        }
+
+        return $this->show($request, $playlist->id);
     }
 
     /**
@@ -482,12 +508,26 @@ class PlaylistsController extends APIController
         if ($single_item) {
             $playlist_items = [$playlist_items];
         }
+        $created_playlist_items = $this->createPlaylistItems($playlist, $playlist_items);
 
+        return $this->reply($single_item ? $created_playlist_items[0] : $created_playlist_items);
+    }
+
+    private function createPlaylistItems($playlist, $playlist_items)
+    {
         $created_playlist_items = [];
+
+        $current_items_size = sizeof($playlist->items);
+        $new_items_size = sizeof($playlist_items);
+
+        if ($current_items_size + $new_items_size > $this->items_limit) {
+            $allowed_size = $this->items_limit - $current_items_size;
+            $playlist_items = array_slice($playlist_items, 0, $allowed_size);
+        }
 
         foreach ($playlist_items as $playlist_item) {
             $verses = $playlist_items->verses ?? 0;
-
+            $playlist_item = (object) $playlist_item;
             $created_playlist_item = PlaylistItems::create([
                 'playlist_id'       => $playlist->id,
                 'fileset_id'        => $playlist_item->fileset_id,
@@ -505,7 +545,7 @@ class PlaylistsController extends APIController
             $created_playlist_items[] = $created_playlist_item;
         }
 
-        return $this->reply($single_item ? $created_playlist_items[0] : $created_playlist_items);
+        return $created_playlist_items;
     }
 
     /**
@@ -672,6 +712,49 @@ class PlaylistsController extends APIController
         }
 
         return $this->reply($translated_items);
+    }
+
+    /**
+     *  @OA\Post(
+     *     path="/playlists/{playlist_id}/draft",
+     *     tags={"Playlists"},
+     *     summary="Change draft status in a playlist.",
+     *     operationId="v4_playlists.draft",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(name="playlist_id", in="path", required=true, @OA\Schema(ref="#/components/schemas/Playlist/properties/id")),
+     *     @OA\Parameter(name="draft", in="query", @OA\Schema(type="boolean")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="application/xml",  @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/x-yaml",      @OA\Schema(type="string")),
+     *         @OA\MediaType(mediaType="text/csv",      @OA\Schema(type="string"))
+     *     )
+     * )
+     */
+    public function draft(Request $request, $playlist_id)
+    {
+        // Validate Project / User Connection
+        $user = $request->user();
+        $user_is_member = $this->compareProjects($user->id, $this->key);
+
+        if (!$user_is_member) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $playlist = Playlist::where('user_id', $user->id)->where('id', $playlist_id)->first();
+
+        if (!$playlist) {
+            return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
+        }
+
+        $draft = checkBoolean('draft');
+        $playlist->draft = $draft;
+
+        $playlist->save();
+
+        return $this->reply('Playlist draft status changed');
     }
 
     private function getFileset($filesets, $type, $size)
