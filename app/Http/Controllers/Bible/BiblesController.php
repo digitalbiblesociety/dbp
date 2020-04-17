@@ -714,7 +714,7 @@ class BiblesController extends APIController
         $text_plain = $this->getFileset($bible->filesets, 'text_plain', $book->book_testament);
         if ($text_plain) {
             $text_controller = new TextController();
-            $verses = $text_controller->index($text_plain->id, $book_id, $chapter)->original['data'];
+            $verses = $text_controller->index($text_plain->id, $book_id, $chapter)->original['data'] ?? [];
             if (!empty($verses)) {
                 $chapter_filesets->text->verses = $verses;
             }
@@ -723,7 +723,7 @@ class BiblesController extends APIController
         $text_format = $this->getFileset($bible->filesets, 'text_format', $book->book_testament);
         if ($text_format) {
             $fileset_controller = new BibleFileSetsController();
-            $formatted_verses = $fileset_controller->show($text_format->id, $text_format->asset_id, $text_format->set_type_code)->original['data'];
+            $formatted_verses = $fileset_controller->show($text_format->id, $text_format->asset_id, $text_format->set_type_code)->original['data'] ?? [];
             if (!empty($formatted_verses)) {
                 $path = $formatted_verses[0]['path'];
                 $cache_string = generateCacheString('bible_chapter_formatted_verses', [$bible_id, $book_id, $chapter, $text_format->id]);
@@ -755,7 +755,7 @@ class BiblesController extends APIController
         $video_stream = $this->getFileset($bible->filesets, 'video_stream', $book->book_testament);
         if ($video_stream) {
             $fileset_controller = new BibleFileSetsController();
-            $gospel_films = $fileset_controller->show($video_stream['id'], $video_stream['asset_id'], $video_stream['set_type_code'])->original['data'];
+            $gospel_films = $fileset_controller->show($video_stream['id'], $video_stream['asset_id'], $video_stream['set_type_code'])->original['data'] ?? [];
             $chapter_filesets->video->gospel_films = $gospel_films;
         }
 
@@ -852,7 +852,7 @@ class BiblesController extends APIController
             $fileset = BibleFileset::whereId($fileset['id'])->first();
 
             // Get fileset
-            $fileset_result = $fileset_controller->show($fileset->id, $fileset->asset_id, $fileset->set_type_code)->original['data'];
+            $fileset_result = $fileset_controller->show($fileset->id, $fileset->asset_id, $fileset->set_type_code)->original['data'] ?? [];
             if (!empty($fileset_result)) {
                 $results->audio->$name = $fileset_result[0];
                 $results->audio->$name['fileset'] = $fileset;
