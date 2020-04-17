@@ -36,6 +36,7 @@ class UserNotesTransformer extends TransformerAbstract
      *          @OA\Property(property="notes",          ref="#/components/schemas/Note/properties/notes"),
      *          @OA\Property(property="created_at",     ref="#/components/schemas/Note/properties/created_at"),
      *          @OA\Property(property="updated_at",     ref="#/components/schemas/Note/properties/updated_at"),
+     *          @OA\Property(property="bible_name",     ref="#/components/schemas/Note/properties/bible_name"),
      *          @OA\Property(property="tags",           ref="#/components/schemas/AnnotationTag"),
      * )
      *
@@ -48,6 +49,7 @@ class UserNotesTransformer extends TransformerAbstract
         return [
       'id' => (int) $note->id,
       'bible_id' => (string) $note->bible_id,
+      'bible_name' => (string) $note->bible_name,
       'book_id' => (string) $note->book_id,
       'book_name' => (string) optional($note->book)->name,
       'chapter' => (int) $note->chapter,
