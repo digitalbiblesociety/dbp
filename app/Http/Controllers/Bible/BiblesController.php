@@ -847,9 +847,13 @@ class BiblesController extends APIController
         $non_stream = $this->getFileset($bible->filesets,  $type, $book->book_testament);
         $fileset = $stream ? $stream :  $non_stream;
 
-
         if ($fileset) {
-            $fileset = BibleFileset::whereId($fileset['id'])->first();
+            $fileset = BibleFileset::where([
+                'id' => $fileset['id'],
+                'asset_id' => $fileset['asset_id'],
+                'set_type_code' => $fileset['set_type_code'],
+                'set_size_code' => $fileset['set_size_code'],
+            ])->first();
 
             // Get fileset
             $fileset_result = $fileset_controller->show($fileset->id, $fileset->asset_id, $fileset->set_type_code)->original['data'] ?? [];
