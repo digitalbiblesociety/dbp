@@ -795,7 +795,7 @@ class BiblesController extends APIController
         return $this->replyWithDownload($result, $zip, $bible, $book, $chapter);
     }
 
-    private function getFileset($filesets, $type, $testament)
+    public function getFileset($filesets, $type, $testament)
     {
         $available_filesets = [];
 
