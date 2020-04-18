@@ -711,7 +711,7 @@ class BiblesController extends APIController
 
         $book = Book::whereId($book_id)->first();
 
-        $text_plain = $this->getFileset($bible->filesets, 'text_plain', $book->book_testament);
+        $text_plain = (object) $this->getFileset($bible->filesets, 'text_plain', $book->book_testament);
         if ($text_plain) {
             $text_controller = new TextController();
             $verses = $text_controller->index($text_plain->id, $book_id, $chapter)->original['data'] ?? [];
