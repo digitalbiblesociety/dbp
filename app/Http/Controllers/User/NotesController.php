@@ -138,14 +138,6 @@ class NotesController extends APIController
             return $this->setStatusCode(404)->replyWithError(trans('api.errors_404'));
         }
 
-        $bible = Bible::whereId($bible_id)->first();
-        if ($bible) {
-            $vtitle = $bible->vtitle;
-            $ctitle = $bible->ctitle;
-
-            $note->bible_name = ($vtitle ? $vtitle : $ctitle);
-        }
-
         return $this->reply($note);
     }
 

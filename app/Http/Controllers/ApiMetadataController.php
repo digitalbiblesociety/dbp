@@ -27,7 +27,7 @@ class ApiMetadataController extends APIController
         if (\is_array($params)) {
             $params = implode('&', array_map(function ($v, $k) {
                 if ($k === 'key') {
-                    return 'key='.config('services.bibleIs.key');
+                    return 'key=' . config('services.bibleIs.key');
                 }
                 if ($k === 0) {
                     return $v;
@@ -35,7 +35,7 @@ class ApiMetadataController extends APIController
                 return sprintf('%s=%s', $k, $v);
             }, $params, array_keys($params)));
         }
-        $contents = json_decode(file_get_contents('https://dbt.io/'.$path1.'/'.$path2.'?'.$params));
+        $contents = json_decode(file_get_contents('https://dbt.io/' . $path1 . '/' . $path2 . '?' . $params));
         return response()->json($contents);
     }
 
@@ -88,7 +88,7 @@ class ApiMetadataController extends APIController
             $cache_test = \Cache::get('cache_test');
             if ($cache_test != 'live') {
                 $status_code = 500;
-	    }
+            }
         } catch (\Exception $e) {
             $cache_test = $e->getMessage();
             $status_code = 500;

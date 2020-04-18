@@ -52,6 +52,7 @@ class Note extends Model
     'created_at',
     'updated_at'
   ];
+    protected $appends = ['bible_name'];
 
     /**
      *
@@ -232,5 +233,21 @@ class Note extends Model
       ->get()
       ->pluck('verse_text');
         return implode(' ', $verses->toArray());
+    }
+
+    /**
+     * @OA\Property(
+     *   property="bible_name",
+     *   title="bible_name",
+     *   type="string",
+     *   description="Bible name"
+     * )
+     */
+    public function getBibleNameAttribute()
+    {
+        $bible = Bible::whereId($this['bible_id'])->with(['translations', 'books.book'])->first();
+        $ctitle = optional($bible->translations->where('language_id', $GLOBALS['i18n_id'])->first())->name;
+        $vtitle = optional($bible->vernacularTranslation)->name;
+        return ($vtitle ? $vtitle : $ctitle);
     }
 }
