@@ -6,6 +6,7 @@ use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleVerse;
+use App\Models\User\User;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
@@ -52,7 +53,7 @@ class Note extends Model
     'created_at',
     'updated_at'
   ];
-    protected $appends = ['bible_name'];
+    protected $appends = ['bible_name', 'verse_text'];
 
     /**
      *
@@ -206,11 +207,10 @@ class Note extends Model
      */
     public function getVerseTextAttribute()
     {
-        $note = $this->toArray();
-        $chapter = $note['chapter'];
-        $verse_start = $note['verse_start'];
-        $verse_end = $note['verse_end'] ? $note['verse_end'] : $verse_start;
-        $bible = Bible::where('id', $note['bible_id'])->first();
+        $chapter = $this['chapter'];
+        $verse_start = $this['verse_start'];
+        $verse_end = $this['verse_end'] ? $this['verse_end'] : $verse_start;
+        $bible = Bible::where('id', $this['bible_id'])->first();
         $fileset = BibleFileset::join(
       'bible_fileset_connections as connection',
       'connection.hash_id',
@@ -224,7 +224,7 @@ class Note extends Model
         }
         $verses = BibleVerse::withVernacularMetaData($bible)
       ->where('hash_id', $fileset->hash_id)
-      ->where('bible_verses.book_id', $note['book_id'])
+      ->where('bible_verses.book_id', $this['book_id'])
       ->where('verse_start', '>=', $verse_start)
       ->where('verse_end', '<=', $verse_end)
       ->where('chapter', $chapter)
