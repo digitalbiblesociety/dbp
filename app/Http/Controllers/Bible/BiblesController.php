@@ -711,7 +711,7 @@ class BiblesController extends APIController
 
         $book = Book::whereId($book_id)->first();
 
-        $text_plain = (object) $this->getFileset($bible->filesets, 'text_plain', $book->book_testament);
+        $text_plain = $this->getFileset($bible->filesets, 'text_plain', $book->book_testament);
         if ($text_plain) {
             $text_controller = new TextController();
             $verses = $text_controller->index($text_plain->id, $book_id, $chapter)->original['data'] ?? [];
@@ -755,7 +755,7 @@ class BiblesController extends APIController
         $video_stream = $this->getFileset($bible->filesets, 'video_stream', $book->book_testament);
         if ($video_stream) {
             $fileset_controller = new BibleFileSetsController();
-            $gospel_films = $fileset_controller->show($video_stream['id'], $video_stream['asset_id'], $video_stream['set_type_code'])->original['data'] ?? [];
+            $gospel_films = $fileset_controller->show($video_stream->id, $video_stream->asset_id, $video_stream->set_type_code)->original['data'] ?? [];
             $chapter_filesets->video->gospel_films = $gospel_films;
         }
 
@@ -832,7 +832,7 @@ class BiblesController extends APIController
         }
 
         if (!empty($available_filesets)) {
-            return collect($available_filesets)->sortBy(function ($fileset) {
+            return (object) collect($available_filesets)->sortBy(function ($fileset) {
                 return strpos($fileset['id'], '16') !== false;
             })->first();
         }
@@ -849,10 +849,10 @@ class BiblesController extends APIController
 
         if ($fileset) {
             $fileset = BibleFileset::where([
-                'id' => $fileset['id'],
-                'asset_id' => $fileset['asset_id'],
-                'set_type_code' => $fileset['set_type_code'],
-                'set_size_code' => $fileset['set_size_code'],
+                'id' => $fileset->id,
+                'asset_id' => $fileset->asset_id,
+                'set_type_code' => $fileset->set_type_code,
+                'set_size_code' => $fileset->set_size_code,
             ])->first();
 
             // Get fileset
