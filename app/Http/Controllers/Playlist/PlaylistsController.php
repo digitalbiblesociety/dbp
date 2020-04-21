@@ -835,9 +835,10 @@ class PlaylistsController extends APIController
         ]);
     }
 
-    private function processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download)
+    private function processHLSAudio($bible_files, $signed_files, $transaction_id, $item, $download)
     {
         $durations = [];
+        $hls_items = '';
         foreach ($bible_files as $bible_file) {
             $currentBandwidth = $bible_file->streamBandwidth->first();
 
@@ -864,15 +865,15 @@ class PlaylistsController extends APIController
                 $hls_file_path = $download ? $file_path : $signed_files[$file_path];
                 $hls_items .= "\n" . $hls_file_path;
             }
-            $hls_items .= "\n" . '#EXT-X-DISCONTINUITY';
         }
 
         return (object) ['hls_items' => $hls_items, 'signed_files' => $signed_files, 'durations' => $durations];
     }
 
-    private function processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download, $item)
+    private function processMp3Audio($bible_files, $signed_files, $transaction_id, $download, $item)
     {
         $durations = [];
+        $hls_items = '';
         foreach ($bible_files as $bible_file) {
             $default_duration = $bible_file->duration ?? 180;
             $durations[] = $default_duration;
@@ -886,7 +887,6 @@ class PlaylistsController extends APIController
             }
             $hls_file_path = $download ? $file_path : $signed_files[$file_path];
             $hls_items .= "\n" . $hls_file_path;
-            $hls_items .= "\n" . '#EXT-X-DISCONTINUITY';
         }
 
         return (object) ['hls_items' => $hls_items, 'signed_files' => $signed_files, 'durations' => $durations];
@@ -920,7 +920,7 @@ class PlaylistsController extends APIController
             Log::error($e);
         }
         $durations = [];
-        $hls_items = '';
+        $hls_items = [];
         foreach ($items as $item) {
             $fileset = $item->fileset;
             if (!Str::contains($fileset->set_type_code, 'audio')) {
@@ -934,20 +934,20 @@ class PlaylistsController extends APIController
                 ->where('chapter_start', '<=', $item->chapter_end)
                 ->get();
             if ($fileset->set_type_code === 'audio_stream' || $fileset->set_type_code === 'audio_drama_stream') {
-                $result = $this->processHLSAudio($bible_files, $hls_items, $signed_files, $transaction_id, $item, $download);
-                $hls_items = $result->hls_items;
+                $result = $this->processHLSAudio($bible_files, $signed_files, $transaction_id, $item, $download);
+                $hls_items[] = $result->hls_items;
                 $signed_files = $result->signed_files;
-                $durations[] = collect($result->durations)->max();
+                $durations[] = collect($result->durations)->sum();
             } else {
-                $result = $this->processMp3Audio($bible_files, $hls_items, $signed_files, $transaction_id, $download, $item);
-                $hls_items = $result->hls_items;
+                $result = $this->processMp3Audio($bible_files, $signed_files, $transaction_id, $download, $item);
+                $hls_items[] = $result->hls_items;
                 $signed_files = $result->signed_files;
-                $durations[] = collect($result->durations)->max();
+                $durations[] = collect($result->durations)->sum();
             }
         }
-
+        $hls_items = join("\n" . '#EXT-X-DISCONTINUITY', $hls_items);
         $current_file = "#EXTM3U\n";
-        $current_file .= '#EXT-X-TARGETDURATION:' . ceil(collect($durations)->max()) . "\n";
+        $current_file .= '#EXT-X-TARGETDURATION:' . ceil(collect($durations)->sum()) . "\n";
         $current_file .= "#EXT-X-VERSION:4\n";
         $current_file .= "#EXT-X-MEDIA-SEQUENCE:0\n";
         $current_file .= '#EXT-X-ALLOW-CACHE:YES';
