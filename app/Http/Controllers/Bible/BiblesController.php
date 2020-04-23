@@ -876,14 +876,8 @@ class BiblesController extends APIController
             }
 
             // Get timestamps
-            $bible_files = BibleFile::where('hash_id', $fileset->hash_id)->where('book_id', $book->id)->where('chapter_start', $chapter)->get();
-            $audioTimestamps = BibleFileTimestamp::whereIn('bible_file_id', $bible_files->pluck('id'))->orderBy('verse_start')
-                ->get()->map(function ($timestamp) {
-                    return [
-                        'timestamp' => $timestamp->timestamp,
-                        'verse_start' => $timestamp->verse_start
-                    ];
-                });
+            $audio_controller = new AudioController();
+            $audioTimestamps = $audio_controller->timestampsByReference($fileset->id, $book->id,  $chapter, $fileset->asset_id)->original['data'] ?? [];
             $results->timestamps->$name = $audioTimestamps;
         }
         return $results;
