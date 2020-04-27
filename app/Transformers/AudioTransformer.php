@@ -98,6 +98,11 @@ class AudioTransformer extends BaseTransformer
                     'verse_start'    => (string) $audio->verse_start,
                     'timestamp'      => $audio->timestamp
                 ];
+            case 'v4_bible.chapter':
+                return [
+                    'verse_start'    => (string) $audio->verse_start,
+                    'timestamp'      => $audio->timestamp
+                ];
             default:
                 /**
                  * @OA\Schema (
