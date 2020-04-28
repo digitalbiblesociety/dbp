@@ -245,6 +245,26 @@ class AudioController extends APIController
         // Fetch Timestamps
         $audioTimestamps = BibleFileTimestamp::whereIn('bible_file_id', $bible_files->pluck('id'))->orderBy('verse_start')->get();
 
+
+        if ($audioTimestamps->isEmpty() && ($fileset->set_type_code === 'audio_stream' || $fileset->set_type_code === 'audio_drama_stream')) {
+            $audioTimestamps = [];
+            $bible_files = BibleFile::with('streamBandwidth.transportStreamBytes')->where([
+                'hash_id' => $fileset->hash_id,
+                'book_id' => $book,
+            ])
+                ->where('chapter_start', '>=', $chapter)
+                ->where('chapter_start', '<=', $chapter)
+                ->get();
+            foreach ($bible_files as $bible_file) {
+                $currentBandwidth = $bible_file->streamBandwidth->first();
+                foreach ($currentBandwidth->transportStreamBytes as $stream) {
+                    if ($stream->timestamp) {
+                        $audioTimestamps[] = $stream->timestamp;
+                    }
+                }
+            }
+        }
+
         // Return Response
         return $this->reply(fractal($audioTimestamps, new AudioTransformer()));
     }

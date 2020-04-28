@@ -677,6 +677,12 @@ class BiblesController extends APIController
             $drama = checkBoolean('drama') ? 'drama' : 'non-drama';
         }
 
+        $book = Book::whereId($book_id)->first();
+
+        if (!$book) {
+            return $this->setStatusCode(404)->replyWithError('Book not found');
+        }
+
         $result = (object) [];
 
         if ($show_annotations) {
@@ -708,8 +714,6 @@ class BiblesController extends APIController
         if ($zip) {
             $chapter_filesets->downloads = [];
         }
-
-        $book = Book::whereId($book_id)->first();
 
         $text_plain = $this->getFileset($bible->filesets, 'text_plain', $book->book_testament);
         if ($text_plain) {
@@ -743,19 +747,20 @@ class BiblesController extends APIController
             }
         }
 
+        $drama_all = $drama === 'all';
 
-        if ($drama === 'drama' || $drama === 'all') {
-            $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio_drama', 'drama', $zip);
+        if ($drama === 'drama' || $drama_all) {
+            $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio_drama', 'drama', $zip, 'audio', 'non_drama', !$drama_all && $zip);
         }
 
-        if ($drama === 'non-drama' || $drama === 'all') {
-            $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio', 'non_drama', $zip);
+        if ($drama === 'non-drama' || $drama_all) {
+            $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio', 'non_drama', $zip, 'audio_drama', 'drama', !$drama_all && $zip);
         }
 
         $video_stream = $this->getFileset($bible->filesets, 'video_stream', $book->book_testament);
         if ($video_stream) {
             $fileset_controller = new BibleFileSetsController();
-            $gospel_films = $fileset_controller->show($video_stream['id'], $video_stream['asset_id'], $video_stream['set_type_code'])->original['data'] ?? [];
+            $gospel_films = $fileset_controller->show($video_stream->id, $video_stream->asset_id, $video_stream->set_type_code)->original['data'] ?? [];
             $chapter_filesets->video->gospel_films = $gospel_films;
         }
 
@@ -832,7 +837,7 @@ class BiblesController extends APIController
         }
 
         if (!empty($available_filesets)) {
-            return collect($available_filesets)->sortBy(function ($fileset) {
+            return (object) collect($available_filesets)->sortBy(function ($fileset) {
                 return strpos($fileset['id'], '16') !== false;
             })->first();
         }
@@ -840,19 +845,22 @@ class BiblesController extends APIController
         return false;
     }
 
-    private function getAudioFilesetData($results, $bible, $book, $chapter, $type, $name, $download = false)
+    private function getAudioFilesetData($results, $bible, $book, $chapter, $type, $name, $download = false, $secondary_type, $secondary_name, $get_secondary = false)
     {
         $fileset_controller = new BibleFileSetsController();
-        $stream = $download ? false : $this->getFileset($bible->filesets, $type . '_stream', $book->book_testament);
-        $non_stream = $this->getFileset($bible->filesets,  $type, $book->book_testament);
-        $fileset = $stream ? $stream :  $non_stream;
+        $fileset = $this->getStreamNonStreamFileset($download, $bible, $type, $book);
+
+        if (!$fileset && $get_secondary) {
+            $name = $secondary_name;
+            $fileset = $this->getStreamNonStreamFileset($download, $bible, $secondary_type, $book);
+        }
 
         if ($fileset) {
             $fileset = BibleFileset::where([
-                'id' => $fileset['id'],
-                'asset_id' => $fileset['asset_id'],
-                'set_type_code' => $fileset['set_type_code'],
-                'set_size_code' => $fileset['set_size_code'],
+                'id' => $fileset->id,
+                'asset_id' => $fileset->asset_id,
+                'set_type_code' => $fileset->set_type_code,
+                'set_size_code' => $fileset->set_size_code,
             ])->first();
 
             // Get fileset
@@ -868,18 +876,18 @@ class BiblesController extends APIController
             }
 
             // Get timestamps
-            $bible_files = BibleFile::where('hash_id', $fileset->hash_id)->where('book_id', $book->id)->where('chapter_start', $chapter)->get();
-            $audioTimestamps = BibleFileTimestamp::whereIn('bible_file_id', $bible_files->pluck('id'))->orderBy('verse_start')
-                ->get()->map(function ($timestamp) {
-                    return [
-                        'timestamp' => $timestamp->timestamp,
-                        'verse_start' => $timestamp->verse_start
-                    ];
-                });
+            $audio_controller = new AudioController();
+            $audioTimestamps = $audio_controller->timestampsByReference($fileset->id, $book->id,  $chapter, $fileset->asset_id)->original['data'] ?? [];
             $results->timestamps->$name = $audioTimestamps;
         }
-
         return $results;
+    }
+
+    private function getStreamNonStreamFileset($download, $bible, $type, $book)
+    {
+        $stream = $download ? false : $this->getFileset($bible->filesets, $type . '_stream', $book->book_testament);
+        $non_stream = $this->getFileset($bible->filesets,  $type, $book->book_testament);
+        return $stream ? $stream :  $non_stream;
     }
 
     private function replyWithDownload($result, $zip, $bible, $book, $chapter)
