@@ -64,7 +64,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(syncV2Database::class)
             ->everyFifteenMinutes()
             ->onOneServer()
-            ->appendOutputTo("/var/app/current/syncV2Database.log")            
+            ->appendOutputTo("/var/app/current/storage/logs/artisan-scheduler.log")            
             ->withoutOverlapping() ;
 
         $schedule->command(DeleteDraftPlaylistsPlans::class)
