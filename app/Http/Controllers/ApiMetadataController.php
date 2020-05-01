@@ -86,12 +86,11 @@ class ApiMetadataController extends APIController
             \Cache::forget('cache_test');
             \Cache::add('cache_test', 'live', 5);
             $cache_test = \Cache::get('cache_test');
-            if ($cache_test != 'live') {
-                $status_code = 500;
-            }
+	    /* If return code is 500 for failed cache, beanstalk will bring the whole service down.
+	     * TODO: decide if there is something more useful to do here if cache test fails */
         } catch (\Exception $e) {
             $cache_test = $e->getMessage();
-            $status_code = 500;
+	    /* TODO: ditto above */
         }
 
         $connection = [
