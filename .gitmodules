@@ -1,4 +1,0 @@
-[submodule "dbp-eb"]
-	path = dbp-eb
-	url = https://git-codecommit.us-west-2.amazonaws.com/v1/repos/dbp-eb
-	master = master

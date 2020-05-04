@@ -220,11 +220,11 @@ class AudioController extends APIController
      *
      * @return mixed
      */
-    public function timestampsByReference($fileset_id_param = null, $book_url_param = null, $chapter_url_param = null)
+    public function timestampsByReference($fileset_id_param = null, $book_url_param = null, $chapter_url_param = null, $asset_id = null)
     {
         // Check Params
         $id       = checkParam('fileset_id|dam_id|id', true, $fileset_id_param);
-        $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
+        $asset_id = checkParam('asset_id', false, $asset_id) ?? config('filesystems.disks.s3_fcbh.bucket');
         $book     = checkParam('book|osis_code', false, $book_url_param);
         $chapter  = checkParam('chapter_id|chapter_number', false, $chapter_url_param);
 
@@ -244,6 +244,26 @@ class AudioController extends APIController
 
         // Fetch Timestamps
         $audioTimestamps = BibleFileTimestamp::whereIn('bible_file_id', $bible_files->pluck('id'))->orderBy('verse_start')->get();
+
+
+        if ($audioTimestamps->isEmpty() && ($fileset->set_type_code === 'audio_stream' || $fileset->set_type_code === 'audio_drama_stream')) {
+            $audioTimestamps = [];
+            $bible_files = BibleFile::with('streamBandwidth.transportStreamBytes')->where([
+                'hash_id' => $fileset->hash_id,
+                'book_id' => $book,
+            ])
+                ->where('chapter_start', '>=', $chapter)
+                ->where('chapter_start', '<=', $chapter)
+                ->get();
+            foreach ($bible_files as $bible_file) {
+                $currentBandwidth = $bible_file->streamBandwidth->first();
+                foreach ($currentBandwidth->transportStreamBytes as $stream) {
+                    if ($stream->timestamp) {
+                        $audioTimestamps[] = $stream->timestamp;
+                    }
+                }
+            }
+        }
 
         // Return Response
         return $this->reply(fractal($audioTimestamps, new AudioTransformer()));

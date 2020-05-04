@@ -2,6 +2,7 @@
 
 namespace App\Models\Playlist;
 
+use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFile;
 use App\Models\Bible\BibleFileset;
 use App\Models\Bible\BibleVerse;
@@ -253,7 +254,7 @@ class PlaylistItems extends Model implements Sortable
     }
 
 
-    protected $appends = ['completed', 'full_chapter', 'path'];
+    protected $appends = ['completed', 'full_chapter', 'path', 'metadata'];
 
 
     public function calculateVerses()
@@ -294,6 +295,29 @@ class PlaylistItems extends Model implements Sortable
 
         $this->attributes['verses'] =  $verses;
         return $this;
+    }
+
+    public function getVerseText()
+    {
+        $fileset = BibleFileset::where('id', $this['fileset_id'])->first();
+        $text_fileset = $fileset->bible->first()->filesets->where('set_type_code', 'text_plain')->first();
+        $verses = null;
+        if ($text_fileset) {
+            $where = [
+                ['book_id', $this['book_id']],
+                ['chapter', '>=', $this['chapter_start']],
+                ['chapter', '<=', $this['chapter_end']],
+            ];
+            if ($this['verse_start'] && $this['verse_end']) {
+                $where[] = ['verse_start', '>=', $this['verse_start']];
+                $where[] = ['verse_end', '<=', $this['verse_end']];
+            }
+            $verses = BibleVerse::where('hash_id', $text_fileset->hash_id)
+                ->where($where)
+                ->get()->pluck('verse_text');
+        }
+
+        return $verses;
     }
 
     /**
@@ -341,6 +365,34 @@ class PlaylistItems extends Model implements Sortable
     public function getPathAttribute()
     {
         return route('v4_playlists_item.hls', ['playlist_item_id'  => $this->attributes['id'], 'v' => checkParam('v'), 'key' => checkParam('key')]);
+    }
+
+    /**
+     * @OA\Property(
+     *   property="metadata",
+     *   title="metadata",
+     *   type="object",
+     *   description="Bible metadata info",
+     *      @OA\Property(property="bible_id", ref="#/components/schemas/Bible/properties/id"),
+     *      @OA\Property(property="bible_name", ref="#/components/schemas/BibleTranslation/properties/name"),
+     *      @OA\Property(property="bible_vname", ref="#/components/schemas/BibleTranslation/properties/name"),
+     *      @OA\Property(property="book_name", ref="#/components/schemas/BookTranslation/properties/name")
+     * )
+     */
+    public function getMetadataAttribute()
+    {
+        $bible = BibleFileset::whereId($this['fileset_id'])->first()->bible->first();
+        if (!$bible) {
+            return null;
+        }
+        $bible = Bible::whereId($bible->id)->with(['translations', 'books.book'])->first();
+
+        return [
+            'bible_id' => $bible->id,
+            'bible_name' => optional($bible->translations->where('language_id', $GLOBALS['i18n_id'])->first())->name,
+            'bible_vname' =>  optional($bible->vernacularTranslation)->name,
+            'book_name' => optional($bible->books->where('book_id', $this['book_id'])->first())->name
+        ];
     }
 
     public function fileset()

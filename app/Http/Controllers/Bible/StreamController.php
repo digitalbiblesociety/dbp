@@ -103,7 +103,7 @@ class StreamController extends APIController
         $currentBandwidth->transportStream = sizeof($currentBandwidth->transportStreamBytes) ? $currentBandwidth->transportStreamBytes : $currentBandwidth->transportStreamTS;
 
         $current_file = "#EXTM3U\n";
-        $current_file .= '#EXT-X-TARGETDURATION:' . ceil($currentBandwidth->transportStream->max('runtime')) . "\n";
+        $current_file .= '#EXT-X-TARGETDURATION:' . ceil($currentBandwidth->transportStream->sum('runtime')) . "\n";
         $current_file .= "#EXT-X-VERSION:4\n";
         $current_file .= "#EXT-X-MEDIA-SEQUENCE:0\n";
         $current_file .= '#EXT-X-ALLOW-CACHE:YES';

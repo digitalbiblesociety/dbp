@@ -48,6 +48,12 @@ class BookmarksController extends APIController
      *          @OA\Schema(type="integer",default=25)),
      *     @OA\Parameter(name="page",  in="query", description="The current page of the results",
      *          @OA\Schema(type="integer",default=1)),
+     *     @OA\Parameter(
+     *          name="query",
+     *          in="query",
+     *          description="The word or phrase to filter bookmarks by.",
+     *          @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/sort_by"),
      *     @OA\Parameter(ref="#/components/parameters/sort_dir"),
      *     @OA\Response(
@@ -78,16 +84,25 @@ class BookmarksController extends APIController
         $limit        = (int) (checkParam('limit') ?? 25);
         $sort_by    = checkParam('sort_by');
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
+        $query      = checkParam('query');
 
-        $bookmarks = Bookmark::with('tags')->where('user_id', $user_id)
+        $bookmarks = Bookmark::with('tags')
+            ->where('user_bookmarks.user_id', $user_id)
             ->when($bible_id, function ($q) use ($bible_id) {
-                $q->where('bible_id', $bible_id);
+                $q->where('user_bookmarks.bible_id', $bible_id);
             })->when($book_id, function ($q) use ($book_id) {
-                $q->where('book_id', $book_id);
+                $q->where('user_bookmarks.book_id', $book_id);
             })->when($chapter, function ($q) use ($chapter) {
-                $q->where('chapter', $chapter);
+                $q->where('user_bookmarks.chapter', $chapter);
             })->when($sort_by, function ($q) use ($sort_by, $sort_dir) {
-                $q->orderBy($sort_by, $sort_dir);
+                $q->orderBy('user_bookmarks.' . $sort_by, $sort_dir);
+            })->when($query, function ($q) use ($query) {
+                $dbp_database = config('database.connections.dbp.database');
+                $q->join($dbp_database . '.bible_books as bible_books', function ($join) use ($query) {
+                    $join->on('user_bookmarks.bible_id', '=', 'bible_books.bible_id')
+                        ->on('user_bookmarks.book_id', '=', 'bible_books.book_id');
+                });
+                $q->where('bible_books.name', 'like', '%' . $query . '%');
             })->paginate($limit);
 
         $bookmarkCollection = $bookmarks->getCollection();
@@ -255,6 +270,9 @@ class BookmarksController extends APIController
         }
 
         $bookmark = Bookmark::where('id', $bookmark_id)->where('user_id', $user_id)->first();
+        if (!$bookmark) {
+            return $this->setStatusCode(404)->replyWithError('Bookmark not found');
+        }
         $bookmark->delete();
 
         return $this->reply('bookmark successfully deleted');
@@ -263,11 +281,11 @@ class BookmarksController extends APIController
     private function validateBookmark()
     {
         $validator = Validator::make(request()->all(), [
-            'bible_id'    => ((request()->method() === 'POST') ? 'required|' : ''). 'exists:dbp.bibles,id',
-            'user_id'     => ((request()->method() === 'POST') ? 'required|' : ''). 'exists:dbp_users.users,id',
-            'book_id'     => ((request()->method() === 'POST') ? 'required|' : ''). 'exists:dbp.books,id',
-            'chapter'     => ((request()->method() === 'POST') ? 'required|' : ''). 'max:150|min:1|integer',
-            'verse_start' => ((request()->method() === 'POST') ? 'required|' : ''). 'max:177|min:1|integer'
+            'bible_id'    => ((request()->method() === 'POST') ? 'required|' : '') . 'exists:dbp.bibles,id',
+            'user_id'     => ((request()->method() === 'POST') ? 'required|' : '') . 'exists:dbp_users.users,id',
+            'book_id'     => ((request()->method() === 'POST') ? 'required|' : '') . 'exists:dbp.books,id',
+            'chapter'     => ((request()->method() === 'POST') ? 'required|' : '') . 'max:150|min:1|integer',
+            'verse_start' => ((request()->method() === 'POST') ? 'required|' : '') . 'max:177|min:1|integer'
         ]);
         if ($validator->fails()) {
             return ['errors' => $validator->errors()];

@@ -40,7 +40,7 @@ _ide_helper_models.php
 .phpunit.result.cache
 .php_cs.cache
 fixers/tmp
-
+.elasticbeanstalk/*
 
 # The Mac
 .DS_STORE
@@ -48,3 +48,8 @@ fixers/tmp
 # Images
 /public/img/countries/landmarks/
 /public/img/banners/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

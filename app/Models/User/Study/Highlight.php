@@ -2,6 +2,7 @@
 
 namespace App\Models\User\Study;
 
+use App\Http\Controllers\Bible\BiblesController;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleBook;
 use App\Models\Bible\BibleVerse;
@@ -47,8 +48,8 @@ class Highlight extends Model
 {
     protected $connection = 'dbp_users';
     public $table = 'user_highlights';
-    protected $fillable = ['user_id','v2_id','bible_id','book_id','project_id','chapter','verse_start','verse_end','highlight_start','highlighted_words','highlighted_color'];
-    protected $hidden = ['user_id','project_id'];
+    protected $fillable = ['user_id', 'v2_id', 'bible_id', 'book_id', 'project_id', 'chapter', 'verse_start', 'verse_end', 'highlight_start', 'highlighted_words', 'highlighted_color'];
+    protected $hidden = ['user_id', 'project_id'];
 
     /**
      *
@@ -174,26 +175,35 @@ class Highlight extends Model
         $bible = Bible::where('id', $highlight['bible_id'])->first();
         $filesets = $bible->filesets;
         $text_fileset = $filesets->firstWhere('set_type_code', 'text_plain');
+
+        $bibles_controller = new BiblesController();
+        $fileset_types = collect(['audio_stream_drama', 'audio_drama', 'audio_stream', 'audio']);
+        $testament = $this->book->book->book_testament;
+
         $audio_filesets = $filesets->filter(function ($fs) {
             return Str::contains($fs->set_type_code, 'audio');
-        })->flatten()->toArray();
-        
+        });
+        $available_filesets = $fileset_types->map(function ($fileset) use ($audio_filesets, $testament, $bibles_controller) {
+            return $bibles_controller->getFileset($audio_filesets, $fileset, $testament);
+        })->filter(function ($item) {
+            return $item;
+        })->toArray();
+
         $verses = '';
         if ($text_fileset) {
             $verses = BibleVerse::withVernacularMetaData($bible)
-            ->where('hash_id', $text_fileset->hash_id)
-            ->where('bible_verses.book_id', $highlight['book_id'])
-            ->where('verse_start', '>=', $verse_start)
-            ->where('verse_end', '<=', $verse_end)
-            ->where('chapter', $chapter)
-            ->orderBy('verse_start')
-            ->select([
-              'bible_verses.verse_text',
-            ])->get()->pluck('verse_text');
+                ->where('hash_id', $text_fileset->hash_id)
+                ->where('bible_verses.book_id', $highlight['book_id'])
+                ->where('verse_start', '>=', $verse_start)
+                ->where('verse_end', '<=', $verse_end)
+                ->where('chapter', $chapter)
+                ->orderBy('verse_start')
+                ->select([
+                    'bible_verses.verse_text',
+                ])->get()->pluck('verse_text');
+            $verse_text = implode(' ', $verses->toArray());
         }
-        
-        $verse_text = implode(' ', $verses->toArray());
 
-        return collect(['verse_text' => $verse_text, 'audio_filesets' => $audio_filesets]);
+        return collect(['verse_text' => $verse_text, 'audio_filesets' => array_values($available_filesets)]);
     }
 }

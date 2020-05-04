@@ -15,6 +15,7 @@ use App\Models\User\User;
  * @property string $name
  * @property string $user_id
  * @property bool $featured
+ * @property bool $draft
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon $deleted_at
@@ -33,7 +34,7 @@ class Playlist extends Model
 
     protected $connection = 'dbp_users';
     public $table         = 'user_playlists';
-    protected $fillable   = ['user_id', 'name', 'external_content'];
+    protected $fillable   = ['user_id', 'name', 'external_content', 'draft'];
     protected $hidden     = ['user_id', 'deleted_at'];
     protected $dates      = ['deleted_at'];
     /**
@@ -101,6 +102,16 @@ class Playlist extends Model
     /**
      *
      * @OA\Property(
+     *   title="draft",
+     *   type="boolean",
+     *   description="If the playlist is draft"
+     * )
+     *
+     */
+    protected $draft;
+    /**
+     *
+     * @OA\Property(
      *   title="created_at",
      *   type="string",
      *   description="The timestamp the playlist was created at"
@@ -117,6 +128,12 @@ class Playlist extends Model
     {
         return (bool) $featured;
     }
+
+    public function getDraftAttribute($draft)
+    {
+        return (bool) $draft;
+    }
+
     /**
      *
      * @OA\Property(

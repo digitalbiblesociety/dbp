@@ -32,6 +32,12 @@ class NotesController extends APIController
      *     @OA\Parameter(name="chapter_id",  in="query", description="The starting chapter", @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")),
      *     @OA\Parameter(name="limit",       in="query", description="The number of highlights to return", @OA\Schema(type="integer",example=25)),
      *     @OA\Parameter(name="paginate",    in="query", description="When set to false will disable pagination", @OA\Schema(type="boolean",example=false)),
+     *     @OA\Parameter(
+     *          name="query",
+     *          in="query",
+     *          description="The word or phrase to filter notes book name by.",
+     *          @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(name="page",  in="query", description="The current page of the results",
      *          @OA\Schema(type="integer",default=1)),
      *     @OA\Parameter(ref="#/components/parameters/sort_by"),
@@ -65,16 +71,25 @@ class NotesController extends APIController
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
         $limit      = (int) checkParam('limit') ?? 25;
         $limit      = ($limit > 50) ? 50 : $limit;
+        $query      = checkParam('query');
 
-        $notes = Note::with('tags')->where('user_id', $user_id)
+        $notes = Note::with('tags')
+            ->where('user_notes.user_id', $user_id)
             ->when($bible_id, function ($q) use ($bible_id) {
-                $q->where('bible_id', $bible_id);
+                $q->where('user_notes.bible_id', $bible_id);
             })->when($book_id, function ($q) use ($book_id) {
-                $q->where('book_id', $book_id);
+                $q->where('user_notes.book_id', $book_id);
             })->when($sort_by, function ($q) use ($sort_by, $sort_dir) {
-                $q->orderBy($sort_by, $sort_dir);
+                $q->orderBy('user_notes.' . $sort_by, $sort_dir);
             })->when($chapter_id, function ($q) use ($chapter_id) {
-                $q->where('chapter', $chapter_id);
+                $q->where('user_notes.chapter', $chapter_id);
+            })->when($query, function ($q) use ($query) {
+                $dbp_database = config('database.connections.dbp.database');
+                $q->join($dbp_database . '.bible_books as bible_books', function ($join) use ($query) {
+                    $join->on('user_notes.bible_id', '=', 'bible_books.bible_id')
+                        ->on('user_notes.book_id', '=', 'bible_books.book_id');
+                });
+                $q->where('bible_books.name', 'like', '%' . $query . '%');
             })->paginate($limit);
 
         if (!$notes) {
@@ -297,7 +312,7 @@ class NotesController extends APIController
 
         $note = Note::where('user_id', $user_id)->where('id', $note_id)->first();
         if (!$note) {
-            $this->setStatusCode(404)->replyWithError('Note Not Found');
+            return $this->setStatusCode(404)->replyWithError('Note Not Found');
         }
         $note->delete();
 

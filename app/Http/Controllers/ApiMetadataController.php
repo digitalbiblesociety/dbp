@@ -27,7 +27,7 @@ class ApiMetadataController extends APIController
         if (\is_array($params)) {
             $params = implode('&', array_map(function ($v, $k) {
                 if ($k === 'key') {
-                    return 'key='.config('services.bibleIs.key');
+                    return 'key=' . config('services.bibleIs.key');
                 }
                 if ($k === 0) {
                     return $v;
@@ -35,7 +35,7 @@ class ApiMetadataController extends APIController
                 return sprintf('%s=%s', $k, $v);
             }, $params, array_keys($params)));
         }
-        $contents = json_decode(file_get_contents('https://dbt.io/'.$path1.'/'.$path2.'?'.$params));
+        $contents = json_decode(file_get_contents('https://dbt.io/' . $path1 . '/' . $path2 . '?' . $params));
         return response()->json($contents);
     }
 
@@ -71,7 +71,7 @@ class ApiMetadataController extends APIController
             $user_connection_message = 'live';
         } catch (\Exception $e) {
             $user_connection_message = $e->getMessage();
-            $status_code = 417;
+            $status_code = 500;
         }
 
         try {
@@ -79,16 +79,18 @@ class ApiMetadataController extends APIController
             $dbp_connection_message = 'live';
         } catch (\Exception $e) {
             $dbp_connection_message = $e->getMessage();
-            $status_code = 417;
+            $status_code = 500;
         }
 
         try {
             \Cache::forget('cache_test');
             \Cache::add('cache_test', 'live', 5);
-            $cache_test = \Cache::get('cache_test', 'failed by default');
+            $cache_test = \Cache::get('cache_test');
+	    /* If return code is 500 for failed cache, beanstalk will bring the whole service down.
+	     * TODO: decide if there is something more useful to do here if cache test fails */
         } catch (\Exception $e) {
             $cache_test = $e->getMessage();
-            $status_code = 417;
+	    /* TODO: ditto above */
         }
 
         $connection = [

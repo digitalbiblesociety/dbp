@@ -247,6 +247,7 @@ class BibleTransformer extends BaseTransformer
                             $chapters[$key] = intval($chapter);
                         }
                         $book->chapters = $chapters;
+                        $book->testament = $book->book['book_testament'];
                         unset($book->book);
                         return $book;
                     })->values(),
