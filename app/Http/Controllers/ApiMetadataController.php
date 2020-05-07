@@ -7,6 +7,7 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Organization\Asset;
 use App\Models\User\Changelog;
 use App\Traits\CallsBucketsTrait;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class ApiMetadataController extends APIController
@@ -86,11 +87,11 @@ class ApiMetadataController extends APIController
             \Cache::forget('cache_test');
             \Cache::add('cache_test', 'live', 5);
             $cache_test = \Cache::get('cache_test');
-	    /* If return code is 500 for failed cache, beanstalk will bring the whole service down.
-	     * TODO: decide if there is something more useful to do here if cache test fails */
+            /* If return code is 500 for failed cache, beanstalk will bring the whole service down.
+         * TODO: decide if there is something more useful to do here if cache test fails */
         } catch (\Exception $e) {
             $cache_test = $e->getMessage();
-	    /* TODO: ditto above */
+            /* TODO: ditto above */
         }
 
         $connection = [
@@ -106,6 +107,34 @@ class ApiMetadataController extends APIController
         ];
 
         return $this->setStatusCode($status_code)->reply($connection);
+    }
+
+    public function getCacheStatus()
+    {
+        $now = now();
+        $closure = function () use ($now) {
+            return $now;
+        };
+
+        $week = new Carbon($now);
+        $week_cache = cacheRemember($week->addWeek(), $closure, 'cache-status-week');
+        $day = new Carbon($now);
+        $day_cache = cacheRemember($day->addDay(), $closure, 'cache-status-day');
+        $hour = new Carbon($now);
+        $hour_cache = cacheRemember($hour->addHour(), $closure, 'cache-status-hour');
+        $minute = new Carbon($now);
+        $minute_cache = cacheRemember($minute->addMinute(), $closure, 'cache-status-minute');
+
+        return $this->reply([
+            'now' => $now,
+            'cached' => [
+                'week' => ['value' => $week_cache, 'cached' => $week_cache !== $now],
+                'day' => ['value' => $day_cache, 'cached' => $day_cache !== $now],
+                'hour' => ['value' => $hour_cache, 'cached' => $hour_cache !== $now],
+                'minute' => ['value' => $minute_cache, 'cached' => $minute_cache !== $now],
+            ]
+
+        ]);
     }
 
     /**

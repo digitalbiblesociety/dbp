@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Cache;
+
 /**
  * Check query parameters for a given parameter name, and check the headers for the same parameter name;
  * also allow for two or more parameter names to match to the same $paramName using pipes to separate them.
@@ -54,6 +56,12 @@ function checkBoolean(string $paramName, $required = false, $inPathValue = null)
     $param = checkParam($paramName, $required, $inPathValue);
     $param = (bool) $param &&  strtolower($param) !== 'false';
     return $param;
+}
+
+function cacheRemember($duration, $closure, $cache_key, $cache_args = [])
+{
+    $cache_string = generateCacheString($cache_key, $cache_args);
+    return Cache::remember($cache_string, $duration, $closure);
 }
 
 function apiLogs($request, $status_code, $s3_string = false, $ip_address = null)
