@@ -136,8 +136,8 @@ class BiblesController extends APIController
 
         $access_control = (!$show_restricted) ? $this->accessControl($this->key) : (object) ['string' => null, 'hashes' => null];
         $organization = $organization_id ? Organization::where('id', $organization_id)->orWhere('slug', $organization_id)->first() : null;
-        $cache_string = strtolower('bibles:' . $language_code . $organization . $country . $asset_id . $access_control->string . $media . $media_exclude . $size . $size_exclude . $bitrate . $limit . $page);
-        $bibles = \Cache::remember($cache_string, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude, $bitrate, $show_restricted, $limit, $page) {
+        $cache_params = [$language_code, $organization, $country, $asset_id, $access_control->string, $media, $media_exclude, $size, $size_exclude, $bitrate, $limit, $page];
+        $bibles = cacheRemember('bibles', $cache_params, now()->addDay(), function () use ($language_code, $organization, $country, $asset_id, $access_control, $media, $media_exclude, $size, $size_exclude, $bitrate, $show_restricted, $limit, $page) {
             $bibles = Bible::when(!$show_restricted, function ($query) use ($access_control, $asset_id, $media, $media_exclude, $size, $size_exclude, $bitrate) {
                 $query->withRequiredFilesets([
                     'access_control' => $access_control,
@@ -247,8 +247,8 @@ class BiblesController extends APIController
     {
         $asset_id = checkParam('asset_id');
         $access_control = $this->accessControl($this->key);
-        $cache_string = strtolower('bible_show:' . $id . ':' . $access_control->string);
-        $bible = \Cache::remember($cache_string, now()->addDay(), function () use ($access_control, $id) {
+        $cache_params = [$id, $access_control->string];
+        $bible = cacheRemember('bibles_show', $cache_params, now()->addDay(), function () use ($access_control, $id) {
             return Bible::with([
                 'translations', 'books.book', 'links', 'organizations.logo', 'organizations.logoIcon', 'organizations.translations', 'alphabet.primaryFont', 'equivalents',
                 'filesets' => function ($query) use ($access_control) {
@@ -314,8 +314,8 @@ class BiblesController extends APIController
 
         $bible = Bible::find($bible_id);
         $access_control = $this->accessControl($this->key);
-        $cache_string = strtolower('bible_books_bible:' . $bible_id . ':' . $access_control->string . ':' . $verify_content . ':' . $asset_id);
-        $bible = \Cache::remember($cache_string, now()->addDay(), function () use ($access_control, $bible_id, $asset_id, $verify_content) {
+        $cache_params = [$bible_id, $access_control->string, $verify_content, $asset_id];
+        $bible = cacheRemember('bible_books_bible', $cache_params, now()->addDay(), function () use ($access_control, $bible_id, $asset_id, $verify_content) {
             if (!$verify_content) {
                 return Bible::find($bible_id);
             }
@@ -335,8 +335,8 @@ class BiblesController extends APIController
             return $this->setStatusCode(404)->replyWithError(trans('api.bibles_errors_404', ['bible_id' => $bible_id]));
         }
 
-        $cache_string = strtolower('bible_books_books:' . $bible_id . ':' . $testament . ':' . $book_id);
-        $books = \Cache::remember($cache_string, now()->addDay(), function () use ($bible_id, $testament, $book_id, $bible) {
+        $cache_params = [$bible_id, $testament, $book_id];
+        $books = cacheRemember('bible_books_books', $cache_params, now()->addDay(), function () use ($bible_id, $testament, $book_id, $bible) {
             $books = BibleBook::where('bible_id', $bible_id)
                 ->when($testament, function ($query) use ($testament) {
                     $query->where('book_testament', $testament);
@@ -352,8 +352,8 @@ class BiblesController extends APIController
         });
 
         if ($verify_content) {
-            $cache_string = strtolower('bible_books_books_verified:' . $bible_id . ':' . $access_control->string . ':' . $verify_content . ':' . $asset_id . ':' . $testament . ':' . $book_id);
-            $books = \Cache::remember($cache_string, now()->addDay(), function () use ($books, $bible) {
+            $cache_params = [$bible_id, $access_control->string, $verify_content, $asset_id, $testament, $book_id];
+            $books = cacheRemember('bible_books_books_verified', $cache_params, now()->addDay(), function () use ($books, $bible) {
                 $book_controller = new BooksController();
                 $active_books = [];
                 foreach ($bible->filesets as $fileset) {
@@ -486,8 +486,8 @@ class BiblesController extends APIController
 
         $iso = checkParam('iso') ?? 'eng';
 
-        $cache_string = generateCacheString('bible_copyrights', [$bible_id, $iso]);
-        $copyrights = \Cache::remember($cache_string, now()->addDay(), function () use ($bible, $iso) {
+        $cache_params = [$bible_id, $iso];
+        $copyrights = cacheRemember('bible_copyrights', $cache_params, now()->addDay(), function () use ($bible, $iso) {
             $language_id = optional(Language::where('iso', $iso)->select('id')->first())->id;
             return $bible->filesets->map(function ($fileset) use ($language_id) {
                 return BibleFileset::where('hash_id', $fileset->hash_id)->with([
@@ -730,8 +730,8 @@ class BiblesController extends APIController
             $formatted_verses = $fileset_controller->show($text_format->id, $text_format->asset_id, $text_format->set_type_code)->original['data'] ?? [];
             if (!empty($formatted_verses)) {
                 $path = $formatted_verses[0]['path'];
-                $cache_string = generateCacheString('bible_chapter_formatted_verses', [$bible_id, $book_id, $chapter, $text_format->id]);
-                $formatted_verses = \Cache::remember($cache_string, now()->addDay(), function () use ($path) {
+                $cache_params = [$bible_id, $book_id, $chapter, $text_format->id];
+                $formatted_verses = cacheRemember('bible_chapter_formatted_verses', $cache_params, now()->addDay(), function () use ($path) {
                     try {
                         $client = new Client();
                         $html = $client->get($path);

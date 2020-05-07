@@ -68,8 +68,8 @@ class BibleFileSetsController extends APIController
         $asset_id      = checkParam('bucket|bucket_id|asset_id', false, $asset_id) ?? config('filesystems.disks.s3_fcbh.bucket');
         $type          = checkParam('type', $set_type_code !== null, $set_type_code);
 
-        $cache_string = 'bible_filesets_show:' . $this->v . ':' . $fileset_id . $book_id . $type . $chapter_id . $asset_id;
-        $fileset_chapters = \Cache::remember($cache_string, now()->addHours(12), function () use ($fileset_id, $book_id, $type, $chapter_id, $asset_id) {
+        $cache_params = [$this->v, $fileset_id, $book_id, $type, $chapter_id, $asset_id];
+        $fileset_chapters = cacheRemember('bible_filesets_show', $cache_params, now()->addHours(12), function () use ($fileset_id, $book_id, $type, $chapter_id, $asset_id) {
             $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
             $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, $type)->first();
             if (!$fileset) {
@@ -283,8 +283,8 @@ class BibleFileSetsController extends APIController
         $type = checkParam('type', true);
         $asset_id = checkParam('bucket|bucket_id|asset_id') ?? 'dbp-prod';
 
-        $cache_string = strtolower('bible_fileset_copyright:' . $asset_id . ':' . $id . ':' . $type . $iso);
-        $fileset = \Cache::remember($cache_string, now()->addDay(), function () use ($iso, $type, $asset_id, $id) {
+        $cache_params = [$asset_id, $id, $type, $iso];
+        $fileset = cacheRemember('bible_fileset_copyright', $cache_params, now()->addDay(), function () use ($iso, $type, $asset_id, $id) {
             $language_id = optional(Language::where('iso', $iso)->select('id')->first())->id;
             return BibleFileset::where('id', $id)->with([
                 'copyright.organizations.logos',
@@ -384,8 +384,8 @@ class BibleFileSetsController extends APIController
         $bible_locations = json_decode($request->getContent());
         $result = [];
         foreach ($bible_locations as $bible_location) {
-            $cache_string = 'v4_bible_filesets.checkTypes' . $bible_location->fileset_id;
-            $hashes = \Cache::remember($cache_string, now()->addMonth(), function () use ($bible_location) {
+            $cache_params = [$bible_location->fileset_id];
+            $hashes = cacheRemember('v4_bible_filesets.checkTypes', $cache_params, now()->addMonth(), function () use ($bible_location) {
                 $filesets = BibleFileset::where('id', $bible_location->fileset_id)
                     ->whereNotIn('set_type_code', ['text_format'])
                     ->first()

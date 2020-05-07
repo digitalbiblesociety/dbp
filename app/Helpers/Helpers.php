@@ -58,10 +58,35 @@ function checkBoolean(string $paramName, $required = false, $inPathValue = null)
     return $param;
 }
 
-function cacheRemember($duration, $closure, $cache_key, $cache_args = [])
+function cacheAdd($cache_key, $value, $duration)
+{
+    return Cache::add($cache_key, $value, $duration);
+}
+
+function cacheForget($cache_key)
+{
+    return Cache::forget($cache_key);
+}
+
+function cacheFlush()
+{
+    return Cache::flush();
+}
+
+function cacheGet($cache_key)
+{
+    return Cache::get($cache_key);
+}
+
+function cacheRemember($cache_key, $cache_args = [], $duration, $callback)
 {
     $cache_string = generateCacheString($cache_key, $cache_args);
-    return Cache::remember($cache_string, $duration, $closure);
+    return Cache::remember($cache_string, $duration, $callback);
+}
+
+function cacheRememberForever($cache_key, $callback)
+{
+    return Cache::rememberForever($cache_key, $callback);
 }
 
 function apiLogs($request, $status_code, $s3_string = false, $ip_address = null)

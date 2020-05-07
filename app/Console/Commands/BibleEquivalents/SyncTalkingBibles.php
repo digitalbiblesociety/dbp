@@ -29,7 +29,7 @@ class SyncTalkingBibles extends Command
      */
     public function handle()
     {
-        $bible_equivalents = \Cache::rememberForever('talking_bibles', function () {
+        $bible_equivalents = cacheRememberForever('talking_bibles', function () {
             $opts = [
                 'http' => [
                     'method' => 'GET',
@@ -42,7 +42,7 @@ class SyncTalkingBibles extends Command
             $count     = 25;
 
             while ($count === 25) {
-                $bibles = json_decode(file_get_contents($baseurl . 'recordings.json?page='.$page, false, $context));
+                $bibles = json_decode(file_get_contents($baseurl . 'recordings.json?page=' . $page, false, $context));
                 $count = count($bibles);
                 $bible_equivalents[] = $bibles;
                 $page++;

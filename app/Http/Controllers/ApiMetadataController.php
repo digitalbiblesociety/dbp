@@ -84,9 +84,9 @@ class ApiMetadataController extends APIController
         }
 
         try {
-            \Cache::forget('cache_test');
-            \Cache::add('cache_test', 'live', 5);
-            $cache_test = \Cache::get('cache_test');
+            cacheForget('cache_test');
+            cacheAdd('cache_test', 'live', 5);
+            $cache_test = cacheGet('cache_test');
             /* If return code is 500 for failed cache, beanstalk will bring the whole service down.
          * TODO: decide if there is something more useful to do here if cache test fails */
         } catch (\Exception $e) {
@@ -117,13 +117,13 @@ class ApiMetadataController extends APIController
         };
 
         $week = new Carbon($now);
-        $week_cache = cacheRemember($week->addWeek(), $closure, 'cache-status-week');
+        $week_cache = cacheRemember('cache-status-week', [], $week->addWeek(), $closure);
         $day = new Carbon($now);
-        $day_cache = cacheRemember($day->addDay(), $closure, 'cache-status-day');
+        $day_cache = cacheRemember('cache-status-day', [], $day->addDay(), $closure);
         $hour = new Carbon($now);
-        $hour_cache = cacheRemember($hour->addHour(), $closure, 'cache-status-hour');
+        $hour_cache = cacheRemember('cache-status-hour', [], $hour->addHour(), $closure);
         $minute = new Carbon($now);
-        $minute_cache = cacheRemember($minute->addMinute(), $closure, 'cache-status-minute');
+        $minute_cache = cacheRemember('cache-status-minute', [], $minute->addMinute(), $closure);
 
         return $this->reply([
             'now' => $now,
@@ -300,7 +300,7 @@ class ApiMetadataController extends APIController
         if (config('app.server_name') != 'APP_DEV') {
             return $this->setStatusCode(422)->replyWithError('This is not the dev server');
         }
-        Cache::flush();
+        cacheFlush();
         return $this->reply('Cache Flushed successfully');
     }
 

@@ -54,8 +54,7 @@ class AlphabetsController extends APIController
      */
     public function index()
     {
-        $cache_string = 'alphabets';
-        $alphabets = \Cache::remember($cache_string, now()->addDay(), function () {
+        $alphabets = cacheRemember('alphabets', [], now()->addDay(), function () {
             $alphabets = Alphabet::select(['name', 'script', 'family', 'direction', 'type'])->get();
             return fractal($alphabets, new AlphabetTransformer(), $this->serializer);
         });
@@ -115,8 +114,7 @@ class AlphabetsController extends APIController
      */
     public function show($id)
     {
-        $cache_string = 'alphabet:' . strtolower($id);
-        $alphabet = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
+        $alphabet = cacheRemember('alphabet', [$id], now()->addDay(), function () use ($id) {
             $alphabet = Alphabet::with('fonts', 'languages', 'bibles.currentTranslation')->find($id);
             return fractal($alphabet, AlphabetTransformer::class, $this->serializer);
         });

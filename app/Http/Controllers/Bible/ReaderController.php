@@ -24,10 +24,9 @@ class ReaderController extends APIController
      */
     public function languages()
     {
-        $cache_string = 'Bible_is_languages';
-        $languages = \Cache::remember($cache_string, now()->addDay(), function () {
+        $languages = cacheRemember('Bible_is_languages', [], now()->addDay(), function () {
             $project_key = optional(Key::where('name', 'bible.is')->first())->key;
-            $access_control = \Cache::remember($project_key.'_access_control', now()->addDay(), function () use ($project_key) {
+            $access_control = cacheRemember('access_control', [$project_key], now()->addDay(), function () use ($project_key) {
                 return $this->accessControl($project_key);
             });
             return Language::select(['languages.id', 'languages.name', 'autonym.name as autonym'])
@@ -55,7 +54,7 @@ class ReaderController extends APIController
     public function bibles($language_id)
     {
         $project_key = Key::where('name', 'bible.is')->first();
-        $access_control = \Cache::remember($project_key->key.'_access_control', now()->addDay(), function () use ($project_key) {
+        $access_control = cacheRemember('access_control', [$project_key->key], now()->addDay(), function () use ($project_key) {
             return $this->accessControl($project_key->key);
         });
 

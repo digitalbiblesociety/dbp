@@ -43,7 +43,7 @@ class BooksController extends APIController
      */
     public function index()
     {
-        $books = \Cache::rememberForever('v4_books:index', function () {
+        $books = cacheRememberForever('v4_books:index', function () {
             $books = Book::orderBy('protestant_order')->get();
             return fractal($books, new BooksTransformer(), $this->serializer);
         });
@@ -102,8 +102,8 @@ class BooksController extends APIController
         $fileset_type = checkParam('fileset_type') ?? 'text_plain';
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        $cache_string = strtolower('v4_books:' . $asset_id . ':' . $id . '_' . $fileset_type);
-        $books = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset_type, $asset_id, $id) {
+        $cache_params = [$asset_id, $id, $fileset_type];
+        $books = cacheRemember('v4_books', $cache_params, now()->addDay(), function () use ($fileset_type, $asset_id, $id) {
             $books = $this->getActiveBooksFromFileset($id, $asset_id, $fileset_type);
             return fractal($books, new BooksTransformer(), $this->serializer);
         });

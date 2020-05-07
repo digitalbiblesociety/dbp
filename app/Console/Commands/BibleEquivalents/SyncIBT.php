@@ -44,7 +44,7 @@ class SyncIBT extends Command
     public function handle()
     {
         $user = User::where('email', config('app.contact'))->first();
-        $response = \Cache::remember('ibt_russian_bibles', now()->addMonth(), function () {
+        $response = cacheRemember('ibt_russian_bibles', [], now()->addMonth(), function () {
             return json_decode(file_get_contents('http://ibt.org.ru/sites/default/files/media_manifest.json'));
         });
 

@@ -33,7 +33,7 @@ class SyncFcbhApk extends Command
     public function handle()
     {
         // Find and delete current
-        $apps = \Cache::remember('fcbh_apk_list', 1600, function () {
+        $apps = cacheRemember('fcbh_apk_list', [], now()->addMinutes(30), function () {
             $app = [];
             $html_string = file_get_contents('https://apk.fcbh.org/');
             $html = HtmlDomParser::str_get_html($html_string);
