@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Wiki;
 
 use App\Http\Controllers\APIController;
@@ -48,8 +49,8 @@ class LanguageControllerV2 extends APIController
         $sort_by               = checkParam('sort_by') ?? 'name';
 
         // Caching Logic
-        $cache_string = strtolower('v' . $this->v . '_languages_' . $code.$full_word.$name.$sort_by);
-        $cached_languages = \Cache::remember($cache_string, now()->addDay(), function () use ($code, $full_word, $name, $sort_by) {
+        $cache_params = [$this->v, $code, $full_word, $name, $sort_by];
+        $cached_languages = cacheRemember('languages', $cache_params, now()->addDay(), function () use ($code, $full_word, $name, $sort_by) {
             $languages = Language::select(['id', 'iso2B', 'iso', 'name'])->orderBy($sort_by)
                 ->when($code, function ($query) use ($code) {
                     return $query->where('iso', $code);
@@ -58,7 +59,7 @@ class LanguageControllerV2 extends APIController
                 // Filter results by language name when set
                 ->when($name, function ($query) use ($name, $full_word) {
                     return $query->whereHas('translations', function ($query) use ($name, $full_word) {
-                        $added_space = ($full_word === 'true') ? ' ': '';
+                        $added_space = ($full_word === 'true') ? ' ' : '';
                         $query->where('name', 'like', '%' . $name . $added_space . '%')->orWhere('name', $name);
                     });
                 })->get();
@@ -140,10 +141,12 @@ class LanguageControllerV2 extends APIController
         $additional         = checkParam('additional');
 
         $access_control = $this->accessControl($this->key);
-        $cache_string   = 'v2_country_lang_' . $sort_by . $lang_code . $country_code . $img_size . $img_type .
-                          $additional . $access_control->string;
+        $cache_params = [$sort_by, $lang_code, $country_code, $img_size, $img_type, $additional, $access_control->string];
 
-        $countryLang = \Cache::remember($cache_string, now()->addDay(),
+        $countryLang = cacheRemember(
+            'v2_country_lang',
+            $cache_params,
+            now()->addDay(),
             function () use ($sort_by, $lang_code, $country_code, $additional, $img_size, $img_type, $access_control) {
                 $country_langs = CountryLanguage::with(['country', 'language' => function ($query) use ($additional) {
                     $query->when($additional, function ($subquery) {
@@ -166,7 +169,7 @@ class LanguageControllerV2 extends APIController
                     ->orderBy($sort_by, 'desc')->get()->each(function ($item, $key) use ($img_size, $img_type) {
                         $path  = 'https://dbp-mcdn.s3.us-west-2.amazonaws.com/flags/full';
                         $path .= (($img_type === 'svg') ? '/svg/' : "/$img_size/");
-                        $path .= strtoupper($item->country_id).'.'.$img_type;
+                        $path .= strtoupper($item->country_id) . '.' . $img_type;
 
                         $item->country_image = $path;
                     });
@@ -248,12 +251,16 @@ class LanguageControllerV2 extends APIController
         $iso             = checkParam('language_code');
         $root            = checkParam('root');
         $media           = checkParam('media');
-        $full_word       = (boolean) checkParam('full_word');
+        $full_word       = (bool) checkParam('full_word');
         $organization_id = checkParam('organization_id');
-        
-        $cache_string = strtolower('volumeLanguage' . $root . $iso . $media . $organization_id);
-        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($root, $iso, $media, $full_word, $organization_id) {
-            $languages = Language::has('filesets')
+
+        $cache_params = [$root, $iso, $media, $organization_id];
+        $languages = cacheRemember(
+            'volumeLanguage',
+            $cache_params,
+            now()->addDay(),
+            function () use ($root, $iso, $media, $full_word, $organization_id) {
+                $languages = Language::has('filesets')
                     ->includeCurrentTranslation()
                     ->includeAutonymTranslation()
                     ->filterableByIsoCode($iso)
@@ -264,7 +271,7 @@ class LanguageControllerV2 extends APIController
                         });
                     })->when($media, function ($query) use ($media) {
                         return $query->whereHas(['bibles.filesets' => function ($query) use ($media) {
-                            return $query->where('set_type_code', 'LIKE', $media.'%');
+                            return $query->where('set_type_code', 'LIKE', $media . '%');
                         }]);
                     })->select([
                         'languages.id',
@@ -275,8 +282,8 @@ class LanguageControllerV2 extends APIController
                         'autonym.name as autonym'
                     ])->with('parent')->get();
 
-            return fractal($languages, new LanguageListingTransformer(), $this->serializer);
-        }
+                return fractal($languages, new LanguageListingTransformer(), $this->serializer);
+            }
         );
         return $this->reply($languages);
     }
@@ -351,46 +358,46 @@ class LanguageControllerV2 extends APIController
 
         $access_control = $this->accessControl($this->key);
         $hashes = BibleFileset::whereIn('hash_id', $access_control->hashes)
-                              ->where('set_type_code', '!=', 'text_format')
-                              ->where('asset_id', 'dbp-prod')
-                              ->select('hash_id')->get()->pluck('hash_id');
+            ->where('set_type_code', '!=', 'text_format')
+            ->where('asset_id', 'dbp-prod')
+            ->select('hash_id')->get()->pluck('hash_id');
 
-        $cache_string = strtolower('volumeLanguageFamily' . $root . $iso . $media . $organization_id);
-        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($root, $iso, $hashes, $media, $organization_id) {
+        $cache_params = [$root, $iso, $media, $organization_id];
+        $languages = cacheRemember('volumeLanguageFamily', $cache_params, now()->addDay(), function () use ($root, $iso, $hashes, $media, $organization_id) {
             $languages = Language::with('bibles')->with('dialects')
-                    ->includeAutonymTranslation()
-                    ->includeCurrentTranslation()
-                    ->whereHas('filesets', function ($query) use ($hashes,$organization_id,$media) {
-                        $query->whereIn('hash_id', $hashes);
-                        if ($organization_id) {
-                            $query->whereHas('copyright', function ($query) use ($organization_id) {
-                                $query->where('organization_id', $organization_id);
-                            });
-                        }
-                        if ($media) {
-                            $query->where('set_type_code', 'LIKE', $media.'%');
-                        }
-                    })
-                    ->with(['dialects.childLanguage' => function ($query) {
-                        $query->select(['id', 'iso']);
-                    }])
-                    ->when($iso, function ($query) use ($iso) {
-                        return $query->where('iso', $iso);
-                    })
-                    ->when($root, function ($query) use ($root) {
-                        return $query->where('name', 'LIKE', '%' . $root . '%');
-                    })
-                    ->select(
-                        [
-                            'current_translation.name as name',
-                            'autonym.name as autonym',
-                            'languages.iso',
-                            'languages.iso2B',
-                            'languages.iso2T',
-                            'languages.iso1'
-                        ]
-                    )
-                    ->get();
+                ->includeAutonymTranslation()
+                ->includeCurrentTranslation()
+                ->whereHas('filesets', function ($query) use ($hashes, $organization_id, $media) {
+                    $query->whereIn('hash_id', $hashes);
+                    if ($organization_id) {
+                        $query->whereHas('copyright', function ($query) use ($organization_id) {
+                            $query->where('organization_id', $organization_id);
+                        });
+                    }
+                    if ($media) {
+                        $query->where('set_type_code', 'LIKE', $media . '%');
+                    }
+                })
+                ->with(['dialects.childLanguage' => function ($query) {
+                    $query->select(['id', 'iso']);
+                }])
+                ->when($iso, function ($query) use ($iso) {
+                    return $query->where('iso', $iso);
+                })
+                ->when($root, function ($query) use ($root) {
+                    return $query->where('name', 'LIKE', '%' . $root . '%');
+                })
+                ->select(
+                    [
+                        'current_translation.name as name',
+                        'autonym.name as autonym',
+                        'languages.iso',
+                        'languages.iso2B',
+                        'languages.iso2T',
+                        'languages.iso1'
+                    ]
+                )
+                ->get();
 
             return fractal($languages, new LanguageListingTransformer(), $this->serializer);
         });

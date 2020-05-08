@@ -77,7 +77,7 @@ class HomeController extends APIController
      */
     public function buckets()
     {
-        $assets = \Cache::remember('v4_api_assets', now()->addDay(), function () {
+        $assets = cacheRemember('v4_api_assets', [], now()->addDay(), function () {
             return Asset::select('id', 'asset_type', 'organization_id')->with([
                 'organization' => function ($query) {
                     $query->select('slug', 'email', 'id');
@@ -90,7 +90,7 @@ class HomeController extends APIController
 
     public function stats()
     {
-        $counts = \Cache::remember('v4_api_counts', now()->addDay(), function () {
+        $counts = cacheRemember('v4_api_counts', [], now()->addDay(), function () {
             $count['languages']      = Language::count();
             $count['countries']      = Country::count();
             $count['alphabets']      = Alphabet::count();

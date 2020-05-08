@@ -13,7 +13,6 @@ use App\Transformers\V2\LibraryVolumeTransformer;
 use App\Transformers\V2\LibraryCatalog\LibraryMetadataTransformer;
 
 use App\Http\Controllers\APIController;
-use Cache;
 
 class LibraryController extends APIController
 {
@@ -49,8 +48,8 @@ class LibraryController extends APIController
         $fileset_id = checkParam('dam_id');
         $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
 
-        $cache_string = 'v2_library_metadata:' . strtolower($fileset_id);
-        $metadata = Cache::remember($cache_string, now()->addDay(), function () use ($fileset_id, $asset_id) {
+        $cache_params = [$fileset_id];
+        $metadata = cacheRemember('v2_library_metadata', $cache_params, now()->addDay(), function () use ($fileset_id, $asset_id) {
             $metadata = BibleFileset::where('asset_id', $asset_id)
                 ->when($fileset_id, function ($q) use ($fileset_id) {
                     $q->where('id', $fileset_id)->orWhere('id', substr($fileset_id, 0, -4))->orWhere('id', substr($fileset_id, 0, -2));
@@ -134,8 +133,8 @@ class LibraryController extends APIController
         $name = checkParam('name');
         $sort = checkParam('sort_by');
 
-        $cache_string = strtolower('v2_library_version:'.$code.'_'.$name.'_'.$sort);
-        $versions = \Cache::remember($cache_string, now()->addDay(), function () use ($code, $sort, $name) {
+        $cache_params = [$code, $name, $sort];
+        $versions = cacheRemember('v2_library_version', $cache_params, now()->addDay(), function () use ($code, $sort, $name) {
             $english_id = Language::where('iso', 'eng')->first()->id ?? '6414';
 
             $versions = BibleFileset::where('asset_id', config('filesystems.disks.s3_fcbh.bucket'))
@@ -198,9 +197,9 @@ class LibraryController extends APIController
     public function history()
     {
         $limit  = checkParam('limit') ?? 500;
-        $cache_string = strtolower('v2_library_history:'.$limit);
+        $cache_params = [$limit];
 
-        $filesets = \Cache::remember($cache_string, now()->addDay(), function () use ($limit) {
+        $filesets = cacheRemember('v2_library_history', $cache_params, now()->addDay(), function () use ($limit) {
             $filesets = BibleFileset::with('bible.language')->has('bible.language')->take($limit)->get();
             return $filesets->map(function ($fileset) {
                 $v2_id = $fileset->bible->first()->language->iso . substr($fileset->bible->first()->id, 3, 3);
@@ -319,8 +318,8 @@ class LibraryController extends APIController
             return $arclight->volumes();
         }
 
-        $cache_string = 'v2_library_volume:'.$dam_id.$media.$language_name.$iso.$updated.$organization.$version_code;
-        $filesets = Cache::remember($cache_string, now()->addDay(), function () use ($dam_id, $media, $language_name, $iso, $updated,$organization, $version_code) {
+        $cache_params = [$dam_id, $media, $language_name, $iso, $updated, $organization, $version_code];
+        $filesets = cacheRemember('v2_library_volume', $cache_params, now()->addDay(), function () use ($dam_id, $media, $language_name, $iso, $updated, $organization, $version_code) {
             $access_control = $this->accessControl($this->key);
             $language_id = $iso ? Language::where('iso', $iso)->first()->id : null;
 
@@ -400,21 +399,21 @@ class LibraryController extends APIController
     {
         $output = [];
         foreach ($filesets as $fileset) {
-            $has_nondrama = $fileset->where('id', 'LIKE', substr($fileset->id, 0, 6).'%')
-                                    ->where('set_type_code', 'audio')
-                                    ->whereHas('permissions', function ($query) {
-                                        $query->whereHas('access', function ($query) {
-                                            $query->where('name', '!=', 'RESTRICTED');
-                                        });
-                                    })
-                                    ->get();
+            $has_nondrama = $fileset->where('id', 'LIKE', substr($fileset->id, 0, 6) . '%')
+                ->where('set_type_code', 'audio')
+                ->whereHas('permissions', function ($query) {
+                    $query->whereHas('access', function ($query) {
+                        $query->where('name', '!=', 'RESTRICTED');
+                    });
+                })
+                ->get();
 
             $type_codes = $this->getV2TypeCode($fileset, !$has_nondrama->isEmpty());
 
             foreach ($type_codes as $type_code) {
-                $ot_fileset_id = substr($fileset->id, 0, 6).'O'.$type_code;
-                $nt_fileset_id = substr($fileset->id, 0, 6).'N'.$type_code;
-                $pt_fileset_id = substr($fileset->id, 0, 6).'P'.$type_code;
+                $ot_fileset_id = substr($fileset->id, 0, 6) . 'O' . $type_code;
+                $nt_fileset_id = substr($fileset->id, 0, 6) . 'N' . $type_code;
+                $pt_fileset_id = substr($fileset->id, 0, 6) . 'P' . $type_code;
                 switch ($fileset->set_size_code) {
                     case 'C':
                         $output[$ot_fileset_id] = clone $fileset;

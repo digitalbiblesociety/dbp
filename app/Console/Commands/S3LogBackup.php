@@ -74,9 +74,9 @@ class S3LogBackup extends Command
     private function pushToS3($current_file, $log_contents)
     {
         if (config('app.env') === 'local') {
-            Cache::forget('iam_assumed_role');
+            cacheForget('iam_assumed_role');
         }
-        $security_token = Cache::remember('iam_assumed_role', 60, function () {
+        $security_token = cacheRemember('iam_assumed_role', [], now()->addMinute(), function () {
             $role_call  = $this->assumeRole();
             if ($role_call) {
                 $response_xml   = simplexml_load_string($role_call->response, 'SimpleXMLElement', LIBXML_NOCDATA);
@@ -99,7 +99,7 @@ class S3LogBackup extends Command
             // Upload data.
             $result = $s3->putObject([
                 'Bucket' => 'dbp-log',
-                'Key'    => 'srv/'.$current_file,
+                'Key'    => 'srv/' . $current_file,
                 'Body'   => 'Hello, world!'
             ]);
             // Print the URL to the object.

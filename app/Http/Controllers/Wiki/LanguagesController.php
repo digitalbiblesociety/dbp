@@ -119,14 +119,12 @@ class LanguagesController extends APIController
 
         $access_control = $this->accessControl($this->key);
 
-        $cache_string = 'v' . $this->v . '_l_' . $country . $code . $GLOBALS['i18n_id'] . $sort_by . $name .
-            $show_restricted . $include_alt_names . $asset_id . $access_control->string . $limit . $page . $show_bibles;
+        $cache_params = [$this->v,  $country, $code, $GLOBALS['i18n_id'], $sort_by, $name, $show_restricted, $include_alt_names, $asset_id, $access_control->string, $limit, $page, $show_bibles];
 
         $order = $country ? 'country_population.population' : 'ifnull(current_translation.name, languages.name)';
         $order_dir = $country ? 'desc' : 'asc';
         $select_country_population = $country ? 'country_population.population' : 'null';
-
-        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control, $order, $order_dir, $select_country_population, $limit, $page) {
+        $languages = cacheRemember('languages_all', $cache_params, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control, $order, $order_dir, $select_country_population, $limit, $page) {
             $languages = Language::includeCurrentTranslation()
                 ->includeAutonymTranslation()
                 ->includeExtraLanguages($show_restricted, $access_control, $asset_id)
@@ -173,6 +171,7 @@ class LanguagesController extends APIController
             return fractal($languages, new LanguageTransformer(), $this->serializer);
         });
 
+
         return $this->reply($languages);
     }
 
@@ -215,8 +214,8 @@ class LanguagesController extends APIController
     public function show($id)
     {
         $access_control = $this->accessControl($this->key);
-        $cache_string = 'language:' . strtolower($id) . $access_control->string;
-        $language = \Cache::remember($cache_string, now()->addDay(), function () use ($id, $access_control) {
+        $cache_params = [$id, $access_control->string];
+        $language = cacheRemember('language', $cache_params, now()->addDay(), function () use ($id, $access_control) {
             $language = Language::where('id', $id)->orWhere('iso', $id)
                 ->includeExtraLanguages(false, $access_control, false)
                 ->first();
@@ -243,8 +242,7 @@ class LanguagesController extends APIController
 
     public function valid($id)
     {
-        $cache_string = 'language_single_valid:' . strtolower($id);
-        $language = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
+        $language = cacheRemember('language_single_valid', [$id], now()->addDay(), function () use ($id) {
             return Language::where('iso', $id)->exists();
         });
 

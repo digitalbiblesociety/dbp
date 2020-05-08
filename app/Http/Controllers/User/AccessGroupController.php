@@ -15,9 +15,8 @@ class AccessGroupController extends APIController
 
     public function index()
     {
-        $cache_string = 'access_groups';
-        $access_groups = \Cache::remember($cache_string, now()->addDay(), function () {
-            $access_groups = AccessGroup::select(['id','name'])->get();
+        $access_groups = cacheRemember('access_groups', [], now()->addDay(), function () {
+            $access_groups = AccessGroup::select(['id', 'name'])->get();
             return $access_groups->pluck('name', 'id');
         });
 
@@ -37,7 +36,7 @@ class AccessGroupController extends APIController
         }
 
         $access_group = \DB::transaction(function () use ($request) {
-            $access_group = AccessGroup::create($request->only(['name','description']));
+            $access_group = AccessGroup::create($request->only(['name', 'description']));
             if ($request->filesets) {
                 foreach ($request->filesets as $fileset) {
                     $access_group->filesets()->create(['hash_id' => $fileset]);
@@ -58,8 +57,7 @@ class AccessGroupController extends APIController
 
     public function show($id)
     {
-        $cache_string = 'access_group:'.strtolower($id);
-        $access_group = \Cache::remember($cache_string, now()->addDay(), function () use ($id) {
+        $access_group = cacheRemember('access_group', [$id], now()->addDay(), function () use ($id) {
             $access_group = AccessGroup::with('filesets', 'types', 'keys')->findByIdOrName($id)->first();
             if (!$access_group) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.access_group_404'));
@@ -73,8 +71,7 @@ class AccessGroupController extends APIController
 
     public function current()
     {
-        $cache_string = 'access_current:'.$this->key;
-        $current_access = \Cache::remember($cache_string, now()->addDay(), function () {
+        $current_access = cacheRemember('access_current', [$this->key], now()->addDay(), function () {
             $current_access = $this->accessControl($this->key);
             $current_access->hash_count = \count($current_access->hashes);
             return $current_access;
@@ -154,7 +151,7 @@ class AccessGroupController extends APIController
         $unique_condition  = $request_is_post ? 'unique' : 'exists';
 
         $validator = \Validator::make($request->all(), [
-            'name'               => $require_condition.'max:64|alpha_dash|'.$unique_condition.':dbp.access_groups,name',
+            'name'               => $require_condition . 'max:64|alpha_dash|' . $unique_condition . ':dbp.access_groups,name',
             'description'        => 'string',
             'filesets.*'         => 'exists:dbp.bible_filesets,hash_id',
             'keys.*'             => 'exists:dbp_users.user_keys,key',

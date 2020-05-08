@@ -149,3 +149,4 @@ Localization::localizedRoutesGroup(function () {
 });
 
 Route::name('status')->get('/status', 'ApiMetadataController@getStatus');
+Route::name('status')->get('/status/cache', 'ApiMetadataController@getCacheStatus');
