@@ -74,23 +74,27 @@ class OrganizationsController extends APIController
         $resources   = checkParam('resources');
         $language_id = $GLOBALS['i18n_id'];
 
-        $cache_string = strtolower($this->v . '_organizations:' . $language_id . $membership . $content . $bibles . $resources);
-        $organizations = \Cache::remember($cache_string, now()->addDay(), function () use ($language_id, $membership, $content, $bibles, $resources) {
-            $organizations = Organization::with('translations')
-                ->includeMemberResources($membership)
-                ->includeLogos($language_id)
-                ->has('translations')
-                ->withCount('bibles')
-                ->when($bibles, function ($q) {
-                    $q->has('bibles')->orHas('links');
-                })->when($resources, function ($q) {
-                    $q->has('resources');
-                })->when($content, function ($q) {
-                    $q->has('resources');
-                })->get();
+        $cache_params = [$this->v, $language_id, $membership, $content, $bibles, $resources];
+        $organizations = cacheRemember(
+            'organizations',
+            $cache_params,
+            now()->addDay(),
+            function () use ($language_id, $membership, $content, $bibles, $resources) {
+                $organizations = Organization::with('translations')
+                    ->includeMemberResources($membership)
+                    ->includeLogos($language_id)
+                    ->has('translations')
+                    ->withCount('bibles')
+                    ->when($bibles, function ($q) {
+                        $q->has('bibles')->orHas('links');
+                    })->when($resources, function ($q) {
+                        $q->has('resources');
+                    })->when($content, function ($q) {
+                        $q->has('resources');
+                    })->get();
 
-            return fractal($organizations, new OrganizationTransformer(), $this->serializer);
-        }
+                return fractal($organizations, new OrganizationTransformer(), $this->serializer);
+            }
         );
 
         return $this->reply($organizations);
@@ -105,7 +109,7 @@ class OrganizationsController extends APIController
      */
     public function show($id)
     {
-        $organization = \Cache::remember($this->v . '_organizations:'.$id, now()->addDay(), function () use ($id) {
+        $organization = cacheRemember('organizations', [$this->v, $id], now()->addDay(), function () use ($id) {
             $organization = Organization::includeLogos($GLOBALS['i18n_id'])
                 ->where('id', $id)->orWhere('slug', $id)
                 ->with([
@@ -193,9 +197,10 @@ class OrganizationsController extends APIController
         $organization = new Organization();
         $organization->save(request()->except(['translations']));
         foreach (request()->translations as $translation) {
-            $organization->translations()->create(['iso'         => $translation['iso'],
-                                                   'name'        => $translation['translation'],
-                                                   'description' => '',
+            $organization->translations()->create([
+                'iso'         => $translation['iso'],
+                'name'        => $translation['translation'],
+                'description' => '',
             ]);
         }
 

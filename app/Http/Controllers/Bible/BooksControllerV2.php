@@ -59,9 +59,10 @@ class BooksControllerV2 extends APIController
             return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));
         }
 
-        $cache_string = strtolower('v2_library_book:' . $asset_id . ':' . $id . ':' . $fileset . '_' . implode('-', $testament));
-        $libraryBook = \Cache::remember(
-            $cache_string,
+        $cache_params = [$asset_id, $id, $fileset, implode('-', $testament)];
+        $libraryBook = cacheRemember(
+            'v2_library_book',
+            $cache_params,
             now()->addDay(),
             function () use ($id, $fileset, $testament) {
                 if ($fileset->set_type_code === 'text_plain') {
@@ -144,9 +145,10 @@ class BooksControllerV2 extends APIController
 
         $testament = $this->getTestamentString($id);
 
-        $cache_string = strtolower('v2_library_bookOrder_' . $id . $asset_id . $fileset->id . json_encode($testament));
-        $libraryBook = \Cache::remember(
-            $cache_string,
+        $cache_params = ['v2_library_bookOrder_', $id, $asset_id, $fileset->id, json_encode($testament)];
+        $libraryBook = cacheRemember(
+            'v2_library_bookOrder',
+            $cache_params,
             now()->addDay(),
             function () use ($id, $fileset, $testament) {
                 $booksChapters = BibleVerse::where('hash_id', $fileset->hash_id)->select('book_id', 'chapter')->distinct()->get();
@@ -214,8 +216,8 @@ class BooksControllerV2 extends APIController
             return $this->setStatusCode(404)->replywithError('No language could be found for the iso code specified');
         }
 
-        $cache_string = 'v2_library_bookName_' . strtolower($iso);
-        $libraryBookName = \Cache::remember($cache_string, now()->addDay(), function () use ($language) {
+        $cache_params = [$iso];
+        $libraryBookName = cacheRemember('v2_library_bookName', [$iso], now()->addDay(), function () use ($language) {
             $bookTranslations = BookTranslation::where('language_id', $language->id)->with('book')->select(['name', 'book_id'])->get()->pluck('name', 'book.id_osis');
             $bookTranslations['AL'] = 'Alternative';
             $bookTranslations['ON'] = 'Old and New Testament';
@@ -384,8 +386,8 @@ class BooksControllerV2 extends APIController
         $asset_id  = checkParam('bucket|bucket_id|asset_id') ?? config('filesystems.disks.s3_fcbh.bucket');
         $book_id   = checkParam('book_id');
 
-        $cache_string = strtolower('v2_library_chapter:' . $asset_id . ':' . $id . '_' . $book_id);
-        $chapters = \Cache::remember($cache_string, now()->addDay(), function () use ($id, $asset_id, $book_id) {
+        $cache_params = [$asset_id, $id, $book_id];
+        $chapters = cacheRemember('v2_library_chapter', $cache_params, now()->addDay(), function () use ($id, $asset_id, $book_id) {
             $fileset = BibleFileset::with('bible')->uniqueFileset($id, $asset_id, 'text_plain')->first();
             if (!$fileset) {
                 return $this->setStatusCode(404)->replyWithError(trans('api.bible_fileset_errors_404', ['id' => $id]));

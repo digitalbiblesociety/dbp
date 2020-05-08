@@ -7,6 +7,7 @@ use App\Models\Bible\BibleFileset;
 use App\Models\Organization\Asset;
 use App\Models\User\Changelog;
 use App\Traits\CallsBucketsTrait;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class ApiMetadataController extends APIController
@@ -83,14 +84,14 @@ class ApiMetadataController extends APIController
         }
 
         try {
-            \Cache::forget('cache_test');
-            \Cache::add('cache_test', 'live', 5);
-            $cache_test = \Cache::get('cache_test');
-	    /* If return code is 500 for failed cache, beanstalk will bring the whole service down.
-	     * TODO: decide if there is something more useful to do here if cache test fails */
+            cacheForget('cache_test');
+            cacheAdd('cache_test', 'live', 5);
+            $cache_test = cacheGet('cache_test');
+            /* If return code is 500 for failed cache, beanstalk will bring the whole service down.
+         * TODO: decide if there is something more useful to do here if cache test fails */
         } catch (\Exception $e) {
             $cache_test = $e->getMessage();
-	    /* TODO: ditto above */
+            /* TODO: ditto above */
         }
 
         $connection = [
@@ -106,6 +107,34 @@ class ApiMetadataController extends APIController
         ];
 
         return $this->setStatusCode($status_code)->reply($connection);
+    }
+
+    public function getCacheStatus()
+    {
+        $now = now();
+        $closure = function () use ($now) {
+            return $now;
+        };
+
+        $week = new Carbon($now);
+        $week_cache = cacheRemember('cache-status-week', [], $week->addWeek(), $closure);
+        $day = new Carbon($now);
+        $day_cache = cacheRemember('cache-status-day', [], $day->addDay(), $closure);
+        $hour = new Carbon($now);
+        $hour_cache = cacheRemember('cache-status-hour', [], $hour->addHour(), $closure);
+        $minute = new Carbon($now);
+        $minute_cache = cacheRemember('cache-status-minute', [], $minute->addMinute(), $closure);
+
+        return $this->reply([
+            'now' => $now,
+            'cached' => [
+                'week' => ['value' => $week_cache, 'cached' => $week_cache !== $now],
+                'day' => ['value' => $day_cache, 'cached' => $day_cache !== $now],
+                'hour' => ['value' => $hour_cache, 'cached' => $hour_cache !== $now],
+                'minute' => ['value' => $minute_cache, 'cached' => $minute_cache !== $now],
+            ]
+
+        ]);
     }
 
     /**
@@ -271,7 +300,7 @@ class ApiMetadataController extends APIController
         if (config('app.server_name') != 'APP_DEV') {
             return $this->setStatusCode(422)->replyWithError('This is not the dev server');
         }
-        Cache::flush();
+        cacheFlush();
         return $this->reply('Cache Flushed successfully');
     }
 

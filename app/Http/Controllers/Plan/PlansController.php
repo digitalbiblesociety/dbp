@@ -94,8 +94,8 @@ class PlansController extends APIController
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
 
         if ($featured) {
-            $cache_string = generateCacheString('v4_plan_index', [$featured, $limit, $sort_by, $sort_dir]);
-            $plans = \Cache::remember($cache_string, now()->addDay(), function () use ($featured, $limit, $sort_by, $sort_dir, $user) {
+            $cache_params = [$featured, $limit, $sort_by, $sort_dir];
+            $plans = cacheRemember('v4_plan_index', $cache_params, now()->addDay(), function () use ($featured, $limit, $sort_by, $sort_dir, $user) {
                 return $this->getPlans($featured, $limit, $sort_by, $sort_dir, $user);
             });
             return $this->reply($plans);

@@ -150,7 +150,7 @@ class HighlightsController extends APIController
         ];
 
         if ($sort_by_book) {
-            $book_order_query = \Cache::remember('book_order_columns', now()->addDay(), function () {
+            $book_order_query = cacheRemember('book_order_columns', [], now()->addDay(), function () {
                 $query = collect(Schema::connection('dbp')->getColumnListing('books'))->filter(function ($column) {
                     return strpos($column, '_order') !== false;
                 })->map(function ($column) {

@@ -17,8 +17,8 @@ class VideoStreamController extends APIController
             return collect($this->fetchArclight('media-languages', false)->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
         }
 
-        $cache_string =  'arclight_languages_detail' . $metadata_tag;
-        $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($metadata_tag) {
+        $cache_params = [$metadata_tag];
+        $languages = cacheRemember('arclight_languages_detail', $cache_params, now()->addDay(), function () use ($metadata_tag) {
             $languages = collect($this->fetchArclight('media-languages', false, false, 'contentTypes=video&metadataLanguageTags=' . $metadata_tag . ',en')->mediaLanguages);
             return $languages->where('counts.speakerCount.value', '>', 0)->map(function ($language) {
                 return [
@@ -37,8 +37,7 @@ class VideoStreamController extends APIController
     {
         $iso = checkParam('iso') ?? $iso;
         if ($iso) {
-            $cache_string =  generateCacheString('arclight_languages', [$iso]);
-            $languages = \Cache::remember($cache_string, now()->addDay(), function () use ($iso) {
+            $languages = cacheRemember('arclight_languages', [$iso], now()->addDay(), function () use ($iso) {
                 $languages = collect($this->fetchArclight('media-languages', false, false, 'iso3=' . $iso)->mediaLanguages);
                 $languages = $languages->where('counts.speakerCount.value', $languages->max('counts.speakerCount.value'))->keyBy('iso3')->map(function ($item) {
                     return $item->languageId;
@@ -58,9 +57,7 @@ class VideoStreamController extends APIController
             $arclight_id = checkParam('arclight_id', true);
         }
 
-        $cache_string =  generateCacheString('arclight_chapters_', [$arclight_id]);
-
-        $component = \Cache::remember($cache_string, now()->addDay(), function () use ($arclight_id) {
+        $component = cacheRemember('arclight_chapters', [$arclight_id], now()->addDay(), function () use ($arclight_id) {
             $component = $this->fetchArclight('media-components/1_jf-0-0/languages/' . $arclight_id);
             return $component;
         });
@@ -69,17 +66,15 @@ class VideoStreamController extends APIController
             return $this->setStatusCode(404)->replyWithError('Jesus Film component not found');
         }
 
-        $cache_string =  generateCacheString('arclight_chapters_language_tag', [$arclight_id]);
-
-        $media_languages = \Cache::remember($cache_string, now()->addDay(), function () use ($arclight_id) {
+        $media_languages = cacheRemember('arclight_chapters_language_tag', [$arclight_id], now()->addDay(), function () use ($arclight_id) {
             $media_languages = $this->fetchArclight('media-languages/' . $arclight_id);
             return $media_languages;
         });
 
         $metadataLanguageTag = isset($media_languages->bcp47) ? $media_languages->bcp47 : '';
-        $cache_string =  generateCacheString('arclight_chapters_metadata', [$arclight_id, $metadataLanguageTag]);
+        $cache_params =  [$arclight_id, $metadataLanguageTag];
 
-        $metadata = \Cache::remember($cache_string, now()->addDay(), function () use ($arclight_id, $metadataLanguageTag) {
+        $metadata = cacheRemember('arclight_chapters_metadata', $cache_params, now()->addDay(), function () use ($arclight_id, $metadataLanguageTag) {
             $media_components = $this->fetchArclight('media-components', $arclight_id, true, 'metadataLanguageTags=' . $metadataLanguageTag . ',en');
             $metadata = collect($media_components->mediaComponents)
                 ->map(function ($component) use ($arclight_id) {
@@ -121,8 +116,8 @@ class VideoStreamController extends APIController
         $language_id  = checkParam('arclight_id', true);
         $chapter_id   = checkParam('chapter_id') ?? '1_jf-0-0';
 
-        $cache_string = 'arclight_media_components_' . $chapter_id . $language_id;
-        $stream_file  = \Cache::remember($cache_string, now()->addDay(), function () use ($chapter_id, $language_id) {
+        $cache_params = [$chapter_id, $language_id];
+        $stream_file  = cacheRemember('arclight_media_components', $cache_params, now()->addDay(), function () use ($chapter_id, $language_id) {
             $media_components = $this->fetchArclight('media-components/' . $chapter_id . '/languages/' . $language_id, $language_id, false);
             return file_get_contents($media_components->streamingUrls->m3u8[0]->url);
         });

@@ -110,8 +110,8 @@ class TextController extends APIController
             return $access_blocked;
         }
 
-        $cache_string = strtolower('bible_text:' . $asset_id . ':' . $fileset_id . ':' . $book_id . ':' . $chapter . ':' . $verse_start . '_' . $verse_end);
-        $verses = \Cache::remember($cache_string, now()->addDay(), function () use ($fileset, $bible, $book, $chapter, $verse_start, $verse_end) {
+        $cache_params = [$asset_id, $fileset_id, $book_id, $chapter, $verse_start, $verse_end];
+        $verses = cacheRemember('bible_text', $cache_params, now()->addDay(), function () use ($fileset, $bible, $book, $chapter, $verse_start, $verse_end) {
             return BibleVerse::withVernacularMetaData($bible)
                 ->where('hash_id', $fileset->hash_id)
                 ->when($book, function ($query) use ($book) {

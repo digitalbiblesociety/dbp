@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs;
 
 use App\Traits\CallsBucketsTrait;
@@ -9,7 +10,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Storage;
-use Cache;
 use Aws\S3\S3Client;
 
 class SendApiLogs implements ShouldQueue
@@ -87,7 +87,7 @@ class SendApiLogs implements ShouldQueue
     private function pushToS3($current_file, $log_contents)
     {
         try {
-            $security_token = Cache::remember('iam_assumed_role', 60, function () {
+            $security_token = cacheRemember('iam_assumed_role', [], now()->addMinute(), function () {
                 $role_call  = $this->assumeRole();
                 if ($role_call) {
                     $response_xml   = simplexml_load_string($role_call->response, 'SimpleXMLElement', LIBXML_NOCDATA);
@@ -108,7 +108,7 @@ class SendApiLogs implements ShouldQueue
 
             $s3->putObject([
                 'Bucket' => 'dbp-log',
-                'Key'    => 'srv/'.substr($current_file, 4),
+                'Key'    => 'srv/' . substr($current_file, 4),
                 'Body'   => $log_contents
             ]);
         } catch (\Exception $e) {

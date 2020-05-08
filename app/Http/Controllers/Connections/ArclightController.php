@@ -26,7 +26,7 @@ class ArclightController extends APIController
         $iso      = substr($dam_id, 0, 3);
         $platform = checkParam('platform') ?? 'ios';
 
-        $chapters = \Cache::remember('arclight_'. strtolower($iso), now()->addDay(), function () use ($iso, $platform) {
+        $chapters = cacheRemember('arclight', [$iso], now()->addDay(), function () use ($iso, $platform) {
             $language_id = optional(LanguageCode::whereHas('language', function ($query) use ($iso) {
                 $query->where('iso', $iso);
             })->where('source', 'arclight')->select('code')->first())->code;
@@ -57,9 +57,9 @@ class ArclightController extends APIController
     {
         $language_id  = checkParam('language_id', true);
 
-        $cache_string = 'arclight_media_components_'.$chapter_id.$language_id;
-        $stream_file  = \Cache::remember($cache_string, now()->addDay(), function () use ($chapter_id, $language_id) {
-            $media_components = $this->fetchArclight('media-components/'.$chapter_id.'/languages/'.$language_id, $language_id, false);
+        $cache_params = [$chapter_id, $language_id];
+        $stream_file  = cacheRemember('arclight_media_components', $cache_params, now()->addDay(), function () use ($chapter_id, $language_id) {
+            $media_components = $this->fetchArclight('media-components/' . $chapter_id . '/languages/' . $language_id, $language_id, false);
             return file_get_contents($media_components->streamingUrls->m3u8[0]->url);
         });
 
@@ -73,8 +73,8 @@ class ArclightController extends APIController
     {
         $iso    = strtolower($iso);
         $dam_id_param = checkParam('dam_id|fcbh_id');
-        $cache_string = 'media-languages_'.$iso.$dam_id_param;
-        return \Cache::remember($cache_string, now()->addWeek(), function () use ($iso, $dam_id_param) {
+        $cache_params =   [$iso, $dam_id_param];
+        return cacheRemember('media-languages', $cache_params, now()->addWeek(), function () use ($iso, $dam_id_param) {
             $languages = collect($this->fetchArclight('media-languages')->mediaLanguages)->pluck('languageId', 'iso3')->toArray();
             if ($iso) {
                 if (!isset($languages[$iso])) {
@@ -88,7 +88,7 @@ class ArclightController extends APIController
             $jesusFilms = [];
 
             foreach ($languages as $iso => $arclight_language_id) {
-                $dam_id = strtoupper($iso).'JFVS2DV';
+                $dam_id = strtoupper($iso) . 'JFVS2DV';
                 if (isset($dam_id_param) && $dam_id_param != $dam_id) {
                     continue;
                 }
@@ -130,7 +130,7 @@ class ArclightController extends APIController
                     'num_art'                 => '0',
                     'num_sample_audio'        => '0',
                     'sku'                     => '',
-                    'audio_zip_path'          => $dam_id.'/'.$dam_id.'.zip',
+                    'audio_zip_path'          => $dam_id . '/' . $dam_id . '.zip',
                     'font'                    => null,
                     'arclight_language_id'    => $arclight_language_id,
                     'media'                   => 'video',
