@@ -42,6 +42,7 @@ class Kernel extends ConsoleKernel
         Commands\syncV2Bookmarks::class,
         Commands\syncV2Highlights::class,
         Commands\syncV2Notes::class,
+        Commands\reSyncV2Notes::class,
 
         Commands\syncPlaylistDuration::class,
         Commands\DeleteDraftPlaylistsPlans::class,
