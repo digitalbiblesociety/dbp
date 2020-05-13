@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\User\Study\Note;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\Process\Process;
 
 class reSyncV2Notes extends Command
 {
@@ -31,11 +32,13 @@ class reSyncV2Notes extends Command
     public function handle()
     {
         $note_id = $this->argument('note_id');
-        echo "\n" . Carbon::now() . ': v2 to v4 notes re sync started.';
+        $this->alert(Carbon::now() . ': v2 to v4 notes re sync started.');
         $db_v2_connection = DB::connection('dbp_users_v2');
+        $db_v2_utf8_connection = DB::connection('dbp_users_v2_utf8');
+
         $db_users_connection = DB::connection('dbp_users');
 
-        $chunk_size = 25;
+        $chunk_size = 1000;
         do {
             $query = $db_users_connection
                 ->table('user_notes')
@@ -48,48 +51,75 @@ class reSyncV2Notes extends Command
 
             $v4_notes = $query->get();
             $remaining = $query->count();
-            echo "\n" . Carbon::now() . ': ' . $remaining . ' remaining to process.';
+            $this->info(Carbon::now() . ': ' . $remaining . ' remaining to process.');
 
             $v2_ids = $v4_notes->pluck('v2_id');
             $v4_updated_dates = $v4_notes->pluck('updated_at', 'v2_id');
             $v4_created_dates = $v4_notes->pluck('created_at', 'v2_id');
-            $v2_notes = $db_v2_connection->table('note')
-                ->select(['id', 'created', 'updated', 'note'])->whereIn('id', $v2_ids)->get();
-            $synced = 0;
-            foreach ($v2_notes as $v2_note) {
-                $should_resync = false;
+            $v4_ids = $v4_notes->pluck('id', 'v2_id');
 
-                // v2 note is newer or equal than v4
-                $v2_note_is_gte = Carbon::createFromTimeString($v2_note->updated)->gte(Carbon::createFromTimeString($v4_updated_dates[$v2_note->id]));
+            $v2_fields = ['id', 'created', 'updated', 'note'];
+            $v2_notes = $db_v2_connection->table('note')->select($v2_fields)->whereIn('id', $v2_ids)->get();
+            $v2_utf8_notes = $db_v2_utf8_connection->table('note')->select($v2_fields)->whereIn('id', $v2_ids)->get()->pluck('note', 'id');
 
-                // Different creation dates on v4 -> v2
-                if ($v4_created_dates[$v2_note->id] !== $v2_note->created) {
-                    // Same v4 updated_at and v4 created_at values means no change
-                    if ($v4_created_dates[$v2_note->id] === $v4_updated_dates[$v2_note->id] || $v2_note_is_gte) {
-                        $should_resync = true;
+            $v2_notes = $v2_notes->map(function ($note) use ($v2_utf8_notes, $v4_created_dates, $v4_updated_dates) {
+                // If v2_note is different than v2_utf8_note
+                $note->resync = $v2_utf8_notes[$note->id] !== $note->note;
+
+                if ($note->resync) {
+                    $note->resync = false;
+                    // v2 note is newer or equal than v4
+                    $v2_note_is_gte = Carbon::createFromTimeString($note->updated)->gte(Carbon::createFromTimeString($v4_updated_dates[$note->id]));
+
+                    // Different creation dates on v4 -> v2
+                    if ($v4_created_dates[$note->id] !== $note->created) {
+                        // Same v4 updated_at and v4 created_at values means no change
+                        if ($v4_created_dates[$note->id] === $v4_updated_dates[$note->id] || $v2_note_is_gte) {
+                            $note->resync = true;
+                        }
+                        // If the v2 note updated date is the same or greater than v4 update date resync
+                    } elseif ($v2_note_is_gte) {
+                        $note->resync = true;
                     }
-                    // If the v2 note updated date is the same or greater than v4 update date resync
-                } elseif ($v2_note_is_gte) {
-                    $should_resync = true;
                 }
+                return $note;
+            })->filter(function ($note) {
+                return $note->resync;
+            });
 
-                // If note is not changed re sync
-                if ($should_resync) {
-                    $db_users_connection->table('user_notes')
-                        ->where('v2_id', $v2_note->id)
-                        ->update([
-                            'notes' => encrypt($v2_note->note),
-                            'updated_at'  => Carbon::createFromTimeString($v2_note->updated),
-                            'bookmark' => 1,
-                        ]);
-                    $synced++;
-                    echo "\n" . Carbon::now() . ': Re synced ' . $synced . '/' . $chunk_size . ' v2 notes.';
+            // Encrypt notes using background process
+            $processes = [];
+            foreach ($v2_notes as $v2_note) {
+                $base64_note = base64_encode($v2_note->note);
+                $process = new Process('php ' . base_path('artisan') . " encrypt {$base64_note} {$v2_note->id}");
+                $process->setTimeout(0);
+                $process->start();
+                $processes[] = $process;
+            }
+            $process_results = [];
+            while (count($processes)) {
+                foreach ($processes as $i => $runningProcess) {
+                    // specific process is finished, so we remove it
+                    if (!$runningProcess->isRunning()) {
+                        $output = json_decode($runningProcess->getOutput());
+                        $process_results[$output->id] = $output->value;
+                        unset($processes[$i]);
+                    }
                 }
             }
+            $query = '';
+            foreach ($v2_notes as $v2_note) {
+                $query .= 'UPDATE user_notes set notes = "'
+                    . $process_results[$v2_note->id] . '", updated_at = "'
+                    . Carbon::createFromTimeString($v2_note->updated) . '", bookmark = 1 where id = '
+                    . $v4_ids[$v2_note->id] . '; ';
+            }
+            $db_users_connection->unprepared($query);
+            $this->line(Carbon::now() . ': Re synced ' . $v2_notes->count() . ' of ' . $chunk_size . ' v2 notes.');
             $v4_ids = $v4_notes->pluck('id');
             $db_users_connection->table('user_notes')->whereIn('id', $v4_ids)->update(['bookmark' => 1]);
         } while (!$v4_notes->isEmpty());
 
-        echo "\n" . Carbon::now() . ": v2 to v4 notes re sync finalized.\n";
+        $this->alert(Carbon::now() . ": v2 to v4 notes re sync finalized.\n");
     }
 }

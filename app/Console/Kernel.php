@@ -43,6 +43,7 @@ class Kernel extends ConsoleKernel
         Commands\syncV2Highlights::class,
         Commands\syncV2Notes::class,
         Commands\reSyncV2Notes::class,
+        Commands\encryptNote::class,
 
         Commands\syncPlaylistDuration::class,
         Commands\DeleteDraftPlaylistsPlans::class,
@@ -65,7 +66,7 @@ class Kernel extends ConsoleKernel
             ->everyFifteenMinutes()
             ->onOneServer()
             ->appendOutputTo('/var/app/current/storage/logs/artisan-scheduler.log')
-            ->withoutOverlapping() ;
+            ->withoutOverlapping();
 
         $schedule->command(DeleteDraftPlaylistsPlans::class)
             ->hourly()
