@@ -32,7 +32,7 @@ class reSyncV2Notes extends Command
     public function handle()
     {
         $note_id = $this->argument('note_id');
-        echo "\n" . Carbon::now() . ': v2 to v4 notes re sync started.';
+        $this->info(Carbon::now() . ': v2 to v4 notes re sync started.');
         $db_v2_connection = DB::connection('dbp_users_v2');
         $db_v2_utf8_connection = DB::connection('dbp_users_v2_utf8');
 
@@ -51,7 +51,7 @@ class reSyncV2Notes extends Command
 
             $v4_notes = $query->get();
             $remaining = $query->count();
-            echo "\n" . Carbon::now() . ': ' . $remaining . ' remaining to process.';
+            $this->info(Carbon::now() . ': ' . $remaining . ' remaining to process.');
 
             $v2_ids = $v4_notes->pluck('v2_id');
             $v4_updated_dates = $v4_notes->pluck('updated_at', 'v2_id');
@@ -115,11 +115,11 @@ class reSyncV2Notes extends Command
                     . $v4_ids[$v2_note->id] . '; ';
             }
             $db_users_connection->unprepared($query);
-            echo "\n" . Carbon::now() . ': Re synced ' . $v2_notes->count() . ' of ' . $chunk_size . ' v2 notes.';
+            $this->line(Carbon::now() . ': Re synced ' . $v2_notes->count() . ' of ' . $chunk_size . ' v2 notes.');
             $v4_ids = $v4_notes->pluck('id');
             $db_users_connection->table('user_notes')->whereIn('id', $v4_ids)->update(['bookmark' => 1]);
         } while (!$v4_notes->isEmpty());
 
-        echo "\n" . Carbon::now() . ": v2 to v4 notes re sync finalized.\n";
+        $this->info(Carbon::now() . ": v2 to v4 notes re sync finalized.\n");
     }
 }
