@@ -38,14 +38,16 @@ class reSyncV2Notes extends Command
 
         $db_users_connection = DB::connection('dbp_users');
 
-        $chunk_size = 1000;
+        $chunk_size = $note_id ? 1 : 1000;
         do {
             $query = $db_users_connection
                 ->table('user_notes')
                 ->where('v2_id', '!=', 0)
-                ->where('bookmark', '=', 0)
                 ->when($note_id, function ($query, $note_id) {
                     return $query->whereId($note_id);
+                })
+                ->unless($note_id, function ($query) {
+                    return $query->where('bookmark', '=', 0);
                 })
                 ->orderBy('v2_id')->limit($chunk_size);
 
@@ -62,7 +64,12 @@ class reSyncV2Notes extends Command
             $v2_notes = $db_v2_connection->table('note')->select($v2_fields)->whereIn('id', $v2_ids)->get();
             $v2_utf8_notes = $db_v2_utf8_connection->table('note')->select($v2_fields)->whereIn('id', $v2_ids)->get()->pluck('note', 'id');
 
-            $v2_notes = $v2_notes->map(function ($note) use ($v2_utf8_notes, $v4_created_dates, $v4_updated_dates) {
+            $v2_notes = $v2_notes->map(function ($note) use ($v2_utf8_notes, $v4_created_dates, $v4_updated_dates, $note_id) {
+                // Force a resync when note_id is provided
+                if ($note_id) {
+                    $note->resync = true;
+                    return $note;
+                }
                 // If v2_note is different than v2_utf8_note
                 $note->resync = $v2_utf8_notes[$note->id] !== $note->note;
 
@@ -114,11 +121,15 @@ class reSyncV2Notes extends Command
                     . Carbon::createFromTimeString($v2_note->updated) . '", bookmark = 1 where id = '
                     . $v4_ids[$v2_note->id] . '; ';
             }
-            $db_users_connection->unprepared($query);
+            if ($query) {
+                $db_users_connection->unprepared($query);
+            }
             $this->line(Carbon::now() . ': Re synced ' . $v2_notes->count() . ' of ' . $chunk_size . ' v2 notes.');
-            $v4_ids = $v4_notes->pluck('id');
-            $db_users_connection->table('user_notes')->whereIn('id', $v4_ids)->update(['bookmark' => 1]);
-        } while (!$v4_notes->isEmpty());
+            if (!$v4_notes->isEmpty()) {
+                $v4_ids = $v4_notes->pluck('id');
+                $db_users_connection->unprepared('UPDATE user_notes set updated_at = updated_at, bookmark = 1 where id IN (' . implode(',', $v4_ids->toArray()) . ');');
+            }
+        } while (!$v4_notes->isEmpty() && !$note_id);
 
         $this->alert(Carbon::now() . ": v2 to v4 notes re sync finalized.\n");
     }
