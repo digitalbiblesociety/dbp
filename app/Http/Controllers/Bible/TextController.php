@@ -378,12 +378,11 @@ class TextController extends APIController
         }
 
         $playlists = Playlist::with('user')
+            ->where('draft', 0)
+            ->where('plan_id', 0)
             ->where('user_playlists.name', 'like', '%' . $query . '%')
             ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
                 $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user->id);
-            })
-            ->whereNotIn('id', function ($query) {
-                $query->select('playlist_id')->from('plan_days');
             })
             ->where('user_playlists.user_id', $user->id)
             ->orWhere('playlists_followers.user_id', $user->id)

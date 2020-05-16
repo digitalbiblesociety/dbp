@@ -312,9 +312,12 @@ class PlaylistItems extends Model implements Sortable
                 $where[] = ['verse_start', '>=', $this['verse_start']];
                 $where[] = ['verse_end', '<=', $this['verse_end']];
             }
-            $verses = BibleVerse::where('hash_id', $text_fileset->hash_id)
-                ->where($where)
-                ->get()->pluck('verse_text');
+            $cache_params = [$text_fileset->hash_id, $this['book_id'], $this['chapter_start'], $this['chapter_end'], $this['verse_start'], $this['verse_end']];
+            $verses =  cacheRemember('playlist_item_text', $cache_params, now()->addDay(), function () use ($text_fileset, $where) {
+                return BibleVerse::where('hash_id', $text_fileset->hash_id)
+                    ->where($where)
+                    ->get()->pluck('verse_text');
+            });
         }
 
         return $verses;
@@ -381,18 +384,28 @@ class PlaylistItems extends Model implements Sortable
      */
     public function getMetadataAttribute()
     {
-        $bible = BibleFileset::whereId($this['fileset_id'])->first()->bible->first();
-        if (!$bible) {
-            return null;
-        }
-        $bible = Bible::whereId($bible->id)->with(['translations', 'books.book'])->first();
+        $fileset_id = $this['fileset_id'];
+        $book_id = $this['book_id'];
 
-        return [
-            'bible_id' => $bible->id,
-            'bible_name' => optional($bible->translations->where('language_id', $GLOBALS['i18n_id'])->first())->name,
-            'bible_vname' =>  optional($bible->vernacularTranslation)->name,
-            'book_name' => optional($bible->books->where('book_id', $this['book_id'])->first())->name
-        ];
+        return cacheRemember(
+            'playlist_item_metadata',
+            [$fileset_id, $book_id],
+            now()->addDay(),
+            function () use ($fileset_id, $book_id) {
+                $bible = BibleFileset::whereId($fileset_id)->first()->bible->first();
+                if (!$bible) {
+                    return null;
+                }
+                $bible = Bible::whereId($bible->id)->with(['translations', 'books.book'])->first();
+
+                return [
+                    'bible_id' => $bible->id,
+                    'bible_name' => optional($bible->translations->where('language_id', $GLOBALS['i18n_id'])->first())->name,
+                    'bible_vname' =>  optional($bible->vernacularTranslation)->name,
+                    'book_name' => optional($bible->books->where('book_id', $book_id)->first())->name
+                ];
+            }
+        );
     }
 
     public function fileset()
