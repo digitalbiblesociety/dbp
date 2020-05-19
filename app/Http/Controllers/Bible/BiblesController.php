@@ -25,6 +25,7 @@ use App\Models\Language\Language;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use ZipArchive;
 
 class BiblesController extends APIController
@@ -896,7 +897,10 @@ class BiblesController extends APIController
             return $this->reply($result);
         }
 
-        $public_dir = public_path();
+        $public_dir = public_path() . '/downloads';
+        if (!File::exists($public_dir)) {
+            File::makeDirectory($public_dir);
+        }
         $file_name = $bible->id . '-' . $book->id . '-' . $chapter . '.zip';
         $zip_file = rand() . time() . '-' . $file_name;
         $file_to_path = $public_dir . '/' . $zip_file;

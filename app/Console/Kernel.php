@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\syncV2Database;
 use App\Console\Commands\DeleteDraftPlaylistsPlans;
+use App\Console\Commands\DeleteTemporaryZipFiles;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -47,6 +48,7 @@ class Kernel extends ConsoleKernel
 
         Commands\syncPlaylistDuration::class,
         Commands\DeleteDraftPlaylistsPlans::class,
+        Commands\DeleteTemporaryZipFiles::class,
 
         Commands\S3LogBackup::class,
         Commands\CleanAndImportKD::class,
@@ -71,6 +73,10 @@ class Kernel extends ConsoleKernel
         $schedule->command(DeleteDraftPlaylistsPlans::class)
             ->hourly()
             ->onOneServer()
+            ->withoutOverlapping();
+
+        $schedule->command(DeleteTemporaryZipFiles::class)
+            ->hourly()
             ->withoutOverlapping();
     }
 
