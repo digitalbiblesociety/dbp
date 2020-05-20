@@ -253,3 +253,10 @@ if (!function_exists('validateV2Annotation')) {
         return true;
     }
 }
+
+if (!function_exists('arrayToCommaSeparatedValues')) {
+    function arrayToCommaSeparatedValues($array)
+    {
+        return  "'" . implode("','", $array) . "'";
+    }
+}
