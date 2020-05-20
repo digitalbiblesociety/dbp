@@ -65,18 +65,19 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command(syncV2Database::class)
+            ->environments(['prod'])  /* no need to do on dev, and reduces load on v2 db */
             ->everyFifteenMinutes()
             ->onOneServer()
             ->appendOutputTo('/var/app/current/storage/logs/artisan-scheduler.log')
             ->withoutOverlapping();
 
         $schedule->command(DeleteDraftPlaylistsPlans::class)
-            ->hourly()
+            ->hourlyAt(7)  /* pick a distinct time to aid debugging if needed */
             ->onOneServer()
             ->withoutOverlapping();
 
         $schedule->command(DeleteTemporaryZipFiles::class)
-            ->hourly()
+            ->hourlyAt(37) /* pick a distinct time to aid debugging if needed */
             ->withoutOverlapping();
     }
 
