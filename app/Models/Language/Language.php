@@ -347,11 +347,11 @@ class Language extends Model
         });
     }
 
-    public function scopeIncludeExtraLanguages($query, $show_restricted, $access_control, $asset_id)
+    public function scopeIncludeExtraLanguages($query, $show_restricted, $access_control_hashes, $asset_id)
     {
-        return $query->when(!$show_restricted, function ($query) use ($access_control, $asset_id) {
-            $query->whereHas('filesets', function ($query) use ($access_control, $asset_id) {
-                $query->whereIn('hash_id', $access_control->hashes);
+        return $query->when(!$show_restricted, function ($query) use ($access_control_hashes, $asset_id) {
+            $query->whereHas('filesets', function ($query) use ($access_control_hashes, $asset_id) {
+                $query->whereRaw('hash_id in (' . $access_control_hashes . ')');
                 if ($asset_id) {
                     $asset_id = explode(',', $asset_id);
                     $query->whereHas('fileset', function ($query) use ($asset_id) {

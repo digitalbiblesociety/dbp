@@ -61,6 +61,12 @@ class LanguagesController extends APIController
      *          description="Will show all entries"
      *     ),
      *     @OA\Parameter(
+     *          name="random",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Will order the entries randomly"
+     *     ),
+     *     @OA\Parameter(
      *          name="show_bibles",
      *          in="query",
      *          @OA\Schema(type="boolean"),
@@ -112,28 +118,36 @@ class LanguagesController extends APIController
         $include_alt_names     = checkParam('include_alt_names');
         $asset_id              = checkParam('bucket_id|asset_id');
         $name                  = checkParam('name|language_name');
+        $random                  = checkParam('random');
         $show_restricted       = checkBoolean('show_all|show_restricted');
         $show_bibles           = checkBoolean('show_bibles');
         $limit      = checkParam('limit');
         $page       = checkParam('page');
 
-        $access_control = $this->accessControl($this->key);
+        $access_control = cacheRemember('access_control', [$this->key], now()->addHour(), function () {
+            return $this->accessControl($this->key);
+        });
 
-        $cache_params = [$this->v,  $country, $code, $GLOBALS['i18n_id'], $sort_by, $name, $show_restricted, $include_alt_names, $asset_id, $access_control->string, $limit, $page, $show_bibles];
+        $cache_params = [$this->v,  $country, $code, $GLOBALS['i18n_id'], $sort_by, $name, $show_restricted, $include_alt_names, $asset_id, $access_control->string, $limit, $page, $show_bibles, $random];
 
         $order = $country ? 'country_population.population' : 'ifnull(current_translation.name, languages.name)';
         $order_dir = $country ? 'desc' : 'asc';
         $select_country_population = $country ? 'country_population.population' : 'null';
-        $languages = cacheRemember('languages_all', $cache_params, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control, $order, $order_dir, $select_country_population, $limit, $page) {
+        $languages = cacheRemember('languages_all', $cache_params, now()->addDay(), function () use ($country, $include_alt_names, $asset_id, $code, $name, $show_restricted, $access_control, $order, $order_dir, $select_country_population, $limit, $page, $random) {
             $languages = Language::includeCurrentTranslation()
                 ->includeAutonymTranslation()
-                ->includeExtraLanguages($show_restricted, $access_control, $asset_id)
+                ->includeExtraLanguages($show_restricted, arrayToCommaSeparatedValues($access_control->hashes), $asset_id)
                 ->includeExtraLanguageTranslations($include_alt_names)
                 ->includeCountryPopulation($country)
                 ->filterableByCountry($country)
                 ->filterableByIsoCode($code)
                 ->filterableByName($name)
-                ->orderByRaw($order . ' ' . $order_dir)
+                ->when($random, function ($query) {
+                    return $query->inRandomOrder();
+                })
+                ->unless($random, function ($query) use ($order, $order_dir) {
+                    return $query->orderByRaw($order . ' ' . $order_dir);
+                })
                 ->select([
                     'languages.id',
                     'languages.glotto_id',
@@ -213,11 +227,13 @@ class LanguagesController extends APIController
      */
     public function show($id)
     {
-        $access_control = $this->accessControl($this->key);
+        $access_control = cacheRemember('access_control', [$this->key], now()->addHour(), function () {
+            return $this->accessControl($this->key);
+        });
         $cache_params = [$id, $access_control->string];
         $language = cacheRemember('language', $cache_params, now()->addDay(), function () use ($id, $access_control) {
             $language = Language::where('id', $id)->orWhere('iso', $id)
-                ->includeExtraLanguages(false, $access_control, false)
+                ->includeExtraLanguages(false, arrayToCommaSeparatedValues($access_control->hashes), false)
                 ->first();
             if (!$language) {
                 return $this->setStatusCode(404)->replyWithError("Language not found for ID: $id");

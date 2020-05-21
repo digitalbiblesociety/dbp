@@ -124,27 +124,35 @@ class PlaylistsController extends APIController
 
     private function getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text)
     {
-        $select = ['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')];
+        $has_user = !empty($user);
+        $featured = $featured || !$has_user;
+
+        $select = ['user_playlists.*'];
+
+        $following_playlists = [];
+        if ($has_user) {
+            $following_playlists = PlaylistFollower::where('user_id', $user->id)->get();
+        }
+
         $playlists = Playlist::with('user')
             ->where('draft', 0)
+            ->where('plan_id', 0)
             ->when($show_details, function ($query) {
                 $query->with('items');
             })
-            ->leftJoin('playlists_followers as playlists_followers', function ($join) use ($user) {
-                $user_id = empty($user) ? 0 : $user->id;
-                $join->on('playlists_followers.playlist_id', '=', 'user_playlists.id')->where('playlists_followers.user_id', $user_id);
-            })
-            ->whereNotIn('id', function ($query) {
-                $query->select('playlist_id')->from('plan_days');
-            })
-            ->when($featured || empty($user), function ($q) {
+            ->when($featured, function ($q) {
                 $q->where('user_playlists.featured', '1');
-            })->unless($featured, function ($q) use ($user) {
+            })
+            ->unless($featured, function ($q) use ($user, $following_playlists) {
                 $q->where('user_playlists.user_id', $user->id)
-                    ->orWhere('playlists_followers.user_id', $user->id);
+                    ->orWhereIn('user_playlists.id', $following_playlists->pluck('playlist_id'));
             })
             ->select($select)
             ->orderBy($sort_by, $sort_dir)->paginate($limit);
+
+        if ($has_user) {
+            $following_playlists = $following_playlists->pluck('playlist_id', 'playlist_id');
+        }
 
         foreach ($playlists->getCollection() as $playlist) {
             if ($show_details) {
@@ -156,8 +164,8 @@ class PlaylistsController extends APIController
                 }
             }
             $playlist->total_duration = PlaylistItems::where('playlist_id', $playlist->id)->sum('duration');
+            $playlist->following = $following_playlists[$playlist->id] ?? false;
         }
-
         return $playlists;
     }
 
