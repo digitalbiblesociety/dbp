@@ -8,7 +8,7 @@ trait ArclightConnection
 {
     private function fetchArclight($path, $language_id = null, $include_refs = false, $parameters = '')
     {
-        $base_url = 'https://api.arclight.org/v2/';
+        $base_url = config('services.arclight.url');
         $key      = config('services.arclight.key');
 
         $path = $base_url.$path.'?_format=json&apiKey='.$key.'&limit=3000&platform=ios';
