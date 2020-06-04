@@ -70,7 +70,8 @@ return [
     ],
 
     'arclight' => [
-        'key' => env('ARCLIGHT_API')
+        'key' => env('ARCLIGHT_API'),
+        'url' => env('ARCLIGHT_API_URL', 'https://api.arclight.org/v2/')
     ],
 
     // Testing
