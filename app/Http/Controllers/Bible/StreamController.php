@@ -39,13 +39,20 @@ class StreamController extends APIController
         $current_file = '#EXTM3U';
         foreach ($file->streamBandwidth as $bandwidth) {
             $current_file .= "\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=$bandwidth->bandwidth";
+
+            $transportStream = sizeof($bandwidth->transportStreamBytes) ? $bandwidth->transportStreamBytes : $bandwidth->transportStreamTS;
+
+            $extra_args = '';
+            if (sizeof($transportStream) && isset($transportStream[0]->timestamp) && $transportStream[0]->timestamp->verse_start === 0) {
+                $extra_args = '&v0=0';
+            }
             if ($bandwidth->resolution_width) {
                 $current_file .= ',RESOLUTION=' . $bandwidth->resolution_width . "x$bandwidth->resolution_height";
             }
             if ($bandwidth->codec) {
                 $current_file .= ",CODECS=\"$bandwidth->codec\"";
             }
-            $current_file .= "\n$bandwidth->file_name" . '?key=' . $this->key . '&v=4&asset_id=' . $asset_id;
+            $current_file .= "\n$bandwidth->file_name" . '?key=' . $this->key . '&v=4&asset_id=' . $asset_id . $extra_args;
         }
 
         return response($current_file, 200, [
@@ -105,8 +112,7 @@ class StreamController extends APIController
         $current_file = "#EXTM3U\n";
         $current_file .= '#EXT-X-TARGETDURATION:' . ceil($currentBandwidth->transportStream->sum('runtime')) . "\n";
         $current_file .= "#EXT-X-VERSION:4\n";
-        $current_file .= "#EXT-X-MEDIA-SEQUENCE:0\n";
-        $current_file .= '#EXT-X-ALLOW-CACHE:YES';
+        $current_file .= '#EXT-X-MEDIA-SEQUENCE:0';
 
         $signed_files = [];
 
