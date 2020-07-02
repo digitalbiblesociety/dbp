@@ -22,18 +22,20 @@ class StreamController extends APIController
      *
      * @return $this
      */
-    public function index($id = null, $file_id = null)
+    public function index($id = null, $file_id_location = null)
     {
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh_video.bucket');
+
 
         $fileset = BibleFileset::uniqueFileset($id, $asset_id)->select('hash_id', 'id')->first();
         if (!$fileset) {
             return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
         }
 
-        $file = BibleFile::with('streamBandwidth')->where('hash_id', $fileset->hash_id)->where('id', $file_id)->first();
+        $file = $this->getFileFromLocation($fileset, $file_id_location);
+
         if (!$file) {
-            return $this->replyWithError(trans('api.bible_file_errors_404', ['id' => $file_id]));
+            return $this->replyWithError(trans('api.bible_file_errors_404', ['id' => $file_id_location]));
         }
 
         $current_file = '#EXTM3U';
@@ -72,7 +74,7 @@ class StreamController extends APIController
      * @return $this
      * @throws \Exception
      */
-    public function transportStream(Response $response, $fileset_id = null, $file_id = null, $file_name = null)
+    public function transportStream(Response $response, $fileset_id = null, $file_id_location = null, $file_name = null)
     {
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh_video.bucket');
 
@@ -90,9 +92,10 @@ class StreamController extends APIController
             $fileset_type = 'video';
         }
 
-        $file = BibleFile::with('streamBandwidth.transportStreamTS')->with('streamBandwidth.transportStreamBytes')->whereId($file_id)->first();
+        $file = $this->getFileFromLocation($fileset, $file_id_location);
+
         if (!$file) {
-            return $this->replyWithError(trans('api.bible_file_errors_404', ['id' => $file_id]));
+            return $this->replyWithError(trans('api.bible_file_errors_404', ['id' => $file_id_location]));
         }
 
         $bible_path    = $fileset->bible->first() !== null ? $fileset->bible->first()->id . '/' : '';
@@ -135,5 +138,21 @@ class StreamController extends APIController
             'Content-Disposition' => 'attachment; filename="' . $file->file_name . '"',
             'Content-Type'        => 'application/x-mpegURL'
         ]);
+    }
+
+    private function getFileFromLocation($fileset, $file_id_location)
+    {
+        $parts = explode('-', $file_id_location);
+        if (sizeof($parts) === 1) {
+            return BibleFile::with('streamBandwidth')->where('hash_id', $fileset->hash_id)->where('id', $parts[0])->first();
+        }
+
+        return BibleFile::with('streamBandwidth')->where('hash_id', $fileset->hash_id)
+            ->where([
+                'book_id' => $parts[0],
+                'chapter_start' => $parts[1],
+                'verse_start' => $parts[2],
+                'verse_end' => $parts[3] ? $parts[3] : null,
+            ])->first();
     }
 }
