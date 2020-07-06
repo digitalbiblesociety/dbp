@@ -429,7 +429,16 @@ class BibleFileSetsController extends APIController
 
         if ($is_stream) {
             foreach ($fileset_chapters as $key => $fileset_chapter) {
-                $fileset_chapters[$key]->file_name = route('v4_media_stream', ['fileset_id' => $fileset->id, 'file_id' => $fileset_chapter->id]);
+                $fileset_chapters[$key]->file_name = route(
+                    'v4_media_stream',
+                    [
+                        'fileset_id' => $fileset->id,
+                        'book_id' => $fileset_chapter->book_id,
+                        'chapter' => $fileset_chapter->chapter_start,
+                        'verse_start' => $fileset_chapter->verse_start,
+                        'verse_end' => $fileset_chapter->verse_end,
+                    ]
+                );
             }
         }
 

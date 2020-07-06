@@ -957,8 +957,7 @@ class PlaylistsController extends APIController
         $current_file = "#EXTM3U\n";
         $current_file .= '#EXT-X-TARGETDURATION:' . ceil(collect($durations)->sum()) . "\n";
         $current_file .= "#EXT-X-VERSION:4\n";
-        $current_file .= "#EXT-X-MEDIA-SEQUENCE:0\n";
-        $current_file .= '#EXT-X-ALLOW-CACHE:YES';
+        $current_file .= '#EXT-X-MEDIA-SEQUENCE:0';
         $current_file .= $hls_items;
         $current_file .= "\n#EXT-X-ENDLIST";
 
