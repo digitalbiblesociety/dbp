@@ -27,40 +27,45 @@ class StreamController extends APIController
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh_video.bucket');
 
 
-        $fileset = BibleFileset::uniqueFileset($id, $asset_id)->select('hash_id', 'id')->first();
-        if (!$fileset) {
-            return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
-        }
+        $cache_params = [$id, $asset_id, $file_id_location];
 
-        $file = $this->getFileFromLocation($fileset, $file_id_location);
-
-        if (!$file) {
-            return $this->replyWithError(trans('api.bible_file_errors_404', ['id' => $file_id_location]));
-        }
-
-        $current_file = '#EXTM3U';
-        foreach ($file->streamBandwidth as $bandwidth) {
-            $current_file .= "\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=$bandwidth->bandwidth";
-
-            $transportStream = sizeof($bandwidth->transportStreamBytes) ? $bandwidth->transportStreamBytes : $bandwidth->transportStreamTS;
-
-            $extra_args = '';
-            if (sizeof($transportStream) && isset($transportStream[0]->timestamp) && $transportStream[0]->timestamp->verse_start === 0) {
-                $extra_args = '&v0=0';
+        $current_file = cacheRemember('stream_master_index', $cache_params, now()->addHours(12), function () use ($id, $asset_id, $file_id_location) {
+            $fileset = BibleFileset::uniqueFileset($id, $asset_id)->select('hash_id', 'id')->first();
+            if (!$fileset) {
+                return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
             }
-            if ($bandwidth->resolution_width) {
-                $current_file .= ',RESOLUTION=' . $bandwidth->resolution_width . "x$bandwidth->resolution_height";
-            }
-            if ($bandwidth->codec) {
-                $current_file .= ",CODECS=\"$bandwidth->codec\"";
-            }
-            $current_file .= "\n$bandwidth->file_name" . '?key=' . $this->key . '&v=4&asset_id=' . $asset_id . $extra_args;
-        }
 
-        return response($current_file, 200, [
-            'Content-Disposition' => 'attachment; filename="' . $file->file_name . '"',
-            'Content-Type'        => 'application/x-mpegURL'
-        ]);
+            $file = $this->getFileFromLocation($fileset, $file_id_location);
+
+            if (!$file) {
+                return $this->replyWithError(trans('api.bible_file_errors_404', ['id' => $file_id_location]));
+            }
+
+            $current_file = '#EXTM3U';
+            foreach ($file->streamBandwidth as $bandwidth) {
+                $current_file .= "\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=$bandwidth->bandwidth";
+
+                $transportStream = sizeof($bandwidth->transportStreamBytes) ? $bandwidth->transportStreamBytes : $bandwidth->transportStreamTS;
+
+                $extra_args = '';
+                if (sizeof($transportStream) && isset($transportStream[0]->timestamp) && $transportStream[0]->timestamp->verse_start === 0) {
+                    $extra_args = '&v0=0';
+                }
+                if ($bandwidth->resolution_width) {
+                    $current_file .= ',RESOLUTION=' . $bandwidth->resolution_width . "x$bandwidth->resolution_height";
+                }
+                if ($bandwidth->codec) {
+                    $current_file .= ",CODECS=\"$bandwidth->codec\"";
+                }
+                $current_file .= "\n$bandwidth->file_name" . '?key=' . $this->key . '&v=4&asset_id=' . $asset_id . $extra_args;
+            }
+            return response($current_file, 200, [
+                'Content-Disposition' => 'attachment; filename="' . $file->file_name . '"',
+                'Content-Type'        => 'application/x-mpegURL'
+            ]);
+        });
+
+        return $current_file;
     }
 
     /**
@@ -78,66 +83,72 @@ class StreamController extends APIController
     {
         $asset_id = checkParam('asset_id') ?? config('filesystems.disks.s3_fcbh_video.bucket');
 
-        $video_fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'video_stream')->select('hash_id', 'id', 'asset_id')->first();
-        $audio_fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'audio', true)->select('hash_id', 'id', 'asset_id')->first();
-        if (!$video_fileset && !$audio_fileset) {
-            return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
-        }
+        $cache_params = [$fileset_id, $asset_id, $file_id_location, $file_name];
 
-        if ($audio_fileset) {
-            $fileset = $audio_fileset;
-            $fileset_type = 'audio';
-        } else {
-            $fileset = $video_fileset;
-            $fileset_type = 'video';
-        }
-
-        $file = $this->getFileFromLocation($fileset, $file_id_location);
-
-        if (!$file) {
-            return $this->replyWithError(trans('api.bible_file_errors_404', ['id' => $file_id_location]));
-        }
-
-        $bible_path    = $fileset->bible->first() !== null ? $fileset->bible->first()->id . '/' : '';
-
-        $currentBandwidth = $file->streamBandwidth->where('file_name', $file_name)->first();
-        if (!$currentBandwidth) {
-            return $this->setStatusCode(404)->replyWithError(trans('api.file_errors_404_size'));
-        }
-        $transaction_id = random_int(0, 10000000);
-        try {
-            apiLogs(request(), $response->getStatusCode(), $transaction_id);
-        } catch (\Exception $e) {
-            Log::error($e);
-        }
-        $currentBandwidth->transportStream = sizeof($currentBandwidth->transportStreamBytes) ? $currentBandwidth->transportStreamBytes : $currentBandwidth->transportStreamTS;
-
-        $current_file = "#EXTM3U\n";
-        $current_file .= '#EXT-X-TARGETDURATION:' . ceil($currentBandwidth->transportStream->sum('runtime')) . "\n";
-        $current_file .= "#EXT-X-VERSION:4\n";
-        $current_file .= '#EXT-X-MEDIA-SEQUENCE:0';
-
-        $signed_files = [];
-
-        foreach ($currentBandwidth->transportStream as $stream) {
-            $current_file .= "\n#EXTINF:$stream->runtime,";
-            if (isset($stream->timestamp)) {
-                $current_file .= "\n#EXT-X-BYTERANGE:$stream->bytes@$stream->offset";
-                $fileset = $stream->timestamp->bibleFile->fileset;
-                $stream->file_name = $stream->timestamp->bibleFile->file_name;
+        $current_file = cacheRemember('stream_bandwidth', $cache_params, now()->addHours(12), function () use ($response, $fileset_id, $asset_id, $file_id_location, $file_name) {
+            $video_fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'video_stream')->select('hash_id', 'id', 'asset_id')->first();
+            $audio_fileset = BibleFileset::uniqueFileset($fileset_id, $asset_id, 'audio', true)->select('hash_id', 'id', 'asset_id')->first();
+            if (!$video_fileset && !$audio_fileset) {
+                return $this->setStatusCode(404)->replyWithError('No fileset found for the provided params');
             }
-            $file_path = $fileset_type . '/' . $bible_path . $fileset->id . '/' . $stream->file_name;
-            if (!isset($signed_files[$file_path])) {
-                $signed_files[$file_path] = $this->signedUrl($file_path, $fileset->asset_id, $transaction_id);
-            }
-            $current_file .= "\n" . $signed_files[$file_path];
-        }
-        $current_file .= "\n#EXT-X-ENDLIST";
 
-        return response($current_file, 200, [
-            'Content-Disposition' => 'attachment; filename="' . $file->file_name . '"',
-            'Content-Type'        => 'application/x-mpegURL'
-        ]);
+            if ($audio_fileset) {
+                $fileset = $audio_fileset;
+                $fileset_type = 'audio';
+            } else {
+                $fileset = $video_fileset;
+                $fileset_type = 'video';
+            }
+
+            $file = $this->getFileFromLocation($fileset, $file_id_location);
+
+            if (!$file) {
+                return $this->replyWithError(trans('api.bible_file_errors_404', ['id' => $file_id_location]));
+            }
+
+            $bible_path    = $fileset->bible->first() !== null ? $fileset->bible->first()->id . '/' : '';
+
+            $currentBandwidth = $file->streamBandwidth->where('file_name', $file_name)->first();
+            if (!$currentBandwidth) {
+                return $this->setStatusCode(404)->replyWithError(trans('api.file_errors_404_size'));
+            }
+            $transaction_id = random_int(0, 10000000);
+            try {
+                apiLogs(request(), $response->getStatusCode(), $transaction_id);
+            } catch (\Exception $e) {
+                Log::error($e);
+            }
+            $currentBandwidth->transportStream = sizeof($currentBandwidth->transportStreamBytes) ? $currentBandwidth->transportStreamBytes : $currentBandwidth->transportStreamTS;
+
+            $current_file = "#EXTM3U\n";
+            $current_file .= '#EXT-X-TARGETDURATION:' . ceil($currentBandwidth->transportStream->sum('runtime')) . "\n";
+            $current_file .= "#EXT-X-VERSION:4\n";
+            $current_file .= '#EXT-X-MEDIA-SEQUENCE:0';
+
+            $signed_files = [];
+
+            foreach ($currentBandwidth->transportStream as $stream) {
+                $current_file .= "\n#EXTINF:$stream->runtime,";
+                if (isset($stream->timestamp)) {
+                    $current_file .= "\n#EXT-X-BYTERANGE:$stream->bytes@$stream->offset";
+                    $fileset = $stream->timestamp->bibleFile->fileset;
+                    $stream->file_name = $stream->timestamp->bibleFile->file_name;
+                }
+                $file_path = $fileset_type . '/' . $bible_path . $fileset->id . '/' . $stream->file_name;
+                if (!isset($signed_files[$file_path])) {
+                    $signed_files[$file_path] = $this->signedUrl($file_path, $fileset->asset_id, $transaction_id);
+                }
+                $current_file .= "\n" . $signed_files[$file_path];
+            }
+            $current_file .= "\n#EXT-X-ENDLIST";
+
+            return response($current_file, 200, [
+                'Content-Disposition' => 'attachment; filename="' . $file->file_name . '"',
+                'Content-Type'        => 'application/x-mpegURL'
+            ]);
+        });
+
+        return $current_file;
     }
 
     private function getFileFromLocation($fileset, $file_id_location)
