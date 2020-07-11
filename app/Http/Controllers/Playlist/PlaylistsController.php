@@ -111,8 +111,8 @@ class PlaylistsController extends APIController
         }
 
         if ($featured) {
-            $cache_params = [$show_details, $featured, $sort_by, $sort_dir, $limit, $show_text];
-            $playlists = cacheRemember('v4_playlist_index', $cache_params, now()->addDay(), function () use ($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text) {
+            $cache_string = generateCacheString('v4_playlist_index', [$show_details, $featured, $sort_by, $sort_dir, $limit, $show_text]);
+            $playlists = \Cache::remember($cache_string, now()->addDay(), function () use ($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text) {
                 return $this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text);
             });
             return $this->reply($playlists);
@@ -703,23 +703,30 @@ class PlaylistsController extends APIController
             if ($has_translation) {
                 $item->fileset_id = $preferred_fileset->id;
                 $is_streaming = $preferred_fileset->set_type_code === 'audio_stream' || $preferred_fileset->set_type_code === 'audio_drama_stream';
+                $translated_items[] = (object)[
+                    'fileset_id' => $item->fileset_id,
+                    'book_id' => $item->book_id,
+                    'chapter_start' => $item->chapter_start,
+                    'chapter_end' => $item->chapter_end,
+                    'verse_start' => $is_streaming ? $item->verse_start : null,
+                    'verse_end' => $is_streaming ? $item->verse_end : null,
+                ];
             }
-
-
-            $translated_items[] = [
-                'id' => $item->id,
-                'fileset_id' => $item->fileset_id,
-                'book_id' => $item->book_id,
-                'chapter_start' => $item->chapter_start,
-                'chapter_end' => $item->chapter_end,
-                'verse_start' => $is_streaming ? $item->verse_start : null,
-                'verse_end' => $is_streaming ? $item->verse_end : null,
-                'bible_id' => $has_translation ? $bible->id : $item->bible_id,
-                'has_translation' => $has_translation,
-            ];
         }
 
-        return $this->reply($translated_items);
+        $playlist_data = [
+            'user_id'           => $user->id,
+            'name'              => $playlist->name . ': ' . $bible->language->name . ' ' . substr($bible->id, -3),
+            'external_content'  => $playlist->external_content,
+            'featured'          => false,
+            'draft'             => true
+        ];
+
+
+        $playlist = Playlist::create($playlist_data);
+        $this->createPlaylistItems($playlist, $translated_items);
+
+        return $this->show($request, $playlist->id);
     }
 
     /**
