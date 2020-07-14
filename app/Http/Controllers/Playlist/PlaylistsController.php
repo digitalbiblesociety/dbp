@@ -521,7 +521,7 @@ class PlaylistsController extends APIController
         return $this->reply($single_item ? $created_playlist_items[0] : $created_playlist_items);
     }
 
-    private function createPlaylistItems($playlist, $playlist_items)
+    private function createPlaylistItems($playlist, $playlist_items, $set_translated_id = false)
     {
         $created_playlist_items = [];
 
@@ -549,6 +549,9 @@ class PlaylistsController extends APIController
             $created_playlist_item->calculateDuration()->save();
             if (!$verses) {
                 $created_playlist_item->calculateVerses()->save();
+            }
+            if ($set_translated_id) {
+                $created_playlist_item->translated_id = $playlist_item->translated_id;
             }
             $created_playlist_items[] = $created_playlist_item;
         }
@@ -689,7 +692,8 @@ class PlaylistsController extends APIController
         $bible_audio_filesets = $bible->filesets->whereIn('set_type_code', $audio_fileset_types);
 
         $translated_items = [];
-
+        $metadata_items = [];
+        $total_translated_items = 0;
         foreach ($playlist->items as $item) {
             $ordered_types = $audio_fileset_types->filter(function ($type) use ($item) {
                 return $type !== $item->fileset->set_type_code;
@@ -704,6 +708,7 @@ class PlaylistsController extends APIController
                 $item->fileset_id = $preferred_fileset->id;
                 $is_streaming = $preferred_fileset->set_type_code === 'audio_stream' || $preferred_fileset->set_type_code === 'audio_drama_stream';
                 $translated_items[] = (object)[
+                    'translated_id' => $item->id,
                     'fileset_id' => $item->fileset_id,
                     'book_id' => $item->book_id,
                     'chapter_start' => $item->chapter_start,
@@ -711,8 +716,11 @@ class PlaylistsController extends APIController
                     'verse_start' => $is_streaming ? $item->verse_start : null,
                     'verse_end' => $is_streaming ? $item->verse_end : null,
                 ];
+                $total_translated_items += 1;
             }
+            $metadata_items[] = $item;
         }
+        $translated_percentage = sizeof($playlist->items) ? $total_translated_items / sizeof($playlist->items) : 0;
 
         $playlist_data = [
             'user_id'           => $user->id,
@@ -724,9 +732,27 @@ class PlaylistsController extends APIController
 
 
         $playlist = Playlist::create($playlist_data);
-        $this->createPlaylistItems($playlist, $translated_items);
+        $items = collect($this->createPlaylistItems($playlist, $translated_items, true));
 
-        return $this->show($request, $playlist->id);
+
+        foreach ($metadata_items as $item) {
+            $new_item = $items->first(function ($new_item) use ($item) {
+                return $new_item->translated_id === $item->id;
+            });
+            if ($new_item) {
+                unset($new_item->translated_id);
+                $item->translation_item = $new_item;
+            }
+        }
+
+        $playlist = $this->getPlaylist($user, $playlist->id);
+        $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist->id, 'v' => $this->v, 'key' => $this->key]);
+        $playlist->total_duration = PlaylistItems::where('playlist_id', $playlist->id)->sum('duration');
+
+        $playlist->translation_data = $metadata_items;
+        $playlist->translated_percentage = $translated_percentage * 100;
+
+        return $this->reply($playlist);
     }
 
     /**

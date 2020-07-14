@@ -911,20 +911,30 @@ class PlansController extends APIController
 
         $new_plan = Plan::create($plan_data);
         $playlist_controller = new PlaylistsController();
-
+        $translation_data = [];
+        $translated_percentage = 0;
         foreach ($plan->days as $day) {
             $playlist = (object) $playlist_controller->translate($request, $day->playlist_id)->original;
+
             PlanDay::create([
                 'plan_id'               => $new_plan->id,
                 'playlist_id'           => $playlist->id,
             ]);
+            $translation_data[] = $playlist->translation_data;
+            $translated_percentage += $playlist->translated_percentage;
         }
+        $translated_percentage = sizeof($plan->days) ? $translated_percentage / sizeof($plan->days) : 0;
+
 
         UserPlan::create([
             'user_id'               => $user->id,
             'plan_id'               => $new_plan->id
         ]);
 
-        return $this->show($request, $new_plan->id);
+        $plan = $this->show($request, $new_plan->id)->original;
+        $plan['translation_data'] = $translation_data;
+        $plan['translated_percentage'] = $translated_percentage;
+
+        return $plan;
     }
 }
