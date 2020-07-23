@@ -865,6 +865,12 @@ class PlansController extends APIController
      *          @OA\Schema(ref="#/components/schemas/Bible/properties/id"),
      *          description="The id of the bible that will be used to translate the plan"
      *     ),
+     *     @OA\Parameter(
+     *          name="show_details",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Give full details of the translated plan"
+     *     ),
      *     @OA\Response(response=200, ref="#/components/responses/plan")
      * )
      *
@@ -895,17 +901,40 @@ class PlansController extends APIController
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
         }
 
+        $plan_data = [
+            'user_id'               => $user->id,
+            'name'                  => $plan->name . ': ' . $bible->language->name . ' ' . substr($bible->id, -3),
+            'featured'              => false,
+            'draft'                 => true,
+            'suggested_start_date'  => $plan->suggested_start_date
+        ];
+
+        $new_plan = Plan::create($plan_data);
         $playlist_controller = new PlaylistsController();
-
-        $translated_days = [];
+        $translation_data = [];
+        $translated_percentage = 0;
         foreach ($plan->days as $day) {
-            $playlist_items = $playlist_controller->translate($request, $day->playlist_id);
-            $translated_days[] = [
-                'id' => $day->id,
-                'playlist_items' => $playlist_items->original,
-            ];
-        }
+            $playlist = (object) $playlist_controller->translate($request, $day->playlist_id)->original;
 
-        return $this->reply($translated_days);
+            PlanDay::create([
+                'plan_id'               => $new_plan->id,
+                'playlist_id'           => $playlist->id,
+            ]);
+            $translation_data[] = $playlist->translation_data;
+            $translated_percentage += $playlist->translated_percentage;
+        }
+        $translated_percentage = sizeof($plan->days) ? $translated_percentage / sizeof($plan->days) : 0;
+
+
+        UserPlan::create([
+            'user_id'               => $user->id,
+            'plan_id'               => $new_plan->id
+        ]);
+
+        $plan = $this->show($request, $new_plan->id)->original;
+        $plan['translation_data'] = $translation_data;
+        $plan['translated_percentage'] = $translated_percentage;
+
+        return $plan;
     }
 }
