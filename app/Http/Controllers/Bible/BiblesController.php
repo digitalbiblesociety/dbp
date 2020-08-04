@@ -921,4 +921,99 @@ class BiblesController extends APIController
         $response = response()->download($file_to_path, $file_name, $headers)->deleteFileAfterSend(true);
         return $response;
     }
+
+    /**
+     * @OA\Get(
+     *     path="/bibles/{bible_id}/chapter/annotations",
+     *     tags={"Bibles"},
+     *     summary="Bible chapter annotations",
+     *     description="Bible chapter annotations",
+     *     operationId="v4_bible.chapter.annotations",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="bible_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Bible/properties/id"),
+     *          description="The Bible ID to retrieve the chapter information for"
+     *     ),
+     *     @OA\Parameter(
+     *          name="book_id",
+     *          in="query",
+     *          description="Will filter the results by the given book. For a complete list see the `book_id` field in the `/bibles/books` route.",
+     *          @OA\Schema(ref="#/components/schemas/Book/properties/id")
+     *     ),
+     *     @OA\Parameter(
+     *          name="chapter",
+     *          in="query",
+     *          description="Will filter the results by the given chapter",
+     *          @OA\Schema(ref="#/components/schemas/BibleFile/properties/chapter_start")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="The requested bible chapter annotations",
+     *         @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/v4_bible.chapter.annotations")),
+     *         @OA\MediaType(mediaType="application/xml", @OA\Schema(ref="#/components/schemas/v4_bible.chapter.annotations")),
+     *         @OA\MediaType(mediaType="text/csv", @OA\Schema(ref="#/components/schemas/v4_bible.chapter.annotations")),
+     *         @OA\MediaType(mediaType="text/x-yaml", @OA\Schema(ref="#/components/schemas/v4_bible.chapter.annotations"))
+     *     )
+     * )
+     *
+     * @OA\Schema (
+     *   type="object",
+     *   schema="v4_bible.chapter.annotations",
+     *   title="Bible chapter annotations response",
+     *   description="The v4 bible chapter annotations response.",
+     *   @OA\Property(property="annotations", type="object",
+     *      @OA\Property(property="bookmarks", ref="#/components/schemas/v4_user_bookmarks/properties/data"),
+     *      @OA\Property(property="highlights", ref="#/components/schemas/v4_highlights_index/properties/data"),
+     *      @OA\Property(property="notes", ref="#/components/schemas/v4_notes_index/properties/data")
+     *   )
+     * )
+     */
+    public function annotations(Request $request, $bible_id)
+    {
+        $bible = Bible::whereId($bible_id)->first();
+        if (!$bible) {
+            return $this->setStatusCode(404)->replyWithError('Bible not found');
+        }
+
+        $user = $request->user();
+
+        // Validate Project / User Connection
+        if (!$this->compareProjects($user->id, $this->key)) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+
+        $book_id = checkParam('book_id');
+        $chapter = checkParam('chapter');
+
+        if ($book_id) {
+            $book = Book::whereId($book_id)->first();
+
+            if (!$book) {
+                return $this->setStatusCode(404)->replyWithError('Book not found');
+            }
+        }
+
+
+        $result = (object) [];
+
+
+        $highlights_controller = new HighlightsController();
+        $bookmarks_controller = new BookmarksController();
+        $notes_controller = new NotesController();
+        $request->request->add(['bible_id' => $bible_id]);
+        $result->highlights = $highlights_controller->index($request, $user->id)->original['data'];
+        $result->bookmarks = $bookmarks_controller->index($request, $user->id)->original['data'];
+        $result->notes = $notes_controller->index($request, $user->id)->original['data'];
+
+        $result->bible_id = $bible->id;
+        $result->book_id = $book_id;
+        $result->chapter = $chapter;
+
+
+        return $this->reply($result);
+    }
 }
