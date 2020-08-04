@@ -822,7 +822,7 @@ class BiblesController extends APIController
         }
 
         $size_partial_filesets = $filesets->filter(function ($fileset) use ($type, $testament) {
-            return $fileset->set_type_code === $type && strpos($fileset->set_size_code, $testament . 'P') !== false;
+            return $fileset->set_type_code === $type && strpos($fileset->set_size_code, $testament) !== false;
         })->toArray();
 
         if (!empty($size_partial_filesets)) {
