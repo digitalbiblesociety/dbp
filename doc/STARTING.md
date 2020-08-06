@@ -236,3 +236,136 @@ params `type`, `book_id`, and `chapter_id`
 	}]
 }
 ```
+
+### Common workflow #2: Displays video stream Bibles
+
+Let's imagine that we're building an app that starts the end user off looking 
+at a list of Bibles from which they will choose a Bible, Book, and Chapter to 
+read.
+
+> Note: All example URLs in these common workflows will assume you're passing 
+an `Authorization` header and the api version header `v: 4`
+
+#### Step 1: List Bibles that have a video stream content
+
+First, make a query to the Bibles route with the added requirements video_stream
+and dbp-vid
+
+`/bibles?media=video_stream&asset_id=dbp-vid`
+
+> Note: What's `dbp-vid`? The bibles call nests all `filesets` under varient 
+`asset_id` values. Each asset id corresponds with a DBP provider AWS instance
+hit `/api/buckets` for a complete list of `asset_id` values and organizations
+
+Here's what your response might look like:
+
+```json
+{
+    "data": [
+        {
+            "abbr": "EN1ESV",
+            "name": "English Standard Version® - Hear the Word Audio Bible",
+            "vname": null,
+            "language": "English",
+            "autonym": "English",
+            "language_id": 6414,
+            "iso": "eng",
+            "date": "2001",
+            "filesets": {
+                "dbp-vid": [
+                    {
+                        "id": "ENGESHP2DV",
+                        "type": "video_stream",
+                        "size": "NTP",
+                        "bitrate": null
+                    }
+                ]
+            }
+        }
+    ]
+}
+```
+
+Now let us assume the user picked the bible `EN1ESV` from the 
+example above. 
+
+
+#### Step 2: List Books that have a video fileset
+
+
+`/bibles/{BIBLE_ID}/book?asset_id=dbp-vid&verify_content=true`
+
+This route returns a complete list of books for the bible but for brevity's
+sake only the first one is shown (for BIBLE_ID=EN1ESV).
+
+```json
+{
+  "data": [
+    {
+        "book_id": "MAT",
+        "book_id_usfx": "MT",
+        "book_id_osis": "Matt",
+        "name": "Matthew",
+        "testament": "NT",
+        "testament_order": 1,
+        "book_order": 41,
+        "book_group": "Gospels",
+        "chapters": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
+        "content_types": [
+        "video_stream"
+        ]
+    }
+  ]
+}
+
+```
+### Step 3: Getting the video URL of the chapter
+
+Now that we have the bible, book and chapter let us get the chapter information so we can use the video
+
+`/bibles/{BIBLE_ID}/chapter?chapter={CHAPTER_ID}&book_id={BOOK_ID}`
+
+This route returns the complete information of the chapter, but for brevity's
+sake here are just the gospel_films results.
+
+```json
+{
+  "bible_id": "EN1ESV",
+  "book_id": "MAT",
+  "chapter": "1",
+  "filesets": {
+    "video": {
+      "gospel_films": [
+        {
+          "book_id": "MAT",
+          "book_name": "Matthew",
+          "chapter_start": 1,
+          "chapter_end": null,
+          "verse_start": 1,
+          "verse_end": 17,
+          "thumbnail": "https://dbp-vid.s3.amazonaws.com/video/thumbnails/MAT_01.jpg",
+          "timestamp": null,
+          "path": "https://api.dbp4.org/api/bible/filesets/ENGESHP2DV/MAT-1-1-17/playlist.m3u8",
+          "duration": 201
+        },
+        {
+          "book_id": "MAT",
+          "book_name": "Matthew",
+          "chapter_start": 1,
+          "chapter_end": null,
+          "verse_start": 18,
+          "verse_end": 25,
+          "thumbnail": "https://dbp-vid.s3.amazonaws.com/video/thumbnails/MAT_01.jpg",
+          "timestamp": null,
+          "path": "https://api.dbp4.org/api/bible/filesets/ENGESHP2DV/MAT-1-18-25/playlist.m3u8",
+          "duration": 129
+        }
+      ]
+    }
+  }
+}
+```
+
+Now we have a list of videos and thumbnail that we can use on a video player 
+
+> Note: The `path` of the video needs an `Authorization` header and the api version header `v: 4`
