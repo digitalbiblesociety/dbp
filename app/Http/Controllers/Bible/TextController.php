@@ -389,25 +389,22 @@ class TextController extends APIController
             ->select(['user_playlists.*', DB::Raw('IF(playlists_followers.user_id, true, false) as following')])
             ->orderBy('name', 'asc')->get();
 
-        $highlights = Highlight::with('color')->with('tags')
-            ->where('user_id', $user->id)
+        $highlights = Highlight::where('user_id', $user->id)
             ->orderBy('user_highlights.updated_at')->limit($limit)->get()
             ->filter(function ($highlight) use ($query) {
                 return str_contains(strtolower($highlight->book->name . ' ' . $highlight->verse_text), $query);
             });
 
-        $bookmarks = Bookmark::with('tags')
-            ->where('user_id', $user->id)
+        $bookmarks = Bookmark::where('user_id', $user->id)
             ->limit($limit)->get()
             ->filter(function ($bookmark) use ($query) {
                 return str_contains(strtolower($bookmark->book->name . ' ' . $bookmark->verse_text), $query);
             });
 
-        $notes = Note::with('tags')
-            ->where('user_id', $user->id)
+        $notes = Note::where('user_id', $user->id)
             ->limit($limit)->get()
             ->filter(function ($note) use ($query) {
-                return str_contains(strtolower($note->book->name . ' ' . $note->verse_text . ' ' . $note->notes), $query);
+                return str_contains(strtolower($note->book->name . ' ' . $note->verse_text), $query);
             });
 
 
