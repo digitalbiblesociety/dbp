@@ -6,6 +6,7 @@ use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFile;
+use App\Models\Language\Language;
 use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
 use App\Models\Playlist\PlaylistFollower;
@@ -51,6 +52,12 @@ class PlaylistsController extends APIController
      *          in="query",
      *          @OA\Schema(type="boolean"),
      *          description="Enable the full details of the playlist and retrieve the text of the items"
+     *     ),
+     *     @OA\Parameter(
+     *          name="iso",
+     *          in="query",
+     *          @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
+     *          description="The iso code to filter plans by. For a complete list see the `iso` field in the `/languages` route"
      *     ),
      *     security={{"api_token":{}}},
      *     @OA\Parameter(ref="#/components/parameters/limit"),
@@ -98,6 +105,7 @@ class PlaylistsController extends APIController
 
         $sort_by    = checkParam('sort_by') ?? 'name';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
+        $iso = checkParam('iso');
 
         $featured = checkBoolean('featured') || empty($user);
         $limit    = (int) (checkParam('limit') ?? 25);
@@ -110,19 +118,23 @@ class PlaylistsController extends APIController
             $show_details = $show_text;
         }
 
+        $language_id = cacheRemember('v4_language_id_from_iso', [$iso], now()->addDay(), function () use ($iso) {
+            return optional(Language::where('iso', $iso)->select('id')->first())->id;
+        });
+
         if ($featured) {
-            $cache_string = generateCacheString('v4_playlist_index', [$show_details, $featured, $sort_by, $sort_dir, $limit, $show_text]);
-            $playlists = \Cache::remember($cache_string, now()->addDay(), function () use ($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text) {
-                return $this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text);
+            $cache_params = [$show_details, $featured, $sort_by, $sort_dir, $limit, $show_text, $language_id];
+            $playlists = cacheRemember('v4_playlist_index', $cache_params, now()->addDay(), function () use ($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text, $language_id) {
+                return $this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text, $language_id);
             });
             return $this->reply($playlists);
         }
 
 
-        return $this->reply($this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text));
+        return $this->reply($this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text, $language_id));
     }
 
-    private function getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text)
+    private function getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text, $language_id)
     {
         $has_user = !empty($user);
         $featured = $featured || !$has_user;
@@ -139,6 +151,9 @@ class PlaylistsController extends APIController
             ->where('plan_id', 0)
             ->when($show_details, function ($query) {
                 $query->with('items');
+            })
+            ->when($language_id, function ($q) use ($language_id) {
+                $q->where('user_playlists.language_id', $language_id);
             })
             ->when($featured, function ($q) {
                 $q->where('user_playlists.featured', '1');

@@ -35,7 +35,7 @@ class Playlist extends Model
     protected $connection = 'dbp_users';
     public $table         = 'user_playlists';
     protected $fillable   = ['user_id', 'name', 'external_content', 'draft'];
-    protected $hidden     = ['user_id', 'deleted_at', 'plan_id'];
+    protected $hidden     = ['user_id', 'deleted_at', 'plan_id', 'language_id'];
     protected $dates      = ['deleted_at'];
     /**
      *

@@ -6,6 +6,7 @@ use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\Playlist\PlaylistsController;
 use App\Models\Bible\Bible;
+use App\Models\Language\Language;
 use App\Models\Plan\Plan;
 use App\Traits\CheckProjectMembership;
 use App\Models\Plan\PlanDay;
@@ -35,6 +36,12 @@ class PlansController extends APIController
      *          description="Return featured plans"
      *     ),
      *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="iso",
+     *          in="query",
+     *          @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
+     *          description="The iso code to filter plans by. For a complete list see the `iso` field in the `/languages` route"
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/limit"),
      *     @OA\Parameter(ref="#/components/parameters/page"),
      *     @OA\Parameter(ref="#/components/parameters/sort_by"),
@@ -92,23 +99,31 @@ class PlansController extends APIController
         $limit        = (int) (checkParam('limit') ?? 25);
         $sort_by    = checkParam('sort_by') ?? 'name';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
+        $iso = checkParam('iso');
+
+        $language_id = cacheRemember('v4_language_id_from_iso', [$iso], now()->addDay(), function () use ($iso) {
+            return optional(Language::where('iso', $iso)->select('id')->first())->id;
+        });
 
         if ($featured) {
-            $cache_params = [$featured, $limit, $sort_by, $sort_dir];
-            $plans = cacheRemember('v4_plan_index', $cache_params, now()->addDay(), function () use ($featured, $limit, $sort_by, $sort_dir, $user) {
-                return $this->getPlans($featured, $limit, $sort_by, $sort_dir, $user);
+            $cache_params = [$featured, $limit, $sort_by, $sort_dir, $iso];
+            $plans = cacheRemember('v4_plan_index', $cache_params, now()->addDay(), function () use ($featured, $limit, $sort_by, $sort_dir, $user, $language_id) {
+                return $this->getPlans($featured, $limit, $sort_by, $sort_dir, $user, $language_id);
             });
             return $this->reply($plans);
         }
 
-        return $this->reply($this->getPlans($featured, $limit, $sort_by, $sort_dir, $user));
+        return $this->reply($this->getPlans($featured, $limit, $sort_by, $sort_dir, $user, $language_id));
     }
 
-    private function getPlans($featured, $limit, $sort_by, $sort_dir, $user)
+    private function getPlans($featured, $limit, $sort_by, $sort_dir, $user, $language_id)
     {
         $plans = Plan::with('days')
             ->with('user')
             ->where('draft', 0)
+            ->when($language_id, function ($q) use ($language_id) {
+                $q->where('plans.language_id', $language_id);
+            })
             ->when($featured || empty($user), function ($q) {
                 $q->where('plans.featured', '1');
             })->unless($featured, function ($q) use ($user) {
