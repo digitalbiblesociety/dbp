@@ -237,6 +237,8 @@ Route::name('v4_playlists.store')
     ->middleware('APIToken:check')->post('playlists',                               'Playlist\PlaylistsController@store');
 Route::name('v4_playlists.show')
     ->middleware('APIToken')->get('playlists/{playlist_id}',                        'Playlist\PlaylistsController@show');
+Route::name('v4_playlists.show_text')
+    ->middleware('APIToken')->get('playlists/{playlist_id}/text',                   'Playlist\PlaylistsController@showText');
 Route::name('v4_playlists.update')
     ->middleware('APIToken:check')->put('playlists/{playlist_id}',                  'Playlist\PlaylistsController@update');
 Route::name('v4_playlists.destroy')

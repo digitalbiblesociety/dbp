@@ -280,6 +280,11 @@ class PlansController extends APIController
             foreach ($plan->days as $day) {
                 $day_playlist = $playlist_controller->getPlaylist($user, $day->playlist_id);
                 $day_playlist->path = route('v4_playlists.hls', ['playlist_id'  => $day_playlist->id, 'v' => $this->v, 'key' => $this->key]);
+                if ($show_text) {
+                    foreach ($day_playlist->items as $item) {
+                        $item->verse_text = $item->getVerseText();
+                    }
+                }
                 $day->playlist = $day_playlist;
             }
         }

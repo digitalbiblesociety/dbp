@@ -244,10 +244,10 @@ class PlaylistsController extends APIController
     /**
      *
      * @OA\Get(
-     *     path="/playlists/{playlist_id}",
+     *     path="/playlists/{playlist_id}/text",
      *     tags={"Playlists"},
-     *     summary="A user's playlist",
-     *     operationId="v4_playlists.show",
+     *     summary="A user's playlist text",
+     *     operationId="v4_playlists.show_text",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(
      *          name="playlist_id",
@@ -265,7 +265,7 @@ class PlaylistsController extends APIController
      *
      *
      */
-    public function show(Request $request, $playlist_id)
+    public function showText(Request $request, $playlist_id)
     {
         $user = $request->user();
 
@@ -278,6 +278,65 @@ class PlaylistsController extends APIController
 
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
+        }
+
+        foreach ($playlist->items as $item) {
+            $item->verse_text = $item->getVerseText();
+        }
+        
+
+        return $this->reply($playlist->items->pluck('verse_text', 'id'));
+    }
+    /**
+     *
+     * @OA\Get(
+     *     path="/playlists/{playlist_id}",
+     *     tags={"Playlists"},
+     *     summary="A user's playlist",
+     *     operationId="v4_playlists.show",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="playlist_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Playlist/properties/id"),
+     *          description="The playlist id"
+     *     ),
+     *     @OA\Parameter(
+     *          name="show_text",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Enable the full details of the playlist and retrieve the text of the items"
+     *     ),
+     *     @OA\Response(response=200, ref="#/components/responses/playlist")
+     * )
+     *
+     * @param $playlist_id
+     *
+     * @return mixed
+     *
+     *
+     */
+    public function show(Request $request, $playlist_id)
+    {
+        $user = $request->user();
+        $show_text = checkBoolean('show_text');
+
+        // Validate Project / User Connection
+        if (!empty($user) && !$this->compareProjects($user->id, $this->key)) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $playlist = $this->getPlaylist($user, $playlist_id);
+
+        if (!$playlist) {
+            return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
+        }
+
+        if ($show_text) {
+            foreach ($playlist->items as $item) {
+                $item->verse_text = $item->getVerseText();
+            }
         }
 
         $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist_id, 'v' => $this->v, 'key' => $this->key]);
