@@ -26,7 +26,7 @@
     "dependencies": {
         "babel-preset-es2015": "^6.24.1",
         "babel-preset-stage-2": "^6.24.1",
-        "buefy": "^0.6.6",
+        "buefy": "^0.7.2",
         "chart.js": "^2.7.2",
         "dropzone": "^5.4.0",
         "fs": "0.0.1-security",
