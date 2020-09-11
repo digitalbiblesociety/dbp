@@ -910,13 +910,16 @@ class PlansController extends APIController
         }
 
         $bible_id = checkParam('bible_id', true);
-        $bible = Bible::whereId($bible_id)->first();
+        $bible = cacheRemember('bible_translate', [$bible_id], now()->addDay(), function () use ($bible_id) {
+            return Bible::whereId($bible_id)->first();
+        });
 
         if (!$bible) {
             return $this->setStatusCode(404)->replyWithError('Bible Not Found');
         }
 
-        $plan = $this->getPlan($plan_id, $user);
+        $plan = $this->getPlan($plan_id, false);
+
         if (!$plan) {
             return $this->setStatusCode(404)->replyWithError('Plan Not Found');
         }
@@ -933,16 +936,17 @@ class PlansController extends APIController
         $playlist_controller = new PlaylistsController();
         $translation_data = [];
         $translated_percentage = 0;
+        $playlists_data = [];
         foreach ($plan->days as $day) {
-            $playlist = (object) $playlist_controller->translate($request, $day->playlist_id)->original;
-
-            PlanDay::create([
+            $playlist = (object) $playlist_controller->translate($request, $day->playlist_id, $user)->original;
+            $playlists_data[] = [
                 'plan_id'               => $new_plan->id,
                 'playlist_id'           => $playlist->id,
-            ]);
+            ];
             $translation_data[] = $playlist->translation_data;
             $translated_percentage += $playlist->translated_percentage;
         }
+        PlanDay::insert($playlists_data);
         $translated_percentage = sizeof($plan->days) ? $translated_percentage / sizeof($plan->days) : 0;
 
 
