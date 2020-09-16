@@ -60,7 +60,7 @@ class BibleFileSetsController extends APIController
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
      * @throws \Exception
      */
-    public function show($id = null, $asset_id = null, $set_type_code = null)
+    public function show($id = null, $asset_id = null, $set_type_code = null, $cache_key = 'bible_filesets_show')
     {
         $fileset_id    = checkParam('dam_id|fileset_id', true, $id);
         $book_id       = checkParam('book_id');
@@ -69,7 +69,8 @@ class BibleFileSetsController extends APIController
         $type          = checkParam('type', $set_type_code !== null, $set_type_code);
 
         $cache_params = [$this->v, $fileset_id, $book_id, $type, $chapter_id, $asset_id];
-        $fileset_chapters = cacheRemember('bible_filesets_show', $cache_params, now()->addHours(12), function () use ($fileset_id, $book_id, $type, $chapter_id, $asset_id) {
+
+        $fileset_chapters = cacheRemember($cache_key, $cache_params, now()->addHours(12), function () use ($fileset_id, $book_id, $type, $chapter_id, $asset_id) {
             $book = Book::where('id', $book_id)->orWhere('id_osis', $book_id)->orWhere('id_usfx', $book_id)->first();
             $fileset = BibleFileset::with('bible')->uniqueFileset($fileset_id, $asset_id, $type)->first();
             if (!$fileset) {

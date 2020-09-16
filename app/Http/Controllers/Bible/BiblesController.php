@@ -654,7 +654,10 @@ class BiblesController extends APIController
      */
     public function chapter(Request $request, $bible_id)
     {
-        $bible = Bible::whereId($bible_id)->first();
+        $bible = cacheRemember('v4_chapter_bible', [$bible_id], now()->addDay(), function () use ($bible_id) {
+            return Bible::whereId($bible_id)->first();
+        });
+
         if (!$bible) {
             return $this->setStatusCode(404)->replyWithError('Bible not found');
         }
@@ -678,7 +681,9 @@ class BiblesController extends APIController
             $drama = checkBoolean('drama') ? 'drama' : 'non-drama';
         }
 
-        $book = Book::whereId($book_id)->first();
+        $book = cacheRemember('v4_chapter_book', [$book_id], now()->addDay(), function () use ($book_id) {
+            return Book::whereId($book_id)->first();
+        });
 
         if (!$book) {
             return $this->setStatusCode(404)->replyWithError('Book not found');
@@ -702,98 +707,106 @@ class BiblesController extends APIController
         $result->chapter = $chapter;
 
         if ($copyrights) {
-            $result->copyrights = $this->copyright($bible->id)->original;
+            $result->copyrights = cacheRemember('v4_chapter_copyrights', [$bible->id], now()->addDay(), function () use ($bible) {
+                return $this->copyright($bible->id)->original;
+            });
         }
 
-        $chapter_filesets = (object) [
-            'video' => (object) ['gospel_films' => [], 'jesus_films' => []],
-            'audio' => (object) [],
-            'text' => (object) [],
-            'timestamps' => (object) [],
-        ];
+        $cache_params = [$bible_id, $book_id, $chapter, $zip, $drama];
 
-        if ($zip) {
-            $chapter_filesets->downloads = [];
-        }
+        $chapter_filesets = cacheRemember('v4_chapter_filesets', $cache_params, now()->addHours(12), function () use ($drama, $zip, $bible, $book, $bible_id, $book_id, $chapter) {
+            $chapter_filesets = (object) [
+                'video' => (object) ['gospel_films' => [], 'jesus_films' => []],
+                'audio' => (object) [],
+                'text' => (object) [],
+                'timestamps' => (object) [],
+            ];
 
-        $text_plain = $this->getFileset($bible->filesets, 'text_plain', $book->book_testament);
-        if ($text_plain) {
-            $text_controller = new TextController();
-            $verses = $text_controller->index($text_plain->id, $book_id, $chapter)->original['data'] ?? [];
-            if (!empty($verses)) {
-                $chapter_filesets->text->verses = $verses;
+            if ($zip) {
+                $chapter_filesets->downloads = [];
             }
-        }
 
-        $text_format = $this->getFileset($bible->filesets, 'text_format', $book->book_testament);
-        if ($text_format) {
-            $fileset_controller = new BibleFileSetsController();
-            $formatted_verses = $fileset_controller->show($text_format->id, $text_format->asset_id, $text_format->set_type_code)->original['data'] ?? [];
-            if (!empty($formatted_verses)) {
-                $path = $formatted_verses[0]['path'];
-                $cache_params = [$bible_id, $book_id, $chapter, $text_format->id];
-                $formatted_verses = cacheRemember('bible_chapter_formatted_verses', $cache_params, now()->addDay(), function () use ($path) {
-                    try {
-                        $client = new Client();
-                        $html = $client->get($path);
-                        $body = $html->getBody() . '';
-                        return $body;
-                    } catch (Exception $e) {
-                        return false;
+            $text_plain = $this->getFileset($bible->filesets, 'text_plain', $book->book_testament);
+            if ($text_plain) {
+                $text_controller = new TextController();
+                $verses = $text_controller->index($text_plain->id, $book_id, $chapter)->original['data'] ?? [];
+                if (!empty($verses)) {
+                    $chapter_filesets->text->verses = $verses;
+                }
+            }
+
+            $text_format = $this->getFileset($bible->filesets, 'text_format', $book->book_testament);
+            if ($text_format) {
+                $fileset_controller = new BibleFileSetsController();
+                $formatted_verses = $fileset_controller->show($text_format->id, $text_format->asset_id, $text_format->set_type_code, 'v4_chapter_filesets_show')->original['data'] ?? [];
+                if (!empty($formatted_verses)) {
+                    $path = $formatted_verses[0]['path'];
+                    $cache_params = [$bible_id, $book_id, $chapter, $text_format->id];
+                    $formatted_verses = cacheRemember('bible_chapter_formatted_verses', $cache_params, now()->addDay(), function () use ($path) {
+                        try {
+                            $client = new Client();
+                            $html = $client->get($path);
+                            $body = $html->getBody() . '';
+                            return $body;
+                        } catch (Exception $e) {
+                            return false;
+                        }
+                    });
+                    if ($formatted_verses) {
+                        $chapter_filesets->text->formatted_verses = $formatted_verses;
                     }
-                });
-                if ($formatted_verses) {
-                    $chapter_filesets->text->formatted_verses = $formatted_verses;
                 }
             }
-        }
 
-        $drama_all = $drama === 'all';
+            $drama_all = $drama === 'all';
 
-        if ($drama === 'drama' || $drama_all) {
-            $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio_drama', 'drama', $zip, 'audio', 'non_drama', !$drama_all && $zip);
-        }
+            if ($drama === 'drama' || $drama_all) {
+                $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio_drama', 'drama', $zip, 'audio', 'non_drama', !$drama_all && $zip);
+            }
 
-        if ($drama === 'non-drama' || $drama_all) {
-            $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio', 'non_drama', $zip, 'audio_drama', 'drama', !$drama_all && $zip);
-        }
+            if ($drama === 'non-drama' || $drama_all) {
+                $chapter_filesets = $this->getAudioFilesetData($chapter_filesets, $bible, $book, $chapter, 'audio', 'non_drama', $zip, 'audio_drama', 'drama', !$drama_all && $zip);
+            }
 
-        $video_stream = $this->getFileset($bible->filesets, 'video_stream', $book->book_testament);
-        if ($video_stream) {
-            $fileset_controller = new BibleFileSetsController();
-            $gospel_films = $fileset_controller->show($video_stream->id, $video_stream->asset_id, $video_stream->set_type_code)->original['data'] ?? [];
-            $chapter_filesets->video->gospel_films = $gospel_films;
-        }
+            $video_stream = $this->getFileset($bible->filesets, 'video_stream', $book->book_testament);
+            if ($video_stream) {
+                $fileset_controller = new BibleFileSetsController();
+                $gospel_films = $fileset_controller->show($video_stream->id, $video_stream->asset_id, $video_stream->set_type_code, 'v4_chapter_filesets_show')->original['data'] ?? [];
+                $chapter_filesets->video->gospel_films = $gospel_films;
+            }
 
-        $video_stream_controller = new VideoStreamController();
-        try {
-            $jesus_films = $video_stream_controller->jesusFilmChapters($bible->language->iso)->original;
-        } catch (Exception $e) {
-            $jesus_films = [];
-        }
+            $video_stream_controller = new VideoStreamController();
+            try {
+                $jesus_films = $video_stream_controller->jesusFilmChapters($bible->language->iso)->original;
+            } catch (Exception $e) {
+                $jesus_films = [];
+            }
 
-        if (isset($jesus_films['verses'])) {
-            $verses = $jesus_films['verses'];
-            $metadata = $jesus_films['meta'];
-            $films = [];
+            if (isset($jesus_films['verses'])) {
+                $verses = $jesus_films['verses'];
+                $metadata = $jesus_films['meta'];
+                $films = [];
 
-            foreach ($verses as $key => $verse) {
-                if (!$verse) {
-                    continue;
-                }
-                foreach ($verse as $book_key => $chapters) {
-                    foreach ($chapters as $chapter_key => $item) {
-                        if (substr(strtoupper($book_key), 0, 3) === $book->id && intval($chapter_key) === intval($chapter)) {
-                            $films[] = (object) ['component_id' => $key, 'verses' => $item];
+                foreach ($verses as $key => $verse) {
+                    if (!$verse) {
+                        continue;
+                    }
+                    foreach ($verse as $book_key => $chapters) {
+                        foreach ($chapters as $chapter_key => $item) {
+                            if (substr(strtoupper($book_key), 0, 3) === $book->id && intval($chapter_key) === intval($chapter)) {
+                                $films[] = (object) ['component_id' => $key, 'verses' => $item];
+                            }
                         }
                     }
                 }
+                $chapter_filesets->video->jesus_films = collect($films)->map(function ($film) use ($metadata) {
+                    $film->meta = $metadata[$film->component_id];
+                    return $film;
+                });
             }
-            $chapter_filesets->video->jesus_films = collect($films)->map(function ($film) use ($metadata) {
-                $film->meta = $metadata[$film->component_id];
-                return $film;
-            });
-        }
+
+            return $chapter_filesets;
+        });
 
         $result->filesets = $chapter_filesets;
         $result->timestamps = $result->filesets->timestamps;
@@ -865,7 +878,7 @@ class BiblesController extends APIController
             ])->first();
 
             // Get fileset
-            $fileset_result = $fileset_controller->show($fileset->id, $fileset->asset_id, $fileset->set_type_code)->original['data'] ?? [];
+            $fileset_result = $fileset_controller->show($fileset->id, $fileset->asset_id, $fileset->set_type_code, 'v4_chapter_filesets_show')->original['data'] ?? [];
             if (!empty($fileset_result)) {
                 $results->audio->$name = $fileset_result[0];
                 $results->audio->$name['fileset'] = $fileset;

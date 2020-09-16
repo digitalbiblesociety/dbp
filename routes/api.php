@@ -223,7 +223,7 @@ Route::name('v4_api.versions')->get('/api/versions',                            
 Route::name('v4_api.buckets')->get('/api/buckets',                                 'HomeController@buckets');
 Route::name('v4_api.stats')->get('/stats',                                         'HomeController@stats');
 Route::name('v4_api.gitVersion')->get('/api/git/version',                          'ApiMetadataController@gitVersion');
-Route::name('v4_api.refreshDevCache')->get('/api/refresh-dev-cache',               'ApiMetadataController@refreshDevCache');
+Route::name('v4_api.refreshDevCache')->get('/refresh-dev-cache',               'ApiMetadataController@refreshDevCache');
 
 Route::name('v4_api.changes')->get('/api/changelog',                               'ApiMetadataController@changelog');
 
@@ -237,6 +237,8 @@ Route::name('v4_playlists.store')
     ->middleware('APIToken:check')->post('playlists',                               'Playlist\PlaylistsController@store');
 Route::name('v4_playlists.show')
     ->middleware('APIToken')->get('playlists/{playlist_id}',                        'Playlist\PlaylistsController@show');
+Route::name('v4_playlists.show_text')
+    ->middleware('APIToken')->get('playlists/{playlist_id}/text',                   'Playlist\PlaylistsController@showText');
 Route::name('v4_playlists.update')
     ->middleware('APIToken:check')->put('playlists/{playlist_id}',                  'Playlist\PlaylistsController@update');
 Route::name('v4_playlists.destroy')
