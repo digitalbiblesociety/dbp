@@ -24,7 +24,7 @@ class BookmarkTransformer extends TransformerAbstract
             'id'                   => (string) $bookmark->id,
             'user_id'              => (string) $bookmark->user_id,
             'dam_id'               => $bookmark->bible_id.substr($bookmark->book->book_testament, 0, 1).'2ET',
-            'book_id'              => (string) $bookmark->book->id_osis,
+            'book_id'              => (string) $bookmark->book->id_osis ? $bookmark->book->id_osis : $bookmark->book_id,
             'chapter_id'           => (string) $bookmark->chapter,
             'verse_id'             => (string) $bookmark->verse_start,
             'created'              => (string) $bookmark->created_at,

@@ -166,7 +166,8 @@ class BookmarksController extends APIController
             return $this->setStatusCode(422)->replyWithError($invalidBookmark);
         }
 
-        $bookmark = Bookmark::create($request->all());
+        $bookmark_id = Bookmark::create($request->all())->id;
+        $bookmark = Bookmark::where('id', $bookmark_id)->first();
 
         $this->handleTags($bookmark);
 

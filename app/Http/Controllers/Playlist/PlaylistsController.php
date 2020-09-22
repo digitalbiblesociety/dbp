@@ -6,6 +6,7 @@ use App\Traits\AccessControlAPI;
 use App\Http\Controllers\APIController;
 use App\Models\Bible\Bible;
 use App\Models\Bible\BibleFile;
+use App\Models\Language\Language;
 use App\Models\Plan\UserPlan;
 use App\Models\Playlist\Playlist;
 use App\Models\Playlist\PlaylistFollower;
@@ -51,6 +52,12 @@ class PlaylistsController extends APIController
      *          in="query",
      *          @OA\Schema(type="boolean"),
      *          description="Enable the full details of the playlist and retrieve the text of the items"
+     *     ),
+     *     @OA\Parameter(
+     *          name="iso",
+     *          in="query",
+     *          @OA\Schema(ref="#/components/schemas/Language/properties/iso"),
+     *          description="The iso code to filter plans by. For a complete list see the `iso` field in the `/languages` route"
      *     ),
      *     security={{"api_token":{}}},
      *     @OA\Parameter(ref="#/components/parameters/limit"),
@@ -98,6 +105,7 @@ class PlaylistsController extends APIController
 
         $sort_by    = checkParam('sort_by') ?? 'name';
         $sort_dir   = checkParam('sort_dir') ?? 'asc';
+        $iso = checkParam('iso');
 
         $featured = checkBoolean('featured') || empty($user);
         $limit    = (int) (checkParam('limit') ?? 25);
@@ -110,19 +118,23 @@ class PlaylistsController extends APIController
             $show_details = $show_text;
         }
 
+        $language_id = cacheRemember('v4_language_id_from_iso', [$iso], now()->addDay(), function () use ($iso) {
+            return optional(Language::where('iso', $iso)->select('id')->first())->id;
+        });
+
         if ($featured) {
-            $cache_string = generateCacheString('v4_playlist_index', [$show_details, $featured, $sort_by, $sort_dir, $limit, $show_text]);
-            $playlists = \Cache::remember($cache_string, now()->addDay(), function () use ($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text) {
-                return $this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text);
+            $cache_params = [$show_details, $featured, $sort_by, $sort_dir, $limit, $show_text, $language_id];
+            $playlists = cacheRemember('v4_playlist_index', $cache_params, now()->addDay(), function () use ($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text, $language_id) {
+                return $this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text, $language_id);
             });
             return $this->reply($playlists);
         }
 
 
-        return $this->reply($this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text));
+        return $this->reply($this->getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text, $language_id));
     }
 
-    private function getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text)
+    private function getPlaylists($show_details, $user, $featured, $sort_by, $sort_dir, $limit, $show_text, $language_id)
     {
         $has_user = !empty($user);
         $featured = $featured || !$has_user;
@@ -139,6 +151,9 @@ class PlaylistsController extends APIController
             ->where('plan_id', 0)
             ->when($show_details, function ($query) {
                 $query->with('items');
+            })
+            ->when($language_id, function ($q) use ($language_id) {
+                $q->where('user_playlists.language_id', $language_id);
             })
             ->when($featured, function ($q) {
                 $q->where('user_playlists.featured', '1');
@@ -229,10 +244,10 @@ class PlaylistsController extends APIController
     /**
      *
      * @OA\Get(
-     *     path="/playlists/{playlist_id}",
+     *     path="/playlists/{playlist_id}/text",
      *     tags={"Playlists"},
-     *     summary="A user's playlist",
-     *     operationId="v4_playlists.show",
+     *     summary="A user's playlist text",
+     *     operationId="v4_playlists.show_text",
      *     security={{"api_token":{}}},
      *     @OA\Parameter(
      *          name="playlist_id",
@@ -250,7 +265,7 @@ class PlaylistsController extends APIController
      *
      *
      */
-    public function show(Request $request, $playlist_id)
+    public function showText(Request $request, $playlist_id)
     {
         $user = $request->user();
 
@@ -263,6 +278,65 @@ class PlaylistsController extends APIController
 
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
+        }
+
+        foreach ($playlist->items as $item) {
+            $item->verse_text = $item->getVerseText();
+        }
+
+
+        return $this->reply($playlist->items->pluck('verse_text', 'id'));
+    }
+    /**
+     *
+     * @OA\Get(
+     *     path="/playlists/{playlist_id}",
+     *     tags={"Playlists"},
+     *     summary="A user's playlist",
+     *     operationId="v4_playlists.show",
+     *     security={{"api_token":{}}},
+     *     @OA\Parameter(
+     *          name="playlist_id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(ref="#/components/schemas/Playlist/properties/id"),
+     *          description="The playlist id"
+     *     ),
+     *     @OA\Parameter(
+     *          name="show_text",
+     *          in="query",
+     *          @OA\Schema(type="boolean"),
+     *          description="Enable the full details of the playlist and retrieve the text of the items"
+     *     ),
+     *     @OA\Response(response=200, ref="#/components/responses/playlist")
+     * )
+     *
+     * @param $playlist_id
+     *
+     * @return mixed
+     *
+     *
+     */
+    public function show(Request $request, $playlist_id)
+    {
+        $user = $request->user();
+        $show_text = checkBoolean('show_text');
+
+        // Validate Project / User Connection
+        if (!empty($user) && !$this->compareProjects($user->id, $this->key)) {
+            return $this->setStatusCode(401)->replyWithError(trans('api.projects_users_not_connected'));
+        }
+
+        $playlist = $this->getPlaylist($user, $playlist_id);
+
+        if (!$playlist) {
+            return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
+        }
+
+        if ($show_text) {
+            foreach ($playlist->items as $item) {
+                $item->verse_text = $item->getVerseText();
+            }
         }
 
         $playlist->path = route('v4_playlists.hls', ['playlist_id'  => $playlist_id, 'v' => $this->v, 'key' => $this->key]);
@@ -521,7 +595,7 @@ class PlaylistsController extends APIController
         return $this->reply($single_item ? $created_playlist_items[0] : $created_playlist_items);
     }
 
-    private function createPlaylistItems($playlist, $playlist_items, $set_translated_id = false)
+    private function createPlaylistItems($playlist, $playlist_items)
     {
         $created_playlist_items = [];
 
@@ -550,10 +624,45 @@ class PlaylistsController extends APIController
             if (!$verses) {
                 $created_playlist_item->calculateVerses()->save();
             }
-            if ($set_translated_id) {
-                $created_playlist_item->translated_id = $playlist_item->translated_id;
-            }
             $created_playlist_items[] = $created_playlist_item;
+        }
+
+        return $created_playlist_items;
+    }
+
+    private function createTranslatedPlaylistItems($playlist, $playlist_items)
+    {
+        $current_items_size = sizeof($playlist->items);
+        $new_items_size = sizeof($playlist_items);
+
+        if ($current_items_size + $new_items_size > $this->items_limit) {
+            $allowed_size = $this->items_limit - $current_items_size;
+            $playlist_items = array_slice($playlist_items, 0, $allowed_size);
+        }
+
+        $playlist_items_to_create = [];
+        foreach ($playlist_items as $playlist_item) {
+            $playlist_item = (object) $playlist_item;
+            $playlist_item_data = [
+                'playlist_id'       => $playlist->id,
+                'fileset_id'        => $playlist_item->fileset_id,
+                'book_id'           => $playlist_item->book_id,
+                'chapter_start'     => $playlist_item->chapter_start,
+                'chapter_end'       => $playlist_item->chapter_end,
+                'verse_start'       => $playlist_item->verse_start ?? null,
+                'verse_end'         => $playlist_item->verse_end ?? null,
+                'verses'            => $playlist_items->verses ?? 0
+            ];
+            $playlist_items_to_create[] = $playlist_item_data;
+        }
+
+        PlaylistItems::insert($playlist_items_to_create);
+        $new_items = PlaylistItems::where('playlist_id', $playlist->id)->get();
+        $created_playlist_items = [];
+        foreach ($new_items as $key => $playlist_item) {
+            $playlist_item->translated_id = $playlist_items[$key]->translated_id;
+
+            $created_playlist_items[] = $playlist_item;
         }
 
         return $created_playlist_items;
@@ -666,9 +775,9 @@ class PlaylistsController extends APIController
      *
      *
      */
-    public function translate(Request $request, $playlist_id)
+    public function translate(Request $request, $playlist_id, $user = false)
     {
-        $user = $request->user();
+        $user = $user ? $user : $request->user();
 
         // Validate Project / User Connection
         if (!empty($user) && !$this->compareProjects($user->id, $this->key)) {
@@ -676,13 +785,15 @@ class PlaylistsController extends APIController
         }
 
         $bible_id = checkParam('bible_id', true);
-        $bible = Bible::whereId($bible_id)->first();
+        $bible = cacheRemember('bible_translate', [$bible_id], now()->addDay(), function () use ($bible_id) {
+            return Bible::whereId($bible_id)->first();
+        });
 
         if (!$bible) {
             return $this->setStatusCode(404)->replyWithError('Bible Not Found');
         }
 
-        $playlist = $this->getPlaylist($user, $playlist_id);
+        $playlist = $this->getPlaylist(false, $playlist_id);
         if (!$playlist) {
             return $this->setStatusCode(404)->replyWithError('Playlist Not Found');
         }
@@ -732,7 +843,7 @@ class PlaylistsController extends APIController
 
 
         $playlist = Playlist::create($playlist_data);
-        $items = collect($this->createPlaylistItems($playlist, $translated_items, true));
+        $items = collect($this->createTranslatedPlaylistItems($playlist, $translated_items));
 
 
         foreach ($metadata_items as $item) {

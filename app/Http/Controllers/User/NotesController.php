@@ -191,7 +191,7 @@ class NotesController extends APIController
             return $invalidNote;
         }
 
-        $note = Note::create([
+        $note_id = Note::create([
             'user_id'     => $user_id,
             'bible_id'    => $request->bible_id,
             'book_id'     => $request->book_id,
@@ -199,7 +199,8 @@ class NotesController extends APIController
             'verse_start' => $request->verse_start,
             'verse_end'   => $request->verse_end ?? $request->verse_start,
             'notes'       =>  encrypt(isset($request->notes) ? $request->notes : ''),
-        ]);
+        ])->id;
+        $note = Note::where('id', $note_id)->first();
 
         $this->handleTags($note);
 
